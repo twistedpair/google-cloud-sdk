@@ -68,7 +68,7 @@ def VerifyScopeForSearch(scope):
   Args:
     scope: the scope string of a search request.
   """
-  if not re.match('^[^/]+/[^/]+$', scope):
+  if not re.match('^[^/#?]+/[^/#?]+$', scope):
     raise gcloud_exceptions.InvalidArgumentException(
         '--scope', 'A valid scope should be: projects/{PROJECT_ID}, '
         'projects/{PROJECT_NUMBER}, folders/{FOLDER_NUMBER} or '

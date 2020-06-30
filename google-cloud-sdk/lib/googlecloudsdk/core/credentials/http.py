@@ -15,43 +15,34 @@
 
 """A module to get a credentialed http object for making API calls."""
 
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
 import google_auth_httplib2
 
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import http
-from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import creds as core_creds
-from googlecloudsdk.core.credentials import store
-from googlecloudsdk.core.util import files
-from oauth2client import client
-
-import six
-from google.auth import exceptions as google_auth_exceptions
-
-
-class Error(exceptions.Error):
-  """Exceptions for the http module."""
+from googlecloudsdk.core.credentials import transport
 
 
 def Http(timeout='unset',
-         enable_resource_quota=True,
-         force_resource_quota=False,
          response_encoding=None,
          ca_certs=None,
+         enable_resource_quota=True,
+         force_resource_quota=False,
          allow_account_impersonation=True,
-         use_google_auth=False):
+         use_google_auth=None):
   """Get an httplib2.Http client for working with the Google API.
 
   Args:
     timeout: double, The timeout in seconds to pass to httplib2.  This is the
         socket level timeout.  If timeout is None, timeout is infinite.  If
         default argument 'unset' is given, a sensible default is selected.
+    response_encoding: str, the encoding to use to decode the response.
+    ca_certs: str, absolute filename of a ca_certs file that overrides the
+        default
     enable_resource_quota: bool, By default, we are going to tell APIs to use
         the quota of the project being operated on. For some APIs we want to use
         gcloud's quota, so you can explicitly disable that behavior by passing
@@ -59,15 +50,13 @@ def Http(timeout='unset',
     force_resource_quota: bool, If true resource project quota will be used by
       this client regardless of the settings in gcloud. This should be used for
       newer APIs that cannot work with legacy project quota.
-    response_encoding: str, the encoding to use to decode the response.
-    ca_certs: str, absolute filename of a ca_certs file that overrides the
-        default
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials for calls made with this client. If False, the active
       user credentials will always be used.
     use_google_auth: bool, True if the calling command indicates to use
       google-auth library for authentication. If False, authentication will
-      fallback to using the oauth2client library.
+      fallback to using the oauth2client library. If None, set the value based
+      on the configuration.
 
   Returns:
     1. A regular httplib2.Http object if no credentials are available;
@@ -82,78 +71,21 @@ def Http(timeout='unset',
   http_client = http.Http(timeout=timeout, response_encoding=response_encoding,
                           ca_certs=ca_certs)
 
-  # Wrappers for IAM header injection.
-  authority_selector = properties.VALUES.auth.authority_selector.Get()
-  authorization_token_file = (
-      properties.VALUES.auth.authorization_token_file.Get())
-  handlers = _GetIAMAuthHandlers(authority_selector, authorization_token_file)
+  if use_google_auth is None:
+    use_google_auth = base.UseGoogleAuth()
+  http_client = RequestWrapper().WrapCredentials(
+      http_client, enable_resource_quota, force_resource_quota,
+      allow_account_impersonation, use_google_auth)
+  return http_client
 
-  creds = store.LoadIfEnabled(allow_account_impersonation, use_google_auth)
-  if creds:
-    # Inject the resource project header for quota unless explicitly disabled.
-    if enable_resource_quota or force_resource_quota:
-      quota_project = core_creds.GetQuotaProject(creds, force_resource_quota)
-      if quota_project:
-        handlers.append(http.Modifiers.Handler(
-            http.Modifiers.SetHeader('X-Goog-User-Project', quota_project)))
 
+class RequestWrapper(transport.CredentialWrappingMixin, http.RequestWrapper):
+  """Class for wrapping httplib.Httplib2 requests."""
+
+  def AuthorizeClient(self, http_client, creds):
+    """Returns an http_client authorized with the given credentials."""
     if core_creds.IsGoogleAuthCredentials(creds):
       http_client = google_auth_httplib2.AuthorizedHttp(creds, http_client)
     else:
       http_client = creds.authorize(http_client)
-
-    # Wrap the request method to put in our own error handling.
-    http_client = http.Modifiers.WrapRequest(
-        http_client, handlers, _HandleAuthError,
-        (client.AccessTokenRefreshError, google_auth_exceptions.RefreshError))
-
-  return http_client
-
-
-def _GetIAMAuthHandlers(authority_selector, authorization_token_file):
-  """Get the request handlers for IAM authority selctors and auth tokens..
-
-  Args:
-    authority_selector: str, The authority selector string we want to use for
-        the request or None.
-    authorization_token_file: str, The file that contains the authorization
-        token we want to use for the request or None.
-
-  Returns:
-    [http.Modifiers]: A list of request modifier functions to use to wrap an
-    http request.
-  """
-  authorization_token = None
-  if authorization_token_file:
-    try:
-      authorization_token = files.ReadFileContents(authorization_token_file)
-    except files.Error as e:
-      raise Error(e)
-
-  handlers = []
-  if authority_selector:
-    handlers.append(http.Modifiers.Handler(
-        http.Modifiers.SetHeader('x-goog-iam-authority-selector',
-                                 authority_selector)))
-
-  if authorization_token:
-    handlers.append(http.Modifiers.Handler(
-        http.Modifiers.SetHeader('x-goog-iam-authorization-token',
-                                 authorization_token)))
-
-  return handlers
-
-
-def _HandleAuthError(e):
-  """Handle a generic auth error and raise a nicer message.
-
-  Args:
-    e: The exception that was caught.
-
-  Raises:
-    sore.TokenRefreshError: If an auth error occurs.
-  """
-  msg = six.text_type(e)
-  log.debug('Exception caught during HTTP request: %s', msg,
-            exc_info=True)
-  raise store.TokenRefreshError(msg)
+    return http_client

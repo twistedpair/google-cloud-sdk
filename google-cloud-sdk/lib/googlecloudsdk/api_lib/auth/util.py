@@ -116,10 +116,13 @@ def DoInstalledAppBrowserFlow(launch_browser, scopes, client_id_file=None,
           scopes=scopes,
           client_id=client_id,
           client_secret=client_secret)
-  except c_store.FlowError:
-    msg = 'There was a problem with web authentication.'
-    if launch_browser:
-      msg += ' Try running again with --no-launch-browser.'
+  except c_store.FlowError as e:
+    if c_store.IsContextAwareAccessDeniedError(e):
+      msg = c_store.CONTEXT_AWARE_ACCESS_HELP_MSG
+    else:
+      msg = 'There was a problem with web authentication.'
+      if launch_browser:
+        msg += ' Try running again with --no-launch-browser.'
     log.error(msg)
     raise
 

@@ -197,6 +197,42 @@ class VersionsClient(object):
               allowed=', '.join(sorted(allowed_fields))))
     return version
 
+  def _ConfigureContainer(self, version, **kwargs):
+    """Adds `container` and `routes` fields to version."""
+    if not any(kwargs.values()):
+      # Nothing related to containers was specified!
+      return
+
+    if not kwargs['image']:  # Implied from above: some other parameter is set!
+      set_flags = ', '.join(
+          ['--{}'.format(k) for k, v in sorted(kwargs.items()) if v])
+      raise ValueError(
+          '--image was not provided, but other container related flags were '
+          'specified. Please specify --image or remove the following flags: '
+          '{}'.format(set_flags))
+
+    version.container = self.messages.GoogleCloudMlV1ContainerSpec(
+        image=kwargs['image'])
+    if kwargs['command']:
+      version.container.command = kwargs['command']
+    if kwargs['args']:
+      version.container.args = kwargs['args']
+    if kwargs['env_vars']:
+      version.container.env = [
+          self.messages.GoogleCloudMlV1EnvVar(name=name, value=value)
+          for name, value in kwargs['env_vars'].items()]
+    if kwargs['ports']:
+      version.container.ports = [
+          self.messages.GoogleCloudMlV1ContainerPort(containerPort=p)
+          for p in kwargs['ports']
+      ]
+
+    if kwargs['predict_route'] or kwargs['health_route']:
+      version.routes = self.messages.GoogleCloudMlV1RouteMap(
+          predict=kwargs['predict_route'],
+          health=kwargs['health_route']
+      )
+
   def BuildVersion(self, name,
                    path=None,
                    deployment_uri=None,
@@ -213,6 +249,13 @@ class VersionsClient(object):
                    explanation_method=None,
                    num_integral_steps=None,
                    num_paths=None,
+                   image=None,
+                   command=None,
+                   container_args=None,
+                   env_vars=None,
+                   ports=None,
+                   predict_route=None,
+                   health_route=None,
                    containers_hidden=True):
     """Create a Version object.
 
@@ -247,6 +290,15 @@ class VersionsClient(object):
       num_integral_steps: Number of integral steps for Integrated Gradients and
         XRAI.
       num_paths: Number of paths for Sampled Shapley.
+      image: The container image to deploy.
+      command: Entrypoint for the container image.
+      container_args: The command-line args to pass the container.
+      env_vars: The environment variables to set on the container.
+      ports: The ports to which traffic will be sent in the container.
+      predict_route: The HTTP path within the container that predict requests
+        are sent to.
+      health_route: The HTTP path within the container that health checks are
+        sent to.
       containers_hidden: Whether or not container-related fields are hidden
         on this track.
 
@@ -298,6 +350,17 @@ class VersionsClient(object):
 
     if explanation_config is not None:
       additional_fields['explanationConfig'] = explanation_config
+
+    if not containers_hidden:
+      self._ConfigureContainer(
+          version,
+          image=image,
+          command=command,
+          args=container_args,
+          env_vars=env_vars,
+          ports=ports,
+          predict_route=predict_route,
+          health_route=health_route)
 
     for field_name, value in additional_fields.items():
       if value is not None:

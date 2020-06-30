@@ -356,7 +356,6 @@ class ClusterGroup(_messages.Message):
       of the existing labels along with the new label. If you only provide a
       map with the new label, all of the old labels will be removed (probably
       not what is desired).
-    managementIp: Management ip
     name: Output only. The resource name of this ClusterGroup. Resource names
       are schemeless URI's that follow the conventions in
       https://cloud.google.com/apis/design/resource_names For example,
@@ -368,7 +367,6 @@ class ClusterGroup(_messages.Message):
       resource.
     updateTime: Output only. Update time of the resource.
     vcenter: Output only. vCenter information.
-    vpcSelfLink: VPC self link
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -422,15 +420,13 @@ class ClusterGroup(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  managementIp = _messages.StringField(4)
-  name = _messages.StringField(5)
-  networkConfig = _messages.MessageField('NetworkConfig', 6)
-  nsx = _messages.MessageField('Nsx', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  status = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-  vcenter = _messages.MessageField('Vcenter', 11)
-  vpcSelfLink = _messages.StringField(12)
+  name = _messages.StringField(4)
+  networkConfig = _messages.MessageField('NetworkConfig', 5)
+  nsx = _messages.MessageField('Nsx', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  status = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  vcenter = _messages.MessageField('Vcenter', 10)
 
 
 class ClusterGroupBackup(_messages.Message):

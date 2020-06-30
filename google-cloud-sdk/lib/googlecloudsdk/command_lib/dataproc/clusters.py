@@ -328,6 +328,13 @@ If you want to enable all scopes use the 'cloud-platform' scope.
                 'Use the `--secondary-worker-boot-disk-type` flag instead.')))
   secondary_worker_boot_disk_type.add_argument(
       '--secondary-worker-boot-disk-type', help=boot_disk_type_detailed_help)
+  parser.add_argument(
+      '--enable-component-gateway',
+      action='store_true',
+      help="""\
+        Enable access to the web UIs of selected components on the cluster
+        through the component gateway.
+        """)
 
   autoscaling_group = parser.add_argument_group()
   flags.AddAutoscalingPolicyResourceArgForCluster(
@@ -548,14 +555,7 @@ def _AddDiskArgsDeprecated(parser):
 
 def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
-
-  parser.add_argument(
-      '--enable-component-gateway',
-      action='store_true',
-      help="""\
-        Enable access to the web UIs of selected components on the cluster
-        through the component gateway.
-        """)
+  pass
 
 
 def GetClusterConfig(args,
@@ -816,10 +816,9 @@ def GetClusterConfig(args,
             minCpuPlatform=args.worker_min_cpu_platform,
             preemptibility=_GetType(dataproc, args.secondary_worker_type)))
 
-  if beta:
-    if args.enable_component_gateway:
-      cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
-          enableHttpPortAccess=args.enable_component_gateway)
+  if args.enable_component_gateway:
+    cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
+        enableHttpPortAccess=args.enable_component_gateway)
 
   if include_gke_platform_args:
     if args.gke_cluster is not None:

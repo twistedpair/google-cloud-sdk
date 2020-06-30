@@ -4261,7 +4261,10 @@ class WorkflowMetadata(_messages.Message):
       dag_timeout when DAG ends.
     dagStartTime: Output only. DAG start time, only set for workflows with
       dag_timeout when DAG begins.
-    dagTimeout: Output only. The timeout duration for the DAG of jobs.
+    dagTimeout: Output only. The timeout duration for the DAG of jobs. Minimum
+      timeout duration is 10 minutes and maximum is 24 hours, expressed as a
+      google.protobuf.Duration. For example, "1800" = 1800 seconds/30 minutes
+      duration.
     deleteCluster: Output only. The delete cluster operation metadata.
     endTime: Output only. Workflow end time.
     graph: Output only. The workflow graph.

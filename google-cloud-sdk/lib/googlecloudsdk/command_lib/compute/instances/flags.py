@@ -439,7 +439,7 @@ def _GetDiskDeviceNameHelp(container_mount_enabled=False):
 def AddDiskArgs(parser,
                 enable_regional_disks=False,
                 enable_kms=False,
-                container_mount_enabled=False, enable_pd_interface=False):
+                container_mount_enabled=False):
   """Adds arguments related to disks for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -461,9 +461,6 @@ def AddDiskArgs(parser,
 
   if enable_regional_disks:
     disk_arg_spec['scope'] = str
-
-  if enable_pd_interface:
-    disk_arg_spec['interface'] = str
 
   disk_help = """
       Attaches persistent disks to the instances. The disks
@@ -496,12 +493,6 @@ def AddDiskArgs(parser,
       interpreted as a zonal disk in the same zone as the instance (default).
       If ``regional'', the disk is interpreted as a regional disk in the same
       region as the instance. The default value for this is ``zonal''.
-      """
-
-  if enable_pd_interface:
-    disk_help += """
-      *interface*::: Specifies the disk interface to use for attaching this
-      disk. Valid values are `SCSI` and `NVME`. The default is `SCSI`.
       """
 
   parser.add_argument(
@@ -1063,18 +1054,7 @@ def AddAddressArgs(parser,
                    multiple_network_interface_cards=True):
   """Adds address arguments for instances and instance-templates."""
   addresses = parser.add_mutually_exclusive_group()
-  addresses.add_argument(
-      '--no-address',
-      action='store_true',
-      help="""\
-           If provided, the instances are not assigned external IP
-           addresses. To pull container images, you must configure private
-           Google access if using Container Registry or configure Cloud NAT
-           for instances to access container images directly. For more
-           information, see:
-             * https://cloud.google.com/vpc/docs/configure-private-google-access
-             * https://cloud.google.com/nat/docs/using-nat
-           """)
+  AddNoAddressArg(addresses)
   if instances:
     address_help = """\
         Assigns the given external address to the instance that is created.
@@ -1185,6 +1165,21 @@ def AddAddressArgs(parser,
         action='append',  # pylint:disable=protected-access
         metavar='PROPERTY=VALUE',
         help=network_interface_help)
+
+
+def AddNoAddressArg(parser):
+  parser.add_argument(
+      '--no-address',
+      action='store_true',
+      help="""\
+           If provided, the instances are not assigned external IP
+           addresses. To pull container images, you must configure private
+           Google access if using Container Registry or configure Cloud NAT
+           for instances to access container images directly. For more
+           information, see:
+             * https://cloud.google.com/vpc/docs/configure-private-google-access
+             * https://cloud.google.com/nat/docs/using-nat
+           """)
 
 
 def AddMachineTypeArgs(parser, required=False, unspecified_help=None):
@@ -2540,11 +2535,15 @@ def AddBulkCreateArgs(parser):
         created will equal the number of names provided.
       """)
   location = parser.add_group(required=True, mutex=True)
-  location.add_argument('--region', help="""
+  location.add_argument(
+      '--region',
+      help="""
       Region in which to create the Compute Engine virtual machines. Compute
       Engine will select a zone in which to create all virtual machines.
   """)
-  location.add_argument('--zone', help="""
+  location.add_argument(
+      '--zone',
+      help="""
       Zone in which to create the Compute Engine virtual machines.
 
       A list of zones can be fetched by running:

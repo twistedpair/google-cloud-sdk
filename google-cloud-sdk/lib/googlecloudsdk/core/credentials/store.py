@@ -69,6 +69,19 @@ _CREDENTIALS_EXPIRY_WINDOW = '300s'
 AUTH_LOGIN_COMMAND = 'gcloud auth login'
 ADC_LOGIN_COMMAND = 'gcloud auth application-default login'
 
+CONTEXT_AWARE_ACCESS_DENIED_ERROR = 'access_denied'
+CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION = 'Account restricted'
+CONTEXT_AWARE_ACCESS_HELP_MSG = (
+    'Access was blocked due to an organization policy, please contact your '
+    'admin to gain access.'
+)
+
+
+def IsContextAwareAccessDeniedError(exc):
+  exc_text = six.text_type(exc)
+  return (CONTEXT_AWARE_ACCESS_DENIED_ERROR in exc_text and
+          CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION in exc_text)
+
 
 class Error(exceptions.Error):
   """Exceptions for the credentials module."""
@@ -77,9 +90,10 @@ class Error(exceptions.Error):
 class AuthenticationException(Error):
   """Exceptions that tell the users to re-login."""
 
-  def __init__(self, message, for_adc=False):
-    login_command = ADC_LOGIN_COMMAND if for_adc else AUTH_LOGIN_COMMAND
-    extended_msg = textwrap.dedent("""\
+  def __init__(self, message, for_adc=False, should_relogin=True):
+    if should_relogin:
+      login_command = ADC_LOGIN_COMMAND if for_adc else AUTH_LOGIN_COMMAND
+      message = textwrap.dedent("""\
         {message}
         Please run:
 
@@ -94,8 +108,8 @@ class AuthenticationException(Error):
           $ gcloud config set account ACCOUNT
 
       to select an already authenticated account to use.""")
-      extended_msg = '\n'.join([extended_msg, switch_account_msg])
-    super(AuthenticationException, self).__init__(extended_msg)
+      message = '\n\n'.join([message, switch_account_msg])
+    super(AuthenticationException, self).__init__(message)
 
 
 class PrintTokenAuthenticationException(Error):
@@ -140,10 +154,21 @@ class NoActiveAccountException(AuthenticationException):
 class TokenRefreshError(AuthenticationException):
   """An exception raised when the auth tokens fail to refresh."""
 
-  def __init__(self, error, for_adc=False):
+  def __init__(self, error, for_adc=False, should_relogin=True):
     message = ('There was a problem refreshing your current auth tokens: {0}'
                .format(error))
-    super(TokenRefreshError, self).__init__(message, for_adc=for_adc)
+    super(TokenRefreshError, self).__init__(
+        message, for_adc=for_adc, should_relogin=should_relogin)
+
+
+class TokenRefreshDeniedByCAAError(TokenRefreshError):
+  """Raises when token refresh is denied by context aware access policies."""
+
+  def __init__(self, error, for_adc=False):
+    compiled_msg = '{}\n\n{}'.format(error, CONTEXT_AWARE_ACCESS_HELP_MSG)
+
+    super(TokenRefreshDeniedByCAAError, self).__init__(
+        compiled_msg, for_adc=for_adc, should_relogin=False)
 
 
 class ReauthenticationException(Error):
@@ -560,18 +585,14 @@ def Load(account=None,
   else:
     cred = _Load(account, scopes, prevent_refresh, use_google_auth)
 
-  cred = c_creds.MaybeConvertToGoogleAuthCredentials(cred, use_google_auth)
   return cred
 
 
-def _Load(account, scopes, prevent_refresh, use_google_auth=False):
-  """Helper for Load()."""
-  # If a credential file is set, just use that and ignore the active account
-  # and whatever is in the credential store.
-  cred_file_override = properties.VALUES.auth.credential_file_override.Get()
-  if cred_file_override:
-    log.info('Using alternate credentials from file: [%s]',
-             cred_file_override)
+def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
+  """Load credentials from cred file override."""
+  log.info('Using alternate credentials from file: [%s]', cred_file_override)
+
+  if not use_google_auth:
     try:
       cred = client.GoogleCredentials.from_stream(cred_file_override)
     except client.Error as e:
@@ -593,6 +614,51 @@ def _Load(account, scopes, prevent_refresh, use_google_auth=False):
     # The credential override is not stored in credential store, but we still
     # want to cache access tokens between invocations.
     cred = c_creds.MaybeAttachAccessTokenCacheStore(cred)
+  else:
+    # Import only when necessary to decrease the startup time. Move it to
+    # global once google-auth is ready to replace oauth2client.
+    # Ideally we should wrap the following two lines inside a pylint disable and
+    # enable block just like other places, but it seems it is not working here.
+    from google.auth import _default as google_auth_default  # pylint: disable=g-import-not-at-top
+    from google.auth import credentials as google_auth_creds  # pylint: disable=g-import-not-at-top
+
+    try:
+      # pylint: disable=protected-access
+      cred, _ = google_auth_default.load_credentials_from_file(
+          cred_file_override)
+      # pylint: enable=protected-access
+    except google_auth_exceptions.DefaultCredentialsError as e:
+      raise InvalidCredentialFileException(cred_file_override, e)
+
+    if scopes is None:
+      scopes = config.CLOUDSDK_SCOPES
+    cred = google_auth_creds.with_scopes_if_required(cred, scopes)
+
+    # Set token_uri after scopes since token_uri needs to be explicitly
+    # preserved when scopes are applied.
+    token_uri_override = properties.VALUES.auth.token_host.Get()
+    if token_uri_override:
+      cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(cred)
+      if cred_type == c_creds.CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
+        # pylint: disable=protected-access
+        cred._token_uri = token_uri_override
+        # pylint: enable=protected-access
+
+    # The credential override is not stored in credential store, but we still
+    # want to cache access tokens between invocations.
+    cred = c_creds.MaybeAttachAccessTokenCacheStoreGoogleAuth(cred)
+
+  return cred
+
+
+def _Load(account, scopes, prevent_refresh, use_google_auth=False):
+  """Helper for Load()."""
+  # If a credential file is set, just use that and ignore the active account
+  # and whatever is in the credential store.
+  cred_file_override = properties.VALUES.auth.credential_file_override.Get()
+
+  if cred_file_override:
+    cred = _LoadFromFileOverride(cred_file_override, scopes, use_google_auth)
   else:
     if not account:
       account = properties.VALUES.core.account.Get()
@@ -695,6 +761,8 @@ def _Refresh(credentials,
       credentials.id_tokenb64 = id_token
 
   except (client.AccessTokenRefreshError, httplib2.ServerNotFoundError) as e:
+    if IsContextAwareAccessDeniedError(e):
+      raise TokenRefreshDeniedByCAAError(e)
     raise TokenRefreshError(six.text_type(e))
   except reauth_errors.ReauthSamlLoginRequiredError:
     raise WebLoginRequiredReauthError()
@@ -718,6 +786,8 @@ def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
           c_google_auth.ReauthRequiredError) as e:
     raise TokenRefreshReauthError(str(e), for_adc=for_adc)
   except google_auth_exceptions.RefreshError as e:
+    if IsContextAwareAccessDeniedError(e):
+      raise TokenRefreshDeniedByCAAError(e)
     raise TokenRefreshError(six.text_type(e), for_adc=for_adc)
 
 
@@ -888,17 +958,12 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, request_client):
   # pylint: disable=g-import-not-at-top
   from google.oauth2 import service_account as google_auth_service_account
   # pylint: enable=g-import-not-at-top
-  cred_dict = {
-      'client_email': cred.service_account_email,
-      'token_uri': cred._token_uri,  # pylint: disable=protected-access
-      'private_key': cred.private_key,
-      'private_key_id': cred.private_key_id,
-  }
 
-  id_token_credentails = (
-      google_auth_service_account.IDTokenCredentials.from_service_account_info)
-  id_token_cred = id_token_credentails(
-      cred_dict, target_audience=config.CLOUDSDK_CLIENT_ID)
+  id_token_cred = google_auth_service_account.IDTokenCredentials(
+      cred.signer,
+      cred.service_account_email,
+      cred._token_uri,  # pylint: disable=protected-access
+      config.CLOUDSDK_CLIENT_ID)
   id_token_cred.refresh(request_client)
 
   return id_token_cred.token

@@ -152,6 +152,36 @@ class TPUNode(object):
         name=fully_qualified_node_name_ref.RelativeName())
     return self.client.projects_locations_nodes.Get(request)
 
+  def LatestStableTensorflowVersion(self, zone):
+    """Parses available Tensorflow versions to find the most stable version."""
+    project = properties.VALUES.core.project.Get(required=True)
+    parent_ref = resources.REGISTRY.Parse(
+        zone,
+        params={'projectsId': project},
+        collection='tpu.projects.locations')
+    request = self.messages.TpuProjectsLocationsTensorflowVersionsListRequest(
+        parent=parent_ref.RelativeName()
+        )
+    tf_versions = list_pager.YieldFromList(
+        service=self.client.projects_locations_tensorflowVersions,
+        request=request,
+        batch_size_attribute='pageSize',
+        field='tensorflowVersions')
+    parsed_tf_versions = []
+    for tf_version in tf_versions:
+      parsed_tf_versions.append(
+          TensorflowVersionParser.ParseVersion(tf_version.version))
+
+    sorted_tf_versions = sorted(parsed_tf_versions)
+    for version in sorted_tf_versions:
+      if version.is_nightly:
+        raise HttpNotFoundError('No stable release found', None, None)
+
+      if not version.modifier:
+        return version.VersionString()
+
+    raise HttpNotFoundError('No stable release found', None, None)
+
   def IsRunning(self, node):
     return node.state == self.messages.Node.StateValueValuesEnum.READY or (
         node.state == self.messages.Node.StateValueValuesEnum.CREATING and
@@ -177,6 +207,127 @@ class ComputePollerNoResources(poller.Poller):
     return None
 
 
+class TensorflowVersionParser(object):
+  """Helper to parse tensorflow versions."""
+
+  class ParseError(Exception):
+    """Error raised with input is unabled to be parse as a TF version."""
+
+  class Result(object):
+    """Helper to capture result of parsing the TF version."""
+
+    def __init__(self,
+                 major=0,
+                 minor=0,
+                 patch=0,
+                 is_nightly=False,
+                 modifier=''):
+      self.major = major
+      self.minor = minor
+      self.patch = patch
+      self.is_nightly = is_nightly
+      self.modifier = modifier
+
+    def IsUnknown(self):
+      return self.major == 0 and self.minor == 0 and not self.is_nightly
+
+    def VersionString(self):
+      if self.is_nightly:
+        return 'nightly{}'.format(self.modifier)
+      if self.major == 0 and self.minor == 0:
+        return self.modifier
+      return '{}.{}{}'.format(self.major, self.minor, self.modifier)
+
+    def __hash__(self):
+      return hash(self.major) + hash(self.minor) + hash(self.patch) + hash(
+          self.is_nightly) + hash(self.modifier)
+
+    def __eq__(self, other):
+      return (self.major == other.major and
+              self.minor == other.minor and
+              self.patch == other.patch and
+              self.is_nightly == other.is_nightly and
+              self.modifier == other.modifier)
+
+    def __lt__(self, other):
+      # Both non-nightlies, non-unknowns
+      if not self.is_nightly and not other.is_nightly and not self.IsUnknown(
+      ) and not other.IsUnknown():
+        if self.major != other.major:
+          return self.major > other.major
+        if self.minor != other.minor:
+          return self.minor > other.minor
+        if self.patch != other.patch:
+          return self.patch > other.patch
+        if not self.modifier:
+          return True
+        if not other.modifier:
+          return False
+
+      # Both nightlies
+      if self.is_nightly and other.is_nightly:
+        if not self.modifier:
+          return True
+        if not other.modifier:
+          return False
+
+      # Both unknown versions
+      if self.IsUnknown() and other.IsUnknown():
+        return self.modifier < other.modifier
+
+      # If one is an unknown version, sort after
+      if self.IsUnknown():
+        return False
+      if other.IsUnknown():
+        return True
+
+      if self.is_nightly:
+        return False
+
+      return True
+
+  _VERSION_REGEX = re.compile('^(\\d+)\\.(\\d+)(.*)$')
+  _NIGHTLY_REGEX = re.compile('^nightly(.*)$')
+  _PATCH_NUMBER_REGEX = re.compile('^\\.(\\d+)$')
+
+  @staticmethod
+  def ParseVersion(tf_version):
+    """Helper to parse the tensorflow version into it's subcomponents."""
+    if not tf_version:
+      raise TensorflowVersionParser.ParseError('Bad argument: '
+                                               'tf_version is empty')
+
+    version_match = TensorflowVersionParser._VERSION_REGEX.match(tf_version)
+    nightly_match = TensorflowVersionParser._NIGHTLY_REGEX.match(tf_version)
+
+    if version_match is None and nightly_match is None:
+      return TensorflowVersionParser.Result(modifier=tf_version)
+
+    if version_match is not None and nightly_match is not None:
+      raise TensorflowVersionParser.ParseError(
+          'TF version error: bad version: {}'.format(tf_version))
+    if version_match:
+      major = int(version_match.group(1))
+      minor = int(version_match.group(2))
+      result = TensorflowVersionParser.Result(major=major, minor=minor)
+      if version_match.group(3):
+        patch_match = TensorflowVersionParser._PATCH_NUMBER_REGEX.match(
+            version_match.group(3))
+        if patch_match:
+          matched_patch = int(patch_match.group(1))
+          if matched_patch:
+            result.patch = matched_patch
+        else:
+          result.modifier = version_match.group(3)
+      return result
+
+    if nightly_match:
+      result = TensorflowVersionParser.Result(is_nightly=True)
+      if nightly_match.group(1):
+        result.modifier = nightly_match.group(1)
+      return result
+
+
 class Instance(object):
   """Helper to create the GCE VM required to work with the TPU Node."""
 
@@ -185,15 +336,46 @@ class Instance(object):
     self.client = holder.client.apitools_client
     self.messages = holder.client.messages
 
+  def _ImageFamilyFromTensorflowVersion(self, tf_version, use_dl_image):
+    """Generates the image family from the tensorflow version."""
+    if tf_version == 'nightly':
+      return 'tf-nightly'
+
+    parsed = TensorflowVersionParser.ParseVersion(tf_version)
+
+    if parsed.modifier:
+      raise TensorflowVersionParser.ParseError('Invalid tensorflow version:{} '
+                                               '(non-empty modifier); please '
+                                               'set the --gce-image '
+                                               'flag'.format(tf_version))
+
+    if use_dl_image:
+      return 'tf-{}-{}-gpu'.format(parsed.major, parsed.minor)
+
+    if parsed.patch:
+      return 'tf-{}-{}-{}'.format(parsed.major, parsed.minor, parsed.patch)
+
+    return 'tf-{}-{}'.format(parsed.major, parsed.minor)
+
+  def ResolveImageFromTensorflowVersion(self, tf_version, project,
+                                        use_dl_image):
+    """Queries GCE to find the right image for the given TF version."""
+    image_family = self._ImageFamilyFromTensorflowVersion(
+        tf_version, use_dl_image)
+    request = self.messages.ComputeImagesGetFromFamilyRequest(
+        family=image_family, project=project)
+    image = self.client.images.GetFromFamily(request)
+    return image and image.selfLink
+
   def _BuildInstanceSpec(self, name, zone, machine_type, disk_size,
-                         preemptible):
+                         preemptible, source_image=None):
     """Builds an instance spec to be used for Instance creation."""
 
     disk = self.messages.AttachedDisk(
         boot=True,
         autoDelete=True,
         initializeParams=self.messages.AttachedDiskInitializeParams(
-            sourceImage='projects/ml-images/global/images/debian-10-tf-nightly-v20200403',
+            sourceImage=source_image,
             diskSizeGb=disk_size
         ))
     project_number = p_util.GetProjectNumber(
@@ -235,13 +417,13 @@ class Instance(object):
     return resources.REGISTRY.Parse(
         operation.selfLink, collection='compute.zoneOperations')
 
-  def Create(self, name, zone, machine_type, disk_size, preemptible):
+  def Create(self, name, zone, machine_type, disk_size, preemptible, gce_image):
     """Issue request to create an Instance."""
     request = self.messages.ComputeInstancesInsertRequest(
         project=properties.VALUES.core.project.Get(required=True),
         zone=zone,
         instance=self._BuildInstanceSpec(
-            name, zone, machine_type, disk_size, preemptible))
+            name, zone, machine_type, disk_size, preemptible, gce_image))
     operation = self.client.instances.Insert(request)
     return self._GetComputeZoneOperationRef(operation)
 

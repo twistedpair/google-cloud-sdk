@@ -56,6 +56,10 @@ apis:
       resources:
         customer:
           path: customer/{customerId}
+  anthosevents:
+    v1:
+      discovery_doc: anthosevents_v1.json
+      default: true
   apikeys:
     v2alpha1:
       discovery_doc: apikeys_v2alpha1.json
@@ -147,6 +151,8 @@ apis:
       discovery_doc: cloudasset_v1p4beta1.json
     v1p5alpha1:
       discovery_doc: cloudasset_v1p5alpha1.json
+    v1p5beta1:
+      discovery_doc: cloudasset_v1p5beta1.json
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
@@ -637,6 +643,9 @@ apis:
   networkservices:
     v1alpha1:
       discovery_doc: networkservices_v1alpha1.json
+  networksecurity:
+    v1alpha1:
+      discovery_doc: networksecurity_v1alpha1.json
   notebooks:
     v1beta1:
       discovery_doc: notebooks_v1beta1.json

@@ -229,14 +229,27 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
 
     return exec_args
 
+  def _ParseCreateLoginConfigArgs(self, kube_config, output_file=None,
+                                  merge_from=None, **kwargs):
+    del kwargs  # Not Used Here
+    exec_args = ['create-login-config']
+    exec_args.extend(['--kubeconfig', kube_config])
+    if output_file:
+      exec_args.extend(['--output', output_file])
+    if merge_from:
+      exec_args.extend(['--merge-from', merge_from])
+    return exec_args
+
   def _ParseArgsForCommand(self, command, **kwargs):
     if command == 'login':
       return self._ParseLoginArgs(**kwargs)
-    if command == 'version':
+    elif command == 'create-login-config':
+      return self._ParseCreateLoginConfigArgs(**kwargs)
+    elif command == 'version':
       return ['version']
-
-    raise binary_operations.InvalidOperationForBinary(
-        'Invalid Operation [{}] for kubectl-anthos'.format(command))
+    else:
+      raise binary_operations.InvalidOperationForBinary(
+          'Invalid Operation [{}] for kubectl-anthos'.format(command))
 
 
 def _GetClusterConfig(all_configs, cluster):
@@ -283,3 +296,18 @@ def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
     cluster_config.SetPreferredAuth(auth_method)
     configs.WriteToDisk()
   return auth_method
+
+
+def LoginResponseHandler(response):
+  """Handle Login Responses."""
+  if response.stdout:
+    log.status.Print(response.stdout)
+
+  if response.stderr:
+    log.status.Print(response.stderr)
+
+  if response.failed:
+    log.error(messages.LOGIN_CONFIG_FAILED_MESSAGE.format(response.stderr))
+    return None
+  log.status.Print(messages.LOGIN_CONFIG_SUCCESS_MESSAGE)
+  return response.stdout

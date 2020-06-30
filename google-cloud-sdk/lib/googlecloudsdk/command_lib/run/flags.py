@@ -20,10 +20,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import collections
+import enum
 import os
 import re
 from apitools.base.py import exceptions as apitools_exceptions
-import enum
 
 from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import global_methods
@@ -478,17 +478,7 @@ def AddTimeoutFlag(parser):
 def AddServiceAccountFlag(parser):
   parser.add_argument(
       '--service-account',
-      help='Email address of the IAM service account associated with the '
-      'revision of the service. The service account represents the identity of '
-      'the running revision, and determines what permissions the revision has. '
-      'If not provided, the revision will use the project\'s default service '
-      'account.')
-
-
-def AddServiceAccountFlagAlpha(parser):
-  parser.add_argument(
-      '--service-account',
-      help='The service account associated with the revision of the service. '
+      help='Service account associated with the revision of the service. '
       'The service account represents the identity of '
       'the running revision, and determines what permissions the revision has. '
       'For the {} platform, this is the email address of an IAM '
@@ -1324,14 +1314,6 @@ def VerifyGKEFlags(args, release_track, product):
         'flag can limit which network a service is available on to reduce '
         'access.')
 
-  if (release_track != base.ReleaseTrack.ALPHA and
-      FlagIsExplicitlySet(args, 'service_account') and product == Product.RUN):
-    raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--service-account',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
-
   if FlagIsExplicitlySet(args, 'region'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1389,14 +1371,6 @@ def VerifyKubernetesFlags(args, release_track, product):
         'services allow unauthenticated requests. The `--connectivity` '
         'flag can limit which network a service is available on to reduce '
         'access.')
-
-  if (release_track != base.ReleaseTrack.ALPHA and
-      FlagIsExplicitlySet(args, 'service_account') and product == Product.RUN):
-    raise serverless_exceptions.ConfigurationError(
-        error_msg.format(
-            flag='--service-account',
-            platform=PLATFORM_MANAGED,
-            platform_desc=_PLATFORM_SHORT_DESCRIPTIONS[PLATFORM_MANAGED]))
 
   if FlagIsExplicitlySet(args, 'region'):
     raise serverless_exceptions.ConfigurationError(
@@ -1538,8 +1512,9 @@ def AddSourceFlag(parser):
       'Google Cloud Storage. If the source is a local directory, this '
       'command skips the files specified in the `--ignore-file`. If '
       '`--ignore-file` is not specified, use`.gcloudignore` file. If a '
-      '`.gitignore` file is present in the local source directory, gcloud '
-      'will use a Git-compatible `.gcloudignore` file that respects your '
-      '.gitignored files. The global `.gitignore` is not respected. For more '
-      'information on `.gcloudignore`, see `gcloud topic gcloudignore`.',
+      '`.gcloudignore` file is absent and a `.gitignore` file is present in '
+      'the local source directory, gcloud will use a generated Git-compatible '
+      '`.gcloudignore` file that respects your .gitignored files. The global '
+      '`.gitignore` is not respected. For more information on `.gcloudignore`, '
+      'see `gcloud topic gcloudignore`.',
   )

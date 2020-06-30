@@ -55,6 +55,7 @@ DEFAULT_NETWORK_INTERFACE = 'nic0'
 NETWORK_TIER_CHOICES_FOR_INSTANCE = ['PREMIUM', 'SELECT', 'STANDARD']
 
 DEFAULT_IMAGE_FAMILY = 'debian-10'
+DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS = 'ubuntu-1804-lts'
 
 ImageAlias = collections.namedtuple(
     'ImageAlias', ['project', 'name_prefix', 'family'])

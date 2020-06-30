@@ -335,12 +335,19 @@ class BuildOptions(_messages.Message):
       LOGGING_UNSPECIFIED: The service determines the logging mode. The
         default is `LEGACY`. Do not rely on the default logging behavior as it
         may change in the future.
-      LEGACY: Stackdriver logging and Cloud Storage logging are enabled.
+      LEGACY: Cloud Logging (Stackdriver) and Cloud Storage logging are
+        enabled.
       GCS_ONLY: Only Cloud Storage logging is enabled.
+      STACKDRIVER_ONLY: Only Cloud Logging (Stackdriver) is enabled. Note that
+        logs for both the Cloud Console UI and Cloud SDK are based on Cloud
+        Storage logs, so neither will provide logs if this option is chosen.
+      NONE: Turn off all logging. No build logs will be captured.
     """
     LOGGING_UNSPECIFIED = 0
     LEGACY = 1
     GCS_ONLY = 2
+    STACKDRIVER_ONLY = 3
+    NONE = 4
 
   class MachineTypeValueValuesEnum(_messages.Enum):
     r"""Compute Engine machine type on which to run the build.
@@ -852,19 +859,6 @@ class CloudbuildProjectsTriggersRunRequest(_messages.Message):
   projectId = _messages.StringField(1, required=True)
   repoSource = _messages.MessageField('RepoSource', 2)
   triggerId = _messages.StringField(3, required=True)
-
-
-class CloudbuildVbeta1ProjectsLocationsOperationsCancelRequest(_messages.Message):
-  r"""A CloudbuildVbeta1ProjectsLocationsOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class Empty(_messages.Message):

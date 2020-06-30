@@ -73,29 +73,35 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False):
           required_keys=['enabled']),
       hidden=hide_arguments,
       help="""\
-      Controls whether the service proxy and agent are installed and configured on the VM.
-      "cloud-platform" scope will be enabled to allow connection to Traffic Director API.
-      Therefore --no-scopes flag should not be present.
+      Controls whether the Traffic Director service proxy (Envoy) and agent are installed and configured on the VM.
+      "cloud-platform" scope will be enabled to allow connections to the Traffic Director API.
+      Do not use the --no-scopes flag.
 
-      *enabled*::: If specified, the service-proxy software will be installed on the instance when created.
-      It will be configured to work with TrafficDirector.
+      *enabled*::: If specified, the service-proxy software will be installed when the instance is created.
+      The instance is configured to work with Traffic Director.
 
-      *serving-ports*::: List of the ports inside quotes ("), separated by ';', on which the customer's application/workload is serving.
+      *serving-ports*::: Semi-colon-separated (;) list of the ports, specified inside quotation marks ("), on which the customer's application/workload
+      is serving.
+
+      For example:
+
+            --serving-ports="80;8080"
+
       The service proxy will intercept inbound traffic, then forward it to the specified serving port(s) on localhost.
       If not provided, no incoming traffic is intercepted.
 
       *proxy-port*::: The port on which the service proxy listens.
       The VM intercepts traffic and redirects it to this port to be handled by the service proxy.
-      If you omit this flag, defaults to '15001'.
+      If omitted, the default value is '15001'.
 
       *tracing*::: Enables the service proxy to generate distributed tracing information.
-      If set to ON, the service proxy's control plane generates configuration which enables request ID-based tracing.
-      For more information, refer to generate_request_id documentation of the Envoy proxy. Allowed values of the flags are:
-      ON and OFF.
+      If set to ON, the service proxy's control plane generates a configuration that enables request ID-based tracing.
+      For more information, refer to the `generate_request_id` documentation
+      for the Envoy proxy. Allowed values are `ON` and `OFF`.
 
       *access-log*::: The filepath for access logs sent to the service proxy by the control plane.
       All incoming and outgoing requests are recorded in this file.
-      For more information, refer to File access log documentation of the Envoy proxy.
+      For more information, refer to the file access log documentation for the Envoy proxy.
 
       *network*::: The name of a valid VPC network. The Google Cloud Platform VPC network used by the service proxy's control plane
       to generate dynamic configuration for the service proxy.

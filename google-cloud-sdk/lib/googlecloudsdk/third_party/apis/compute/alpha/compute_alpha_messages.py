@@ -38557,7 +38557,8 @@ class NetworkEndpointGroup(_messages.Message):
   reachable, and where they are located. For more information about using
   NEGs, see  Setting up internet NEGs or  Setting up zonal NEGs. (==
   resource_for {$api_version}.networkEndpointGroups ==) (== resource_for
-  {$api_version}.globalNetworkEndpointGroups ==)
+  {$api_version}.globalNetworkEndpointGroups ==) (== resource_for
+  {$api_version}.regionNetworkEndpointGroups ==)
 
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
@@ -42746,6 +42747,10 @@ class PacketMirroringAggregatedList(_messages.Message):
 class PacketMirroringFilter(_messages.Message):
   r"""A PacketMirroringFilter object.
 
+  Enums:
+    DirectionValueValuesEnum: Direction of traffic to mirror, either INGRESS,
+      EGRESS, or BOTH. The default is BOTH.
+
   Fields:
     IPProtocols: Protocols that apply as filter on mirrored traffic. If no
       protocols are specified, all traffic that matches the specified CIDR
@@ -42756,10 +42761,26 @@ class PacketMirroringFilter(_messages.Message):
       ranges are specified, all traffic that matches the specified IPProtocols
       is mirrored. If neither cidrRanges nor IPProtocols is specified, all
       traffic is mirrored.
+    direction: Direction of traffic to mirror, either INGRESS, EGRESS, or
+      BOTH. The default is BOTH.
   """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""Direction of traffic to mirror, either INGRESS, EGRESS, or BOTH. The
+    default is BOTH.
+
+    Values:
+      BOTH: <no description>
+      EGRESS: <no description>
+      INGRESS: <no description>
+    """
+    BOTH = 0
+    EGRESS = 1
+    INGRESS = 2
 
   IPProtocols = _messages.StringField(1, repeated=True)
   cidrRanges = _messages.StringField(2, repeated=True)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 3)
 
 
 class PacketMirroringForwardingRuleInfo(_messages.Message):

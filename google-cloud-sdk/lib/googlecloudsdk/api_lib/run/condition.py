@@ -96,6 +96,7 @@ class Conditions(collections.Mapping):
           'severity': cond.severity,
           'reason': cond.reason,
           'message': cond.message,
+          'lastTransitionTime': cond.lastTransitionTime,
           'status': status
       }
     self._ready_condition = ready_condition

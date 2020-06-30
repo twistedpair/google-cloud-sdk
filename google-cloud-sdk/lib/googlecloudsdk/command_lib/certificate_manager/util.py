@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""General utilties for Certificate Manager commands."""
+"""General utilities for Certificate Manager commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -26,6 +26,7 @@ from googlecloudsdk.core import resources
 
 _OPERATIONS_COLLECTION = 'certificatemanager.projects.locations.operations'
 _CERTIFICATE_MAPS_COLLECTION = 'certificatemanager.projects.locations.certificateMaps'
+_CERTIFICATES_COLLECTION = 'certificatemanager.projects.locations.certificates'
 _PROJECT = lambda: properties.VALUES.core.project.Get(required=True)
 
 
@@ -55,6 +56,16 @@ def _ParseCertificateMap(certificate_map):
       collection=_CERTIFICATE_MAPS_COLLECTION)
 
 
+def _ParseCertificate(certificate):
+  return _GetRegistry().Parse(
+      certificate,
+      params={
+          'projectsId': _PROJECT,
+          'locationsId': 'global'
+      },
+      collection=_CERTIFICATES_COLLECTION)
+
+
 def WaitForOperation(response, is_async=False):
   """Handles waiting for the operation and printing information about it.
 
@@ -78,3 +89,7 @@ def WaitForOperation(response, is_async=False):
 
 def CertificateMapUriFunc(resource):
   return _ParseCertificateMap(resource.name).SelfLink()
+
+
+def CertificateUriFunc(resource):
+  return _ParseCertificate(resource.name).SelfLink()

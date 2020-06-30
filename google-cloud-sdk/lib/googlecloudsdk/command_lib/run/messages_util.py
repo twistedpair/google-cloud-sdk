@@ -51,7 +51,9 @@ def GetSuccessMessageForSynchronousDeploy(operations, service_ref):
       latest_percent_traffic=latest_percent_traffic) + tag_url_message
 
 
-def GetStartDeployMessage(conn_context, service_ref):
+def GetStartDeployMessage(conn_context,
+                          service_ref,
+                          operation='Deploying container'):
   """Returns a user mesage for starting a deploy.
 
   Args:
@@ -60,12 +62,14 @@ def GetStartDeployMessage(conn_context, service_ref):
     service_ref: protorpc.messages.Message, A resource reference object
       for the service See googlecloudsdk.core.resources.Registry.ParseResourceId
       for details.
+    operation: str, what deploy action is being done.
   """
-  msg = ('Deploying container to {operator} service '
+  msg = ('{operation} to {operator} service '
          '[{{bold}}{service}{{reset}}] in {ns_label} [{{bold}}{ns}{{reset}}]')
   msg += conn_context.location_label
 
   return msg.format(
+      operation=operation,
       operator=conn_context.operator,
       ns_label=conn_context.ns_label,
       service=service_ref.servicesId,

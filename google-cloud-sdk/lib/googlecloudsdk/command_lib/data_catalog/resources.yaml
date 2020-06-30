@@ -145,3 +145,24 @@ tag_template_field:
     attribute_name: field
     help: |
       Tag template field of the {resource}.
+
+enum_value:
+  name: enum value
+  collection: datacatalog.projects.locations.tagTemplates.fields.enumValues
+  request_id_field: name
+  disable_auto_completers: true
+  attributes:
+  - *project
+  - *location
+  - parameter_name: tagTemplatesId
+    attribute_name: tag-template
+    help: |
+      Tag template that contains {resource}.
+  - parameter_name: fieldsId
+    attribute_name: field
+    help: |
+      Tag template field that contains {resource}.
+  - parameter_name: enumValuesId
+    attribute_name: enum_value
+    help: |
+      Display name of {resource}.

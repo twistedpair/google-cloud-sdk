@@ -18,7 +18,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import subprocess
+
 from googlecloudsdk.command_lib.code import run_subprocess
+from googlecloudsdk.core import exceptions
+import six
 
 DEFAULT_CLUSTER_NAME = 'gcloud-local-dev'
 
@@ -161,52 +165,66 @@ class MinikubeCluster(_KubeCluster):
 class Minikube(object):
   """Starts and stops a minikube cluster."""
 
-  def __init__(self, cluster_name, stop_cluster=True, vm_driver=None):
+  def __init__(self,
+               cluster_name,
+               stop_cluster=True,
+               vm_driver=None,
+               debug=False):
     self._cluster_name = cluster_name
     self._stop_cluster = stop_cluster
     self._vm_driver = vm_driver
+    self._debug = debug
 
   def __enter__(self):
-    _StartMinikubeCluster(self._cluster_name, self._vm_driver)
+    _StartMinikubeCluster(self._cluster_name, self._vm_driver, self._debug)
     return MinikubeCluster(self._cluster_name, self._vm_driver == 'docker')
 
   def __exit__(self, exc_type, exc_value, tb):
     if self._stop_cluster:
-      _StopMinikube(self._cluster_name)
+      _StopMinikube(self._cluster_name, self._debug)
 
 
 def _FindMinikube():
   return run_subprocess.GetGcloudPreferredExecutable('minikube')
 
 
-def _StartMinikubeCluster(cluster_name, vm_driver):
-  """Starts a minikube cluster."""
-  if not _IsMinikubeClusterUp(cluster_name):
-    cmd = [
-        _FindMinikube(),
-        'start',
-        '-p',
-        cluster_name,
-        '--keep-context',
-        '--interactive=false',
-        '--delete-on-failure',
-        '--install-addons=false',
-    ]
-    if vm_driver:
-      cmd.append('--vm-driver=' + vm_driver)
-      if vm_driver == 'docker':
-        cmd.append('--container-runtime=docker')
+class MinikubeStartError(exceptions.Error):
+  """Error if minikube fails to start."""
 
-    print("Starting development environment '%s' ..." % cluster_name)
-    run_subprocess.Run(cmd, timeout_sec=150, show_output=False)
-    print('Development environment created.')
+
+def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
+  """Starts a minikube cluster."""
+  # pylint: disable=broad-except
+  try:
+    if not _IsMinikubeClusterUp(cluster_name):
+      cmd = [
+          _FindMinikube(),
+          'start',
+          '-p',
+          cluster_name,
+          '--keep-context',
+          '--interactive=false',
+          '--delete-on-failure',
+          '--install-addons=false',
+      ]
+      if vm_driver:
+        cmd.append('--vm-driver=' + vm_driver)
+        if vm_driver == 'docker':
+          cmd.append('--container-runtime=docker')
+
+      print("Starting development environment '%s' ..." % cluster_name)
+      run_subprocess.Run(cmd, timeout_sec=150, show_output=debug)
+      print('Development environment created.')
+  except Exception as e:
+    six.reraise(MinikubeStartError, e)
 
 
 def _GetMinikubeDockerEnvs(cluster_name):
   """Get the docker environment settings for a given cluster."""
   cmd = [_FindMinikube(), 'docker-env', '-p', cluster_name, '--shell=none']
   lines = run_subprocess.GetOutputLines(cmd, timeout_sec=20)
-  return dict(line.split('=', 1) for line in lines if line)
+  return dict(
+      line.split('=', 1) for line in lines if line and not line.startswith('#'))
 
 
 def _IsMinikubeClusterUp(cluster_name):
@@ -216,15 +234,15 @@ def _IsMinikubeClusterUp(cluster_name):
     status = run_subprocess.GetOutputJson(
         cmd, timeout_sec=20, show_stderr=False)
     return 'Host' in status and status['Host'].strip() == 'Running'
-  except ValueError:
+  except (ValueError, subprocess.CalledProcessError):
     return False
 
 
-def _StopMinikube(cluster_name):
+def _StopMinikube(cluster_name, debug=False):
   """Stop a minikube cluster."""
   cmd = [_FindMinikube(), 'stop', '-p', cluster_name]
   print("Stopping development environment '%s' ..." % cluster_name)
-  run_subprocess.Run(cmd, timeout_sec=150, show_output=False)
+  run_subprocess.Run(cmd, timeout_sec=150, show_output=debug)
   print('Development environment stopped.')
 
 

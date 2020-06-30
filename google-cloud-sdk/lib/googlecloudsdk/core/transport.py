@@ -142,6 +142,10 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
   request is executed. Finally, all response handlers are executed in order,
   getting passed both the http response as well as the result from their
   corresponding request handler.
+
+  Attributes:
+    request_class: Class used to represent a generic HTTP request.
+    response_class: Class used to represent a generic HTTP request.
   """
   request_class = Request
   response_class = Response
@@ -161,6 +165,40 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
       http_client: The http client with a wrapped request method.
       orig_request: The original unwrapped request method.
     """
+
+  def WrapWithDefaults(self, http_client, response_encoding):
+    """Wraps request with user-agent, and trace reporting.
+
+    Args:
+      http_client: The original http client to be wrapped.
+      response_encoding: str, the encoding to use to decode the response.
+
+    Returns:
+      http, The same http object but with the request method wrapped.
+    """
+    gcloud_ua = MakeUserAgentString(
+        properties.VALUES.metrics.command_name.Get())
+    handlers = [
+        Handler(RecordStartTime(), ReportDuration()),
+        Handler(AppendToHeader('user-agent', gcloud_ua))
+    ]
+
+    trace_value = GetTraceValue()
+    if trace_value:
+      handlers.append(Handler(AddQueryParam('trace', trace_value)))
+
+    request_reason = properties.VALUES.core.request_reason.Get()
+    if request_reason:
+      handlers.append(
+          Handler(SetHeader('X-Goog-Request-Reason', request_reason)))
+
+    # Do this one last so that it sees the effects of the other modifiers.
+    if properties.VALUES.core.log_http.GetBool():
+      redact_token = properties.VALUES.core.log_http_redact_token.GetBool()
+      handlers.append(Handler(LogRequest(redact_token), LogResponse()))
+
+    return self.WrapRequest(
+        http_client, handlers, response_encoding=response_encoding)
 
   def WrapRequest(self,
                   http_client,

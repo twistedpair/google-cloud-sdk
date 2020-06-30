@@ -326,6 +326,7 @@ to choose another account.""".format(
 
   @staticmethod
   def _RawRequest(*args, **kwargs):
+    """Executes an HTTP request."""
     def RetryIf(exc_type, exc_value, unused_traceback, unused_state):
       return exc_type == urllib.error.HTTPError and exc_value.code == 404
 

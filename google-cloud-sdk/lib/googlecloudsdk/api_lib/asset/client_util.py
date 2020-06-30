@@ -41,6 +41,7 @@ V1P1BETA1_API_VERSION = 'v1p1beta1'
 V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
 V1P4BETA1_API_VERSION = 'v1p4beta1'
 V1P5ALPHA1_API_VERSION = 'v1p5alpha1'
+V1P5BETA1_API_VERSION = 'v1p5beta1'
 BASE_URL = 'https://cloudasset.googleapis.com'
 _HEADERS = {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -325,11 +326,16 @@ class AssetFeedClient(object):
     feed_output_config = self.message_module.FeedOutputConfig(
         pubsubDestination=self.message_module.PubsubDestination(
             topic=args.pubsub_topic))
+    feed_condition = self.message_module.Expr(
+        expression=args.condition_expression,
+        title=args.condition_title,
+        description=args.condition_description)
     feed = self.message_module.Feed(
         assetNames=args.asset_names,
         assetTypes=args.asset_types,
         contentType=content_type,
-        feedOutputConfig=feed_output_config)
+        feedOutputConfig=feed_output_config,
+        condition=feed_condition)
     create_feed_request = self.message_module.CreateFeedRequest(
         feed=feed, feedId=args.feed)
     request_message = self.message_module.CloudassetFeedsCreateRequest(
@@ -365,17 +371,28 @@ class AssetFeedClient(object):
       update_masks.append('content_type')
     if args.pubsub_topic:
       update_masks.append('feed_output_config.pubsub_destination.topic')
+    if args.condition_expression or args.clear_condition_expression:
+      update_masks.append('condition.expression')
+    if args.condition_title or args.clear_condition_title:
+      update_masks.append('condition.title')
+    if args.condition_description or args.clear_condition_description:
+      update_masks.append('condition.description')
     asset_names, asset_types = self.UpdateAssetNamesAndTypes(
         args, feed_name, update_masks)
     update_mask = ','.join(update_masks)
     feed_output_config = self.message_module.FeedOutputConfig(
         pubsubDestination=self.message_module.PubsubDestination(
             topic=args.pubsub_topic))
+    feed_condition = self.message_module.Expr(
+        expression=args.condition_expression,
+        title=args.condition_title,
+        description=args.condition_description)
     feed = self.message_module.Feed(
         assetNames=asset_names,
         assetTypes=asset_types,
         contentType=content_type,
-        feedOutputConfig=feed_output_config)
+        feedOutputConfig=feed_output_config,
+        condition=feed_condition)
     update_feed_request = self.message_module.UpdateFeedRequest(
         feed=feed, updateMask=update_mask)
     request_message = self.message_module.CloudassetFeedsPatchRequest(
@@ -456,7 +473,7 @@ class AssetSearchClient(object):
 class AssetListClient(object):
   """Client for list assets."""
 
-  def __init__(self, parent, api_version=V1P5ALPHA1_API_VERSION):
+  def __init__(self, parent, api_version=V1P5BETA1_API_VERSION):
     self.parent = parent
     self.message_module = GetMessages(api_version)
     self.service = GetClient(api_version).assets

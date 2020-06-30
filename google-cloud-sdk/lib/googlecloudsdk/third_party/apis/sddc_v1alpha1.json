@@ -479,17 +479,9 @@
           "description": "The description of this resource.",
           "type": "string"
         },
-        "vpcSelfLink": {
-          "description": "VPC self link",
-          "type": "string"
-        },
         "networkConfig": {
           "description": "NetworkConfig passed in the param.",
           "$ref": "NetworkConfig"
-        },
-        "managementIp": {
-          "description": "Management ip",
-          "type": "string"
         },
         "createTime": {
           "description": "Output only. Creation time of the resource.",

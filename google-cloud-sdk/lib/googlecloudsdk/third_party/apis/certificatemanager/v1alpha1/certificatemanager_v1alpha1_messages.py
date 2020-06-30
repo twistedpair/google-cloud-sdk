@@ -1494,7 +1494,7 @@ class SelfManagedCertData(_messages.Message):
   r"""Uploaded certificate data.
 
   Fields:
-    certificatePem: The certificate data in PEM-encoded form.
+    certificatePem: The certificate chain in PEM-encoded form.
     privateKeyPem: Input only. The private key data in PEM-encoded form.
   """
 

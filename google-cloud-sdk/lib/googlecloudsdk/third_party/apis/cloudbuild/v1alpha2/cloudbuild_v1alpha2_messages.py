@@ -335,12 +335,19 @@ class BuildOptions(_messages.Message):
       LOGGING_UNSPECIFIED: The service determines the logging mode. The
         default is `LEGACY`. Do not rely on the default logging behavior as it
         may change in the future.
-      LEGACY: Stackdriver logging and Cloud Storage logging are enabled.
+      LEGACY: Cloud Logging (Stackdriver) and Cloud Storage logging are
+        enabled.
       GCS_ONLY: Only Cloud Storage logging is enabled.
+      STACKDRIVER_ONLY: Only Cloud Logging (Stackdriver) is enabled. Note that
+        logs for both the Cloud Console UI and Cloud SDK are based on Cloud
+        Storage logs, so neither will provide logs if this option is chosen.
+      NONE: Turn off all logging. No build logs will be captured.
     """
     LOGGING_UNSPECIFIED = 0
     LEGACY = 1
     GCS_ONLY = 2
+    STACKDRIVER_ONLY = 3
+    NONE = 4
 
   class MachineTypeValueValuesEnum(_messages.Enum):
     r"""Compute Engine machine type on which to run the build.

@@ -1923,8 +1923,7 @@ class GooglePrivacyDlpV2Bucket(_messages.Message):
     max: Upper bound of the range, exclusive; type must match min.
     min: Lower bound of the range, inclusive. Type should be the same as max
       if used.
-    replacementValue: Replacement value for this bucket. If not provided the
-      default behavior will be to hyphenate the min-max range.
+    replacementValue: Required. Replacement value for this bucket.
   """
 
   max = _messages.MessageField('GooglePrivacyDlpV2Value', 1)

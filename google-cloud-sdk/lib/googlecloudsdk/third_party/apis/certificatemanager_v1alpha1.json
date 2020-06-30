@@ -288,7 +288,7 @@
       "type": "object",
       "properties": {
         "certificatePem": {
-          "description": "The certificate data in PEM-encoded form.",
+          "description": "The certificate chain in PEM-encoded form.",
           "type": "string",
           "format": "byte"
         },

@@ -2035,6 +2035,8 @@ class SqlExternalSyncSettingError(_messages.Message):
         max_worker_processes is not sufficient.
       UNSUPPORTED_EXTENSIONS: Extensions installed are either not supported or
         having unsupported versions
+      INVALID_RDS_LOGICAL_REPLICATION: The value of parameter
+        rds.logical_replication is not set to 1.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2051,6 +2053,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     INSUFFICIENT_MAX_WAL_SENDERS = 12
     INSUFFICIENT_MAX_WORKER_PROCESSES = 13
     UNSUPPORTED_EXTENSIONS = 14
+    INVALID_RDS_LOGICAL_REPLICATION = 15
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

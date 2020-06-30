@@ -680,8 +680,8 @@ class Feature(_messages.Message):
     deleteTime: Output only. Timestamp for when the Feature was deleted.
     description: Description of the feature, limited to 63 characters.
     featureState: Output only. State of the resource itself.
-    helloworldFeatureSpec: A hello world feature to act as an example and test
-      our feature lifecycle code.
+    helloworldFeatureSpec: A hello world feature to act as an example in
+      codelab and to test our feature lifecycle code.
     labels: GCP labels for this feature.
     meteringFeatureSpec: The specification for the metering feature.
     multiclusteringressFeatureSpec: The specification for the Ingress for
@@ -865,6 +865,112 @@ class FeatureStateDetails(_messages.Message):
   multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 9)
   servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 10)
   updateTime = _messages.StringField(11)
+
+
+class FeatureTest(_messages.Message):
+  r"""Represents message used in feature e2e create/mutate testing.
+
+  Enums:
+    ThirdValueValuesEnum:
+
+  Messages:
+    FifthValue: A FifthValue object.
+    NinthValue: Map field.
+
+  Fields:
+    eighth: Repeated field.
+    fifth: A FifthValue attribute.
+    first: Singular scaler field.
+    fourth: Singular Message fields.
+    ninth: Map field.
+    second: Singular scaler field.
+    seventh: A string attribute.
+    sixth: A string attribute.
+    third: A ThirdValueValuesEnum attribute.
+  """
+
+  class ThirdValueValuesEnum(_messages.Enum):
+    r"""ThirdValueValuesEnum enum type.
+
+    Values:
+      BAR_UNSPECIFIED: <no description>
+      FIRST: <no description>
+      SECOND: <no description>
+    """
+    BAR_UNSPECIFIED = 0
+    FIRST = 1
+    SECOND = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FifthValue(_messages.Message):
+    r"""A FifthValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a FifthValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FifthValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NinthValue(_messages.Message):
+    r"""Map field.
+
+    Messages:
+      AdditionalProperty: An additional property for a NinthValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type NinthValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NinthValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A FooBar attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('FooBar', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  eighth = _messages.MessageField('FooBar', 1, repeated=True)
+  fifth = _messages.MessageField('FifthValue', 2)
+  first = _messages.StringField(3)
+  fourth = _messages.StringField(4)
+  ninth = _messages.MessageField('NinthValue', 5)
+  second = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  seventh = _messages.StringField(7)
+  sixth = _messages.IntegerField(8)
+  third = _messages.EnumField('ThirdValueValuesEnum', 9)
+
+
+class FooBar(_messages.Message):
+  r"""Nested Message.
+
+  Fields:
+    first: A string attribute.
+    second: A integer attribute.
+  """
+
+  first = _messages.StringField(1)
+  second = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GitConfig(_messages.Message):
@@ -1175,14 +1281,18 @@ class GroupVersionKind(_messages.Message):
 
 
 class HelloWorldFeatureSpec(_messages.Message):
-  r"""An empty spec for hello world feature. This is required since Feature
-  proto requires a spec.
+  r"""HelloWorldFeatureSpec contains the input for the HelloWorld feature.
+
+  Fields:
+    featureTest: Message to hold fields to use in feature e2e create/mutate
+      testing.
   """
 
+  featureTest = _messages.MessageField('FeatureTest', 1)
 
 
 class HelloWorldFeatureState(_messages.Message):
-  r"""An empty state for hello world feature. This is required since
+  r"""An empty state for HelloWorld feature. This is required since
   FeatureStateDetails requires a state.
   """
 

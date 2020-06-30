@@ -27,7 +27,6 @@ from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
-from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
 import ipaddress
 import six
@@ -216,11 +215,6 @@ def CreatePersistentAttachedDiskMessages(resources,
         source=disk_ref.SelfLink(),
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         **kwargs)
-
-    interface = disk.get('interface')
-    if interface:
-      attached_disk.interface = arg_utils.ChoiceToEnum(
-          interface, messages.AttachedDisk.InterfaceValueValuesEnum)
 
     # The boot disk must end up at index 0.
     if boot:
@@ -584,7 +578,8 @@ def _CreateLocalSsdMessage(resources,
 def GetBulkNetworkInterfaces(args, resource_parser, compute_client, holder,
                              project, location, scope, skip_defaults):
   if (skip_defaults and not instance_utils.IsAnySpecified(
-      args, 'network_interface', 'network', 'network_tier', 'subnet')):
+      args, 'network_interface', 'network', 'network_tier', 'subnet',
+      'no_address')):
     return []
   elif args.network_interface:
     return CreateNetworkInterfaceMessages(
@@ -601,6 +596,7 @@ def GetBulkNetworkInterfaces(args, resource_parser, compute_client, holder,
             compute_client=compute_client,
             network=args.network,
             subnet=args.subnet,
+            no_address=args.no_address,
             project=project,
             location=location,
             scope=scope,
@@ -922,7 +918,12 @@ def BuildConfidentialInstanceConfigMessage(messages, args):
     return None
 
 
-def GetImageUri(args, client, create_boot_disk, project, resource_parser):
+def GetImageUri(args,
+                client,
+                create_boot_disk,
+                project,
+                resource_parser,
+                confidential_vm=False):
   """Retrieves the image uri for the specified image."""
   if create_boot_disk:
     image_expander = image_utils.ImageExpander(client, resource_parser)
@@ -931,7 +932,8 @@ def GetImageUri(args, client, create_boot_disk, project, resource_parser):
         image=args.image,
         image_family=args.image_family,
         image_project=args.image_project,
-        return_image_resource=False)
+        return_image_resource=False,
+        confidential_vm=confidential_vm)
     return image_uri
 
 
@@ -945,13 +947,11 @@ def GetAccelerators(args, compute_client, resource_parser, project, location,
     # Accelerator count is default to 1.
     accelerator_count = int(args.accelerator.get('count', 1))
     return CreateAcceleratorConfigMessages(compute_client.messages,
-                                           accelerator_type,
-                                           accelerator_count)
+                                           accelerator_type, accelerator_count)
   return []
 
 
-def CreateAcceleratorConfigMessages(msgs, accelerator_type,
-                                    accelerator_count):
+def CreateAcceleratorConfigMessages(msgs, accelerator_type, accelerator_count):
   """Returns a list of accelerator config messages.
 
   Args:
@@ -965,8 +965,7 @@ def CreateAcceleratorConfigMessages(msgs, accelerator_type,
   """
 
   accelerator_config = msgs.AcceleratorConfig(
-      acceleratorType=accelerator_type,
-      acceleratorCount=accelerator_count)
+      acceleratorType=accelerator_type, acceleratorCount=accelerator_count)
   return [accelerator_config]
 
 

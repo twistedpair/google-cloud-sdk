@@ -150,6 +150,9 @@ def AddVmOnlyFlag(parser):
 def AddDeepLearningImagesFlag(parser):
   return parser.add_argument(
       '--use-dl-images',
+      action='store_true',
+      required=False,
+      default=False,
       help="""\
       Use Deep Learning VM Images (see docs - https://cloud.google.com/deep-learning-vm/) instead
         of TPU-specific machine images. Defaults to TPU-specific images.

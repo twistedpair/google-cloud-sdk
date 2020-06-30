@@ -393,9 +393,6 @@ properties:
       display_resource_type: {type: string}
       # The API version to use, defaults to API set as gcloud default.
       api_version: {type: string}
-      # If true, use google-auth library for authentication. Defaults to false and using
-      # the oauth2client library.
-      use_google_auth: {type: boolean}
       # The name of the method to call to perform the operation. Optional if
       # your command is one of the supported command types (not Generic).
       method: {type: string}

@@ -254,7 +254,7 @@
           "$ref": "MultiClusterIngressFeatureSpec"
         },
         "helloworldFeatureSpec": {
-          "description": "A hello world feature to act as an example and test our feature\nlifecycle code.",
+          "description": "A hello world feature to act as an example in codelab and to test our\nfeature lifecycle code.",
           "$ref": "HelloWorldFeatureSpec"
         },
         "meteringFeatureSpec": {
@@ -321,9 +321,89 @@
     },
     "HelloWorldFeatureSpec": {
       "id": "HelloWorldFeatureSpec",
-      "description": "An empty spec for hello world feature. This is required since Feature proto\nrequires a spec.",
+      "description": "HelloWorldFeatureSpec contains the input for the HelloWorld feature.",
       "type": "object",
       "properties": {
+        "featureTest": {
+          "description": "Message to hold fields to use in feature e2e create\/mutate testing.",
+          "$ref": "FeatureTest"
+        }
+      }
+    },
+    "FeatureTest": {
+      "id": "FeatureTest",
+      "description": "Represents message used in feature e2e create\/mutate testing.",
+      "type": "object",
+      "properties": {
+        "first": {
+          "description": "Singular scaler field.",
+          "type": "string"
+        },
+        "second": {
+          "description": "Singular scaler field.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "third": {
+          "enumDescriptions": [
+            "",
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "BAR_UNSPECIFIED",
+            "FIRST",
+            "SECOND"
+          ]
+        },
+        "fourth": {
+          "description": "Singular Message fields.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "fifth": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "sixth": {
+          "type": "string",
+          "format": "int64"
+        },
+        "seventh": {
+          "type": "string"
+        },
+        "eighth": {
+          "description": "Repeated field.",
+          "type": "array",
+          "items": {
+            "$ref": "FooBar"
+          }
+        },
+        "ninth": {
+          "description": "Map field.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "FooBar"
+          }
+        }
+      }
+    },
+    "FooBar": {
+      "id": "FooBar",
+      "description": "Nested Message.",
+      "type": "object",
+      "properties": {
+        "first": {
+          "type": "string"
+        },
+        "second": {
+          "type": "integer",
+          "format": "int32"
+        }
       }
     },
     "MeteringFeatureSpec": {
@@ -550,7 +630,7 @@
     },
     "HelloWorldFeatureState": {
       "id": "HelloWorldFeatureState",
-      "description": "An empty state for hello world feature. This is required since\nFeatureStateDetails requires a state.",
+      "description": "An empty state for HelloWorld feature. This is required since\nFeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
       }

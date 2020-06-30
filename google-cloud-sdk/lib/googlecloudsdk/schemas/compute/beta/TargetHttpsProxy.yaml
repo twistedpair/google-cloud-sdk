@@ -26,26 +26,20 @@ properties:
     items:
       type: string
   authentication:
-    description: |-
-      A URL referring to a networksecurity.Authentication resource that
-      describes how the proxy should authenticate inbound traffic. If left
-      blank, communications between services are not encrypted (i.e., the TLS
-      policy is set to OPEN). When terminating inbound traffic to this proxy,
-      the TerminationTls setting of Authentication.TransportAuthentication is
-      applied. Refer to the Authentication and
-      Authentication.TransportAuthentication.TerminationTls resources for
-      additional details. authentication only applies to a global
-      TargetHttpsProxy attached to globalForwardingRules with the
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+    description: '[Deprecated] Use serverTlsPolicy instead.'
     type: string
   authorization:
+    description: '[Deprecated] Use authorizationPolicy instead.'
+    type: string
+  authorizationPolicy:
     description: |-
-      A URL referring to a networksecurity.Authorization resource that describes
-      how the proxy should authorize inbound traffic. If left blank, access will
-      not be restricted by an authorization policy. Refer to the Authorization
-      resource for additional details. authorization only applies to a global
-      TargetHttpsProxy attached to globalForwardingRules with the
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+      A URL referring to a networksecurity.AuthorizationPolicy resource that
+      describes how the proxy should authorize inbound traffic. If left blank,
+      access will not be restricted by an authorization policy. Refer to the
+      AuthorizationPolicy resource for additional details. authorizationPolicy
+      only applies to a global TargetHttpsProxy attached to
+      globalForwardingRules with the loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
     type: string
   creationTimestamp:
     description: '[Output Only] Creation timestamp in RFC3339 text format.'
@@ -97,6 +91,14 @@ properties:
     type: string
   selfLink:
     description: '[Output Only] Server-defined URL for the resource.'
+    type: string
+  serverTlsPolicy:
+    description: |-
+      A URL referring to a networksecurity.ServerTlsPolicy resource that
+      describes how the proxy should authenticate inbound traffic.
+      serverTlsPolicy only applies to a global TargetHttpsProxy attached to
+      globalForwardingRules with the loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED. If left blank, communications are not encrypted.
     type: string
   sslCertificates:
     description: |-

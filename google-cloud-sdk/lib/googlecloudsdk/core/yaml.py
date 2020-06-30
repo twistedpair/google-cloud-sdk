@@ -132,7 +132,7 @@ def load(stream,
     raise YAMLParseError(e, f=file_hint)
 
 
-def load_all(stream, file_hint=None, version=VERSION_1_1):
+def load_all(stream, file_hint=None, version=VERSION_1_1, round_trip=False):
   """Loads multiple YAML documents from the given steam.
 
   Args:
@@ -140,6 +140,8 @@ def load_all(stream, file_hint=None, version=VERSION_1_1):
     file_hint: str, The name of a file or url that the stream data is coming
       from. See load() for more information.
     version: str, YAML version to use when parsing.
+    round_trip: bool, True to use the RoundTripLoader which preserves ordering
+      and line numbers.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -147,8 +149,9 @@ def load_all(stream, file_hint=None, version=VERSION_1_1):
   Yields:
     The parsed YAML data.
   """
+  loader = yaml.RoundTripLoader if round_trip else yaml.SafeLoader
   try:
-    for x in yaml.load_all(stream, yaml.SafeLoader, version=version):
+    for x in yaml.load_all(stream, loader, version=version):
       yield x
   except yaml.YAMLError as e:
     raise YAMLParseError(e, f=file_hint)
@@ -189,12 +192,14 @@ def load_path(path,
     raise FileLoadError(e, f=path)
 
 
-def load_all_path(path, version=VERSION_1_1):
+def load_all_path(path, version=VERSION_1_1, round_trip=False):
   """Loads multiple YAML documents from the given file path.
 
   Args:
     path: str, A file path to open and read from.
     version: str, YAML version to use when parsing.
+    round_trip: bool, True to use the RoundTripLoader which preserves ordering
+      and line numbers.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -205,7 +210,10 @@ def load_all_path(path, version=VERSION_1_1):
   """
   try:
     with files.FileReader(path) as fp:
-      for x in load_all(fp, file_hint=path, version=version):
+      for x in load_all(fp,
+                        file_hint=path,
+                        version=version,
+                        round_trip=round_trip):
         yield x
   except files.Error as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
@@ -244,6 +252,22 @@ def dump_all(documents, stream=None, **kwargs):
   """
   return yaml.safe_dump_all(
       documents, stream=stream, default_flow_style=False, indent=2, **kwargs)
+
+
+def dump_all_round_trip(documents, stream=None, **kwargs):
+  """Dumps multiple YAML documents to the stream using the RoundTripDumper.
+
+  Args:
+    documents: An iterable of YAML serializable Python objects to dump.
+    stream: The stream to write the data to or None to return it as a string.
+    **kwargs: Other arguments to the dump method.
+
+  Returns:
+    The string representation of the YAML data if stream is None.
+  """
+  return yaml.dump_all(
+      documents, stream=stream, default_flow_style=False, indent=2,
+      Dumper=yaml.RoundTripDumper, **kwargs)
 
 
 def convert_to_block_text(data):

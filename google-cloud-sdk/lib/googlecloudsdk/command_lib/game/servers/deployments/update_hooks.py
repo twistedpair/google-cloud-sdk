@@ -78,8 +78,6 @@ def ChooseUpdateOrPreviewMethod(unused_instance_ref, args):
   if args.preview_time:
     raise PreviewTimeFieldNotRelevantError(
         '`--preview-time` is only relevant if `--dry-run` is set to true.')
-  log.status.Print('Update rollout request issued for: [{}]'.format(
-      args.deployment))
   return 'updateRollout'
 
 
@@ -137,6 +135,9 @@ def SetUpdateMaskForRollout(ref, args, request):
         'Must specify at least one parameter to update.')
 
   request.updateMask = ','.join(update_mask)
+  if not args.dry_run:
+    log.status.Print('Update rollout request issued for: [{}]'.format(
+        args.deployment))
   return request
 
 

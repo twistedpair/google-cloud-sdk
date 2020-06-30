@@ -554,7 +554,7 @@ def AddSessionAffinity(parser,
               'client-IP\'s address and destination address.'
               )
       })
-  help_str = 'The type of TCP session affinity to use. Not supported for UDP.'
+  help_str = 'The type of session affinity to use. Supports both TCP and UDP.'
   parser.add_argument(
       '--session-affinity',
       choices=choices,

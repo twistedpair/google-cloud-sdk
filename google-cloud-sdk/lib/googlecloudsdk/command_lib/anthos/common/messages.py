@@ -31,3 +31,7 @@ MISSING_AUTH_BINARY = ('Could not locate anthos auth executable [{binary}]'
                        'installed. '
                        'See https://cloud.google.com/sdk/docs/components for '
                        'more details.')
+
+LOGIN_CONFIG_MESSAGE = 'Configuring Anthos authentication '
+LOGIN_CONFIG_SUCCESS_MESSAGE = LOGIN_CONFIG_MESSAGE + 'success.'
+LOGIN_CONFIG_FAILED_MESSAGE = LOGIN_CONFIG_MESSAGE + 'failed\n {}'

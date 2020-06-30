@@ -112,7 +112,6 @@ class Request(object):
     self.disable_resource_check = data.get('disable_resource_check')
     self.display_resource_type = data.get('display_resource_type')
     self.api_version = data.get('api_version')
-    self.use_google_auth = data.get('use_google_auth', False)
     self.method = data.get('method', command_type.default_method)
     if not self.method:
       raise util.InvalidSchemaError(

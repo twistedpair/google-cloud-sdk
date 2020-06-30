@@ -1767,7 +1767,7 @@
           "$ref": "GooglePrivacyDlpV2Value"
         },
         "replacementValue": {
-          "description": "Replacement value for this bucket. If not provided\nthe default behavior will be to hyphenate the min-max range.",
+          "description": "Required. Replacement value for this bucket.",
           "$ref": "GooglePrivacyDlpV2Value"
         }
       }

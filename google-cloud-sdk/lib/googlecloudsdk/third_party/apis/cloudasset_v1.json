@@ -183,7 +183,7 @@
           "format": "google-datetime"
         },
         "assetTypes": {
-          "description": "A list of asset types of which to take a snapshot for. Example:\n\"compute.googleapis.com\/Disk\". If specified, only matching assets will be\nreturned. See [Introduction to Cloud Asset\nInventory](https:\/\/cloud.google.com\/asset-inventory\/docs\/overview)\nfor all supported asset types.",
+          "description": "A list of asset types to take a snapshot for. For example:\n\"compute.googleapis.com\/Disk\".\n\nRegular expressions are also supported. For example:\n\n* \"compute.googleapis.com.*\" snapshots resources whose asset type starts\nwith \"compute.googleapis.com\".\n* \".*Instance\" snapshots resources whose asset type ends with \"Instance\".\n* \".*Instance.*\" snapshots resources whose asset type contains \"Instance\".\n\nSee [RE2](https:\/\/github.com\/google\/re2\/wiki\/Syntax) for all supported\nregular expression syntax. If the regular expression does not match any\nsupported asset type, an INVALID_ARGUMENT error will be returned.\n\nIf specified, only matching assets will be returned, otherwise, it will\nsnapshot all asset types. See [Introduction to Cloud Asset\nInventory](https:\/\/cloud.google.com\/asset-inventory\/docs\/overview)\nfor all supported asset types.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1160,7 +1160,7 @@
           }
         },
         "additionalAttributes": {
-          "description": "The additional attributes of this resource. The attributes may vary from\none resource type to another. Examples: `projectId` for Project,\n`dnsName` for DNS ManagedZone.\n\nTo search against the `additional_attributes`:\n\n* use a free text query to match the attributes values. Example: to search\n  `additional_attributes = { dnsName: \"foobar\" }`, you can issue a query\n  `\"foobar\"`.",
+          "description": "The additional attributes of this resource. The attributes may vary from\none resource type to another. Examples: `projectId` for Project,\n`dnsName` for DNS ManagedZone. This field contains a subset of the resource\nmetadata fields that are returned by the List or Get APIs provided by the\ncorresponding GCP service (e.g., Compute Engine). see [API\nreferences](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types#supported_resource_types)\nof CAIS supported resource types. You can search values of these fields\nthrough free text search. However, you should not consume the field\nprogramically as the field names and values may change as the GCP service\n(e.g., Compute Engine) updates to a new incompatible API version.\n\nTo search against the `additional_attributes`:\n\n* use a free text query to match the attributes values. Example: to search\n  `additional_attributes = { dnsName: \"foobar\" }`, you can issue a query\n  `\"foobar\"`.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -1390,7 +1390,7 @@
               "type": "string"
             },
             "orderBy": {
-              "description": "Optional. A comma separated list of fields specifying the sorting order of the\nresults. The default order is ascending. Add ` DESC` after the field name\nto indicate descending order. Redundant space characters are ignored.\nExample: ` location DESC, name`. See [supported resource metadata\nfields](https:\/\/cloud.google.com\/asset-inventory\/docs\/searching-resources#query_on_resource_metadata_fields)\nfor more details.",
+              "description": "Optional. A comma separated list of fields specifying the sorting order of the\nresults. The default order is ascending. Add \" DESC\" after the field name\nto indicate descending order. Redundant space characters are ignored.\nExample: \"location DESC, name\". Only string fields in the response are\nsortable, including `name`, `displayName`, `description`, `location`. All\nthe other fields such as repeated fields (e.g., `networkTags`), map\nfields (e.g., `labels`) and struct fields (e.g., `additionalAttributes`)\nare not supported.",
               "location": "query",
               "type": "string"
             }

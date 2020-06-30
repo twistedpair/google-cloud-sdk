@@ -192,6 +192,10 @@ export CLOUDSDK_PYTHON_ARGS
 export CLOUDSDK_GSUTIL_PYTHON
 export CLOUDSDK_BQ_PYTHON
 
+case $HOSTNAME in
+  *.corp.google.com|*.c.googlers.com) export CLOUDSDK_GOOGLE_AUTH_IS_GOOGLE_DOMAIN=true;;
+esac
+
 # </cloud-sdk-sh-preamble>
 
 if [ -z "$CLOUDSDK_PYTHON" ]; then

@@ -6,6 +6,67 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 299.0.0 (2020-06-30)
+
+### Cloud SDK
+
+* Added `gcloud cheat-sheet` command to display the gcloud command-line tool
+  cheat sheet. For the full cheat sheet, refer to
+  <https://cloud.google.com/sdk/docs/cheatsheet>.
+
+### Anthos
+
+* Added `gcloud anthos create-login-config` command to GA.
+
+### Cloud Asset Inventory
+
+* Promoted Cloud assets search commands `gcloud asset search-all-resources` and `gcloud asset search-all-iam-policies` to GA.
+
+### Cloud Data Catalog
+
+* Added possibility to rename enum values using `gcloud data-catalog tag-templates fields enum-values rename`.
+
+### Cloud Dataproc
+
+* Promoted `--enable-component-gateway` flag of `gcloud dataproc clusters create` and `gcloud dataproc workflow-templates set-managed-cluster` to GA.
+
+### Cloud Run
+
+* Updated `--service-account` flag to accept a Kubernetes service account for
+`--platform=gke` and `--platform=kubernetes`.
+
+### Compute Engine
+
+* Added `--interface` flag to `gcloud beta compute disks create`.
+* Removed `interface` key from `--disk` key of `gcloud beta compute instances create`.
+* Promoted `gcloud compute security-policies list-preconfigured-expression-sets`
+  to GA.
+* Promote `--condition` flag to GA for the following commands:
+  * `gcloud compute disks add-iam-policy-binding`
+  * `gcloud compute disks remove-iam-policy-binding`
+  * `gcloud compute instance-templates add-iam-policy-binding`
+  * `gcloud compute instance-templates remove-iam-policy-binding`.
+* Added `--service-proxy` and '--service-proxy-labels' flags to
+  `gcloud beta compute instance-templates create` to populate the fields in Instance Template
+  required to automatically deploy and configure the service proxy and service-proxy-agent.
+* Added `--chain-name` flag `gcloud beta compute disks snapshot`.
+* Promoted Regional Network Endpoint Groups to beta.
+
+### Kubernetes Engine
+
+* Promoted NodeLocalDNS Addon to GA. Use
+NodeLocalDNS addons with `gcloud container clusters create` and
+`gcloud container clusters update`.
+
+### VPC Access
+
+*   Added `--vpc-connector` flag to `gcloud run deploy` and `gcloud run services update` which allows cloud run services to connect to a VPC Connector.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 298.0.0 (2020-06-23)
 
 ### Breaking Changes

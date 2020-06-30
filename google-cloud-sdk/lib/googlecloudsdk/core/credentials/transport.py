@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import abc
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -45,7 +46,7 @@ class CredentialWrappingMixin(object):
                       enable_resource_quota=True,
                       force_resource_quota=False,
                       allow_account_impersonation=True,
-                      use_google_auth=False):
+                      use_google_auth=None):
     """Get an http client for working with Google APIs.
 
     Args:
@@ -62,7 +63,8 @@ class CredentialWrappingMixin(object):
         the active user credentials will always be used.
       use_google_auth: bool, True if the calling command indicates to use
         google-auth library for authentication. If False, authentication will
-        fallback to using the oauth2client library.
+        fallback to using the oauth2client library. If None, set the value
+        based the configuration.
 
     Returns:
       An authorized http client with exception handling.
@@ -77,6 +79,8 @@ class CredentialWrappingMixin(object):
         properties.VALUES.auth.authorization_token_file.Get())
     handlers = _GetIAMAuthHandlers(authority_selector, authorization_token_file)
 
+    if use_google_auth is None:
+      use_google_auth = base.UseGoogleAuth()
     creds = store.LoadIfEnabled(allow_account_impersonation, use_google_auth)
     if creds:
       # Inject the resource project header for quota unless explicitly disabled.
@@ -146,5 +150,8 @@ def _HandleAuthError(e):
     store.TokenRefreshError: If an auth error occurs.
   """
   msg = six.text_type(e)
-  log.debug('Exception caught during HTTP request: %s', msg, exc_info=True)
+  log.debug('Exception caught during HTTP request: %s', msg,
+            exc_info=True)
+  if store.IsContextAwareAccessDeniedError(e):
+    raise store.TokenRefreshDeniedByCAAError(msg)
   raise store.TokenRefreshError(msg)

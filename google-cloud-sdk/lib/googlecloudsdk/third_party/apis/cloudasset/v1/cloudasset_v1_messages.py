@@ -420,12 +420,13 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       types](https://cloud.google.com/asset-inventory/docs/supported-asset-
       types#searchable_asset_types).
     orderBy: Optional. A comma separated list of fields specifying the sorting
-      order of the results. The default order is ascending. Add ` DESC` after
+      order of the results. The default order is ascending. Add " DESC" after
       the field name to indicate descending order. Redundant space characters
-      are ignored. Example: ` location DESC, name`. See [supported resource
-      metadata fields](https://cloud.google.com/asset-
-      inventory/docs/searching-resources#query_on_resource_metadata_fields)
-      for more details.
+      are ignored. Example: "location DESC, name". Only string fields in the
+      response are sortable, including `name`, `displayName`, `description`,
+      `location`. All the other fields such as repeated fields (e.g.,
+      `networkTags`), map fields (e.g., `labels`) and struct fields (e.g.,
+      `additionalAttributes`) are not supported.
     pageSize: Optional. The page size for search result pagination. Page size
       is capped at 500 even if a larger value is given. If set to zero, server
       will pick an appropriate default. Returned results may be fewer than
@@ -563,9 +564,17 @@ class ExportAssetsRequest(_messages.Message):
       content but the asset name will be returned.
 
   Fields:
-    assetTypes: A list of asset types of which to take a snapshot for.
-      Example: "compute.googleapis.com/Disk". If specified, only matching
-      assets will be returned. See [Introduction to Cloud Asset
+    assetTypes: A list of asset types to take a snapshot for. For example:
+      "compute.googleapis.com/Disk".  Regular expressions are also supported.
+      For example:  * "compute.googleapis.com.*" snapshots resources whose
+      asset type starts with "compute.googleapis.com". * ".*Instance"
+      snapshots resources whose asset type ends with "Instance". *
+      ".*Instance.*" snapshots resources whose asset type contains "Instance".
+      See [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
+      regular expression syntax. If the regular expression does not match any
+      supported asset type, an INVALID_ARGUMENT error will be returned.  If
+      specified, only matching assets will be returned, otherwise, it will
+      snapshot all asset types. See [Introduction to Cloud Asset
       Inventory](https://cloud.google.com/asset-inventory/docs/overview) for
       all supported asset types.
     contentType: Asset content type. If not specified, no content but the
@@ -1664,10 +1673,19 @@ class ResourceSearchResult(_messages.Message):
   Messages:
     AdditionalAttributesValue: The additional attributes of this resource. The
       attributes may vary from one resource type to another. Examples:
-      `projectId` for Project, `dnsName` for DNS ManagedZone.  To search
-      against the `additional_attributes`:  * use a free text query to match
-      the attributes values. Example: to search   `additional_attributes = {
-      dnsName: "foobar" }`, you can issue a query   `"foobar"`.
+      `projectId` for Project, `dnsName` for DNS ManagedZone. This field
+      contains a subset of the resource metadata fields that are returned by
+      the List or Get APIs provided by the corresponding GCP service (e.g.,
+      Compute Engine). see [API references](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#supported_resource_types) of CAIS
+      supported resource types. You can search values of these fields through
+      free text search. However, you should not consume the field
+      programically as the field names and values may change as the GCP
+      service (e.g., Compute Engine) updates to a new incompatible API
+      version.  To search against the `additional_attributes`:  * use a free
+      text query to match the attributes values. Example: to search
+      `additional_attributes = { dnsName: "foobar" }`, you can issue a query
+      `"foobar"`.
     LabelsValue: Labels associated with this resource. See [Labelling and
       grouping GCP
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
@@ -1681,10 +1699,19 @@ class ResourceSearchResult(_messages.Message):
   Fields:
     additionalAttributes: The additional attributes of this resource. The
       attributes may vary from one resource type to another. Examples:
-      `projectId` for Project, `dnsName` for DNS ManagedZone.  To search
-      against the `additional_attributes`:  * use a free text query to match
-      the attributes values. Example: to search   `additional_attributes = {
-      dnsName: "foobar" }`, you can issue a query   `"foobar"`.
+      `projectId` for Project, `dnsName` for DNS ManagedZone. This field
+      contains a subset of the resource metadata fields that are returned by
+      the List or Get APIs provided by the corresponding GCP service (e.g.,
+      Compute Engine). see [API references](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#supported_resource_types) of CAIS
+      supported resource types. You can search values of these fields through
+      free text search. However, you should not consume the field
+      programically as the field names and values may change as the GCP
+      service (e.g., Compute Engine) updates to a new incompatible API
+      version.  To search against the `additional_attributes`:  * use a free
+      text query to match the attributes values. Example: to search
+      `additional_attributes = { dnsName: "foobar" }`, you can issue a query
+      `"foobar"`.
     assetType: The type of this resource. Example:
       `compute.googleapis.com/Disk`.  To search against the `asset_type`:  *
       specify the `asset_type` field in your search request.
@@ -1731,10 +1758,18 @@ class ResourceSearchResult(_messages.Message):
   class AdditionalAttributesValue(_messages.Message):
     r"""The additional attributes of this resource. The attributes may vary
     from one resource type to another. Examples: `projectId` for Project,
-    `dnsName` for DNS ManagedZone.  To search against the
-    `additional_attributes`:  * use a free text query to match the attributes
-    values. Example: to search   `additional_attributes = { dnsName: "foobar"
-    }`, you can issue a query   `"foobar"`.
+    `dnsName` for DNS ManagedZone. This field contains a subset of the
+    resource metadata fields that are returned by the List or Get APIs
+    provided by the corresponding GCP service (e.g., Compute Engine). see [API
+    references](https://cloud.google.com/asset-inventory/docs/supported-asset-
+    types#supported_resource_types) of CAIS supported resource types. You can
+    search values of these fields through free text search. However, you
+    should not consume the field programically as the field names and values
+    may change as the GCP service (e.g., Compute Engine) updates to a new
+    incompatible API version.  To search against the `additional_attributes`:
+    * use a free text query to match the attributes values. Example: to search
+    `additional_attributes = { dnsName: "foobar" }`, you can issue a query
+    `"foobar"`.
 
     Messages:
       AdditionalProperty: An additional property for a

@@ -217,7 +217,8 @@ def AddListContentTypeArgs(parser):
       ' type will be returned in the feed. To read more see '
       'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
   )
-  parser.add_argument('--content-type', choices=['resource'], help=help_text)
+  parser.add_argument(
+      '--content-type', choices=['resource', 'iam-policy'], help=help_text)
 
 
 def AddFeedIdArgs(parser, help_text):
@@ -312,3 +313,97 @@ def AddUpdateFeedContentTypeArgs(parser):
   parent_group = parser.add_group(mutex=True)
   AddChangeFeedContentTypeArgs(parent_group)
   AddClearFeedContentTypeArgs(parent_group)
+
+
+def FeedConditionExpressionArgs(parser, help_text):
+  parser.add_argument('--condition-expression', help=help_text)
+
+
+def AddFeedConditionExpressionArgs(parser):
+  # TODO(b/154120326): add link to public doc once it's ready.
+  help_text = (
+      'Feed condition expression. If not specified, no condition will be'
+      ' applied to feed.')
+
+  FeedConditionExpressionArgs(parser, help_text)
+
+
+def AddChangeFeedConditionExpressionArgs(parser):
+  # TODO(b/154120326): add link to public doc once it's ready.
+  help_text = ('Condition expression to overwrite the existing one.')
+
+  FeedConditionExpressionArgs(parser, help_text)
+
+
+def AddClearFeedConditionExpressionArgs(parser):
+  parser.add_argument(
+      '--clear-condition-expression',
+      action='store_true',
+      help=('Clear any existing condition expression setting on the feed. '
+            'No condition will be applied to feed.'))
+
+
+def AddUpdateFeedConditionExpressionArgs(parser):
+  parent_group = parser.add_group(mutex=True)
+  AddChangeFeedConditionExpressionArgs(parent_group)
+  AddClearFeedConditionExpressionArgs(parent_group)
+
+
+def FeedConditionTitleArgs(parser, help_text):
+  parser.add_argument('--condition-title', help=help_text)
+
+
+def AddFeedConditionTitleArgs(parser):
+  help_text = ('Title of the feed condition. For reference only.')
+
+  FeedConditionTitleArgs(parser, help_text)
+
+
+def AddChangeFeedConditionTitleArgs(parser):
+  help_text = ('Condition title to overwrite the existing one.')
+
+  FeedConditionTitleArgs(parser, help_text)
+
+
+def AddClearFeedConditionTitleArgs(parser):
+  parser.add_argument(
+      '--clear-condition-title',
+      action='store_true',
+      help=('Clear any existing condition title setting on the feed. '
+            'Condition title will be empty.'))
+
+
+def AddUpdateFeedConditionTitleArgs(parser):
+  parent_group = parser.add_group(mutex=True)
+  AddChangeFeedConditionTitleArgs(parent_group)
+  AddClearFeedConditionTitleArgs(parent_group)
+
+
+def FeedConditionDescriptionArgs(parser, help_text):
+  parser.add_argument('--condition-description', help=help_text)
+
+
+def AddFeedConditionDescriptionArgs(parser):
+  help_text = ('Description of the feed condition. For reference only.')
+
+  FeedConditionDescriptionArgs(parser, help_text)
+
+
+def AddChangeFeedConditionDescriptionArgs(parser):
+  help_text = ('Condition description to overwrite the existing one.')
+
+  FeedConditionDescriptionArgs(parser, help_text)
+
+
+def AddClearFeedConditionDescriptionArgs(parser):
+  parser.add_argument(
+      '--clear-condition-description',
+      action='store_true',
+      help=('Clear any existing condition description setting on the feed. '
+            'Condition description will be empty.'))
+
+
+def AddUpdateFeedConditionDescriptionArgs(parser):
+  parent_group = parser.add_group(mutex=True)
+  AddChangeFeedConditionDescriptionArgs(parent_group)
+  AddClearFeedConditionDescriptionArgs(parent_group)

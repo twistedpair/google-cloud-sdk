@@ -43,4 +43,4 @@ def GetApiFromTrack(track):
 
 
 def GetApiClient(version):
-  return apis.GetClientInstance('dns', version, use_google_auth=True)
+  return apis.GetClientInstance('dns', version)

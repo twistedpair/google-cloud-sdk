@@ -940,6 +940,26 @@ def EnableUserProjectQuota():
       properties.VALUES.billing.CURRENT_PROJECT)
 
 
+def AllowGoogleAuth():
+  """Allows the command group to use google auth for authentication.
+
+  Call this function in the Filter method of the command group
+  to enable google-auth.
+  """
+  properties.VALUES.auth.google_auth_allowed.Set(True)
+
+
+def UseGoogleAuth():
+  """Returns True if using google-auth to authenticate the http request.
+
+  auth/disable_load_google_auth is a global switch to turn off google-auth in
+  case google-auth is buggy. auth/google_auth_allowed is an internal property
+  to opt-in surface.
+  """
+  return (properties.VALUES.auth.google_auth_allowed.GetBool() and
+          not properties.VALUES.auth.disable_load_google_auth.GetBool())
+
+
 def LogCommand(prog, args):
   """Log (to debug) the command/arguments being run in a standard format.
 

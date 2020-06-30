@@ -37,10 +37,12 @@ class MissingConfigError(core_exceptions.Error):
   """An exception raised when kubeconfig file is missing."""
 
 
-def GetKubeConfigFlag(help_txt='The path to the Kubeconfig file to use.'):
+def GetKubeConfigFlag(
+    help_txt='The path to the Kubeconfig file to use.',
+    required=False):
   return base.Argument(
       '--kubeconfig',
-      required=False,
+      required=required,
       help=help_txt)
 
 

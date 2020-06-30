@@ -47,24 +47,16 @@ __author__ = 'arb@google.com (Anthony Baxter)'
 # for that module and set the field to None. This allows us to selectively
 # operate on time data without pytz.
 # Ex: //third_party/py/appengine/google/appengine/cron/groctimespecification.py.
-try:
-  import pytz
-except ImportError:
-  pytz = None
+pytz = None
 
 HOURS = 'hours'
 MINUTES = 'minutes'
 
-try:
-  from pytz import NonExistentTimeError
-  from pytz import AmbiguousTimeError
-except ImportError:
+class NonExistentTimeError(Exception):
+  pass
 
-  class NonExistentTimeError(Exception):
-    pass
-
-  class AmbiguousTimeError(Exception):
-    pass
+class AmbiguousTimeError(Exception):
+  pass
 
 
 def GrocTimeSpecification(schedule, timezone=None):

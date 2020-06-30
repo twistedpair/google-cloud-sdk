@@ -108,8 +108,7 @@ class CommandBuilder(object):
     """Allows command to be reconfigured if needed."""
     self.method = registry.GetMethod(self.spec.request.collection,
                                      self.spec.request.method,
-                                     self.spec.request.api_version,
-                                     self.spec.request.use_google_auth)
+                                     self.spec.request.api_version)
     resource_arg = self.spec.arguments.resource
     self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
         self.method, self.spec.arguments.params, resource_arg)

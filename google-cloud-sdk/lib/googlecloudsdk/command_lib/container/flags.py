@@ -186,6 +186,34 @@ The default Kubernetes version is available using the following command.
   return parser.add_argument('--cluster-version', help=help, hidden=suppressed)
 
 
+def AddNotificationConfigFlag(parser, hidden=False):
+  """Adds a --notification-config flag to the given parser."""
+  help_text = """\
+The notification configuration of the cluster. GKE supports publishing
+cluster upgrade notifications to any Pub/Sub topic you created in the same
+project. Create a subscription for the topic specified to receive notification
+messages. See https://cloud.google.com/pubsub/docs/admin on how to manage
+Pub/Sub topics and subscriptions.
+
+Example:
+
+    $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/gke-notifications
+
+    The project of the Pub/Sub topic must be the same one as the cluster. It can
+    be either the project ID or the project number.
+    """
+  return parser.add_argument(
+      '--notification-config',
+      type=arg_parsers.ArgDict(
+          spec={
+              'pubsub': str,
+              'pubsub-topic': str,
+          }, required_keys=['pubsub']),
+      metavar='pubsub=ENABLED|DISABLED,pubsub-topic=TOPIC',
+      help=help_text,
+      hidden=hidden)
+
+
 def AddReleaseChannelFlag(parser, is_update=False, hidden=False):
   """Adds a --release-channel flag to the given parser."""
   short_text = """\
@@ -198,36 +226,31 @@ Subscribe or unsubscribe this cluster to a release channel.
 
 """
   help_text = short_text + """\
-When a cluster is subscribed to a release channel, GKE maintains both the
-master version and the node version. Node auto-upgrade defaults to true and
-cannot be disabled. Updates to version related fields (e.g. --cluster-version)
-return an error.
+When a cluster is subscribed to a release channel, Google maintains
+both the master version and the node version. Node auto-upgrade
+defaults to true and cannot be disabled.
 """
 
   choices = {
       'rapid':
           """\
-WARNING: 'rapid' is recommended for testing, and not for production workloads.
-Clusters on 'rapid' are not covered by GKE SLA.
+'rapid' channel is offered on an early access basis for customers who want
+to test new releases.
 
-Clusters subscribed to 'rapid' receive the latest qualified
-components, before any other channel. 'rapid' is intended for early testers
-and developers who require new features. New upgrades will occur roughly
-weekly.
+WARNING: Versions available in the 'rapid' channel may be subject to
+unresolved issues with no known workaround and are not subject to any
+SLAs.
 """,
       'regular':
           """\
 Clusters subscribed to 'regular' receive versions that are considered GA
 quality. 'regular' is intended for production users who want to take
-advantage of new features. New upgrades will occur roughly every few
-weeks.
+advantage of new features.
 """,
       'stable':
           """\
 Clusters subscribed to 'stable' receive versions that are known to be
-stable and reliable in production. 'stable' is intended for production
-users who need stability above all else, or for whom frequent upgrades
-are too risky. New upgrades will occur roughly every few months.
+stable and reliable in production.
 """,
   }
 
@@ -754,6 +777,30 @@ def ValidateCloudRunConfigCreateArgs(cloud_run_config_args, addons_args):
           '--cloudrun-config is given')
 
 
+def ValidateCloudRunConfigUpdateArgs(cloud_run_config_args, update_addons_args):
+  """Validates flags specifying Cloud Run config for update.
+
+  Args:
+    cloud_run_config_args: parsed comandline arguments for --cloud_run_config.
+    update_addons_args: parsed comandline arguments for --update-addons.
+
+  Raises:
+    InvalidArgumentException: when load-balancer-type is not MTLS_PERMISSIVE nor MTLS_STRICT,
+    or --update-addons=CloudRun=ENABLED is not specified
+  """
+  if cloud_run_config_args:
+    load_balancer_type = cloud_run_config_args.get('load-balancer-type', '')
+    if load_balancer_type not in ['EXTERNAL', 'INTERNAL']:
+      raise exceptions.InvalidArgumentException(
+          '--cloud-run-config', 'load-balancer-type must be one of EXTERNAL or '
+          'INTERNAL e.g. --cloud-run-config load-balancer-type=EXTERNAL')
+    disable_cloud_run = update_addons_args.get('CloudRun')
+    if disable_cloud_run is None or disable_cloud_run:
+      raise exceptions.InvalidArgumentException(
+          '--cloud-run-config', '--update-addons=CloudRun=ENABLED must be specified '
+          'when --cloud-run-config is given')
+
+
 def AddEnableStackdriverKubernetesFlag(parser):
   """Adds a --enable-stackdriver-kubernetes flag to parser."""
   help_text = """Enable Stackdriver Kubernetes monitoring and logging."""
@@ -791,14 +838,22 @@ Example:
   group.add_argument(
       '--master-logs',
       type=arg_parsers.ArgList(choices=api_adapter.MASTER_LOGS_OPTIONS),
-      help=help_text, metavar='COMPONENT')
+      help=help_text,
+      metavar='COMPONENT',
+      hidden=True,
+  )
 
   if not for_create:
     help_text = """\
 Disable sending logs from master components to Cloud Operations.
 """
     group.add_argument(
-        '--no-master-logs', action='store_true', default=False, help=help_text)
+        '--no-master-logs',
+        action='store_true',
+        default=False,
+        help=help_text,
+        hidden=True,
+    )
 
   help_text = """\
 Enable sending metrics from master components to Cloud Operations.
@@ -807,7 +862,9 @@ Enable sending metrics from master components to Cloud Operations.
       '--enable-master-metrics',
       action='store_true',
       default=None,
-      help=help_text)
+      help=help_text,
+      hidden=True,
+  )
 
 
 def AddNodeLabelsFlag(parser, for_node_pool=False):
@@ -2647,6 +2704,19 @@ def ValidateSurgeUpgradeSettings(args):
         '--max-unavailable-upgrade', util.INVALIID_SURGE_UPGRADE_SETTINGS)
 
 
+def ValidateNotificationConfigFlag(args):
+  """Raise exception if validation of notification config fails."""
+  if 'notification_config' in args._specified_args:
+    if 'pubsub' in args.notification_config:
+      pubsub = args.notification_config['pubsub']
+      if pubsub != 'ENABLED' and pubsub != 'DISABLED':
+        raise exceptions.InvalidArgumentException(
+            '--notification-config', 'invalid [pubsub] value \"{0}\"; '
+            'must be ENABLED or DISABLED.'.format(pubsub))
+      if pubsub == 'ENABLED' and 'pubsub-topic' not in args.notification_config:
+        raise exceptions.InvalidArgumentException(
+            '--notification-config',
+            'when [pubsub] is ENABLED, [pubsub-topic] must not be empty')
 # pylint: enable=protected-access
 
 

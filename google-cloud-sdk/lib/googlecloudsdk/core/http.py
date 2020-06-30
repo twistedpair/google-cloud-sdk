@@ -19,27 +19,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import time
 import enum
 import google_auth_httplib2
 
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
-from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import encoding
 
 import httplib2
 import six
-from six.moves import urllib
-from six.moves import zip  # pylint: disable=redefined-builtin
-
-
-# Alternative spellings of User-Agent header key that may appear in requests.
-_NORMALIZED_USER_AGENT = b'user-agent'
-_USER_AGENT_HEADER_KEYS = [_NORMALIZED_USER_AGENT, b'User-Agent', b'USER-AGENT']
 
 
 def Http(timeout='unset', response_encoding=None, ca_certs=None):
@@ -61,23 +52,12 @@ def Http(timeout='unset', response_encoding=None, ca_certs=None):
     An httplib2.Http client object configured with all the required settings
     for gcloud.
   """
-  # Wrap the request method to put in our own user-agent, and trace reporting.
-  command_name = properties.VALUES.metrics.command_name.Get()
-  gcloud_ua = transport.MakeUserAgentString(command_name)
   http_client = _CreateRawHttpClient(timeout, ca_certs)
-  http_client = _Wrap(
-      http_client,
-      properties.VALUES.core.request_reason.Get(),
-      gcloud_ua,
-      properties.VALUES.core.log_http.GetBool(),
-      properties.VALUES.core.log_http_redact_token.GetBool(),
-      response_encoding
-  )
-
+  http_client = RequestWrapper().WrapWithDefaults(http_client,
+                                                  response_encoding)
   return http_client
 
 
-# TODO(b/120951866) Can this be the same as Http?
 def HttpClient(
     timeout=None,
     proxy_info=httplib2.proxy_info_from_environment,
@@ -93,7 +73,6 @@ def HttpClient(
         validation.
 
   Returns: A httplib2.Http subclass
-
   """
   if properties.VALUES.proxy.use_urllib3_via_shim.GetBool():
     import httplib2shim  # pylint:disable=g-import-not-at-top
@@ -126,6 +105,7 @@ def _CreateRawHttpClient(timeout='unset', ca_certs=None):
     effective_timeout = timeout
   else:
     effective_timeout = transport.GetDefaultTimeout()
+
   no_validate = properties.VALUES.auth.disable_ssl_validation.GetBool() or False
   ca_certs_property = properties.VALUES.core.custom_ca_certs_file.Get()
   # Believe an explicitly-set ca_certs property over anything we added.
@@ -139,419 +119,81 @@ def _CreateRawHttpClient(timeout='unset', ca_certs=None):
                     disable_ssl_certificate_validation=no_validate)
 
 
-def _Wrap(
-    http_client, request_reason, gcloud_ua,
-    log_http, log_http_redact_token, response_encoding):
-  """Wrap request with user-agent, and trace reporting.
+class Request(transport.Request):
+  """Encapsulates parameters for making a general HTTP request.
 
-  Args:
-    http_client: The original http object.
-    request_reason: str, Justification for access.
-    gcloud_ua: str, User agent string to be included in the request.
-    log_http: bool, True to enable request/response logging.
-    log_http_redact_token: bool, True to avoid logging access tokens if log_http
-                           is set.
-    response_encoding: str, the encoding to use to decode the response.
+  This implementation does additional manipulation to ensure that the request
+  parameters are specified in the same way as they were specified by the
+  caller. That is, if the user calls:
+      request('URI', 'GET', None, {'header': '1'})
 
-  Returns:
-    http, The same http object but with the request method wrapped.
+  After modifying the request, we will call request using positional
+  parameters, instead of transforming the request into:
+      request('URI', method='GET', body=None, headers={'header': '1'})
   """
-  handlers = []
-
-  handlers.append(Modifiers.Handler(
-      Modifiers.RecordStartTime(),
-      Modifiers.ReportDuration()))
-
-  handlers.append(Modifiers.Handler(
-      Modifiers.AppendToHeader(_NORMALIZED_USER_AGENT, gcloud_ua)))
-
-  trace_value = transport.GetTraceValue()
-  if trace_value:
-    handlers.append(Modifiers.Handler(
-        Modifiers.AddQueryParam('trace', trace_value)))
-
-  if request_reason:
-    handlers.append(Modifiers.Handler(
-        Modifiers.SetHeader('X-Goog-Request-Reason', request_reason)))
-
-  # Do this one last so that it sees the affects of the other modifiers.
-  if log_http:
-    handlers.append(Modifiers.Handler(
-        Modifiers.LogRequest(log_http_redact_token),
-        Modifiers.LogResponse()))
-
-  return Modifiers.WrapRequest(http_client, handlers,
-                               response_encoding=response_encoding)
-
-
-class Modifiers(object):
-  """Encapsulates a bunch of http request wrapping functionality.
-
-  The general process is that you can define a series of handlers that get
-  executed before and after the original http request you are mapping. All the
-  request handlers are executed in the order provided. Request handlers must
-  return a result that is used when invoking the corresponding response handler.
-  Request handlers don't actually execute the request but rather just modify the
-  request arguments. After all request handlers are executed, the original http
-  request is executed. Finally, all response handlers are executed in order,
-  getting passed both the http response as well as the result from their
-  corresponding request handler.
-  """
-
-  class Handler(object):
-    """A holder object for a pair of request and response handlers.
-
-    Request handlers are invoked before the original http request, response
-    handlers are invoked after.
-    """
-
-    def __init__(self, request, response=None):
-      """Creates a new Handler.
-
-      Args:
-        request: f(args, kwargs) -> Result, A function that gets called before
-          the original http request gets called. It has the same arguments as
-          http.request(). It returns a Modifiers.Result object that contains
-          data to be passed to later stages of execution.
-        response: f(response, Modifiers.Result.data), A function that gets
-          called after the original http request. It is passed the http response
-          as well as whatever the request handler put in its Result object.
-      """
-      self.request = request
-      self.response = response
-
-  class Result(object):
-    """A holder object for data a request modifier needs to return.
-
-    Data from the Result object is later passed into the response handler after
-    the original http request is executed.
-    """
-
-    def __init__(self, args=None, data=None):
-      """Creates a new Result.
-
-      Args:
-        args: A modified version of the http request args passed into the
-          request modifier (if they need to be changed). This is required
-          because the args are a tuple and cannot be modified in place like the
-          kwargs can.
-        data: Anything the request modifier wants to save for later use in a
-          response handler.
-      """
-      self.args = args
-      self.data = data
 
   @classmethod
-  def WrapRequest(cls, http_client, handlers, exc_handler=None,
-                  exc_type=Exception, response_encoding=None):
-    """Wraps an http client with request modifiers.
+  def FromRequestArgs(cls, *args, **kwargs):
+    return cls(*args, **kwargs)
 
-    Args:
-      http_client: The original http client to be wrapped.
-      handlers: [Modifiers.Handler], The handlers to execute before and after
-        the original request.
-      exc_handler: f(e), A function that takes an exception and handles it. It
-        should also throw an exception if you don't want it to be swallowed.
-      exc_type: The type of exception that should be caught and given to the
-        handler. It could be a tuple to catch more than one exception type.
-      response_encoding: str, the encoding to use to decode the response.
+  def __init__(self, *args, **kwargs):
+    self._args = args
+    self._kwargs = kwargs
 
-    Returns:
-      The wrapped http client.
-    """
-    orig_request = http_client.request
+    uri = RequestParam.URI.Get(args, kwargs)
+    if not six.PY2:
+      # httplib2 needs text under Python 3.
+      uri = encoding.Decode(uri)
+    method = RequestParam.METHOD.Get(args, kwargs)
+    headers = RequestParam.HEADERS.Get(args, kwargs) or {}
+    body = RequestParam.BODY.Get(args, kwargs)
+    super(Request, self).__init__(uri, method, headers, body)
 
-    def WrappedRequest(*args, **kwargs):
-      """Replacement http.request() method."""
-      modified_args = list(args)
+  def ToRequestArgs(self):
+    args, kwargs = list(self._args), dict(self._kwargs)
+    RequestParam.URI.Set(args, kwargs, self.uri)
+    if self.method:
+      RequestParam.METHOD.Set(args, kwargs, self.method)
+    if self.headers:
+      RequestParam.HEADERS.Set(args, kwargs, self.headers)
+    if self.body:
+      RequestParam.BODY.Set(args, kwargs, self.body)
+    return args, kwargs
 
-      if not six.PY2:
-        # httplib2 needs text under Python 3.
-        RequestParam.URI.Set(
-            modified_args, kwargs,
-            encoding.Decode(RequestParam.URI.Get(modified_args, kwargs)))
 
-      # We need to make a copy here because if we don't we will be modifying the
-      # dictionary that people pass in.
-      # TODO(b/37281703): Copy the entire dictionary. This is blocked on making
-      # sure anything that comes through is actually copyable.
-      headers = RequestParam.HEADERS.Get(modified_args, kwargs) or {}
-      # httplib2 adds headers and body together to POST messages. If headers are
-      # text, it prevents POSTing bytes because you will get a decode error when
-      # it combines them. Normalize everything to bytes here so we call request
-      # consistently.
-      headers = Modifiers._EncodeHeaders(headers)
-      RequestParam.HEADERS.Set(modified_args, kwargs, headers)
+class Response(transport.Response):
+  """Encapsulates responses from making a general HTTP request."""
 
-      modifier_data = []
+  @classmethod
+  def FromResponse(cls, response):
+    resp, content = response
+    headers = {h: v for h, v in six.iteritems(resp) if h != 'status'}
+    return cls(resp.get('status'), headers, content)
 
-      for handler in handlers:
-        modifier_result = handler.request(modified_args, kwargs)
-        if modifier_result.args:
-          modified_args = modifier_result.args
-        modifier_data.append(modifier_result.data)
 
-      try:
-        response = orig_request(*modified_args, **kwargs)
-      except exc_type as e:  # pylint: disable=broad-except
-        response = None
-        if exc_handler:
-          exc_handler(e)
-        else:
-          raise
+class RequestWrapper(transport.RequestWrapper):
+  """Class for wrapping httplib.Httplib2 requests."""
 
-      if response_encoding is not None:
-        response = Modifiers._DecodeResponse(response, response_encoding)
+  request_class = Request
+  response_class = Response
 
-      for handler, data in zip(handlers, modifier_data):
-        if handler.response:
-          handler.response(response, data)
+  def DecodeResponse(self, response, response_encoding):
+    response, content = response
+    content = content.decode(response_encoding)
+    return response, content
 
-      return response
-
-    http_client.request = WrappedRequest
-
+  def AttachCredentials(self, http_client, orig_request):
     # apitools needs this attribute to do credential refreshes during batch API
     # requests.
     if hasattr(orig_request, 'credentials'):
       setattr(http_client.request, 'credentials', orig_request.credentials)
 
-    return http_client
-
-  @classmethod
-  def _EncodeHeaders(cls, headers):
-    return dict(
-        Modifiers._EncodeHeader(h, v) for h, v in six.iteritems(headers))
-
-  @classmethod
-  def _EncodeHeader(cls, header, value):
-    if isinstance(header, six.text_type):
-      header = header.encode('utf-8')
-    if isinstance(value, six.text_type):
-      value = value.encode('utf-8')
-    return header, value
-
-  @classmethod
-  def _DecodeResponse(cls, response, response_encoding):
-    """Decodes the response content if an encoding is given."""
-    response, content = response
-    content = content.decode(response_encoding)
-    return response, content
-
-  @classmethod
-  def _GetUserAgentHeaderValue(cls, headers):
-    """Retrieve the correct user-agent header key from the requests."""
-    for hdr, value in six.iteritems(headers):
-      if hdr in _USER_AGENT_HEADER_KEYS:
-        return hdr, value
-    return None, None
-
-  @classmethod
-  def AppendToHeader(cls, header, value):
-    """Appends the given value to the existing value in the http request.
-
-    Args:
-      header: str, The name of the header to append to.
-      value: str, The value to append to the existing header value.
-
-    Returns:
-      A function that can be used in a Handler.request.
-    """
-    header, value = Modifiers._EncodeHeader(header, value)
-    def _AppendToHeader(args, kwargs):
-      """Replacement http.request() method."""
-      modified_args = list(args)
-      headers = RequestParam.HEADERS.Get(args, kwargs) or {}
-      if header == _NORMALIZED_USER_AGENT:
-        found_header, current_value = cls._GetUserAgentHeaderValue(headers)
-        if found_header:
-          del headers[found_header]
-      else:
-        current_value = headers.get(header, b'')
-
-      headers[header] = (
-          (current_value + b' ' + value).strip() if current_value else value)
-      RequestParam.HEADERS.Set(modified_args, kwargs, headers)
-      return Modifiers.Result(args=modified_args)
-    return _AppendToHeader
-
-  @classmethod
-  def SetHeader(cls, header, value):
-    """Sets the given header value in the http request.
-
-    Args:
-      header: str, The name of the header to set to.
-      value: str, The new value of the header.
-
-    Returns:
-      A function that can be used in a Handler.request.
-    """
-    header, value = Modifiers._EncodeHeader(header, value)
-    def _SetHeader(args, kwargs):
-      """Replacement http.request() method."""
-      modified_args = list(args)
-      headers = RequestParam.HEADERS.Get(args, kwargs) or {}
-      headers[header] = value
-      RequestParam.HEADERS.Set(modified_args, kwargs, headers)
-      return Modifiers.Result(args=modified_args)
-    return _SetHeader
-
-  @classmethod
-  def AddQueryParam(cls, param, value):
-    """Adds the given query parameter to the http request.
-
-    Args:
-      param: str, The name of the parameter.
-      value: str, The value of the parameter.
-
-    Returns:
-      A function that can be used in a Handler.request.
-    """
-    def _AddQueryParam(args, kwargs):
-      """Replacement http.request() method."""
-      url_parts = urllib.parse.urlsplit(
-          RequestParam.URI.Get(args, kwargs))
-      query_params = urllib.parse.parse_qs(url_parts.query)
-      query_params[param] = value
-      # Need to do this to convert a SplitResult into a list so it can be
-      # modified.
-      url_parts = list(url_parts)
-      url_parts[3] = urllib.parse.urlencode(query_params, doseq=True)
-
-      modified_args = list(args)
-      # pylint:disable=too-many-function-args, This is just bogus.
-      new_url = urllib.parse.urlunsplit(url_parts)
-      RequestParam.URI.Set(modified_args, kwargs, new_url)
-      return Modifiers.Result(args=modified_args)
-    return _AddQueryParam
-
-  @classmethod
-  def LogRequest(cls, redact_token=True):
-    """Logs the contents of the http request.
-
-    Args:
-      redact_token: bool, True to redact auth tokens.
-
-    Returns:
-      A function that can be used in a Handler.request.
-    """
-    def _LogRequest(args, kwargs):
-      """Replacement http.request() method."""
-
-      uri, method, body, headers = Modifiers._GetRequest(args, kwargs)
-
-      # If set, these prevent the printing of the http body and replace it with
-      # the reason the body is not being printed.
-      redact_req_body_reason = None
-      redact_resp_body_reason = None
-
-      if redact_token and transport.IsTokenUri(uri):
-        redact_req_body_reason = (
-            'Contains oauth token. Set log_http_redact_token property to false '
-            'to print the body of this request.'
-        )
-        redact_resp_body_reason = (
-            'Contains oauth token. Set log_http_redact_token property to false '
-            'to print the body of this response.'
-        )
-
-      log.status.Print('=======================')
-      log.status.Print('==== request start ====')
-      log.status.Print('uri: {uri}'.format(uri=uri))
-      log.status.Print('method: {method}'.format(method=method))
-      log.status.Print('== headers start ==')
-      for h, v in sorted(six.iteritems(headers)):
-        if redact_token and (h == b'Authorization' or
-                             h == b'x-goog-iam-authorization-token'):
-          v = '--- Token Redacted ---'
-        log.status.Print('{0}: {1}'.format(h, v))
-      log.status.Print('== headers end ==')
-      log.status.Print('== body start ==')
-      if redact_req_body_reason is None:
-        log.status.Print(body)
-      else:
-        log.status.Print('Body redacted: {}'.format(redact_req_body_reason))
-      log.status.Print('== body end ==')
-      log.status.Print('==== request end ====')
-
-      return Modifiers.Result(data={
-          'start_time': time.time(),
-          'redact_resp_body_reason': redact_resp_body_reason,
-      })
-    return _LogRequest
-
-  @classmethod
-  def LogResponse(cls):
-    """Logs the contents of the http response.
-
-    Returns:
-      A function that can be used in a Handler.response.
-    """
-    def _LogResponse(response, data):
-      """Response handler."""
-      redact_resp_body_reason = data['redact_resp_body_reason']
-
-      time_taken = time.time() - data['start_time']
-      headers, content = response
-      log.status.Print('---- response start ----')
-      log.status.Print('-- headers start --')
-      for h, v in sorted(six.iteritems(headers)):
-        log.status.Print('{0}: {1}'.format(h, v))
-      log.status.Print('-- headers end --')
-      log.status.Print('-- body start --')
-      if redact_resp_body_reason is None:
-        log.status.Print(content)
-      else:
-        log.status.Print('Body redacted: {}'.format(redact_resp_body_reason))
-      log.status.Print('-- body end --')
-      log.status.Print('total round trip time (request+response): {0:.3f} secs'
-                       .format(time_taken))
-      log.status.Print('---- response end ----')
-      log.status.Print('----------------------')
-    return _LogResponse
-
-  @classmethod
-  def RecordStartTime(cls):
-    """Records the time at which the request was started.
-
-    Returns:
-      A function that can be used in a Handler.request.
-    """
-    def _RecordStartTime(unused_args, unused_kwargs):
-      """Replacement http.request() method."""
-      return Modifiers.Result(data=time.time())
-    return _RecordStartTime
-
-  @classmethod
-  def ReportDuration(cls):
-    """Reports the duration of response to the metrics module.
-
-    Returns:
-      A function that can be used in a Handler.response.
-    """
-    def _ReportDuration(unused_response, start_time):
-      """Response handler."""
-      duration = time.time() - start_time
-      metrics.RPCDuration(duration)
-
-    return _ReportDuration
-
-  @classmethod
-  def _GetRequest(cls, args, kwargs):
-    """Parse args and kwargs to get uri, method, body, headers."""
-    # http.request has the following signature:
-    # request(self, uri, method="GET", body=None, headers=None,
-    #         redirections=DEFAULT_MAX_REDIRECTS, connection_type=None)
-
-    uri = RequestParam.URI.Get(args, kwargs)
-    method = RequestParam.METHOD.Get(args, kwargs) or 'GET'
-    body = RequestParam.BODY.Get(args, kwargs) or ''
-    headers = RequestParam.HEADERS.Get(args, kwargs) or {}
-    return uri, method, body, headers
-
 
 class RequestParam(enum.Enum):
-  """Encapsulates the parameters to a request() call and how to extract them.
+  """Encapsulates parameters to a request() call and how to extract them.
+
+  http.request has the following signature:
+    request(self, uri, method="GET", body=None, headers=None, ...)
   """
   URI = ('uri', 0)
   METHOD = ('method', 1)

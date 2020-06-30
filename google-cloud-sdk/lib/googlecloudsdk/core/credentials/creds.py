@@ -38,7 +38,6 @@ from oauth2client import service_account
 from oauth2client.contrib import gce as oauth2client_gce
 import six
 import sqlite3
-from google.auth import _oauth2client as oauth2client_helper
 from google.auth import compute_engine as google_auth_compute_engine
 from google.auth import credentials as google_auth_creds
 
@@ -396,6 +395,46 @@ def MaybeAttachAccessTokenCacheStore(credentials,
   credentials.set_store(store)
   # Return from the store, which will reload credentials with access token info.
   return store.get()
+
+
+def MaybeAttachAccessTokenCacheStoreGoogleAuth(credentials,
+                                               access_token_file=None):
+  """Attaches access token cache to given credentials if no store set.
+
+  Note that credentials themselves will not be persisted only access token. Use
+  this whenever access token caching is desired, yet credentials themselves
+  should not be persisted.
+
+  Args:
+    credentials: google.auth.credentials.Credentials.
+    access_token_file: str, optional path to use for access token storage.
+
+  Returns:
+    google.auth.credentials.Credentials, reloaded credentials.
+  """
+  account_id = getattr(credentials, 'service_account_email', None)
+  if not account_id:
+    account_id = six.text_type(hash(credentials.refresh_token))
+
+  access_token_cache = AccessTokenCache(access_token_file or
+                                        config.Paths().access_token_db_path)
+  store = AccessTokenStoreGoogleAuth(access_token_cache, account_id,
+                                     credentials)
+  credentials = store.Get()
+
+  # google-auth credentials do not support auto caching access token on
+  # credentials refresh. This logic needs to be implemented in gcloud.
+  orig_refresh = credentials.refresh
+
+  def _WrappedRefresh(request):
+    orig_refresh(request)
+    credentials.id_tokenb64 = getattr(credentials, 'id_token', None)
+    # credentials are part of store. Calling Put() on store caches the
+    # short lived tokens of the credentials.
+    store.Put()
+
+  credentials.refresh = _WrappedRefresh
+  return credentials
 
 
 class CredentialStoreWithCache(CredentialStore):
@@ -934,59 +973,3 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
     }
   raise ADCError('Cannot convert credentials of type {} to application '
                  'default credentials.'.format(type(credentials)))
-
-
-# TODO(b/147098689): Deprecate this method once credentials store is ready
-# to produce credentials of google-auth directly.
-def MaybeConvertToGoogleAuthCredentials(credentials, use_google_auth):
-  """Converts credentials to type of google-auth under certain conditions.
-
-  The conversion will take place when the below conditions are all met,
-  1. use_google_auth is True;
-  2. credentials is of type oauth2client;
-  3. The input credentials are not built from P12 service account key. The
-     reason is that this legacy service account key is not supported by
-     google-auth. Additionally, gcloud plans to deprecate P12 service account
-     key support. The authentication logic of credentials of this type will be
-     left on oauth2client for now and will be removed in the deprecation.
-
-  Args:
-    credentials: oauth2client.client.Credentials or
-      google.auth.credentials.Credentials
-    use_google_auth: bool, True if the calling command indicates to use
-      google-auth library for authentication.
-
-  Returns:
-    google.auth.credentials.Credentials or oauth2client.client.Credentials
-  """
-  if not use_google_auth:
-    return credentials
-  if not IsOauth2ClientCredentials(credentials):
-    return credentials
-  if CredentialType.FromCredentials(
-      credentials) == CredentialType.P12_SERVICE_ACCOUNT:
-    return credentials
-
-  if isinstance(credentials, c_devshell.DevshellCredentials):
-    target_creds_type = c_devshell.DevShellCredentialsGoogleAuth
-    return target_creds_type.from_devshell_credentials(credentials)
-
-  target_creds = oauth2client_helper.convert(credentials)
-  # token expiry is lost in the conversion.
-  target_creds.expiry = getattr(credentials, 'token_expiry', None)
-  # Import only when necessary to decrease the startup time. Move it to
-  # global once google-auth is ready to replace oauth2client.
-  # pylint: disable=g-import-not-at-top
-  from google.oauth2 import service_account as google_auth_service_account
-  # pylint: enable=g-import-not-at-top
-  if (isinstance(target_creds, google_auth_service_account.Credentials) or
-      isinstance(target_creds, google_auth_compute_engine.Credentials)):
-    # Access token and scopes are lost in the conversions of service acccount
-    # and GCE credentials.
-    target_creds.token = getattr(credentials, 'access_token', None)
-    scopes = getattr(credentials, 'scopes', [])
-    scopes = scopes if scopes else config.CLOUDSDK_SCOPES
-    # client.OAuth2Credentials converts scopes into a set. google-auth requires
-    # scopes to be of a Sequence type.
-    target_creds._scopes = list(scopes)  # pylint: disable=protected-access
-  return target_creds

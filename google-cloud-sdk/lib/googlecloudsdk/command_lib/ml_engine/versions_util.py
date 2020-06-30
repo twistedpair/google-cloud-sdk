@@ -80,7 +80,9 @@ def Create(versions_client, operations_client, version_id,
            description=None, framework=None, python_version=None,
            prediction_class=None, package_uris=None, accelerator_config=None,
            service_account=None, explanation_method=None,
-           num_integral_steps=None, num_paths=None, containers_hidden=True):
+           num_integral_steps=None, num_paths=None, image=None, command=None,
+           container_args=None, env_vars=None, ports=None, predict_route=None,
+           health_route=None, containers_hidden=True):
   """Create a version, optionally waiting for creation to finish."""
   if origin:
     try:
@@ -113,11 +115,25 @@ def Create(versions_client, operations_client, version_id,
                                          explanation_method=explanation_method,
                                          num_integral_steps=num_integral_steps,
                                          num_paths=num_paths,
+                                         image=image,
+                                         command=command,
+                                         container_args=container_args,
+                                         env_vars=env_vars,
+                                         ports=ports,
+                                         predict_route=predict_route,
+                                         health_route=health_route,
                                          containers_hidden=containers_hidden)
-  if not version.deploymentUri and not version.container:
+  if not version.deploymentUri and containers_hidden:
     raise InvalidArgumentCombinationError(
         'Either `--origin` must be provided or `deploymentUri` must be '
         'provided in the file given by `--config`.')
+  has_image = (
+      hasattr(version, 'container') and hasattr(version.container, 'image') and
+      version.container.image)
+  if not version.deploymentUri and not has_image and not containers_hidden:
+    raise InvalidArgumentCombinationError(
+        'Either `--origin`, `--image`, or equivalent parameters in a config '
+        'file (from `--config`) must be specified.')
   op = versions_client.Create(model_ref, version)
   return WaitForOpMaybe(
       operations_client, op, asyncronous=asyncronous,

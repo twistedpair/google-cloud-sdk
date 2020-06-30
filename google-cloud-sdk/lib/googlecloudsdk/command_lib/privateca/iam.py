@@ -31,7 +31,7 @@ _CA_CREATE_PERMISSIONS_ON_KEY = [
 
 # Permissions needed on a project for creating a CA.
 _CA_CREATE_PERMISSIONS_ON_PROJECT = [
-    'privateca.certificateauthorities.create', 'storage.buckets.create'
+    'privateca.certificateAuthorities.create', 'storage.buckets.create'
 ]
 
 # Permissions needed on a CA for issuing certificates.

@@ -249,7 +249,7 @@ def GetSetPreferredAuthenticationFlag():
 
 
 def GetOutputDirFlag(positional=False, required=False,
-                     help_override=None, metavar='OUTPUT-DIR'):
+                     help_override=None, metavar='OUTPUT-DIR', default=None):
   """Anthos operation local output directory flag."""
   help_txt = help_override or ('The output directory of the cluster resources.'
                                ' If empty will export files to ./CLUSTER_NAME')
@@ -259,6 +259,7 @@ def GetOutputDirFlag(positional=False, required=False,
       required=required,
       type=ExpandLocalDirAndVersion,
       help=help_txt,
+      default=default,
       metavar=metavar)
 
 
@@ -269,3 +270,22 @@ def GetLocationFlag():
       required=False,
       help='Specifies the Google Cloud location to use. If not'
            'specified will use the current compute/zone property.')
+
+
+def GetMergeFromFlag():
+  """Anthos create-login-config Merge-From flag."""
+  return base.Argument(
+      '--merge-from',
+      required=False,
+      help='Specifies the file path of an existing login '
+           'configuration file to merge with.')
+
+
+def GetConfigOutputFileFlag():
+  """Anthos create-login-config output flag."""
+  return base.Argument(
+      '--output',
+      required=False,
+      type=ExpandLocalDirAndVersion,
+      help='Destination to write login configuration file. '
+           'Defaults to "kubectl-anthos-config.yaml".')

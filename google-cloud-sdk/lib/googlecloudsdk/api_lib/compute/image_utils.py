@@ -129,7 +129,8 @@ class ImageExpander(object):
                       image=None,
                       image_family=None,
                       image_project=None,
-                      return_image_resource=False):
+                      return_image_resource=False,
+                      confidential_vm=False):
     """Resolves the image or image-family value.
 
     If the value of image is one of the aliases defined in the
@@ -146,6 +147,7 @@ class ImageExpander(object):
       image_project: The project of the image.
       return_image_resource: If True, always makes an API call to also
         fetch the image resource.
+      confidential_vm: If True, default image is different for confidential VMs
 
     Returns:
       A tuple where the first element is the self link of the image. If
@@ -179,6 +181,11 @@ class ImageExpander(object):
                            or properties.VALUES.core.project.GetOrFail
             },
             collection='compute.images')
+      elif confidential_vm:
+        image_ref = self._resources.Parse(
+            constants.DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS,
+            collection='compute.images',
+            params={'project': 'ubuntu-os-cloud'})
       else:
         image_ref = self._resources.Parse(
             constants.DEFAULT_IMAGE_FAMILY,

@@ -32,10 +32,7 @@ import os
 import sys
 import traceback
 
-try:
-  import pytz
-except ImportError:
-  pytz = None
+pytz = None
 
 # pylint: disable=g-import-not-at-top
 from googlecloudsdk.third_party.appengine._internal import six_subset

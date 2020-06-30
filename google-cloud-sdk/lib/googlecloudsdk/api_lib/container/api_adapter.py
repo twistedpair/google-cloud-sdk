@@ -255,11 +255,15 @@ ENABLE_AUTO_REPAIR = 'autoRepair'
 SCOPES = 'scopes'
 AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
 DEFAULT_ADDONS = [INGRESS, HPA]
-ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, NETWORK_POLICY, CLOUDRUN]
+ADDONS_OPTIONS = DEFAULT_ADDONS + [
+    DASHBOARD,
+    NETWORK_POLICY,
+    CLOUDRUN,
+    NODELOCALDNS,
+]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
     APPLICATIONMANAGER,
-    NODELOCALDNS,
     GCEPDCSIDRIVER,
     CONFIGCONNECTOR,
 ]
@@ -511,6 +515,8 @@ class CreateClusterOptions(object):
       enable_gvnic=None,
       enable_master_metrics=None,
       master_logs=None,
+      release_channel=None,
+      notification_config=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -631,6 +637,8 @@ class CreateClusterOptions(object):
     self.enable_gvnic = enable_gvnic
     self.enable_master_metrics = enable_master_metrics
     self.master_logs = master_logs
+    self.release_channel = release_channel
+    self.notification_config = notification_config
 
 
 class UpdateClusterOptions(object):
@@ -650,6 +658,7 @@ class UpdateClusterOptions(object):
                enable_master_metrics=None,
                disable_addons=None,
                istio_config=None,
+               cloud_run_config=None,
                enable_autoscaling=None,
                min_nodes=None,
                max_nodes=None,
@@ -700,7 +709,8 @@ class UpdateClusterOptions(object):
                tpu_ipv4_cidr=None,
                enable_master_global_access=None,
                enable_tpu_service_networking=None,
-               enable_gvnic=None):
+               enable_gvnic=None,
+               notification_config=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -714,6 +724,7 @@ class UpdateClusterOptions(object):
     self.enable_master_metrics = enable_master_metrics
     self.disable_addons = disable_addons
     self.istio_config = istio_config
+    self.cloud_run_config = cloud_run_config
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
@@ -766,6 +777,7 @@ class UpdateClusterOptions(object):
     self.enable_tpu_service_networking = enable_tpu_service_networking
     self.enable_master_global_access = enable_master_global_access
     self.enable_gvnic = enable_gvnic
+    self.notification_config = notification_config
 
 
 class SetMasterAuthOptions(object):
@@ -1288,6 +1300,8 @@ class APIAdapter(object):
 
     if options.enable_gvnic:
       cluster.enableGvnic = options.enable_gvnic
+
+    _AddReleaseChannelToCluster(cluster, options, self.messages)
 
     return cluster
 
@@ -1923,6 +1937,11 @@ class APIAdapter(object):
     if options.enable_gvnic is not None:
       update = self.messages.ClusterUpdate(
           desiredEnableGvnic=options.enable_gvnic)
+
+    if options.release_channel is not None:
+      update = self.messages.ClusterUpdate(
+          desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
+              options, self.messages))
 
     return update
 
@@ -2912,7 +2931,7 @@ class V1Beta1Adapter(V1Adapter):
       cluster.privateClusterConfig.masterGlobalAccessConfig = \
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)
-    _AddReleaseChannelToCluster(cluster, options, self.messages)
+    _AddNotificationConfigToCluster(cluster, options, self.messages)
 
     cluster.loggingService = None
     cluster.monitoringService = None
@@ -2957,9 +2976,9 @@ class V1Beta1Adapter(V1Adapter):
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               workloadPool=''))
 
-    if options.release_channel is not None:
+    if options.notification_config is not None:
       update = self.messages.ClusterUpdate(
-          desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
+          desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
               options, self.messages))
 
     if options.enable_stackdriver_kubernetes:
@@ -3278,6 +3297,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)
     _AddReleaseChannelToCluster(cluster, options, self.messages)
+    _AddNotificationConfigToCluster(cluster, options, self.messages)
     if options.enable_cost_management:
       cluster.costManagementConfig = self.messages.CostManagementConfig(
           enabled=True)
@@ -3354,6 +3374,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
               options, self.messages))
 
+    if options.notification_config is not None:
+      update = self.messages.ClusterUpdate(
+          desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
+              options, self.messages))
+
     if options.enable_stackdriver_kubernetes:
       update = self.messages.ClusterUpdate(
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
@@ -3394,9 +3419,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
       if options.disable_addons.get(CLOUDRUN) is not None:
+        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN)))
+                disabled=options.disable_addons.get(CLOUDRUN), loadBalancerType=load_balancer_type))
       if options.disable_addons.get(APPLICATIONMANAGER) is not None:
         update.desiredAddonsConfig.kalmConfig = (
             self.messages.KalmConfig(
@@ -3602,7 +3628,9 @@ def _GetCloudRunLoadBalancerType(options, messages):
     if input_load_balancer_type is not None:
       if input_load_balancer_type == 'INTERNAL':
         return messages.CloudRunConfig.LoadBalancerTypeValueValuesEnum.LOAD_BALANCER_TYPE_INTERNAL
-  return messages.CloudRunConfig.LoadBalancerTypeValueValuesEnum.LOAD_BALANCER_TYPE_EXTERNAL
+      return messages.CloudRunConfig.LoadBalancerTypeValueValuesEnum.LOAD_BALANCER_TYPE_EXTERNAL
+  return messages.CloudRunConfig.LoadBalancerTypeValueValuesEnum.LOAD_BALANCER_TYPE_UNSPECIFIED
+
 
 def _AddMetadataToNodeConfig(node_config, options):
   if not options.metadata:
@@ -3722,6 +3750,18 @@ def _AddReleaseChannelToCluster(cluster, options, messages):
         channel=channels[options.release_channel])
 
 
+def _AddNotificationConfigToCluster(cluster, options, messages):
+  """Adds notification config to Cluster."""
+  nc = options.notification_config
+  if nc is not None:
+    pubsub = messages.PubSub()
+    if 'pubsub' in nc:
+      pubsub.enabled = nc['pubsub'] == 'ENABLED'
+    if 'pubsub-topic' in nc:
+      pubsub.topic = nc['pubsub-topic']
+    cluster.notificationConfig = messages.NotificationConfig(pubsub=pubsub)
+
+
 def _GetReleaseChannelForClusterUpdate(options, messages):
   """Gets the ReleaseChannel from update options."""
   if options.release_channel is not None:
@@ -3732,6 +3772,18 @@ def _GetReleaseChannelForClusterUpdate(options, messages):
         'None': messages.ReleaseChannel.ChannelValueValuesEnum.UNSPECIFIED,
     }
     return messages.ReleaseChannel(channel=channels[options.release_channel])
+
+
+def _GetNotificationConfigForClusterUpdate(options, messages):
+  """Gets the NotificationConfig from update options."""
+  nc = options.notification_config
+  if nc is not None:
+    pubsub = messages.PubSub()
+    if 'pubsub' in nc:
+      pubsub.enabled = nc['pubsub'] == 'ENABLED'
+    if 'pubsub-topic' in nc:
+      pubsub.topic = nc['pubsub-topic']
+    return messages.NotificationConfig(pubsub=pubsub)
 
 
 def _GetTpuConfigForClusterUpdate(options, messages):

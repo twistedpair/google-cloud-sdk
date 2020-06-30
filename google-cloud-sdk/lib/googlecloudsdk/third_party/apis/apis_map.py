@@ -124,6 +124,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'anthosevents': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.anthosevents.v1',
+                client_classpath='anthosevents_v1_client.AnthoseventsV1',
+                messages_modulepath='anthosevents_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'apigateway': {
         'v1alpha1':
             APIDef(
@@ -344,6 +354,14 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.cloudasset.v1p5alpha1',
                 client_classpath='cloudasset_v1p5alpha1_client.CloudassetV1p5alpha1',
                 messages_modulepath='cloudasset_v1p5alpha1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1p5beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudasset.v1p5beta1',
+                client_classpath='cloudasset_v1p5beta1_client.CloudassetV1p5beta1',
+                messages_modulepath='cloudasset_v1p5beta1_messages',
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -1249,6 +1267,16 @@ MAP = {
                 client_classpath='networkmanagement_v1beta1_client.NetworkmanagementV1beta1',
                 messages_modulepath='networkmanagement_v1beta1_messages',
                 default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'networksecurity': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.networksecurity.v1alpha1',
+                client_classpath='networksecurity_v1alpha1_client.NetworksecurityV1alpha1',
+                messages_modulepath='networksecurity_v1alpha1_messages',
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

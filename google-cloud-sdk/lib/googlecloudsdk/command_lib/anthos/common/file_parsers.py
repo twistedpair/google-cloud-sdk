@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import collections
 import copy
+import io
 
 
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -237,7 +238,7 @@ class YamlConfigFile(object):
     self._file_path = file_path
     self._item_type = item_type
     try:
-      items = yaml.load_all_path(file_path)
+      items = yaml.load_all_path(file_path, round_trip=True)
       self._data = [item_type(x) for x in items]
     except yaml.FileLoadError as fe:
       raise YamlConfigFileError('Error Loading Config File: [{}]'.format(fe))
@@ -299,5 +300,13 @@ class YamlConfigFile(object):
     return results
 
   def WriteToDisk(self):
-    with files.FileWriter(self.file_path) as f:
-      yaml.dump_all([x.content for x in self.data], f)
+    """Overwrite Original Yaml File."""
+    out_file_buf = io.BytesIO()
+    tmp_yaml_buf = io.TextIOWrapper(out_file_buf, newline='\n',
+                                    encoding='utf-8')
+    yaml.dump_all_round_trip([x.content for x in self.data],
+                             stream=tmp_yaml_buf)
+    with files.BinaryFileWriter(self.file_path) as f:
+      tmp_yaml_buf.seek(0)
+      f.write(out_file_buf.getvalue())
+

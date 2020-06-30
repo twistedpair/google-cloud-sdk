@@ -1398,11 +1398,20 @@ class _SectionAuth(_Section):
         'disable_load_google_auth',
         default=False,
         hidden=True,
-        help_text='True to have credentials store fall back to the old behavior '
-        'and load oauth2client credentials.')
+        help_text='Global switch to turn off loading credentials as '
+                  'google-auth. Users can use it to switch back to the old '
+                  'mode if google-auth breaks users.'
+    )
+    self.google_auth_allowed = self._AddBool(
+        'google_auth_allowed',
+        default=False,
+        hidden=True,
+        help_text='A switch to opt in a surface or a command group '
+                  'to google-auth.'
+    )
     self.disable_activate_service_account_google_auth = self._AddBool(
         'disable_activate_service_account_google_auth',
-        default=True,
+        default=False,
         hidden=True,
         help_text='True to have activate-service-account command fall back to '
         'execute against oauth2client library.')
