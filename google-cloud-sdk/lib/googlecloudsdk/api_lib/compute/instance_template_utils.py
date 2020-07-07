@@ -271,7 +271,9 @@ def CreatePersistentCreateDiskMessages(
     policies = disk.get('disk-resource-policy')
     if policies:
       init_params.resourcePolicies = policies
-
+    multi_writer = disk.get('multi-writer') == 'yes'
+    if multi_writer:
+      init_params.multiWriter = True
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=boot,

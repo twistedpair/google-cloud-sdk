@@ -32,9 +32,10 @@ class _PackageTemplates(
 
 
 class _AgentTemplates(
-    collections.namedtuple('_AgentTemplates',
-                           ('yum_package', 'apt_package', 'run_agent',
-                            'repo_id', 'display_name', 'recipe_name'))):
+    collections.namedtuple(
+        '_AgentTemplates',
+        ('yum_package', 'apt_package', 'run_agent', 'repo_id', 'display_name',
+         'recipe_name', 'current_major_version'))):
   pass
 
 
@@ -44,7 +45,7 @@ _AGENT_TEMPLATES = {
             yum_package=_PackageTemplates(
                 repo={
                     'all': 'google-cloud-logging-%s-x86_64-all',
-                    '1.x.x': 'google-cloud-logging-%s-x86_64'
+                    '1.x.x': 'google-cloud-logging-%s-x86_64-1'
                 },
                 install_with_version=textwrap.dedent("""\
                     sudo yum remove google-fluentd
@@ -53,7 +54,7 @@ _AGENT_TEMPLATES = {
             apt_package=_PackageTemplates(
                 repo={
                     'all': 'google-cloud-logging-%s-all',
-                    '1.x.x': 'google-cloud-logging-%s'
+                    '1.x.x': 'google-cloud-logging-%s-1'
                 },
                 install_with_version=textwrap.dedent("""\
                     sudo apt-get remove google-fluentd
@@ -66,13 +67,15 @@ _AGENT_TEMPLATES = {
                     sleep 5m
                     %(install)s"""),
             recipe_name='set-google-fluentd-version',
+            current_major_version='1.x.x',
         ),
     'metrics':
         _AgentTemplates(
             yum_package=_PackageTemplates(
                 repo={
                     'all': 'google-cloud-monitoring-%s-x86_64-all',
-                    '5.x.x': 'google-cloud-monitoring-%s-x86_64'
+                    '5.x.x': 'google-cloud-monitoring-%s-x86_64-5',
+                    '6.x.x': 'google-cloud-monitoring-%s-x86_64-6'
                 },
                 install_with_version=textwrap.dedent("""\
                     sudo yum remove stackdriver-agent
@@ -81,7 +84,8 @@ _AGENT_TEMPLATES = {
             apt_package=_PackageTemplates(
                 repo={
                     'all': 'google-cloud-monitoring-%s-all',
-                    '5.x.x': 'google-cloud-monitoring-%s'
+                    '5.x.x': 'google-cloud-monitoring-%s-5',
+                    '6.x.x': 'google-cloud-monitoring-%s-6'
                 },
                 install_with_version=textwrap.dedent("""\
                     sudo apt-get remove stackdriver-agent
@@ -94,6 +98,7 @@ _AGENT_TEMPLATES = {
                     sleep 5m
                     %(install)s"""),
             recipe_name='set-stackdriver-agent-version',
+            current_major_version='6.x.x',
         ),
 }
 
@@ -158,7 +163,7 @@ def _CreatePackageRepositories(messages, os_type, agents):
 
   Args:
     messages: os config guest policy api messages.
-    os_type: it contains os_version, os_shortname, os_architecture.
+    os_type: it contains os_version, os_shortname.
     agents: list of agents which contains version, package_state, type of
       {logging,metrics}.
 
@@ -180,6 +185,7 @@ def _CreatePackageRepositories(messages, os_type, agents):
     version = os_type.version.split('.')[0]
     package_repos = _CreateYumPkgRepos(messages, 'el%s' % version, agents)
   else:
+    # TODO(b/160098692): Implement support for SLES and UBUNTU.
     raise exceptions.BadArgumentException(
         'os_type.short_name',
         'OS: %s is not being supported.' % os_type.short_name)
@@ -190,7 +196,7 @@ def _CreateYumPkgRepos(messages, repo_distro, agents):
   yum_pkg_repos = []
   for agent in agents:
     template = _AGENT_TEMPLATES[agent.type]
-    repo_key = agent.version if agent.version in {'1.x.x', '5.x.x'} else 'all'
+    repo_key = agent.version if 'x.x' in agent.version else 'all'
     repo_name = template.yum_package.repo[repo_key] % repo_distro
     yum_pkg_repos.append(
         _CreateYumPkgRepo(messages, template.repo_id, template.display_name,
@@ -225,7 +231,7 @@ def _CreateYumPkgRepo(messages, repo_id, display_name, repo_name):
 def _CreateAptPkgRepos(messages, repo_distro, agents):
   apt_pkg_repos = []
   for agent in agents or []:
-    repo_key = agent.version if agent.version in {'1.x.x', '5.x.x'} else 'all'
+    repo_key = agent.version if 'x.x' in agent.version else 'all'
     repo_name = _AGENT_TEMPLATES[agent.type].apt_package.repo.get(
         repo_key) % repo_distro
     apt_pkg_repos.append(_CreateAptPkgRepo(messages, repo_name))
@@ -254,7 +260,6 @@ def _CreateOstypes(messages, assignment_os_types):
   os_types = []
   for assignment_os_type in assignment_os_types or []:
     os_type = messages.AssignmentOsType(
-        osArchitecture=assignment_os_type.architecture,
         osShortName=assignment_os_type.short_name,
         osVersion=assignment_os_type.version)
     os_types.append(os_type)
@@ -336,7 +341,7 @@ def _CreateStepInScript(messages, agent, os_type):
 
   if os_type.short_name in {'centos', 'rhel'}:
     os_version = os_type.version.split('.')[0]
-    if agent.version in {'latest', None, ''}:
+    if agent.version == 'latest':
       agent_version = ''
     elif 'x.x' in agent.version:
       agent_version = '-%s' % agent.version.replace('x.x', '*')
@@ -346,7 +351,7 @@ def _CreateStepInScript(messages, agent, os_type):
     run_script = _AGENT_TEMPLATES[
         agent.type].yum_package.install_with_version % agent_version
   if os_type.short_name == 'debian':
-    if agent.version in {'latest', None, ''}:
+    if agent.version == 'latest':
       agent_version = ''
     elif 'x.x' in agent.version:
       agent_version = '=%s' % agent.version.replace('x.x', '*')
@@ -378,9 +383,16 @@ def _CreateDescription(agents, description):
   return description_template % (description, ','.join(agent_contents))
 
 
+def _SetAgentVersion(agents):
+  for agent in agents or []:
+    if agent.version in {'current-major', None, ''}:
+      agent.version = _AGENT_TEMPLATES[agent.type].current_major_version
+
+
 def ConvertOpsAgentPolicyToGuestPolicy(messages, ops_agents_policy):
   """Converts Ops Agent policy to OS Config guest policy."""
   ops_agents_policy_assignment = ops_agents_policy.assignment
+  _SetAgentVersion(ops_agents_policy.agents)
   # TODO(b/159365920): once os config supports multi repos, remove indexing [0].
   guest_policy = messages.GuestPolicy(
       description=_CreateDescription(ops_agents_policy.agents,

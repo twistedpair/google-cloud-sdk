@@ -1553,6 +1553,7 @@ class AttachedDiskInitializeParams(_messages.Message):
       to more than one instance.
     onUpdateAction: Specifies which action to take on instance update with
       this disk. Default is to use the existing disk.
+    provisionedIops: Indicates how many IOPS must be provisioned for the disk.
     replicaZones: URLs of the zones where the disk should be replicated to.
       Only applicable for regional resources.
     resourcePolicies: Resource policies applied to this disk for automatic
@@ -1636,12 +1637,13 @@ class AttachedDiskInitializeParams(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   multiWriter = _messages.BooleanField(7)
   onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 8)
-  replicaZones = _messages.StringField(9, repeated=True)
-  resourcePolicies = _messages.StringField(10, repeated=True)
-  sourceImage = _messages.StringField(11)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 12)
-  sourceSnapshot = _messages.StringField(13)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
+  provisionedIops = _messages.IntegerField(9)
+  replicaZones = _messages.StringField(10, repeated=True)
+  resourcePolicies = _messages.StringField(11, repeated=True)
+  sourceImage = _messages.StringField(12)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 13)
+  sourceSnapshot = _messages.StringField(14)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
 
 
 class AuditConfig(_messages.Message):
@@ -2624,12 +2626,14 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
 
     Values:
       NONE: <no description>
+      OPTIMIZE_AVAILABILITY: <no description>
       PREDICTIVE_METHOD_UNSPECIFIED: <no description>
       STANDARD: <no description>
     """
     NONE = 0
-    PREDICTIVE_METHOD_UNSPECIFIED = 1
-    STANDARD = 2
+    OPTIMIZE_AVAILABILITY = 1
+    PREDICTIVE_METHOD_UNSPECIFIED = 2
+    STANDARD = 3
 
   predictiveMethod = _messages.EnumField('PredictiveMethodValueValuesEnum', 1)
   utilizationTarget = _messages.FloatField(2)
@@ -3046,6 +3050,8 @@ class BackendBucketCdnPolicy(_messages.Message):
   r"""Message containing Cloud CDN configuration for a backend bucket.
 
   Fields:
+    requestCoalescing: If true then Cloud CDN will combine multiple concurrent
+      cache fill requests into a small number of requests to the origin.
     signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
       signed URL request will be considered fresh. After this time period, the
       response will be revalidated before being served. Defaults to 1hr
@@ -3058,8 +3064,9 @@ class BackendBucketCdnPolicy(_messages.Message):
       URLs.
   """
 
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(1)
-  signedUrlKeyNames = _messages.StringField(2, repeated=True)
+  requestCoalescing = _messages.BooleanField(1)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(2)
+  signedUrlKeyNames = _messages.StringField(3, repeated=True)
 
 
 class BackendBucketList(_messages.Message):
@@ -3705,6 +3712,8 @@ class BackendServiceCdnPolicy(_messages.Message):
 
   Fields:
     cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
+    requestCoalescing: If true then Cloud CDN will combine multiple concurrent
+      cache fill requests into a small number of requests to the origin.
     signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
       signed URL request will be considered fresh. After this time period, the
       response will be revalidated before being served. Defaults to 1hr
@@ -3718,8 +3727,9 @@ class BackendServiceCdnPolicy(_messages.Message):
   """
 
   cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(2)
-  signedUrlKeyNames = _messages.StringField(3, repeated=True)
+  requestCoalescing = _messages.BooleanField(2)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(3)
+  signedUrlKeyNames = _messages.StringField(4, repeated=True)
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
@@ -4436,12 +4446,14 @@ class BulkInsertInstanceResource(_messages.Message):
     predefinedNames: List of predefined names. The number of names provided
       must be equal to count.
     sourceInstanceTemplate: Specifies the instance template from which to
-      create the instance. This field is optional. This field is optional. It
-      can be a full or partial URL. For example, the following are all valid
-      URLs to an instance template:   - https://www.googleapis.com/compute/v1/
-      projects/project/global/instanceTemplates/instanceTemplate  -
-      projects/project/global/instanceTemplates/instanceTemplate  -
-      global/instanceTemplates/instanceTemplate
+      create instances. You may combine sourceInstanceTemplate with
+      instanceProperties to override specific values from an existing instance
+      template. Bulk API follows the semantics of JSON Merge Patch described
+      by RFC 7396.  It can be a full or partial URL. For example, the
+      following are all valid URLs to an instance template:   - https://www.go
+      ogleapis.com/compute/v1/projects/project/global/instanceTemplates/instan
+      ceTemplate  - projects/project/global/instanceTemplates/instanceTemplate
+      - global/instanceTemplates/instanceTemplate    This field is optional.
   """
 
   count = _messages.IntegerField(1)
@@ -4676,7 +4688,9 @@ class Commitment(_messages.Message):
       the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
     TypeValueValuesEnum: The type of commitment, which affects the discount
       rate and the eligible resources. Type MEMORY_OPTIMIZED specifies a
-      commitment that will only apply to memory optimized machines.
+      commitment that will only apply to memory optimized machines. Type
+      ACCELERATOR_OPTIMIZED specifies a commitment that will only apply to
+      accelerator optimized machines.
 
   Fields:
     category: The category of the commitment. Category MACHINE specifies
@@ -4721,7 +4735,9 @@ class Commitment(_messages.Message):
       the status.
     type: The type of commitment, which affects the discount rate and the
       eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that
-      will only apply to memory optimized machines.
+      will only apply to memory optimized machines. Type ACCELERATOR_OPTIMIZED
+      specifies a commitment that will only apply to accelerator optimized
+      machines.
   """
 
   class CategoryValueValuesEnum(_messages.Enum):
@@ -4773,9 +4789,12 @@ class Commitment(_messages.Message):
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of commitment, which affects the discount rate and the
     eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that will
-    only apply to memory optimized machines.
+    only apply to memory optimized machines. Type ACCELERATOR_OPTIMIZED
+    specifies a commitment that will only apply to accelerator optimized
+    machines.
 
     Values:
+      ACCELERATOR_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
@@ -4784,13 +4803,14 @@ class Commitment(_messages.Message):
       MEMORY_OPTIMIZED: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
-    COMPUTE_OPTIMIZED = 0
-    GENERAL_PURPOSE = 1
-    GENERAL_PURPOSE_E2 = 2
-    GENERAL_PURPOSE_N2 = 3
-    GENERAL_PURPOSE_N2D = 4
-    MEMORY_OPTIMIZED = 5
-    TYPE_UNSPECIFIED = 6
+    ACCELERATOR_OPTIMIZED = 0
+    COMPUTE_OPTIMIZED = 1
+    GENERAL_PURPOSE = 2
+    GENERAL_PURPOSE_E2 = 3
+    GENERAL_PURPOSE_N2 = 4
+    GENERAL_PURPOSE_N2D = 5
+    MEMORY_OPTIMIZED = 6
+    TYPE_UNSPECIFIED = 7
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   creationTimestamp = _messages.StringField(2)
@@ -24941,6 +24961,7 @@ class Condition(_messages.Message):
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
       CREDENTIALS_TYPE: <no description>
+      CREDS_ASSERTION: <no description>
       JUSTIFICATION_TYPE: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
@@ -24949,9 +24970,10 @@ class Condition(_messages.Message):
     ATTRIBUTION = 1
     AUTHORITY = 2
     CREDENTIALS_TYPE = 3
-    JUSTIFICATION_TYPE = 4
-    NO_ATTR = 5
-    SECURITY_REALM = 6
+    CREDS_ASSERTION = 4
+    JUSTIFICATION_TYPE = 5
+    NO_ATTR = 6
+    SECURITY_REALM = 7
 
   class OpValueValuesEnum(_messages.Enum):
     r"""An operator to apply the subject with.
@@ -44541,6 +44563,7 @@ class Quota(_messages.Message):
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
+      EXTERNAL_NETWORK_LB_FORWARDING_RULES: <no description>
       EXTERNAL_VPN_GATEWAYS: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
@@ -44660,95 +44683,96 @@ class Quota(_messages.Message):
     CPUS = 23
     CPUS_ALL_REGIONS = 24
     DISKS_TOTAL_GB = 25
-    EXTERNAL_VPN_GATEWAYS = 26
-    FIREWALLS = 27
-    FORWARDING_RULES = 28
-    GLOBAL_INTERNAL_ADDRESSES = 29
-    GPUS_ALL_REGIONS = 30
-    HEALTH_CHECKS = 31
-    IMAGES = 32
-    INSTANCES = 33
-    INSTANCES_PER_NETWORK_GLOBAL = 34
-    INSTANCE_GROUPS = 35
-    INSTANCE_GROUP_MANAGERS = 36
-    INSTANCE_TEMPLATES = 37
-    INTERCONNECTS = 38
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 39
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 40
-    INTERCONNECT_TOTAL_GBPS = 41
-    INTERNAL_ADDRESSES = 42
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 43
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 44
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 45
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 46
-    IN_PLACE_SNAPSHOTS = 47
-    IN_USE_ADDRESSES = 48
-    IN_USE_BACKUP_SCHEDULES = 49
-    IN_USE_MAINTENANCE_WINDOWS = 50
-    IN_USE_SNAPSHOT_SCHEDULES = 51
-    LOCAL_SSD_TOTAL_GB = 52
-    M1_CPUS = 53
-    M2_CPUS = 54
-    MACHINE_IMAGES = 55
-    N2D_CPUS = 56
-    N2_CPUS = 57
-    NETWORKS = 58
-    NETWORK_ENDPOINT_GROUPS = 59
-    NETWORK_FIREWALL_POLICIES = 60
-    NODE_GROUPS = 61
-    NODE_TEMPLATES = 62
-    NVIDIA_A100_GPUS = 63
-    NVIDIA_K80_GPUS = 64
-    NVIDIA_P100_GPUS = 65
-    NVIDIA_P100_VWS_GPUS = 66
-    NVIDIA_P4_GPUS = 67
-    NVIDIA_P4_VWS_GPUS = 68
-    NVIDIA_T4_GPUS = 69
-    NVIDIA_T4_VWS_GPUS = 70
-    NVIDIA_V100_GPUS = 71
-    PACKET_MIRRORINGS = 72
-    PREEMPTIBLE_CPUS = 73
-    PREEMPTIBLE_LOCAL_SSD_GB = 74
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 75
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 76
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 77
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 78
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 79
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 80
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 81
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 82
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 83
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 84
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 85
-    PUBLIC_ADVERTISED_PREFIXES = 86
-    PUBLIC_DELEGATED_PREFIXES = 87
-    REGIONAL_AUTOSCALERS = 88
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 89
-    RESERVATIONS = 90
-    RESOURCE_POLICIES = 91
-    ROUTERS = 92
-    ROUTES = 93
-    SECURITY_POLICIES = 94
-    SECURITY_POLICY_CEVAL_RULES = 95
-    SECURITY_POLICY_RULES = 96
-    SNAPSHOTS = 97
-    SSD_TOTAL_GB = 98
-    SSL_CERTIFICATES = 99
-    STATIC_ADDRESSES = 100
-    STATIC_BYOIP_ADDRESSES = 101
-    SUBNETWORKS = 102
-    SUBNET_RANGES_PER_NETWORK = 103
-    TARGET_HTTPS_PROXIES = 104
-    TARGET_HTTP_PROXIES = 105
-    TARGET_INSTANCES = 106
-    TARGET_POOLS = 107
-    TARGET_SSL_PROXIES = 108
-    TARGET_TCP_PROXIES = 109
-    TARGET_VPN_GATEWAYS = 110
-    URL_MAPS = 111
-    VPN_GATEWAYS = 112
-    VPN_TUNNELS = 113
-    XPN_SERVICE_PROJECTS = 114
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 26
+    EXTERNAL_VPN_GATEWAYS = 27
+    FIREWALLS = 28
+    FORWARDING_RULES = 29
+    GLOBAL_INTERNAL_ADDRESSES = 30
+    GPUS_ALL_REGIONS = 31
+    HEALTH_CHECKS = 32
+    IMAGES = 33
+    INSTANCES = 34
+    INSTANCES_PER_NETWORK_GLOBAL = 35
+    INSTANCE_GROUPS = 36
+    INSTANCE_GROUP_MANAGERS = 37
+    INSTANCE_TEMPLATES = 38
+    INTERCONNECTS = 39
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 40
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 41
+    INTERCONNECT_TOTAL_GBPS = 42
+    INTERNAL_ADDRESSES = 43
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 44
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 45
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 46
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 47
+    IN_PLACE_SNAPSHOTS = 48
+    IN_USE_ADDRESSES = 49
+    IN_USE_BACKUP_SCHEDULES = 50
+    IN_USE_MAINTENANCE_WINDOWS = 51
+    IN_USE_SNAPSHOT_SCHEDULES = 52
+    LOCAL_SSD_TOTAL_GB = 53
+    M1_CPUS = 54
+    M2_CPUS = 55
+    MACHINE_IMAGES = 56
+    N2D_CPUS = 57
+    N2_CPUS = 58
+    NETWORKS = 59
+    NETWORK_ENDPOINT_GROUPS = 60
+    NETWORK_FIREWALL_POLICIES = 61
+    NODE_GROUPS = 62
+    NODE_TEMPLATES = 63
+    NVIDIA_A100_GPUS = 64
+    NVIDIA_K80_GPUS = 65
+    NVIDIA_P100_GPUS = 66
+    NVIDIA_P100_VWS_GPUS = 67
+    NVIDIA_P4_GPUS = 68
+    NVIDIA_P4_VWS_GPUS = 69
+    NVIDIA_T4_GPUS = 70
+    NVIDIA_T4_VWS_GPUS = 71
+    NVIDIA_V100_GPUS = 72
+    PACKET_MIRRORINGS = 73
+    PREEMPTIBLE_CPUS = 74
+    PREEMPTIBLE_LOCAL_SSD_GB = 75
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 76
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 77
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 78
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 79
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 80
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 81
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 82
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 83
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 84
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 85
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 86
+    PUBLIC_ADVERTISED_PREFIXES = 87
+    PUBLIC_DELEGATED_PREFIXES = 88
+    REGIONAL_AUTOSCALERS = 89
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 90
+    RESERVATIONS = 91
+    RESOURCE_POLICIES = 92
+    ROUTERS = 93
+    ROUTES = 94
+    SECURITY_POLICIES = 95
+    SECURITY_POLICY_CEVAL_RULES = 96
+    SECURITY_POLICY_RULES = 97
+    SNAPSHOTS = 98
+    SSD_TOTAL_GB = 99
+    SSL_CERTIFICATES = 100
+    STATIC_ADDRESSES = 101
+    STATIC_BYOIP_ADDRESSES = 102
+    SUBNETWORKS = 103
+    SUBNET_RANGES_PER_NETWORK = 104
+    TARGET_HTTPS_PROXIES = 105
+    TARGET_HTTP_PROXIES = 106
+    TARGET_INSTANCES = 107
+    TARGET_POOLS = 108
+    TARGET_SSL_PROXIES = 109
+    TARGET_TCP_PROXIES = 110
+    TARGET_VPN_GATEWAYS = 111
+    URL_MAPS = 112
+    VPN_GATEWAYS = 113
+    VPN_TUNNELS = 114
+    XPN_SERVICE_PROJECTS = 115
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -52107,10 +52131,11 @@ class Subnetwork(_messages.Message):
       is defined by the server.
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
-      example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
+      example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-
       overlapping within a network. Only IPv4 is supported. This field is set
-      at resource creation time. The range can be expanded after creation
-      using expandIpCidrRange.
+      at resource creation time. This may be a RFC 1918 IP range, or a
+      privately routed, non-RFC 1918 IP range, not belonging to Google. The
+      range can be expanded after creation using expandIpCidrRange.
     ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
       owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
@@ -52683,7 +52708,9 @@ class SubnetworkSecondaryRange(_messages.Message):
     ipCidrRange: The range of IP addresses belonging to this subnetwork
       secondary range. Provide this property when you create the subnetwork.
       Ranges must be unique and non-overlapping with all primary and secondary
-      IP ranges within a network. Only IPv4 is supported.
+      IP ranges within a network. Only IPv4 is supported. This may be a RFC
+      1918 IP range, or a privately, non-RFC 1918 IP range, not belonging to
+      Google.
     rangeName: The name associated with this subnetwork secondary range, used
       when adding an alias IP range to a VM instance. The name must be 1-63
       characters long, and comply with RFC1035. The name must be unique within

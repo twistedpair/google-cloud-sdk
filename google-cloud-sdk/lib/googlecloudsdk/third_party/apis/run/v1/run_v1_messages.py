@@ -1530,7 +1530,11 @@ class RevisionSpec(_messages.Message):
       identity of the running revision, and determines what permissions the
       revision has. If not provided, the revision will use the project's
       default service account.
-    timeoutSeconds: A integer attribute.
+    timeoutSeconds: TimeoutSeconds holds the max duration the instance is
+      allowed for responding to a request.  Cloud Run fully managed: defaults
+      to 300 seconds (5 minutes). Maximum allowed value is 900 seconds (15
+      minutes).  Cloud Run for Anthos: defaults to 300 seconds (5 minutes).
+      Maximum allowed value is configurable by the cluster operator.
     volumes: A Volume attribute.
   """
 

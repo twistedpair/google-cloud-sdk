@@ -27,20 +27,11 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
+import ruamel.yaml as ryaml
 import six
 
 GAME_SERVICES_API = 'gameservices'
 OPERATIONS_COLLECTION = 'gameservices.projects.locations.operations'
-
-
-def AddFieldToUpdateMask(field, patch_request):
-  update_mask = patch_request.updateMask
-  if update_mask:
-    if update_mask.count(field) == 0:
-      patch_request.updateMask = update_mask + ',' + field
-  else:
-    patch_request.updateMask = field
-  return patch_request
 
 
 def GetApiMessage(api_version):
@@ -133,7 +124,7 @@ def ProcessConfigOverrideFile(config_override_file, api_version):
   messages = GetMessages(api_version)
   message_class = messages.GameServerConfigOverride
   try:
-    overrides_message = [
+    overrides_messages = [
         encoding.DictToMessage(o, message_class) for o in overrides
     ]
   except AttributeError:
@@ -143,13 +134,9 @@ def ProcessConfigOverrideFile(config_override_file, api_version):
     # Unfortunately apitools doesn't provide a way to get the path to the
     # invalid field here.
     raise InvalidSchemaError('Invalid schema: [{}]'.format(e))
-  unrecognized_field_paths = _GetUnrecognizedFieldPaths(overrides_message)
-  if unrecognized_field_paths:
-    error_msg_lines = ['Invalid schema, the following fields are unrecognized:']
-    error_msg_lines += unrecognized_field_paths
-    raise InvalidSchemaError('\n'.join(error_msg_lines))
-
-  return overrides_message
+  for msg in overrides_messages:
+    _CheckUnrecognizedFieldPaths(msg)
+  return overrides_messages
 
 
 def ProcessFleetConfigsFile(fleet_configs_file, api_version):
@@ -165,37 +152,33 @@ def ProcessFleetConfigsFile(fleet_configs_file, api_version):
 
   messages = GetMessages(api_version)
   message_class = messages.FleetConfig
-  fleet_configs_message = []
+  fleet_configs_messages = []
   try:
     for fc in fleet_configs:
       f = encoding.DictToMessage(fc, message_class)
       spec = yaml.load(f.fleetSpec)
       spec_as_json_str = json.dumps(spec)
       f.fleetSpec = spec_as_json_str
-      fleet_configs_message.append(f)
+      fleet_configs_messages.append(f)
   except AttributeError:
     raise InvalidSchemaError('Invalid schema: expected proper fleet configs')
+  except ryaml.error.YAMLStreamError:
+    raise InvalidSchemaError(
+        'Invalid schema: expect `fleetSpec:` in fleet configs.')
   except _messages.ValidationError as e:
-    # The most likely reason this is reaised is the file that is submitted is
+    # The most likely reason this is raised is the file that is submitted is
     # following new format (json/yaml without string blob) and we will parse
     # with the new format
     for fc in fleet_configs:
       f = messages.FleetConfig()
       if 'name' in fc:
         f.name = fc['name']
-      if 'fleetSpec' not in fc:
-        raise InvalidSchemaError(
-            'Invalid schema: expected proper fleet configs')
       spec_as_json_str = json.dumps(fc['fleetSpec'])
       f.fleetSpec = spec_as_json_str
-      fleet_configs_message.append(f)
-  unrecognized_field_paths = _GetUnrecognizedFieldPaths(fleet_configs_message)
-  if unrecognized_field_paths:
-    error_msg_lines = ['Invalid schema, the following fields are unrecognized:']
-    error_msg_lines += unrecognized_field_paths
-    raise InvalidSchemaError('\n'.join(error_msg_lines))
-
-  return fleet_configs_message
+      fleet_configs_messages.append(f)
+  for msg in fleet_configs_messages:
+    _CheckUnrecognizedFieldPaths(msg)
+  return fleet_configs_messages
 
 
 def ProcessScalingConfigsFile(scaling_configs_file, api_version):
@@ -213,7 +196,7 @@ def ProcessScalingConfigsFile(scaling_configs_file, api_version):
   messages = GetMessages(api_version)
   message_class = messages.ScalingConfig
   selector = messages.LabelSelector()
-  scaling_configs_message = []
+  scaling_configs_messages = []
   try:
     for sc in scaling_configs:
       esc = encoding.DictToMessage(sc, message_class)
@@ -224,9 +207,12 @@ def ProcessScalingConfigsFile(scaling_configs_file, api_version):
       spec = yaml.load(esc.fleetAutoscalerSpec)
       spec_as_json_str = json.dumps(spec)
       esc.fleetAutoscalerSpec = spec_as_json_str
-      scaling_configs_message.append(esc)
+      scaling_configs_messages.append(esc)
   except AttributeError:
     raise InvalidSchemaError('Invalid schema: expected proper scaling configs')
+  except ryaml.error.YAMLStreamError:
+    raise InvalidSchemaError(
+        'Invalid schema: expect `fleetAutoscalerSpec:` in scaling configs.')
   except _messages.ValidationError as e:
     # The most likely reason this is reaised is the file that is submitted is
     # following new format (json/yaml without string blob) and we will parse
@@ -262,17 +248,16 @@ def ProcessScalingConfigsFile(scaling_configs_file, api_version):
           if 'endTime' in sh:
             schedule.endTime = sh['endTime']
           s.schedules.append(schedule)
-      if 'fleetAutoscalerSpec' not in sc:
-        raise InvalidSchemaError(
-            'Invalid schema: expected proper scaling configs')
       spec_as_json_str = json.dumps(sc['fleetAutoscalerSpec'])
       s.fleetAutoscalerSpec = spec_as_json_str
-      scaling_configs_message.append(s)
-  return scaling_configs_message
+      scaling_configs_messages.append(s)
+  for msg in scaling_configs_messages:
+    _CheckUnrecognizedFieldPaths(msg)
+  return scaling_configs_messages
 
 
-def _GetUnrecognizedFieldPaths(message):
-  """Returns the field paths for unrecognized fields in the message."""
+def _CheckUnrecognizedFieldPaths(message):
+  """Raise error if unrecognized fields found in the message."""
   errors = encoding.UnrecognizedFieldIter(message)
   unrecognized_field_paths = []
   for edges_to_message, field_names in errors:
@@ -282,4 +267,9 @@ def _GetUnrecognizedFieldPaths(message):
     for field_name in field_names:
       unrecognized_field_paths.append('{}.{}'.format(message_field_path,
                                                      field_name))
-  return sorted(unrecognized_field_paths)
+  unrecognized_field_paths = sorted(unrecognized_field_paths)
+  if unrecognized_field_paths:
+    error_msg_lines = [
+        'Invalid schema, the following fields are unrecognized:'] + \
+        unrecognized_field_paths
+    raise InvalidSchemaError('\n'.join(error_msg_lines))

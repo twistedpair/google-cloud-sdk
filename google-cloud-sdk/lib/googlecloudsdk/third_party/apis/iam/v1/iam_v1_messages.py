@@ -1197,9 +1197,11 @@ class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsSignBlobRequest object.
 
   Fields:
-    name: Required. The resource name of the service account in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
-      a wildcard for the `PROJECT_ID` will infer the project from the account.
+    name: Required. Deprecated. [Migrate to Service Account Credentials
+      API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+      resource name of the service account in the following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
       The `ACCOUNT` value can be the `email` address or the `unique_id` of the
       service account.
     signBlobRequest: A SignBlobRequest resource to be passed as the request
@@ -1214,9 +1216,11 @@ class IamProjectsServiceAccountsSignJwtRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsSignJwtRequest object.
 
   Fields:
-    name: Required. The resource name of the service account in the following
-      format: `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as
-      a wildcard for the `PROJECT_ID` will infer the project from the account.
+    name: Required. Deprecated. [Migrate to Service Account Credentials
+      API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+      resource name of the service account in the following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
       The `ACCOUNT` value can be the `email` address or the `unique_id` of the
       service account.
     signJwtRequest: A SignJwtRequest resource to be passed as the request
@@ -2055,21 +2059,31 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class SignBlobRequest(_messages.Message):
-  r"""The service account sign blob request.
+  r"""Deprecated. [Migrate to Service Account Credentials
+  API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+  service account sign blob request.
 
   Fields:
-    bytesToSign: Required. The bytes to sign.
+    bytesToSign: Required. Deprecated. [Migrate to Service Account Credentials
+      API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+      bytes to sign.
   """
 
   bytesToSign = _messages.BytesField(1)
 
 
 class SignBlobResponse(_messages.Message):
-  r"""The service account sign blob response.
+  r"""Deprecated. [Migrate to Service Account Credentials
+  API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+  service account sign blob response.
 
   Fields:
-    keyId: The id of the key used to sign the blob.
-    signature: The signed blob.
+    keyId: Deprecated. [Migrate to Service Account Credentials
+      API](https://cloud.google.com/iam/help/credentials/migrate-api).  The id
+      of the key used to sign the blob.
+    signature: Deprecated. [Migrate to Service Account Credentials
+      API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+      signed blob.
   """
 
   keyId = _messages.StringField(1)
@@ -2077,27 +2091,37 @@ class SignBlobResponse(_messages.Message):
 
 
 class SignJwtRequest(_messages.Message):
-  r"""The service account sign JWT request.
+  r"""Deprecated. [Migrate to Service Account Credentials
+  API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+  service account sign JWT request.
 
   Fields:
-    payload: Required. The JWT payload to sign. Must be a serialized JSON
-      object that contains a JWT Claims Set. For example: `{"sub":
-      "user@example.com", "iat": 313435}`  If the JWT Claims Set contains an
-      expiration time (`exp`) claim, it must be an integer timestamp that is
-      not in the past and no more than 1 hour in the future.  If the JWT
-      Claims Set does not contain an expiration time (`exp`) claim, this claim
-      is added automatically, with a timestamp that is 1 hour in the future.
+    payload: Required. Deprecated. [Migrate to Service Account Credentials
+      API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+      JWT payload to sign. Must be a serialized JSON object that contains a
+      JWT Claims Set. For example: `{"sub": "user@example.com", "iat":
+      313435}`  If the JWT Claims Set contains an expiration time (`exp`)
+      claim, it must be an integer timestamp that is not in the past and no
+      more than 1 hour in the future.  If the JWT Claims Set does not contain
+      an expiration time (`exp`) claim, this claim is added automatically,
+      with a timestamp that is 1 hour in the future.
   """
 
   payload = _messages.StringField(1)
 
 
 class SignJwtResponse(_messages.Message):
-  r"""The service account sign JWT response.
+  r"""Deprecated. [Migrate to Service Account Credentials
+  API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+  service account sign JWT response.
 
   Fields:
-    keyId: The id of the key used to sign the JWT.
-    signedJwt: The signed JWT.
+    keyId: Deprecated. [Migrate to Service Account Credentials
+      API](https://cloud.google.com/iam/help/credentials/migrate-api).  The id
+      of the key used to sign the JWT.
+    signedJwt: Deprecated. [Migrate to Service Account Credentials
+      API](https://cloud.google.com/iam/help/credentials/migrate-api).  The
+      signed JWT.
   """
 
   keyId = _messages.StringField(1)

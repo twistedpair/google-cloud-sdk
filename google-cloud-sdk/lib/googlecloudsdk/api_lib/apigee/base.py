@@ -88,6 +88,9 @@ class PagedListClient(BaseClient):
       params.update(extra_params)
     while True:
       result_chunk = super(PagedListClient, cls).List(identifiers, params)
+      if not result_chunk and start_at_param not in params:
+        # First request returned no rows; entire dataset is empty.
+        return
 
       if cls._list_container is not None:
         # This API is expected to return a dictionary with a list inside it.

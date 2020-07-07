@@ -187,6 +187,9 @@ apis:
       resources:
         projects:
           path: projects/{projectId}
+  cloudcommerceconsumerprocurement:
+    v1alpha1:
+      discovery_doc: cloudcommerceconsumerprocurement_v1alpha1.json
   clouddebugger:
     v2:
       discovery_doc: clouddebugger_v2.json
@@ -724,13 +727,6 @@ apis:
       discovery_doc: secretmanager_v1.json
       default: true
   securitycenter:
-    v1beta1:
-      discovery_doc: securitycenter_v1beta1.json
-      resources:
-        organizations.sources.findings:
-          path: organizations/{organizationsId}/sources/{sourcesId}/findings/{findingId}
-        organizations.assets:
-          path: organizations/{organizationsId}/assets/{assetsId}
     v1:
       discovery_doc: securitycenter_v1.json
       resources:
@@ -741,15 +737,6 @@ apis:
         organizations.notificationConfigs:
           path: organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}
       default: true
-    v1p1beta1:
-      discovery_doc: securitycenter_v1p1beta1.json
-      resources:
-        organizations.sources.findings:
-          path: organizations/{organizationsId}/sources/{sourcesId}/findings/{findingId}
-        organizations.assets:
-          path: organizations/{organizationsId}/assets/{assetsId}
-        organizations.notificationConfigs:
-          path: organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}
   serviceconsumermanagement:
     v1beta1:
       discovery_doc: serviceconsumermanagement_v1beta1.json

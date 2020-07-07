@@ -30,8 +30,7 @@ from googlecloudsdk.core.util import files
 
 def BackupConfiguration(sql_messages,
                         instance=None,
-                        backup=None,
-                        no_backup=None,
+                        backup_enabled=None,
                         backup_location=None,
                         backup_start_time=None,
                         enable_bin_log=None,
@@ -42,8 +41,7 @@ def BackupConfiguration(sql_messages,
     sql_messages: module, The messages module that should be used.
     instance: sql_messages.DatabaseInstance, the original instance, if the
       previous state is needed.
-    backup: boolean, True if backup should be enabled.
-    no_backup: boolean, True if backup should be disabled.
+    backup_enabled: boolean, True if backup should be enabled.
     backup_location: string, location where to store backups by default.
     backup_start_time: string, start time of backup specified in 24-hour format.
     enable_bin_log: boolean, True if binary logging should be enabled.
@@ -56,7 +54,6 @@ def BackupConfiguration(sql_messages,
   Raises:
     ToolException: Bad combination of arguments.
   """
-  backup_enabled = no_backup is False or backup
   should_generate_config = any([
       backup_location is not None,
       backup_start_time,
@@ -67,7 +64,8 @@ def BackupConfiguration(sql_messages,
 
   if not should_generate_config:
     return None
-  elif not instance or not instance.settings.backupConfiguration:
+
+  if not instance or not instance.settings.backupConfiguration:
     backup_config = sql_messages.BackupConfiguration(
         kind='sql#backupConfiguration',
         startTime='00:00',
@@ -81,11 +79,11 @@ def BackupConfiguration(sql_messages,
   if backup_start_time:
     backup_config.startTime = backup_start_time
     backup_config.enabled = True
-  if no_backup:
-    if backup_location is not None or backup_start_time or enable_bin_log is not None:
+  if not backup_enabled:
+    if backup_location is not None or backup_start_time:
       raise exceptions.ToolException(
-          ('Argument --no-backup not allowed with'
-           ' --backup_location, --backup-start-time, or --enable-bin-log'))
+          'Argument --no-backup not allowed with --backup_location or '
+          '--backup-start-time')
     backup_config.enabled = False
 
   if enable_bin_log is not None:

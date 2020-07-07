@@ -2621,6 +2621,12 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
       returned in the response bundle's links field, where `link.relation` is
       "previous" or "next".  Omit `page_token` if no previous request has been
       made.
+    _since: If provided, only resources updated after this time are exported.
+      The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For example,
+      `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The time must
+      be specified to the second and include a time zone.
+    _type: String of comma-delimited FHIR resource types. If provided, only
+      resources of the specified resource type(s) are returned.
     end: The response includes records prior to the end date. If no end date
       is provided, all records subsequent to the start date are in scope.
     name: Name of the `Patient` resource for which the information is
@@ -2631,9 +2637,11 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest(
 
   _count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   _page_token = _messages.StringField(2)
-  end = _messages.StringField(3)
-  name = _messages.StringField(4, required=True)
-  start = _messages.StringField(5)
+  _since = _messages.StringField(3)
+  _type = _messages.StringField(4)
+  end = _messages.StringField(5)
+  name = _messages.StringField(6, required=True)
+  start = _messages.StringField(7)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresFhirReadRequest(_messages.Message):

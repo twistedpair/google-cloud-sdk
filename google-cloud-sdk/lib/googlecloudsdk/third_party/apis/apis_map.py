@@ -402,6 +402,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'cloudcommerceconsumerprocurement': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudcommerceconsumerprocurement.v1alpha1',
+                client_classpath='cloudcommerceconsumerprocurement_v1alpha1_client.CloudcommerceconsumerprocurementV1alpha1',
+                messages_modulepath='cloudcommerceconsumerprocurement_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'clouddebugger': {
         'v2':
             APIDef(
@@ -1579,22 +1589,6 @@ MAP = {
                 client_classpath='securitycenter_v1_client.SecuritycenterV1',
                 messages_modulepath='securitycenter_v1_messages',
                 default_version=True,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
-        'v1beta1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.securitycenter.v1beta1',
-                client_classpath='securitycenter_v1beta1_client.SecuritycenterV1beta1',
-                messages_modulepath='securitycenter_v1beta1_messages',
-                default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
-        'v1p1beta1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.securitycenter.v1p1beta1',
-                client_classpath='securitycenter_v1p1beta1_client.SecuritycenterV1p1beta1',
-                messages_modulepath='securitycenter_v1p1beta1_messages',
-                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

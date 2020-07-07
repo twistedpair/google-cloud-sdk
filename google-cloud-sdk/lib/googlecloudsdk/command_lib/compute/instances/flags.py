@@ -548,7 +548,8 @@ def AddCreateDiskArgs(parser,
                       source_snapshot_csek=False,
                       image_csek=False,
                       include_name=True,
-                      support_boot=False):
+                      support_boot=False,
+                      support_multi_writer=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -733,6 +734,15 @@ def AddCreateDiskArgs(parser,
       key file for the image. Must be specified with `image-csek-required`.
     """
     spec['image-csek-key-file'] = str
+
+  if support_multi_writer:
+    spec['multi-writer'] = str
+    disk_help += """
+      *multi-writer*::: If ``yes'', create the disk in multi-writer mode so that
+      it can be attached with read-write access to multiple VMs. Cannot be used
+      with regional disks. Disks in multi-writer mode do not yet support resize
+      and snapshot operations. The default value is ``no''.
+    """
 
   parser.add_argument(
       '--create-disk',

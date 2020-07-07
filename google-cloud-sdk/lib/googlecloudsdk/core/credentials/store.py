@@ -1178,27 +1178,49 @@ def RunWebFlow(webflow, launch_browser=True):
 
 def AcquireFromToken(refresh_token,
                      token_uri=GOOGLE_OAUTH2_PROVIDER_TOKEN_URI,
-                     revoke_uri=GOOGLE_OAUTH2_PROVIDER_REVOKE_URI):
+                     revoke_uri=GOOGLE_OAUTH2_PROVIDER_REVOKE_URI,
+                     use_google_auth=False):
   """Get credentials from an already-valid refresh token.
 
   Args:
     refresh_token: An oauth2 refresh token.
     token_uri: str, URI to use for refreshing.
     revoke_uri: str, URI to use for revoking.
+    use_google_auth: bool, True to return google-auth credentials, False to
+      return oauth2client credentials.
 
   Returns:
-    client.Credentials, Credentials made from the refresh token.
+    client.Credentials or google.auth.credentials.Credentials, Credentials made
+      from the refresh token. The returned credentials type is based on the
+      value of use_google_auth.
   """
-  cred = client.OAuth2Credentials(
-      access_token=None,
-      client_id=properties.VALUES.auth.client_id.Get(required=True),
-      client_secret=properties.VALUES.auth.client_secret.Get(required=True),
-      refresh_token=refresh_token,
-      # always start expired
-      token_expiry=datetime.datetime.utcnow(),
-      token_uri=token_uri,
-      user_agent=config.CLOUDSDK_USER_AGENT,
-      revoke_uri=revoke_uri)
+  if use_google_auth:
+    # Import only when necessary to decrease the startup time. Move it to
+    # global once google-auth is ready to replace oauth2client.
+    # pylint: disable=g-import-not-at-top
+    from google.oauth2 import credentials as google_auth_creds
+    # pylint: enable=g-import-not-at-top
+    cred = google_auth_creds.Credentials(
+        token=None,
+        refresh_token=refresh_token,
+        id_token=None,
+        token_uri=token_uri,
+        client_id=properties.VALUES.auth.client_id.Get(required=True),
+        client_secret=properties.VALUES.auth.client_secret.Get(required=True))
+
+    # always start expired
+    cred.expiry = datetime.datetime.utcnow()
+  else:
+    cred = client.OAuth2Credentials(
+        access_token=None,
+        client_id=properties.VALUES.auth.client_id.Get(required=True),
+        client_secret=properties.VALUES.auth.client_secret.Get(required=True),
+        refresh_token=refresh_token,
+        # always start expired
+        token_expiry=datetime.datetime.utcnow(),
+        token_uri=token_uri,
+        user_agent=config.CLOUDSDK_USER_AGENT,
+        revoke_uri=revoke_uri)
   return cred
 
 

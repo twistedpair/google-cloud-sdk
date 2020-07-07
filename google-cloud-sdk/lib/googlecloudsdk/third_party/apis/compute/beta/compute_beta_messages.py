@@ -3158,6 +3158,7 @@ class BackendService(_messages.Message):
     information.
 
     Values:
+      GRPC: <no description>
       HTTP: <no description>
       HTTP2: <no description>
       HTTPS: <no description>
@@ -3165,12 +3166,13 @@ class BackendService(_messages.Message):
       TCP: <no description>
       UDP: <no description>
     """
-    HTTP = 0
-    HTTP2 = 1
-    HTTPS = 2
-    SSL = 3
-    TCP = 4
-    UDP = 5
+    GRPC = 0
+    HTTP = 1
+    HTTP2 = 2
+    HTTPS = 3
+    SSL = 4
+    TCP = 5
+    UDP = 6
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE. Session affinity
@@ -4160,7 +4162,9 @@ class Commitment(_messages.Message):
       the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
     TypeValueValuesEnum: The type of commitment, which affects the discount
       rate and the eligible resources. Type MEMORY_OPTIMIZED specifies a
-      commitment that will only apply to memory optimized machines.
+      commitment that will only apply to memory optimized machines. Type
+      ACCELERATOR_OPTIMIZED specifies a commitment that will only apply to
+      accelerator optimized machines.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -4196,7 +4200,9 @@ class Commitment(_messages.Message):
       the status.
     type: The type of commitment, which affects the discount rate and the
       eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that
-      will only apply to memory optimized machines.
+      will only apply to memory optimized machines. Type ACCELERATOR_OPTIMIZED
+      specifies a commitment that will only apply to accelerator optimized
+      machines.
   """
 
   class PlanValueValuesEnum(_messages.Enum):
@@ -4232,9 +4238,12 @@ class Commitment(_messages.Message):
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of commitment, which affects the discount rate and the
     eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that will
-    only apply to memory optimized machines.
+    only apply to memory optimized machines. Type ACCELERATOR_OPTIMIZED
+    specifies a commitment that will only apply to accelerator optimized
+    machines.
 
     Values:
+      ACCELERATOR_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED: <no description>
       GENERAL_PURPOSE: <no description>
       GENERAL_PURPOSE_E2: <no description>
@@ -4243,13 +4252,14 @@ class Commitment(_messages.Message):
       MEMORY_OPTIMIZED: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
-    COMPUTE_OPTIMIZED = 0
-    GENERAL_PURPOSE = 1
-    GENERAL_PURPOSE_E2 = 2
-    GENERAL_PURPOSE_N2 = 3
-    GENERAL_PURPOSE_N2D = 4
-    MEMORY_OPTIMIZED = 5
-    TYPE_UNSPECIFIED = 6
+    ACCELERATOR_OPTIMIZED = 0
+    COMPUTE_OPTIMIZED = 1
+    GENERAL_PURPOSE = 2
+    GENERAL_PURPOSE_E2 = 3
+    GENERAL_PURPOSE_N2 = 4
+    GENERAL_PURPOSE_N2D = 5
+    MEMORY_OPTIMIZED = 6
+    TYPE_UNSPECIFIED = 7
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -19199,6 +19209,138 @@ class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
+class ComputeTargetGrpcProxiesDeleteRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetGrpcProxy: Name of the TargetGrpcProxy resource to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetGrpcProxy = _messages.StringField(3, required=True)
+
+
+class ComputeTargetGrpcProxiesGetRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    targetGrpcProxy: Name of the TargetGrpcProxy resource to return.
+  """
+
+  project = _messages.StringField(1, required=True)
+  targetGrpcProxy = _messages.StringField(2, required=True)
+
+
+class ComputeTargetGrpcProxiesInsertRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetGrpcProxy: A TargetGrpcProxy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetGrpcProxy = _messages.MessageField('TargetGrpcProxy', 3)
+
+
+class ComputeTargetGrpcProxiesListRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      `=`, `!=`, `>`, or `<`.  For example, if you are filtering Compute
+      Engine instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`.  You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first.  Currently, only sorting by `name`
+      or `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeTargetGrpcProxiesPatchRequest(_messages.Message):
+  r"""A ComputeTargetGrpcProxiesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetGrpcProxy: Name of the TargetGrpcProxy resource to patch.
+    targetGrpcProxyResource: A TargetGrpcProxy resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetGrpcProxy = _messages.StringField(3, required=True)
+  targetGrpcProxyResource = _messages.MessageField('TargetGrpcProxy', 4)
+
+
 class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
   r"""A ComputeTargetHttpProxiesAggregatedListRequest object.
 
@@ -21696,6 +21838,7 @@ class Condition(_messages.Message):
       ATTRIBUTION: <no description>
       AUTHORITY: <no description>
       CREDENTIALS_TYPE: <no description>
+      CREDS_ASSERTION: <no description>
       JUSTIFICATION_TYPE: <no description>
       NO_ATTR: <no description>
       SECURITY_REALM: <no description>
@@ -21704,9 +21847,10 @@ class Condition(_messages.Message):
     ATTRIBUTION = 1
     AUTHORITY = 2
     CREDENTIALS_TYPE = 3
-    JUSTIFICATION_TYPE = 4
-    NO_ATTR = 5
-    SECURITY_REALM = 6
+    CREDS_ASSERTION = 4
+    JUSTIFICATION_TYPE = 5
+    NO_ATTR = 6
+    SECURITY_REALM = 7
 
   class OpValueValuesEnum(_messages.Enum):
     r"""An operator to apply the subject with.
@@ -38812,6 +38956,7 @@ class Quota(_messages.Message):
       CPUS: <no description>
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
+      EXTERNAL_NETWORK_LB_FORWARDING_RULES: <no description>
       EXTERNAL_VPN_GATEWAYS: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
@@ -38917,86 +39062,87 @@ class Quota(_messages.Message):
     CPUS = 21
     CPUS_ALL_REGIONS = 22
     DISKS_TOTAL_GB = 23
-    EXTERNAL_VPN_GATEWAYS = 24
-    FIREWALLS = 25
-    FORWARDING_RULES = 26
-    GLOBAL_INTERNAL_ADDRESSES = 27
-    GPUS_ALL_REGIONS = 28
-    HEALTH_CHECKS = 29
-    IMAGES = 30
-    INSTANCES = 31
-    INSTANCE_GROUPS = 32
-    INSTANCE_GROUP_MANAGERS = 33
-    INSTANCE_TEMPLATES = 34
-    INTERCONNECTS = 35
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 36
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 37
-    INTERCONNECT_TOTAL_GBPS = 38
-    INTERNAL_ADDRESSES = 39
-    IN_PLACE_SNAPSHOTS = 40
-    IN_USE_ADDRESSES = 41
-    IN_USE_BACKUP_SCHEDULES = 42
-    IN_USE_SNAPSHOT_SCHEDULES = 43
-    LOCAL_SSD_TOTAL_GB = 44
-    M1_CPUS = 45
-    M2_CPUS = 46
-    MACHINE_IMAGES = 47
-    N2D_CPUS = 48
-    N2_CPUS = 49
-    NETWORKS = 50
-    NETWORK_ENDPOINT_GROUPS = 51
-    NETWORK_FIREWALL_POLICIES = 52
-    NODE_GROUPS = 53
-    NODE_TEMPLATES = 54
-    NVIDIA_A100_GPUS = 55
-    NVIDIA_K80_GPUS = 56
-    NVIDIA_P100_GPUS = 57
-    NVIDIA_P100_VWS_GPUS = 58
-    NVIDIA_P4_GPUS = 59
-    NVIDIA_P4_VWS_GPUS = 60
-    NVIDIA_T4_GPUS = 61
-    NVIDIA_T4_VWS_GPUS = 62
-    NVIDIA_V100_GPUS = 63
-    PACKET_MIRRORINGS = 64
-    PREEMPTIBLE_CPUS = 65
-    PREEMPTIBLE_LOCAL_SSD_GB = 66
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 67
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 68
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 69
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 70
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 71
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 72
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 73
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 74
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 75
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 76
-    PUBLIC_ADVERTISED_PREFIXES = 77
-    PUBLIC_DELEGATED_PREFIXES = 78
-    REGIONAL_AUTOSCALERS = 79
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 80
-    RESERVATIONS = 81
-    RESOURCE_POLICIES = 82
-    ROUTERS = 83
-    ROUTES = 84
-    SECURITY_POLICIES = 85
-    SECURITY_POLICY_CEVAL_RULES = 86
-    SECURITY_POLICY_RULES = 87
-    SNAPSHOTS = 88
-    SSD_TOTAL_GB = 89
-    SSL_CERTIFICATES = 90
-    STATIC_ADDRESSES = 91
-    STATIC_BYOIP_ADDRESSES = 92
-    SUBNETWORKS = 93
-    TARGET_HTTPS_PROXIES = 94
-    TARGET_HTTP_PROXIES = 95
-    TARGET_INSTANCES = 96
-    TARGET_POOLS = 97
-    TARGET_SSL_PROXIES = 98
-    TARGET_TCP_PROXIES = 99
-    TARGET_VPN_GATEWAYS = 100
-    URL_MAPS = 101
-    VPN_GATEWAYS = 102
-    VPN_TUNNELS = 103
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 24
+    EXTERNAL_VPN_GATEWAYS = 25
+    FIREWALLS = 26
+    FORWARDING_RULES = 27
+    GLOBAL_INTERNAL_ADDRESSES = 28
+    GPUS_ALL_REGIONS = 29
+    HEALTH_CHECKS = 30
+    IMAGES = 31
+    INSTANCES = 32
+    INSTANCE_GROUPS = 33
+    INSTANCE_GROUP_MANAGERS = 34
+    INSTANCE_TEMPLATES = 35
+    INTERCONNECTS = 36
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 37
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 38
+    INTERCONNECT_TOTAL_GBPS = 39
+    INTERNAL_ADDRESSES = 40
+    IN_PLACE_SNAPSHOTS = 41
+    IN_USE_ADDRESSES = 42
+    IN_USE_BACKUP_SCHEDULES = 43
+    IN_USE_SNAPSHOT_SCHEDULES = 44
+    LOCAL_SSD_TOTAL_GB = 45
+    M1_CPUS = 46
+    M2_CPUS = 47
+    MACHINE_IMAGES = 48
+    N2D_CPUS = 49
+    N2_CPUS = 50
+    NETWORKS = 51
+    NETWORK_ENDPOINT_GROUPS = 52
+    NETWORK_FIREWALL_POLICIES = 53
+    NODE_GROUPS = 54
+    NODE_TEMPLATES = 55
+    NVIDIA_A100_GPUS = 56
+    NVIDIA_K80_GPUS = 57
+    NVIDIA_P100_GPUS = 58
+    NVIDIA_P100_VWS_GPUS = 59
+    NVIDIA_P4_GPUS = 60
+    NVIDIA_P4_VWS_GPUS = 61
+    NVIDIA_T4_GPUS = 62
+    NVIDIA_T4_VWS_GPUS = 63
+    NVIDIA_V100_GPUS = 64
+    PACKET_MIRRORINGS = 65
+    PREEMPTIBLE_CPUS = 66
+    PREEMPTIBLE_LOCAL_SSD_GB = 67
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 68
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 69
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 70
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 71
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 72
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 73
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 74
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 75
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 76
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 77
+    PUBLIC_ADVERTISED_PREFIXES = 78
+    PUBLIC_DELEGATED_PREFIXES = 79
+    REGIONAL_AUTOSCALERS = 80
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 81
+    RESERVATIONS = 82
+    RESOURCE_POLICIES = 83
+    ROUTERS = 84
+    ROUTES = 85
+    SECURITY_POLICIES = 86
+    SECURITY_POLICY_CEVAL_RULES = 87
+    SECURITY_POLICY_RULES = 88
+    SNAPSHOTS = 89
+    SSD_TOTAL_GB = 90
+    SSL_CERTIFICATES = 91
+    STATIC_ADDRESSES = 92
+    STATIC_BYOIP_ADDRESSES = 93
+    SUBNETWORKS = 94
+    TARGET_HTTPS_PROXIES = 95
+    TARGET_HTTP_PROXIES = 96
+    TARGET_INSTANCES = 97
+    TARGET_POOLS = 98
+    TARGET_SSL_PROXIES = 99
+    TARGET_TCP_PROXIES = 100
+    TARGET_VPN_GATEWAYS = 101
+    URL_MAPS = 102
+    VPN_GATEWAYS = 103
+    VPN_TUNNELS = 104
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -45533,10 +45679,11 @@ class Subnetwork(_messages.Message):
       is defined by the server.
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork. Provide this property when you create the subnetwork. For
-      example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-
+      example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-
       overlapping within a network. Only IPv4 is supported. This field is set
-      at resource creation time. The range can be expanded after creation
-      using expandIpCidrRange.
+      at resource creation time. This may be a RFC 1918 IP range, or a
+      privately routed, non-RFC 1918 IP range, not belonging to Google. The
+      range can be expanded after creation using expandIpCidrRange.
     ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
       owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
@@ -46052,7 +46199,9 @@ class SubnetworkSecondaryRange(_messages.Message):
     ipCidrRange: The range of IP addresses belonging to this subnetwork
       secondary range. Provide this property when you create the subnetwork.
       Ranges must be unique and non-overlapping with all primary and secondary
-      IP ranges within a network. Only IPv4 is supported.
+      IP ranges within a network. Only IPv4 is supported. This may be a RFC
+      1918 IP range, or a privately, non-RFC 1918 IP range, not belonging to
+      Google.
     rangeName: The name associated with this subnetwork secondary range, used
       when adding an alias IP range to a VM instance. The name must be 1-63
       characters long, and comply with RFC1035. The name must be unique within
@@ -46296,6 +46445,190 @@ class Tags(_messages.Message):
 
   fingerprint = _messages.BytesField(1)
   items = _messages.StringField(2, repeated=True)
+
+
+class TargetGrpcProxy(_messages.Message):
+  r"""Represents a Target gRPC Proxy resource.  A target gRPC proxy is a
+  component of load balancers intended for load balancing gRPC traffic. Global
+  forwarding rules reference a target gRPC proxy. The Target gRPC Proxy
+  references a URL map which specifies how traffic routes to gRPC backend
+  services.
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a TargetGrpcProxy. An up-to-date
+      fingerprint must be provided in order to patch/update the
+      TargetGrpcProxy; otherwise, the request will fail with error 412
+      conditionNotMet. To see the latest fingerprint, make a get() request to
+      retrieve the TargetGrpcProxy.
+    id: [Output Only] The unique identifier for the resource type. The server
+      generates this identifier.
+    kind: [Output Only] Type of the resource. Always compute#targetGrpcProxy
+      for target grpc proxies.
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL with id for the resource.
+    urlMap: URL to the UrlMap resource that defines the mapping from URL to
+      the BackendService. The protocol field in the BackendService must be set
+      to GRPC.
+    validateForProxyless: If true, indicates that the BackendServices
+      referenced by the urlMap may be accessed by gRPC applications without
+      using a sidecar proxy. This will enable configuration checks on urlMap
+      and its referenced BackendServices to not allow unsupported features. A
+      gRPC application must use "xds-experimental:///" scheme in the target
+      URI of the service it is connecting to. If false, indicates that the
+      BackendServices referenced by the urlMap will be accessed by gRPC
+      applications via a sidecar proxy. In this case, a gRPC application must
+      not use "xds-experimental:///" scheme in the target URI of the service
+      it is connecting to
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  fingerprint = _messages.BytesField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default='compute#targetGrpcProxy')
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  selfLinkWithId = _messages.StringField(8)
+  urlMap = _messages.StringField(9)
+  validateForProxyless = _messages.BooleanField(10)
+
+
+class TargetGrpcProxyList(_messages.Message):
+  r"""A TargetGrpcProxyList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of TargetGrpcProxy resources.
+    kind: [Output Only] Type of the resource. Always compute#targetGrpcProxy
+      for target grpc proxies.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('TargetGrpcProxy', 2, repeated=True)
+  kind = _messages.StringField(3, default='compute#targetGrpcProxyList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class TargetHttpProxiesScopedList(_messages.Message):

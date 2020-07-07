@@ -6,7 +6,7 @@
   "canonicalName": "Cloud Run",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "Cloud Run API",
+  "title": "Cloud Run Admin API",
   "description": "Deploy and manage user provided container images that scale automatically based on HTTP traffic.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

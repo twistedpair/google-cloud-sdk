@@ -110,24 +110,6 @@
     }
   },
   "schemas": {
-    "ListOperationsResponse": {
-      "id": "ListOperationsResponse",
-      "description": "The response message for Operations.ListOperations.",
-      "type": "object",
-      "properties": {
-        "operations": {
-          "description": "A list of operations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Operation"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -989,6 +971,175 @@
           }
         }
       }
+    },
+    "HTTPDelivery": {
+      "id": "HTTPDelivery",
+      "description": "HTTPDelivery is the delivery configuration for an HTTP notification.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The URI to which JSON-containing HTTP POST requests should be sent.",
+          "type": "string"
+        }
+      }
+    },
+    "Notification": {
+      "id": "Notification",
+      "description": "Notification is the container which holds the data that is relevant to this\nparticular notification.",
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "The filter string to use for notification filtering.\nCurrently, this is assumed to be a CEL program.\nSee https:\/\/opensource.google\/projects\/cel for more.",
+          "type": "string"
+        },
+        "smtpDelivery": {
+          "description": "Configuration for SMTP (email) delivery.",
+          "$ref": "SMTPDelivery"
+        },
+        "slackDelivery": {
+          "description": "Configuration for Slack delivery.",
+          "$ref": "SlackDelivery"
+        },
+        "httpDelivery": {
+          "description": "Configuration for HTTP delivery.",
+          "$ref": "HTTPDelivery"
+        },
+        "structDelivery": {
+          "description": "Escape hatch for users to supply custom delivery configs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    },
+    "SMTPDelivery": {
+      "id": "SMTPDelivery",
+      "description": "SMTPDelivery is the delivery configuration for an SMTP (email) notification.",
+      "type": "object",
+      "properties": {
+        "server": {
+          "description": "The address of the SMTP server.",
+          "type": "string"
+        },
+        "port": {
+          "description": "The SMTP port of the server.",
+          "type": "string"
+        },
+        "senderAddress": {
+          "description": "This is the SMTP account\/email that is used to send the message.",
+          "type": "string"
+        },
+        "fromAddress": {
+          "description": "This is the SMTP account\/email that appears in the `From:` of the email.\nIf empty, it is assumed to be sender.",
+          "type": "string"
+        },
+        "recipientAddresses": {
+          "description": "This is the list of addresses to which we send the email (i.e. in the `To:`\nof the email).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "password": {
+          "description": "The SMTP sender's password.",
+          "$ref": "NotifierSecretRef"
+        }
+      }
+    },
+    "NotifierSecretRef": {
+      "id": "NotifierSecretRef",
+      "description": "NotifierSecretRef contains the reference to a secret stored in the\ncorresponding NotifierSpec.",
+      "type": "object",
+      "properties": {
+        "secretRef": {
+          "description": "The value of `secret_ref` should be a `name` that is registered in a\n`Secret` in the `secrets` list of the `Spec`.",
+          "type": "string"
+        }
+      }
+    },
+    "SlackDelivery": {
+      "id": "SlackDelivery",
+      "description": "SlackDelivery is the delivery configuration for delivering Slack messages via\nwebhooks. See Slack webhook documentation at:\nhttps:\/\/api.slack.com\/messaging\/webhooks.",
+      "type": "object",
+      "properties": {
+        "webhookUri": {
+          "description": "The secret reference for the Slack webhook URI for sending messages to a\nchannel.",
+          "$ref": "NotifierSecretRef"
+        }
+      }
+    },
+    "NotifierConfig": {
+      "id": "NotifierConfig",
+      "description": "NotifierConfig is the top-level configuration message.",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version of this configuration format.",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The type of notifier to use (e.g. SMTPNotifier).",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata for referring to\/handling\/deploying this notifier.",
+          "$ref": "NotifierMetadata"
+        },
+        "spec": {
+          "description": "The actual configuration for this notifier.",
+          "$ref": "NotifierSpec"
+        }
+      }
+    },
+    "NotifierMetadata": {
+      "id": "NotifierMetadata",
+      "description": "NotifierMetadata contains the data which can be used to reference or describe\nthis notifier.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The human-readable and user-given name for the notifier.\nFor example: \"repo-merge-email-notifier\".",
+          "type": "string"
+        },
+        "notifier": {
+          "description": "The string representing the name and version of notifier to deploy.\nExpected to be of the form of \"<registry-path>\/<name>:<version>\".\nFor example: \"gcr.io\/my-project\/notifiers\/smtp:1.2.34\".",
+          "type": "string"
+        }
+      }
+    },
+    "NotifierSpec": {
+      "id": "NotifierSpec",
+      "description": "NotifierSpec is the configuration container for notifications.",
+      "type": "object",
+      "properties": {
+        "notification": {
+          "description": "The configuration of this particular notifier.",
+          "$ref": "Notification"
+        },
+        "secrets": {
+          "description": "Configurations for secret resources used by this particular notifier.",
+          "type": "array",
+          "items": {
+            "$ref": "NotifierSecret"
+          }
+        }
+      }
+    },
+    "NotifierSecret": {
+      "id": "NotifierSecret",
+      "description": "NotifierSecret is the container that maps a secret name (reference) to its\nGoogle Cloud Secret Manager resource path.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name is the local name of the secret, such as the verbatim string\n\"my-smtp-password\".",
+          "type": "string"
+        },
+        "value": {
+          "description": "Value is interpreted to be a resource path for fetching the actual\n(versioned) secret data for this secret. For example, this would be a\nGoogle Cloud Secret Manager secret version resource path like:\n\"projects\/my-project\/secrets\/my-secret\/versions\/latest\".",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -998,47 +1149,6 @@
           "resources": {
             "operations": {
               "methods": {
-                "list": {
-                  "id": "cloudbuild.projects.locations.operations.list",
-                  "path": "v1alpha2/{+name}/operations",
-                  "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/operations",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation's parent resource.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "The standard list filter.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The standard list page size.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "The standard list page token.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "ListOperationsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
-                },
                 "get": {
                   "id": "cloudbuild.projects.locations.operations.get",
                   "path": "v1alpha2/{+name}",

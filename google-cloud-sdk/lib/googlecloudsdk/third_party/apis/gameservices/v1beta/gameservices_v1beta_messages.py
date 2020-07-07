@@ -260,6 +260,7 @@ class Condition(_messages.Message):
         CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
         based on the *absence* of a credentials type, so the conditions can
         only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE.
     """
     NO_ATTR = 0
     AUTHORITY = 1
@@ -268,6 +269,7 @@ class Condition(_messages.Message):
     APPROVER = 4
     JUSTIFICATION_TYPE = 5
     CREDENTIALS_TYPE = 6
+    CREDS_ASSERTION = 7
 
   class OpValueValuesEnum(_messages.Enum):
     r"""An operator to apply the subject with.

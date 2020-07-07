@@ -895,12 +895,14 @@ see https://cloud.google.com/ml-engine/docs/tensorflow/online-predict#machine-ty
 
 def AddContainerFlags(parser):
   """Adds flags related to custom containers to the specified parser."""
-  base.Argument(
+  container_group = parser.add_argument_group(
+      help='Configure the container to be deployed.')
+  container_group.add_argument(
       '--image',
       help="""\
 Name of the container image to deploy (e.g. gcr.io/myproject/server:latest).
-""").AddToParser(parser)
-  base.Argument(
+""")
+  container_group.add_argument(
       '--command',
       type=arg_parsers.ArgList(),
       metavar='COMMAND',
@@ -908,8 +910,8 @@ Name of the container image to deploy (e.g. gcr.io/myproject/server:latest).
       help="""\
 Entrypoint for the container image. If not specified, the container
 image's default Entrypoint is run.
-""").AddToParser(parser)
-  base.Argument(
+""")
+  container_group.add_argument(
       '--args',
       metavar='ARG',
       type=arg_parsers.ArgList(),
@@ -918,15 +920,15 @@ image's default Entrypoint is run.
 Comma-separated arguments passed to the command run by the container
 image. If not specified and no '--command' is provided, the container
 image's default Cmd is used.
-""").AddToParser(parser)
-  base.Argument(
+""")
+  container_group.add_argument(
       '--env-vars',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
       help='List of key-value pairs to set as environment variables.'
-  ).AddToParser(parser)
-  base.Argument(
+  )
+  container_group.add_argument(
       '--ports',
       metavar='ARG',
       type=arg_parsers.ArgList(element_type=arg_parsers.BoundedInt(1, 65535)),
@@ -934,12 +936,15 @@ image's default Cmd is used.
       help="""\
 Container ports to receive requests at. Must be a number between 1 and 65535,
 inclusive.
-""").AddToParser(parser)
-  base.Argument(
+""")
+  route_group = container_group.add_argument_group(
+      help='Flags to control the paths that requests and health checks are '
+      'sent to.')
+  route_group.add_argument(
       '--predict-route',
       help='HTTP path to send prediction requests to inside the container.'
-  ).AddToParser(parser)
-  base.Argument(
+  )
+  route_group.add_argument(
       '--health-route',
       help='HTTP path to send health checks to inside the container.'
-  ).AddToParser(parser)
+  )

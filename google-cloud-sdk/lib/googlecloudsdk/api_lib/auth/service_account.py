@@ -26,6 +26,7 @@ import os
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.credentials import creds as c_creds
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
@@ -82,13 +83,15 @@ def CredentialsFromAdcDictGoogleAuth(json_key):
   from google.oauth2 import service_account as google_auth_service_account
   # pylint: enable=g-import-not-at-top
 
-  keys_needed = set(['client_email', 'token_uri'])
-  missing = keys_needed.difference(json_key.keys())
-
-  if missing:
+  if 'client_email' not in json_key:
     raise BadCredentialJsonFileException(
-        'The .json key file is not in a valid format, missing field(s) {}'
-        .format(', '.join(missing)))
+        'The .json key file is not in a valid format.')
+
+  # 'token_uri' is required by google-auth credentails construction. However,
+  # the service account keys generated before 2015 do not provide this field.
+  # More details in http://shortn/_LtMjDvpgfh.
+  if not json_key.get('token_uri'):
+    json_key['token_uri'] = c_creds.TOKEN_URI
 
   service_account_credentials = (
       google_auth_service_account.Credentials.from_service_account_info)

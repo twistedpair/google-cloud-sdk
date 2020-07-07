@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import properties
 
 DEFAULT_LOCATION = 'global'
@@ -31,11 +30,6 @@ PARENT_REALM_TEMPLATE = 'projects/{}/locations/{}/realms/{}'
 DEPLOYMENT_WILDCARD = '-'
 LOCATION_WILDCARD = '-'
 REALM_WILDCARD = '-'
-
-
-def FlattenedArgDict(value):
-  dict_value = arg_parsers.ArgDict()(value)
-  return [{'key': key, 'value': value} for key, value in dict_value.items()]
 
 
 def AddDefaultLocationToListRequest(ref, args, req):

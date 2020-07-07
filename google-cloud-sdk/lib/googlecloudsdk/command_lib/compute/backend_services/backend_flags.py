@@ -141,7 +141,7 @@ def AddBalancingMode(parser,
 
   This cannot be used when the endpoint type of an attached network endpoint
   group is {0}.
-    """.format(' or '.join(incompatible_types))
+    """.format(_JoinTypes(incompatible_types))
   parser.add_argument(
       '--balancing-mode',
       choices=_GetBalancingModes(),
@@ -165,7 +165,7 @@ def AddCapacityLimits(parser,
 
   This cannot be used when the endpoint type of an attached network endpoint
   group is {0}.
-  """.format(' or '.join(
+  """.format(_JoinTypes(
       capacity_incompatible_types)) if capacity_incompatible_types else ''
   capacity_group.add_argument(
       '--max-rate-per-endpoint',
@@ -304,7 +304,7 @@ def AddCapacityScalar(parser,
 
     This cannot be used when the endpoint type of an attached network endpoint
     group is {0}.
-    """.format(' or '.join(incompatible_types))
+    """.format(_JoinTypes(incompatible_types))
   parser.add_argument(
       '--capacity-scaler',
       type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
@@ -321,3 +321,8 @@ def AddFailover(parser, default):
       Designates whether this is a failover backend. More than one
       failover backend can be configured for a given BackendService.
       Not compatible with the --global flag""")
+
+
+def _JoinTypes(types):
+  return ', or '.join([', '.join(types[:-1]), types[-1]
+                      ]) if len(types) > 2 else ' or '.join(types)

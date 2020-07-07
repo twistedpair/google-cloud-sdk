@@ -1253,7 +1253,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       Compute Engine on-demand VM and therefore won't be preempted). See
       [Preemptible VMs](https://cloud.google.com/preemptible-vms/) for more
       details.
-    vmImage: Output only. The name of the image used by each VM.
+    vmImage: The name of the image used by each VM.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

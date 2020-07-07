@@ -414,6 +414,92 @@
       "type": "object",
       "properties": {
       }
+    },
+    "GoogleCloudRecaptchaenterpriseV1Metrics": {
+      "id": "GoogleCloudRecaptchaenterpriseV1Metrics",
+      "description": "Metrics for a single Key.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "Inclusive start time aligned to a day (UTC).",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "scoreMetrics": {
+          "description": "Metrics will be continuous and in order by dates, and in the granularity\nof day. All Key types should have score-based data.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudRecaptchaenterpriseV1ScoreMetrics"
+          }
+        },
+        "challengeMetrics": {
+          "description": "Metrics will be continuous and in order by dates, and in the granularity\nof day. Only challenge-based keys (CHECKBOX, INVISIBLE), will have\nchallenge-based data.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudRecaptchaenterpriseV1ChallengeMetrics"
+          }
+        }
+      }
+    },
+    "GoogleCloudRecaptchaenterpriseV1ScoreMetrics": {
+      "id": "GoogleCloudRecaptchaenterpriseV1ScoreMetrics",
+      "description": "Metrics related to scoring.",
+      "type": "object",
+      "properties": {
+        "overallMetrics": {
+          "description": "Aggregated score metrics for all traffic.",
+          "$ref": "GoogleCloudRecaptchaenterpriseV1ScoreDistribution"
+        },
+        "actionMetrics": {
+          "description": "Action-based metrics. The map key is the action name which specified by the\nsite owners at time of the \"execute\" client-side call.\nPopulated only for SCORE keys.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudRecaptchaenterpriseV1ScoreDistribution"
+          }
+        }
+      }
+    },
+    "GoogleCloudRecaptchaenterpriseV1ScoreDistribution": {
+      "id": "GoogleCloudRecaptchaenterpriseV1ScoreDistribution",
+      "description": "Score distribution.",
+      "type": "object",
+      "properties": {
+        "scoreBuckets": {
+          "description": "Map key is score value multiplied by 100. The scores are discrete values\nbetween [0, 1]. The maximum number of buckets is on order of a few dozen,\nbut typically much lower (ie. 10).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "GoogleCloudRecaptchaenterpriseV1ChallengeMetrics": {
+      "id": "GoogleCloudRecaptchaenterpriseV1ChallengeMetrics",
+      "description": "Metrics related to challenges.",
+      "type": "object",
+      "properties": {
+        "pageloadCount": {
+          "description": "Count of reCAPTCHA checkboxes or badges rendered. This is mostly equivalent\nto a count of pageloads for pages that include reCAPTCHA.",
+          "type": "string",
+          "format": "int64"
+        },
+        "nocaptchaCount": {
+          "description": "Count of nocaptchas (successful verification without a challenge) issued.",
+          "type": "string",
+          "format": "int64"
+        },
+        "failedCount": {
+          "description": "Count of submitted challenge solutions that were incorrect or otherwise\ndeemed suspicious such that a subsequent challenge was triggered.",
+          "type": "string",
+          "format": "int64"
+        },
+        "passedCount": {
+          "description": "Count of nocaptchas (successful verification without a challenge) plus\nsubmitted challenge solutions that were correct and resulted in\nverification.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
     }
   },
   "resources": {
@@ -628,6 +714,31 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes the specified key."
+            },
+            "getMetrics": {
+              "id": "recaptchaenterprise.projects.keys.getMetrics",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/keys/{keysId}/metrics",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. The name of the requested metrics, in the format\n\"projects\/{project}\/keys\/{key}\/metrics\".",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/keys\/[^\/]+\/metrics$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudRecaptchaenterpriseV1Metrics"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Get some aggregated metrics for a Key. This method is used by Pantheon\nto build simple dashboards."
             }
           }
         }

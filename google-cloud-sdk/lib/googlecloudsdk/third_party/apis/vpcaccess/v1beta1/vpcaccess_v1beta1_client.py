@@ -161,6 +161,33 @@ does not exist.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a Serverless VPC Access connector, returns an operation.
+
+      Args:
+        request: (VpcaccessProjectsLocationsConnectorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/connectors/{connectorsId}',
+        http_method='PATCH',
+        method_id='vpcaccess.projects.locations.connectors.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='connector',
+        request_type_name='VpcaccessProjectsLocationsConnectorsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

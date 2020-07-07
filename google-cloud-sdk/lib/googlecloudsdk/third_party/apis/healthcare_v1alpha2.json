@@ -970,6 +970,38 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "consentList": {
+          "description": "The Consents to\nevaluate the access request against. They must have the same `user_id` as\nthe data to check access for, exist in the current `consent_store`, and\ncan have a `state` of either `ACTIVE` or `DRAFT`. A maximum of 100\nconsents can be provided here.",
+          "$ref": "ConsentList"
+        },
+        "responseView": {
+          "description": "The view for CheckDataAccessResponse.",
+          "enumDescriptions": [
+            "No response view specified. The API will default to the BASIC view.",
+            "Only the `consented` field is populated in CheckDataAccessResponse.",
+            "All fields within CheckDataAccessResponse are\npopulated. When set to `FULL`, all `ACTIVE` consents are evaluated even\nif a matching policy is found during evaluation."
+          ],
+          "type": "string",
+          "enum": [
+            "RESPONSE_VIEW_UNSPECIFIED",
+            "BASIC",
+            "FULL"
+          ]
+        }
+      }
+    },
+    "ConsentList": {
+      "id": "ConsentList",
+      "description": "List of resource names of\nConsent resources.",
+      "type": "object",
+      "properties": {
+        "consents": {
+          "description": "The resource names of the Consents to evaluate against,\n of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -981,6 +1013,38 @@
         "consented": {
           "description": "Whether the requested data is consented for the given use.",
           "type": "boolean"
+        },
+        "consentDetails": {
+          "description": "The resource names of all evaluated Consents mapped to their\nevaluation.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ConsentEvaluation"
+          }
+        }
+      }
+    },
+    "ConsentEvaluation": {
+      "id": "ConsentEvaluation",
+      "description": "The detailed evaluation of a particular Consent.",
+      "type": "object",
+      "properties": {
+        "evaluationResult": {
+          "description": "The evaluation result.",
+          "enumDescriptions": [
+            "No evaluation result specified. This option is invalid.",
+            "The consent is not applicable to the requested access determination. For\nexample, it does not belong to the end user who owns the data for which\nthe access determination is requested, or it has a `state` of `REVOKED`.",
+            "The consent does not have a policy with matching `resource_attributes` as\nthe data.",
+            "The consent has at least one policy with matching `resource_attributes`\nas the data, but none with a satisfied `authorization_rule`.",
+            "The consent has at least one policy with matching `resource_attributes`\nas the data and a satisfied `authorization_rule`."
+          ],
+          "type": "string",
+          "enum": [
+            "EVALUATION_RESULT_UNSPECIFIED",
+            "NOT_APPLICABLE",
+            "NO_MATCHING_POLICY",
+            "NO_SATISFIED_POLICY",
+            "HAS_SATISFIED_POLICY"
+          ]
         }
       }
     },
@@ -1503,6 +1567,28 @@
         },
         "nextPageToken": {
           "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "ImportMessagesRequest": {
+      "id": "ImportMessagesRequest",
+      "description": "Request to import messages.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Cloud Storage source data location and import configuration.\n\nThe Cloud Storage location requires the `roles\/storage.objectViewer`\nCloud IAM role.",
+          "$ref": "GcsSource"
+        }
+      }
+    },
+    "GcsSource": {
+      "id": "GcsSource",
+      "description": "Specifies the configuration for importing data from Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Points to a Cloud Storage URI containing file(s) to import.\n\nThe URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`.\nThe URI can include wildcards in `object_id` and thus identify multiple\nfiles. Supported wildcards:\n\n*  `*` to match 0 or more non-separator characters\n*  `**` to match 0 or more characters (including separators). Must be used\nat the end of a path and with no other wildcards in the\npath. Can also be used with a file extension (such as .ndjson), which\nimports all files with the extension in the specified directory and\nits sub-directories. For example, `gs:\/\/my-bucket\/my-directory\/**.ndjson`\nimports all files with `.ndjson` extensions in `my-directory\/` and its\nsub-directories.\n*  `?` to match 1 character\n\nFiles matching the wildcard are expected to contain content only, no\nmetadata.",
           "type": "string"
         }
       }
@@ -2033,6 +2119,55 @@
         },
         "errorCount": {
           "description": "The number of resources that had errors.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ExportMessagesResponse": {
+      "id": "ExportMessagesResponse",
+      "description": "Final response for the export operation.\nThis structure is included in the\nresponse to describe the detailed\noutcome.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ImportMessagesResponse": {
+      "id": "ImportMessagesResponse",
+      "description": "Final response of importing messages.\nThis structure is included in the\nresponse to describe the detailed\noutcome. It is only included when the operation finishes successfully.",
+      "type": "object",
+      "properties": {
+        "hl7v2Store": {
+          "description": "The name of the target HL7v2 store, in the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`",
+          "type": "string"
+        },
+        "inputSize": {
+          "description": "The total number of resources included in the source data.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ImportMessagesErrorDetails": {
+      "id": "ImportMessagesErrorDetails",
+      "description": "Error response of importing messages.\nThis structure is included in the\nerror\ndetails to describe the detailed error. It is only\nincluded when the operation finishes with some failure.",
+      "type": "object",
+      "properties": {
+        "hl7v2Store": {
+          "description": "The name of the target HL7v2 store, in the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`",
+          "type": "string"
+        },
+        "inputSize": {
+          "description": "The total number of messages included in the source data. This is the sum\nof the success and error counts.",
+          "type": "string",
+          "format": "int64"
+        },
+        "successCount": {
+          "description": "The number of messages that have been imported.",
+          "type": "string",
+          "format": "int64"
+        },
+        "errorCount": {
+          "description": "The number of messages that had errors.",
           "type": "string",
           "format": "int64"
         }
@@ -3028,6 +3163,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Updates the HL7v2 store."
+                    },
+                    "import": {
+                      "id": "healthcare.projects.locations.datasets.hl7V2Stores.import",
+                      "path": "v1alpha2/{+name}:import",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the target HL7v2 store, in the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ImportMessagesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Import messages to the HL7v2 store by loading data from the specified\nsources. This method is optimized to load large quantities of data using\nimport semantics that ignore some HL7v2 store configuration options and are\nnot suitable for all use cases. It is primarily intended to load data into\nan empty HL7v2 store that is not being used by other clients.\n\nAn existing message will be overwritten if a duplicate message is imported.\nA duplicate message is a message with the same raw bytes as a message that\nalready exists in this HL7v2 store. When a message is overwritten, its\nlabels will also be overwritten.\n\nThe import operation is idempotent unless the input data contains multiple\nvalid messages with the same raw bytes but different labels. In that case,\nafter the import completes, the store contains exactly one message\nwith that raw bytes but there is no ordering guarantee on which version\nof the labels it has. The operation result counters do not count\nduplicated raw bytes as an error and count one success for each message in\nthe input, which might result in a success count larger than the number\nof messages in the HL7v2 store.\n\nIf some messages fail to import, for example due to parsing errors,\nsuccessfully imported messages are not rolled back.\n\nThis method returns an Operation that can\nbe used to track the status of the import by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field.\nOtherwise, when the operation finishes, a detailed response of type\nImportMessagesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
                     }
                   }
                 },
@@ -3895,7 +4058,7 @@
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+                          "description": "Token to retrieve the next page of results or empty to get the first page.",
                           "location": "query",
                           "type": "string"
                         },
@@ -4114,7 +4277,7 @@
                               "format": "int32"
                             },
                             "pageToken": {
-                              "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+                              "description": "Token to retrieve the next page of results or empty to get the first page.",
                               "location": "query",
                               "type": "string"
                             },
@@ -4655,7 +4818,7 @@
                               "format": "int32"
                             },
                             "pageToken": {
-                              "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list.",
+                              "description": "Token to retrieve the next page of results or empty to get the first page.",
                               "location": "query",
                               "type": "string"
                             },

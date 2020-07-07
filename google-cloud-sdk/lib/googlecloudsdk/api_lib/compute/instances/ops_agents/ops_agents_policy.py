@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 import enum
 import json
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.resource import resource_property
 
 
@@ -38,11 +37,15 @@ class OpsAgentPolicy(object):
       INSTALLED = 'installed'
       REMOVED = 'removed'
 
+    class Version(str, enum.Enum):
+      LATEST_OF_ALL = 'latest'
+      CURRENT_MAJOR = 'current-major'
+
     def __init__(self,
                  agent_type,
-                 version='',
+                 version=Version.CURRENT_MAJOR,
                  package_state=PackageState.INSTALLED,
-                 enable_autoupgrade=False):
+                 enable_autoupgrade=True):
       """Initialize Agent instance.
 
       Args:
@@ -59,6 +62,11 @@ class OpsAgentPolicy(object):
 
     def __eq__(self, other):
       return self.__dict__ == other.__dict__
+
+    def __repr__(self):
+      """JSON format string representation for testing."""
+      return json.dumps(self, default=lambda o: o.__dict__,
+                        indent=2, separators=(',', ': '), sort_keys=True)
 
     def ToJson(self):
       """Generate JSON with camel-cased key."""
@@ -77,40 +85,52 @@ class OpsAgentPolicy(object):
 
       class OsShortName(str, enum.Enum):
         CENTOS = 'centos'
-        RHEL = 'rhel'
         DEBIAN = 'debian'
 
-      def __init__(self, short_name, version, architecture=None):
+        RHEL = 'rhel'
+        SLES = 'sles'
+        SLES_SAP = 'sles-sap'
+        UBUNTU = 'ubuntu'
+
+      def __init__(self, short_name, version):
         """Initialize OsType instance.
 
         Args:
           short_name: str, OS distro name, e.g. 'centos', 'debian'.
           version: str, OS version, e.g. '19.10', '7', '7.8'.
-          architecture: Optional str, OS architecture, e.x. 'x86_64'.
         """
         self.short_name = short_name
         self.version = version
-        self.architecture = architecture
 
       def __eq__(self, other):
         return self.__dict__ == other.__dict__
+
+      def __repr__(self):
+        """JSON format string representation for testing."""
+        return json.dumps(self, default=lambda o: o.__dict__,
+                          indent=2, separators=(',', ': '), sort_keys=True)
 
     def __init__(self, group_labels, zones, instances, os_types):
       """Initialize Assignment Instance.
 
       Args:
-        group_labels: list of dict, VM group label matchers.
-        zones: list, VM zone matchers.
-        instances: list, instance name matchers.
-        os_types: OsType, VM OS type matchers.
+        group_labels: list of dict, VM group label matchers, or None.
+        zones: list, VM zone matchers, or None.
+        instances: list, instance name matchers, or None.
+        os_types: OsType, VM OS type matchers, or None.
       """
-      self.group_labels = group_labels
-      self.zones = zones
-      self.instances = instances
-      self.os_types = os_types
+      self.group_labels = group_labels or []
+      self.zones = zones or []
+      self.instances = instances or []
+      self.os_types = os_types or []
 
     def __eq__(self, other):
       return self.__dict__ == other.__dict__
+
+    def __repr__(self):
+      """JSON format string representation for testing."""
+      return json.dumps(self, default=lambda o: o.__dict__,
+                        indent=2, separators=(',', ': '), sort_keys=True)
 
   def __init__(self,
                assignment,
@@ -142,6 +162,11 @@ class OpsAgentPolicy(object):
   def __eq__(self, other):
     return self.__dict__ == other.__dict__
 
+  def __repr__(self):
+    """JSON format string representation for testing."""
+    return json.dumps(self, default=lambda o: o.__dict__,
+                      indent=2, separators=(',', ': '), sort_keys=True)
+
 
 def CreateOpsAgentPolicy(description, agents, group_labels, os_types, zones,
                          instances):
@@ -151,7 +176,7 @@ def CreateOpsAgentPolicy(description, agents, group_labels, os_types, zones,
     description: str, ops agent policy description.
     agents: list of dict, fields describing agents from the command line.
     group_labels: list of dict, VM group label matchers.
-    os_types: dict, VM OS type matchers.
+    os_types: dict, VM OS type matchers, or None.
     zones: list, VM zone matchers.
     instances: list, instance name matchers.
 
@@ -159,42 +184,23 @@ def CreateOpsAgentPolicy(description, agents, group_labels, os_types, zones,
     ops agent policy.
   """
   assignment_os_types = []
-  for os_type in os_types:
-    try:
+  if os_types is not None:
+    for os_type in os_types:
       assignment_os_types.append(
           OpsAgentPolicy.Assignment.OsType(
               OpsAgentPolicy.Assignment.OsType.OsShortName(
-                  os_type['short-name']), os_type['version'],
-              os_type.get('architecture')))
-    except KeyError as e:
-      raise exceptions.BadArgumentException(
-          'os_type',
-          'os_type specification %s missing a required key: %s' % (os_type, e))
-    except ValueError as e:
-      raise exceptions.BadArgumentException(
-          'os_type',
-          'os_type specification %s contains invalid short-name: %s' %
-          (os_type, e))
+                  os_type['short-name']), os_type['version']))
   assignment = OpsAgentPolicy.Assignment(group_labels, zones, instances,
                                          assignment_os_types)
 
   ops_agents = []
   for agent in agents:
-    try:
-      ops_agents.append(
-          OpsAgentPolicy.Agent(
-              OpsAgentPolicy.Agent.Type(agent['type']),
-              agent.get('version', ''),
-              OpsAgentPolicy.Agent.PackageState(
-                  agent.get('package-state',
-                            OpsAgentPolicy.Agent.PackageState.INSTALLED)),
-              agent.get('enable-autoupgrade', False)))
-    except KeyError as e:
-      raise exceptions.BadArgumentException(
-          'agent',
-          'agent specification %s missing a required key: %s' % (agent, e))
-    except ValueError as e:
-      raise exceptions.BadArgumentException(
-          'agent',
-          'agent specification %s contains invalid enum value: %s' % (agent, e))
+    ops_agents.append(
+        OpsAgentPolicy.Agent(
+            OpsAgentPolicy.Agent.Type(agent['type']),
+            agent.get('version', OpsAgentPolicy.Agent.Version.CURRENT_MAJOR),
+            OpsAgentPolicy.Agent.PackageState(
+                agent.get('package-state',
+                          OpsAgentPolicy.Agent.PackageState.INSTALLED)),
+            agent.get('enable-autoupgrade', True)))
   return OpsAgentPolicy(assignment, ops_agents, description)

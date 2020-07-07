@@ -343,6 +343,8 @@ class LongRunningRecognizeMetadata(_messages.Message):
 
   Fields:
     lastUpdateTime: Time of the most recent processing update.
+    outputConfig: Output only. A copy of the TranscriptOutputConfig if it was
+      set in the request.
     progressPercent: Approximate percentage of audio processed thus far.
       Guaranteed to be 100 when the audio is fully processed and the results
       are available.
@@ -352,9 +354,10 @@ class LongRunningRecognizeMetadata(_messages.Message):
   """
 
   lastUpdateTime = _messages.StringField(1)
-  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(3)
-  uri = _messages.StringField(4)
+  outputConfig = _messages.MessageField('TranscriptOutputConfig', 2)
+  progressPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(4)
+  uri = _messages.StringField(5)
 
 
 class LongRunningRecognizeRequest(_messages.Message):
@@ -366,11 +369,14 @@ class LongRunningRecognizeRequest(_messages.Message):
     config: Required. Provides information to the recognizer that specifies
       how to process the request.
     name: Use `model` field in RecognitionConfig instead.
+    outputConfig: Optional. If set this field configures how the recognizer
+      will output the final transcript.
   """
 
   audio = _messages.MessageField('RecognitionAudio', 1)
   config = _messages.MessageField('RecognitionConfig', 2)
   name = _messages.StringField(3)
+  outputConfig = _messages.MessageField('TranscriptOutputConfig', 4)
 
 
 class LongRunningRecognizeResponse(_messages.Message):
@@ -381,11 +387,16 @@ class LongRunningRecognizeResponse(_messages.Message):
   `google::longrunning::Operations` service.
 
   Fields:
+    outputConfig: Original output config if present in the request.
+    outputError: If the transcript output fails this field contains the
+      relevant error.
     results: Sequential list of transcription results corresponding to
       sequential portions of audio.
   """
 
-  results = _messages.MessageField('SpeechRecognitionResult', 1, repeated=True)
+  outputConfig = _messages.MessageField('TranscriptOutputConfig', 1)
+  outputError = _messages.MessageField('Status', 2)
+  results = _messages.MessageField('SpeechRecognitionResult', 3, repeated=True)
 
 
 class Model(_messages.Message):
@@ -1641,6 +1652,20 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TranscriptOutputConfig(_messages.Message):
+  r"""Provides information to the recognizer that specifies the transcript
+  output.
+
+  Fields:
+    gcsUri: Specifies a Cloud Storage URI for the final transcript. Returns
+      INVALID_ARGUMENT if not in the format: `gs://bucket_name/object_name`.
+      If the write attempt fails, relevant error information will be stored in
+      the response object.
+  """
+
+  gcsUri = _messages.StringField(1)
 
 
 class WordInfo(_messages.Message):

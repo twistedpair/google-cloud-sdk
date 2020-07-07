@@ -160,6 +160,7 @@ class MarkdownRenderer(object):
     self._next_paragraph = False
     self._line = None
     self.command_metadata = command_metadata
+    self._example_regex = '$ gcloud'
 
   def _AnchorStyle1(self, buf, i):
     """Checks for link:target[text] hyperlink anchor markdown.
@@ -853,6 +854,8 @@ class MarkdownRenderer(object):
       self._line = self._ReadLine()
       if not self._line:
         break
+      if self._line.startswith(self._example_regex):
+        self._line = ' ' * self._example + '  ' + self._line
       self._line = self._line.rstrip()
       i = 0
       # Each _Convert*() function can:

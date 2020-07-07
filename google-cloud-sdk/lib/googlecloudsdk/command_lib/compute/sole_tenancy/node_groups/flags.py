@@ -23,8 +23,8 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 _MAINTENANCE_POLICY_CHOICES = {
-    'default': 'VM instances on the host are live migrated to a new '
-               'physical server.',
+    'default': 'VM instances on the host are live migrated to a new physical '
+               ' server. This is the default setting.',
     'restart-in-place': 'VM instances on the host are terminated and then '
                         'restarted on the same physical server after the '
                         'maintenance event has completed.',
@@ -69,8 +69,10 @@ def AddCreateArgsToParser(parser):
       '--maintenance-policy',
       choices=_MAINTENANCE_POLICY_CHOICES,
       type=lambda policy: policy.lower(),
-      help=('Determines the maintenance behavior during host maintenance '
-            'events.'))
+      help=(
+          'Determines the maintenance behavior during host maintenance '
+          'events. For more information, see '
+          'https://cloud.google.com/compute/docs/nodes#maintenance_policies.'))
 
 
 def AddUpdateArgsToParser(parser):

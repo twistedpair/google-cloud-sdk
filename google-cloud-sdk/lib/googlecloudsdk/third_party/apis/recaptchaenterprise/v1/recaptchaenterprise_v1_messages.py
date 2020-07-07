@@ -77,6 +77,29 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 4)
 
 
+class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
+  r"""Metrics related to challenges.
+
+  Fields:
+    failedCount: Count of submitted challenge solutions that were incorrect or
+      otherwise deemed suspicious such that a subsequent challenge was
+      triggered.
+    nocaptchaCount: Count of nocaptchas (successful verification without a
+      challenge) issued.
+    pageloadCount: Count of reCAPTCHA checkboxes or badges rendered. This is
+      mostly equivalent to a count of pageloads for pages that include
+      reCAPTCHA.
+    passedCount: Count of nocaptchas (successful verification without a
+      challenge) plus submitted challenge solutions that were correct and
+      resulted in verification.
+  """
+
+  failedCount = _messages.IntegerField(1)
+  nocaptchaCount = _messages.IntegerField(2)
+  pageloadCount = _messages.IntegerField(3)
+  passedCount = _messages.IntegerField(4)
+
+
 class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   r"""A GoogleCloudRecaptchaenterpriseV1Event object.
 
@@ -179,6 +202,23 @@ class GoogleCloudRecaptchaenterpriseV1ListKeysResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudRecaptchaenterpriseV1Metrics(_messages.Message):
+  r"""Metrics for a single Key.
+
+  Fields:
+    challengeMetrics: Metrics will be continuous and in order by dates, and in
+      the granularity of day. Only challenge-based keys (CHECKBOX, INVISIBLE),
+      will have challenge-based data.
+    scoreMetrics: Metrics will be continuous and in order by dates, and in the
+      granularity of day. All Key types should have score-based data.
+    startTime: Inclusive start time aligned to a day (UTC).
+  """
+
+  challengeMetrics = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ChallengeMetrics', 1, repeated=True)
+  scoreMetrics = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ScoreMetrics', 2, repeated=True)
+  startTime = _messages.StringField(3)
+
+
 class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
   r"""Risk analysis result for an event.
 
@@ -211,6 +251,96 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
 
   reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 1, repeated=True)
   score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudRecaptchaenterpriseV1ScoreDistribution(_messages.Message):
+  r"""Score distribution.
+
+  Messages:
+    ScoreBucketsValue: Map key is score value multiplied by 100. The scores
+      are discrete values between [0, 1]. The maximum number of buckets is on
+      order of a few dozen, but typically much lower (ie. 10).
+
+  Fields:
+    scoreBuckets: Map key is score value multiplied by 100. The scores are
+      discrete values between [0, 1]. The maximum number of buckets is on
+      order of a few dozen, but typically much lower (ie. 10).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ScoreBucketsValue(_messages.Message):
+    r"""Map key is score value multiplied by 100. The scores are discrete
+    values between [0, 1]. The maximum number of buckets is on order of a few
+    dozen, but typically much lower (ie. 10).
+
+    Messages:
+      AdditionalProperty: An additional property for a ScoreBucketsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ScoreBucketsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ScoreBucketsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  scoreBuckets = _messages.MessageField('ScoreBucketsValue', 1)
+
+
+class GoogleCloudRecaptchaenterpriseV1ScoreMetrics(_messages.Message):
+  r"""Metrics related to scoring.
+
+  Messages:
+    ActionMetricsValue: Action-based metrics. The map key is the action name
+      which specified by the site owners at time of the "execute" client-side
+      call. Populated only for SCORE keys.
+
+  Fields:
+    actionMetrics: Action-based metrics. The map key is the action name which
+      specified by the site owners at time of the "execute" client-side call.
+      Populated only for SCORE keys.
+    overallMetrics: Aggregated score metrics for all traffic.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ActionMetricsValue(_messages.Message):
+    r"""Action-based metrics. The map key is the action name which specified
+    by the site owners at time of the "execute" client-side call. Populated
+    only for SCORE keys.
+
+    Messages:
+      AdditionalProperty: An additional property for a ActionMetricsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ActionMetricsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ActionMetricsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudRecaptchaenterpriseV1ScoreDistribution attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ScoreDistribution', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  actionMetrics = _messages.MessageField('ActionMetricsValue', 1)
+  overallMetrics = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ScoreDistribution', 2)
 
 
 class GoogleCloudRecaptchaenterpriseV1TokenProperties(_messages.Message):
@@ -388,6 +518,17 @@ class RecaptchaenterpriseProjectsKeysDeleteRequest(_messages.Message):
   Fields:
     name: Required. The name of the key to be deleted, in the format
       "projects/{project}/keys/{key}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RecaptchaenterpriseProjectsKeysGetMetricsRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsKeysGetMetricsRequest object.
+
+  Fields:
+    name: Required. The name of the requested metrics, in the format
+      "projects/{project}/keys/{key}/metrics".
   """
 
   name = _messages.StringField(1, required=True)

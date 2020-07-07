@@ -35,13 +35,45 @@ def _CreateGroupLabels(policy_group_labels):
   return group_labels
 
 
-def _ExtractDescriptionAndAgents(description):
+def _ExtractDescriptionAndAgents(guest_policy_description):
+  """Extract Ops Agents policy's description and agents.
+
+  Extract Ops Agents policy's description and agents from description of
+  OS Config guest policy.
+
+  Args:
+    guest_policy_description: OS Config guest policy's description.
+
+  Returns:
+    extracted description and agents for ops agents policy.
+
+  Raises:
+    BadArgumentException: If guest policy's description is illformed JSON
+    object, or if it does not have keys description or agents.
+  """
+
   try:
-    decode_description = json.loads(description)
+    decode_description = json.loads(guest_policy_description)
   except ValueError as e:
     raise exceptions.BadArgumentException(
-        'description', 'guest policy description contains invalid JSON: %s' % e)
-  return (decode_description.get('description'), decode_description['agents'])
+        'description', 'description field is not a JSON object: {}'.format(e))
+
+  if not isinstance(decode_description, dict):
+    raise exceptions.BadArgumentException(
+        'description', 'description field is not a JSON object.')
+
+  try:
+    decoded_description = decode_description['description']
+  except KeyError as e:
+    raise exceptions.BadArgumentException(
+        'description.description', 'missing a required key description: %s' % e)
+  try:
+    decoded_agents = decode_description['agents']
+  except KeyError as e:
+    raise exceptions.BadArgumentException(
+        'description.agents', 'missing a required key agents: %s' %e)
+
+  return (decoded_description, decoded_agents)
 
 
 def _CreateAgents(agents):
@@ -80,8 +112,7 @@ def _CreateAssignment(guest_policy_assignment):
   os_types = []
   for guest_os_type in guest_policy_assignment.osTypes or []:
     os_type = agent_policy.OpsAgentPolicy.Assignment.OsType(
-        guest_os_type.osShortName, guest_os_type.osVersion,
-        guest_os_type.osArchitecture)
+        guest_os_type.osShortName, guest_os_type.osVersion)
     os_types.append(os_type)
   assignment = agent_policy.OpsAgentPolicy.Assignment(
       _CreateGroupLabels(guest_policy_assignment.groupLabels),

@@ -332,7 +332,7 @@ def AddEnablePointInTimeRecovery(parser, show_negated_in_help=False):
   parser.add_argument(
       '--enable-point-in-time-recovery',
       required=False,
-      help=('Specified if point-in-time recovery (using write-ahead log '
+      help=('Specifies if point-in-time recovery (using write-ahead log '
             'archiving) should be enabled. If backup configuration is '
             'disabled, point-in-time recovery must be disabled as well.'),
       **kwargs)

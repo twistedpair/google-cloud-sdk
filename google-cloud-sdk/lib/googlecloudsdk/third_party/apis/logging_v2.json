@@ -668,10 +668,6 @@
           "description": "Optional. Source code location information associated with the log entry, if any.",
           "$ref": "LogEntrySourceLocation"
         },
-        "bucket": {
-          "description": "Output only. The resource name of the bucket where this log is stored. Example: \"projects\/my-projectid\/locations\/my-location\/buckets\/my-bucketid\"",
-          "type": "string"
-        },
         "receivedLocation": {
           "description": "Output only. The cloud region that this LogEntry was received in, such as \"us-east1\".",
           "type": "string"

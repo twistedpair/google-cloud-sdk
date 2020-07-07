@@ -409,6 +409,10 @@
         "systrace": {
           "description": "Systrace configuration for the run.\nIf set a systrace will be taken, starting on test start and lasting for the\nconfigured duration. The systrace file thus obtained is put in the results\nbucket together with the other artifacts from the run.",
           "$ref": "SystraceSetup"
+        },
+        "dontAutograntPermissions": {
+          "description": "Whether to prevent all runtime permissions to be granted at app install",
+          "type": "boolean"
         }
       }
     },
@@ -1361,6 +1365,10 @@
         "softwareCatalog": {
           "description": "The software test environment provided by TestExecutionService.",
           "$ref": "ProvidedSoftwareCatalog"
+        },
+        "deviceIpBlockCatalog": {
+          "description": "The IP blocks used by devices in the test environment.",
+          "$ref": "DeviceIpBlockCatalog"
         }
       }
     },
@@ -1418,14 +1426,16 @@
           "description": "Whether this device is virtual or physical.",
           "enumDescriptions": [
             "Do not use.  For proto versioning only.",
-            "A software stack that simulates the device.",
-            "Actual hardware."
+            "Android virtual device using Compute Engine native virtualization. Firebase\nTest Lab only.",
+            "Actual hardware.",
+            "Android virtual device using emulator in nested virtualization. Equivalent\nto Android Studio."
           ],
           "type": "string",
           "enum": [
             "DEVICE_FORM_UNSPECIFIED",
             "VIRTUAL",
-            "PHYSICAL"
+            "PHYSICAL",
+            "EMULATOR"
           ]
         },
         "formFactor": {
@@ -1882,6 +1892,51 @@
           "type": "string"
         }
       }
+    },
+    "DeviceIpBlockCatalog": {
+      "id": "DeviceIpBlockCatalog",
+      "description": "List of IP blocks used by the Firebase Test Lab",
+      "type": "object",
+      "properties": {
+        "ipBlocks": {
+          "description": "The device IP blocks used by Firebase Test Lab",
+          "type": "array",
+          "items": {
+            "$ref": "DeviceIpBlock"
+          }
+        }
+      }
+    },
+    "DeviceIpBlock": {
+      "id": "DeviceIpBlock",
+      "description": "A single device IP block",
+      "type": "object",
+      "properties": {
+        "block": {
+          "description": "An IP address block in CIDR notation eg: 34.68.194.64\/29",
+          "type": "string"
+        },
+        "form": {
+          "description": "Whether this block is used by physical or virtual devices",
+          "enumDescriptions": [
+            "Do not use.  For proto versioning only.",
+            "Android virtual device using Compute Engine native virtualization. Firebase\nTest Lab only.",
+            "Actual hardware.",
+            "Android virtual device using emulator in nested virtualization. Equivalent\nto Android Studio."
+          ],
+          "type": "string",
+          "enum": [
+            "DEVICE_FORM_UNSPECIFIED",
+            "VIRTUAL",
+            "PHYSICAL",
+            "EMULATOR"
+          ]
+        },
+        "addedDate": {
+          "description": "The date this block was added to Firebase Test Lab",
+          "$ref": "Date"
+        }
+      }
     }
   },
   "resources": {
@@ -2030,7 +2085,8 @@
                 "ANDROID",
                 "IOS",
                 "NETWORK_CONFIGURATION",
-                "PROVIDED_SOFTWARE"
+                "PROVIDED_SOFTWARE",
+                "DEVICE_IP_BLOCKS"
               ]
             },
             "projectId": {

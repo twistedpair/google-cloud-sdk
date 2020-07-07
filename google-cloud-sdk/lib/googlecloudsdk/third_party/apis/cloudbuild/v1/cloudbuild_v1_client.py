@@ -118,42 +118,6 @@ service.
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
-
-      Args:
-        request: (CloudbuildOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/operations',
-        http_method='GET',
-        method_id='cloudbuild.operations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='CloudbuildOperationsListRequest',
-        response_type_name='ListOperationsResponse',
-        supports_download=False,
-    )
-
   class ProjectsBuildsService(base_api.BaseApiService):
     """Service class for the projects_builds resource."""
 
@@ -402,42 +366,6 @@ service.
         request_field='',
         request_type_name='CloudbuildProjectsLocationsOperationsGetRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
-
-      Args:
-        request: (CloudbuildProjectsLocationsOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations',
-        http_method='GET',
-        method_id='cloudbuild.projects.locations.operations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+name}/operations',
-        request_field='',
-        request_type_name='CloudbuildProjectsLocationsOperationsListRequest',
-        response_type_name='ListOperationsResponse',
         supports_download=False,
     )
 

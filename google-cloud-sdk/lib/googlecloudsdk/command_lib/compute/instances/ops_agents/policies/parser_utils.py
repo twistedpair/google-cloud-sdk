@@ -18,26 +18,100 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.compute.instances.ops_agents import ops_agents_policy as agent_policy
 from googlecloudsdk.calliope import arg_parsers
 
 
-def AddArgs(parser):
-  """Add shared arguments for Create/Update commands.
+# TODO(b/159913205): Migrate to calliope native solution once that feature
+# request is fulfilled.
+class ArgEnum(object):
+  """Interpret an argument value as an item from an allowed value list.
+
+  Example usage:
+
+    parser.add_argument(
+      '--agents',
+      metavar='KEY=VALUE',
+      action='store',
+      required=True,
+      type=arg_parsers.ArgList(
+          custom_delim_char=';',
+          element_type=arg_parsers.ArgDict(spec={
+              'type': ArgEnum('type', [
+                  OpsAgentPolicy.Agent.Type.LOGGING,
+                  OpsAgentPolicy.Agent.Type.METRICS]),
+              'version': str,
+              'package_state': str,
+              'enable_autoupgrade': arg_parsers.ArgBoolean(),
+          }),
+      )
+    )
+
+  Example error:
+
+    ERROR: (gcloud.alpha.compute.instances.ops-agents.policies.create) argument
+    --agents: Invalid value [what] from field [type], expected one of [logging,
+    metrics].
+  """
+
+  def __init__(self, field_name, allowed_values):
+    """Constructor.
+
+    Args:
+      field_name: str. The name of field that contains this arg value.
+      allowed_values: list of allowed values. The allowed values to validate
+        against.
+    """
+    self._field_name = field_name
+    self._allowed_values = allowed_values
+
+  def __call__(self, arg_value):
+    """Interpret the arg value as an item from an allowed value list.
+
+    Args:
+      arg_value: str. The value of the user input argument.
+
+    Returns:
+      The value of the arg.
+
+    Raises:
+      arg_parsers.ArgumentTypeError.
+        If the arg value is not one of the allowed values.
+    """
+    str_value = str(arg_value)
+    if str_value not in self._allowed_values:
+      raise arg_parsers.ArgumentTypeError(
+          'Invalid value [{0}] from field [{1}], expected one of [{2}].'.format(
+              arg_value, self._field_name, ', '.join(self._allowed_values)))
+    return str_value
+
+
+def AddSharedArgs(parser):
+  """Adds shared arguments to the given parser.
 
   Args:
     parser: A given parser
   """
   parser.add_argument(
       'POLICY_ID',
-      type=str,
+      type=arg_parsers.RegexpValidator(
+          r'^ops-agents-.*$', 'POLICY_ID must start with [ops-agents-].'),
       help="""\
-      Name of the policy to create.
+      Name of the policy.
 
       This name must contain only lowercase letters, numbers, and hyphens,
       start with a letter, end with a number or a letter, be between 1-63
       characters, and be unique within the project.
       """,
   )
+
+
+def AddMutationArgs(parser):
+  """Adds arguments for mutating commands.
+
+  Args:
+    parser: A given parser
+  """
   parser.add_argument(
       '--description',
       type=str,
@@ -52,11 +126,24 @@ def AddArgs(parser):
           custom_delim_char=';',
           element_type=arg_parsers.ArgDict(
               spec={
-                  'type': str,
-                  'version': str,
-                  'package-state': str,
-                  'enable-autoupgrade': arg_parsers.ArgBoolean(),
-              }),
+                  'type':
+                      ArgEnum('type', [
+                          agent_policy.OpsAgentPolicy.Agent.Type.LOGGING,
+                          agent_policy.OpsAgentPolicy.Agent.Type.METRICS
+                      ]),
+                  'version':
+                      str,
+                  'package-state':
+                      ArgEnum('package-state', [
+                          agent_policy.OpsAgentPolicy.Agent.PackageState
+                          .INSTALLED,
+                          agent_policy.OpsAgentPolicy.Agent.PackageState.REMOVED
+                      ]),
+                  'enable-autoupgrade':
+                      arg_parsers.ArgBoolean(),
+              },
+              required_keys=['type']
+          ),
       ),
       help="""\
       Agents to be installed.
@@ -68,18 +155,33 @@ def AddArgs(parser):
       '--os-types',
       metavar='KEY=VALUE',
       action='store',
+      required=True,
       type=arg_parsers.ArgList(
           custom_delim_char=';',
           element_type=arg_parsers.ArgDict(spec={
-              'architecture': str,
-              'short-name': str,
+              'short-name': ArgEnum(
+                  'short-name',
+                  [
+                      agent_policy.OpsAgentPolicy.Assignment.OsType
+                      .OsShortName.CENTOS,
+                      agent_policy.OpsAgentPolicy.Assignment.OsType
+                      .OsShortName.DEBIAN,
+                      agent_policy.OpsAgentPolicy.Assignment.OsType
+                      .OsShortName.RHEL,
+                      agent_policy.OpsAgentPolicy.Assignment.OsType
+                      .OsShortName.SLES,
+                      agent_policy.OpsAgentPolicy.Assignment.OsType
+                      .OsShortName.SLES_SAP,
+                      agent_policy.OpsAgentPolicy.Assignment.OsType
+                      .OsShortName.UBUNTU
+                  ]),
               'version': str,
-          }),
+          }, required_keys=['short-name', 'version']),
       ),
       help="""\
       OS Types matcher for instances on which to create the policy.
 
-      This contains fields of architecture(default: None) - sample: x86_64, short_name(required) - sample:{centos, debian, rhel}, version(required) - sample:{6, 7.8}.
+      This contains fields of short_name(required) - sample:{centos, debian, rhel}, version(required) - sample:{6, 7.8}.
       """,
   )
   parser.add_argument(

@@ -1715,7 +1715,7 @@ resources](/healthcare/docs/how-tos/fhir-resources#getting_all_patient_compartme
         method_id='healthcare.projects.locations.datasets.fhirStores.fhir.Patient-everything',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['_count', '_page_token', 'end', 'start'],
+        query_params=['_count', '_page_token', '_since', '_type', 'end', 'start'],
         relative_path='v1beta1/{+name}/$everything',
         request_field='',
         request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresFhirPatientEverythingRequest',

@@ -561,22 +561,6 @@ class CloudbuildProjectsLocationsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class CloudbuildProjectsLocationsOperationsListRequest(_messages.Message):
-  r"""A CloudbuildProjectsLocationsOperationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class CloudbuildProjectsWorkerPoolsCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsWorkerPoolsCreateRequest object.
 
@@ -665,6 +649,16 @@ class FileHashes(_messages.Message):
   fileHash = _messages.MessageField('Hash', 1, repeated=True)
 
 
+class HTTPDelivery(_messages.Message):
+  r"""HTTPDelivery is the delivery configuration for an HTTP notification.
+
+  Fields:
+    uri: The URI to which JSON-containing HTTP POST requests should be sent.
+  """
+
+  uri = _messages.StringField(1)
+
+
 class Hash(_messages.Message):
   r"""Container message for hash values.
 
@@ -692,19 +686,6 @@ class Hash(_messages.Message):
   value = _messages.BytesField(2)
 
 
-class ListOperationsResponse(_messages.Message):
-  r"""The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
 class ListWorkerPoolsResponse(_messages.Message):
   r"""Response containing existing `WorkerPools`.
 
@@ -728,6 +709,131 @@ class NetworkConfig(_messages.Message):
   """
 
   peeredNetwork = _messages.StringField(1)
+
+
+class Notification(_messages.Message):
+  r"""Notification is the container which holds the data that is relevant to
+  this particular notification.
+
+  Messages:
+    StructDeliveryValue: Escape hatch for users to supply custom delivery
+      configs.
+
+  Fields:
+    filter: The filter string to use for notification filtering. Currently,
+      this is assumed to be a CEL program. See
+      https://opensource.google/projects/cel for more.
+    httpDelivery: Configuration for HTTP delivery.
+    slackDelivery: Configuration for Slack delivery.
+    smtpDelivery: Configuration for SMTP (email) delivery.
+    structDelivery: Escape hatch for users to supply custom delivery configs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StructDeliveryValue(_messages.Message):
+    r"""Escape hatch for users to supply custom delivery configs.
+
+    Messages:
+      AdditionalProperty: An additional property for a StructDeliveryValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StructDeliveryValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  filter = _messages.StringField(1)
+  httpDelivery = _messages.MessageField('HTTPDelivery', 2)
+  slackDelivery = _messages.MessageField('SlackDelivery', 3)
+  smtpDelivery = _messages.MessageField('SMTPDelivery', 4)
+  structDelivery = _messages.MessageField('StructDeliveryValue', 5)
+
+
+class NotifierConfig(_messages.Message):
+  r"""NotifierConfig is the top-level configuration message.
+
+  Fields:
+    apiVersion: The API version of this configuration format.
+    kind: The type of notifier to use (e.g. SMTPNotifier).
+    metadata: Metadata for referring to/handling/deploying this notifier.
+    spec: The actual configuration for this notifier.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('NotifierMetadata', 3)
+  spec = _messages.MessageField('NotifierSpec', 4)
+
+
+class NotifierMetadata(_messages.Message):
+  r"""NotifierMetadata contains the data which can be used to reference or
+  describe this notifier.
+
+  Fields:
+    name: The human-readable and user-given name for the notifier. For
+      example: "repo-merge-email-notifier".
+    notifier: The string representing the name and version of notifier to
+      deploy. Expected to be of the form of "<registry-
+      path>/<name>:<version>". For example: "gcr.io/my-
+      project/notifiers/smtp:1.2.34".
+  """
+
+  name = _messages.StringField(1)
+  notifier = _messages.StringField(2)
+
+
+class NotifierSecret(_messages.Message):
+  r"""NotifierSecret is the container that maps a secret name (reference) to
+  its Google Cloud Secret Manager resource path.
+
+  Fields:
+    name: Name is the local name of the secret, such as the verbatim string
+      "my-smtp-password".
+    value: Value is interpreted to be a resource path for fetching the actual
+      (versioned) secret data for this secret. For example, this would be a
+      Google Cloud Secret Manager secret version resource path like:
+      "projects/my-project/secrets/my-secret/versions/latest".
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class NotifierSecretRef(_messages.Message):
+  r"""NotifierSecretRef contains the reference to a secret stored in the
+  corresponding NotifierSpec.
+
+  Fields:
+    secretRef: The value of `secret_ref` should be a `name` that is registered
+      in a `Secret` in the `secrets` list of the `Spec`.
+  """
+
+  secretRef = _messages.StringField(1)
+
+
+class NotifierSpec(_messages.Message):
+  r"""NotifierSpec is the configuration container for notifications.
+
+  Fields:
+    notification: The configuration of this particular notifier.
+    secrets: Configurations for secret resources used by this particular
+      notifier.
+  """
+
+  notification = _messages.MessageField('Notification', 1)
+  secrets = _messages.MessageField('NotifierSecret', 2, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -928,6 +1034,30 @@ class Results(_messages.Message):
   numArtifacts = _messages.IntegerField(6)
 
 
+class SMTPDelivery(_messages.Message):
+  r"""SMTPDelivery is the delivery configuration for an SMTP (email)
+  notification.
+
+  Fields:
+    fromAddress: This is the SMTP account/email that appears in the `From:` of
+      the email. If empty, it is assumed to be sender.
+    password: The SMTP sender's password.
+    port: The SMTP port of the server.
+    recipientAddresses: This is the list of addresses to which we send the
+      email (i.e. in the `To:` of the email).
+    senderAddress: This is the SMTP account/email that is used to send the
+      message.
+    server: The address of the SMTP server.
+  """
+
+  fromAddress = _messages.StringField(1)
+  password = _messages.MessageField('NotifierSecretRef', 2)
+  port = _messages.StringField(3)
+  recipientAddresses = _messages.StringField(4, repeated=True)
+  senderAddress = _messages.StringField(5)
+  server = _messages.StringField(6)
+
+
 class Secret(_messages.Message):
   r"""Pairs a set of secret environment variables containing encrypted values
   with the Cloud KMS key to use to decrypt the value.
@@ -978,6 +1108,19 @@ class Secret(_messages.Message):
 
   kmsKeyName = _messages.StringField(1)
   secretEnv = _messages.MessageField('SecretEnvValue', 2)
+
+
+class SlackDelivery(_messages.Message):
+  r"""SlackDelivery is the delivery configuration for delivering Slack
+  messages via webhooks. See Slack webhook documentation at:
+  https://api.slack.com/messaging/webhooks.
+
+  Fields:
+    webhookUri: The secret reference for the Slack webhook URI for sending
+      messages to a channel.
+  """
+
+  webhookUri = _messages.MessageField('NotifierSecretRef', 1)
 
 
 class Source(_messages.Message):

@@ -33,6 +33,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.survey import survey_check
 from googlecloudsdk.core.util import platforms
 
+from six.moves import http_client as httplib
+
 _CLEARCUT_ENDPOINT = 'https://play.googleapis.com/log'
 
 
@@ -174,7 +176,7 @@ def LogSurveyAnswers(survey_instance):
   body = json.dumps(_ClearcutRequest(survey_instance), sort_keys=True)
   response, _ = http_client.request(
       _CLEARCUT_ENDPOINT, method='POST', body=body, headers=headers)
-  if response['status'] != '200':
+  if int(response['status']) != httplib.OK:
     raise SurveyNotRecordedError(
         'We cannot record your feedback at this time, please try again later.')
   _UpdateSurveyCache()

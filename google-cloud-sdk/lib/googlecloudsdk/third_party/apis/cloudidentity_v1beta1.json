@@ -432,6 +432,24 @@
         }
       }
     },
+    "ListDevicesResponse": {
+      "id": "ListDevicesResponse",
+      "description": "Response message that is returned in LRO result of ListDevices Operation.",
+      "type": "object",
+      "properties": {
+        "devices": {
+          "description": "Devices meeting the list restrictions.",
+          "type": "array",
+          "items": {
+            "$ref": "Device"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
+        }
+      }
+    },
     "RingDeviceRequest": {
       "id": "RingDeviceRequest",
       "description": "Request message for ringing device.",
@@ -576,6 +594,46 @@
           "description": "When the user first signed in to the device",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "ListDeviceUsersResponse": {
+      "id": "ListDeviceUsersResponse",
+      "description": "Response message that is returned in LRO result of ListDeviceUsers Operation.",
+      "type": "object",
+      "properties": {
+        "deviceUsers": {
+          "description": "Devices meeting the list restrictions.",
+          "type": "array",
+          "items": {
+            "$ref": "DeviceUser"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
+        }
+      }
+    },
+    "LookupSelfDeviceUsersResponse": {
+      "id": "LookupSelfDeviceUsersResponse",
+      "description": "Response containing resource names of the DeviceUsers associated with the\ncaller's credentials.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "description": "[Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe DeviceUsers in the format:\n`devices\/{device_id}\/deviceUsers\/{user_resource_id}`, where\ndevice_id is the unique ID assigned to a Device and\nuser_resource_id is the unique user ID",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "customer": {
+          "description": "The obfuscated customer Id that may be passed back to other\nDevices API methods such as List, Get, etc.",
+          "type": "string"
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
         }
       }
     },
@@ -793,6 +851,24 @@
         "boolValue": {
           "description": "Represents a boolean value.",
           "type": "boolean"
+        }
+      }
+    },
+    "ListClientStatesResponse": {
+      "id": "ListClientStatesResponse",
+      "description": "Response message that is returned in LRO result of ListClientStates\nOperation.",
+      "type": "object",
+      "properties": {
+        "clientStates": {
+          "description": "Client states meeting the list restrictions.",
+          "type": "array",
+          "items": {
+            "$ref": "ClientState"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
+          "type": "string"
         }
       }
     },
@@ -1407,42 +1483,6 @@
         }
       }
     },
-    "ListDevicesResponse": {
-      "id": "ListDevicesResponse",
-      "description": "Response message that is returned in LRO result of ListDevices Operation.",
-      "type": "object",
-      "properties": {
-        "devices": {
-          "description": "Devices meeting the list restrictions.",
-          "type": "array",
-          "items": {
-            "$ref": "Device"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
-          "type": "string"
-        }
-      }
-    },
-    "ListDeviceUsersResponse": {
-      "id": "ListDeviceUsersResponse",
-      "description": "Response message that is returned in LRO result of ListDeviceUsers Operation.",
-      "type": "object",
-      "properties": {
-        "deviceUsers": {
-          "description": "Devices meeting the list restrictions.",
-          "type": "array",
-          "items": {
-            "$ref": "DeviceUser"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
-          "type": "string"
-        }
-      }
-    },
     "ListEndpointAppsResponse": {
       "id": "ListEndpointAppsResponse",
       "description": "Response message for listing all apps on the device.",
@@ -1561,46 +1601,6 @@
           "$ref": "Device"
         }
       }
-    },
-    "LookupSelfDeviceUsersResponse": {
-      "id": "LookupSelfDeviceUsersResponse",
-      "description": "Response containing resource names of the DeviceUsers associated with the\ncaller's credentials.",
-      "type": "object",
-      "properties": {
-        "names": {
-          "description": "[Resource names](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe DeviceUsers in the format:\n`devices\/{device_id}\/deviceUsers\/{user_resource_id}`, where\ndevice_id is the unique ID assigned to a Device and\nuser_resource_id is the unique user ID",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "customer": {
-          "description": "The obfuscated customer Id that may be passed back to other\nDevices API methods such as List, Get, etc.",
-          "type": "string"
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
-          "type": "string"
-        }
-      }
-    },
-    "ListClientStatesResponse": {
-      "id": "ListClientStatesResponse",
-      "description": "Response message that is returned in LRO result of ListClientStates\nOperation.",
-      "type": "object",
-      "properties": {
-        "clientStates": {
-          "description": "Client states meeting the list restrictions.",
-          "type": "array",
-          "items": {
-            "$ref": "ClientState"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results. Empty if there are no more\nresults.",
-          "type": "string"
-        }
-      }
     }
   },
   "resources": {
@@ -1646,7 +1646,7 @@
             "name"
           ],
           "response": {
-            "$ref": "Operation"
+            "$ref": "Device"
           },
           "description": "Retrieves a device."
         },
@@ -1696,7 +1696,7 @@
           "parameterOrder": [
           ],
           "response": {
-            "$ref": "Operation"
+            "$ref": "ListDevicesResponse"
           },
           "description": "Lists\/Searches devices."
         },
@@ -1988,7 +1988,7 @@
                 "name"
               ],
               "response": {
-                "$ref": "Operation"
+                "$ref": "DeviceUser"
               },
               "description": "Retrieves a DeviceUser"
             },
@@ -2036,7 +2036,7 @@
                 "parent"
               ],
               "response": {
-                "$ref": "Operation"
+                "$ref": "ListDeviceUsersResponse"
               },
               "description": "Lists\/Searches DeviceUsers."
             },
@@ -2383,7 +2383,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "Operation"
+                    "$ref": "ClientState"
                   },
                   "description": "Get client state for a device user"
                 },
@@ -2425,7 +2425,7 @@
                     "parent"
                   ],
                   "response": {
-                    "$ref": "Operation"
+                    "$ref": "ListClientStatesResponse"
                   },
                   "description": "List client states for the given search query."
                 },
@@ -2504,7 +2504,7 @@
                   "parameterOrder": [
                   ],
                   "response": {
-                    "$ref": "Operation"
+                    "$ref": "LookupSelfDeviceUsersResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-identity.devices.lookup",

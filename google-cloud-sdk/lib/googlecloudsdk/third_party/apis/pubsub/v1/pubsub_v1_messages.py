@@ -464,11 +464,11 @@ class PubsubMessage(_messages.Message):
   r"""A message that is published by publishers and consumed by subscribers.
   The message must contain either a non-empty data field or at least one
   attribute. Note that client libraries represent this object differently
-  depending on the language. See the corresponding <a
-  href="https://cloud.google.com/pubsub/docs/reference/libraries">client
-  library documentation</a> for more information. See <a
-  href="https://cloud.google.com/pubsub/quotas">Quotas and limits</a> for more
-  information about message limits.
+  depending on the language. See the corresponding [client library
+  documentation](https://cloud.google.com/pubsub/docs/reference/libraries) for
+  more information. See [quotas and limits]
+  (https://cloud.google.com/pubsub/quotas) for more information about message
+  limits.
 
   Messages:
     AttributesValue: Attributes for this message. If this field is empty, the
@@ -492,10 +492,10 @@ class PubsubMessage(_messages.Message):
       same non-empty `ordering_key` value will be delivered to subscribers in
       the order in which they are received by the Pub/Sub system. All
       `PubsubMessage`s published in a given `PublishRequest` must specify the
-      same `ordering_key` value. <b>EXPERIMENTAL:</b> This feature is part of
-      a closed alpha release. This API might be changed in backward-
-      incompatible ways and is not recommended for production use. It is not
-      subject to any SLA or deprecation policy.
+      same `ordering_key` value. **EXPERIMENTAL:** This feature is part of a
+      closed alpha release. This API might be changed in backward-incompatible
+      ways and is not recommended for production use. It is not subject to any
+      SLA or deprecation policy.
     publishTime: The time at which the message was published, populated by the
       server when it receives the `Publish` call. It must not be populated by
       the publisher in a `Publish` call.
@@ -1207,15 +1207,15 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  r"""A snapshot resource. Snapshots are used in <a
-  href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
-  operations, which allow you to manage message acknowledgments in bulk. That
-  is, you can set the acknowledgment state of messages in an existing
-  subscription to the state captured by a snapshot.
+  r"""A snapshot resource. Snapshots are used in
+  [Seek](https://cloud.google.com/pubsub/docs/replay-overview) operations,
+  which allow you to manage message acknowledgments in bulk. That is, you can
+  set the acknowledgment state of messages in an existing subscription to the
+  state captured by a snapshot.
 
   Messages:
-    LabelsValue: See <a href="https://cloud.google.com/pubsub/docs/labels">
-      Creating and managing labels</a>.
+    LabelsValue: See [Creating and managing labels]
+      (https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
     expireTime: The snapshot is guaranteed to exist up until this time. A
@@ -1229,8 +1229,8 @@ class Snapshot(_messages.Message):
       backlog as long as the snapshot exists -- will expire in 4 days. The
       service will refuse to create a snapshot that would expire in less than
       1 hour after creation.
-    labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
-      Creating and managing labels</a>.
+    labels: See [Creating and managing labels]
+      (https://cloud.google.com/pubsub/docs/labels).
     name: The name of the snapshot.
     topic: The name of the topic from which this snapshot is retaining
       messages.
@@ -1238,8 +1238,8 @@ class Snapshot(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See <a href="https://cloud.google.com/pubsub/docs/labels"> Creating
-    and managing labels</a>.
+    r"""See [Creating and managing labels]
+    (https://cloud.google.com/pubsub/docs/labels).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1368,7 +1368,7 @@ class Subscription(_messages.Message):
     enableMessageOrdering: If true, messages published with the same
       `ordering_key` in `PubsubMessage` will be delivered to the subscribers
       in the order in which they are received by the Pub/Sub system.
-      Otherwise, they may be delivered in any order. <b>EXPERIMENTAL:</b> This
+      Otherwise, they may be delivered in any order. **EXPERIMENTAL:** This
       feature is part of a closed alpha release. This API might be changed in
       backward-incompatible ways and is not recommended for production use. It
       is not subject to any SLA or deprecation policy.
@@ -1405,8 +1405,8 @@ class Subscription(_messages.Message):
       true, then messages are not expunged from the subscription's backlog,
       even if they are acknowledged, until they fall out of the
       `message_retention_duration` window. This must be true if you would like
-      to <a href="https://cloud.google.com/pubsub/docs/replay-
-      overview#seek_to_a_time"> Seek to a timestamp</a>.
+      to [Seek to a timestamp] (https://cloud.google.com/pubsub/docs/replay-
+      overview#seek_to_a_time).
     retryPolicy: A policy that specifies how Pub/Sub retries message delivery
       for this subscription.  If not set, the default retry policy is applied.
       This generally implies that messages will be retried as soon as possible
@@ -1486,15 +1486,15 @@ class Topic(_messages.Message):
   r"""A topic resource.
 
   Messages:
-    LabelsValue: See <a href="https://cloud.google.com/pubsub/docs/labels">
-      Creating and managing labels</a>.
+    LabelsValue: See [Creating and managing labels]
+      (https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
     kmsKeyName: The resource name of the Cloud KMS CryptoKey to be used to
       protect access to messages published on this topic.  The expected format
       is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
-    labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
-      Creating and managing labels</a>.
+    labels: See [Creating and managing labels]
+      (https://cloud.google.com/pubsub/docs/labels).
     messageStoragePolicy: Policy constraining the set of Google Cloud Platform
       regions where messages published to the topic may be stored. If not
       present, then no constraints are in effect.
@@ -1508,8 +1508,8 @@ class Topic(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See <a href="https://cloud.google.com/pubsub/docs/labels"> Creating
-    and managing labels</a>.
+    r"""See [Creating and managing labels]
+    (https://cloud.google.com/pubsub/docs/labels).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

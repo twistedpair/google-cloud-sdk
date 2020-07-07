@@ -636,9 +636,6 @@ class LogEntry(_messages.Message):
       "type.googleapis.com/google.appengine.logging.v1.RequestLog"
 
   Fields:
-    bucket: Output only. The resource name of the bucket where this log is
-      stored. Example: "projects/my-projectid/locations/my-
-      location/buckets/my-bucketid"
     httpRequest: Optional. Information about the HTTP request associated with
       this log entry, if applicable.
     insertId: Optional. A unique identifier for the log entry. If you provide
@@ -833,25 +830,24 @@ class LogEntry(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  bucket = _messages.StringField(1)
-  httpRequest = _messages.MessageField('HttpRequest', 2)
-  insertId = _messages.StringField(3)
-  jsonPayload = _messages.MessageField('JsonPayloadValue', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  logName = _messages.StringField(6)
-  metadata = _messages.MessageField('MonitoredResourceMetadata', 7)
-  operation = _messages.MessageField('LogEntryOperation', 8)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 9)
-  receiveTimestamp = _messages.StringField(10)
-  receivedLocation = _messages.StringField(11)
-  resource = _messages.MessageField('MonitoredResource', 12)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 13)
-  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 14)
-  spanId = _messages.StringField(15)
-  textPayload = _messages.StringField(16)
-  timestamp = _messages.StringField(17)
-  trace = _messages.StringField(18)
-  traceSampled = _messages.BooleanField(19)
+  httpRequest = _messages.MessageField('HttpRequest', 1)
+  insertId = _messages.StringField(2)
+  jsonPayload = _messages.MessageField('JsonPayloadValue', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  logName = _messages.StringField(5)
+  metadata = _messages.MessageField('MonitoredResourceMetadata', 6)
+  operation = _messages.MessageField('LogEntryOperation', 7)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 8)
+  receiveTimestamp = _messages.StringField(9)
+  receivedLocation = _messages.StringField(10)
+  resource = _messages.MessageField('MonitoredResource', 11)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 13)
+  spanId = _messages.StringField(14)
+  textPayload = _messages.StringField(15)
+  timestamp = _messages.StringField(16)
+  trace = _messages.StringField(17)
+  traceSampled = _messages.BooleanField(18)
 
 
 class LogEntryOperation(_messages.Message):

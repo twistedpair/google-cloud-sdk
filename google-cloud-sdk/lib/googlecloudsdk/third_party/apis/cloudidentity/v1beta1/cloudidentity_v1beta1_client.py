@@ -63,7 +63,7 @@ caller's credentials, as well as the properties provided in the request.
         request: (CloudidentityDevicesDeviceUsersLookupSelfRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (LookupSelfDeviceUsersResponse) The response message.
       """
       config = self.GetMethodConfig('LookupSelf')
       return self._RunMethod(
@@ -78,7 +78,7 @@ caller's credentials, as well as the properties provided in the request.
         relative_path='v1beta1/devices/-/deviceUsers:lookupSelf',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersLookupSelfRequest',
-        response_type_name='Operation',
+        response_type_name='LookupSelfDeviceUsersResponse',
         supports_download=False,
     )
 
@@ -109,7 +109,7 @@ caller's credentials, as well as the properties provided in the request.
         request: (CloudidentityDevicesDeviceUsersClientStatesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (ClientState) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -125,7 +125,7 @@ caller's credentials, as well as the properties provided in the request.
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersClientStatesGetRequest',
-        response_type_name='Operation',
+        response_type_name='ClientState',
         supports_download=False,
     )
 
@@ -136,7 +136,7 @@ caller's credentials, as well as the properties provided in the request.
         request: (CloudidentityDevicesDeviceUsersClientStatesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (ListClientStatesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -152,7 +152,7 @@ caller's credentials, as well as the properties provided in the request.
         relative_path='v1beta1/{+parent}/clientStates',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersClientStatesListRequest',
-        response_type_name='Operation',
+        response_type_name='ListClientStatesResponse',
         supports_download=False,
     )
 
@@ -375,7 +375,7 @@ wipe operation returning success and the device being wiped.
         request: (CloudidentityDevicesDeviceUsersGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (DeviceUser) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -391,7 +391,7 @@ wipe operation returning success and the device being wiped.
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersGetRequest',
-        response_type_name='Operation',
+        response_type_name='DeviceUser',
         supports_download=False,
     )
 
@@ -402,7 +402,7 @@ wipe operation returning success and the device being wiped.
         request: (CloudidentityDevicesDeviceUsersListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (ListDeviceUsersResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -418,7 +418,7 @@ wipe operation returning success and the device being wiped.
         relative_path='v1beta1/{+parent}/deviceUsers',
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersListRequest',
-        response_type_name='Operation',
+        response_type_name='ListDeviceUsersResponse',
         supports_download=False,
     )
 
@@ -657,7 +657,7 @@ wipe operation returning success and the device being wiped.
         request: (CloudidentityDevicesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (Device) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -673,7 +673,7 @@ wipe operation returning success and the device being wiped.
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='CloudidentityDevicesGetRequest',
-        response_type_name='Operation',
+        response_type_name='Device',
         supports_download=False,
     )
 
@@ -711,7 +711,7 @@ wipe operation returning success and the device being wiped.
         request: (CloudidentityDevicesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (ListDevicesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -726,7 +726,7 @@ wipe operation returning success and the device being wiped.
         relative_path='v1beta1/devices',
         request_field='',
         request_type_name='CloudidentityDevicesListRequest',
-        response_type_name='Operation',
+        response_type_name='ListDevicesResponse',
         supports_download=False,
     )
 

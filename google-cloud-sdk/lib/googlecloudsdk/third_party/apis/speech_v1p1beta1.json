@@ -761,6 +761,21 @@
         "name": {
           "description": "Use `model` field in RecognitionConfig instead.",
           "type": "string"
+        },
+        "outputConfig": {
+          "description": "Optional. If set this field configures how the recognizer will output the final\ntranscript.",
+          "$ref": "TranscriptOutputConfig"
+        }
+      }
+    },
+    "TranscriptOutputConfig": {
+      "id": "TranscriptOutputConfig",
+      "description": "Provides information to the recognizer that specifies the transcript output.",
+      "type": "object",
+      "properties": {
+        "gcsUri": {
+          "description": "Specifies a Cloud Storage URI for the final transcript. Returns\nINVALID_ARGUMENT if not in the format: `gs:\/\/bucket_name\/object_name`. If\nthe write attempt fails, relevant error information will be stored in the\nresponse object.",
+          "type": "string"
         }
       }
     },
@@ -1093,6 +1108,10 @@
         "uri": {
           "description": "Output only. The URI of the audio file being transcribed. Empty if the audio was sent\nas byte content.",
           "type": "string"
+        },
+        "outputConfig": {
+          "description": "Output only. A copy of the TranscriptOutputConfig if it was set in the request.",
+          "$ref": "TranscriptOutputConfig"
         }
       }
     },
@@ -1107,6 +1126,14 @@
           "items": {
             "$ref": "SpeechRecognitionResult"
           }
+        },
+        "outputConfig": {
+          "description": "Original output config if present in the request.",
+          "$ref": "TranscriptOutputConfig"
+        },
+        "outputError": {
+          "description": "If the transcript output fails this field contains the relevant error.",
+          "$ref": "Status"
         }
       }
     },

@@ -2154,7 +2154,7 @@
     },
     "GoogleCloudDialogflowV2SentimentAnalysisResult": {
       "id": "GoogleCloudDialogflowV2SentimentAnalysisResult",
-      "description": "The result of sentiment analysis as configured by\n`sentiment_analysis_request_config`.",
+      "description": "The result of sentiment analysis. Sentiment analysis inspects user input\nand identifies the prevailing subjective opinion, especially to determine a\nuser's attitude as positive, negative, or neutral.\nFor Participants.AnalyzeContent, it needs to be configured in\nDetectIntentRequest.query_params. For\nParticipants.StreamingAnalyzeContent, it needs to be configured in\nStreamingDetectIntentRequest.query_params.\nAnd for Participants.AnalyzeContent and\nParticipants.StreamingAnalyzeContent, it needs to be configured in\nConversationProfile.human_agent_assistant_config",
       "type": "object",
       "properties": {
         "queryTextSentiment": {
@@ -4089,7 +4089,7 @@
     },
     "GoogleCloudDialogflowV2beta1SentimentAnalysisResult": {
       "id": "GoogleCloudDialogflowV2beta1SentimentAnalysisResult",
-      "description": "The result of sentiment analysis as configured by\n`sentiment_analysis_request_config`.",
+      "description": "The result of sentiment analysis. Sentiment analysis inspects user input\nand identifies the prevailing subjective opinion, especially to determine a\nuser's attitude as positive, negative, or neutral.\nFor Participants.AnalyzeContent, it needs to be configured in\nDetectIntentRequest.query_params. For\nParticipants.StreamingAnalyzeContent, it needs to be configured in\nStreamingDetectIntentRequest.query_params.\nAnd for Participants.AnalyzeContent and\nParticipants.StreamingAnalyzeContent, it needs to be configured in\nConversationProfile.human_agent_assistant_config",
       "type": "object",
       "properties": {
         "queryTextSentiment": {
@@ -4538,6 +4538,10 @@
           "description": "Indicates that the conversation succeeded.",
           "$ref": "GoogleCloudDialogflowCxV3beta1ResponseMessageConversationSuccess"
         },
+        "outputAudioText": {
+          "description": "A text or ssml response that is preferentially used for TTS output audio\nsynthesis, as described in the comment on the ResponseMessage message.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1ResponseMessageOutputAudioText"
+        },
         "liveAgentHandoff": {
           "description": "Hands off conversation to a human agent.",
           "$ref": "GoogleCloudDialogflowCxV3beta1ResponseMessageLiveAgentHandoff"
@@ -4601,6 +4605,21 @@
             "type": "any",
             "description": "Properties of the object."
           }
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1ResponseMessageOutputAudioText": {
+      "id": "GoogleCloudDialogflowCxV3beta1ResponseMessageOutputAudioText",
+      "description": "A text or ssml response that is preferentially used for TTS output audio\nsynthesis, as described in the comment on the ResponseMessage message.",
+      "type": "object",
+      "properties": {
+        "text": {
+          "description": "The raw text to be synthesized.",
+          "type": "string"
+        },
+        "ssml": {
+          "description": "The SSML text to be synthesized. For more information, see\n[SSML](\/speech\/text-to-speech\/docs\/ssml).",
+          "type": "string"
         }
       }
     },

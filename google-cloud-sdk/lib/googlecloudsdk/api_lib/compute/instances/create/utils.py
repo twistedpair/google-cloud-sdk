@@ -357,6 +357,9 @@ def CreatePersistentCreateDiskMessages(compute_client,
       if snapshot_key_file:
         initialize_params.snapshotKeyFile = snapshot_key_file
     boot = disk.get('boot') == 'yes'
+    multi_writer = disk.get('multi-writer') == 'yes'
+    if multi_writer:
+      initialize_params.multiWriter = True
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)
     create_disk = messages.AttachedDisk(

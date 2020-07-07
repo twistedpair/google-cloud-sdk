@@ -196,6 +196,34 @@ on whether the event turned out to be authentic or fradulent.
         supports_download=False,
     )
 
+    def GetMetrics(self, request, global_params=None):
+      r"""Get some aggregated metrics for a Key. This method is used by Pantheon.
+to build simple dashboards.
+
+      Args:
+        request: (RecaptchaenterpriseProjectsKeysGetMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecaptchaenterpriseV1Metrics) The response message.
+      """
+      config = self.GetMethodConfig('GetMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/keys/{keysId}/metrics',
+        http_method='GET',
+        method_id='recaptchaenterprise.projects.keys.getMetrics',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='RecaptchaenterpriseProjectsKeysGetMetricsRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1Metrics',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Returns the list of all keys that belong to a project.
 

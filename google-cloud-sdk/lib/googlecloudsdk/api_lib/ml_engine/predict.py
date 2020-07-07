@@ -24,6 +24,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.credentials import http
 
 import six
+from six.moves import http_client as httplib
 
 
 class InstancesEncodeError(core_exceptions.Error):
@@ -72,7 +73,7 @@ def Predict(model_or_version_ref, instances, signature_name=None):
   encoding = None if six.PY2 else 'utf-8'
   response, response_body = http.Http(response_encoding=encoding).request(
       uri=url, method='POST', body=body, headers=headers)
-  if response.get('status') != '200':
+  if int(response.get('status')) != httplib.OK:
     raise HttpRequestFailError('HTTP request failed. Response: ' +
                                response_body)
   try:
@@ -115,7 +116,7 @@ def Explain(model_or_version_ref, instances):
   encoding = None if six.PY2 else 'utf-8'
   response, response_body = http.Http(response_encoding=encoding).request(
       uri=url, method='POST', body=body, headers=headers)
-  if response.get('status') != '200':
+  if int(response.get('status')) != httplib.OK:
     raise HttpRequestFailError('HTTP request failed. Response: ' +
                                response_body)
   try:

@@ -48,7 +48,8 @@ def ResolveAppLocation(project_ref):
   if location is not None:
     return location
   raise RegionResolvingError(
-      'Could not determine the location for the project. Please try again.')
+      'Could not determine the location for the project. Please try again. It '
+      'is possible an AppEngine App does not exist for this project.')
 
 
 def _GetLocation(project_ref):
@@ -70,10 +71,12 @@ def _GetLocation(project_ref):
 
 def _CreateApp(project_ref):
   """Walks the user through creating an AppEngine app."""
+
   project = properties.VALUES.core.project.GetOrFail()
   if console_io.PromptContinue(
       message=('There is no App Engine app in project [{}].'.format(project)),
       prompt_string=('Would you like to create one'),
+      default=False,
       throw_if_unattended=True):
     try:
       app_engine_api_client = app_engine_api.GetApiClientForTrack(

@@ -235,12 +235,16 @@ class AndroidModel(_messages.Message):
 
     Values:
       DEVICE_FORM_UNSPECIFIED: Do not use.  For proto versioning only.
-      VIRTUAL: A software stack that simulates the device.
+      VIRTUAL: Android virtual device using Compute Engine native
+        virtualization. Firebase Test Lab only.
       PHYSICAL: Actual hardware.
+      EMULATOR: Android virtual device using emulator in nested
+        virtualization. Equivalent to Android Studio.
     """
     DEVICE_FORM_UNSPECIFIED = 0
     VIRTUAL = 1
     PHYSICAL = 2
+    EMULATOR = 3
 
   brand = _messages.StringField(1)
   codename = _messages.StringField(2)
@@ -544,6 +548,50 @@ class DeviceFile(_messages.Message):
 
   obbFile = _messages.MessageField('ObbFile', 1)
   regularFile = _messages.MessageField('RegularFile', 2)
+
+
+class DeviceIpBlock(_messages.Message):
+  r"""A single device IP block
+
+  Enums:
+    FormValueValuesEnum: Whether this block is used by physical or virtual
+      devices
+
+  Fields:
+    addedDate: The date this block was added to Firebase Test Lab
+    block: An IP address block in CIDR notation eg: 34.68.194.64/29
+    form: Whether this block is used by physical or virtual devices
+  """
+
+  class FormValueValuesEnum(_messages.Enum):
+    r"""Whether this block is used by physical or virtual devices
+
+    Values:
+      DEVICE_FORM_UNSPECIFIED: Do not use.  For proto versioning only.
+      VIRTUAL: Android virtual device using Compute Engine native
+        virtualization. Firebase Test Lab only.
+      PHYSICAL: Actual hardware.
+      EMULATOR: Android virtual device using emulator in nested
+        virtualization. Equivalent to Android Studio.
+    """
+    DEVICE_FORM_UNSPECIFIED = 0
+    VIRTUAL = 1
+    PHYSICAL = 2
+    EMULATOR = 3
+
+  addedDate = _messages.MessageField('Date', 1)
+  block = _messages.StringField(2)
+  form = _messages.EnumField('FormValueValuesEnum', 3)
+
+
+class DeviceIpBlockCatalog(_messages.Message):
+  r"""List of IP blocks used by the Firebase Test Lab
+
+  Fields:
+    ipBlocks: The device IP blocks used by Firebase Test Lab
+  """
+
+  ipBlocks = _messages.MessageField('DeviceIpBlock', 1, repeated=True)
 
 
 class Distribution(_messages.Message):
@@ -1195,6 +1243,8 @@ class TestEnvironmentCatalog(_messages.Message):
 
   Fields:
     androidDeviceCatalog: Supported Android devices.
+    deviceIpBlockCatalog: The IP blocks used by devices in the test
+      environment.
     iosDeviceCatalog: Supported iOS devices.
     networkConfigurationCatalog: Supported network configurations.
     softwareCatalog: The software test environment provided by
@@ -1202,9 +1252,10 @@ class TestEnvironmentCatalog(_messages.Message):
   """
 
   androidDeviceCatalog = _messages.MessageField('AndroidDeviceCatalog', 1)
-  iosDeviceCatalog = _messages.MessageField('IosDeviceCatalog', 2)
-  networkConfigurationCatalog = _messages.MessageField('NetworkConfigurationCatalog', 3)
-  softwareCatalog = _messages.MessageField('ProvidedSoftwareCatalog', 4)
+  deviceIpBlockCatalog = _messages.MessageField('DeviceIpBlockCatalog', 2)
+  iosDeviceCatalog = _messages.MessageField('IosDeviceCatalog', 3)
+  networkConfigurationCatalog = _messages.MessageField('NetworkConfigurationCatalog', 4)
+  softwareCatalog = _messages.MessageField('ProvidedSoftwareCatalog', 5)
 
 
 class TestExecution(_messages.Message):
@@ -1533,6 +1584,8 @@ class TestSetup(_messages.Message):
       treated as implicit path substitutions. E.g. if /sdcard on a particular
       device does not map to external storage, the system will replace it with
       the external storage path prefix for that device.
+    dontAutograntPermissions: Whether to prevent all runtime permissions to be
+      granted at app install
     environmentVariables: Environment variables to set for the test (only
       applicable for instrumentation tests).
     filesToPush: List of files to push to the device before starting the test.
@@ -1549,10 +1602,11 @@ class TestSetup(_messages.Message):
   account = _messages.MessageField('Account', 1)
   additionalApks = _messages.MessageField('Apk', 2, repeated=True)
   directoriesToPull = _messages.StringField(3, repeated=True)
-  environmentVariables = _messages.MessageField('EnvironmentVariable', 4, repeated=True)
-  filesToPush = _messages.MessageField('DeviceFile', 5, repeated=True)
-  networkProfile = _messages.StringField(6)
-  systrace = _messages.MessageField('SystraceSetup', 7)
+  dontAutograntPermissions = _messages.BooleanField(4)
+  environmentVariables = _messages.MessageField('EnvironmentVariable', 5, repeated=True)
+  filesToPush = _messages.MessageField('DeviceFile', 6, repeated=True)
+  networkProfile = _messages.StringField(7)
+  systrace = _messages.MessageField('SystraceSetup', 8)
 
 
 class TestSpecification(_messages.Message):
@@ -1663,12 +1717,14 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
       IOS: <no description>
       NETWORK_CONFIGURATION: <no description>
       PROVIDED_SOFTWARE: <no description>
+      DEVICE_IP_BLOCKS: <no description>
     """
     ENVIRONMENT_TYPE_UNSPECIFIED = 0
     ANDROID = 1
     IOS = 2
     NETWORK_CONFIGURATION = 3
     PROVIDED_SOFTWARE = 4
+    DEVICE_IP_BLOCKS = 5
 
   environmentType = _messages.EnumField('EnvironmentTypeValueValuesEnum', 1, required=True)
   projectId = _messages.StringField(2)

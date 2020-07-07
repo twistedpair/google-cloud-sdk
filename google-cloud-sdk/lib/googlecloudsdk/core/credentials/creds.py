@@ -23,6 +23,7 @@ import abc
 import base64
 import copy
 import enum
+import hashlib
 import json
 import os
 
@@ -43,7 +44,7 @@ from google.auth import credentials as google_auth_creds
 
 ADC_QUOTA_PROJECT_FIELD_NAME = 'quota_project_id'
 
-_TOKEN_URI = 'https://oauth2.googleapis.com/token'
+TOKEN_URI = 'https://oauth2.googleapis.com/token'
 _REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke'
 
 UNKNOWN_CREDS_NAME = 'unknown'
@@ -387,7 +388,8 @@ def MaybeAttachAccessTokenCacheStore(credentials,
     return credentials
   account_id = getattr(credentials, 'service_account_email', None)
   if not account_id:
-    account_id = six.text_type(hash(credentials.refresh_token))
+    account_id = hashlib.sha256(six.ensure_binary(
+        credentials.refresh_token)).hexdigest()
 
   access_token_cache = AccessTokenCache(
       access_token_file or config.Paths().access_token_db_path)
@@ -414,7 +416,8 @@ def MaybeAttachAccessTokenCacheStoreGoogleAuth(credentials,
   """
   account_id = getattr(credentials, 'service_account_email', None)
   if not account_id:
-    account_id = six.text_type(hash(credentials.refresh_token))
+    account_id = hashlib.sha256(six.ensure_binary(
+        credentials.refresh_token)).hexdigest()
 
   access_token_cache = AccessTokenCache(access_token_file or
                                         config.Paths().access_token_db_path)
@@ -804,7 +807,7 @@ def FromJsonGoogleAuth(json_value):
     # To be backward compatible with oauth2client, which sets the token URI
     # internally if it is not provided.
     if not json_key.get('token_uri'):
-      json_key['token_uri'] = _TOKEN_URI
+      json_key['token_uri'] = TOKEN_URI
     # Import only when necessary to decrease the startup time. Move it to
     # global once google-auth is ready to replace oauth2client.
     # pylint: disable=g-import-not-at-top

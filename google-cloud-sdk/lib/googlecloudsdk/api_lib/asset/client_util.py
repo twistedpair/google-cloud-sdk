@@ -34,6 +34,7 @@ from googlecloudsdk.core.util import encoding as core_encoding
 from googlecloudsdk.core.util import times
 
 import six
+from six.moves import http_client as httplib
 
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
@@ -127,7 +128,7 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
 
   content = core_encoding.Decode(raw_content)
 
-  if response['status'] != '200':
+  if int(response['status']) != httplib.OK:
     http_error = api_exceptions.HttpError(response, content, url)
     raise exceptions.HttpException(http_error)
 
@@ -253,7 +254,7 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
 
   content = core_encoding.Decode(raw_content)
 
-  if response['status'] != '200':
+  if int(response['status']) != httplib.OK:
     http_error = api_exceptions.HttpError(response, content, url)
     raise exceptions.HttpException(http_error)
 

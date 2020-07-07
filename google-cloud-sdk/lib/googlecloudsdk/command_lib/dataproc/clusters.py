@@ -149,6 +149,12 @@ def ArgsForClusterRef(parser,
       dependencies, miscellaneous config files, and job driver console output
       when using this cluster.
       """)
+  parser.add_argument(
+      '--temp-bucket',
+      help="""\
+      The Google Cloud Storage bucket to use by default to to store
+      ephemeral cluster and jobs data, such as Spark and MapReduce history files.
+      """)
 
   netparser = gce_platform_group.add_argument_group(mutex=True)
   netparser.add_argument(
@@ -710,6 +716,7 @@ def GetClusterConfig(args,
 
   cluster_config = dataproc.messages.ClusterConfig(
       configBucket=args.bucket,
+      tempBucket=args.temp_bucket,
       gceClusterConfig=gce_cluster_config,
       masterConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_masters,

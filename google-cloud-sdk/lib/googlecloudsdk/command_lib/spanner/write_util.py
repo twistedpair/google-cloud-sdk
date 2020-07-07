@@ -127,10 +127,12 @@ class _ColumnType(six.with_metaclass(abc.ABCMeta, object)):
     scalar_type: String, the type of the column or the element of the column
         (if the column is an array).
   """
+  # TODO(b/143093180): Support numeric in keys.
   # For Scalar types: there are 7 scalar types in Cloud Spanner considered as
-  # valid key and column types.
+  # valid key and column types. The NUMERIC type is currently only valid as a
+  # column type, not as a key type.
   _SCALAR_TYPES = ('BOOL', 'BYTES', 'DATE', 'FLOAT64', 'INT64', 'STRING',
-                   'TIMESTAMP')
+                   'TIMESTAMP', 'NUMERIC')
 
   def __init__(self, scalar_type):
     self.scalar_type = scalar_type
@@ -194,8 +196,8 @@ def ConvertJsonValueForScalarTypes(scalar_type, scalar_value):
       return extra_types.JsonValue(double_value=float(scalar_value))
   else:
     # TODO(b/73077622): add bytes conversion.
-    # For other data types (INT, STRING, TIMESTAMP, DATE), the json format
-    # would be string.
+    # For other data types (INT, STRING, TIMESTAMP, DATE, NUMERIC), the json
+    # format would be string.
     return extra_types.JsonValue(string_value=scalar_value)
 
 
@@ -363,6 +365,12 @@ class Table(object):
       column_defs = table_match.group('columns')
       column_dict = OrderedDict()
 
+      # TODO(b/143093180): Remove the check that prevents numeric or array of
+      # numeric from being used as a key value once we fully support numeric in
+      # keys.
+      scalar_numeric_col_type = _ColumnType.FromDdl('NUMERIC')
+      array_numeric_col_type = _ColumnType.FromDdl('ARRAY<NUMERIC>')
+
       for column_ddl in column_defs.split(','):
         # It can be an empty string at the end of the list.
         if column_ddl and not column_ddl.isspace():
@@ -372,6 +380,13 @@ class Table(object):
       # Example: PRIMARY KEY ( Bar, Qux ) -> [Bar,Qux].
       raw_primary_keys = table_match.groupdict()['primary_keys']
       primary_keys_list = [k.strip() for k in raw_primary_keys.split(',')]
+      for primary_key in primary_keys_list:
+        if primary_key in column_dict and (
+            column_dict[primary_key].col_type == scalar_numeric_col_type or
+            column_dict[primary_key].col_type == array_numeric_col_type):
+          raise ValueError(
+              'Invalid DDL: Column [{}] is not a valid primary key type.'
+              .format(primary_key))
 
       return Table(table_name, column_dict, primary_keys_list)
 

@@ -28,6 +28,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources as cloud_resources
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import encoding as core_encoding
+from six.moves import http_client as httplib
 from six.moves import urllib
 
 
@@ -98,7 +99,7 @@ class APIAdapter(object):
     response, raw_content = http.Http().request(uri=url)
     content = core_encoding.Decode(raw_content)
     status_code = response.get('status')
-    if status_code != '200':
+    if int(status_code) != httplib.OK:
       msg = self._HTTP_ERROR_FORMAT.format(status_code, content)
       raise exceptions.HttpException(msg)
     return json.loads(content).get('manifest')

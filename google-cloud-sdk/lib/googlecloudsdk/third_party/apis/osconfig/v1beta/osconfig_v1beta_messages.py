@@ -918,7 +918,7 @@ class PatchDeployment(_messages.Message):
     patchConfig: Optional. Patch configuration that is applied.
     recurringSchedule: Required. Schedule recurring executions.
     updateTime: Output only. Time the patch deployment was last updated.
-      Timestamp is in [RFC3339]("https://www.ietf.org/rfc/rfc3339.txt) text
+      Timestamp is in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text
       format.
   """
 
@@ -950,7 +950,7 @@ class PatchInstanceFilter(_messages.Message):
       targeting configs, for example prefix="prod-".
     instances: Targets any of the VM instances specified. Instances are
       specified by their URI in the form
-      `zones/[ZONE]/instances/[INSTANCE_NAME],
+      `zones/[ZONE]/instances/[INSTANCE_NAME]`,
       `projects/[PROJECT_ID]/zones/[ZONE]/instances/[INSTANCE_NAME]`, or `http
       s://www.googleapis.com/compute/v1/projects/[PROJECT_ID]/zones/[ZONE]/ins
       tances/[INSTANCE_NAME]`

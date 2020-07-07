@@ -97,9 +97,9 @@ class Any(_messages.Message):
   foo = any.unpack(Foo.class); }  Example 3: Pack and unpack a message in
   Python.  foo = Foo(...) any = Any() any.Pack(foo) ... if
   any.Is(Foo.DESCRIPTOR): any.Unpack(foo) ...  Example 4: Pack and unpack a
-  message in Go  foo := &pb.Foo{...} any, err := ptypes.MarshalAny(foo) ...
-  foo := &pb.Foo{} if err := ptypes.UnmarshalAny(any, foo); err != nil { ... }
-  The pack methods provided by protobuf library will by default use
+  message in Go  foo := &pb.Foo{...} any, err := anypb.New(foo) if err != nil
+  { ... } ... foo := &pb.Foo{} if err := any.UnmarshalTo(foo); err != nil {
+  ... }  The pack methods provided by protobuf library will by default use
   'type.googleapis.com/full.type.name' as the type URL and the unpack methods
   only use the fully qualified type name after the last '/' in the type URL,
   for example "foo.bar.com/x/y.z" will yield type name "y.z".    JSON ==== The

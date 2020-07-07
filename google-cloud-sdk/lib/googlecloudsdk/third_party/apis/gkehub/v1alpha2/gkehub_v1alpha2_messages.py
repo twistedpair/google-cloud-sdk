@@ -295,6 +295,7 @@ class Condition(_messages.Message):
         CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
         based on the *absence* of a credentials type, so the conditions can
         only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
+      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE.
     """
     NO_ATTR = 0
     AUTHORITY = 1
@@ -303,6 +304,7 @@ class Condition(_messages.Message):
     APPROVER = 4
     JUSTIFICATION_TYPE = 5
     CREDENTIALS_TYPE = 6
+    CREDS_ASSERTION = 7
 
   class OpValueValuesEnum(_messages.Enum):
     r"""An operator to apply the subject with.
@@ -848,12 +850,15 @@ class KubernetesMetadata(_messages.Message):
 
 
 class KubernetesResource(_messages.Message):
-  r"""KubernetesResource contains the YAML manifests for Kubernetes resources
-  of the Membership in the cluster. Upon CreateMembership:   - The caller
-  should provide membership_cr_manifest if a Membership CR     exists in the
-  cluster.   - The caller should then apply resources from the successful
-  GetMembership request. Upon UpdateMembership:   - The caller should re-apply
-  the resources from the returned Membership.
+  r"""KubernetesResource contains the YAML manifests and configs for
+  Kubernetes resources of the Membership in the cluster. Upon
+  CreateMembership:   - The caller should provide membership_cr_manifest if a
+  Membership CR     exists in the cluster.   - The caller should provide
+  connect_version if they wish to also install     the Connect agent.   - The
+  caller should then apply resources from the successful     GetMembership
+  request. Upon UpdateMembership:   - The caller should provide
+  membership_cr_manifest if a Membership CR     exists in the cluster.   - The
+  caller should re-apply the resources from the returned Membership.
 
   Fields:
     connectResources: Output only. The Kubernetes resources for installing GKE
@@ -862,7 +867,7 @@ class KubernetesResource(_messages.Message):
       but not in standalone Get/ListMembership requests. To get the resource
       manifest after the initial registration, the caller could make an
       UpdateMembership call with an empty field mask.
-    connectVersion: Input only. The connect version to generate for
+    connectVersion: Immutable. The connect version to generate for
       connect_resources. * If set to "latest", the latest Connect resources
       will be populated. This   should be the default option for most clients.
       * If set to a specific Connect version, the Connect resources of the
@@ -872,7 +877,9 @@ class KubernetesResource(_messages.Message):
     membershipCrManifest: Input only. The YAML representation of the
       Membership CR if already exists in the cluster. Leave empty if no
       Membership CR exists. The CR manifest will be used to validate that the
-      cluster has not been registered with another Membership.
+      cluster has not been registered with another Membership. For GKE
+      clusters, the input from the caller will be ignored as Hub API server
+      will directly fetch the Membership CR from the cluster.
     membershipResources: Output only. The additional Kubernetes resources that
       need to be applied to the cluster after the membership creation and
       every update. This field is only populated in the Membership returned
@@ -1122,8 +1129,7 @@ class MembershipEndpoint(_messages.Message):
       cluster is exclusively registered to one and only one Hub   Membership.
       * Propagate Workload Pool Information available in the Membership
       Authority   field. * Ensure proper initial configuration of default Hub
-      Features. This field is only filled out upon a Membership Get request if
-      `WITH_KUBERNETES_RESOURCES` or `FULL` view is specified.
+      Features.
   """
 
   gkeCluster = _messages.MessageField('GkeCluster', 1)

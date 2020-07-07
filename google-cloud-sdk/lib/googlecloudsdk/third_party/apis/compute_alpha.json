@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20200619",
+ "revision": "20200626",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1337,6 +1337,11 @@
       ""
      ]
     },
+    "provisionedIops": {
+     "type": "string",
+     "description": "Indicates how many IOPS must be provisioned for the disk.",
+     "format": "int64"
+    },
     "replicaZones": {
      "type": "array",
      "description": "URLs of the zones where the disk should be replicated to. Only applicable for regional resources.",
@@ -2054,10 +2059,12 @@
      "description": "Indicates which method of prediction is used for CPU utilization metric, if any. Current set of possible values: * NONE: No predictions are made based on the scaling metric when calculating the number of VM instances. * STANDARD: Standard predictive autoscaling predicts the future values of the scaling metric and then scales a MIG to ensure that new VM instances are ready in time to cover the predicted peak. New values might be added in the future. Some of the values might not be available in all API versions.",
      "enum": [
       "NONE",
+      "OPTIMIZE_AVAILABILITY",
       "PREDICTIVE_METHOD_UNSPECIFIED",
       "STANDARD"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -2314,6 +2321,10 @@
    "type": "object",
    "description": "Message containing Cloud CDN configuration for a backend bucket.",
    "properties": {
+    "requestCoalescing": {
+     "type": "boolean",
+     "description": "If true then Cloud CDN will combine multiple concurrent cache fill requests into a small number of requests to the origin."
+    },
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
      "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a \"Cache-Control: public, max-age=[TTL]\" header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
@@ -2792,6 +2803,10 @@
     "cacheKeyPolicy": {
      "$ref": "CacheKeyPolicy",
      "description": "The CacheKeyPolicy for this CdnPolicy."
+    },
+    "requestCoalescing": {
+     "type": "boolean",
+     "description": "If true then Cloud CDN will combine multiple concurrent cache fill requests into a small number of requests to the origin."
     },
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
@@ -3444,7 +3459,7 @@
     },
     "sourceInstanceTemplate": {
      "type": "string",
-     "description": "Specifies the instance template from which to create the instance. This field is optional. This field is optional. It can be a full or partial URL. For example, the following are all valid URLs to an instance template:  \n- https://www.googleapis.com/compute/v1/projects/project/global/instanceTemplates/instanceTemplate \n- projects/project/global/instanceTemplates/instanceTemplate \n- global/instanceTemplates/instanceTemplate"
+     "description": "Specifies the instance template from which to create instances. You may combine sourceInstanceTemplate with instanceProperties to override specific values from an existing instance template. Bulk API follows the semantics of JSON Merge Patch described by RFC 7396.\n\nIt can be a full or partial URL. For example, the following are all valid URLs to an instance template:  \n- https://www.googleapis.com/compute/v1/projects/project/global/instanceTemplates/instanceTemplate \n- projects/project/global/instanceTemplates/instanceTemplate \n- global/instanceTemplates/instanceTemplate  \n\nThis field is optional."
     }
    }
   },
@@ -3734,8 +3749,9 @@
     },
     "type": {
      "type": "string",
-     "description": "The type of commitment, which affects the discount rate and the eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that will only apply to memory optimized machines.",
+     "description": "The type of commitment, which affects the discount rate and the eligible resources. Type MEMORY_OPTIMIZED specifies a commitment that will only apply to memory optimized machines. Type ACCELERATOR_OPTIMIZED specifies a commitment that will only apply to accelerator optimized machines.",
      "enum": [
+      "ACCELERATOR_OPTIMIZED",
       "COMPUTE_OPTIMIZED",
       "GENERAL_PURPOSE",
       "GENERAL_PURPOSE_E2",
@@ -3745,6 +3761,7 @@
       "TYPE_UNSPECIFIED"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -4100,11 +4117,13 @@
       "ATTRIBUTION",
       "AUTHORITY",
       "CREDENTIALS_TYPE",
+      "CREDS_ASSERTION",
       "JUSTIFICATION_TYPE",
       "NO_ATTR",
       "SECURITY_REALM"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -20970,6 +20989,7 @@
       "CPUS",
       "CPUS_ALL_REGIONS",
       "DISKS_TOTAL_GB",
+      "EXTERNAL_NETWORK_LB_FORWARDING_RULES",
       "EXTERNAL_VPN_GATEWAYS",
       "FIREWALLS",
       "FORWARDING_RULES",
@@ -21061,6 +21081,7 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -27730,7 +27751,7 @@
     },
     "ipCidrRange": {
      "type": "string",
-     "description": "The range of internal addresses that are owned by this subnetwork. Provide this property when you create the subnetwork. For example, 10.0.0.0/8 or 192.168.0.0/16. Ranges must be unique and non-overlapping within a network. Only IPv4 is supported. This field is set at resource creation time. The range can be expanded after creation using expandIpCidrRange."
+     "description": "The range of internal addresses that are owned by this subnetwork. Provide this property when you create the subnetwork. For example, 10.0.0.0/8 or 100.64.0.0/10. Ranges must be unique and non-overlapping within a network. Only IPv4 is supported. This field is set at resource creation time. This may be a RFC 1918 IP range, or a privately routed, non-RFC 1918 IP range, not belonging to Google. The range can be expanded after creation using expandIpCidrRange."
     },
     "ipv6CidrRange": {
      "type": "string",
@@ -28157,7 +28178,7 @@
    "properties": {
     "ipCidrRange": {
      "type": "string",
-     "description": "The range of IP addresses belonging to this subnetwork secondary range. Provide this property when you create the subnetwork. Ranges must be unique and non-overlapping with all primary and secondary IP ranges within a network. Only IPv4 is supported."
+     "description": "The range of IP addresses belonging to this subnetwork secondary range. Provide this property when you create the subnetwork. Ranges must be unique and non-overlapping with all primary and secondary IP ranges within a network. Only IPv4 is supported. This may be a RFC 1918 IP range, or a privately, non-RFC 1918 IP range, not belonging to Google."
     },
     "rangeName": {
      "type": "string",

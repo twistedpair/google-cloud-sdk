@@ -109,7 +109,7 @@ def AddCreateArgsToParser(parser):
 
           See the following for more information:
 
-              $ gcloud alpha compute sole-tenancy node-types""")
+              $ {grandparent_command} node-types list""")
   node_type_group.add_argument(
       '--node-requirements',
       type=arg_parsers.ArgDict(

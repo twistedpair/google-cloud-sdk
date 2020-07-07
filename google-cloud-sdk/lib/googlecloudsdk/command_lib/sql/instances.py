@@ -307,20 +307,16 @@ class _BaseInstances(object):
     original_settings = instance.settings if instance else None
     settings = cls._ConstructBaseSettingsFromArgs(sql_messages, args, instance,
                                                   release_track)
-    if _IsAlpha(release_track):
-      enable_point_in_time_recovery = args.enable_point_in_time_recovery
-    else:
-      enable_point_in_time_recovery = None
 
     backup_configuration = (
         reducers.BackupConfiguration(
             sql_messages,
             instance,
-            backup=args.backup,
+            backup_enabled=args.backup,
             backup_location=args.backup_location,
             backup_start_time=args.backup_start_time,
             enable_bin_log=args.enable_bin_log,
-            enable_point_in_time_recovery=enable_point_in_time_recovery))
+            enable_point_in_time_recovery=args.enable_point_in_time_recovery))
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 
@@ -354,7 +350,7 @@ class _BaseInstances(object):
                                       args,
                                       instance,
                                       release_track=DEFAULT_RELEASE_TRACK):
-    """Constructs create settings object from base settings and args."""
+    """Constructs patch settings object from base settings and args."""
     original_settings = instance.settings
     settings = cls._ConstructBaseSettingsFromArgs(sql_messages, args, instance,
                                                   release_track)
@@ -376,20 +372,15 @@ class _BaseInstances(object):
     if args.enable_database_replication is not None:
       settings.databaseReplicationEnabled = args.enable_database_replication
 
-    if _IsAlpha(release_track):
-      enable_point_in_time_recovery = args.enable_point_in_time_recovery
-    else:
-      enable_point_in_time_recovery = None
-
     backup_configuration = (
         reducers.BackupConfiguration(
             sql_messages,
             instance,
-            no_backup=args.no_backup,
+            backup_enabled=not args.no_backup,
             backup_location=args.backup_location,
             backup_start_time=args.backup_start_time,
             enable_bin_log=args.enable_bin_log,
-            enable_point_in_time_recovery=enable_point_in_time_recovery))
+            enable_point_in_time_recovery=args.enable_point_in_time_recovery))
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 

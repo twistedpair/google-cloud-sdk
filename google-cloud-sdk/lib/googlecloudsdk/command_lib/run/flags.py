@@ -117,6 +117,26 @@ def AddConfigFlags(parser):
       hidden=True,
       default='cloudbuild.yaml',  # By default, find this in the current dir
       help='The YAML or JSON file to use as the build configuration file.')
+  build_config.add_argument(
+      '--pack',
+      hidden=True,
+      type=arg_parsers.ArgDict(
+          spec={
+              'image': str,
+              'builder': str,
+              'env': str
+          },
+          required_keys=['image']),
+      action='append',
+      help='Uses CNCF buildpack (https://buildpacks.io/) to create image.  '
+      'The "image" key/value must be provided.  The image name must be in the '
+      'gcr.io/*, *.gcr.io, or pkg.dev namespaces. By default '
+      'gcr.io/buildpacks/builder will be used. To specify your own builder '
+      'image use the optional "builder" key/value argument.  To pass '
+      'environment variables to the builder use the optional "env" key/value '
+      'argument where value is a list of key values using '
+      'escaping (https://cloud.google.com/sdk/gcloud/reference/topic/escaping) '
+      'if neccessary.')
 
 
 _ARG_GROUP_HELP_TEXT = ('Only applicable if connecting to {platform_desc}. '
@@ -238,8 +258,7 @@ def AddNoTrafficFlag(parser):
 def AddDeployTagFlag(parser):
   """Add flag to specify a tag for the new revision."""
   parser.add_argument(
-      '--tag',
-      help='Traffic tag to assign to the newly created revision.')
+      '--tag', help='Traffic tag to assign to the newly created revision.')
 
 
 def AddTrafficTagsFlags(parser):
@@ -543,8 +562,7 @@ def AddEgressSettingsFlag(parser):
           'private-ranges-only':
               'Default option. Sends outbound traffic to private IP addresses '
               'defined by RFC1918 through the VPC connector.',
-          'all':
-              'Sends all outbound traffic through the VPC connector.'
+          'all': 'Sends all outbound traffic through the VPC connector.'
       })
 
 
@@ -793,8 +811,7 @@ def _GetScalingChanges(args):
     else:
       result.append(
           config_changes.SetTemplateAnnotationChange(
-              revision.MIN_SCALE_ANNOTATION,
-              str(scale_value.instance_count)))
+              revision.MIN_SCALE_ANNOTATION, str(scale_value.instance_count)))
   if 'max_instances' in args and args.max_instances is not None:
     scale_value = args.max_instances
     if scale_value.restore_default:
@@ -804,8 +821,7 @@ def _GetScalingChanges(args):
     else:
       result.append(
           config_changes.SetTemplateAnnotationChange(
-              revision.MAX_SCALE_ANNOTATION,
-              str(scale_value.instance_count)))
+              revision.MAX_SCALE_ANNOTATION, str(scale_value.instance_count)))
   return result
 
 

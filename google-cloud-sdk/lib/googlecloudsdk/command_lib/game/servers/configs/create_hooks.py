@@ -25,18 +25,10 @@ def ProcessConfigsFiles(ref, args, request):
   """Reads the fleet/scaling configs into FleetConfig/ScalingConfig protos and updates the request."""
   del ref
   if args.fleet_configs_file:
-    if not request.gameServerConfig:
-      messages = utils.GetMessages(utils.GetApiVersionFromArgs(args))
-      gsc = messages.GameServerConfig()
-      request.gameServerConfig = gsc
     request.gameServerConfig.fleetConfigs = utils.ProcessFleetConfigsFile(
         args.fleet_configs_file, utils.GetApiVersionFromArgs(args))
 
   if args.scaling_configs_file:
-    if not request.gameServerConfig:
-      messages = utils.GetMessages(utils.GetApiVersionFromArgs(args))
-      gsc = messages.GameServerConfig()
-      request.gameServerConfig = gsc
     request.gameServerConfig.scalingConfigs = utils.ProcessScalingConfigsFile(
         args.scaling_configs_file, utils.GetApiVersionFromArgs(args))
 
