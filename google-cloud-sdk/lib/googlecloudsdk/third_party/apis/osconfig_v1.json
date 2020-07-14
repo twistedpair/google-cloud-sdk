@@ -112,7 +112,7 @@
   "schemas": {
     "ExecutePatchJobRequest": {
       "id": "ExecutePatchJobRequest",
-      "description": "A request message to initiate patching across Google Compute Engine\ninstances.",
+      "description": "A request message to initiate patching across Compute Engine\ninstances.",
       "type": "object",
       "properties": {
         "description": {
@@ -139,6 +139,10 @@
         "displayName": {
           "description": "Display name for this patch job. This does not have to be unique.",
           "type": "string"
+        },
+        "rollout": {
+          "description": "Rollout strategy of the patch job.",
+          "$ref": "PatchRollout"
         }
       }
     },
@@ -152,7 +156,7 @@
           "type": "boolean"
         },
         "groupLabels": {
-          "description": "Targets VM instances matching at least one of these label sets. This allows\ntargeting of disparate groups, for example \"env=prod or env=staging\".",
+          "description": "Targets VM instances matching ANY of these GroupLabels. This allows\ntargeting of disparate groups of VM instances.",
           "type": "array",
           "items": {
             "$ref": "PatchInstanceFilterGroupLabel"
@@ -166,7 +170,7 @@
           }
         },
         "instances": {
-          "description": "Targets any of the VM instances specified. Instances are specified by their\nURI in the form `zones\/[ZONE]\/instances\/[INSTANCE_NAME],\n`projects\/[PROJECT_ID]\/zones\/[ZONE]\/instances\/[INSTANCE_NAME]`, or\n`https:\/\/www.googleapis.com\/compute\/v1\/projects\/[PROJECT_ID]\/zones\/[ZONE]\/instances\/[INSTANCE_NAME]`",
+          "description": "Targets any of the VM instances specified. Instances are specified by their\nURI in the form `zones\/[ZONE]\/instances\/[INSTANCE_NAME]`,\n`projects\/[PROJECT_ID]\/zones\/[ZONE]\/instances\/[INSTANCE_NAME]`, or\n`https:\/\/www.googleapis.com\/compute\/v1\/projects\/[PROJECT_ID]\/zones\/[ZONE]\/instances\/[INSTANCE_NAME]`",
           "type": "array",
           "items": {
             "type": "string"
@@ -183,11 +187,11 @@
     },
     "PatchInstanceFilterGroupLabel": {
       "id": "PatchInstanceFilterGroupLabel",
-      "description": "Represents a group of VMs that can be identified as having all these\nlabels, for example \"env=prod and app=web\".",
+      "description": "Targets a group of VM instances by using their [assigned\nlabels](https:\/\/cloud.google.com\/compute\/docs\/labeling-resources). Labels\nare key-value pairs. A `GroupLabel` is a combination of labels\nthat is used to target VMs for a patch job.\n\nFor example, a patch job can target VMs that have the following\n`GroupLabel`: `{\"env\":\"test\", \"app\":\"web\"}`. This means that the patch job\nis applied to VMs that have both the labels `env=test` and `app=web`.",
       "type": "object",
       "properties": {
         "labels": {
-          "description": "Google Compute Engine instance labels that must be present for a VM\ninstance to be targeted by this filter.",
+          "description": "Compute Engine instance labels that must be present for a VM\ninstance to be targeted by this filter.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -437,7 +441,7 @@
           "type": "string"
         },
         "gcsObject": {
-          "description": "A Google Cloud Storage object containing the executable.",
+          "description": "A Cloud Storage object containing the executable.",
           "$ref": "GcsObject"
         },
         "allowedSuccessCodes": {
@@ -466,27 +470,69 @@
     },
     "GcsObject": {
       "id": "GcsObject",
-      "description": "Google Cloud Storage object representation.",
+      "description": "Cloud Storage object representation.",
       "type": "object",
       "properties": {
         "bucket": {
-          "description": "Required. Bucket of the Google Cloud Storage object.",
+          "description": "Required. Bucket of the Cloud Storage object.",
           "type": "string"
         },
         "object": {
-          "description": "Required. Name of the Google Cloud Storage object.",
+          "description": "Required. Name of the Cloud Storage object.",
           "type": "string"
         },
         "generationNumber": {
-          "description": "Required. Generation number of the Google Cloud Storage object. This is used to\nensure that the ExecStep specified by this PatchJob does not change.",
+          "description": "Required. Generation number of the Cloud Storage object. This is used to\nensure that the ExecStep specified by this PatchJob does not change.",
           "type": "string",
           "format": "int64"
         }
       }
     },
+    "PatchRollout": {
+      "id": "PatchRollout",
+      "description": "Patch rollout configuration specifications. Contains details on the\nconcurrency control when applying patch(es) to all targeted VMs.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "Mode of the patch rollout.",
+          "enumDescriptions": [
+            "Mode must be specified.",
+            "Patches are applied one zone at a time. The patch job begins in the\nregion with the lowest number of targeted VMs. Within the region,\npatching begins in the zone with the lowest number of targeted VMs. If\nmultiple regions (or zones within a region) have the same number of\ntargeted VMs, a tie-breaker is achieved by sorting the regions or zones\nin alphabetical order.",
+            "Patches are applied to VMs in all zones at the same time."
+          ],
+          "type": "string",
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "ZONE_BY_ZONE",
+            "CONCURRENT_ZONES"
+          ]
+        },
+        "disruptionBudget": {
+          "description": "The maximum number (or percentage) of VMs per zone to disrupt at any given\nmoment. The number of VMs calculated from multiplying the percentage by the\ntotal number of VMs in a zone is rounded up.\n\nDuring patching, a VM is considered disrupted from the time the agent is\nnotified to begin until patching has completed. This disruption time\nincludes the time to complete reboot and any post-patch steps.\n\nA VM contributes to the disruption budget if its patching operation fails\neither when applying the patches, running pre or post patch steps, or if it\nfails to respond with a success notification before timing out. VMs that\nare not running or do not have an active agent do not count toward this\ndisruption budget.\n\nFor zone-by-zone rollouts, if the disruption budget in a zone is exceeded,\nthe patch job stops, because continuing to the next zone requires\ncompletion of the patch process in the previous zone.\n\nFor example, if the disruption budget has a fixed value of `10`, and 8 VMs\nfail to patch in the current zone, the patch job continues to patch 2 VMs\nat a time until the zone is completed. When that zone is completed\nsuccessfully, patching begins with 10 VMs at a time in the next zone. If 10\nVMs in the next zone fail to patch, the patch job stops.",
+          "$ref": "FixedOrPercent"
+        }
+      }
+    },
+    "FixedOrPercent": {
+      "id": "FixedOrPercent",
+      "description": "Message encapsulating a value that can be either absolute (\"fixed\") or\nrelative (\"percent\") to a value.",
+      "type": "object",
+      "properties": {
+        "fixed": {
+          "description": "Specifies a fixed value.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "percent": {
+          "description": "Specifies the relative value defined as a percentage, which will be\nmultiplied by a reference value.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "PatchJob": {
       "id": "PatchJob",
-      "description": "A high level representation of a patch job that is either in progress\nor has completed.\n\nInstances details are not included in the job. To paginate through instance\ndetails, use ListPatchJobInstanceDetails.\n\nFor more information about patch jobs, see\n[Creating patch jobs](\/compute\/docs\/os-patch-management\/create-patch-job).",
+      "description": "A high level representation of a patch job that is either in progress\nor has completed.\n\nInstance details are not included in the job. To paginate through instance\ndetails, use ListPatchJobInstanceDetails.\n\nFor more information about patch jobs, see\n[Creating patch\njobs](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/create-patch-job).",
       "type": "object",
       "properties": {
         "name": {
@@ -512,7 +558,7 @@
           "format": "google-datetime"
         },
         "state": {
-          "description": "The current state of the PatchJob .",
+          "description": "The current state of the PatchJob.",
           "enumDescriptions": [
             "State must be specified.",
             "The patch job was successfully initiated.",
@@ -568,6 +614,10 @@
         "patchDeployment": {
           "description": "Output only. Name of the patch deployment that created this patch job.",
           "type": "string"
+        },
+        "rollout": {
+          "description": "Rollout strategy being applied.",
+          "$ref": "PatchRollout"
         }
       }
     },
@@ -698,7 +748,7 @@
     },
     "PatchJobInstanceDetails": {
       "id": "PatchJobInstanceDetails",
-      "description": "Patch details for a VM instance. For more information about reviewing VM\ninstance details, see\n[Listing all VM instance details for a specific patch\njob](\/compute\/docs\/os-patch-management\/manage-patch-jobs#list-instance-details).",
+      "description": "Patch details for a VM instance. For more information about reviewing VM\ninstance details, see\n[Listing all VM instance details for a specific patch\njob](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/manage-patch-jobs#list-instance-details).",
       "type": "object",
       "properties": {
         "name": {
@@ -762,7 +812,7 @@
     },
     "PatchDeployment": {
       "id": "PatchDeployment",
-      "description": "Patch deployments are configurations that individual patch jobs use to\ncomplete a patch. These configurations include instance filter, package\nrepository settings, and a schedule. For more information about creating and\nmanaging patch deployments, see [Scheduling patch\njobs](\/compute\/docs\/os-patch-management\/schedule-patch-jobs).",
+      "description": "Patch deployments are configurations that individual patch jobs use to\ncomplete a patch. These configurations include instance filter, package\nrepository settings, and a schedule. For more information about creating and\nmanaging patch deployments, see [Scheduling patch\njobs](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/schedule-patch-jobs).",
       "type": "object",
       "properties": {
         "name": {
@@ -795,25 +845,29 @@
           "$ref": "RecurringSchedule"
         },
         "createTime": {
-          "description": "Output only. Time the patch deployment was created. Timestamp is in\n<a href=\"https:\/\/www.ietf.org\/rfc\/rfc3339.txt\" target=\"_blank\">RFC3339<\/a>\ntext format.",
+          "description": "Output only. Time the patch deployment was created. Timestamp is in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Time the patch deployment was last updated. Timestamp is in\n<a href=\"https:\/\/www.ietf.org\/rfc\/rfc3339.txt\" target=\"_blank\">RFC3339<\/a>\ntext format.",
+          "description": "Output only. Time the patch deployment was last updated. Timestamp is in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
           "type": "string",
           "format": "google-datetime"
         },
         "lastExecuteTime": {
-          "description": "Output only. The last time a patch job was started by this deployment.\nTimestamp is in\n<a href=\"https:\/\/www.ietf.org\/rfc\/rfc3339.txt\" target=\"_blank\">RFC3339<\/a>\ntext format.",
+          "description": "Output only. The last time a patch job was started by this deployment.\nTimestamp is in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text\nformat.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "rollout": {
+          "description": "Optional. Rollout strategy of the patch job.",
+          "$ref": "PatchRollout"
         }
       }
     },
     "OneTimeSchedule": {
       "id": "OneTimeSchedule",
-      "description": "Sets the time for a one time patch deployment. Timestamp is in\n<a href=\"https:\/\/www.ietf.org\/rfc\/rfc3339.txt\" target=\"_blank\">RFC3339<\/a>\ntext format.",
+      "description": "Sets the time for a one time patch deployment. Timestamp is in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
       "type": "object",
       "properties": {
         "executeTime": {
@@ -930,14 +984,14 @@
         "dayOfWeek": {
           "description": "Required. Day of the week.",
           "enumDescriptions": [
-            "The unspecified day-of-week.",
-            "The day-of-week of Monday.",
-            "The day-of-week of Tuesday.",
-            "The day-of-week of Wednesday.",
-            "The day-of-week of Thursday.",
-            "The day-of-week of Friday.",
-            "The day-of-week of Saturday.",
-            "The day-of-week of Sunday."
+            "The day of the week is unspecified.",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
           ],
           "type": "string",
           "enum": [
@@ -982,14 +1036,14 @@
         "dayOfWeek": {
           "description": "Required. A day of the week.",
           "enumDescriptions": [
-            "The unspecified day-of-week.",
-            "The day-of-week of Monday.",
-            "The day-of-week of Tuesday.",
-            "The day-of-week of Wednesday.",
-            "The day-of-week of Thursday.",
-            "The day-of-week of Friday.",
-            "The day-of-week of Saturday.",
-            "The day-of-week of Sunday."
+            "The day of the week is unspecified.",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday"
           ],
           "type": "string",
           "enum": [

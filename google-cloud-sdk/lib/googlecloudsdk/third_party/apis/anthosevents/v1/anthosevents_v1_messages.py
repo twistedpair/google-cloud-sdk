@@ -113,6 +113,93 @@ class AnthoseventsApiV1NamespacesReplaceNamespaceRequest(_messages.Message):
   namespace = _messages.MessageField('Namespace', 2)
 
 
+class AnthoseventsApiV1NamespacesSecretsCreateRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesSecretsCreateRequest object.
+
+  Fields:
+    parent: Required. The project ID or project number in which this secret
+      should be created.
+    secret: A Secret resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
+
+
+class AnthoseventsApiV1NamespacesSecretsDeleteRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesSecretsDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: Required. The name of the secret being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class AnthoseventsApiV1NamespacesSecretsGetRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesSecretsGetRequest object.
+
+  Fields:
+    name: Required. The name of the secret being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AnthoseventsApiV1NamespacesSecretsListRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesSecretsListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: Required. The project ID or project number from which the secrets
+      should be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class AnthoseventsApiV1NamespacesSecretsReplaceSecretRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesSecretsReplaceSecretRequest object.
+
+  Fields:
+    name: Required. The name of the secret being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    secret: A Secret resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
+
+
 class AnthoseventsProjectsLocationsNamespacesCreateRequest(_messages.Message):
   r"""A AnthoseventsProjectsLocationsNamespacesCreateRequest object.
 
@@ -216,6 +303,93 @@ class AnthoseventsProjectsLocationsNamespacesReplaceNamespaceRequest(_messages.M
   namespace = _messages.MessageField('Namespace', 2)
 
 
+class AnthoseventsProjectsLocationsSecretsCreateRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsSecretsCreateRequest object.
+
+  Fields:
+    parent: Required. The project ID or project number in which this secret
+      should be created.
+    secret: A Secret resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
+
+
+class AnthoseventsProjectsLocationsSecretsDeleteRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsSecretsDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: Required. The name of the secret being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class AnthoseventsProjectsLocationsSecretsGetRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsSecretsGetRequest object.
+
+  Fields:
+    name: Required. The name of the secret being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AnthoseventsProjectsLocationsSecretsListRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsSecretsListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: Required. The project ID or project number from which the secrets
+      should be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class AnthoseventsProjectsLocationsSecretsReplaceSecretRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsSecretsReplaceSecretRequest object.
+
+  Fields:
+    name: Required. The name of the secret being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    secret: A Secret resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -265,12 +439,33 @@ class ListNamespacesResponse(_messages.Message):
     items: List of Namespaces. More info:
       https://kubernetes.io/docs/concepts/configuration/namespace
     kind: The kind of this resource, in this case "NamespaceList".
-    metadata: Metadata associated with this Namespace list.
+    metadata: A ListMeta attribute.
     unreachable: Locations that could not be reached.
   """
 
   apiVersion = _messages.StringField(1)
   items = _messages.MessageField('Namespace', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListSecretsResponse(_messages.Message):
+  r"""ListSecretsResponse is a list of Secret resources.
+
+  Fields:
+    apiVersion: The API version for this call such as "core/v1". The core API
+      group that Secrets are part of do not specify an explicit group name in
+      the api version. So the api version here is just "v1".
+    items: List of Secrets. More info:
+      https://kubernetes.io/docs/concepts/configuration/secret
+    kind: The kind of this resource, in this case "SecretList".
+    metadata: Metadata associated with this Secret list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('Secret', 2, repeated=True)
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
@@ -544,6 +739,101 @@ class OwnerReference(_messages.Message):
   kind = _messages.StringField(4)
   name = _messages.StringField(5)
   uid = _messages.StringField(6)
+
+
+class Secret(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  Secret holds secret data of a certain type. The total bytes of the values in
+  the Data field must be less than MaxSecretSize bytes.
+
+  Messages:
+    DataValue: Data contains the secret data. Each key must consist of
+      alphanumeric characters, '-', '_' or '.'. The serialized form of the
+      secret data is a base64 encoded string, representing the arbitrary
+      (possibly non-string) data value here. Described in
+      https://tools.ietf.org/html/rfc4648#section-4
+    StringDataValue: stringData allows specifying non-binary secret data in
+      string form. It is provided as a write-only convenience method. All keys
+      and values are merged into the data field on write, overwriting any
+      existing values. It is never output when reading from the API.
+      +k8s:conversion-gen=false
+
+  Fields:
+    data: Data contains the secret data. Each key must consist of alphanumeric
+      characters, '-', '_' or '.'. The serialized form of the secret data is a
+      base64 encoded string, representing the arbitrary (possibly non-string)
+      data value here. Described in
+      https://tools.ietf.org/html/rfc4648#section-4
+    metadata: Standard object's metadata. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata
+    stringData: stringData allows specifying non-binary secret data in string
+      form. It is provided as a write-only convenience method. All keys and
+      values are merged into the data field on write, overwriting any existing
+      values. It is never output when reading from the API. +k8s:conversion-
+      gen=false
+    type: Used to facilitate programmatic handling of secret data.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""Data contains the secret data. Each key must consist of alphanumeric
+    characters, '-', '_' or '.'. The serialized form of the secret data is a
+    base64 encoded string, representing the arbitrary (possibly non-string)
+    data value here. Described in
+    https://tools.ietf.org/html/rfc4648#section-4
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A byte attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BytesField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StringDataValue(_messages.Message):
+    r"""stringData allows specifying non-binary secret data in string form. It
+    is provided as a write-only convenience method. All keys and values are
+    merged into the data field on write, overwriting any existing values. It
+    is never output when reading from the API. +k8s:conversion-gen=false
+
+    Messages:
+      AdditionalProperty: An additional property for a StringDataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type StringDataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StringDataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  data = _messages.MessageField('DataValue', 1)
+  metadata = _messages.MessageField('ObjectMeta', 2)
+  stringData = _messages.MessageField('StringDataValue', 3)
+  type = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

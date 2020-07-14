@@ -1892,8 +1892,8 @@ class GceClusterConfig(_messages.Message):
       reservation.
     serviceAccount: Optional. The Dataproc service account
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
-      clusters/service-accounts#service_accounts_in_cloud_dataproc) (also see
-      VM Data Plane identity
+      clusters/service-accounts#service_accounts_in_dataproc) (also see VM
+      Data Plane identity
       (https://cloud.google.com/dataproc/docs/concepts/iam/dataproc-
       principals#vm_service_account_data_plane_identity)) used by Dataproc
       cluster VM instances to access Google Cloud Platform services.If not
@@ -3495,7 +3495,7 @@ class SoftwareConfig(_messages.Message):
     imageVersion: Optional. The version of software inside the cluster. It
       must be one of the supported Dataproc Versions
       (https://cloud.google.com/dataproc/docs/concepts/versioning/dataproc-
-      versions#supported_cloud_dataproc_versions), such as "1.2" (including a
+      versions#supported_dataproc_versions), such as "1.2" (including a
       subminor version, such as "1.2.29"), or the "preview" version
       (https://cloud.google.com/dataproc/docs/concepts/versioning/dataproc-
       versions#other_versions). If unspecified, it defaults to the latest

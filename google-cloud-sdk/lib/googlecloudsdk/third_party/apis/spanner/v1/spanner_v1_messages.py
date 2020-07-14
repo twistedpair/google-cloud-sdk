@@ -3634,6 +3634,12 @@ class Type(_messages.Message):
       STRUCT: Encoded as `list`, where list element `i` is represented
         according to
         [struct_type.fields[i]][google.spanner.v1.StructType.fields].
+      NUMERIC: Encoded as `string`, in decimal format or scientific notation
+        format. <br>Decimal format: <br>`[+-]Digits[.[Digits]]` or
+        <br>`+-.Digits`  Scientific notation:
+        <br>`[+-]Digits[.[Digits]][ExponentIndicator[+-]Digits]` or
+        <br>`+-.Digits[ExponentIndicator[+-]Digits]` <br>(ExponentIndicator is
+        `"e"` or `"E"`)
     """
     TYPE_CODE_UNSPECIFIED = 0
     BOOL = 1
@@ -3645,6 +3651,7 @@ class Type(_messages.Message):
     BYTES = 7
     ARRAY = 8
     STRUCT = 9
+    NUMERIC = 10
 
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

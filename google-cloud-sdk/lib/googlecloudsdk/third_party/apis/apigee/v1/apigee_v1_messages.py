@@ -790,6 +790,134 @@ class ApigeeOrganizationsDevelopersUpdateRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsEnvgroupsAttachmentsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsAttachmentsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1EnvironmentGroupAttachment: A
+      GoogleCloudApigeeV1EnvironmentGroupAttachment resource to be passed as
+      the request body.
+    parent: EnvironmentGroup under which to create the attachment in the
+      following format: `organizations/{org}/envgroups/{envgroup}`.
+  """
+
+  googleCloudApigeeV1EnvironmentGroupAttachment = _messages.MessageField('GoogleCloudApigeeV1EnvironmentGroupAttachment', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsEnvgroupsAttachmentsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsAttachmentsDeleteRequest object.
+
+  Fields:
+    name: Name of the environment group attachment to delete in the following
+      format:
+      `organizations/{org}/envgroups/{envgroup}/attachments/{attachment}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvgroupsAttachmentsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsAttachmentsGetRequest object.
+
+  Fields:
+    name: Name of the environment group attachment in the following format:
+      `organizations/{org}/envgroups/{envgroup}/attachments/{attachment}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvgroupsAttachmentsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsAttachmentsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of environment group attachments to return. The
+      page size defaults to 25.
+    pageToken: Page token, returned by a previous
+      ListEnvironmentGroupAttachments call, that you can use to retrieve the
+      next page.
+    parent: Name of the organization in the following format:
+      `organizations/{org}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsEnvgroupsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1EnvironmentGroup: A GoogleCloudApigeeV1EnvironmentGroup
+      resource to be passed as the request body.
+    name: ID of the environment group. Overrides any ID in the
+      environment_group resource.
+    parent: Name of the organization in which to create the environment group
+      in the following format: `organizations/{org}`.
+  """
+
+  googleCloudApigeeV1EnvironmentGroup = _messages.MessageField('GoogleCloudApigeeV1EnvironmentGroup', 1)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsEnvgroupsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsDeleteRequest object.
+
+  Fields:
+    name: Name of the environment group in the following format:
+      `organizations/{org}/envgroups/{envgroup}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvgroupsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsGetRequest object.
+
+  Fields:
+    name: Name of the environment group in the following format:
+      `organizations/{org}/envgroups/{envgroup}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvgroupsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of environment groups to return. The page size
+      defaults to 25.
+    pageToken: Page token, returned from a previous ListEnvironmentGroups
+      call, that you can use to retrieve the next page.
+    parent: Name of the organization for which to list environment groups in
+      the following format: `organizations/{org}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsEnvgroupsPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvgroupsPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1EnvironmentGroup: A GoogleCloudApigeeV1EnvironmentGroup
+      resource to be passed as the request body.
+    name: Name of the environment group to update in the format:
+      `organizations/{org}/envgroups/{envgroup}.
+    updateMask: List of fields to be updated.
+  """
+
+  googleCloudApigeeV1EnvironmentGroup = _messages.MessageField('GoogleCloudApigeeV1EnvironmentGroup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class ApigeeOrganizationsEnvironmentsAnalyticsAdminGetSchemav2Request(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsAnalyticsAdminGetSchemav2Request
   object.
@@ -896,6 +1024,37 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsListRequest(_mess
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChangeReportRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployC
+  hangeReportRequest object.
+
+  Fields:
+    basepath: Base path where the API proxy revision should be deployed.
+      Defaults to '/' if not provided.
+    name: Name of the API proxy revision deployment in the following format:
+      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
+    override: Flag that specifies whether to force the deployment of the new
+      revision over the currently deployed revision by overriding conflict
+      checks.
+  """
+
+  basepath = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  override = _messages.BooleanField(3)
+
+
+class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateUndeployChangeReportRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateUndeplo
+  yChangeReportRequest object.
+
+  Fields:
+    name: Name of the API proxy revision deployment in the following format:
+      `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsRequest(_messages.Message):
@@ -1718,6 +1877,17 @@ class ApigeeOrganizationsEnvironmentsUpdateDebugmaskRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class ApigeeOrganizationsGetDeployedIngressConfigRequest(_messages.Message):
+  r"""A ApigeeOrganizationsGetDeployedIngressConfigRequest object.
+
+  Fields:
+    name: Name of the deployed configuration for the organization in the
+      following format: 'organizations/{org}/deployedIngressConfig'.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsGetRequest object.
 
@@ -1742,6 +1912,130 @@ class ApigeeOrganizationsGetSyncAuthorizationRequest(_messages.Message):
 
   googleCloudApigeeV1GetSyncAuthorizationRequest = _messages.MessageField('GoogleCloudApigeeV1GetSyncAuthorizationRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsInstancesAttachmentsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesAttachmentsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1InstanceAttachment: A
+      GoogleCloudApigeeV1InstanceAttachment resource to be passed as the
+      request body.
+    parent: Required. Name of the instance. Use the following structure in
+      your request:   `organizations/{org}/instances/{instance}`.
+  """
+
+  googleCloudApigeeV1InstanceAttachment = _messages.MessageField('GoogleCloudApigeeV1InstanceAttachment', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsInstancesAttachmentsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesAttachmentsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the attachment. Use the following structure in
+      your request:
+      `organizations/{org}/instances/{instance}/attachments/{attachment}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsInstancesAttachmentsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesAttachmentsGetRequest object.
+
+  Fields:
+    name: Required. Name of the attachment. Use the following structure in
+      your request:
+      `organizations/{org}/instances/{instance}/attachments/{attachment}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsInstancesAttachmentsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesAttachmentsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of instance attachments to return. Defaults to
+      25.
+    pageToken: Page token, returned by a previous ListInstanceAttachments
+      call, that you can use to retrieve the next page of content.
+    parent: Required. Name of the organization. Use the following structure in
+      your request:   `organizations/{org}/instances/{instance}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsInstancesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1Instance: A GoogleCloudApigeeV1Instance resource to be
+      passed as the request body.
+    parent: Required. Name of the organization. Use the following structure in
+      your request:   `organizations/{org}`.
+  """
+
+  googleCloudApigeeV1Instance = _messages.MessageField('GoogleCloudApigeeV1Instance', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsInstancesDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesDeleteRequest object.
+
+  Fields:
+    name: Name of the instance. Use the following structure in your request:
+      `organizations/{org}/instance/{instance}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsInstancesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesGetRequest object.
+
+  Fields:
+    name: Name of the instance. Use the following structure in your request:
+      `organizations/{org}/instances/{instance}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsInstancesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of instances to return. Defaults to 25.
+    pageToken: Page token, returned from a previous ListInstances call, that
+      you can use to retrieve the next page of content.
+    parent: Name of the organization. Use the following structure in your
+      request:   `organizations/{org}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsInstancesReportStatusRequest(_messages.Message):
+  r"""A ApigeeOrganizationsInstancesReportStatusRequest object.
+
+  Fields:
+    googleCloudApigeeV1ReportInstanceStatusRequest: A
+      GoogleCloudApigeeV1ReportInstanceStatusRequest resource to be passed as
+      the request body.
+    instance: The name of the instance reporting this status. For SaaS the
+      request will be rejected if no instance exists under this name. Format
+      is organizations/{org}/instances/{instance}
+  """
+
+  googleCloudApigeeV1ReportInstanceStatusRequest = _messages.MessageField('GoogleCloudApigeeV1ReportInstanceStatusRequest', 1)
+  instance = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsKeyvaluemapsCreateRequest(_messages.Message):
@@ -2843,22 +3137,146 @@ class GoogleCloudApigeeV1DeleteCustomReportResponse(_messages.Message):
 class GoogleCloudApigeeV1Deployment(_messages.Message):
   r"""A GoogleCloudApigeeV1Deployment object.
 
+  Enums:
+    StateValueValuesEnum: Current state of the deployment. This field is not
+      populated in List APIs.
+
   Fields:
     apiProxy: API proxy.
     basePath: Base path for the deployment.
     deployStartTime: Time the API proxy was marked `deployed` in the control
       plane in millisconds since epoch.
     environment: Environment.
-    pods: Status reported by runtime pods.
+    errors: Errors reported for this deployment. Populated only when state ==
+      ERROR. This field is not populated in List APIs.
+    instances: Status reported by each runtime instance. This field is not
+      populated in List APIs.
+    pods: Status reported by runtime pods. This field is not populated for
+      List APIs.
     revision: API proxy revision.
+    routeConflicts: Conflicts in the desired state routing configuration. The
+      presence of conflicts does not cause the state to be ERROR, but it will
+      mean that some of the deployments basepaths are not routed to its
+      environment. If the conflicts change, the state will transition to
+      PROGRESSING until the latest configuration is rolled out to all
+      instances. This field is not populated in List APIs.
+    state: Current state of the deployment. This field is not populated in
+      List APIs.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Current state of the deployment. This field is not populated in List
+    APIs.
+
+    Values:
+      RUNTIME_STATE_UNSPECIFIED: This value should never be returned.
+      READY: The runtime has loaded the deployment.
+      PROGRESSING: The deployment is still rolling out to the runtime.
+      ERROR: There is an error with the deployment that requires intervention.
+      TIMED_OUT: The deployment has taken too long and is likely failed.
+    """
+    RUNTIME_STATE_UNSPECIFIED = 0
+    READY = 1
+    PROGRESSING = 2
+    ERROR = 3
+    TIMED_OUT = 4
 
   apiProxy = _messages.StringField(1)
   basePath = _messages.StringField(2)
   deployStartTime = _messages.IntegerField(3)
   environment = _messages.StringField(4)
-  pods = _messages.MessageField('GoogleCloudApigeeV1PodStatus', 5, repeated=True)
-  revision = _messages.StringField(6)
+  errors = _messages.MessageField('GoogleRpcStatus', 5, repeated=True)
+  instances = _messages.MessageField('GoogleCloudApigeeV1InstanceDeploymentStatus', 6, repeated=True)
+  pods = _messages.MessageField('GoogleCloudApigeeV1PodStatus', 7, repeated=True)
+  revision = _messages.StringField(8)
+  routeConflicts = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict', 9, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+
+
+class GoogleCloudApigeeV1DeploymentChangeReport(_messages.Message):
+  r"""Response for GenerateDeployChangeReport and
+  GenerateUndeployChangeReport.  This report contains any validation failures
+  that would cause the deployment to be rejected, as well changes and
+  conflicts in routing that may occur due to the new deployment.  The
+  existence of a routing warning does not necessarily imply that the
+  deployment request is bad, if the desired state of the deployment request is
+  to effect a routing change. The primary purposes of the routing messages
+  are:  1) To inform users of routing changes that may have an effect on
+  traffic currently being routed to other existing deployments.  2) To warn
+  users if some basepath in the proxy will not receive traffic due to an
+  existing deployment having already claimed that basepath.  The presence of
+  routing conflicts/changes will not cause non-dry-run
+  DeployApiProxy/UndeployApiProxy requests to be rejected.
+
+  Fields:
+    routingChanges: All routing changes that may result from a deployment
+      request.
+    routingConflicts: All basepath conflicts detected for a deployment
+      request.
+    validationErrors: Validation errors that would cause the deployment change
+      request to be rejected.
+  """
+
+  routingChanges = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingChange', 1, repeated=True)
+  routingConflicts = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict', 2, repeated=True)
+  validationErrors = _messages.MessageField('GoogleRpcPreconditionFailure', 3)
+
+
+class GoogleCloudApigeeV1DeploymentChangeReportRoutingChange(_messages.Message):
+  r"""Describes a potential routing change that may occur as a result of some
+  deployment operation.
+
+  Fields:
+    description: A human-readable description of this routing change.
+    environmentGroup: The name of the environment group affected by this
+      routing change.
+    fromDeployment: The basepath/deployment that may stop receiving some
+      traffic.
+    shouldSequenceRollout: True if using sequenced rollout would make this
+      routing change safer. Note: this does not necessarily imply that
+      automated sequenced rollout mode is supported for the operation.
+    toDeployment: The basepath/deployment that may start receiving that
+      traffic. May be null if no deployment is able to receive the traffic.
+  """
+
+  description = _messages.StringField(1)
+  environmentGroup = _messages.StringField(2)
+  fromDeployment = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingDeployment', 3)
+  shouldSequenceRollout = _messages.BooleanField(4)
+  toDeployment = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingDeployment', 5)
+
+
+class GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict(_messages.Message):
+  r"""Describes a routing conflict that may cause a deployment not to receive
+  traffic at some basepath.
+
+  Fields:
+    conflictingDeployment: The existing basepath/deployment causing the
+      conflict.
+    description: A human-readable description of this conflict.
+    environmentGroup: The name of the environment group in which this conflict
+      exists.
+  """
+
+  conflictingDeployment = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingDeployment', 1)
+  description = _messages.StringField(2)
+  environmentGroup = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1DeploymentChangeReportRoutingDeployment(_messages.Message):
+  r"""A tuple representing a basepath and the deployment containing it.
+
+  Fields:
+    apiProxy: The name of the deployed proxy revision containing the basepath.
+    basepath: The basepath receiving traffic.
+    environment: The name of the environment in which the proxy is deployed.
+    revision: The name of the deployed proxy revision containing the basepath.
+  """
+
+  apiProxy = _messages.StringField(1)
+  basepath = _messages.StringField(2)
+  environment = _messages.StringField(3)
+  revision = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1DeploymentConfig(_messages.Message):
@@ -3160,6 +3578,66 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
   uid = _messages.StringField(16)
 
 
+class GoogleCloudApigeeV1EnvironmentGroup(_messages.Message):
+  r"""EnvironmentGroup configuration. An environment group is used to group
+  one or more Apigee environments under a single host name.
+
+  Fields:
+    createdAt: Output only. The time at which the environment group was
+      created as milliseconds since epoch.
+    hostnames: Required. Host names for this environment group.
+    lastModifiedAt: Output only. The time at which the environment group was
+      last updated as milliseconds since epoch.
+    name: ID of the environment group.
+  """
+
+  createdAt = _messages.IntegerField(1)
+  hostnames = _messages.StringField(2, repeated=True)
+  lastModifiedAt = _messages.IntegerField(3)
+  name = _messages.StringField(4)
+
+
+class GoogleCloudApigeeV1EnvironmentGroupAttachment(_messages.Message):
+  r"""EnvironmentGroupAttachment is a resource which defines an attachment of
+  an environment to an environment group.
+
+  Fields:
+    createdAt: Output only. The time at which the environment group attachment
+      was created as milliseconds since epoch.
+    environment: Required. ID of the attached environment.
+    name: ID of the environment group attachment.
+  """
+
+  createdAt = _messages.IntegerField(1)
+  environment = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1EnvironmentGroupConfig(_messages.Message):
+  r"""EnvironmentGroupConfig is a revisioned snapshot of an EnvironmentGroup
+  and its associated routing rules.
+
+  Fields:
+    hostnames: Host names for the environment group.
+    name: Name of the environment group in the following format:
+      `organizations/{org}/envgroups/{envgroup}`.
+    revisionId: Revision id that defines the ordering of the
+      EnvironmentGroupConfig resource. The higher the revision, the more
+      recently the configuration was deployed.
+    routingRules: Ordered list of routing rules defining how traffic to this
+      environment group's hostnames should be routed to different
+      environments.
+    uid: A unique id for the environment group config that will only change if
+      the environment group is deleted and recreated.
+  """
+
+  hostnames = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  revisionId = _messages.IntegerField(3)
+  routingRules = _messages.MessageField('GoogleCloudApigeeV1RoutingRule', 4, repeated=True)
+  uid = _messages.StringField(5)
+
+
 class GoogleCloudApigeeV1FlowHook(_messages.Message):
   r"""A GoogleCloudApigeeV1FlowHook object.
 
@@ -3204,6 +3682,121 @@ class GoogleCloudApigeeV1FlowHookConfig(_messages.Message):
 class GoogleCloudApigeeV1GetSyncAuthorizationRequest(_messages.Message):
   r"""Request for
 GetSyncAuthorization."""
+
+
+class GoogleCloudApigeeV1IngressConfig(_messages.Message):
+  r"""A GoogleCloudApigeeV1IngressConfig object.
+
+  Fields:
+    createTime: Time at which the IngressConfig was created.
+    environmentGroups: List of environment groups in the organization.
+    name: Name of the resource in the following format:
+      `organizations/{org}/deployedIngressConfig`.
+    revisionId: Revision id that defines the ordering on IngressConfig
+      resources. The higher the revision, the more recently the configuration
+      was deployed.
+    sequenceNumber: DEPRECATED: Use revision_id
+    uid: A unique id for the ingress config that will only change if the
+      organization is deleted and recreated.
+  """
+
+  createTime = _messages.StringField(1)
+  environmentGroups = _messages.MessageField('GoogleCloudApigeeV1EnvironmentGroupConfig', 2, repeated=True)
+  name = _messages.StringField(3)
+  revisionId = _messages.IntegerField(4)
+  sequenceNumber = _messages.IntegerField(5)
+  uid = _messages.StringField(6)
+
+
+class GoogleCloudApigeeV1Instance(_messages.Message):
+  r"""Apigee runtime instance.
+
+  Fields:
+    createdAt: Output only. Time the instance was created in milliseconds
+      since epoch.
+    description: Optional. Description of the instance.
+    diskEncryptionKeyName: Optional. Customer Managed Encryption Key (CMEK)
+      used for disk & volume encryption.
+    displayName: Optional. Display name for the instance.
+    host: Output only. Hostname or IP address of the exposed Apigee endpoint
+      used by clients to connect to the service.
+    lastModifiedAt: Output only. Time the instance was last modified in
+      milliseconds since epoch.
+    name: Required. Resource ID of the instance. Values must match the regular
+      expression `^a-z{0,30}[a-z\d]$`.
+    port: Output only. Port number of the exposed Apigee endpoint.
+    region: Required. Region where the instance resides.
+  """
+
+  createdAt = _messages.IntegerField(1)
+  description = _messages.StringField(2)
+  diskEncryptionKeyName = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  host = _messages.StringField(5)
+  lastModifiedAt = _messages.IntegerField(6)
+  name = _messages.StringField(7)
+  port = _messages.StringField(8)
+  region = _messages.StringField(9)
+
+
+class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
+  r"""InstanceAttachment represents the installation of an environment onto an
+  instance.
+
+  Fields:
+    createdAt: Output only. Time the attachment was created in milliseconds
+      since epoch.
+    environment: ID of the attached environment.
+    name: Output only. ID of the attachment.
+  """
+
+  createdAt = _messages.IntegerField(1)
+  environment = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1InstanceDeploymentStatus(_messages.Message):
+  r"""The status of a deployment as reported by a single instance.
+
+  Fields:
+    deployedRevisions: Revisions currently deployed in MPs.
+    deployedRoutes: The current routes deployed in the ingress routing table.
+      A route which is missing will be shown with no destination environment.
+    instance: ID of the instance reporting the status.
+  """
+
+  deployedRevisions = _messages.MessageField('GoogleCloudApigeeV1InstanceDeploymentStatusDeployedRevision', 1, repeated=True)
+  deployedRoutes = _messages.MessageField('GoogleCloudApigeeV1InstanceDeploymentStatusDeployedRoute', 2, repeated=True)
+  instance = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1InstanceDeploymentStatusDeployedRevision(_messages.Message):
+  r"""Revisions deployed in the MPs.
+
+  Fields:
+    percentage: The percentage of MP replicas reporting this revision
+    revision: The proxy revision reported as deployed.
+  """
+
+  percentage = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  revision = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1InstanceDeploymentStatusDeployedRoute(_messages.Message):
+  r"""A route deployed in the ingress routing table.
+
+  Fields:
+    basepath: The basepath in the routing table.
+    envgroup: The envgroup where this route is installed.
+    environment: The destination environment. This will be empty if the route
+      is not yet reported.
+    percentage: The percentage of ingress replicas reporting this route.
+  """
+
+  basepath = _messages.StringField(1)
+  envgroup = _messages.StringField(2)
+  environment = _messages.StringField(3)
+  percentage = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudApigeeV1KeyAliasReference(_messages.Message):
@@ -3343,6 +3936,35 @@ class GoogleCloudApigeeV1ListDeveloperAppsResponse(_messages.Message):
   app = _messages.MessageField('GoogleCloudApigeeV1DeveloperApp', 1, repeated=True)
 
 
+class GoogleCloudApigeeV1ListEnvironmentGroupAttachmentsResponse(_messages.Message):
+  r"""Response for ListEnvironmentGroupAttachments.
+
+  Fields:
+    environmentGroupAttachments: EnvironmentGroupAttachments for the specified
+      environment group.
+    nextPageToken: Page token that you can include in a
+      ListEnvironmentGroupAttachments request to retrieve the next page. If
+      omitted, no subsequent pages exist.
+  """
+
+  environmentGroupAttachments = _messages.MessageField('GoogleCloudApigeeV1EnvironmentGroupAttachment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1ListEnvironmentGroupsResponse(_messages.Message):
+  r"""Response for ListEnvironmentGroups.
+
+  Fields:
+    environmentGroups: EnvironmentGroups in the specified organization.
+    nextPageToken: Page token that you can include in a ListEnvironmentGroups
+      request to retrieve the next page. If omitted, no subsequent pages
+      exist.
+  """
+
+  environmentGroups = _messages.MessageField('GoogleCloudApigeeV1EnvironmentGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1ListEnvironmentResourcesResponse(_messages.Message):
   r"""Response for ListEnvironmentResources
 
@@ -3361,6 +3983,34 @@ class GoogleCloudApigeeV1ListHybridIssuersResponse(_messages.Message):
   """
 
   issuers = _messages.MessageField('GoogleCloudApigeeV1ServiceIssuersMapping', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1ListInstanceAttachmentsResponse(_messages.Message):
+  r"""Response for ListInstanceAttachments.
+
+  Fields:
+    attachments: Attachments for the instance.
+    nextPageToken: Page token that you can include in a
+      ListInstanceAttachments request to retrieve the next page of content. If
+      omitted, no subsequent pages exist.
+  """
+
+  attachments = _messages.MessageField('GoogleCloudApigeeV1InstanceAttachment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1ListInstancesResponse(_messages.Message):
+  r"""Response for ListInstances.
+
+  Fields:
+    instances: Instances in the specified organization.
+    nextPageToken: Page token that you can include in a ListInstance request
+      to retrieve the next page of content. If omitted, no subsequent pages
+      exist.
+  """
+
+  instances = _messages.MessageField('GoogleCloudApigeeV1Instance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1ListOfDevelopersResponse(_messages.Message):
@@ -3561,6 +4211,15 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       For valid values, see [Create an
       organization](https://docs.apigee.com/hybrid/latest/precog-provision).
     attributes: Not used by Apigee.
+    authorizedNetwork: Compute Engine network used for ServiceNetworking to be
+      peered with Apigee runtime instances. See [Getting started with the
+      Service Networking API](https://cloud.google.com/service-
+      infrastructure/docs/service-networking/getting-started). Valid only when
+      [RuntimeType] is set to CLOUD. The value can be updated only when there
+      are no runtime instances. For example: "default".  **Note:** Not
+      supported for Apigee hybrid.
+    caCertificate: Output only. Base64-encoded public certificate for the root
+      CA of the Apigee organization. Valid only when [RuntimeType] is CLOUD.
     createdAt: Output only. Time that the Apigee organization was created in
       milliseconds since epoch.
     customerName: Not used by Apigee.
@@ -3630,18 +4289,20 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
 
   analyticsRegion = _messages.StringField(1)
   attributes = _messages.StringField(2, repeated=True)
-  createdAt = _messages.IntegerField(3)
-  customerName = _messages.StringField(4)
-  description = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  environments = _messages.StringField(7, repeated=True)
-  lastModifiedAt = _messages.IntegerField(8)
-  name = _messages.StringField(9)
-  projectId = _messages.StringField(10)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 11)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 12)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 13)
-  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  authorizedNetwork = _messages.StringField(3)
+  caCertificate = _messages.BytesField(4)
+  createdAt = _messages.IntegerField(5)
+  customerName = _messages.StringField(6)
+  description = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  environments = _messages.StringField(9, repeated=True)
+  lastModifiedAt = _messages.IntegerField(10)
+  name = _messages.StringField(11)
+  projectId = _messages.StringField(12)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 13)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 14)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
@@ -3862,6 +4523,28 @@ class GoogleCloudApigeeV1ReferenceConfig(_messages.Message):
   resourceName = _messages.StringField(2)
 
 
+class GoogleCloudApigeeV1ReportInstanceStatusRequest(_messages.Message):
+  r"""Request for ReportInstanceStatus.
+
+  Fields:
+    instanceUid: A unique ID for the instance which is guaranteed to be unique
+      in case the user installs multiple hybrid runtimes with the same
+      instance ID.
+    reportTime: The time the report was generated in the runtime. Used to
+      prevent an old status from overwriting a newer one. An instance should
+      space out it's status reports so that clock skew does not play a factor.
+    resources: Status for config resources
+  """
+
+  instanceUid = _messages.StringField(1)
+  reportTime = _messages.StringField(2)
+  resources = _messages.MessageField('GoogleCloudApigeeV1ResourceStatus', 3, repeated=True)
+
+
+class GoogleCloudApigeeV1ReportInstanceStatusResponse(_messages.Message):
+  r"""Placeholder for future enhancements to status reporting protocol"""
+
+
 class GoogleCloudApigeeV1ReportProperty(_messages.Message):
   r"""A GoogleCloudApigeeV1ReportProperty object.
 
@@ -3910,6 +4593,28 @@ class GoogleCloudApigeeV1ResourceFiles(_messages.Message):
   resourceFile = _messages.MessageField('GoogleCloudApigeeV1ResourceFile', 1, repeated=True)
 
 
+class GoogleCloudApigeeV1ResourceStatus(_messages.Message):
+  r"""The status of a resource loaded in the runtime.
+
+  Fields:
+    resource: The resource name. Currently only two resources are supported:
+      EnvironmentGroup - organizations/{org}/envgroups/{envgroup}
+      EnvironmentConfig -
+      organizations/{org}/environments/{environment}/deployedConfig
+    revisions: Revisions of the resource currently deployed in the instance.
+    totalReplicas: The total number of replicas that should have this
+      resource.
+    uid: The uid of the resource. In the unexpected case that the instance has
+      multiple uids for the same name, they should be reported under separate
+      ResourceStatuses.
+  """
+
+  resource = _messages.StringField(1)
+  revisions = _messages.MessageField('GoogleCloudApigeeV1RevisionStatus', 2, repeated=True)
+  totalReplicas = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  uid = _messages.StringField(4)
+
+
 class GoogleCloudApigeeV1Result(_messages.Message):
   r"""Result is short for "action result", could be different types identified
   by "action_result" field. Supported types: 1. DebugInfo : generic debug info
@@ -3956,6 +4661,38 @@ class GoogleCloudApigeeV1Result(_messages.Message):
   timestamp = _messages.StringField(8)
   uRI = _messages.StringField(9)
   verb = _messages.StringField(10)
+
+
+class GoogleCloudApigeeV1RevisionStatus(_messages.Message):
+  r"""The status of a specific resource revision.
+
+  Fields:
+    errors: Errors reported when attempting to load this revision.
+    jsonSpec: The json content of the resource revision.
+    replicas: The number of replicas that have successfully loaded this
+      revision.
+    revisionId: The revision of the resource.
+  """
+
+  errors = _messages.MessageField('GoogleCloudApigeeV1UpdateError', 1, repeated=True)
+  jsonSpec = _messages.StringField(2)
+  replicas = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  revisionId = _messages.StringField(4)
+
+
+class GoogleCloudApigeeV1RoutingRule(_messages.Message):
+  r"""A GoogleCloudApigeeV1RoutingRule object.
+
+  Fields:
+    basepath: URI path prefix used to route to the specified environment. May
+      contain one or more wildcards. For example, path segments consisting of
+      a single `*` character will match any string.
+    environment: Name of an environment bound to the environment group in the
+      following format: `organizations/{org}/environments/{env}`.
+  """
+
+  basepath = _messages.StringField(1)
+  environment = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1Schema(_messages.Message):
@@ -4337,6 +5074,135 @@ class GoogleCloudApigeeV1TlsInfoConfig(_messages.Message):
   trustStore = _messages.StringField(9)
 
 
+class GoogleCloudApigeeV1UpdateError(_messages.Message):
+  r"""Details on why a resource update failed in the runtime.
+
+  Enums:
+    CodeValueValuesEnum: Status code.
+
+  Fields:
+    code: Status code.
+    message: User-friendly error message.
+    resource: The sub resource specific to this error (e.g. a proxy deployed
+      within the EnvironmentConfig). If empty the error refers to the top
+      level resource.
+    type: A string that uniquely identifies the type of error. This provides a
+      more reliable means to deduplicate errors across revisions and
+      instances.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Status code.
+
+    Values:
+      OK: Not an error; returned on success  HTTP Mapping: 200 OK
+      CANCELLED: The operation was cancelled, typically by the caller.  HTTP
+        Mapping: 499 Client Closed Request
+      UNKNOWN: Unknown error.  For example, this error may be returned when a
+        `Status` value received from another address space belongs to an error
+        space that is not known in this address space.  Also errors raised by
+        APIs that do not return enough error information may be converted to
+        this error.  HTTP Mapping: 500 Internal Server Error
+      INVALID_ARGUMENT: The client specified an invalid argument.  Note that
+        this differs from `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates
+        arguments that are problematic regardless of the state of the system
+        (e.g., a malformed file name).  HTTP Mapping: 400 Bad Request
+      DEADLINE_EXCEEDED: The deadline expired before the operation could
+        complete. For operations that change the state of the system, this
+        error may be returned even if the operation has completed
+        successfully.  For example, a successful response from a server could
+        have been delayed long enough for the deadline to expire.  HTTP
+        Mapping: 504 Gateway Timeout
+      NOT_FOUND: Some requested entity (e.g., file or directory) was not
+        found.  Note to server developers: if a request is denied for an
+        entire class of users, such as gradual feature rollout or undocumented
+        whitelist, `NOT_FOUND` may be used. If a request is denied for some
+        users within a class of users, such as user-based access control,
+        `PERMISSION_DENIED` must be used.  HTTP Mapping: 404 Not Found
+      ALREADY_EXISTS: The entity that a client attempted to create (e.g., file
+        or directory) already exists.  HTTP Mapping: 409 Conflict
+      PERMISSION_DENIED: The caller does not have permission to execute the
+        specified operation. `PERMISSION_DENIED` must not be used for
+        rejections caused by exhausting some resource (use
+        `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED`
+        must not be used if the caller can not be identified (use
+        `UNAUTHENTICATED` instead for those errors). This error code does not
+        imply the request is valid or the requested entity exists or satisfies
+        other pre-conditions.  HTTP Mapping: 403 Forbidden
+      UNAUTHENTICATED: The request does not have valid authentication
+        credentials for the operation.  HTTP Mapping: 401 Unauthorized
+      RESOURCE_EXHAUSTED: Some resource has been exhausted, perhaps a per-user
+        quota, or perhaps the entire file system is out of space.  HTTP
+        Mapping: 429 Too Many Requests
+      FAILED_PRECONDITION: The operation was rejected because the system is
+        not in a state required for the operation's execution.  For example,
+        the directory to be deleted is non-empty, an rmdir operation is
+        applied to a non-directory, etc.  Service implementors can use the
+        following guidelines to decide between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`:  (a) Use `UNAVAILABLE` if the client can
+        retry just the failing call.  (b) Use `ABORTED` if the client should
+        retry at a higher level      (e.g., when a client-specified test-and-
+        set fails, indicating the      client should restart a read-modify-
+        write sequence).  (c) Use `FAILED_PRECONDITION` if the client should
+        not retry until      the system state has been explicitly fixed.
+        E.g., if an "rmdir"      fails because the directory is non-empty,
+        `FAILED_PRECONDITION`      should be returned since the client should
+        not retry unless      the files are deleted from the directory.  HTTP
+        Mapping: 400 Bad Request
+      ABORTED: The operation was aborted, typically due to a concurrency issue
+        such as a sequencer check failure or transaction abort.  See the
+        guidelines above for deciding between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`.  HTTP Mapping: 409 Conflict
+      OUT_OF_RANGE: The operation was attempted past the valid range.  E.g.,
+        seeking or reading past end-of-file.  Unlike `INVALID_ARGUMENT`, this
+        error indicates a problem that may be fixed if the system state
+        changes. For example, a 32-bit file system will generate
+        `INVALID_ARGUMENT` if asked to read at an offset that is not in the
+        range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read
+        from an offset past the current file size.  There is a fair bit of
+        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`.  We
+        recommend using `OUT_OF_RANGE` (the more specific error) when it
+        applies so that callers who are iterating through a space can easily
+        look for an `OUT_OF_RANGE` error to detect when they are done.  HTTP
+        Mapping: 400 Bad Request
+      UNIMPLEMENTED: The operation is not implemented or is not
+        supported/enabled in this service.  HTTP Mapping: 501 Not Implemented
+      INTERNAL: Internal errors.  This means that some invariants expected by
+        the underlying system have been broken.  This error code is reserved
+        for serious errors.  HTTP Mapping: 500 Internal Server Error
+      UNAVAILABLE: The service is currently unavailable.  This is most likely
+        a transient condition, which can be corrected by retrying with a
+        backoff. Note that it is not always safe to retry non-idempotent
+        operations.  See the guidelines above for deciding between
+        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`.  HTTP Mapping:
+        503 Service Unavailable
+      DATA_LOSS: Unrecoverable data loss or corruption.  HTTP Mapping: 500
+        Internal Server Error
+    """
+    OK = 0
+    CANCELLED = 1
+    UNKNOWN = 2
+    INVALID_ARGUMENT = 3
+    DEADLINE_EXCEEDED = 4
+    NOT_FOUND = 5
+    ALREADY_EXISTS = 6
+    PERMISSION_DENIED = 7
+    UNAUTHENTICATED = 8
+    RESOURCE_EXHAUSTED = 9
+    FAILED_PRECONDITION = 10
+    ABORTED = 11
+    OUT_OF_RANGE = 12
+    UNIMPLEMENTED = 13
+    INTERNAL = 14
+    UNAVAILABLE = 15
+    DATA_LOSS = 16
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+  resource = _messages.StringField(3)
+  type = _messages.StringField(4)
+
+
 class GoogleIamV1AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -4703,6 +5569,38 @@ class GoogleProtobufEmpty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class GoogleRpcPreconditionFailure(_messages.Message):
+  r"""Describes what preconditions have failed.  For example, if an RPC failed
+  because it required the Terms of Service to be acknowledged, it could list
+  the terms of service violation in the PreconditionFailure message.
+
+  Fields:
+    violations: Describes all precondition violations.
+  """
+
+  violations = _messages.MessageField('GoogleRpcPreconditionFailureViolation', 1, repeated=True)
+
+
+class GoogleRpcPreconditionFailureViolation(_messages.Message):
+  r"""A message type used to describe a single precondition failure.
+
+  Fields:
+    description: A description of how the precondition failed. Developers can
+      use this description to understand how to fix the failure.  For example:
+      "Terms of service not accepted".
+    subject: The subject, relative to the type, that failed. For example,
+      "google.com/cloud" relative to the "TOS" type would indicate which terms
+      of service is being referenced.
+    type: The type of PreconditionFailure. We recommend using a service-
+      specific enum type to define the supported precondition violation
+      subjects. For example, "TOS" for "Terms of Service violation".
+  """
+
+  description = _messages.StringField(1)
+  subject = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 class GoogleRpcStatus(_messages.Message):

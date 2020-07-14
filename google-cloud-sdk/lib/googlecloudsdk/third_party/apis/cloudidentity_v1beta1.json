@@ -157,7 +157,7 @@
           "format": "google-datetime"
         },
         "ownerType": {
-          "description": "Whether the device is owned by the company or an individual",
+          "description": "Output only. Whether the device is owned by the company or an individual",
           "enumDescriptions": [
             "Default value. The value is unused.",
             "Company owns the device.",
@@ -2473,10 +2473,10 @@
           "resources": {
             "deviceUsers": {
               "methods": {
-                "lookupSelf": {
-                  "id": "cloudidentity.devices.-.deviceUsers.lookupSelf",
-                  "path": "v1beta1/devices/-/deviceUsers:lookupSelf",
-                  "flatPath": "v1beta1/devices/-/deviceUsers:lookupSelf",
+                "lookup": {
+                  "id": "cloudidentity.devices.-.deviceUsers.lookup",
+                  "path": "v1beta1/devices/-/deviceUsers:lookup",
+                  "flatPath": "v1beta1/devices/-/deviceUsers:lookup",
                   "httpMethod": "GET",
                   "parameters": {
                     "pageSize": {
@@ -2497,6 +2497,11 @@
                     },
                     "rawResourceId": {
                       "description": "Raw Resource Id used by Google Endpoint Verification.\n\nIf the user is enrolled into Google Endpoint Verification, this id will be\nsaved as the 'device_resource_id' field in the following platform dependent\nfiles.\n\nMac: ~\/.secureConnect\/context_aware_config.json\nWindows: C:\\Users\\%USERPROFILE%\\.secureConnect\\context_aware_config.json\nLinux: ~\/.secureConnect\/context_aware_config.json",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "userId": {
+                      "description": "The user whose DeviceUser's resource name will be fetched. Must be set to\n'me' to fetch the DeviceUser's resource name for the calling user.",
                       "location": "query",
                       "type": "string"
                     }

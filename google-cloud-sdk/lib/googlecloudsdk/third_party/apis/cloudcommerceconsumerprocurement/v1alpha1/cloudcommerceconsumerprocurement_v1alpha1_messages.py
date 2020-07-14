@@ -963,9 +963,11 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrdersResponse(_messages
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.ModifyOrder.
+  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 6
 
   Fields:
+    displayName: Optional. Updated display name of the order, leave as empty
+      if you do not want to update current display name.
     etag: The weak etag, which can be optionally populated, of the order that
       this modify request is based on. Validation checking will only happen if
       the invoker supplies this field.
@@ -974,9 +976,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages
     modifyQuoteOrderRequest: Required. Modifies an existing order for quote.
   """
 
-  etag = _messages.StringField(1)
-  modifyProductsOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest', 2)
-  modifyQuoteOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ModifyQuoteOrderRequest', 3)
+  displayName = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  modifyProductsOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest', 3)
+  modifyQuoteOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ModifyQuoteOrderRequest', 4)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest(_messages.Message):
@@ -1163,9 +1166,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
   r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 9
 
   Fields:
-    account: The resource name of the account that this order is based on.
-      Required if the creation of any products in the order requires an
-      account to be present.
+    account: The resource name of the account that this order is based on. If
+      this field is not specified and the creation of any products in the
+      order requires an account, system will look for existing account and
+      auto create one if there is no existing one.
     displayName: Required. The user-specified name of the order being placed.
       Must be unique within a billing account.
     placeProductsOrderRequest: Required. Places order for non-quote products.

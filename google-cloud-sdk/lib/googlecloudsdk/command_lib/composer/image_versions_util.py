@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.composer import environments_util as environments_api_util
 from googlecloudsdk.api_lib.composer import image_versions_util as image_version_api_util
 from googlecloudsdk.calliope import base
@@ -41,10 +43,12 @@ class _ImageVersionItem(object):
   """Class used to dissect and analyze image version components and strings."""
 
   def __init__(self, image_ver=None, composer_ver=None, airflow_ver=None):
+    image_version_regex = r'^composer-(\d+\.\d+\.\d+(?:-[a-z]+\.\d+)?|latest)-airflow-(\d+\.\d+(?:\.\d+)?)'
+
     if image_ver is not None:
-      iv_parts = image_ver.split('-', 4)
-      self.composer_ver = iv_parts[1]
-      self.airflow_ver = iv_parts[3]
+      iv_parts = re.findall(image_version_regex, image_ver)[0]
+      self.composer_ver = iv_parts[0]
+      self.airflow_ver = iv_parts[1]
 
     if composer_ver is not None:
       self.composer_ver = composer_ver

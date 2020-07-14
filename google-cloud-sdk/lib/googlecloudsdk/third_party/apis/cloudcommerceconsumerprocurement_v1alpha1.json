@@ -307,7 +307,7 @@
           "type": "string"
         },
         "account": {
-          "description": "The resource name of the account that this order is based on.\nRequired if the creation of any products in the order requires an account\nto be present.",
+          "description": "The resource name of the account that this order is based on.\nIf this field is not specified and the creation of any products in the\norder requires an account, system will look for existing account and auto\ncreate one if there is no existing one.",
           "type": "string"
         },
         "provider": {
@@ -691,7 +691,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest",
-      "description": "Request message for ConsumerProcurementService.ModifyOrder.",
+      "description": "Request message for ConsumerProcurementService.ModifyOrder.\nNext Id: 6",
       "type": "object",
       "properties": {
         "modifyProductsOrderRequest": {
@@ -701,6 +701,10 @@
         "modifyQuoteOrderRequest": {
           "description": "Required. Modifies an existing order for quote.",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyQuoteOrderRequest"
+        },
+        "displayName": {
+          "description": "Optional. Updated display name of the order, leave as empty if you do not want to\nupdate current display name.",
+          "type": "string"
         },
         "etag": {
           "description": "The weak etag, which can be optionally populated, of the order that this\nmodify request is based on. Validation checking will only happen if the\ninvoker supplies this field.",

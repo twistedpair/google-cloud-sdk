@@ -139,8 +139,7 @@ class LogTailer(object):
     if res.status == 206 or res.status == 200:  # Partial Content
       # New content available. Print it!
       log.debug('Reading GCS logfile: {code} (read {count} bytes)'.format(
-          code=res.status,
-          count=len(body)))
+          code=res.status, count=len(body)))
       if self.cursor == 0:
         self._PrintFirstLine()
       self.cursor += len(body)
@@ -203,25 +202,36 @@ class CloudBuildClient(object):
     """
     return self.client.projects_builds.Get(
         self.messages.CloudbuildProjectsBuildsGetRequest(
-            projectId=build_ref.projectId,
-            id=build_ref.id))
+            projectId=build_ref.projectId, id=build_ref.id))
 
   def Stream(self, build_ref, out=log.out):
-    """Stream the logs for a build.
+    """Streams the logs for a build if available.
+
+    Regardless of whether logs are available for streaming, awaits build
+    completion before returning.
 
     Args:
       build_ref: Build reference, The build whose logs shall be streamed.
       out: The output stream to write the logs to.
 
     Raises:
-      NoLogsBucketException: If the build does not specify a logsBucket.
+      NoLogsBucketException: If the build is expected to specify a logsBucket
+      but does not.
 
     Returns:
       Build message, The completed or terminated build as read for the final
       poll.
     """
     build = self.GetBuild(build_ref)
-    log_tailer = LogTailer.FromBuild(build, out=out)
+    if not build.options or build.options.logging not in [
+        self.messages.BuildOptions.LoggingValueValuesEnum.NONE,
+        self.messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
+    ]:
+      log_tailer = LogTailer.FromBuild(build, out=out)
+    else:
+      log.info('Not streaming logs: requested logging mode is {0}.'.format(
+          build.options.logging))
+      log_tailer = None
 
     statuses = self.messages.Build.StatusValueValuesEnum
     working_statuses = [
@@ -230,7 +240,8 @@ class CloudBuildClient(object):
     ]
 
     while build.status in working_statuses:
-      log_tailer.Poll()
+      if log_tailer:
+        log_tailer.Poll()
       time.sleep(1)
       build = self.GetBuild(build_ref)
 
@@ -238,7 +249,8 @@ class CloudBuildClient(object):
     # final poll will get the full log contents because GCS is strongly
     # consistent and Cloud Build waits for logs to finish pushing before
     # marking the build complete.
-    log_tailer.Poll(is_last=True)
+    if log_tailer:
+      log_tailer.Poll(is_last=True)
 
     return build
 
@@ -252,6 +264,13 @@ class CloudBuildClient(object):
       NoLogsBucketException: If the build does not specify a logsBucket.
     """
     build = self.GetBuild(build_ref)
-    log_tailer = LogTailer.FromBuild(build)
+    if build.options and build.options.logging in [
+        self.messages.BuildOptions.LoggingValueValuesEnum.NONE,
+        self.messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
+    ]:
+      log.info('GCS logs not available: build logging mode is {0}.'.format(
+          build.options.logging))
+      return
 
+    log_tailer = LogTailer.FromBuild(build)
     log_tailer.Poll(is_last=True)

@@ -618,7 +618,15 @@ class InstallationState(object):
       regex_exclusion = re.compile('(httplib2/python3|typing/python3'
                                    '|platform/bq/third_party/yaml/lib3)')
     else:
-      regex_exclusion = None
+      # Do not compile anything on python 3.4.x
+      if sys.version_info[1] == 4:
+        regex_exclusion = re.compile('.*')
+      elif sys.version_info[1] == 8:
+        regex_exclusion = re.compile(
+            '(kubernetes/utils/create_from_yaml.py'
+            '|gslib/vendored/boto/boto/iam/connection.py)')
+      else:
+        regex_exclusion = None
 
     # The self.sdk_root pathname could contain unicode chars and py_compile
     # chokes on unicode paths. Using relative paths from self.sdk_root works

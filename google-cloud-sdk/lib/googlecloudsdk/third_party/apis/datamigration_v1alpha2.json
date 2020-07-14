@@ -1067,7 +1067,9 @@
             "The value of parameter max_replication_slots is not sufficient.",
             "The value of parameter max_wal_senders is not sufficient.",
             "The value of parameter max_worker_processes is not sufficient.",
-            "Extensions installed are either not supported or having unsupported\nversions"
+            "Extensions installed are either not supported or having unsupported\nversions.",
+            "Unsupported migration type.",
+            "Invalid RDS logical replication."
           ],
           "type": "string",
           "enum": [
@@ -1084,7 +1086,9 @@
             "INSUFFICIENT_MAX_REPLICATION_SLOTS",
             "INSUFFICIENT_MAX_WAL_SENDERS",
             "INSUFFICIENT_MAX_WORKER_PROCESSES",
-            "UNSUPPORTED_EXTENSIONS"
+            "UNSUPPORTED_EXTENSIONS",
+            "UNSUPPORTED_MIGRATION_TYPE",
+            "INVALID_RDS_LOGICAL_REPLICATION"
           ]
         },
         "errorMessage": {

@@ -901,7 +901,8 @@ class ArgList(ArgType):
     """
     del is_custom_metavar  # Unused in GetUsageMsg
 
-    required = self.DEFAULT_DELIM_CHAR.join([metavar] * self.min_length)
+    delim_char = self.custom_delim_char or self.DEFAULT_DELIM_CHAR
+    required = delim_char.join([metavar] * self.min_length)
 
     if self.max_length:
       num_optional = self.max_length - self.min_length
@@ -914,22 +915,22 @@ class ArgList(ArgType):
     elif num_optional == 1:
       optional = '[{}]'.format(metavar)
     elif num_optional == 2:
-      optional = '[{0}{1}[{0}]]'.format(metavar, self.DEFAULT_DELIM_CHAR)
+      optional = '[{0}{1}[{0}]]'.format(metavar, delim_char)
     else:
-      optional = '[{}{}...]'.format(metavar, self.DEFAULT_DELIM_CHAR)
+      optional = '[{}{}...]'.format(metavar, delim_char)
 
-    msg = self.DEFAULT_DELIM_CHAR.join([x for x in [required, optional] if x])
+    msg = delim_char.join([x for x in [required, optional] if x])
 
     if len(msg) < self._MAX_METAVAR_LENGTH:
       return msg
 
     # With long metavars, only put it in once.
     if self.min_length == 0:
-      return '[{}{}...]'.format(metavar, self.DEFAULT_DELIM_CHAR)
+      return '[{}{}...]'.format(metavar, delim_char)
     if self.min_length == 1:
-      return '{}{}[...]'.format(metavar, self.DEFAULT_DELIM_CHAR)
+      return '{}{}[...]'.format(metavar, delim_char)
     else:
-      return '{0}{1}...{1}[...]'.format(metavar, self.DEFAULT_DELIM_CHAR)
+      return '{0}{1}...{1}[...]'.format(metavar, delim_char)
 
 
 class ArgDict(ArgList):

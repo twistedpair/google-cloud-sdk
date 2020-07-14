@@ -5119,7 +5119,7 @@
                 "https://www.googleapis.com/auth/compute.readonly",
                 "https://www.googleapis.com/auth/userinfo.email"
               ],
-              "description": "List the jobs of a project.\n\nTo list the jobs of a project in a region, we recommend using\n`projects.locations.jobs.get` with a [regional endpoint]\n(https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). To\nlist the all jobs across all regions, use `projects.jobs.aggregated`. Using\n`projects.jobs.list` is not recommended, as you can only get the list of\njobs that are running in `us-central1`."
+              "description": "List the jobs of a project.\n\nTo list the jobs of a project in a region, we recommend using\n`projects.locations.jobs.list` with a [regional endpoint]\n(https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). To\nlist the all jobs across all regions, use `projects.jobs.aggregated`. Using\n`projects.jobs.list` is not recommended, as you can only get the list of\njobs that are running in `us-central1`."
             },
             "aggregated": {
               "id": "dataflow.projects.jobs.aggregated",
@@ -6245,7 +6245,7 @@
                     "https://www.googleapis.com/auth/compute.readonly",
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
-                  "description": "List the jobs of a project.\n\nTo list the jobs of a project in a region, we recommend using\n`projects.locations.jobs.get` with a [regional endpoint]\n(https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). To\nlist the all jobs across all regions, use `projects.jobs.aggregated`. Using\n`projects.jobs.list` is not recommended, as you can only get the list of\njobs that are running in `us-central1`."
+                  "description": "List the jobs of a project.\n\nTo list the jobs of a project in a region, we recommend using\n`projects.locations.jobs.list` with a [regional endpoint]\n(https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). To\nlist the all jobs across all regions, use `projects.jobs.aggregated`. Using\n`projects.jobs.list` is not recommended, as you can only get the list of\njobs that are running in `us-central1`."
                 },
                 "snapshot": {
                   "id": "dataflow.projects.locations.jobs.snapshot",

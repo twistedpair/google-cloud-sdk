@@ -1160,7 +1160,9 @@ class MigrationJobVerificationError(_messages.Message):
       INSUFFICIENT_MAX_WORKER_PROCESSES: The value of parameter
         max_worker_processes is not sufficient.
       UNSUPPORTED_EXTENSIONS: Extensions installed are either not supported or
-        having unsupported versions
+        having unsupported versions.
+      UNSUPPORTED_MIGRATION_TYPE: Unsupported migration type.
+      INVALID_RDS_LOGICAL_REPLICATION: Invalid RDS logical replication.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -1176,6 +1178,8 @@ class MigrationJobVerificationError(_messages.Message):
     INSUFFICIENT_MAX_WAL_SENDERS = 11
     INSUFFICIENT_MAX_WORKER_PROCESSES = 12
     UNSUPPORTED_EXTENSIONS = 13
+    UNSUPPORTED_MIGRATION_TYPE = 14
+    INVALID_RDS_LOGICAL_REPLICATION = 15
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)

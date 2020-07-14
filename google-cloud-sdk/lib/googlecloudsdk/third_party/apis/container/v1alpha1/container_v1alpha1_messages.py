@@ -2503,10 +2503,10 @@ class NodeConfig(_messages.Message):
       information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform)
-    nodeGroup: The optional node group. Setting this field will assign
-      instances of this pool to run on the specified node group. This is
-      useful for running workloads on [sole tenant
-      nodes](/compute/docs/nodes/)
+    nodeGroup: Setting this field will assign instances of this pool to run on
+      the specified node group. This is useful for running workloads on [sole
+      tenant nodes](https://cloud.google.com/compute/docs/nodes/sole-tenant-
+      nodes).
     nodeImageConfig: The node image configuration to use for this node pool.
       Note that this is only applicable for node pools using
       image_type=CUSTOM.
@@ -4131,12 +4131,14 @@ class WorkloadIdentityConfig(_messages.Message):
   Fields:
     identityNamespace: IAM Identity Namespace to attach all k8s Service
       Accounts to.
+    identityProvider: identity provider is the third party identity provider.
     workloadPool: The workload pool to attach all Kubernetes service accounts
       to.
   """
 
   identityNamespace = _messages.StringField(1)
-  workloadPool = _messages.StringField(2)
+  identityProvider = _messages.StringField(2)
+  workloadPool = _messages.StringField(3)
 
 
 class WorkloadMetadataConfig(_messages.Message):

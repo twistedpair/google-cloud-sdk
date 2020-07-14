@@ -2304,6 +2304,10 @@ class NodeConfig(_messages.Message):
       information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform)
+    nodeGroup: Setting this field will assign instances of this pool to run on
+      the specified node group. This is useful for running workloads on [sole
+      tenant nodes](https://cloud.google.com/compute/docs/nodes/sole-tenant-
+      nodes).
     nodeImageConfig: The node image configuration to use for this node pool.
       Note that this is only applicable for node pools using
       image_type=CUSTOM.
@@ -2421,16 +2425,17 @@ class NodeConfig(_messages.Message):
   machineType = _messages.StringField(10)
   metadata = _messages.MessageField('MetadataValue', 11)
   minCpuPlatform = _messages.StringField(12)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 13)
-  oauthScopes = _messages.StringField(14, repeated=True)
-  preemptible = _messages.BooleanField(15)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 16)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 17)
-  serviceAccount = _messages.StringField(18)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 19)
-  tags = _messages.StringField(20, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 21, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 22)
+  nodeGroup = _messages.StringField(13)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 14)
+  oauthScopes = _messages.StringField(15, repeated=True)
+  preemptible = _messages.BooleanField(16)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 17)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 18)
+  serviceAccount = _messages.StringField(19)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
+  tags = _messages.StringField(21, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 22, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 23)
 
 
 class NodeKubeletConfig(_messages.Message):
@@ -3921,12 +3926,14 @@ class WorkloadIdentityConfig(_messages.Message):
   Fields:
     identityNamespace: IAM Identity Namespace to attach all Kubernetes Service
       Accounts to.
+    identityProvider: identity provider is the third party identity provider.
     workloadPool: The workload pool to attach all Kubernetes service accounts
       to.
   """
 
   identityNamespace = _messages.StringField(1)
-  workloadPool = _messages.StringField(2)
+  identityProvider = _messages.StringField(2)
+  workloadPool = _messages.StringField(3)
 
 
 class WorkloadMetadataConfig(_messages.Message):

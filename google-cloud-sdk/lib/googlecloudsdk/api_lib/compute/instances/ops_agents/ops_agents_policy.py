@@ -50,7 +50,7 @@ class OpsAgentPolicy(object):
 
       Args:
         agent_type: Type, agent type to be installed.
-        version: str, agent version, e.g. 'latest', '5.5.2', '5.x.x'.
+        version: str, agent version, e.g. 'latest', '5.5.2', '5.*.*'.
         package_state: Optional PackageState. DesiredState for the package.
         enable_autoupgrade: Optional bool. Enable autoupgrade for the package or
           not.
@@ -62,11 +62,6 @@ class OpsAgentPolicy(object):
 
     def __eq__(self, other):
       return self.__dict__ == other.__dict__
-
-    def __repr__(self):
-      """JSON format string representation for testing."""
-      return json.dumps(self, default=lambda o: o.__dict__,
-                        indent=2, separators=(',', ': '), sort_keys=True)
 
     def ToJson(self):
       """Generate JSON with camel-cased key."""
@@ -105,11 +100,6 @@ class OpsAgentPolicy(object):
       def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
-      def __repr__(self):
-        """JSON format string representation for testing."""
-        return json.dumps(self, default=lambda o: o.__dict__,
-                          indent=2, separators=(',', ': '), sort_keys=True)
-
     def __init__(self, group_labels, zones, instances, os_types):
       """Initialize Assignment Instance.
 
@@ -126,11 +116,6 @@ class OpsAgentPolicy(object):
 
     def __eq__(self, other):
       return self.__dict__ == other.__dict__
-
-    def __repr__(self):
-      """JSON format string representation for testing."""
-      return json.dumps(self, default=lambda o: o.__dict__,
-                        indent=2, separators=(',', ': '), sort_keys=True)
 
   def __init__(self,
                assignment,
@@ -168,33 +153,33 @@ class OpsAgentPolicy(object):
                       indent=2, separators=(',', ': '), sort_keys=True)
 
 
-def CreateOpsAgentPolicy(description, agents, group_labels, os_types, zones,
-                         instances):
-  """Create Ops Agent Policy.
+def CreateOsTypes(os_types):
+  """Create Os Types in Ops Agent  Policy.
 
   Args:
-    description: str, ops agent policy description.
-    agents: list of dict, fields describing agents from the command line.
-    group_labels: list of dict, VM group label matchers.
     os_types: dict, VM OS type matchers, or None.
-    zones: list, VM zone matchers.
-    instances: list, instance name matchers.
 
   Returns:
-    ops agent policy.
+    A list of OpsAgentPolicy.Assignment.OsType objects.
   """
-  assignment_os_types = []
-  if os_types is not None:
-    for os_type in os_types:
-      assignment_os_types.append(
-          OpsAgentPolicy.Assignment.OsType(
-              OpsAgentPolicy.Assignment.OsType.OsShortName(
-                  os_type['short-name']), os_type['version']))
-  assignment = OpsAgentPolicy.Assignment(group_labels, zones, instances,
-                                         assignment_os_types)
+  OsType = OpsAgentPolicy.Assignment.OsType  # pylint: disable=invalid-name
+  return [
+      OsType(OsType.OsShortName(os_type['short-name']), os_type['version'])
+      for os_type in os_types or []
+  ]
 
+
+def CreateAgents(agents):
+  """Create agents in ops agent policy.
+
+  Args:
+    agents: list of dict, fields describing agents from the command line.
+
+  Returns:
+    An OpsAgentPolicy.Agents object.
+  """
   ops_agents = []
-  for agent in agents:
+  for agent in agents or []:
     ops_agents.append(
         OpsAgentPolicy.Agent(
             OpsAgentPolicy.Agent.Type(agent['type']),
@@ -203,4 +188,93 @@ def CreateOpsAgentPolicy(description, agents, group_labels, os_types, zones,
                 agent.get('package-state',
                           OpsAgentPolicy.Agent.PackageState.INSTALLED)),
             agent.get('enable-autoupgrade', True)))
-  return OpsAgentPolicy(assignment, ops_agents, description)
+  return ops_agents
+
+
+def CreateOpsAgentPolicy(description, agents, group_labels, os_types, zones,
+                         instances):
+  """Create Ops Agent Policy.
+
+  Args:
+    description: str, ops agent policy description.
+    agents: list of dict, fields describing agents from the command line.
+    group_labels: list of dict, VM group label matchers.
+    os_types: dict, VM OS type matchers.
+    zones: list, VM zone matchers.
+    instances: list, instance name matchers.
+
+  Returns:
+    ops agent policy.
+  """
+  return OpsAgentPolicy(
+      OpsAgentPolicy.Assignment(group_labels, zones, instances,
+                                CreateOsTypes(os_types)),
+      CreateAgents(agents),
+      description)
+
+
+def _MergeAgents(old_agents, input_agents):
+  """Merge updated agents into existing agents.
+
+  One example for the --agents field: If the policy has two agents specified
+  (e.g.
+  --agents="type=logging,package-state=installed;type=metrics,package-state=installed")
+  when it is created, and only one of the agents (e.g.
+  --agents="type=logging,package-state=installed") is specified in an gcloud
+  alpha compute instances ops-agents policies update command, the status of
+  the other agent remains the same. In other words the setting for the
+  metrics
+  agent remains as type=metrics,package-state=installed. In order to remove
+  the metrics agent in this case, set the package state explicitly to removed
+  (e.g.
+  --agents="type=logging,package-state=installed;type=metrics,package-state=removed").
+
+  Args:
+    old_agents: list of OpsAgentsPolicy.Agent, agents in existing policy.
+    input_agents: list of OpsAgentsPolicy.Agent, agents from user update input.
+
+  Returns:
+    list of OpsAgentsPolicy.Agent
+
+
+  """
+  input_agents_types = {agent.type for agent in input_agents}
+  agents_to_inherit = [
+      agent for agent in old_agents if agent.type not in input_agents_types
+  ]
+  return input_agents + agents_to_inherit
+
+
+def UpdateOpsAgentsPolicy(ops_agents_policy, description, agents, os_types,
+                          group_labels, zones, instances):
+  """Merge existing ops agent policy with user updates.
+
+  Args:
+    ops_agents_policy: OpsAgentPolicy, ops agent policy.
+    description: str, ops agent policy description.
+    agents: list of dict, fields describing agents from the command line.
+    os_types: dict, VM OS type matchers.
+    group_labels: list of dict, VM group label matchers.
+    zones: list of zones, VM zone matchers.
+    instances: list of instances, instance name matchers.
+
+  Returns:
+    Updated ops agents policy.
+  """
+  updated_description = (
+      ops_agents_policy.description if description is None else description)
+  assignment = ops_agents_policy.assignment
+  updated_group_labels = (
+      assignment.group_labels if group_labels is None else group_labels)
+  updated_instances = assignment.instances if instances is None else instances
+  updated_zones = assignment.zones if zones is None else zones
+  updated_os_types = (
+      assignment.os_types if os_types is None else CreateOsTypes(os_types))
+  updated_agents = (
+      ops_agents_policy.agents if agents is None else _MergeAgents(
+          ops_agents_policy.agents, CreateAgents(agents)))
+
+  return OpsAgentPolicy(
+      OpsAgentPolicy.Assignment(updated_group_labels, updated_zones,
+                                updated_instances, updated_os_types),
+      updated_agents, updated_description)

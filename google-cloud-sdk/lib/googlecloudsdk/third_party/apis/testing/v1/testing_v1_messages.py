@@ -550,50 +550,6 @@ class DeviceFile(_messages.Message):
   regularFile = _messages.MessageField('RegularFile', 2)
 
 
-class DeviceIpBlock(_messages.Message):
-  r"""A single device IP block
-
-  Enums:
-    FormValueValuesEnum: Whether this block is used by physical or virtual
-      devices
-
-  Fields:
-    addedDate: The date this block was added to Firebase Test Lab
-    block: An IP address block in CIDR notation eg: 34.68.194.64/29
-    form: Whether this block is used by physical or virtual devices
-  """
-
-  class FormValueValuesEnum(_messages.Enum):
-    r"""Whether this block is used by physical or virtual devices
-
-    Values:
-      DEVICE_FORM_UNSPECIFIED: Do not use.  For proto versioning only.
-      VIRTUAL: Android virtual device using Compute Engine native
-        virtualization. Firebase Test Lab only.
-      PHYSICAL: Actual hardware.
-      EMULATOR: Android virtual device using emulator in nested
-        virtualization. Equivalent to Android Studio.
-    """
-    DEVICE_FORM_UNSPECIFIED = 0
-    VIRTUAL = 1
-    PHYSICAL = 2
-    EMULATOR = 3
-
-  addedDate = _messages.MessageField('Date', 1)
-  block = _messages.StringField(2)
-  form = _messages.EnumField('FormValueValuesEnum', 3)
-
-
-class DeviceIpBlockCatalog(_messages.Message):
-  r"""List of IP blocks used by the Firebase Test Lab
-
-  Fields:
-    ipBlocks: The device IP blocks used by Firebase Test Lab
-  """
-
-  ipBlocks = _messages.MessageField('DeviceIpBlock', 1, repeated=True)
-
-
 class Distribution(_messages.Message):
   r"""Data about the relative number of devices running a given configuration
   of the Android platform.
@@ -1011,9 +967,9 @@ class RegularFile(_messages.Message):
   Fields:
     content: Required. The source file.
     devicePath: Required. Where to put the content on the device. Must be an
-      absolute, whitelisted path. If the file exists, it will be replaced. The
+      absolute, allowlisted path. If the file exists, it will be replaced. The
       following device-side directories and any of their subdirectories are
-      whitelisted: <p>${EXTERNAL_STORAGE}, or /sdcard</p>
+      allowlisted: <p>${EXTERNAL_STORAGE}, /sdcard, or /storage</p>
       <p>${ANDROID_DATA}/local/tmp, or /data/local/tmp</p> <p>Specifying a
       path outside of these directory trees is invalid.  <p> The paths /sdcard
       and /data will be made available and treated as implicit path
@@ -1243,8 +1199,6 @@ class TestEnvironmentCatalog(_messages.Message):
 
   Fields:
     androidDeviceCatalog: Supported Android devices.
-    deviceIpBlockCatalog: The IP blocks used by devices in the test
-      environment.
     iosDeviceCatalog: Supported iOS devices.
     networkConfigurationCatalog: Supported network configurations.
     softwareCatalog: The software test environment provided by
@@ -1252,10 +1206,9 @@ class TestEnvironmentCatalog(_messages.Message):
   """
 
   androidDeviceCatalog = _messages.MessageField('AndroidDeviceCatalog', 1)
-  deviceIpBlockCatalog = _messages.MessageField('DeviceIpBlockCatalog', 2)
-  iosDeviceCatalog = _messages.MessageField('IosDeviceCatalog', 3)
-  networkConfigurationCatalog = _messages.MessageField('NetworkConfigurationCatalog', 4)
-  softwareCatalog = _messages.MessageField('ProvidedSoftwareCatalog', 5)
+  iosDeviceCatalog = _messages.MessageField('IosDeviceCatalog', 2)
+  networkConfigurationCatalog = _messages.MessageField('NetworkConfigurationCatalog', 3)
+  softwareCatalog = _messages.MessageField('ProvidedSoftwareCatalog', 4)
 
 
 class TestExecution(_messages.Message):
@@ -1578,12 +1531,12 @@ class TestSetup(_messages.Message):
     additionalApks: APKs to install in addition to those being directly
       tested. Currently capped at 100.
     directoriesToPull: List of directories on the device to upload to GCS at
-      the end of the test; they must be absolute paths under /sdcard or
-      /data/local/tmp. Path names are restricted to characters a-z A-Z 0-9 _ -
-      . + and /  Note: The paths /sdcard and /data will be made available and
-      treated as implicit path substitutions. E.g. if /sdcard on a particular
-      device does not map to external storage, the system will replace it with
-      the external storage path prefix for that device.
+      the end of the test; they must be absolute paths under /sdcard, /storage
+      or /data/local/tmp. Path names are restricted to characters a-z A-Z 0-9
+      _ - . + and /  Note: The paths /sdcard and /data will be made available
+      and treated as implicit path substitutions. E.g. if /sdcard on a
+      particular device does not map to external storage, the system will
+      replace it with the external storage path prefix for that device.
     dontAutograntPermissions: Whether to prevent all runtime permissions to be
       granted at app install
     environmentVariables: Environment variables to set for the test (only
@@ -1717,14 +1670,12 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
       IOS: <no description>
       NETWORK_CONFIGURATION: <no description>
       PROVIDED_SOFTWARE: <no description>
-      DEVICE_IP_BLOCKS: <no description>
     """
     ENVIRONMENT_TYPE_UNSPECIFIED = 0
     ANDROID = 1
     IOS = 2
     NETWORK_CONFIGURATION = 3
     PROVIDED_SOFTWARE = 4
-    DEVICE_IP_BLOCKS = 5
 
   environmentType = _messages.EnumField('EnvironmentTypeValueValuesEnum', 1, required=True)
   projectId = _messages.StringField(2)

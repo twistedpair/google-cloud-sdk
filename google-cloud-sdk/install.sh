@@ -12,6 +12,7 @@ echo Welcome to the Google Cloud SDK!
 #  CLOUDSDK_GSUTIL_PYTHON       (u)  python interpreter path for gsutil
 #  CLOUDSDK_PYTHON_ARGS         (u)  python interpreter arguments
 #  CLOUDSDK_PYTHON_SITEPACKAGES (u)  use python site packages
+#  CLOUDSDK_BQ_PYTHON           (u)  python interpreter for bq
 #
 # (a) always defined by the preamble
 # (u) user definition overrides preamble
@@ -101,29 +102,13 @@ _cloudsdk_root_dir() {
 CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
 setup_cloudsdk_python() {
-  # Snap and component-based unix installs prefer python3
-  if [ -z "$CLOUDSDK_PYTHON" ] && { [ "$SNAP_INSTANCE_NAME" ] || [ ! -f "$CLOUDSDK_ROOT_DIR/.install/component_mapping.yaml" ]; }; then
+  # if $CLOUDSDK_PYTHON is not set, prefer python3 over python2
+  if [ -z "$CLOUDSDK_PYTHON" ]; then
     CLOUDSDK_PYTHON=$(order_python python3 python2 python2.7 python)
   fi
-  if [ -z "$CLOUDSDK_PYTHON" ]; then
-    CLOUDSDK_PYTHON=$(order_python python2 python2.7 python python3)
-  fi
 }
 
-setup_cloudsdk_python_prefer_python3() {
-# Settings for corp
-  if [ -z "$CLOUDSDK_PYTHON" ]; then
-    CLOUDSDK_PYTHON=$(order_python python3 python python2 python2.7)
-  else
-    setup_cloudsdk_python
-  fi
-}
-
-case $HOSTNAME in
-  *.corp.google.com) setup_cloudsdk_python_prefer_python3;;
-  *.c.googlers.com) setup_cloudsdk_python_prefer_python3;;
-  *) setup_cloudsdk_python;;
-esac
+setup_cloudsdk_python
 
 # $PYTHONHOME can interfere with gcloud. Users should use
 # CLOUDSDK_PYTHON to configure which python gcloud uses.
@@ -155,32 +140,10 @@ case :$CLOUDSDK_PYTHON_SITEPACKAGES:$VIRTUAL_ENV: in
       ;;
 esac
 
-# TODO(b/133246173): Remove this once we want to default to Python 3.
 # Allow users to set the Python interpreter used to launch gsutil, falling
-# back to the CLOUDSDK_PYTHON interpreter otherwise. In the future, if this
-# is not set, we'll try finding (and prefer using) Python 3 before falling
-# back to the default Cloud SDK Python.
+# back to the CLOUDSDK_PYTHON interpreter otherwise.
 if [ -z "$CLOUDSDK_GSUTIL_PYTHON" ]; then
   CLOUDSDK_GSUTIL_PYTHON="$CLOUDSDK_PYTHON"
-fi
-
-# Gsutil prefers Python 3 if it is available, which may likely differ from the
-# $CLOUDSDK_PYTHON version. We launch Gsutil with $CLOUDSDK_GSUTIL_PYTHON; the
-# user can set this to any interpreter they like, so we only try to find
-# Python 3 for them if they haven't specified the interpreter already.
-if [ -z "$CLOUDSDK_GSUTIL_PYTHON" ]; then
-  if _cloudsdk_which python3 >/dev/null && \
-       _py3_interpreter_compat_with_gsutil python3; then
-    # Try `python3` first.
-    CLOUDSDK_GSUTIL_PYTHON=python3
-  elif _cloudsdk_which python >/dev/null && \
-      _py3_interpreter_compat_with_gsutil python; then
-    # If `python3` isn't found or valid, try `python`.
-    CLOUDSDK_GSUTIL_PYTHON=python
-  else
-    # Python 3 doesn't appear to be in the OS path. Use $CLOUDSDK_PYTHON.
-    CLOUDSDK_GSUTIL_PYTHON="$CLOUDSDK_PYTHON"
-  fi
 fi
 
 if [ -z "$CLOUDSDK_BQ_PYTHON" ]; then

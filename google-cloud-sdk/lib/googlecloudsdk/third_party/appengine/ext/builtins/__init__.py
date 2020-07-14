@@ -74,6 +74,8 @@ def _initialize_builtins():
   Encountered subdirectories with an app.yaml file are added to
   AVAILABLE_BUILTINS.
   """
+  # Note: This dir will not exist on disk in a gcloud_lite.par build.
+  # Use //cloud/sdk/gcloud:gcloud.par instead.
   if os.path.isdir(_handler_dir):
     for filename in os.listdir(_handler_dir):
       if os.path.isfile(_get_yaml_path(filename, '')):

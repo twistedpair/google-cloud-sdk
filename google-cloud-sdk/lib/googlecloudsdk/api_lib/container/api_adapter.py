@@ -517,7 +517,9 @@ class CreateClusterOptions(object):
       master_logs=None,
       release_channel=None,
       notification_config=None,
+      auto_gke=None,
   ):
+
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -639,6 +641,7 @@ class CreateClusterOptions(object):
     self.master_logs = master_logs
     self.release_channel = release_channel
     self.notification_config = notification_config
+    self.auto_gke = auto_gke
 
 
 class UpdateClusterOptions(object):
@@ -1301,7 +1304,15 @@ class APIAdapter(object):
     if options.enable_gvnic:
       cluster.enableGvnic = options.enable_gvnic
 
+    if options.boot_disk_kms_key:
+      for pool in cluster.nodePools:
+        pool.config.bootDiskKmsKey = options.boot_disk_kms_key
+
     _AddReleaseChannelToCluster(cluster, options, self.messages)
+
+    if options.auto_gke:
+      cluster.autogke = self.messages.AutoGKE()
+      cluster.autogke.enabled = True
 
     return cluster
 
@@ -2913,9 +2924,6 @@ class V1Beta1Adapter(V1Adapter):
         options.autoscaling_profile is not None):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           None, options, False)
-    if options.boot_disk_kms_key:
-      for pool in cluster.nodePools:
-        pool.config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.workload_pool:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           workloadPool=options.workload_pool)
@@ -3235,9 +3243,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.local_ssd_volume_configs:
       for pool in cluster.nodePools:
         self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
-    if options.boot_disk_kms_key:
-      for pool in cluster.nodePools:
-        pool.config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.addons:
       # CloudRun is disabled by default.
       if CLOUDRUN in options.addons:
@@ -3449,8 +3454,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
     if options.local_ssd_volume_configs:
       self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
-    if options.boot_disk_kms_key:
-      pool.config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.enable_autoprovisioning is not None:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
     if options.node_group is not None:

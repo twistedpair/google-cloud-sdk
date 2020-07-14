@@ -160,11 +160,13 @@ class EndpointConfigSelector(_messages.Message):
       EndpointConfigSelector resource.
 
   Fields:
-    authentication: Optional.
-    authorization: Optional. This field specifies the URL of Authorization
-      resource that applies authorization policies to the inbound traffic at
-      the matched endpoints. Refer to Authorization. If this field is not
-      specified, authorization is disabled(no authz checks) for this endpoint.
+    authentication: Optional. [Deprecated] Use serverTlsPolicy and
+      clientTlsPolicy instead.
+    authorizationPolicy: Optional. This field specifies the URL of
+      AuthorizationPolicy resource that applies authorization policies to the
+      inbound traffic at the matched endpoints. Refer to Authorization. If
+      this field is not specified, authorization is disabled(no authz checks)
+      for this endpoint.
     clientTlsPolicy: Optional. A URL referring to a ClientTlsPolicy resource.
       ClientTlsPolicy can be set to specify the authentication for traffic
       from the proxy to the actual endpoints. More specifically, it is applied
@@ -235,7 +237,7 @@ class EndpointConfigSelector(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authentication = _messages.StringField(1)
-  authorization = _messages.StringField(2)
+  authorizationPolicy = _messages.StringField(2)
   clientTlsPolicy = _messages.StringField(3)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)

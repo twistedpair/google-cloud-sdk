@@ -78,7 +78,7 @@ of memory. This also includes specifying custom machine type following
   return base.Argument('--machine-type', required=required, help=help_text)
 
 
-def GetLocalSsdFlag():
+def GetLocalSsdFlag(custom_name=None):
   """Gets the -local-ssd flag."""
   help_text = """\
 Manage the size and the interface of local SSD to use. See
@@ -89,7 +89,7 @@ guest operating systems. NVME may provide higher performance.
 *size*::: The size of the local SSD in base-2 GB.
 """
   return base.Argument(
-      '--local-ssd',
+      custom_name if custom_name else '--local-ssd',
       type=arg_parsers.ArgDict(spec={
           'interface': (lambda x: x.upper()),
           'size': int,
@@ -98,7 +98,7 @@ guest operating systems. NVME may provide higher performance.
       help=help_text)
 
 
-def GetAcceleratorFlag():
+def GetAcceleratorFlag(custom_name=None):
   """Gets the --accelerator flag."""
   help_text = """\
 Manage the configuration of the type and number of accelerator cards attached.
@@ -108,7 +108,7 @@ accelerator to attach to instances in the reservation. Use `gcloud compute accel
 to learn about all available accelerator types.
 """
   return base.Argument(
-      '--accelerator',
+      custom_name if custom_name else '--accelerator',
       type=arg_parsers.ArgDict(spec={
           'count': int,
           'type': str,

@@ -25,15 +25,19 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import http as http_core
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import http as http_creds
-import googlecloudsdk.core.http as http_core
 from oauth2client import client
 from google.auth import exceptions as google_auth_exceptions
 
 
-class ImpersonatedCredGoogleAuthRefreshError(core_exceptions.Error):
+class Error(core_exceptions.Error):
+  """Exception that are defined by this module."""
+
+
+class ImpersonatedCredGoogleAuthRefreshError(Error):
   """Exception for google auth impersonated credentials refresh error."""
 
 

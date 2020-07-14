@@ -74,13 +74,16 @@ def _RetrieveFieldValueFromMessage(message, api_field):
 
 
 def _ParseLabelsIntoUpdateMessage(message, args, api_field):
-  existing_labels = _RetrieveFieldValueFromMessage(message, api_field)
+  """Find diff between existing labels and args, set labels into the message."""
   diff = labels_util.Diff.FromUpdateArgs(args)
+  # Do nothing if 'labels' arguments weren't specified.
+  if not diff.MayHaveUpdates():
+    return False
+  existing_labels = _RetrieveFieldValueFromMessage(message, api_field)
   label_cls = _GetLabelsClass(message, api_field)
   update_result = diff.Apply(label_cls, existing_labels)
-  if not update_result.needs_update:
-    return False
-  arg_utils.SetFieldInMessage(message, api_field, update_result.labels)
+  if update_result.needs_update:
+    arg_utils.SetFieldInMessage(message, api_field, update_result.labels)
   return True
 
 

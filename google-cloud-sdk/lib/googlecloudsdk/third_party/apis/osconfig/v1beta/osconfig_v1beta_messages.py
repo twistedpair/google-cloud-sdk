@@ -324,6 +324,7 @@ class ExecutePatchJobRequest(_messages.Message):
       filtered by some criteria such as zone or labels.
     patchConfig: Patch configuration being applied. If omitted, instances are
       patched using the default configurations.
+    rollout: Rollout strategy of the patch job.
   """
 
   description = _messages.StringField(1)
@@ -332,6 +333,21 @@ class ExecutePatchJobRequest(_messages.Message):
   duration = _messages.StringField(4)
   instanceFilter = _messages.MessageField('PatchInstanceFilter', 5)
   patchConfig = _messages.MessageField('PatchConfig', 6)
+  rollout = _messages.MessageField('PatchRollout', 7)
+
+
+class FixedOrPercent(_messages.Message):
+  r"""Message encapsulating a value that can be either absolute ("fixed") or
+  relative ("percent") to a value.
+
+  Fields:
+    fixed: Specifies a fixed value.
+    percent: Specifies the relative value defined as a percentage, which will
+      be multiplied by a reference value.
+  """
+
+  fixed = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GcsObject(_messages.Message):
@@ -917,6 +933,7 @@ class PatchDeployment(_messages.Message):
     oneTimeSchedule: Required. Schedule a one-time execution.
     patchConfig: Optional. Patch configuration that is applied.
     recurringSchedule: Required. Schedule recurring executions.
+    rollout: Optional. Rollout strategy of the patch job.
     updateTime: Output only. Time the patch deployment was last updated.
       Timestamp is in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text
       format.
@@ -931,7 +948,8 @@ class PatchDeployment(_messages.Message):
   oneTimeSchedule = _messages.MessageField('OneTimeSchedule', 7)
   patchConfig = _messages.MessageField('PatchConfig', 8)
   recurringSchedule = _messages.MessageField('RecurringSchedule', 9)
-  updateTime = _messages.StringField(10)
+  rollout = _messages.MessageField('PatchRollout', 10)
+  updateTime = _messages.StringField(11)
 
 
 class PatchInstanceFilter(_messages.Message):
@@ -1038,6 +1056,7 @@ class PatchJob(_messages.Message):
       this patch job.
     percentComplete: Reflects the overall progress of the patch job in the
       range of 0.0 being no progress to 100.0 being complete.
+    rollout: Rollout strategy being applied.
     state: The current state of the PatchJob.
     updateTime: Last time this patch job was updated.
   """
@@ -1077,8 +1096,9 @@ class PatchJob(_messages.Message):
   patchConfig = _messages.MessageField('PatchConfig', 10)
   patchDeployment = _messages.StringField(11)
   percentComplete = _messages.FloatField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  updateTime = _messages.StringField(14)
+  rollout = _messages.MessageField('PatchRollout', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
 
 
 class PatchJobInstanceDetails(_messages.Message):
@@ -1197,6 +1217,58 @@ class PatchJobInstanceDetailsSummary(_messages.Message):
   succeededInstanceCount = _messages.IntegerField(13)
   succeededRebootRequiredInstanceCount = _messages.IntegerField(14)
   timedOutInstanceCount = _messages.IntegerField(15)
+
+
+class PatchRollout(_messages.Message):
+  r"""Patch rollout configuration specifications. Contains details on the
+  concurrency control when applying patch(es) to all targeted VMs.
+
+  Enums:
+    ModeValueValuesEnum: Mode of the patch rollout.
+
+  Fields:
+    disruptionBudget: The maximum number (or percentage) of VMs per zone to
+      disrupt at any given moment. The number of VMs calculated from
+      multiplying the percentage by the total number of VMs in a zone is
+      rounded up.  During patching, a VM is considered disrupted from the time
+      the agent is notified to begin until patching has completed. This
+      disruption time includes the time to complete reboot and any post-patch
+      steps.  A VM contributes to the disruption budget if its patching
+      operation fails either when applying the patches, running pre or post
+      patch steps, or if it fails to respond with a success notification
+      before timing out. VMs that are not running or do not have an active
+      agent do not count toward this disruption budget.  For zone-by-zone
+      rollouts, if the disruption budget in a zone is exceeded, the patch job
+      stops, because continuing to the next zone requires completion of the
+      patch process in the previous zone.  For example, if the disruption
+      budget has a fixed value of `10`, and 8 VMs fail to patch in the current
+      zone, the patch job continues to patch 2 VMs at a time until the zone is
+      completed. When that zone is completed successfully, patching begins
+      with 10 VMs at a time in the next zone. If 10 VMs in the next zone fail
+      to patch, the patch job stops.
+    mode: Mode of the patch rollout.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Mode of the patch rollout.
+
+    Values:
+      MODE_UNSPECIFIED: Mode must be specified.
+      ZONE_BY_ZONE: Patches are applied one zone at a time. The patch job
+        begins in the region with the lowest number of targeted VMs. Within
+        the region, patching begins in the zone with the lowest number of
+        targeted VMs. If multiple regions (or zones within a region) have the
+        same number of targeted VMs, a tie-breaker is achieved by sorting the
+        regions or zones in alphabetical order.
+      CONCURRENT_ZONES: Patches are applied to VMs in all zones at the same
+        time.
+    """
+    MODE_UNSPECIFIED = 0
+    ZONE_BY_ZONE = 1
+    CONCURRENT_ZONES = 2
+
+  disruptionBudget = _messages.MessageField('FixedOrPercent', 1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
 
 
 class RecurringSchedule(_messages.Message):

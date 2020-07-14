@@ -1841,6 +1841,10 @@ class Autoscaler(_messages.Message):
       are present in the statusDetails field.  New values might be added in
       the future.
 
+  Messages:
+    ScalingScheduleStatusValue: [Output Only] Status information of existing
+      scaling schedules.
+
   Fields:
     autoscalingPolicy: The configuration parameters for the autoscaling
       algorithm. You can define one or more of the policies for an autoscaler:
@@ -1869,6 +1873,8 @@ class Autoscaler(_messages.Message):
       instance group or autoscaler did not generate its prediction.
     region: [Output Only] URL of the region where the instance group resides
       (for autoscalers living in regional scope).
+    scalingScheduleStatus: [Output Only] Status information of existing
+      scaling schedules.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -1907,6 +1913,32 @@ class Autoscaler(_messages.Message):
     ERROR = 2
     PENDING = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ScalingScheduleStatusValue(_messages.Message):
+    r"""[Output Only] Status information of existing scaling schedules.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ScalingScheduleStatusValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ScalingScheduleStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ScalingScheduleStatusValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ScalingScheduleStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ScalingScheduleStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   autoscalingPolicy = _messages.MessageField('AutoscalingPolicy', 1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
@@ -1915,12 +1947,13 @@ class Autoscaler(_messages.Message):
   name = _messages.StringField(6)
   recommendedSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  selfLinkWithId = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  statusDetails = _messages.MessageField('AutoscalerStatusDetails', 12, repeated=True)
-  target = _messages.StringField(13)
-  zone = _messages.StringField(14)
+  scalingScheduleStatus = _messages.MessageField('ScalingScheduleStatusValue', 9)
+  selfLink = _messages.StringField(10)
+  selfLinkWithId = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusDetails = _messages.MessageField('AutoscalerStatusDetails', 13, repeated=True)
+  target = _messages.StringField(14)
+  zone = _messages.StringField(15)
 
 
 class AutoscalerAggregatedList(_messages.Message):
@@ -4440,6 +4473,8 @@ class BulkInsertInstanceResource(_messages.Message):
   Fields:
     count: The maximum number of instances to create.
     instance: A Instance attribute.
+    instanceProperties: The instance properties for the request. Required if
+      sourceInstanceTemplate is not provided.
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
       instances cannot be created, then no instances will be created.
@@ -4458,9 +4493,10 @@ class BulkInsertInstanceResource(_messages.Message):
 
   count = _messages.IntegerField(1)
   instance = _messages.MessageField('Instance', 2)
-  minCount = _messages.IntegerField(3)
-  predefinedNames = _messages.StringField(4, repeated=True)
-  sourceInstanceTemplate = _messages.StringField(5)
+  instanceProperties = _messages.MessageField('InstanceProperties', 3)
+  minCount = _messages.IntegerField(4)
+  predefinedNames = _messages.StringField(5, repeated=True)
+  sourceInstanceTemplate = _messages.StringField(6)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -29015,11 +29051,12 @@ class HealthCheck(_messages.Message):
   Health Check resources:  *
   [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) *
   [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)
-  Internal HTTP(S) load balancers use regional health checks. All other types
-  of GCP load balancers and managed instance group auto-healing use global
-  health checks. For more information, read Health Check Concepts.  To perform
-  health checks on network load balancers, you must use either
-  httpHealthChecks or httpsHealthChecks.
+  Internal HTTP(S) load balancers must use regional health checks. Internal
+  TCP/UDP load balancers can use either regional or global health checks. All
+  other types of GCP load balancers and managed instance group auto-healing
+  must use global health checks. For more information, read Health Check
+  Concepts.  To perform health checks on network load balancers, you must use
+  either httpHealthChecks or httpsHealthChecks.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -31426,6 +31463,8 @@ class Instance(_messages.Message):
       by the setLabels method.
 
   Fields:
+    advancedMachineFeatures: Controls for advanced machine-related behavior
+      features.
     canIpForward: Allows this instance to send and receive packets with non-
       matching destination or source IPs. This is required if you plan to use
       this instance to forward routes. For more information, see Enabling IP
@@ -31639,52 +31678,53 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  canIpForward = _messages.BooleanField(1)
-  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 2)
-  cpuPlatform = _messages.StringField(3)
-  creationTimestamp = _messages.StringField(4)
-  deletionProtection = _messages.BooleanField(5)
-  description = _messages.StringField(6)
-  disks = _messages.MessageField('AttachedDisk', 7, repeated=True)
-  displayDevice = _messages.MessageField('DisplayDevice', 8)
-  eraseWindowsVssSignature = _messages.BooleanField(9)
-  fingerprint = _messages.BytesField(10)
-  guestAccelerators = _messages.MessageField('AcceleratorConfig', 11, repeated=True)
-  hostname = _messages.StringField(12)
-  id = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
-  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
-  kind = _messages.StringField(15, default='compute#instance')
-  labelFingerprint = _messages.BytesField(16)
-  labels = _messages.MessageField('LabelsValue', 17)
-  lastStartTimestamp = _messages.StringField(18)
-  lastStopTimestamp = _messages.StringField(19)
-  lastSuspendedTimestamp = _messages.StringField(20)
-  machineType = _messages.StringField(21)
-  metadata = _messages.MessageField('Metadata', 22)
-  minCpuPlatform = _messages.StringField(23)
-  name = _messages.StringField(24)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 25, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 26)
-  preservedStateSizeGb = _messages.IntegerField(27)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 28)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 29)
-  resourcePolicies = _messages.StringField(30, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 31)
-  selfLink = _messages.StringField(32)
-  selfLinkWithId = _messages.StringField(33)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 34, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 35)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 36)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 37)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 38)
-  sourceMachineImage = _messages.StringField(39)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 40)
-  startRestricted = _messages.BooleanField(41)
-  status = _messages.EnumField('StatusValueValuesEnum', 42)
-  statusMessage = _messages.StringField(43)
-  tags = _messages.MessageField('Tags', 44)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 45)
-  zone = _messages.StringField(46)
+  advancedMachineFeatures = _messages.MessageField('AdvancedMachineFeatures', 1)
+  canIpForward = _messages.BooleanField(2)
+  confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 3)
+  cpuPlatform = _messages.StringField(4)
+  creationTimestamp = _messages.StringField(5)
+  deletionProtection = _messages.BooleanField(6)
+  description = _messages.StringField(7)
+  disks = _messages.MessageField('AttachedDisk', 8, repeated=True)
+  displayDevice = _messages.MessageField('DisplayDevice', 9)
+  eraseWindowsVssSignature = _messages.BooleanField(10)
+  fingerprint = _messages.BytesField(11)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 12, repeated=True)
+  hostname = _messages.StringField(13)
+  id = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
+  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
+  kind = _messages.StringField(16, default='compute#instance')
+  labelFingerprint = _messages.BytesField(17)
+  labels = _messages.MessageField('LabelsValue', 18)
+  lastStartTimestamp = _messages.StringField(19)
+  lastStopTimestamp = _messages.StringField(20)
+  lastSuspendedTimestamp = _messages.StringField(21)
+  machineType = _messages.StringField(22)
+  metadata = _messages.MessageField('Metadata', 23)
+  minCpuPlatform = _messages.StringField(24)
+  name = _messages.StringField(25)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 26, repeated=True)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 27)
+  preservedStateSizeGb = _messages.IntegerField(28)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 29)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 30)
+  resourcePolicies = _messages.StringField(31, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 32)
+  selfLink = _messages.StringField(33)
+  selfLinkWithId = _messages.StringField(34)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 35, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 36)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 37)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 38)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 39)
+  sourceMachineImage = _messages.StringField(40)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 41)
+  startRestricted = _messages.BooleanField(42)
+  status = _messages.EnumField('StatusValueValuesEnum', 43)
+  statusMessage = _messages.StringField(44)
+  tags = _messages.MessageField('Tags', 45)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 46)
+  zone = _messages.StringField(47)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -44588,6 +44628,7 @@ class Quota(_messages.Message):
         description>
       INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK: <no
         description>
+      INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES: <no description>
       IN_PLACE_SNAPSHOTS: <no description>
       IN_USE_ADDRESSES: <no description>
       IN_USE_BACKUP_SCHEDULES: <no description>
@@ -44705,74 +44746,75 @@ class Quota(_messages.Message):
     INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 45
     INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 46
     INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 47
-    IN_PLACE_SNAPSHOTS = 48
-    IN_USE_ADDRESSES = 49
-    IN_USE_BACKUP_SCHEDULES = 50
-    IN_USE_MAINTENANCE_WINDOWS = 51
-    IN_USE_SNAPSHOT_SCHEDULES = 52
-    LOCAL_SSD_TOTAL_GB = 53
-    M1_CPUS = 54
-    M2_CPUS = 55
-    MACHINE_IMAGES = 56
-    N2D_CPUS = 57
-    N2_CPUS = 58
-    NETWORKS = 59
-    NETWORK_ENDPOINT_GROUPS = 60
-    NETWORK_FIREWALL_POLICIES = 61
-    NODE_GROUPS = 62
-    NODE_TEMPLATES = 63
-    NVIDIA_A100_GPUS = 64
-    NVIDIA_K80_GPUS = 65
-    NVIDIA_P100_GPUS = 66
-    NVIDIA_P100_VWS_GPUS = 67
-    NVIDIA_P4_GPUS = 68
-    NVIDIA_P4_VWS_GPUS = 69
-    NVIDIA_T4_GPUS = 70
-    NVIDIA_T4_VWS_GPUS = 71
-    NVIDIA_V100_GPUS = 72
-    PACKET_MIRRORINGS = 73
-    PREEMPTIBLE_CPUS = 74
-    PREEMPTIBLE_LOCAL_SSD_GB = 75
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 76
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 77
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 78
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 79
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 80
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 81
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 82
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 83
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 84
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 85
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 86
-    PUBLIC_ADVERTISED_PREFIXES = 87
-    PUBLIC_DELEGATED_PREFIXES = 88
-    REGIONAL_AUTOSCALERS = 89
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 90
-    RESERVATIONS = 91
-    RESOURCE_POLICIES = 92
-    ROUTERS = 93
-    ROUTES = 94
-    SECURITY_POLICIES = 95
-    SECURITY_POLICY_CEVAL_RULES = 96
-    SECURITY_POLICY_RULES = 97
-    SNAPSHOTS = 98
-    SSD_TOTAL_GB = 99
-    SSL_CERTIFICATES = 100
-    STATIC_ADDRESSES = 101
-    STATIC_BYOIP_ADDRESSES = 102
-    SUBNETWORKS = 103
-    SUBNET_RANGES_PER_NETWORK = 104
-    TARGET_HTTPS_PROXIES = 105
-    TARGET_HTTP_PROXIES = 106
-    TARGET_INSTANCES = 107
-    TARGET_POOLS = 108
-    TARGET_SSL_PROXIES = 109
-    TARGET_TCP_PROXIES = 110
-    TARGET_VPN_GATEWAYS = 111
-    URL_MAPS = 112
-    VPN_GATEWAYS = 113
-    VPN_TUNNELS = 114
-    XPN_SERVICE_PROJECTS = 115
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 48
+    IN_PLACE_SNAPSHOTS = 49
+    IN_USE_ADDRESSES = 50
+    IN_USE_BACKUP_SCHEDULES = 51
+    IN_USE_MAINTENANCE_WINDOWS = 52
+    IN_USE_SNAPSHOT_SCHEDULES = 53
+    LOCAL_SSD_TOTAL_GB = 54
+    M1_CPUS = 55
+    M2_CPUS = 56
+    MACHINE_IMAGES = 57
+    N2D_CPUS = 58
+    N2_CPUS = 59
+    NETWORKS = 60
+    NETWORK_ENDPOINT_GROUPS = 61
+    NETWORK_FIREWALL_POLICIES = 62
+    NODE_GROUPS = 63
+    NODE_TEMPLATES = 64
+    NVIDIA_A100_GPUS = 65
+    NVIDIA_K80_GPUS = 66
+    NVIDIA_P100_GPUS = 67
+    NVIDIA_P100_VWS_GPUS = 68
+    NVIDIA_P4_GPUS = 69
+    NVIDIA_P4_VWS_GPUS = 70
+    NVIDIA_T4_GPUS = 71
+    NVIDIA_T4_VWS_GPUS = 72
+    NVIDIA_V100_GPUS = 73
+    PACKET_MIRRORINGS = 74
+    PREEMPTIBLE_CPUS = 75
+    PREEMPTIBLE_LOCAL_SSD_GB = 76
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 77
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 78
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 79
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 80
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 81
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 82
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 83
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 84
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 85
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 86
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 87
+    PUBLIC_ADVERTISED_PREFIXES = 88
+    PUBLIC_DELEGATED_PREFIXES = 89
+    REGIONAL_AUTOSCALERS = 90
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 91
+    RESERVATIONS = 92
+    RESOURCE_POLICIES = 93
+    ROUTERS = 94
+    ROUTES = 95
+    SECURITY_POLICIES = 96
+    SECURITY_POLICY_CEVAL_RULES = 97
+    SECURITY_POLICY_RULES = 98
+    SNAPSHOTS = 99
+    SSD_TOTAL_GB = 100
+    SSL_CERTIFICATES = 101
+    STATIC_ADDRESSES = 102
+    STATIC_BYOIP_ADDRESSES = 103
+    SUBNETWORKS = 104
+    SUBNET_RANGES_PER_NETWORK = 105
+    TARGET_HTTPS_PROXIES = 106
+    TARGET_HTTP_PROXIES = 107
+    TARGET_INSTANCES = 108
+    TARGET_POOLS = 109
+    TARGET_SSL_PROXIES = 110
+    TARGET_TCP_PROXIES = 111
+    TARGET_VPN_GATEWAYS = 112
+    URL_MAPS = 113
+    VPN_GATEWAYS = 114
+    VPN_TUNNELS = 115
+    XPN_SERVICE_PROJECTS = 116
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -47132,6 +47174,8 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
   Enums:
     CollocationValueValuesEnum: Specifies network collocation
     LocalityValueValuesEnum: Specifies network locality
+    ScopeValueValuesEnum: Scope specifies the availability domain to which the
+      VMs should be spread.
     StyleValueValuesEnum: Specifies instances to hosts placement relationship
 
   Fields:
@@ -47140,6 +47184,8 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
       they will not be put in the same low latency network
     collocation: Specifies network collocation
     locality: Specifies network locality
+    scope: Scope specifies the availability domain to which the VMs should be
+      spread.
     style: Specifies instances to hosts placement relationship
     vmCount: Number of vms in this placement group
   """
@@ -47148,11 +47194,13 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
     r"""Specifies network collocation
 
     Values:
+      CLUSTERED: <no description>
       COLLOCATED: <no description>
       UNSPECIFIED_COLLOCATION: <no description>
     """
-    COLLOCATED = 0
-    UNSPECIFIED_COLLOCATION = 1
+    CLUSTERED = 0
+    COLLOCATED = 1
+    UNSPECIFIED_COLLOCATION = 2
 
   class LocalityValueValuesEnum(_messages.Enum):
     r"""Specifies network locality
@@ -47165,6 +47213,17 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
     BEST_EFFORT = 0
     STRICT = 1
     UNSPECIFIED_LOCALITY = 2
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""Scope specifies the availability domain to which the VMs should be
+    spread.
+
+    Values:
+      HOST: <no description>
+      UNSPECIFIED_SCOPE: <no description>
+    """
+    HOST = 0
+    UNSPECIFIED_SCOPE = 1
 
   class StyleValueValuesEnum(_messages.Enum):
     r"""Specifies instances to hosts placement relationship
@@ -47181,8 +47240,9 @@ class ResourcePolicyGroupPlacementPolicy(_messages.Message):
   availabilityDomainCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   collocation = _messages.EnumField('CollocationValueValuesEnum', 2)
   locality = _messages.EnumField('LocalityValueValuesEnum', 3)
-  style = _messages.EnumField('StyleValueValuesEnum', 4)
-  vmCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 4)
+  style = _messages.EnumField('StyleValueValuesEnum', 5)
+  vmCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class ResourcePolicyHourlyCycle(_messages.Message):
@@ -49383,6 +49443,44 @@ class SavedAttachedDisk(_messages.Message):
   storageBytes = _messages.IntegerField(14)
   storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 15)
   type = _messages.EnumField('TypeValueValuesEnum', 16)
+
+
+class ScalingScheduleStatus(_messages.Message):
+  r"""A ScalingScheduleStatus object.
+
+  Enums:
+    StateValueValuesEnum: [Output Only] The current state of a scaling
+      schedule.
+
+  Fields:
+    lastStartTime: [Output Only] The last time the scaling schedule became
+      active. Note: this is a timestamp when a schedule actually became
+      active, not when it was planned to do so. The timestamp is an RFC3339
+      string in RFC3339 text format.
+    nextStartTime: [Output Only] The next time the scaling schedule will
+      become active. Note: this is a timestamp when a schedule is planned to
+      run, but the actual time might be slightly different. The timestamp is
+      an RFC3339 string in RFC3339 text format.
+    state: [Output Only] The current state of a scaling schedule.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The current state of a scaling schedule.
+
+    Values:
+      ACTIVE: <no description>
+      DISABLED: <no description>
+      OBSOLETE: <no description>
+      PENDING: <no description>
+    """
+    ACTIVE = 0
+    DISABLED = 1
+    OBSOLETE = 2
+    PENDING = 3
+
+  lastStartTime = _messages.StringField(1)
+  nextStartTime = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class Scheduling(_messages.Message):

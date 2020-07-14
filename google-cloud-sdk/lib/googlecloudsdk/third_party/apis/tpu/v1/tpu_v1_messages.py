@@ -224,6 +224,15 @@ class Node(_messages.Message):
     ipAddress: Output only. DEPRECATED! Use network_endpoints instead. The
       network address for the TPU Node as visible to Compute Engine instances.
     labels: Resource labels to represent user-provided metadata.
+    modelBasePath: Inference Mode: Base path to exported saved model. This
+      field can be used instead of model_config_file directly to specify the
+      exported saved model's base path (excluding timestamp), whereas
+      model_config_file points to a GCS path to a ModelServerConfig proto.
+    modelConfigFile: Inference Mode: GCS path to model configuration file for
+      models to serve The contents of the model_config.pbtxt is a
+      ModelServerConfig proto.
+    modelName: Inference Mode: Model name for tensorflow serving to serve to
+      incoming requests. If none is provided, "serving_default" will be used.
     name: Output only. The immutable name of the TPU
     network: The name of a network they wish to peer the TPU node to. It must
       be a preexisting Compute Engine network inside of the project on which
@@ -232,6 +241,9 @@ class Node(_messages.Message):
     networkEndpoints: Output only. The network endpoints where TPU workers can
       be accessed and sent work. It is recommended that Tensorflow clients of
       the node reach out to the 0th entry in this map first.
+    platformConfigFile: Inference Mode: GCS path to configuration file for
+      platform requirements The contents of the platform_config.pbtxt is a
+      PlatformConfigMap proto.
     port: Output only. DEPRECATED! Use network_endpoints instead. The network
       port for the TPU Node as visible to Compute Engine instances.
     schedulingConfig: A SchedulingConfig attribute.
@@ -242,6 +254,12 @@ class Node(_messages.Message):
     state: Output only. The current state for the TPU Node.
     tensorflowVersion: The version of Tensorflow running in the Node.
       Required.
+    useServiceNetworking: Whether the VPC peering for the node is set up
+      through Service Networking API. The VPC Peering should be set up before
+      provisioning the node. If this field is set, cidr_block field should not
+      be specified. If the network, that you want to peer the TPU Node to, is
+      Shared VPC networks, the node must be created with this this field
+      enabled.
   """
 
   class HealthValueValuesEnum(_messages.Enum):
@@ -335,14 +353,19 @@ class Node(_messages.Message):
   healthDescription = _messages.StringField(6)
   ipAddress = _messages.StringField(7)
   labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 11, repeated=True)
-  port = _messages.StringField(12)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 13)
-  serviceAccount = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  tensorflowVersion = _messages.StringField(16)
+  modelBasePath = _messages.StringField(9)
+  modelConfigFile = _messages.StringField(10)
+  modelName = _messages.StringField(11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 14, repeated=True)
+  platformConfigFile = _messages.StringField(15)
+  port = _messages.StringField(16)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 17)
+  serviceAccount = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  tensorflowVersion = _messages.StringField(20)
+  useServiceNetworking = _messages.BooleanField(21)
 
 
 class Operation(_messages.Message):

@@ -17,6 +17,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import base64
 import copy
 import json
 import os
@@ -210,6 +211,8 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
                       login_config=None,
                       login_config_cert=None,
                       user=None,
+                      ldap_user=None,
+                      ldap_pass=None,
                       dry_run=None,
                       **kwargs):
     del kwargs  # Not Used Here
@@ -226,6 +229,9 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.extend(['--user', user])
     if dry_run:
       exec_args.extend(['--dry-run'])
+    if ldap_pass and ldap_user:
+      exec_args.extend(['--ldap-username', ldap_user,
+                        '--ldap-password', ldap_pass])
 
     return exec_args
 
@@ -262,13 +268,40 @@ def _GetClusterConfig(all_configs, cluster):
   return found_clusters.pop()
 
 
+def _Base64EncodeLdap(username, passwd):
+  """Base64 Encode Ldap username and password."""
+  enc = lambda s: six.ensure_text(base64.b64encode(six.ensure_binary(s)))
+  return enc(username), enc(passwd)
+
+
+def _GetLdapUserAndPass(cluster_config, auth_name, cluster):
+  """Prompt User for Ldap Username and Password."""
+  ldap_user = None
+  ldap_pass = None
+  if not cluster_config.IsLdap():
+    return None, None
+  # do the prompting
+  user_message = ('Please enter the ldap user for '
+                  '[{}] on cluster [{}]: '.format(auth_name, cluster))
+  pass_message = ('Please enter the ldap password for '
+                  '[{}] on cluster [{}]: '.format(auth_name, cluster))
+  ldap_user = console_io.PromptWithValidator(
+      validator=lambda x: len(x) > 1,
+      error_message='Error: Invalid username, please try again.',
+      prompt_string=user_message)
+  ldap_pass = console_io.PromptPassword(
+      pass_message, validation_callable=lambda x: len(x) > 1)
+  return _Base64EncodeLdap(ldap_user, ldap_pass)
+
+
 def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
   """Get preferredAuthentication value for cluster."""
   if not (cluster and config_file):
-    return None
+    return None, None, None
   configs = file_parsers.YamlConfigFile(config_file,
                                         file_parsers.LoginConfigObject)
   cluster_config = _GetClusterConfig(configs, cluster)
+
   try:
     auth_method = cluster_config.GetPreferredAuth()
   except KeyError:
@@ -276,8 +309,7 @@ def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
   except file_parsers.YamlConfigObjectFieldError:
     # gracefully quit for config versions older than v2alpha1 that
     # do not support 'preferredAuthentication' field.
-    return None
-
+    return None, None, None
   if not auth_method or force_update:
     prompt_message = ('Please select your preferred authentication option for '
                       'cluster [{}]'.format(cluster))
@@ -295,7 +327,11 @@ def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
         'Setting Preferred Authentication option to [{}]'.format(auth_method))
     cluster_config.SetPreferredAuth(auth_method)
     configs.WriteToDisk()
-  return auth_method
+
+  ldap_user, ldap_pass = _GetLdapUserAndPass(cluster_config,
+                                             auth_method,
+                                             cluster)
+  return auth_method, ldap_user, ldap_pass
 
 
 def LoginResponseHandler(response):

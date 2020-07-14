@@ -2221,6 +2221,10 @@ def WarnForNodeModification(args, enable_autorepair):
 
 
 def WarnForNodeVersionAutoUpgrade(args):
+  if not hasattr(args, 'node_version'):
+    return
+  if not hasattr(args, 'enable_autoupgrade'):
+    return
   if args.IsSpecified('node_version') and args.enable_autoupgrade:
     log.warning(util.WARN_NODE_VERSION_WITH_AUTOUPGRADE_ENABLED)
 

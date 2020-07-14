@@ -1813,6 +1813,10 @@ class NodeConfig(_messages.Message):
       information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform)
+    nodeGroup: Setting this field will assign instances of this pool to run on
+      the specified node group. This is useful for running workloads on [sole
+      tenant nodes](https://cloud.google.com/compute/docs/nodes/sole-tenant-
+      nodes).
     nodeImageConfig: The node image configuration to use for this node pool.
       Note that this is only applicable for node pools using
       image_type=CUSTOM.
@@ -1928,16 +1932,17 @@ class NodeConfig(_messages.Message):
   machineType = _messages.StringField(8)
   metadata = _messages.MessageField('MetadataValue', 9)
   minCpuPlatform = _messages.StringField(10)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 11)
-  oauthScopes = _messages.StringField(12, repeated=True)
-  preemptible = _messages.BooleanField(13)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 14)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 15)
-  serviceAccount = _messages.StringField(16)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 17)
-  tags = _messages.StringField(18, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 19, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 20)
+  nodeGroup = _messages.StringField(11)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 12)
+  oauthScopes = _messages.StringField(13, repeated=True)
+  preemptible = _messages.BooleanField(14)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 15)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 16)
+  serviceAccount = _messages.StringField(17)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 18)
+  tags = _messages.StringField(19, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 20, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 21)
 
 
 class NodeManagement(_messages.Message):

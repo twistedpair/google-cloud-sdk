@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20200626",
+ "revision": "20200706",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1556,6 +1556,13 @@
     "region": {
      "type": "string",
      "description": "[Output Only] URL of the region where the instance group resides (for autoscalers living in regional scope)."
+    },
+    "scalingScheduleStatus": {
+     "type": "object",
+     "description": "[Output Only] Status information of existing scaling schedules.",
+     "additionalProperties": {
+      "$ref": "ScalingScheduleStatus"
+     }
     },
     "selfLink": {
      "type": "string",
@@ -3444,6 +3451,10 @@
     },
     "instance": {
      "$ref": "Instance"
+    },
+    "instanceProperties": {
+     "$ref": "InstanceProperties",
+     "description": "The instance properties for the request. Required if sourceInstanceTemplate is not provided."
     },
     "minCount": {
      "type": "string",
@@ -7450,7 +7461,7 @@
   "HealthCheck": {
    "id": "HealthCheck",
    "type": "object",
-   "description": "Represents a Health Check resource.\n\nGoogle Compute Engine has two Health Check resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) * [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)\n\nInternal HTTP(S) load balancers use regional health checks. All other types of GCP load balancers and managed instance group auto-healing use global health checks. For more information, read Health Check Concepts.\n\nTo perform health checks on network load balancers, you must use either httpHealthChecks or httpsHealthChecks.",
+   "description": "Represents a Health Check resource.\n\nGoogle Compute Engine has two Health Check resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) * [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)\n\nInternal HTTP(S) load balancers must use regional health checks. Internal TCP/UDP load balancers can use either regional or global health checks. All other types of GCP load balancers and managed instance group auto-healing must use global health checks. For more information, read Health Check Concepts.\n\nTo perform health checks on network load balancers, you must use either httpHealthChecks or httpsHealthChecks.",
    "properties": {
     "checkIntervalSec": {
      "type": "integer",
@@ -9536,6 +9547,10 @@
    "type": "object",
    "description": "Represents an Instance resource.\n\nAn instance is a virtual machine that is hosted on Google Cloud Platform. For more information, read Virtual Machine Instances. (== resource_for {$api_version}.instances ==)",
    "properties": {
+    "advancedMachineFeatures": {
+     "$ref": "AdvancedMachineFeatures",
+     "description": "Controls for advanced machine-related behavior features."
+    },
     "canIpForward": {
      "type": "boolean",
      "description": "Allows this instance to send and receive packets with non-matching destination or source IPs. This is required if you plan to use this instance to forward routes. For more information, see Enabling IP Forwarding."
@@ -21011,6 +21026,7 @@
       "INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK",
       "INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK",
       "INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK",
+      "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES",
       "IN_PLACE_SNAPSHOTS",
       "IN_USE_ADDRESSES",
       "IN_USE_BACKUP_SCHEDULES",
@@ -21081,6 +21097,7 @@
       "XPN_SERVICE_PROJECTS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -23338,10 +23355,12 @@
      "type": "string",
      "description": "Specifies network collocation",
      "enum": [
+      "CLUSTERED",
       "COLLOCATED",
       "UNSPECIFIED_COLLOCATION"
      ],
      "enumDescriptions": [
+      "",
       "",
       ""
      ]
@@ -23356,6 +23375,18 @@
      ],
      "enumDescriptions": [
       "",
+      "",
+      ""
+     ]
+    },
+    "scope": {
+     "type": "string",
+     "description": "Scope specifies the availability domain to which the VMs should be spread.",
+     "enum": [
+      "HOST",
+      "UNSPECIFIED_SCOPE"
+     ],
+     "enumDescriptions": [
       "",
       ""
      ]
@@ -25398,6 +25429,36 @@
       "SCRATCH"
      ],
      "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "ScalingScheduleStatus": {
+   "id": "ScalingScheduleStatus",
+   "type": "object",
+   "properties": {
+    "lastStartTime": {
+     "type": "string",
+     "description": "[Output Only] The last time the scaling schedule became active. Note: this is a timestamp when a schedule actually became active, not when it was planned to do so. The timestamp is an RFC3339 string in RFC3339 text format."
+    },
+    "nextStartTime": {
+     "type": "string",
+     "description": "[Output Only] The next time the scaling schedule will become active. Note: this is a timestamp when a schedule is planned to run, but the actual time might be slightly different. The timestamp is an RFC3339 string in RFC3339 text format."
+    },
+    "state": {
+     "type": "string",
+     "description": "[Output Only] The current state of a scaling schedule.",
+     "enum": [
+      "ACTIVE",
+      "DISABLED",
+      "OBSOLETE",
+      "PENDING"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
       "",
       ""
      ]

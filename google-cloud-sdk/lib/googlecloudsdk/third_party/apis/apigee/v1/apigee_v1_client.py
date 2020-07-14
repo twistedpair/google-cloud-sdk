@@ -54,11 +54,14 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_developers_apps = self.OrganizationsDevelopersAppsService(self)
     self.organizations_developers_attributes = self.OrganizationsDevelopersAttributesService(self)
     self.organizations_developers = self.OrganizationsDevelopersService(self)
+    self.organizations_envgroups_attachments = self.OrganizationsEnvgroupsAttachmentsService(self)
+    self.organizations_envgroups = self.OrganizationsEnvgroupsService(self)
     self.organizations_environments_analytics_admin = self.OrganizationsEnvironmentsAnalyticsAdminService(self)
     self.organizations_environments_analytics = self.OrganizationsEnvironmentsAnalyticsService(self)
     self.organizations_environments_apis_deployments = self.OrganizationsEnvironmentsApisDeploymentsService(self)
     self.organizations_environments_apis_revisions_debugsessions_data = self.OrganizationsEnvironmentsApisRevisionsDebugsessionsDataService(self)
     self.organizations_environments_apis_revisions_debugsessions = self.OrganizationsEnvironmentsApisRevisionsDebugsessionsService(self)
+    self.organizations_environments_apis_revisions_deployments = self.OrganizationsEnvironmentsApisRevisionsDeploymentsService(self)
     self.organizations_environments_apis_revisions = self.OrganizationsEnvironmentsApisRevisionsService(self)
     self.organizations_environments_apis = self.OrganizationsEnvironmentsApisService(self)
     self.organizations_environments_caches = self.OrganizationsEnvironmentsCachesService(self)
@@ -77,6 +80,8 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_environments_stats = self.OrganizationsEnvironmentsStatsService(self)
     self.organizations_environments_targetservers = self.OrganizationsEnvironmentsTargetserversService(self)
     self.organizations_environments = self.OrganizationsEnvironmentsService(self)
+    self.organizations_instances_attachments = self.OrganizationsInstancesAttachmentsService(self)
+    self.organizations_instances = self.OrganizationsInstancesService(self)
     self.organizations_keyvaluemaps = self.OrganizationsKeyvaluemapsService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
     self.organizations_reports = self.OrganizationsReportsService(self)
@@ -2114,6 +2119,269 @@ won't be able to expire an access token in less than 180 seconds.
         supports_download=False,
     )
 
+  class OrganizationsEnvgroupsAttachmentsService(base_api.BaseApiService):
+    """Service class for the organizations_envgroups_attachments resource."""
+
+    _NAME = 'organizations_envgroups_attachments'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvgroupsAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new attachment of an environment to an environment group.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsAttachmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups/{envgroupsId}/attachments',
+        http_method='POST',
+        method_id='apigee.organizations.envgroups.attachments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/attachments',
+        request_field='googleCloudApigeeV1EnvironmentGroupAttachment',
+        request_type_name='ApigeeOrganizationsEnvgroupsAttachmentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an environment group attachment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups/{envgroupsId}/attachments/{attachmentsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.envgroups.attachments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvgroupsAttachmentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an environment group attachment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1EnvironmentGroupAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups/{envgroupsId}/attachments/{attachmentsId}',
+        http_method='GET',
+        method_id='apigee.organizations.envgroups.attachments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvgroupsAttachmentsGetRequest',
+        response_type_name='GoogleCloudApigeeV1EnvironmentGroupAttachment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all attachments of an environment group.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListEnvironmentGroupAttachmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups/{envgroupsId}/attachments',
+        http_method='GET',
+        method_id='apigee.organizations.envgroups.attachments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/attachments',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvgroupsAttachmentsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListEnvironmentGroupAttachmentsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsEnvgroupsService(base_api.BaseApiService):
+    """Service class for the organizations_envgroups resource."""
+
+    _NAME = 'organizations_envgroups'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvgroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new environment group.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups',
+        http_method='POST',
+        method_id='apigee.organizations.envgroups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['name'],
+        relative_path='v1/{+parent}/envgroups',
+        request_field='googleCloudApigeeV1EnvironmentGroup',
+        request_type_name='ApigeeOrganizationsEnvgroupsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an environment group.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups/{envgroupsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.envgroups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvgroupsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an environment group.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1EnvironmentGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups/{envgroupsId}',
+        http_method='GET',
+        method_id='apigee.organizations.envgroups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvgroupsGetRequest',
+        response_type_name='GoogleCloudApigeeV1EnvironmentGroup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all environment groups.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListEnvironmentGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups',
+        http_method='GET',
+        method_id='apigee.organizations.envgroups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/envgroups',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvgroupsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListEnvironmentGroupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an environment group.
+
+      Args:
+        request: (ApigeeOrganizationsEnvgroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/envgroups/{envgroupsId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.envgroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1EnvironmentGroup',
+        request_type_name='ApigeeOrganizationsEnvgroupsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class OrganizationsEnvironmentsAnalyticsAdminService(base_api.BaseApiService):
     """Service class for the organizations_environments_analytics_admin resource."""
 
@@ -2356,6 +2624,85 @@ revision.
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsListRequest',
         response_type_name='GoogleCloudApigeeV1ListDebugSessionsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsEnvironmentsApisRevisionsDeploymentsService(base_api.BaseApiService):
+    """Service class for the organizations_environments_apis_revisions_deployments resource."""
+
+    _NAME = 'organizations_environments_apis_revisions_deployments'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvironmentsApisRevisionsDeploymentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GenerateDeployChangeReport(self, request, global_params=None):
+      r"""Generates a report for a dry run analysis of a DeployApiProxy request.
+without committing the deployment.
+
+In addition to the standard validations performed when adding deployments,
+additional analysis will be done to detect possible traffic routing changes
+that would result from this deployment being created. Any potential routing
+conflicts or unsafe changes will be reported in the response. This routing
+analysis is not performed for a non-dry-run DeployApiProxy request.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChangeReportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeploymentChangeReport) The response message.
+      """
+      config = self.GetMethodConfig('GenerateDeployChangeReport')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateDeployChangeReport.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/apis/{apisId}/revisions/{revisionsId}/deployments:generateDeployChangeReport',
+        http_method='POST',
+        method_id='apigee.organizations.environments.apis.revisions.deployments.generateDeployChangeReport',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['basepath', 'override'],
+        relative_path='v1/{+name}/deployments:generateDeployChangeReport',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChangeReportRequest',
+        response_type_name='GoogleCloudApigeeV1DeploymentChangeReport',
+        supports_download=False,
+    )
+
+    def GenerateUndeployChangeReport(self, request, global_params=None):
+      r"""Generates a report for a dry run analysis of an UndeployApiProxy request.
+without committing the undeploy.
+
+In addition to the standard validations performed when removing
+deployments, additional analysis will be done to detect possible traffic
+routing changes that would result from this deployment being removed. Any
+potential routing conflicts or unsafe changes will be reported in the
+response. This routing analysis is not performed for a non-dry-run
+UndeployApiProxy request.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateUndeployChangeReportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeploymentChangeReport) The response message.
+      """
+      config = self.GetMethodConfig('GenerateUndeployChangeReport')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateUndeployChangeReport.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/apis/{apisId}/revisions/{revisionsId}/deployments:generateUndeployChangeReport',
+        http_method='POST',
+        method_id='apigee.organizations.environments.apis.revisions.deployments.generateUndeployChangeReport',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}/deployments:generateUndeployChangeReport',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateUndeployChangeReportRequest',
+        response_type_name='GoogleCloudApigeeV1DeploymentChangeReport',
         supports_download=False,
     )
 
@@ -4099,6 +4446,287 @@ properties for the environment, use the [Get Environment API](get).
         supports_download=False,
     )
 
+  class OrganizationsInstancesAttachmentsService(base_api.BaseApiService):
+    """Service class for the organizations_instances_attachments resource."""
+
+    _NAME = 'organizations_instances_attachments'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsInstancesAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new attachment of an environment to an instance.
+
+**Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesAttachmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}/attachments',
+        http_method='POST',
+        method_id='apigee.organizations.instances.attachments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/attachments',
+        request_field='googleCloudApigeeV1InstanceAttachment',
+        request_type_name='ApigeeOrganizationsInstancesAttachmentsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an attachment.
+
+**Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}/attachments/{attachmentsId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.instances.attachments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsInstancesAttachmentsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an attachment.
+
+**Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1InstanceAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}/attachments/{attachmentsId}',
+        http_method='GET',
+        method_id='apigee.organizations.instances.attachments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsInstancesAttachmentsGetRequest',
+        response_type_name='GoogleCloudApigeeV1InstanceAttachment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all attachments to an instance.
+
+**Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListInstanceAttachmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}/attachments',
+        http_method='GET',
+        method_id='apigee.organizations.instances.attachments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/attachments',
+        request_field='',
+        request_type_name='ApigeeOrganizationsInstancesAttachmentsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListInstanceAttachmentsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsInstancesService(base_api.BaseApiService):
+    """Service class for the organizations_instances resource."""
+
+    _NAME = 'organizations_instances'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Apigee runtime instance. The instance is accessible from the.
+authorized network configured on the organization.
+
+**Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances',
+        http_method='POST',
+        method_id='apigee.organizations.instances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/instances',
+        request_field='googleCloudApigeeV1Instance',
+        request_type_name='ApigeeOrganizationsInstancesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Apigee runtime instance. The instance stops serving.
+requests and the runtime data is deleted.
+
+**Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.instances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsInstancesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details for an Apigee runtime instance.
+
+**Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1Instance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}',
+        http_method='GET',
+        method_id='apigee.organizations.instances.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsInstancesGetRequest',
+        response_type_name='GoogleCloudApigeeV1Instance',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all Apigee runtime instances for the organization.
+
+**Note:** Not supported for Apigee hybrid.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances',
+        http_method='GET',
+        method_id='apigee.organizations.instances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/instances',
+        request_field='',
+        request_type_name='ApigeeOrganizationsInstancesListRequest',
+        response_type_name='GoogleCloudApigeeV1ListInstancesResponse',
+        supports_download=False,
+    )
+
+    def ReportStatus(self, request, global_params=None):
+      r"""Reports the latest status for a runtime instance.
+
+      Args:
+        request: (ApigeeOrganizationsInstancesReportStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ReportInstanceStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReportStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReportStatus.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/instances/{instancesId}:reportStatus',
+        http_method='POST',
+        method_id='apigee.organizations.instances.reportStatus',
+        ordered_params=['instance'],
+        path_params=['instance'],
+        query_params=[],
+        relative_path='v1/{+instance}:reportStatus',
+        request_field='googleCloudApigeeV1ReportInstanceStatusRequest',
+        request_type_name='ApigeeOrganizationsInstancesReportStatusRequest',
+        response_type_name='GoogleCloudApigeeV1ReportInstanceStatusResponse',
+        supports_download=False,
+    )
+
   class OrganizationsKeyvaluemapsService(base_api.BaseApiService):
     """Service class for the organizations_keyvaluemaps resource."""
 
@@ -4753,6 +5381,33 @@ See
         request_field='',
         request_type_name='ApigeeOrganizationsGetRequest',
         response_type_name='GoogleCloudApigeeV1Organization',
+        supports_download=False,
+    )
+
+    def GetDeployedIngressConfig(self, request, global_params=None):
+      r"""Gets the deployed ingress configuration for an organization.
+
+      Args:
+        request: (ApigeeOrganizationsGetDeployedIngressConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1IngressConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetDeployedIngressConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDeployedIngressConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/deployedIngressConfig',
+        http_method='GET',
+        method_id='apigee.organizations.getDeployedIngressConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsGetDeployedIngressConfigRequest',
+        response_type_name='GoogleCloudApigeeV1IngressConfig',
         supports_download=False,
     )
 

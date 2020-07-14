@@ -173,15 +173,79 @@ def GetTypeMapperFlag(messages):
       include_filter=lambda x: x != 'TYPE_UNSPECIFIED')
 
 
+def AddUpdateReservationGroup(parser):
+  """Add reservation arguments to the update-reservations command."""
+  parent_reservations_group = parser.add_group(
+      'Manage reservations that are attached to the commitment.',
+      mutex=True)
+  AddReservationsFromFileFlag(
+      parent_reservations_group,
+      custom_text='Path to a YAML file of two reservations\' configuration.')
+  reservations_group = parent_reservations_group.add_group(
+      'Specify source and destination reservations configuration.')
+  AddReservationArguments(reservations_group)
+  reservation_flags.GetAcceleratorFlag(
+      '--source-accelerator').AddToParser(reservations_group)
+  reservation_flags.GetAcceleratorFlag(
+      '--dest-accelerator').AddToParser(reservations_group)
+  reservation_flags.GetLocalSsdFlag(
+      '--source-local-ssd').AddToParser(reservations_group)
+  reservation_flags.GetLocalSsdFlag(
+      '--dest-local-ssd').AddToParser(reservations_group)
+  return parser
+
+
+def AddReservationArguments(parser):
+  """Add --source-reservation and --dest-reservation arguments to parser."""
+  help_text = """
+{0} reservation configuration.
+*reservation*::: Name of the {0} reservation to operate on.
+*reservation-zone*:::  Zone of the {0} reservation to operate on.
+*vm-count*::: The number of VM instances that are allocated to this reservation.
+The value of this field must be an int in the range [1, 1000].
+*machine-type*:::  The type of machine (name only) which has a fixed number of
+vCPUs and a fixed amount of memory. This also includes specifying custom machine
+type following `custom-number_of_CPUs-amount_of_memory` pattern, e.g. `custom-32-29440`.
+*min-cpu-platform*::: Optional minimum CPU platform of the reservation to create.
+*require-specific-reservation*::: Indicates whether the reservation can be consumed by VMs with "any reservation"
+defined. If enabled, then only VMs that target this reservation by name using
+`--reservation-affinity=specific` can consume from this reservation.
+"""
+  reservation_spec = {
+      'reservation': str,
+      'reservation-zone': str,
+      'vm-count': int,
+      'machine-type': str,
+      'min-cpu-platform': str,
+      'require-specific-reservation': bool,
+  }
+
+  parser.add_argument('--source-reservation',
+                      type=arg_parsers.ArgDict(spec=reservation_spec),
+                      help=help_text.format('source'),
+                      required=True)
+  parser.add_argument('--dest-reservation',
+                      type=arg_parsers.ArgDict(spec=reservation_spec),
+                      help=help_text.format('destination'),
+                      required=True)
+  return parser
+
+
+def AddReservationsFromFileFlag(parser, custom_text=None):
+  help_text = (custom_text if custom_text else
+               'Path to a YAML file of multiple reservations\' configuration.')
+  return parser.add_argument(
+      '--reservations-from-file',
+      type=arg_parsers.FileContents(),
+      help=help_text)
+
+
 def AddReservationArgGroup(parser):
   """Adds all flags needed for reservations creation."""
   reservations_manage_group = parser.add_group(
       'Manage the reservations to be created with the commitment.', mutex=True)
 
-  reservations_manage_group.add_argument(
-      '--reservations-from-file',
-      type=arg_parsers.FileContents(),
-      help='Path to a YAML file of multiple reservations\' configuration.')
+  AddReservationsFromFileFlag(reservations_manage_group)
 
   single_reservation_group = reservations_manage_group.add_argument_group(
       help='Manage the reservation to be created with the commitment.')

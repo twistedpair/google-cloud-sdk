@@ -55,29 +55,29 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def LookupSelf(self, request, global_params=None):
+    def Lookup(self, request, global_params=None):
       r"""Looks up resource names of the DeviceUsers associated with the.
 caller's credentials, as well as the properties provided in the request.
 
       Args:
-        request: (CloudidentityDevicesDeviceUsersLookupSelfRequest) input message
+        request: (CloudidentityDevicesDeviceUsersLookupRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (LookupSelfDeviceUsersResponse) The response message.
       """
-      config = self.GetMethodConfig('LookupSelf')
+      config = self.GetMethodConfig('Lookup')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    LookupSelf.method_config = lambda: base_api.ApiMethodInfo(
+    Lookup.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',
-        method_id='cloudidentity.devices.-.deviceUsers.lookupSelf',
+        method_id='cloudidentity.devices.-.deviceUsers.lookup',
         ordered_params=[],
         path_params=[],
-        query_params=['androidId', 'pageSize', 'pageToken', 'rawResourceId'],
-        relative_path='v1beta1/devices/-/deviceUsers:lookupSelf',
+        query_params=['androidId', 'pageSize', 'pageToken', 'rawResourceId', 'userId'],
+        relative_path='v1beta1/devices/-/deviceUsers:lookup',
         request_field='',
-        request_type_name='CloudidentityDevicesDeviceUsersLookupSelfRequest',
+        request_type_name='CloudidentityDevicesDeviceUsersLookupRequest',
         response_type_name='LookupSelfDeviceUsersResponse',
         supports_download=False,
     )

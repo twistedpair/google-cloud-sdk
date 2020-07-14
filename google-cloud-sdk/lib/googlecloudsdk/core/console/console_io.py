@@ -21,7 +21,8 @@ from __future__ import unicode_literals
 
 from collections import OrderedDict
 import contextlib
-
+import enum
+import getpass
 import io
 import json
 import os
@@ -31,7 +32,6 @@ import sys
 import textwrap
 import threading
 
-import enum
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -1067,3 +1067,20 @@ class UXElementType(enum.Enum):
   def GetDataFields(self):
     """Returns the ordered list of additional fields in the UX Element."""
     return self._data_fields
+
+
+def PromptPassword(prompt,
+                   error_message='Invalid Password',
+                   validation_callable=None,
+                   encoder_callable=None):
+  """Prompt user for password with optional validation."""
+  if properties.VALUES.core.disable_prompts.GetBool():
+    return None
+  pass_wd = getpass.getpass(prompt)
+  encoder = encoder_callable if callable(encoder_callable) else six.ensure_str
+  if callable(validation_callable):
+    while not validation_callable(pass_wd):
+      sys.stderr.write(_DoWrap(error_message) + '\n')
+      pass_wd = getpass.getpass(prompt)
+
+  return encoder(pass_wd)

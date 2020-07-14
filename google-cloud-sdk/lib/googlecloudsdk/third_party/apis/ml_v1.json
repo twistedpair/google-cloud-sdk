@@ -326,7 +326,7 @@
           "$ref": "GoogleCloudMlV1__Scheduling"
         },
         "network": {
-          "description": "Optional. The full name of the Google Compute Engine\n[network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job\nis peered. For example, projects\/12345\/global\/networks\/myVPC. Format is of\nthe form projects\/{project}\/global\/networks\/{network}. Where {project} is a\nproject number, as in '12345', and {network} is network name.\".\n\nPrivate services access must already be configured for the network. If left\nunspecified, the Job is not peered with any network. Learn more -\nConnecting Job to user network over private\nIP.",
+          "description": "Optional. The full name of the [Compute Engine network](\/vpc\/docs\/vpc) to which the\nJob is peered. For example, `projects\/12345\/global\/networks\/myVPC`. The\nformat of this field is `projects\/{project}\/global\/networks\/{network}`,\nwhere {project} is a project number (like `12345`) and {network} is network\nname.\n\nPrivate services access must already be configured for the network. If left\nunspecified, the Job is not peered with any network. [Learn about using VPC\nNetwork Peering.](\/ai-platform\/training\/docs\/vpc-peering).",
           "type": "string"
         },
         "serviceAccount": {
@@ -962,6 +962,61 @@
           "description": "Number of steps for approximating the path integral.\nA good value to start is 50 and gradually increase until the\nsum to diff property is met within the desired error range.",
           "type": "integer",
           "format": "int32"
+        },
+        "smoothGradConfig": {
+          "description": "Config for SmoothGrad approximation of gradients.\nWhen enabled, the gradients are approximated by averaging the gradients\nfrom noisy samples in the vicinity of the inputs. Adding\nnoise can help improve the computed gradients, see here for why:\nhttps:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+          "$ref": "GoogleCloudMlV1__SmoothGradConfig"
+        }
+      }
+    },
+    "GoogleCloudMlV1__SmoothGradConfig": {
+      "id": "GoogleCloudMlV1__SmoothGradConfig",
+      "description": "Config for SmoothGrad approximation of gradients.\nWhen enabled, the gradients are approximated by averaging the gradients from\nnoisy samples in the vicinity of the inputs. Adding noise can help improve\nthe computed gradients. See here for why https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+      "type": "object",
+      "properties": {
+        "noiseSigma": {
+          "description": "If set, this std. deviation will be used to apply noise to all features.",
+          "type": "number",
+          "format": "float"
+        },
+        "featureNoiseSigma": {
+          "description": "Alternatively, set this to use different noise_sigma per feature.\nOne entry per feature. No noise is added to features that are not set.",
+          "$ref": "GoogleCloudMlV1__FeatureNoiseSigma"
+        },
+        "noisySampleCount": {
+          "description": "The number of gradient samples to use for\napproximation. The higher this number, the more accurate the gradient\nis, but the runtime complexity of IG increases by this factor as well.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudMlV1__FeatureNoiseSigma": {
+      "id": "GoogleCloudMlV1__FeatureNoiseSigma",
+      "description": "Noise sigma by features. Noise sigma represents the standard deviation of the\ngaussian kernel that will be used to add noise to interpolated inputs prior\nto computing gradients.",
+      "type": "object",
+      "properties": {
+        "noiseSigma": {
+          "description": "Noise sigma per feature. No noise is added to features that are not set.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudMlV1_FeatureNoiseSigma_NoiseSigmaForFeature"
+          }
+        }
+      }
+    },
+    "GoogleCloudMlV1_FeatureNoiseSigma_NoiseSigmaForFeature": {
+      "id": "GoogleCloudMlV1_FeatureNoiseSigma_NoiseSigmaForFeature",
+      "description": "Noise sigma for a single feature.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the input feature for which noise sigma is provided.",
+          "type": "string"
+        },
+        "sigma": {
+          "description": "Standard deviation of gaussian kernel for noise.",
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -986,6 +1041,10 @@
           "description": "Number of steps for approximating the path integral.\nA good value to start is 50 and gradually increase until the\nsum to diff property is met within the desired error range.",
           "type": "integer",
           "format": "int32"
+        },
+        "smoothGradConfig": {
+          "description": "Config for SmoothGrad approximation of gradients.\nWhen enabled, the gradients are approximated by averaging the gradients\nfrom noisy samples in the vicinity of the inputs. Adding\nnoise can help improve the computed gradients, see here for why:\nhttps:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+          "$ref": "GoogleCloudMlV1__SmoothGradConfig"
         }
       }
     },

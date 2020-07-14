@@ -2388,7 +2388,7 @@ labels will also be overwritten.
 The import operation is idempotent unless the input data contains multiple
 valid messages with the same raw bytes but different labels. In that case,
 after the import completes, the store contains exactly one message
-with that raw bytes but there is no ordering guarantee on which version
+with those raw bytes but there is no ordering guarantee on which version
 of the labels it has. The operation result counters do not count
 duplicated raw bytes as an error and count one success for each message in
 the input, which might result in a success count larger than the number

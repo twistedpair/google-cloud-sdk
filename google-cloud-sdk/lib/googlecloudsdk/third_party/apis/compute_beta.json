@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20200626",
+ "revision": "20200706",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -6551,7 +6551,7 @@
   "HealthCheck": {
    "id": "HealthCheck",
    "type": "object",
-   "description": "Represents a Health Check resource.\n\nGoogle Compute Engine has two Health Check resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) * [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)\n\nInternal HTTP(S) load balancers use regional health checks. All other types of GCP load balancers and managed instance group auto-healing use global health checks. For more information, read Health Check Concepts.\n\nTo perform health checks on network load balancers, you must use either httpHealthChecks or httpsHealthChecks.",
+   "description": "Represents a Health Check resource.\n\nGoogle Compute Engine has two Health Check resources:\n\n* [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) * [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)\n\nInternal HTTP(S) load balancers must use regional health checks. Internal TCP/UDP load balancers can use either regional or global health checks. All other types of GCP load balancers and managed instance group auto-healing must use global health checks. For more information, read Health Check Concepts.\n\nTo perform health checks on network load balancers, you must use either httpHealthChecks or httpsHealthChecks.",
    "properties": {
     "checkIntervalSec": {
      "type": "integer",
@@ -18067,6 +18067,7 @@
       "INTERCONNECT_ATTACHMENTS_TOTAL_MBPS",
       "INTERCONNECT_TOTAL_GBPS",
       "INTERNAL_ADDRESSES",
+      "INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES",
       "IN_PLACE_SNAPSHOTS",
       "IN_USE_ADDRESSES",
       "IN_USE_BACKUP_SCHEDULES",
@@ -18133,6 +18134,7 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",

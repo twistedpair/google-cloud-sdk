@@ -139,6 +139,10 @@
         "displayName": {
           "description": "Display name for this patch job. This does not have to be unique.",
           "type": "string"
+        },
+        "rollout": {
+          "description": "Rollout strategy of the patch job.",
+          "$ref": "PatchRollout"
         }
       }
     },
@@ -484,6 +488,48 @@
         }
       }
     },
+    "PatchRollout": {
+      "id": "PatchRollout",
+      "description": "Patch rollout configuration specifications. Contains details on the\nconcurrency control when applying patch(es) to all targeted VMs.",
+      "type": "object",
+      "properties": {
+        "mode": {
+          "description": "Mode of the patch rollout.",
+          "enumDescriptions": [
+            "Mode must be specified.",
+            "Patches are applied one zone at a time. The patch job begins in the\nregion with the lowest number of targeted VMs. Within the region,\npatching begins in the zone with the lowest number of targeted VMs. If\nmultiple regions (or zones within a region) have the same number of\ntargeted VMs, a tie-breaker is achieved by sorting the regions or zones\nin alphabetical order.",
+            "Patches are applied to VMs in all zones at the same time."
+          ],
+          "type": "string",
+          "enum": [
+            "MODE_UNSPECIFIED",
+            "ZONE_BY_ZONE",
+            "CONCURRENT_ZONES"
+          ]
+        },
+        "disruptionBudget": {
+          "description": "The maximum number (or percentage) of VMs per zone to disrupt at any given\nmoment. The number of VMs calculated from multiplying the percentage by the\ntotal number of VMs in a zone is rounded up.\n\nDuring patching, a VM is considered disrupted from the time the agent is\nnotified to begin until patching has completed. This disruption time\nincludes the time to complete reboot and any post-patch steps.\n\nA VM contributes to the disruption budget if its patching operation fails\neither when applying the patches, running pre or post patch steps, or if it\nfails to respond with a success notification before timing out. VMs that\nare not running or do not have an active agent do not count toward this\ndisruption budget.\n\nFor zone-by-zone rollouts, if the disruption budget in a zone is exceeded,\nthe patch job stops, because continuing to the next zone requires\ncompletion of the patch process in the previous zone.\n\nFor example, if the disruption budget has a fixed value of `10`, and 8 VMs\nfail to patch in the current zone, the patch job continues to patch 2 VMs\nat a time until the zone is completed. When that zone is completed\nsuccessfully, patching begins with 10 VMs at a time in the next zone. If 10\nVMs in the next zone fail to patch, the patch job stops.",
+          "$ref": "FixedOrPercent"
+        }
+      }
+    },
+    "FixedOrPercent": {
+      "id": "FixedOrPercent",
+      "description": "Message encapsulating a value that can be either absolute (\"fixed\") or\nrelative (\"percent\") to a value.",
+      "type": "object",
+      "properties": {
+        "fixed": {
+          "description": "Specifies a fixed value.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "percent": {
+          "description": "Specifies the relative value defined as a percentage, which will be\nmultiplied by a reference value.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "PatchJob": {
       "id": "PatchJob",
       "description": "A high level representation of a patch job that is either in progress\nor has completed.\n\nInstance details are not included in the job. To paginate through instance\ndetails, use `ListPatchJobInstanceDetails`.\n\nFor more information about patch jobs, see\n[Creating patch\njobs](https:\/\/cloud.google.com\/compute\/docs\/os-patch-management\/create-patch-job).",
@@ -568,6 +614,10 @@
         "patchDeployment": {
           "description": "Output only. Name of the patch deployment that created this patch job.",
           "type": "string"
+        },
+        "rollout": {
+          "description": "Rollout strategy being applied.",
+          "$ref": "PatchRollout"
         }
       }
     },
@@ -808,6 +858,10 @@
           "description": "Output only. The last time a patch job was started by this deployment.\nTimestamp is in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text\nformat.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "rollout": {
+          "description": "Optional. Rollout strategy of the patch job.",
+          "$ref": "PatchRollout"
         }
       }
     },

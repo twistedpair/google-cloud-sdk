@@ -545,7 +545,7 @@
           "$ref": "SandboxConfig"
         },
         "nodeGroup": {
-          "description": "The optional node group. Setting this field will assign instances of this\npool to run on the specified node group. This is useful for running\nworkloads on [sole tenant nodes](\/compute\/docs\/nodes\/)",
+          "description": "Setting this field will assign instances of this\npool to run on the specified node group. This is useful for running\nworkloads on [sole tenant\nnodes](https:\/\/cloud.google.com\/compute\/docs\/nodes\/sole-tenant-nodes).",
           "type": "string"
         },
         "reservationAffinity": {
@@ -1934,6 +1934,10 @@
         },
         "workloadPool": {
           "description": "The workload pool to attach all Kubernetes service accounts to.",
+          "type": "string"
+        },
+        "identityProvider": {
+          "description": "identity provider is the third party identity provider.",
           "type": "string"
         }
       }

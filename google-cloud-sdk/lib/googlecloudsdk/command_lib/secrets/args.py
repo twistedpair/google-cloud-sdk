@@ -27,16 +27,6 @@ from googlecloudsdk.core import resources
 # Args
 
 
-def AddCreateIfMissing(parser, resource, positional=False, **kwargs):
-  parser.add_argument(
-      _ArgOrFlag('create-if-missing', positional),
-      action='store_true',
-      help=('Create the {resource} if it does not exist. If this flag is not '
-            'set, the command will return an error when attempting to update a '
-            '{resource} that does not exist.').format(resource=resource),
-      **kwargs)
-
-
 def AddDataFile(parser, positional=False, **kwargs):
   parser.add_argument(
       _ArgOrFlag('data-file', positional),

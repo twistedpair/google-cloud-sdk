@@ -89,7 +89,7 @@ class ExecStepConfig(_messages.Message):
   Fields:
     allowedSuccessCodes: Defaults to [0]. A list of possible return values
       that the execution can return to indicate a success.
-    gcsObject: A Google Cloud Storage object containing the executable.
+    gcsObject: A Cloud Storage object containing the executable.
     interpreter: The script interpreter to use to run the script. If no
       interpreter is specified the script will be executed directly, which
       will likely only succeed for scripts with [shebang lines]
@@ -123,8 +123,7 @@ class ExecStepConfig(_messages.Message):
 
 
 class ExecutePatchJobRequest(_messages.Message):
-  r"""A request message to initiate patching across Google Compute Engine
-  instances.
+  r"""A request message to initiate patching across Compute Engine instances.
 
   Fields:
     description: Description of the patch job. Length of the description is
@@ -139,6 +138,7 @@ class ExecutePatchJobRequest(_messages.Message):
       filtered by some criteria such as zone or labels.
     patchConfig: Patch configuration being applied. If omitted, instances are
       patched using the default configurations.
+    rollout: Rollout strategy of the patch job.
   """
 
   description = _messages.StringField(1)
@@ -147,17 +147,32 @@ class ExecutePatchJobRequest(_messages.Message):
   duration = _messages.StringField(4)
   instanceFilter = _messages.MessageField('PatchInstanceFilter', 5)
   patchConfig = _messages.MessageField('PatchConfig', 6)
+  rollout = _messages.MessageField('PatchRollout', 7)
+
+
+class FixedOrPercent(_messages.Message):
+  r"""Message encapsulating a value that can be either absolute ("fixed") or
+  relative ("percent") to a value.
+
+  Fields:
+    fixed: Specifies a fixed value.
+    percent: Specifies the relative value defined as a percentage, which will
+      be multiplied by a reference value.
+  """
+
+  fixed = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GcsObject(_messages.Message):
-  r"""Google Cloud Storage object representation.
+  r"""Cloud Storage object representation.
 
   Fields:
-    bucket: Required. Bucket of the Google Cloud Storage object.
-    generationNumber: Required. Generation number of the Google Cloud Storage
-      object. This is used to ensure that the ExecStep specified by this
-      PatchJob does not change.
-    object: Required. Name of the Google Cloud Storage object.
+    bucket: Required. Bucket of the Cloud Storage object.
+    generationNumber: Required. Generation number of the Cloud Storage object.
+      This is used to ensure that the ExecStep specified by this PatchJob does
+      not change.
+    object: Required. Name of the Cloud Storage object.
   """
 
   bucket = _messages.StringField(1)
@@ -225,9 +240,8 @@ class MonthlySchedule(_messages.Message):
 
 
 class OneTimeSchedule(_messages.Message):
-  r"""Sets the time for a one time patch deployment. Timestamp is in <a
-  href="https://www.ietf.org/rfc/rfc3339.txt" target="_blank">RFC3339</a> text
-  format.
+  r"""Sets the time for a one time patch deployment. Timestamp is in
+  [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
 
   Fields:
     executeTime: Required. The desired patch job execution time.
@@ -427,22 +441,21 @@ class PatchDeployment(_messages.Message):
   r"""Patch deployments are configurations that individual patch jobs use to
   complete a patch. These configurations include instance filter, package
   repository settings, and a schedule. For more information about creating and
-  managing patch deployments, see [Scheduling patch jobs](/compute/docs/os-
-  patch-management/schedule-patch-jobs).
+  managing patch deployments, see [Scheduling patch
+  jobs](https://cloud.google.com/compute/docs/os-patch-management/schedule-
+  patch-jobs).
 
   Fields:
     createTime: Output only. Time the patch deployment was created. Timestamp
-      is in <a href="https://www.ietf.org/rfc/rfc3339.txt"
-      target="_blank">RFC3339</a> text format.
+      is in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     description: Optional. Description of the patch deployment. Length of the
       description is limited to 1024 characters.
     duration: Optional. Duration of the patch. After the duration ends, the
       patch times out.
     instanceFilter: Required. VM instances to patch.
     lastExecuteTime: Output only. The last time a patch job was started by
-      this deployment. Timestamp is in <a
-      href="https://www.ietf.org/rfc/rfc3339.txt" target="_blank">RFC3339</a>
-      text format.
+      this deployment. Timestamp is in
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     name: Unique name for the patch deployment resource in a project. The
       patch deployment name is in the form:
       `projects/{project_id}/patchDeployments/{patch_deployment_id}`. This
@@ -450,9 +463,10 @@ class PatchDeployment(_messages.Message):
     oneTimeSchedule: Required. Schedule a one-time execution.
     patchConfig: Optional. Patch configuration that is applied.
     recurringSchedule: Required. Schedule recurring executions.
+    rollout: Optional. Rollout strategy of the patch job.
     updateTime: Output only. Time the patch deployment was last updated.
-      Timestamp is in <a href="https://www.ietf.org/rfc/rfc3339.txt"
-      target="_blank">RFC3339</a> text format.
+      Timestamp is in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text
+      format.
   """
 
   createTime = _messages.StringField(1)
@@ -464,7 +478,8 @@ class PatchDeployment(_messages.Message):
   oneTimeSchedule = _messages.MessageField('OneTimeSchedule', 7)
   patchConfig = _messages.MessageField('PatchConfig', 8)
   recurringSchedule = _messages.MessageField('RecurringSchedule', 9)
-  updateTime = _messages.StringField(10)
+  rollout = _messages.MessageField('PatchRollout', 10)
+  updateTime = _messages.StringField(11)
 
 
 class PatchInstanceFilter(_messages.Message):
@@ -475,15 +490,14 @@ class PatchInstanceFilter(_messages.Message):
   Fields:
     all: Target all VM instances in the project. If true, no other criteria is
       permitted.
-    groupLabels: Targets VM instances matching at least one of these label
-      sets. This allows targeting of disparate groups, for example "env=prod
-      or env=staging".
+    groupLabels: Targets VM instances matching ANY of these GroupLabels. This
+      allows targeting of disparate groups of VM instances.
     instanceNamePrefixes: Targets VMs whose name starts with one of these
       prefixes. Similar to labels, this is another way to group VMs when
       targeting configs, for example prefix="prod-".
     instances: Targets any of the VM instances specified. Instances are
       specified by their URI in the form
-      `zones/[ZONE]/instances/[INSTANCE_NAME],
+      `zones/[ZONE]/instances/[INSTANCE_NAME]`,
       `projects/[PROJECT_ID]/zones/[ZONE]/instances/[INSTANCE_NAME]`, or `http
       s://www.googleapis.com/compute/v1/projects/[PROJECT_ID]/zones/[ZONE]/ins
       tances/[INSTANCE_NAME]`
@@ -499,22 +513,27 @@ class PatchInstanceFilter(_messages.Message):
 
 
 class PatchInstanceFilterGroupLabel(_messages.Message):
-  r"""Represents a group of VMs that can be identified as having all these
-  labels, for example "env=prod and app=web".
+  r"""Targets a group of VM instances by using their [assigned
+  labels](https://cloud.google.com/compute/docs/labeling-resources). Labels
+  are key-value pairs. A `GroupLabel` is a combination of labels that is used
+  to target VMs for a patch job.  For example, a patch job can target VMs that
+  have the following `GroupLabel`: `{"env":"test", "app":"web"}`. This means
+  that the patch job is applied to VMs that have both the labels `env=test`
+  and `app=web`.
 
   Messages:
-    LabelsValue: Google Compute Engine instance labels that must be present
-      for a VM instance to be targeted by this filter.
+    LabelsValue: Compute Engine instance labels that must be present for a VM
+      instance to be targeted by this filter.
 
   Fields:
-    labels: Google Compute Engine instance labels that must be present for a
-      VM instance to be targeted by this filter.
+    labels: Compute Engine instance labels that must be present for a VM
+      instance to be targeted by this filter.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Google Compute Engine instance labels that must be present for a VM
-    instance to be targeted by this filter.
+    r"""Compute Engine instance labels that must be present for a VM instance
+    to be targeted by this filter.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -541,13 +560,14 @@ class PatchInstanceFilterGroupLabel(_messages.Message):
 
 class PatchJob(_messages.Message):
   r"""A high level representation of a patch job that is either in progress or
-  has completed.  Instances details are not included in the job. To paginate
+  has completed.  Instance details are not included in the job. To paginate
   through instance details, use ListPatchJobInstanceDetails.  For more
-  information about patch jobs, see [Creating patch jobs](/compute/docs/os-
-  patch-management/create-patch-job).
+  information about patch jobs, see [Creating patch
+  jobs](https://cloud.google.com/compute/docs/os-patch-management/create-
+  patch-job).
 
   Enums:
-    StateValueValuesEnum: The current state of the PatchJob .
+    StateValueValuesEnum: The current state of the PatchJob.
 
   Fields:
     createTime: Time this patch job was created.
@@ -570,12 +590,13 @@ class PatchJob(_messages.Message):
       this patch job.
     percentComplete: Reflects the overall progress of the patch job in the
       range of 0.0 being no progress to 100.0 being complete.
-    state: The current state of the PatchJob .
+    rollout: Rollout strategy being applied.
+    state: The current state of the PatchJob.
     updateTime: Last time this patch job was updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The current state of the PatchJob .
+    r"""The current state of the PatchJob.
 
     Values:
       STATE_UNSPECIFIED: State must be specified.
@@ -609,15 +630,16 @@ class PatchJob(_messages.Message):
   patchConfig = _messages.MessageField('PatchConfig', 10)
   patchDeployment = _messages.StringField(11)
   percentComplete = _messages.FloatField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  updateTime = _messages.StringField(14)
+  rollout = _messages.MessageField('PatchRollout', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
 
 
 class PatchJobInstanceDetails(_messages.Message):
   r"""Patch details for a VM instance. For more information about reviewing VM
   instance details, see [Listing all VM instance details for a specific patch
-  job](/compute/docs/os-patch-management/manage-patch-jobs#list-instance-
-  details).
+  job](https://cloud.google.com/compute/docs/os-patch-management/manage-patch-
+  jobs#list-instance-details).
 
   Enums:
     StateValueValuesEnum: Current state of instance patch.
@@ -729,6 +751,58 @@ class PatchJobInstanceDetailsSummary(_messages.Message):
   succeededInstanceCount = _messages.IntegerField(13)
   succeededRebootRequiredInstanceCount = _messages.IntegerField(14)
   timedOutInstanceCount = _messages.IntegerField(15)
+
+
+class PatchRollout(_messages.Message):
+  r"""Patch rollout configuration specifications. Contains details on the
+  concurrency control when applying patch(es) to all targeted VMs.
+
+  Enums:
+    ModeValueValuesEnum: Mode of the patch rollout.
+
+  Fields:
+    disruptionBudget: The maximum number (or percentage) of VMs per zone to
+      disrupt at any given moment. The number of VMs calculated from
+      multiplying the percentage by the total number of VMs in a zone is
+      rounded up.  During patching, a VM is considered disrupted from the time
+      the agent is notified to begin until patching has completed. This
+      disruption time includes the time to complete reboot and any post-patch
+      steps.  A VM contributes to the disruption budget if its patching
+      operation fails either when applying the patches, running pre or post
+      patch steps, or if it fails to respond with a success notification
+      before timing out. VMs that are not running or do not have an active
+      agent do not count toward this disruption budget.  For zone-by-zone
+      rollouts, if the disruption budget in a zone is exceeded, the patch job
+      stops, because continuing to the next zone requires completion of the
+      patch process in the previous zone.  For example, if the disruption
+      budget has a fixed value of `10`, and 8 VMs fail to patch in the current
+      zone, the patch job continues to patch 2 VMs at a time until the zone is
+      completed. When that zone is completed successfully, patching begins
+      with 10 VMs at a time in the next zone. If 10 VMs in the next zone fail
+      to patch, the patch job stops.
+    mode: Mode of the patch rollout.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Mode of the patch rollout.
+
+    Values:
+      MODE_UNSPECIFIED: Mode must be specified.
+      ZONE_BY_ZONE: Patches are applied one zone at a time. The patch job
+        begins in the region with the lowest number of targeted VMs. Within
+        the region, patching begins in the zone with the lowest number of
+        targeted VMs. If multiple regions (or zones within a region) have the
+        same number of targeted VMs, a tie-breaker is achieved by sorting the
+        regions or zones in alphabetical order.
+      CONCURRENT_ZONES: Patches are applied to VMs in all zones at the same
+        time.
+    """
+    MODE_UNSPECIFIED = 0
+    ZONE_BY_ZONE = 1
+    CONCURRENT_ZONES = 2
+
+  disruptionBudget = _messages.MessageField('FixedOrPercent', 1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
 
 
 class RecurringSchedule(_messages.Message):
@@ -894,14 +968,14 @@ class WeekDayOfMonth(_messages.Message):
     r"""Required. A day of the week.
 
     Values:
-      DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
-      MONDAY: The day-of-week of Monday.
-      TUESDAY: The day-of-week of Tuesday.
-      WEDNESDAY: The day-of-week of Wednesday.
-      THURSDAY: The day-of-week of Thursday.
-      FRIDAY: The day-of-week of Friday.
-      SATURDAY: The day-of-week of Saturday.
-      SUNDAY: The day-of-week of Sunday.
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
     """
     DAY_OF_WEEK_UNSPECIFIED = 0
     MONDAY = 1
@@ -930,14 +1004,14 @@ class WeeklySchedule(_messages.Message):
     r"""Required. Day of the week.
 
     Values:
-      DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
-      MONDAY: The day-of-week of Monday.
-      TUESDAY: The day-of-week of Tuesday.
-      WEDNESDAY: The day-of-week of Wednesday.
-      THURSDAY: The day-of-week of Thursday.
-      FRIDAY: The day-of-week of Friday.
-      SATURDAY: The day-of-week of Saturday.
-      SUNDAY: The day-of-week of Sunday.
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
     """
     DAY_OF_WEEK_UNSPECIFIED = 0
     MONDAY = 1

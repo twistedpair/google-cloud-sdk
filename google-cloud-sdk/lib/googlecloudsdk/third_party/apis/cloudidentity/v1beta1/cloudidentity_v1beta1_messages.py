@@ -660,8 +660,8 @@ class CloudidentityDevicesDeviceUsersListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
 
 
-class CloudidentityDevicesDeviceUsersLookupSelfRequest(_messages.Message):
-  r"""A CloudidentityDevicesDeviceUsersLookupSelfRequest object.
+class CloudidentityDevicesDeviceUsersLookupRequest(_messages.Message):
+  r"""A CloudidentityDevicesDeviceUsersLookupRequest object.
 
   Fields:
     androidId: Android Id returned by [Settings.Secure#ANDROID_ID](https://dev
@@ -681,12 +681,16 @@ class CloudidentityDevicesDeviceUsersLookupSelfRequest(_messages.Message):
       Windows:
       C:\\Users\%USERPROFILE%\.secureConnect\context_aware_config.json Linux:
       ~/.secureConnect/context_aware_config.json
+    userId: The user whose DeviceUser's resource name will be fetched. Must be
+      set to 'me' to fetch the DeviceUser's resource name for the calling
+      user.
   """
 
   androidId = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   rawResourceId = _messages.StringField(4)
+  userId = _messages.StringField(5)
 
 
 class CloudidentityDevicesDeviceUsersPatchRequest(_messages.Message):
@@ -1464,8 +1468,8 @@ class Device(_messages.Message):
     EncryptionStateValueValuesEnum: Output only. Device encryption state.
     ManagementStateValueValuesEnum: Output only. Management state of the
       device
-    OwnerTypeValueValuesEnum: Whether the device is owned by the company or an
-      individual
+    OwnerTypeValueValuesEnum: Output only. Whether the device is owned by the
+      company or an individual
 
   Fields:
     androidSpecificAttributes: Output only. Attributes specific to Android
@@ -1504,7 +1508,8 @@ class Device(_messages.Message):
       |ownership_privilege| is |PROFILE_OWNER| or |DEVICE_OWNER|. Does not
       include the account signed in to the device policy app if that account's
       domain has only one account. Examples: "com.example", "xyz.com".
-    ownerType: Whether the device is owned by the company or an individual
+    ownerType: Output only. Whether the device is owned by the company or an
+      individual
     releaseVersion: Output only. OS release version. Example: 6.0.
     securityPatchTime: Output only. OS security patch update time on device.
     serialNumber: Serial Number of device. Example: HT82V1A01076.
@@ -1584,7 +1589,8 @@ class Device(_messages.Message):
     WIPED = 6
 
   class OwnerTypeValueValuesEnum(_messages.Enum):
-    r"""Whether the device is owned by the company or an individual
+    r"""Output only. Whether the device is owned by the company or an
+    individual
 
     Values:
       DEVICE_OWNERSHIP_UNSPECIFIED: Default value. The value is unused.

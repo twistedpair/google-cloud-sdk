@@ -104,12 +104,12 @@ def _DisplayNumberOfRowsModified(row_count, is_exact_count, out):
     is_exact_count: Boolean stating whether the number is the exact count.
     out: Output stream to which we print.
   """
-  if is_exact_count is True:
+  if is_exact_count:
     output_str = 'Statement modified {} {}'
   else:
     output_str = 'Statement modified a lower bound of {} {}'
 
-  if row_count is 1:
+  if row_count == 1:
     out.Print(output_str.format(row_count, 'row'))
   else:
     out.Print(output_str.format(row_count, 'rows'))
@@ -131,7 +131,7 @@ def QueryHasDml(sql):
         token == (T.Keyword.DML, 'insert') or
         token == (T.Keyword.DML, 'update') or
         token == (T.Keyword.DML, 'delete'))
-    if has_dml is True:
+    if has_dml:
       return True
   return False
 
@@ -201,7 +201,7 @@ def DisplayQueryResults(result, out):
       'rowCountLowerBound') and result.stats.rowCountLowerBound is not None:
     _DisplayNumberOfRowsModified(result.stats.rowCountLowerBound, False, out)
 
-  if len(result.metadata.rowType.fields) is not 0:
+  if result.metadata.rowType.fields:
     # Print "(Unspecified)" for computed columns.
     fields = [
         field.name or '(Unspecified)'

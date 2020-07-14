@@ -90,131 +90,356 @@ def AddSharedArgs(parser):
   """Adds shared arguments to the given parser.
 
   Args:
-    parser: A given parser
+    parser: A given parser.
   """
   parser.add_argument(
       'POLICY_ID',
       type=arg_parsers.RegexpValidator(
           r'^ops-agents-.*$', 'POLICY_ID must start with [ops-agents-].'),
       help="""\
-      Name of the policy.
+      ID of the policy.
 
-      This name must contain only lowercase letters, numbers, and hyphens,
-      start with a letter, end with a number or a letter, be between 1-63
-      characters, and be unique within the project.
+      This ID must start with ``ops-agents-'', contain only lowercase letters,
+      numbers, and hyphens, end with a number or a letter, be between 1-63
+      characters, and be unique within the project. The goal of the prefix
+      ``ops-agents-'' is to easily distinguish these Ops Agents specific
+      policies from other generic policies and lower the chance of naming
+      conflicts.
       """,
   )
 
 
-def AddMutationArgs(parser):
+def AddMutationArgs(parser, required=True):
   """Adds arguments for mutating commands.
 
   Args:
-    parser: A given parser
+    parser: A given parser.
+    required: bool, default is True.
   """
   parser.add_argument(
       '--description',
+      metavar='DESCRIPTION',
       type=str,
       help='Description of the policy.',
   )
   parser.add_argument(
       '--agents',
-      metavar='KEY=VALUE',
+      metavar='type=TYPE,version=VERSION,package-state=PACKAGE-STATE,enable-autoupgrade=ENABLE-AUTOUPGRADE',
       action='store',
-      required=True,
+      required=required,
       type=arg_parsers.ArgList(
           custom_delim_char=';',
           element_type=arg_parsers.ArgDict(
               spec={
                   'type':
-                      ArgEnum('type', [
-                          agent_policy.OpsAgentPolicy.Agent.Type.LOGGING,
-                          agent_policy.OpsAgentPolicy.Agent.Type.METRICS
-                      ]),
+                      ArgEnum('type',
+                              list(agent_policy.OpsAgentPolicy.Agent.Type)),
                   'version':
                       str,
                   'package-state':
-                      ArgEnum('package-state', [
-                          agent_policy.OpsAgentPolicy.Agent.PackageState
-                          .INSTALLED,
-                          agent_policy.OpsAgentPolicy.Agent.PackageState.REMOVED
-                      ]),
+                      ArgEnum(
+                          'package-state',
+                          list(agent_policy.OpsAgentPolicy.Agent.PackageState)),
                   'enable-autoupgrade':
                       arg_parsers.ArgBoolean(),
               },
-              required_keys=['type']
-          ),
+              required_keys=['type']),
       ),
       help="""\
-      Agents to be installed.
+      A list of agent rules to be enforced by the policy.
 
-      This contains fields of type(required) - sample:{logging, metrics}, version(default: latest) - sample:{6.0.0-1, 1.6.35-1, 1.x.x, 6.x.x}, package-state(default: installed) - sample:{installed, removed}, enable-autoupgrade(default: false) - sample:{true, false}.
-      """,
-  )
+      This flag must be quoted. Items in the list are separated by ";". Each
+      item in the list is a <key, value> map that represents a logging or
+      metrics agent. The allowed values of the key are as follows.
+
+      *type*::: Type of agent to manage.
+
+      *Required*. Allowed values: ``logging'' and ``metrics''. Use ``logging''
+      for the Logging Agent (https://cloud.google.com/logging/docs/agent).
+      Use ``metrics'' for the Monitoring Agent
+      (https://cloud.google.com/monitoring/agent).
+
+      *version*::: Version of the agent to install.
+
+      Optional. Default to ``version=current-major''. The allowed values and
+      formats are as follows.
+
+      *version=latest*::::
+
+      With this setting, the latest version of the agent is installed at the
+      time when the policy is applied to an instance.
+
+      If multiple instances are created at different times but they all fall
+      into the instance filter rules of an existing policy, they may end up with
+      different versions of the agent, depending on what the latest version of
+      the agent is at the policy application time (in this case the instance
+      creation time). One way to avoid this is to set
+      ``enable-autoupgrade=true''. This guarantees that the installed agents on
+      all instances that are managed by this policy are always up to date and
+      conform to the same version.
+
+      While this ``version=latest'' setting makes it easier to keep the agent
+      version up to date, this setting does come with a potential risk. When a
+      new major version is released, the policy may install the latest version
+      of the agent from that new major release, which may introduce breaking
+      changes. For production environments, consider using the
+      ```version=MAJOR_VERSION.*.*``` setting below for safer agent deployments.
+
+      ```version=MAJOR_VERSION.*.*```::::
+
+      With this setting, the latest version of agent from a specific major
+      version is installed at the time when the policy is applied to an
+      instance.
+
+      If multiple instances are created at different times but they all fall
+      into the instance filter rules of an existing policy, they may end up with
+      different versions of the agent, depending on what the latest version of
+      the agent is at the policy application time (in this case the instance
+      creation time). One way to avoid this is to set
+      ``enable-autoupgrade=true''. This guarantees that the installed agents on
+      all instances that are managed by this policy are always up to date within
+      that major version and conform to the same version.
+
+      When a new major release is out, this setting ensures that only the latest
+      version from the specified major version is installed, which avoids
+      accidentally introducing breaking changes. This is recommended for
+      production environments to ensure safer agent deployments.
+
+      *version=current-major*::::
+
+      With this setting, the version field is automatically set to
+      ```version=MAJOR_VERSION.*.*```, where ``MAJOR_VERSION'' is the current latest major
+      version released. Refer to the ```version=MAJOR_VERSION.*.*``` section for
+      the expected behavior.
+
+      *version=MAJOR_VERSION.MINOR_VERSION.PATCH_VERSION*::::
+
+      With this setting, the specified exact version of agent is installed at
+      the time when the policy is applied to an instance. ``enable-autoupgrade''
+      must be false for this setting.
+
+      This setting is not recommended since it prevents the policy from
+      installing new versions of the agent that include bug fixes and other
+      improvements.
+
+      One limitation of this setting is that if the agent gets manually
+      uninstalled from the instances after the policy gets applied, the policy
+      can only ensure that the agent is re-installed. It is not able to restore
+      the expected exact version of the agent.
+
+      *package-state*::: Desired package state of the agent.
+
+      Optional. Default to ``package-state=installed''. The allowed values are
+      as follows.
+
+      *package-state=installed*::::
+
+      With this setting, the policy will ensure the agent package is installed
+      on the instances and the agent service is running.
+
+      *package-state=removed*::::
+
+      With this setting, the policy will ensure the agent package is removed
+      from the instances, which stops the service from running.
+
+      *enable-autoupgrade*::: Whether to enable autoupgrade of the agent.
+
+      Optional. Default to ``enable-autoupgrade=true''. Allowed values: ``true''
+      or ``false''. This has to be ``false'' if the agent version is set to a
+      specific patch version in the format of
+      ``version=MAJOR_VERSION.MINOR_VERSION.PATCH_VERSION''.
+      """)
   parser.add_argument(
       '--os-types',
-      metavar='KEY=VALUE',
+      metavar='short-name=SHORT-NAME,version=VERSION',
       action='store',
-      required=True,
+      required=required,
       type=arg_parsers.ArgList(
           custom_delim_char=';',
-          element_type=arg_parsers.ArgDict(spec={
-              'short-name': ArgEnum(
-                  'short-name',
-                  [
-                      agent_policy.OpsAgentPolicy.Assignment.OsType
-                      .OsShortName.CENTOS,
-                      agent_policy.OpsAgentPolicy.Assignment.OsType
-                      .OsShortName.DEBIAN,
-                      agent_policy.OpsAgentPolicy.Assignment.OsType
-                      .OsShortName.RHEL,
-                      agent_policy.OpsAgentPolicy.Assignment.OsType
-                      .OsShortName.SLES,
-                      agent_policy.OpsAgentPolicy.Assignment.OsType
-                      .OsShortName.SLES_SAP,
-                      agent_policy.OpsAgentPolicy.Assignment.OsType
-                      .OsShortName.UBUNTU
-                  ]),
-              'version': str,
-          }, required_keys=['short-name', 'version']),
+          element_type=arg_parsers.ArgDict(
+              spec={
+                  'short-name':
+                      ArgEnum(
+                          'short-name',
+                          list(agent_policy.OpsAgentPolicy.Assignment.OsType
+                               .OsShortName)),
+                  'version':
+                      str,
+              },
+              required_keys=['short-name', 'version']),
       ),
       help="""\
-      OS Types matcher for instances on which to create the policy.
+      A list of OS types to filter instances that the policy applies to.
 
-      This contains fields of short_name(required) - sample:{centos, debian, rhel}, version(required) - sample:{6, 7.8}.
+      For Alpha, exactly one OS type needs to be specified. The support for
+      multiple OS types will be added later for more flexibility. Each OS type
+      contains the following fields.
+
+      *short-name*::: Short name of the OS.
+
+      *Required*. Allowed values: ``centos'', ``debian'', ``rhel'', ``sles'',
+      ``sles_sap'', ``ubuntu''. This is typically the ``ID'' value in the
+      ``/etc/os-release'' file in the OS.
+
+      To inspect the exact OS short name of an instance, run:
+
+        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME
+
+      *version*::: Version of the OS.
+
+      *Required*. This is typically the ``VERSION_ID'' value in the
+      ``/etc/os-release'' file in the OS.
+
+      To inspect the exact OS version of an instance, run:
+
+        $ gcloud beta compute instances os-inventory describe INSTANCE_NAME
+
+      Sample values:
+
+        OS Short Name      OS Version
+        centos             8
+        centos             7
+        debian             10
+        debian             9
+        rhel               8.*
+        rhel               7.*
+        sles               12.*
+        sles               15.*
+        sles_sap           12.*
+        sles_sap           15.*
+        ubuntu             16.04
+        ubuntu             18.04
+        ubuntu             19.10
+        ubuntu             20.04
+
+      ```*``` can be used to match a prefix of the version:
+      ```<VERSION_PREFIX>*``` matches any version that starts with
+      ``<VERSION_PREFIX>''.
       """,
   )
+
+
+def _AddGroupLabelsArgument(parser):
   parser.add_argument(
       '--group-labels',
-      metavar='KEY=VALUE',
+      metavar='LABEL_NAME=LABEL_VALUE,LABEL_NAME=LABEL_VALUE,...',
       action='store',
       type=arg_parsers.ArgList(
           custom_delim_char=';',
           element_type=arg_parsers.ArgDict(),
       ),
       help="""\
-      Group Labels matcher for instances on which to create the policy.
+      A list of label maps to filter instances that the policy applies to.
 
-      This contains a list of key value pairs for the instances labels.
+      Optional. The ``--group-labels'' flag needs to be quoted. Each label map
+      item in the list are separated by ```;```. To manage instance labels, refer
+      to the ```gcloud beta compute instances add-labels``` and the
+      ```gcloud beta compute instances remove-labels``` commands.
+
+      Each label map item in the ``--group-labels'' list is a map in the format
+      of ``LABEL_NAME=LABEL_VALUE,LABEL_NAME=LABEL_VALUE,...''. An instance has
+      to match all of the ``LABEL_NAME=LABEL_VALUE'' criteria inside a label map
+      to be considered a match for that label map. But the instance only needs
+      to match one label map in the ``--group-labels'' list.
+
+      For example,
+      ``--group-labels="env=prod,product=myapp;env=staging,product=myapp"''
+      implies the matching criteria is:
+
+      *(env=prod AND product=myapp) OR (env=staging AND product=myapp)*
       """,
   )
+
+
+def _AddInstancesArgument(parser):
   parser.add_argument(
       '--instances',
-      metavar='INSTANCES',
+      metavar='zones/ZONE_NAME/instances/INSTANCE_NAME',
       type=arg_parsers.ArgList(),
       help="""\
-      Specifies on which instances to create the policy.
+      A list of fully-qualified names to filter instances that the policy
+      applies to.
 
-      This contains a list of instances, example: zones/us-central1-a/instances/test-instance-1
+      Each item in the list must be in the format of
+      `zones/ZONE_NAME/instances/INSTANCE_NAME`. The policy can also target
+      instances that are not yet created.
+
+      To list all existing instances, run:
+
+        $ gcloud compute instances list
+
+      The ``--instances'' flag is recommended for use during development and
+      testing. In production environments, it's more common to select instances
+      via a combination of ``--zones'' and ``--group-labels''.
       """,
   )
+
+
+def _AddZonesArgument(parser):
   parser.add_argument(
       '--zones',
-      metavar='ZONES',
+      metavar='ZONE_NAME',
       type=arg_parsers.ArgList(),
       help="""\
-      Zones matcher for instance on which to create the policy.
+      A list of zones to filter instances to apply the policy.
 
-      This contains a list of zones, example: us-central1-a.
+      To list available zones, run:
+
+        $ gcloud compute zones list
+
+      The use of the ``--zones'' and ``--group-labels'' flags is recommended for
+      production environments. For testing and development, it's more common to
+      select instances directly via the ``--instances'' flag.
+      """,
+  )
+
+
+def AddCreateArgs(parser):
+  """Add arguments for the Create command.
+
+  Args:
+    parser: A given parser.
+  """
+  _AddGroupLabelsArgument(parser)
+  _AddInstancesArgument(parser)
+  _AddZonesArgument(parser)
+
+
+def AddUpdateArgs(parser):
+  """Add arguments for the Update command.
+
+  Args:
+    parser: A given parser.
+  """
+  group_labels_args = parser.add_mutually_exclusive_group()
+  _AddGroupLabelsArgument(group_labels_args)
+  group_labels_args.add_argument(
+      '--clear-group-labels',
+      action='store_true',
+      help="""\
+      Clear the group labels filter that was previously set by the
+      ``--group-labels'' flag to filter instances that the policy applies to.
+      """,
+  )
+
+  instances_args = parser.add_mutually_exclusive_group()
+  _AddInstancesArgument(instances_args)
+  instances_args.add_argument(
+      '--clear-instances',
+      action='store_true',
+      help="""\
+      Clear the instances filter that was previously set by the ``--instances''
+      flag to filter instances that the policy applies to.
+      """,
+  )
+
+  zones_args = parser.add_mutually_exclusive_group()
+  _AddZonesArgument(zones_args)
+  zones_args.add_argument(
+      '--clear-zones',
+      action='store_true',
+      help="""\
+      Clear the zones filter that was previously set by the ``--zones'' flag to
+      filter instances that the policy applies to.
       """,
   )

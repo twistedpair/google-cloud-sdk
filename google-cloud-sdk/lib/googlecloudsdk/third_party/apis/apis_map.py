@@ -133,6 +133,14 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.anthosevents.v1beta1',
+                client_classpath='anthosevents_v1beta1_client.AnthoseventsV1beta1',
+                messages_modulepath='anthosevents_v1beta1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'apigateway': {
         'v1alpha1':

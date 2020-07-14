@@ -69,8 +69,12 @@ def GenerateCertId():
   Returns:
     The generated certificate id string.
   """
+  # Avoid name collisions in certificate id generation. Normal random.choice
+  # seeds on system time, which might not be sufficiently random of a seed.
+  # SystemRandom uses other sources from the OS to generate the random ID.
+  sys_rng = random.SystemRandom()
   alphanum = string.ascii_uppercase + string.digits
-  alphanum_rand1 = ''.join(random.choice(alphanum) for i in range(3))
-  alphanum_rand2 = ''.join(random.choice(alphanum) for i in range(3))
+  alphanum_rand1 = ''.join(sys_rng.choice(alphanum) for i in range(3))
+  alphanum_rand2 = ''.join(sys_rng.choice(alphanum) for i in range(3))
   date_str = times.FormatDateTime(times.Now(), '%Y%m%d')
   return '{}-{}-{}'.format(date_str, alphanum_rand1, alphanum_rand2)

@@ -80,6 +80,401 @@ class GoogleCloudCommonOperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
+  r"""A GoogleCloudSaasacceleratorManagementProvidersV1Instance object.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current lifecycle state of the resource
+      (e.g. if it's being created or ready to use).
+
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user provided
+      metadata. Each label is a key-value pair, where both the key and the
+      value are arbitrary strings provided by the user.
+    MaintenancePolicyNamesValue: The MaintenancePolicies that have been
+      attached to the instance. The key must be of the type name of the oneof
+      policy name defined in MaintenancePolicy, and the referenced policy must
+      define the same policy type. For complete details of MaintenancePolicy,
+      please refer to go/cloud-saas-mw-ug.
+    MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
+      information of published maintenance schedule.
+    ProducerMetadataValue: Output only. Custom string attributes used
+      primarily to expose producer-specific information in monitoring
+      dashboards. See go/get-instance-metadata.
+    SoftwareVersionsValue: Software versions that are used to deploy this
+      instance. This can be mutated by rollout services.
+
+  Fields:
+    consumerDefinedName: consumer_defined_name is the name that is set by the
+      consumer. On the other hand Name field represents system-assigned id of
+      an instance so consumers are not necessarily aware of it.
+      consumer_defined_name is used for notification/UI purposes for consumer
+      to recognize their instances.
+    createTime: Output only. Timestamp when the resource was created.
+    labels: Optional. Resource labels to represent user provided metadata.
+      Each label is a key-value pair, where both the key and the value are
+      arbitrary strings provided by the user.
+    maintenancePolicyNames: The MaintenancePolicies that have been attached to
+      the instance. The key must be of the type name of the oneof policy name
+      defined in MaintenancePolicy, and the referenced policy must define the
+      same policy type. For complete details of MaintenancePolicy, please
+      refer to go/cloud-saas-mw-ug.
+    maintenanceSchedules: The MaintenanceSchedule contains the scheduling
+      information of published maintenance schedule.
+    maintenanceSettings: Optional. The MaintenanceSettings associated with
+      instance.
+    name: Unique name of the resource. It uses the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+    producerMetadata: Output only. Custom string attributes used primarily to
+      expose producer-specific information in monitoring dashboards. See
+      go/get-instance-metadata.
+    provisionedResources: Output only. The list of data plane resources
+      provisioned for this instance, e.g. compute VMs. See go/get-instance-
+      metadata.
+    slmInstanceTemplate: Link to the SLM instance template. Only populated
+      when updating SLM instances via SSA's Actuation service adaptor. Service
+      producers with custom control plane (e.g. Cloud SQL) doesn't need to
+      populate this field. Instead they should use software_versions.
+    sloMetadata: Output only. SLO metadata for instance classification in the
+      Standardized dataplane SLO platform. See go/cloud-ssa-standard-slo for
+      feature description.
+    softwareVersions: Software versions that are used to deploy this instance.
+      This can be mutated by rollout services.
+    state: Output only. Current lifecycle state of the resource (e.g. if it's
+      being created or ready to use).
+    tenantProjectId: Output only. ID of the associated GCP tenant project. See
+      go/get-instance-metadata.
+    updateTime: Output only. Timestamp when the resource was last modified.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current lifecycle state of the resource (e.g. if it's
+    being created or ready to use).
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      CREATING: Instance is being created.
+      READY: Instance has been created and is ready to use.
+      UPDATING: Instance is being updated.
+      REPAIRING: Instance is unheathy and under repair.
+      DELETING: Instance is being deleted.
+      ERROR: Instance encountered an error and is in indeterministic state.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    UPDATING = 3
+    REPAIRING = 4
+    DELETING = 5
+    ERROR = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user provided metadata. Each
+    label is a key-value pair, where both the key and the value are arbitrary
+    strings provided by the user.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MaintenancePolicyNamesValue(_messages.Message):
+    r"""The MaintenancePolicies that have been attached to the instance. The
+    key must be of the type name of the oneof policy name defined in
+    MaintenancePolicy, and the referenced policy must define the same policy
+    type. For complete details of MaintenancePolicy, please refer to go/cloud-
+    saas-mw-ug.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        MaintenancePolicyNamesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MaintenancePolicyNamesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MaintenancePolicyNamesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MaintenanceSchedulesValue(_messages.Message):
+    r"""The MaintenanceSchedule contains the scheduling information of
+    published maintenance schedule.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        MaintenanceSchedulesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MaintenanceSchedulesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MaintenanceSchedulesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ProducerMetadataValue(_messages.Message):
+    r"""Output only. Custom string attributes used primarily to expose
+    producer-specific information in monitoring dashboards. See go/get-
+    instance-metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a ProducerMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ProducerMetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ProducerMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SoftwareVersionsValue(_messages.Message):
+    r"""Software versions that are used to deploy this instance. This can be
+    mutated by rollout services.
+
+    Messages:
+      AdditionalProperty: An additional property for a SoftwareVersionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        SoftwareVersionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SoftwareVersionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consumerDefinedName = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  maintenancePolicyNames = _messages.MessageField('MaintenancePolicyNamesValue', 4)
+  maintenanceSchedules = _messages.MessageField('MaintenanceSchedulesValue', 5)
+  maintenanceSettings = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings', 6)
+  name = _messages.StringField(7)
+  producerMetadata = _messages.MessageField('ProducerMetadataValue', 8)
+  provisionedResources = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource', 9, repeated=True)
+  slmInstanceTemplate = _messages.StringField(10)
+  sloMetadata = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata', 11)
+  softwareVersions = _messages.MessageField('SoftwareVersionsValue', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  tenantProjectId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule(_messages.Message):
+  r"""Maintenance schedule which is exposed to customer and potentially end
+  user, indicating published upcoming future maintenance schedule
+
+  Fields:
+    canReschedule: Can this scheduled update be rescheduled? By default, it's
+      true and API needs to do explicitly check whether it's set, if it's set
+      as false explicitly, it's false
+    endTime: The scheduled end time for the maintenance.
+    rolloutManagementPolicy: The rollout management policy this maintenance
+      schedule is associated with. When doing reschedule update request, the
+      reschedule should be against this given policy.
+    startTime: The scheduled start time for the maintenance.
+  """
+
+  canReschedule = _messages.BooleanField(1)
+  endTime = _messages.StringField(2)
+  rolloutManagementPolicy = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messages.Message):
+  r"""Maintenance settings associated with instance. Allows service producers
+  and end users to assign settings that controls maintenance on this instance.
+
+  Fields:
+    exclude: Optional. Exclude instance from maintenance. When true, rollout
+      service will not attempt maintenance on the instance. Rollout service
+      will include the instance in reported rollout progress as not attempted.
+  """
+
+  exclude = _messages.BooleanField(1)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.Message):
+  r"""Node information for custom per-node SLO implementations. SSA does not
+  support per-node SLO, but producers can populate per-node information in
+  SloMetadata for custom precomputations. SSA Eligibility Exporter will emit
+  per-node metric based on this information.
+
+  Fields:
+    exclusions: By default node is eligible if instance is eligible. But
+      individual node might be excluded from SLO by adding entry here. For
+      semantic see SloMetadata.exclusions. If both instance and node level
+      exclusions are present for time period, the node level's reason will be
+      reported by Eligibility Exporter.
+    location: The location of the node, if different from instance location.
+    nodeId: The id of the node. This should be equal to
+      SaasInstanceNode.node_id.
+  """
+
+  exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 1, repeated=True)
+  location = _messages.StringField(2)
+  nodeId = _messages.StringField(3)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource(_messages.Message):
+  r"""Describes provisioned dataplane resources.
+
+  Fields:
+    resourceType: Type of the resource. This can be either a GCP resource or a
+      custom one (e.g. another cloud provider's VM). For GCP compute resources
+      use singular form of the names listed in GCP compute API documentation
+      (https://cloud.google.com/compute/docs/reference/rest/v1/), prefixed
+      with 'compute-', for example: 'compute-instance', 'compute-disk',
+      'compute-autoscaler'.
+    resourceUrl: URL identifying the resource, e.g.
+      "https://www.googleapis.com/compute/v1/projects/...)".
+  """
+
+  resourceType = _messages.StringField(1)
+  resourceUrl = _messages.StringField(2)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility(_messages.Message):
+  r"""SloEligibility is a tuple containing eligibility value: true if an
+  instance is eligible for SLO calculation or false if it should be excluded
+  from all SLO-related calculations along with a user-defined reason.
+
+  Fields:
+    eligible: Whether an instance is eligible or ineligible.
+    reason: User-defined reason for the current value of instance eligibility.
+      Usually, this can be directly mapped to the internal state. An empty
+      reason is allowed.
+  """
+
+  eligible = _messages.BooleanField(1)
+  reason = _messages.StringField(2)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Message):
+  r"""SloExclusion represents an exclusion in SLI calculation applies to all
+  SLOs.
+
+  Fields:
+    duration: Exclusion duration. No restrictions on the possible values.
+      When an ongoing operation is taking longer than initially expected, an
+      existing entry in the exclusion list can be updated by extending the
+      duration. This is supported by the subsystem exporting eligibility data
+      as long as such extension is committed at least 10 minutes before the
+      original exclusion expiration - otherwise it is possible that there will
+      be "gaps" in the exclusion application in the exported timeseries.
+    reason: Human-readable reason for the exclusion. This should be a static
+      string (e.g. "Disruptive update in progress") and should not contain
+      dynamically generated data (e.g. instance name). Can be left empty.
+    sliName: Name of an SLI that this exclusion applies to. Can be left empty,
+      signaling that the instance should be excluded from all SLIs defined in
+      the service SLO configuration.
+    startTime: Start time of the exclusion. No alignment (e.g. to a full
+      minute) needed.
+  """
+
+  duration = _messages.StringField(1)
+  reason = _messages.StringField(2)
+  sliName = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+
+
+class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Message):
+  r"""SloMetadata contains resources required for proper SLO classification of
+  the instance.
+
+  Fields:
+    eligibility: Optional. User-defined instance eligibility.
+    exclusions: List of SLO exclusion windows. When multiple entries in the
+      list match (matching the exclusion time-window against current time
+      point) the exclusion reason used in the first matching entry will be
+      published.  It is not needed to include expired exclusion in this list,
+      as only the currently applicable exclusions are taken into account by
+      the eligibility exporting subsystem (the historical state of exclusions
+      will be reflected in the historically produced timeseries regardless of
+      the current state).  This field can be used to mark the instance as
+      temporary ineligible for the purpose of SLO calculation. For permanent
+      instance SLO exclusion, use of custom instance eligibility is
+      recommended. See 'eligibility' field below.
+    nodes: Optional. List of nodes. Some producers need to use per-node
+      metadata to calculate SLO. This field allows such producers to publish
+      per-node SLO meta data, which will be consumed by SSA Eligibility
+      Exporter and published in the form of per node metric to Monarch.
+    tier: Name of the SLO tier the Instance belongs to. This name will be
+      expected to match the tiers specified in the service SLO configuration.
+      Field is mandatory and must not be empty.
+  """
+
+  eligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility', 1)
+  exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 2, repeated=True)
+  nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 3, repeated=True)
+  tier = _messages.StringField(4)
+
+
 class ImportInstanceRequest(_messages.Message):
   r"""Request for Import.
 

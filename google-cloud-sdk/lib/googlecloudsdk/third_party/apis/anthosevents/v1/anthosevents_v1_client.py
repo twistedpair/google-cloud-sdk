@@ -36,12 +36,166 @@ class AnthoseventsV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.api_v1_namespaces_secrets = self.ApiV1NamespacesSecretsService(self)
     self.api_v1_namespaces = self.ApiV1NamespacesService(self)
     self.api_v1 = self.ApiV1Service(self)
     self.api = self.ApiService(self)
     self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
+    self.projects_locations_secrets = self.ProjectsLocationsSecretsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ApiV1NamespacesSecretsService(base_api.BaseApiService):
+    """Service class for the api_v1_namespaces_secrets resource."""
+
+    _NAME = 'api_v1_namespaces_secrets'
+
+    def __init__(self, client):
+      super(AnthoseventsV1.ApiV1NamespacesSecretsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new secret.
+
+      Args:
+        request: (AnthoseventsApiV1NamespacesSecretsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='api/v1/namespaces/{namespacesId}/secrets',
+        http_method='POST',
+        method_id='anthosevents.api.v1.namespaces.secrets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='api/v1/{+parent}/secrets',
+        request_field='secret',
+        request_type_name='AnthoseventsApiV1NamespacesSecretsCreateRequest',
+        response_type_name='Secret',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a secret.
+
+      Args:
+        request: (AnthoseventsApiV1NamespacesSecretsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='api/v1/namespaces/{namespacesId}/secrets/{secretsId}',
+        http_method='DELETE',
+        method_id='anthosevents.api.v1.namespaces.secrets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='api/v1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsApiV1NamespacesSecretsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a secret.
+
+      Args:
+        request: (AnthoseventsApiV1NamespacesSecretsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='api/v1/namespaces/{namespacesId}/secrets/{secretsId}',
+        http_method='GET',
+        method_id='anthosevents.api.v1.namespaces.secrets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='api/v1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsApiV1NamespacesSecretsGetRequest',
+        response_type_name='Secret',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list secrets.
+
+      Args:
+        request: (AnthoseventsApiV1NamespacesSecretsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSecretsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='api/v1/namespaces/{namespacesId}/secrets',
+        http_method='GET',
+        method_id='anthosevents.api.v1.namespaces.secrets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='api/v1/{+parent}/secrets',
+        request_field='',
+        request_type_name='AnthoseventsApiV1NamespacesSecretsListRequest',
+        response_type_name='ListSecretsResponse',
+        supports_download=False,
+    )
+
+    def ReplaceSecret(self, request, global_params=None):
+      r"""Rpc to replace a secret.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (AnthoseventsApiV1NamespacesSecretsReplaceSecretRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceSecret')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceSecret.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='api/v1/namespaces/{namespacesId}/secrets/{secretsId}',
+        http_method='PUT',
+        method_id='anthosevents.api.v1.namespaces.secrets.replaceSecret',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='api/v1/{+name}',
+        request_field='secret',
+        request_type_name='AnthoseventsApiV1NamespacesSecretsReplaceSecretRequest',
+        response_type_name='Secret',
+        supports_download=False,
+    )
 
   class ApiV1NamespacesService(base_api.BaseApiService):
     """Service class for the api_v1_namespaces resource."""
@@ -402,6 +556,158 @@ class AnthoseventsV1(base_api.BaseApiClient):
         request_field='namespace',
         request_type_name='AnthoseventsProjectsLocationsNamespacesReplaceNamespaceRequest',
         response_type_name='Namespace',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSecretsService(base_api.BaseApiService):
+    """Service class for the projects_locations_secrets resource."""
+
+    _NAME = 'projects_locations_secrets'
+
+    def __init__(self, client):
+      super(AnthoseventsV1.ProjectsLocationsSecretsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new secret.
+
+      Args:
+        request: (AnthoseventsProjectsLocationsSecretsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/secrets',
+        http_method='POST',
+        method_id='anthosevents.projects.locations.secrets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/secrets',
+        request_field='secret',
+        request_type_name='AnthoseventsProjectsLocationsSecretsCreateRequest',
+        response_type_name='Secret',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a secret.
+
+      Args:
+        request: (AnthoseventsProjectsLocationsSecretsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}',
+        http_method='DELETE',
+        method_id='anthosevents.projects.locations.secrets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsProjectsLocationsSecretsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a secret.
+
+      Args:
+        request: (AnthoseventsProjectsLocationsSecretsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}',
+        http_method='GET',
+        method_id='anthosevents.projects.locations.secrets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsProjectsLocationsSecretsGetRequest',
+        response_type_name='Secret',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list secrets.
+
+      Args:
+        request: (AnthoseventsProjectsLocationsSecretsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSecretsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/secrets',
+        http_method='GET',
+        method_id='anthosevents.projects.locations.secrets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='v1/{+parent}/secrets',
+        request_field='',
+        request_type_name='AnthoseventsProjectsLocationsSecretsListRequest',
+        response_type_name='ListSecretsResponse',
+        supports_download=False,
+    )
+
+    def ReplaceSecret(self, request, global_params=None):
+      r"""Rpc to replace a secret.
+
+Only the spec and metadata labels and annotations are modifiable. After
+the Update request, Cloud Run will work to make the 'status'
+match the requested 'spec'.
+
+May provide metadata.resourceVersion to enforce update from last read for
+optimistic concurrency control.
+
+      Args:
+        request: (AnthoseventsProjectsLocationsSecretsReplaceSecretRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Secret) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceSecret')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceSecret.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}',
+        http_method='PUT',
+        method_id='anthosevents.projects.locations.secrets.replaceSecret',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='secret',
+        request_type_name='AnthoseventsProjectsLocationsSecretsReplaceSecretRequest',
+        response_type_name='Secret',
         supports_download=False,
     )
 

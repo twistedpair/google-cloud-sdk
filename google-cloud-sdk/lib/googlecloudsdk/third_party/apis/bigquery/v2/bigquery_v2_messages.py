@@ -2683,6 +2683,19 @@ class ScriptStatistics(_messages.Message):
   stackFrames = _messages.MessageField('ScriptStackFrame', 2, repeated=True)
 
 
+class SnapshotDefinition(_messages.Message):
+  r"""A SnapshotDefinition object.
+
+  Fields:
+    baseTableReference: [Required] Reference describing the ID of the table
+      that is snapshotted.
+    snapshotTime: [Required] The time at which the base table was snapshot.
+  """
+
+  baseTableReference = _messages.MessageField('TableReference', 1)
+  snapshotTime = _message_types.DateTimeField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2809,6 +2822,7 @@ class Table(_messages.Message):
     schema: [Optional] Describes the schema of this table.
     selfLink: [Output-only] A URL that can be used to access this resource
       again.
+    snapshotDefinition: [Output-only] Snapshot definition.
     streamingBuffer: [Output-only] Contains information regarding this table's
       streaming buffer, if one is present. This field will be absent if the
       table is not being streamed to or if there is no data in the streaming
@@ -2818,10 +2832,11 @@ class Table(_messages.Message):
       Only one of timePartitioning and rangePartitioning should be specified.
     type: [Output-only] Describes the table type. The following values are
       supported: TABLE: A normal BigQuery table. VIEW: A virtual table defined
-      by a SQL query. [TrustedTester] MATERIALIZED_VIEW: SQL query whose
-      result is persisted. EXTERNAL: A table that references data stored in an
-      external storage system, such as Google Cloud Storage. The default value
-      is TABLE.
+      by a SQL query. [TrustedTester] SNAPSHOT: An immutable, read-only table
+      that is a copy of another table. [TrustedTester] MATERIALIZED_VIEW: SQL
+      query whose result is persisted. EXTERNAL: A table that references data
+      stored in an external storage system, such as Google Cloud Storage. The
+      default value is TABLE.
     view: [Optional] The view definition.
   """
 
@@ -2877,11 +2892,12 @@ class Table(_messages.Message):
   requirePartitionFilter = _messages.BooleanField(21, default=False)
   schema = _messages.MessageField('TableSchema', 22)
   selfLink = _messages.StringField(23)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 24)
-  tableReference = _messages.MessageField('TableReference', 25)
-  timePartitioning = _messages.MessageField('TimePartitioning', 26)
-  type = _messages.StringField(27)
-  view = _messages.MessageField('ViewDefinition', 28)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 24)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 25)
+  tableReference = _messages.MessageField('TableReference', 26)
+  timePartitioning = _messages.MessageField('TimePartitioning', 27)
+  type = _messages.StringField(28)
+  view = _messages.MessageField('ViewDefinition', 29)
 
 
 class TableCell(_messages.Message):

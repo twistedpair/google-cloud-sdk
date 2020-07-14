@@ -33,6 +33,53 @@ def MakeReservations(args, messages, holder):
     return []
 
 
+def MakeUpdateReservations(args, messages):
+  if args.IsSpecified('reservations_from_file'):
+    return _MakeReservationsFromFile(messages, args)
+  elif args.IsSpecified('source_reservation'):
+    return MakeSourceDestReservations(args, messages)
+  else:
+    return []
+
+
+def MakeSourceDestReservations(args, messages):
+  """Return messages required for update-reservations command."""
+  source_msg = ReservationArgToMessage('source_reservation',
+                                       'source_accelerator',
+                                       'source_local_ssd',
+                                       args,
+                                       messages)
+  destination_msg = ReservationArgToMessage('dest_reservation',
+                                            'dest_accelerator',
+                                            'dest_local_ssd',
+                                            args,
+                                            messages)
+  return [source_msg, destination_msg]
+
+
+def ReservationArgToMessage(reservation, accelerator, local_ssd,
+                            args, messages):
+  """Convert single reservation argument into a message."""
+  accelerators = util.MakeGuestAccelerators(messages,
+                                            getattr(args, accelerator,
+                                                    None))
+  local_ssds = util.MakeLocalSsds(messages, getattr(args, local_ssd,
+                                                    None))
+  reservation = getattr(args, reservation, None)
+  specific_allocation = util.MakeSpecificSKUReservationMessage(
+      messages, reservation.get('vm-count', None),
+      accelerators, local_ssds,
+      reservation.get('machine-type', None),
+      reservation.get('min-cpu-platform', None))
+  a_msg = util.MakeReservationMessage(
+      messages, reservation.get('reservation', None),
+      specific_allocation,
+      reservation.get('require-specific-reservation', None),
+      reservation.get('reservation-zone', None))
+
+  return a_msg
+
+
 def _MakeReservationsFromFile(messages, args):
   reservations_yaml = yaml.load(args.reservations_from_file)
   return _ConvertYAMLToMessage(messages, reservations_yaml)

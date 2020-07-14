@@ -685,6 +685,31 @@ class GoogleCloudMlV1ExplanationOutput(_messages.Message):
   outputBigqueryTable = _messages.StringField(4)
 
 
+class GoogleCloudMlV1FeatureNoiseSigma(_messages.Message):
+  r"""Noise sigma by features. Noise sigma represents the standard deviation
+  of the gaussian kernel that will be used to add noise to interpolated inputs
+  prior to computing gradients.
+
+  Fields:
+    noiseSigma: Noise sigma per feature. No noise is added to features that
+      are not set.
+  """
+
+  noiseSigma = _messages.MessageField('GoogleCloudMlV1FeatureNoiseSigmaNoiseSigmaForFeature', 1, repeated=True)
+
+
+class GoogleCloudMlV1FeatureNoiseSigmaNoiseSigmaForFeature(_messages.Message):
+  r"""Noise sigma for a single feature.
+
+  Fields:
+    name: The name of the input feature for which noise sigma is provided.
+    sigma: Standard deviation of gaussian kernel for noise.
+  """
+
+  name = _messages.StringField(1)
+  sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudMlV1GetConfigResponse(_messages.Message):
   r"""Returns service account information associated with a project.
 
@@ -895,9 +920,15 @@ class GoogleCloudMlV1IntegratedGradientsAttribution(_messages.Message):
     numIntegralSteps: Number of steps for approximating the path integral. A
       good value to start is 50 and gradually increase until the sum to diff
       property is met within the desired error range.
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients, see here for why:
+      https://arxiv.org/pdf/1706.03825.pdf
   """
 
   numIntegralSteps = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  smoothGradConfig = _messages.MessageField('GoogleCloudMlV1SmoothGradConfig', 2)
 
 
 class GoogleCloudMlV1Job(_messages.Message):
@@ -1934,6 +1965,28 @@ class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):
   r"""Request message for the SetDefaultVersion request."""
 
 
+class GoogleCloudMlV1SmoothGradConfig(_messages.Message):
+  r"""Config for SmoothGrad approximation of gradients. When enabled, the
+  gradients are approximated by averaging the gradients from noisy samples in
+  the vicinity of the inputs. Adding noise can help improve the computed
+  gradients. See here for why https://arxiv.org/pdf/1706.03825.pdf
+
+  Fields:
+    featureNoiseSigma: Alternatively, set this to use different noise_sigma
+      per feature. One entry per feature. No noise is added to features that
+      are not set.
+    noiseSigma: If set, this std. deviation will be used to apply noise to all
+      features.
+    noisySampleCount: The number of gradient samples to use for approximation.
+      The higher this number, the more accurate the gradient is, but the
+      runtime complexity of IG increases by this factor as well.
+  """
+
+  featureNoiseSigma = _messages.MessageField('GoogleCloudMlV1FeatureNoiseSigma', 1)
+  noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  noisySampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudMlV1StopTrialRequest(_messages.Message):
   r"""A GoogleCloudMlV1StopTrialRequest object."""
 
@@ -2359,14 +2412,14 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       options for training with TPUs](/ml-engine/docs/tensorflow/using-
       tpus#configuring_a_custom_tpu_machine).
     nasJobSpec: Optional. The spec of a Neural Architecture Search (NAS) job.
-    network: Optional. The full name of the Google Compute Engine
-      [network](/compute/docs/networks-and-firewalls#networks) to which the
-      Job is peered. For example, projects/12345/global/networks/myVPC. Format
-      is of the form projects/{project}/global/networks/{network}. Where
-      {project} is a project number, as in '12345', and {network} is network
-      name.".  Private services access must already be configured for the
-      network. If left unspecified, the Job is not peered with any network.
-      Learn more - Connecting Job to user network over private IP.
+    network: Optional. The full name of the [Compute Engine
+      network](/vpc/docs/vpc) to which the Job is peered. For example,
+      `projects/12345/global/networks/myVPC`. The format of this field is
+      `projects/{project}/global/networks/{network}`, where {project} is a
+      project number (like `12345`) and {network} is network name.  Private
+      services access must already be configured for the network. If left
+      unspecified, the Job is not peered with any network. [Learn about using
+      VPC Network Peering.](/ai-platform/training/docs/vpc-peering).
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
@@ -2919,9 +2972,15 @@ class GoogleCloudMlV1XraiAttribution(_messages.Message):
     numIntegralSteps: Number of steps for approximating the path integral. A
       good value to start is 50 and gradually increase until the sum to diff
       property is met within the desired error range.
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients, see here for why:
+      https://arxiv.org/pdf/1706.03825.pdf
   """
 
   numIntegralSteps = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  smoothGradConfig = _messages.MessageField('GoogleCloudMlV1SmoothGradConfig', 2)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

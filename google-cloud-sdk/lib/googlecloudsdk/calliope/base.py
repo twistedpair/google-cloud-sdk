@@ -65,6 +65,7 @@ SOLUTIONS_CATEGORY = 'Solutions'
 SERVERLESS_CATEGORY = 'Serverless'
 UNCATEGORIZED_CATEGORY = 'Other'
 IDENTITY_CATEGORY = 'Identity'
+COMMERCE_CATEGORY = 'Commerce'
 
 
 # Common markdown.

@@ -140,6 +140,27 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_ENVGROUPS = (
+      'organizations.envgroups',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/envgroups/{envgroupsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_ENVGROUPS_ATTACHMENTS = (
+      'organizations.envgroups.attachments',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/envgroups/{envgroupsId}/'
+              'attachments/{attachmentsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_ENVIRONMENTS = (
       'organizations.environments',
       '{+name}',
@@ -285,6 +306,27 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/environments/{environmentsId}/'
               'targetservers/{targetserversId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_INSTANCES = (
+      'organizations.instances',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/instances/{instancesId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_INSTANCES_ATTACHMENTS = (
+      'organizations.instances.attachments',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/instances/{instancesId}/'
+              'attachments/{attachmentsId}',
       },
       ['name'],
       True

@@ -573,8 +573,8 @@ class Device(_messages.Message):
     EncryptionStateValueValuesEnum: Output only. Device encryption state.
     ManagementStateValueValuesEnum: Output only. Management state of the
       device
-    OwnerTypeValueValuesEnum: Whether the device is owned by the company or an
-      individual
+    OwnerTypeValueValuesEnum: Output only. Whether the device is owned by the
+      company or an individual
 
   Fields:
     androidSpecificAttributes: Output only. Attributes specific to Android
@@ -613,7 +613,8 @@ class Device(_messages.Message):
       |ownership_privilege| is |PROFILE_OWNER| or |DEVICE_OWNER|. Does not
       include the account signed in to the device policy app if that account's
       domain has only one account. Examples: "com.example", "xyz.com".
-    ownerType: Whether the device is owned by the company or an individual
+    ownerType: Output only. Whether the device is owned by the company or an
+      individual
     releaseVersion: Output only. OS release version. Example: 6.0.
     securityPatchTime: Output only. OS security patch update time on device.
     serialNumber: Serial Number of device. Example: HT82V1A01076.
@@ -693,7 +694,8 @@ class Device(_messages.Message):
     WIPED = 6
 
   class OwnerTypeValueValuesEnum(_messages.Enum):
-    r"""Whether the device is owned by the company or an individual
+    r"""Output only. Whether the device is owned by the company or an
+    individual
 
     Values:
       DEVICE_OWNERSHIP_UNSPECIFIED: Default value. The value is unused.

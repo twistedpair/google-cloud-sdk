@@ -82,8 +82,8 @@ def FindOrSetItemInDict(item, item_path, item_sep='.', set_value=None):
   while parts:
     part = parts.pop()
     if part in context and yaml.dict_like(context):  # path element exists in
-                                                     # in context AND context
-                                                     # is dict() like.
+      # in context AND context
+      # is dict() like.
       if set_value and not parts:  # e.g. at bottom of path with a value to set
         context[part] = set_value
       context = context.get(part)  # continue down the path
@@ -196,6 +196,28 @@ class LoginConfigObject(YamlConfigObject):
   def version(self):
     return self[API_VERSION]
 
+  def _FindMatchingAuthMethod(self, method_name, method_type):
+    providers = self.GetAuthProviders(name_only=False)
+    found = [
+        x for x in providers
+        if x['name'] == method_name and x[method_type] is not None
+    ]
+    if found:  # return first matching item
+      return found.pop()
+    return None
+
+  def IsLdap(self):
+    """Returns true is the current preferredAuth Method is ldap."""
+    try:
+      auth_name = self.GetPreferredAuth()
+      found_auth = self._FindMatchingAuthMethod(auth_name, 'ldap')
+      if found_auth:
+        return True
+    except (YamlConfigObjectFieldError, KeyError):
+      pass  # Fall through to False return
+
+    return False
+
   def GetPreferredAuth(self):
     if self.version == AUTH_VERSION_2_ALPHA:
       return self[self.PREFERRED_AUTH_KEY]
@@ -214,14 +236,16 @@ class LoginConfigObject(YamlConfigObject):
                                        'requires config version [{}]'.format(
                                            AUTH_VERSION_2_ALPHA))
 
-  def GetAuthProviders(self):
+  def GetAuthProviders(self, name_only=True):
     try:
       providers = self[self.AUTH_PROVIDERS_KEY]
     except KeyError:
       return None
     if not providers:
       return None
-    return [provider['name'] for provider in providers]
+    if name_only:
+      return [provider['name'] for provider in providers]
+    return providers
 
 
 class YamlConfigFile(object):

@@ -590,7 +590,7 @@
           "format": "google-datetime"
         },
         "ownerType": {
-          "description": "Whether the device is owned by the company or an individual",
+          "description": "Output only. Whether the device is owned by the company or an individual",
           "enumDescriptions": [
             "Default value. The value is unused.",
             "Company owns the device.",

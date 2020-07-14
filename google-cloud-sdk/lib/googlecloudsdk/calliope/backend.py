@@ -728,10 +728,11 @@ class CommandGroup(CommandCommon):
       """Returns dictionary mapping specific to element type."""
       categorized_dict = collections.defaultdict(set)
       for element in elements.values():
-        if element.category:
-          categorized_dict[element.category].add(element)
-        else:
-          categorized_dict[base.UNCATEGORIZED_CATEGORY].add(element)
+        if not element.IsHidden():
+          if element.category:
+            categorized_dict[element.category].add(element)
+          else:
+            categorized_dict[base.UNCATEGORIZED_CATEGORY].add(element)
       return categorized_dict
 
     self.LoadAllSubElements()

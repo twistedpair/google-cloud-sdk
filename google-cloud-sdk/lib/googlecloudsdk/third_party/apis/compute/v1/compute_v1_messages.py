@@ -21667,12 +21667,33 @@ class FirewallList(_messages.Message):
 class FirewallLogConfig(_messages.Message):
   r"""The available logging options for a firewall rule.
 
+  Enums:
+    MetadataValueValuesEnum: This field can only be specified for a particular
+      firewall rule if logging is enabled for that rule. This field denotes
+      whether to include or exclude metadata for firewall logs.
+
   Fields:
     enable: This field denotes whether to enable logging for a particular
       firewall rule.
+    metadata: This field can only be specified for a particular firewall rule
+      if logging is enabled for that rule. This field denotes whether to
+      include or exclude metadata for firewall logs.
   """
 
+  class MetadataValueValuesEnum(_messages.Enum):
+    r"""This field can only be specified for a particular firewall rule if
+    logging is enabled for that rule. This field denotes whether to include or
+    exclude metadata for firewall logs.
+
+    Values:
+      EXCLUDE_ALL_METADATA: <no description>
+      INCLUDE_ALL_METADATA: <no description>
+    """
+    EXCLUDE_ALL_METADATA = 0
+    INCLUDE_ALL_METADATA = 1
+
   enable = _messages.BooleanField(1)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 2)
 
 
 class FixedOrPercent(_messages.Message):
@@ -22900,11 +22921,12 @@ class HealthCheck(_messages.Message):
   Health Check resources:  *
   [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) *
   [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)
-  Internal HTTP(S) load balancers use regional health checks. All other types
-  of GCP load balancers and managed instance group auto-healing use global
-  health checks. For more information, read Health Check Concepts.  To perform
-  health checks on network load balancers, you must use either
-  httpHealthChecks or httpsHealthChecks.
+  Internal HTTP(S) load balancers must use regional health checks. Internal
+  TCP/UDP load balancers can use either regional or global health checks. All
+  other types of GCP load balancers and managed instance group auto-healing
+  must use global health checks. For more information, read Health Check
+  Concepts.  To perform health checks on network load balancers, you must use
+  either httpHealthChecks or httpsHealthChecks.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -35287,6 +35309,7 @@ class Quota(_messages.Message):
       INTERCONNECT_ATTACHMENTS_TOTAL_MBPS: <no description>
       INTERCONNECT_TOTAL_GBPS: <no description>
       INTERNAL_ADDRESSES: <no description>
+      INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES: <no description>
       IN_PLACE_SNAPSHOTS: <no description>
       IN_USE_ADDRESSES: <no description>
       IN_USE_BACKUP_SCHEDULES: <no description>
@@ -35392,69 +35415,70 @@ class Quota(_messages.Message):
     INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 38
     INTERCONNECT_TOTAL_GBPS = 39
     INTERNAL_ADDRESSES = 40
-    IN_PLACE_SNAPSHOTS = 41
-    IN_USE_ADDRESSES = 42
-    IN_USE_BACKUP_SCHEDULES = 43
-    IN_USE_SNAPSHOT_SCHEDULES = 44
-    LOCAL_SSD_TOTAL_GB = 45
-    M1_CPUS = 46
-    M2_CPUS = 47
-    MACHINE_IMAGES = 48
-    N2D_CPUS = 49
-    N2_CPUS = 50
-    NETWORKS = 51
-    NETWORK_ENDPOINT_GROUPS = 52
-    NETWORK_FIREWALL_POLICIES = 53
-    NODE_GROUPS = 54
-    NODE_TEMPLATES = 55
-    NVIDIA_A100_GPUS = 56
-    NVIDIA_K80_GPUS = 57
-    NVIDIA_P100_GPUS = 58
-    NVIDIA_P100_VWS_GPUS = 59
-    NVIDIA_P4_GPUS = 60
-    NVIDIA_P4_VWS_GPUS = 61
-    NVIDIA_T4_GPUS = 62
-    NVIDIA_T4_VWS_GPUS = 63
-    NVIDIA_V100_GPUS = 64
-    PACKET_MIRRORINGS = 65
-    PREEMPTIBLE_CPUS = 66
-    PREEMPTIBLE_LOCAL_SSD_GB = 67
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 68
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 69
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 70
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 71
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 72
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 73
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 74
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 75
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 76
-    PUBLIC_ADVERTISED_PREFIXES = 77
-    PUBLIC_DELEGATED_PREFIXES = 78
-    REGIONAL_AUTOSCALERS = 79
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 80
-    RESERVATIONS = 81
-    RESOURCE_POLICIES = 82
-    ROUTERS = 83
-    ROUTES = 84
-    SECURITY_POLICIES = 85
-    SECURITY_POLICY_CEVAL_RULES = 86
-    SECURITY_POLICY_RULES = 87
-    SNAPSHOTS = 88
-    SSD_TOTAL_GB = 89
-    SSL_CERTIFICATES = 90
-    STATIC_ADDRESSES = 91
-    STATIC_BYOIP_ADDRESSES = 92
-    SUBNETWORKS = 93
-    TARGET_HTTPS_PROXIES = 94
-    TARGET_HTTP_PROXIES = 95
-    TARGET_INSTANCES = 96
-    TARGET_POOLS = 97
-    TARGET_SSL_PROXIES = 98
-    TARGET_TCP_PROXIES = 99
-    TARGET_VPN_GATEWAYS = 100
-    URL_MAPS = 101
-    VPN_GATEWAYS = 102
-    VPN_TUNNELS = 103
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 41
+    IN_PLACE_SNAPSHOTS = 42
+    IN_USE_ADDRESSES = 43
+    IN_USE_BACKUP_SCHEDULES = 44
+    IN_USE_SNAPSHOT_SCHEDULES = 45
+    LOCAL_SSD_TOTAL_GB = 46
+    M1_CPUS = 47
+    M2_CPUS = 48
+    MACHINE_IMAGES = 49
+    N2D_CPUS = 50
+    N2_CPUS = 51
+    NETWORKS = 52
+    NETWORK_ENDPOINT_GROUPS = 53
+    NETWORK_FIREWALL_POLICIES = 54
+    NODE_GROUPS = 55
+    NODE_TEMPLATES = 56
+    NVIDIA_A100_GPUS = 57
+    NVIDIA_K80_GPUS = 58
+    NVIDIA_P100_GPUS = 59
+    NVIDIA_P100_VWS_GPUS = 60
+    NVIDIA_P4_GPUS = 61
+    NVIDIA_P4_VWS_GPUS = 62
+    NVIDIA_T4_GPUS = 63
+    NVIDIA_T4_VWS_GPUS = 64
+    NVIDIA_V100_GPUS = 65
+    PACKET_MIRRORINGS = 66
+    PREEMPTIBLE_CPUS = 67
+    PREEMPTIBLE_LOCAL_SSD_GB = 68
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 69
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 70
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 71
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 72
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 73
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 74
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 75
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 76
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 77
+    PUBLIC_ADVERTISED_PREFIXES = 78
+    PUBLIC_DELEGATED_PREFIXES = 79
+    REGIONAL_AUTOSCALERS = 80
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 81
+    RESERVATIONS = 82
+    RESOURCE_POLICIES = 83
+    ROUTERS = 84
+    ROUTES = 85
+    SECURITY_POLICIES = 86
+    SECURITY_POLICY_CEVAL_RULES = 87
+    SECURITY_POLICY_RULES = 88
+    SNAPSHOTS = 89
+    SSD_TOTAL_GB = 90
+    SSL_CERTIFICATES = 91
+    STATIC_ADDRESSES = 92
+    STATIC_BYOIP_ADDRESSES = 93
+    SUBNETWORKS = 94
+    TARGET_HTTPS_PROXIES = 95
+    TARGET_HTTP_PROXIES = 96
+    TARGET_INSTANCES = 97
+    TARGET_POOLS = 98
+    TARGET_SSL_PROXIES = 99
+    TARGET_TCP_PROXIES = 100
+    TARGET_VPN_GATEWAYS = 101
+    URL_MAPS = 102
+    VPN_GATEWAYS = 103
+    VPN_TUNNELS = 104
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

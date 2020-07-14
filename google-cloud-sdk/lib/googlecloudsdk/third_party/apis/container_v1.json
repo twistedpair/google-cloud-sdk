@@ -470,6 +470,10 @@
           "description": "Sandbox configuration for this node.",
           "$ref": "SandboxConfig"
         },
+        "nodeGroup": {
+          "description": "Setting this field will assign instances of this\npool to run on the specified node group. This is useful for running\nworkloads on [sole tenant\nnodes](https:\/\/cloud.google.com\/compute\/docs\/nodes\/sole-tenant-nodes).",
+          "type": "string"
+        },
         "reservationAffinity": {
           "description": "The optional reservation affinity. Setting this field will apply\nthe specified [Zonal Compute\nReservation](https:\/\/cloud.google.com\/compute\/docs\/instances\/reserving-zonal-resources)\nto this node pool.",
           "$ref": "ReservationAffinity"

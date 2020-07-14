@@ -26,7 +26,7 @@ from googlecloudsdk.api_lib.compute.instances.ops_agents import exceptions
 from googlecloudsdk.api_lib.compute.instances.ops_agents import ops_agents_policy as agent_policy
 from googlecloudsdk.core import log
 
-_PINNED_MAJOR_VERSION_RE = re.compile(r'^\d+\.x\.x$')
+_PINNED_MAJOR_VERSION_RE = re.compile(r'^\d+\.\*\.\*$')
 _PINNED_VERSION_RE = re.compile(r'^\d+\.\d+\.\d+$')
 _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS: [
@@ -72,7 +72,7 @@ class AgentVersionInvalidFormatError(
         'The agent version [{}] is not allowed. Expected values: [latest], '
         '[current-major], or anything in the format of '
         '[MAJOR_VERSION.MINOR_VERSION.PATCH_VERSION] or '
-        '[MAJOR_VERSION.x.x].'.format(version))
+        '[MAJOR_VERSION.*.*].'.format(version))
 
 
 class AgentVersionAndEnableAutoupgradeConflictError(
@@ -215,7 +215,7 @@ def _ValidateAgentVersion(version):
     version: str. The version of agent. Allowed values:
       * "latest"
       * "current-major"
-      * "[MAJOR_VERSION].x.x"
+      * "[MAJOR_VERSION].*.*"
       * "[MAJOR_VERSION].[MINOR_VERSION].[PATCH_VERSION]"
 
   Returns:
@@ -242,7 +242,7 @@ def _ValidateAgentVersionAndEnableAutoupgrade(version, enable_autoupgrade):
   Args:
     version: str. The version of agent. Possible formats:
       * "latest"
-      * "[MAJOR_VERSION].x.x"
+      * "[MAJOR_VERSION].*.*"
       * "[MAJOR_VERSION].[MINOR_VERSION].[PATCH_VERSION]"
     enable_autoupgrade: bool. Whether autoupgrade is enabled.
 

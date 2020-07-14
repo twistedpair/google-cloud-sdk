@@ -375,11 +375,11 @@
           ]
         },
         "authentication": {
-          "description": "Optional. ",
+          "description": "Optional. [Deprecated] Use serverTlsPolicy and clientTlsPolicy instead.",
           "type": "string"
         },
-        "authorization": {
-          "description": "Optional. This field specifies the URL of Authorization resource that\napplies authorization policies to the inbound traffic at the\nmatched endpoints. Refer to Authorization. If this field is not\nspecified, authorization is disabled(no authz checks) for this\nendpoint.",
+        "authorizationPolicy": {
+          "description": "Optional. This field specifies the URL of AuthorizationPolicy resource that\napplies authorization policies to the inbound traffic at the\nmatched endpoints. Refer to Authorization. If this field is not\nspecified, authorization is disabled(no authz checks) for this\nendpoint.",
           "type": "string"
         },
         "httpFilters": {

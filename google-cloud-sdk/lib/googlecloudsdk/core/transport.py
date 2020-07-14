@@ -180,6 +180,13 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
         properties.VALUES.metrics.command_name.Get())
     handlers = [
         Handler(RecordStartTime(), ReportDuration()),
+        # TODO(b/160008076): The CLOUDSDK_USER_AGENT prefix may already be
+        # provided by the upper stack before the plan of b/160008076 is
+        # finished. The transport will not duplicate this string if this is the
+        # case. Update MaybePrependToHeader() to PrependToHeader() in the step 4
+        # of b/160008076.
+        # More details in the 'Plan of record' section of b/160008076.
+        Handler(MaybePrependToHeader('user-agent', config.CLOUDSDK_USER_AGENT)),
         Handler(AppendToHeader('user-agent', gcloud_ua))
     ]
 
@@ -298,6 +305,35 @@ def _EncodeHeader(header, value):
   if isinstance(value, six.text_type):
     value = value.encode('utf-8')
   return header, value
+
+
+def MaybePrependToHeader(header, value):
+  """Prepends the given value if the existing header does not start with it.
+
+  Args:
+    header: str, The name of the header to prepend to.
+    value: str, The value to prepend to the existing header value.
+
+  Returns:
+    A function that can be used in a Handler.request.
+  """
+  header, value = _EncodeHeader(header, value)
+
+  def _MaybePrependToHeader(request):
+    """Maybe prepends a value to a header on a request."""
+    headers = request.headers
+    current_value = b''
+    for hdr, v in six.iteritems(headers):
+      if hdr.lower() == header.lower():
+        current_value = v
+        del headers[hdr]
+        break
+
+    if not current_value.startswith(value):
+      current_value = (value + b' ' + current_value).strip()
+    headers[header] = current_value
+
+  return _MaybePrependToHeader
 
 
 def AppendToHeader(header, value):
