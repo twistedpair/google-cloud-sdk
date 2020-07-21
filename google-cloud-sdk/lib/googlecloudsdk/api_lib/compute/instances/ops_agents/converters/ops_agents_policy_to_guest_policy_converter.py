@@ -25,69 +25,91 @@ from googlecloudsdk.api_lib.compute.instances.ops_agents import ops_agents_polic
 
 
 class _PackageTemplates(
-    collections.namedtuple('_PackageTemplates',
-                           ('repo', 'install_with_version'))):
+    collections.namedtuple(
+        '_PackageTemplates',
+        ('repo', 'clear_prev_repo', 'install_with_version'))):
   pass
 
 
-class _AgentTemplates(
+class _AgentRuleTemplates(
     collections.namedtuple(
-        '_AgentTemplates',
+        '_AgentRuleTemplates',
         ('yum_package', 'apt_package', 'zypper_package', 'run_agent', 'repo_id',
          'display_name', 'recipe_name', 'current_major_version'))):
   pass
 
-
-_AGENT_TEMPLATES = {
+_EMPTY_SOFTWARE_RECIPE_SCRIPT = textwrap.dedent("""\
+    #!/bin/bash
+    echo 'Skipping as the package state is [removed].'""")
+_AGENT_RULE_TEMPLATES = {
     'logging':
-        _AgentTemplates(
+        _AgentRuleTemplates(
             yum_package=_PackageTemplates(
                 repo={
                     'all': 'google-cloud-logging-el%s-x86_64-all',
                     '1.*.*': 'google-cloud-logging-el%s-x86_64-1'
                 },
+                clear_prev_repo=(
+                    'sudo rm /etc/yum.repos.d/google-cloud-logging.repo'),
                 install_with_version=textwrap.dedent("""\
                     sudo yum remove google-fluentd
-                    sudo yum install -y 'google-fluentd%s'"""),
+                      sudo yum install -y 'google-fluentd%s'"""),
             ),
             zypper_package=_PackageTemplates(
                 repo={
                     'all': 'google-cloud-logging-sles%s-x86_64-all',
                     '1.*.*': 'google-cloud-logging-sles%s-x86_64-1'
                 },
+                clear_prev_repo=(
+                    'sudo rm /etc/zypp/repos.d/google-cloud-logging.repo'),
                 install_with_version=textwrap.dedent("""\
                     sudo zypper remove google-fluentd
-                    sudo zypper install -y 'google-fluentd%s'"""),
+                      sudo zypper install -y 'google-fluentd%s'"""),
             ),
             apt_package=_PackageTemplates(
                 repo={
                     'all': 'google-cloud-logging-%s-all',
                     '1.*.*': 'google-cloud-logging-%s-1'
                 },
+                clear_prev_repo=(
+                    'sudo rm /etc/apt/sources.list.d/google-cloud-logging.repo'
+                ),
                 install_with_version=textwrap.dedent("""\
                     sudo apt-get remove google-fluentd
-                    sudo apt-get install -y 'google-fluentd%s'"""),
+                      sudo apt-get install -y 'google-fluentd%s'"""),
             ),
             repo_id='google-cloud-logging',
             display_name='Google Cloud Logging Agent Repository',
             run_agent=textwrap.dedent("""\
                     #!/bin/bash
-                    sleep 5m
-                    %(install)s"""),
+                    %(clear_prev_repo)s
+                    for i in {1..5}; do
+                      %(install)s
+                      sudo service google-fluentd start
+                      sudo service google-fluentd status
+                      ret=$?
+                      if [ $ret -ne 0 ]; then
+                        sleep 1m
+                      else
+                        break
+                      fi
+                    done"""),
             recipe_name='set-google-fluentd-version',
             current_major_version='1.*.*',
         ),
     'metrics':
-        _AgentTemplates(
+        _AgentRuleTemplates(
             yum_package=_PackageTemplates(
                 repo={
                     'all': 'google-cloud-monitoring-el%s-x86_64-all',
                     '5.*.*': 'google-cloud-monitoring-el%s-x86_64-5',
                     '6.*.*': 'google-cloud-monitoring-el%s-x86_64-6'
                 },
+                clear_prev_repo=(
+                    'sudo rm /etc/yum.repos.d/google-cloud-monitoring.repo'),
                 install_with_version=textwrap.dedent("""\
                     sudo yum remove stackdriver-agent
-                    sudo yum install -y 'stackdriver-agent%s'"""),
+                      sudo yum install -y 'stackdriver-agent%s'"""),
             ),
             zypper_package=_PackageTemplates(
                 repo={
@@ -95,9 +117,11 @@ _AGENT_TEMPLATES = {
                     '5.*.*': 'google-cloud-monitoring-sles%s-x86_64-5',
                     '6.*.*': 'google-cloud-monitoring-sles%s-x86_64-6'
                 },
+                clear_prev_repo=(
+                    'sudo rm /etc/zypp/repos.d/google-cloud-monitoring.repo'),
                 install_with_version=textwrap.dedent("""\
                     sudo zypper remove stackdriver-agent
-                    sudo zypper install -y 'stackdriver-agent%s'"""),
+                      sudo zypper install -y 'stackdriver-agent%s'"""),
             ),
             apt_package=_PackageTemplates(
                 repo={
@@ -105,16 +129,30 @@ _AGENT_TEMPLATES = {
                     '5.*.*': 'google-cloud-monitoring-%s-5',
                     '6.*.*': 'google-cloud-monitoring-%s-6'
                 },
+                clear_prev_repo=(
+                    'sudo rm '
+                    '/etc/apt/sources.list.d/google-cloud-monitoring.repo'
+                ),
                 install_with_version=textwrap.dedent("""\
                     sudo apt-get remove stackdriver-agent
-                    sudo apt-get install -y 'stackdriver-agent%s'"""),
+                      sudo apt-get install -y 'stackdriver-agent%s'"""),
             ),
             repo_id='google-cloud-monitoring',
             display_name='Google Cloud Monitoring Agent Repository',
             run_agent=textwrap.dedent("""\
                     #!/bin/bash
-                    sleep 5m
-                    %(install)s"""),
+                    %(clear_prev_repo)s
+                    for i in {1..5}; do
+                      %(install)s
+                      sudo service stackdriver-agent start
+                      sudo service stackdriver-agent status
+                      ret=$?
+                      if [ $ret -ne 0 ]; then
+                        sleep 1m
+                      else
+                        break
+                      fi
+                    done"""),
             recipe_name='set-stackdriver-agent-version',
             current_major_version='6.*.*',
         ),
@@ -135,67 +173,73 @@ _SUSE_OS = ('sles-sap', 'sles')
 _APT_OS = ('debian', 'ubuntu')
 
 
-def _CreatePackages(messages, agents, os_type):
+def _CreatePackages(messages, agent_rules, os_type):
   """Create OS Agent guest policy packages from Ops Agent policy agent field."""
   packages = []
-  for agent in agents or []:
-    if agent.type is agent_policy.OpsAgentPolicy.Agent.Type.LOGGING:
+  for agent_rule in agent_rules or []:
+    if agent_rule.type is agent_policy.OpsAgentPolicy.AgentRule.Type.LOGGING:
       packages.append(
-          _CreatePackage(messages, 'google-fluentd', agent.package_state,
-                         agent.enable_autoupgrade))
+          _CreatePackage(messages, 'google-fluentd', agent_rule.package_state,
+                         agent_rule.enable_autoupgrade))
       packages.append(
           _CreatePackage(messages, 'google-fluentd-catch-all-config',
-                         agent.package_state, agent.enable_autoupgrade))
+                         agent_rule.package_state,
+                         agent_rule.enable_autoupgrade))
       # apt os will start the service automatically without the start-service.
       if os_type.short_name not in _APT_OS:
         packages.append(
             _CreatePackage(messages, 'google-fluentd-start-service',
-                           agent.package_state, agent.enable_autoupgrade))
+                           agent_rule.package_state,
+                           agent_rule.enable_autoupgrade))
 
-    if agent.type is agent_policy.OpsAgentPolicy.Agent.Type.METRICS:
+    if agent_rule.type is agent_policy.OpsAgentPolicy.AgentRule.Type.METRICS:
       packages.append(
-          _CreatePackage(messages, 'stackdriver-agent', agent.package_state,
-                         agent.enable_autoupgrade))
+          _CreatePackage(messages, 'stackdriver-agent',
+                         agent_rule.package_state,
+                         agent_rule.enable_autoupgrade))
       # apt os will start the service automatically without the start-service.
       if os_type.short_name not in _APT_OS:
         packages.append(
             _CreatePackage(messages, 'stackdriver-agent-start-service',
-                           agent.package_state, agent.enable_autoupgrade))
+                           agent_rule.package_state,
+                           agent_rule.enable_autoupgrade))
   return packages
 
 
-def _CreatePackage(messages, pkg_name, agent_pkg_state, agent_autoupgrade):
+def _CreatePackage(messages, package_name, package_state, enable_autoupgrade):
   """Creates package in guest policy.
 
   Args:
     messages: os config guest policy API messages.
-    pkg_name: package name.
-    agent_pkg_state: package states.
-    agent_autoupgrade: True or False.
+    package_name: package name.
+    package_state: package states.
+    enable_autoupgrade: True or False.
 
   Returns:
     package in guest policy.
   """
   states = messages.Package.DesiredStateValueValuesEnum
   desired_state = None
-  if agent_pkg_state is agent_policy.OpsAgentPolicy.Agent.PackageState.INSTALLED:
-    if agent_autoupgrade:
+  if (package_state
+      is agent_policy.OpsAgentPolicy.AgentRule.PackageState.INSTALLED):
+    if enable_autoupgrade:
       desired_state = states.UPDATED
     else:
       desired_state = states.INSTALLED
-  elif agent_pkg_state is agent_policy.OpsAgentPolicy.Agent.PackageState.REMOVED:
+  elif (package_state
+        is agent_policy.OpsAgentPolicy.AgentRule.PackageState.REMOVED):
     desired_state = states.REMOVED
-  return messages.Package(name=pkg_name, desiredState=desired_state)
+  return messages.Package(name=package_name, desiredState=desired_state)
 
 
-def _CreatePackageRepositories(messages, os_type, agents):
+def _CreatePackageRepositories(messages, os_type, agent_rules):
   """Create package repositories in guest policy.
 
   Args:
     messages: os config guest policy api messages.
     os_type: it contains os_version, os_shortname.
-    agents: list of agents which contains version, package_state, type of
-      {logging,metrics}.
+    agent_rules: list of agent rules which contains version, package_state, type
+      of {logging,metrics}.
 
   Returns:
     package repos in guest policy.
@@ -203,23 +247,23 @@ def _CreatePackageRepositories(messages, os_type, agents):
   package_repos = None
   if os_type.short_name in _APT_OS:
     package_repos = _CreateAptPkgRepos(
-        messages, _APT_CODENAMES.get(os_type.version), agents)
+        messages, _APT_CODENAMES.get(os_type.version), agent_rules)
   elif os_type.short_name in {'rhel', 'centos'}:
     version = os_type.version.split('.')[0]
     version = version.split('*')[0]
-    package_repos = _CreateYumPkgRepos(messages, version, agents)
+    package_repos = _CreateYumPkgRepos(messages, version, agent_rules)
   elif os_type.short_name in _SUSE_OS:
     version = os_type.version.split('.')[0]
     version = version.split('*')[0]
-    package_repos = _CreateZypperPkgRepos(messages, version, agents)
+    package_repos = _CreateZypperPkgRepos(messages, version, agent_rules)
   return package_repos
 
 
-def _CreateZypperPkgRepos(messages, repo_distro, agents):
+def _CreateZypperPkgRepos(messages, repo_distro, agent_rules):
   zypper_pkg_repos = []
-  for agent in agents:
-    template = _AGENT_TEMPLATES[agent.type]
-    repo_key = agent.version if '*.*' in agent.version else 'all'
+  for agent_rule in agent_rules:
+    template = _AGENT_RULE_TEMPLATES[agent_rule.type]
+    repo_key = agent_rule.version if '*.*' in agent_rule.version else 'all'
     repo_name = template.zypper_package.repo[repo_key] % repo_distro
     zypper_pkg_repos.append(
         _CreateZypperPkgRepo(messages, template.repo_id, template.display_name,
@@ -251,11 +295,11 @@ def _CreateZypperPkgRepo(messages, repo_id, display_name, repo_name):
           ]))
 
 
-def _CreateYumPkgRepos(messages, repo_distro, agents):
+def _CreateYumPkgRepos(messages, repo_distro, agent_rules):
   yum_pkg_repos = []
-  for agent in agents:
-    template = _AGENT_TEMPLATES[agent.type]
-    repo_key = agent.version if '*.*' in agent.version else 'all'
+  for agent_rule in agent_rules:
+    template = _AGENT_RULE_TEMPLATES[agent_rule.type]
+    repo_key = agent_rule.version if '*.*' in agent_rule.version else 'all'
     repo_name = template.yum_package.repo[repo_key] % repo_distro
     yum_pkg_repos.append(
         _CreateYumPkgRepo(messages, template.repo_id, template.display_name,
@@ -287,11 +331,11 @@ def _CreateYumPkgRepo(messages, repo_id, display_name, repo_name):
           ]))
 
 
-def _CreateAptPkgRepos(messages, repo_distro, agents):
+def _CreateAptPkgRepos(messages, repo_distro, agent_rules):
   apt_pkg_repos = []
-  for agent in agents or []:
-    repo_key = agent.version if '*.*' in agent.version else 'all'
-    repo_name = _AGENT_TEMPLATES[agent.type].apt_package.repo.get(
+  for agent_rule in agent_rules or []:
+    repo_key = agent_rule.version if '*.*' in agent_rule.version else 'all'
+    repo_name = _AGENT_RULE_TEMPLATES[agent_rule.type].apt_package.repo.get(
         repo_key) % repo_distro
     apt_pkg_repos.append(_CreateAptPkgRepo(messages, repo_name))
   return apt_pkg_repos
@@ -309,10 +353,10 @@ def _CreateAptPkgRepo(messages, repo_name):
   """
   return messages.PackageRepository(
       apt=messages.AptRepository(
-          uri='https://packages.cloud.google.com/apt',
+          uri='http://packages.cloud.google.com/apt',
           distribution=repo_name,
           components=['main'],
-          gpgKey='https://packages.cloud.google.com/apt/doc/apt-key.gpg'))
+          gpgKey='http://packages.cloud.google.com/apt/doc/apt-key.gpg'))
 
 
 def _CreateOstypes(messages, assignment_os_types):
@@ -360,136 +404,163 @@ def _CreateAssignment(messages, assignment_group_labels, assignment_os_types,
 
 def _GetRecipeVersion(prev_recipes, recipe_name):
   for recipe in prev_recipes or []:
-    if recipe.name == recipe_name:
+    if recipe.name.startswith(recipe_name):
       return str(int(recipe.version)+1)
   return '0'
 
 
-def _CreateRecipes(messages, agents, os_type, prev_recipes):
+def _CreateRecipes(messages, agent_rules, os_type, prev_recipes):
   """Create recipes in guest policy.
 
   Args:
     messages: os config guest policy api messages.
-    agents: ops agent policy agents.
+    agent_rules: ops agent policy agent rules.
     os_type: ops agent policy os_type.
-    prev_recipes: a list of SoftwareRecipe.
+    prev_recipes: a list of original SoftwareRecipe.
 
   Returns:
     Recipes in guest policy
   """
   recipes = []
-  for agent in agents or []:
-    recipes.append(
-        _CreateRecipe(messages, _CreateStepInScript(messages, agent, os_type),
-                      _AGENT_TEMPLATES[agent.type].recipe_name,
-                      _GetRecipeVersion(prev_recipes,
-                                        _AGENT_TEMPLATES[agent.type].recipe_name
-                                        )
-                      )
-        )
+  for agent_rule in agent_rules or []:
+    recipes.append(_CreateRecipe(messages, agent_rule, os_type, prev_recipes))
   return recipes
 
 
-def _CreateRecipe(messages, run_script, recipe_name, version):
+def _CreateRecipe(messages, agent_rule, os_type, prev_recipes):
+  """Create a recipe for one agent rule in guest policy.
+
+  Args:
+    messages: os config guest policy api messages.
+    agent_rule: ops agent policy agent rule.
+    os_type: ops agent policy os type.
+    prev_recipes: a list of original SoftwareRecipe.
+
+
+  Returns:
+    One software recipe in guest policy. If the package state is "removed", this
+    software recipe has an empty run script. We still keep the software recipe
+    to maintain versioning of the software recipe as the policy gets updated.
+  """
+  version = _GetRecipeVersion(
+      prev_recipes, _AGENT_RULE_TEMPLATES[agent_rule.type].recipe_name)
   return messages.SoftwareRecipe(
       desiredState=messages.SoftwareRecipe.DesiredStateValueValuesEnum.UPDATED,
-      installSteps=[run_script],
-      name=recipe_name,
+      installSteps=[_CreateStepInScript(messages, agent_rule, os_type)],
+      name='%s-%s' % (
+          _AGENT_RULE_TEMPLATES[agent_rule.type].recipe_name, version),
       version=version)
 
 
-def _CreateStepInScript(messages, agent, os_type):
+def _CreateStepInScript(messages, agent_rule, os_type):
   """Create scriptRun step in guest policy recipe section.
 
   Args:
     messages: os config guest policy api messages.
-    agent: logging or metrics agent.
+    agent_rule: logging or metrics agent rule.
     os_type: it contains os_version, os_short_name.
 
   Returns:
-    step of script to be ran in Recipe section.
+    Step of script to be run in Recipe section. If the package state is
+    "removed", this run script is empty. We still keep the software recipe to
+    maintain versioning of the software recipe as the policy gets updated.
   """
   step = messages.SoftwareRecipeStep()
   step.scriptRun = messages.SoftwareRecipeStepRunScript()
 
+  version_with_build = (
+      agent_rule.version
+      if '-' in agent_rule.version else agent_rule.version + '-1')
   if os_type.short_name in {'centos', 'rhel'}:
     os_version = os_type.version.split('.')[0]
-    if agent.version == 'latest':
+    if agent_rule.version == 'latest':
       agent_version = ''
-    elif '*.*' in agent.version:
-      agent_version = '-%s' % agent.version.replace('*.*', '*')
+    elif '*.*' in agent_rule.version:
+      agent_version = '-%s' % agent_rule.version.replace('*.*', '*')
     else:
-      agent_version = '-%s.el%s' % (agent.version, os_version)
-    run_script = _AGENT_TEMPLATES[
-        agent.type].yum_package.install_with_version % agent_version
+      agent_version = '-%s.el%s' % (version_with_build, os_version)
+    clear_prev_repo = _AGENT_RULE_TEMPLATES[
+        agent_rule.type].yum_package.clear_prev_repo
+    install_with_version = _AGENT_RULE_TEMPLATES[
+        agent_rule.type].yum_package.install_with_version % agent_version
   if os_type.short_name in _APT_OS:
-    if agent.version == 'latest':
+    if agent_rule.version == 'latest':
       agent_version = ''
-    elif '*.*' in agent.version:
-      agent_version = '=%s' % agent.version.replace('*.*', '*')
+    elif '*.*' in agent_rule.version:
+      agent_version = '=%s' % agent_rule.version.replace('*.*', '*')
     else:
-      agent_version = '=%s' % agent.version
-    run_script = _AGENT_TEMPLATES[
-        agent.type].apt_package.install_with_version % agent_version
+      agent_version = '=%s' % version_with_build
+    clear_prev_repo = _AGENT_RULE_TEMPLATES[
+        agent_rule.type].apt_package.clear_prev_repo
+    install_with_version = _AGENT_RULE_TEMPLATES[
+        agent_rule.type].apt_package.install_with_version % agent_version
   if os_type.short_name in _SUSE_OS:
-    if agent.version == 'latest':
+    if agent_rule.version == 'latest':
       agent_version = ''
-    elif '*.*' in agent.version:
-      agent_version = '<%s' % str(int(agent.version.split('.')[0])+1)+'.*'
+    elif '*.*' in agent_rule.version:
+      agent_version = '<%d.*' % (int(agent_rule.version.split('.')[0]) + 1)
     else:
-      agent_version = '=%s' % agent.version
-    run_script = _AGENT_TEMPLATES[
-        agent.type].zypper_package.install_with_version % agent_version
-  step.scriptRun.script = _AGENT_TEMPLATES[agent.type].run_agent % {
-      'install': run_script
-  }
+      agent_version = '=%s' % version_with_build
+    clear_prev_repo = _AGENT_RULE_TEMPLATES[
+        agent_rule.type].zypper_package.clear_prev_repo
+    install_with_version = _AGENT_RULE_TEMPLATES[
+        agent_rule.type].zypper_package.install_with_version % agent_version
+  if (agent_rule.package_state
+      == agent_policy.OpsAgentPolicy.AgentRule.PackageState.REMOVED):
+    step.scriptRun.script = _EMPTY_SOFTWARE_RECIPE_SCRIPT
+  else:
+    step.scriptRun.script = _AGENT_RULE_TEMPLATES[agent_rule.type].run_agent % {
+        'install': install_with_version,
+        'clear_prev_repo': clear_prev_repo
+    }
   return step
 
 
-def _CreateDescription(agents, description):
+def _CreateDescription(agent_rules, description):
   """Create description in guest policy.
 
   Args:
-    agents: agents in ops agent policy.
+    agent_rules: agent rules in ops agent policy.
     description: description in ops agent policy.
 
   Returns:
     description in guest policy.
   """
-  description_template = ('{"type": "ops-agents","description": "%s","agents": '
-                          '[%s]}')
+  description_template = ('{"type": "ops-agents", "description": "%s", '
+                          '"agentRules": [%s]}')
 
-  agent_contents = [agent.ToJson() for agent in agents or []]
+  agent_contents = [agent_rule.ToJson() for agent_rule in agent_rules or []]
 
   return description_template % (description, ','.join(agent_contents))
 
 
-def _SetAgentVersion(agents):
-  for agent in agents or []:
-    if agent.version in {'current-major', None, ''}:
-      agent.version = _AGENT_TEMPLATES[agent.type].current_major_version
+def _SetAgentVersion(agent_rules):
+  for agent_rule in agent_rules or []:
+    if agent_rule.version in {'current-major', None, ''}:
+      agent_rule.version = _AGENT_RULE_TEMPLATES[
+          agent_rule.type].current_major_version
 
 
 def ConvertOpsAgentPolicyToGuestPolicy(messages, ops_agents_policy,
                                        prev_recipes=None):
   """Converts Ops Agent policy to OS Config guest policy."""
   ops_agents_policy_assignment = ops_agents_policy.assignment
-  _SetAgentVersion(ops_agents_policy.agents)
+  _SetAgentVersion(ops_agents_policy.agent_rules)
   # TODO(b/159365920): once os config supports multi repos, remove indexing [0].
   guest_policy = messages.GuestPolicy(
-      description=_CreateDescription(ops_agents_policy.agents,
+      description=_CreateDescription(ops_agents_policy.agent_rules,
                                      ops_agents_policy.description),
       assignment=_CreateAssignment(messages,
                                    ops_agents_policy_assignment.group_labels,
                                    ops_agents_policy_assignment.os_types,
                                    ops_agents_policy_assignment.zones,
                                    ops_agents_policy_assignment.instances),
-      packages=_CreatePackages(messages, ops_agents_policy.agents,
+      packages=_CreatePackages(messages, ops_agents_policy.agent_rules,
                                ops_agents_policy_assignment.os_types[0]),
       packageRepositories=_CreatePackageRepositories(
           messages, ops_agents_policy_assignment.os_types[0],
-          ops_agents_policy.agents),
-      recipes=_CreateRecipes(messages, ops_agents_policy.agents,
+          ops_agents_policy.agent_rules),
+      recipes=_CreateRecipes(messages, ops_agents_policy.agent_rules,
                              ops_agents_policy.assignment.os_types[0],
                              prev_recipes))
 

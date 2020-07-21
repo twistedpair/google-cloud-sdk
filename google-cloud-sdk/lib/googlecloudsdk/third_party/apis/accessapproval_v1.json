@@ -439,7 +439,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter on the type of approval requests to retrieve. Must be one of the\nfollowing values:\n<ol>\n  <li>[not set]: Requests that are pending or have active approvals.<\/li>\n  <li>ALL: All requests.<\/li>\n  <li>PENDING: Only pending requests.<\/li>\n  <li>ACTIVE: Only active (i.e. currently approved) requests.<\/li>\n  <li>DISMISSED: Only dismissed (including expired) requests.<\/li>\n<\/ol>",
+                  "description": "A filter on the type of approval requests to retrieve. Must be one of the\nfollowing values:\n<ol>\n  <li>[not set]: Requests that are pending or have active approvals.<\/li>\n  <li>ALL: All requests.<\/li>\n  <li>PENDING: Only pending requests.<\/li>\n  <li>ACTIVE: Only active (i.e. currently approved) requests.<\/li>\n  <li>DISMISSED: Only dismissed (including expired) requests.<\/li>\n  <li>HISTORY: Active and dismissed (including expired) requests.<\/li>\n<\/ol>",
                   "location": "query",
                   "type": "string"
                 },
@@ -656,7 +656,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter on the type of approval requests to retrieve. Must be one of the\nfollowing values:\n<ol>\n  <li>[not set]: Requests that are pending or have active approvals.<\/li>\n  <li>ALL: All requests.<\/li>\n  <li>PENDING: Only pending requests.<\/li>\n  <li>ACTIVE: Only active (i.e. currently approved) requests.<\/li>\n  <li>DISMISSED: Only dismissed (including expired) requests.<\/li>\n<\/ol>",
+                  "description": "A filter on the type of approval requests to retrieve. Must be one of the\nfollowing values:\n<ol>\n  <li>[not set]: Requests that are pending or have active approvals.<\/li>\n  <li>ALL: All requests.<\/li>\n  <li>PENDING: Only pending requests.<\/li>\n  <li>ACTIVE: Only active (i.e. currently approved) requests.<\/li>\n  <li>DISMISSED: Only dismissed (including expired) requests.<\/li>\n  <li>HISTORY: Active and dismissed (including expired) requests.<\/li>\n<\/ol>",
                   "location": "query",
                   "type": "string"
                 },
@@ -873,7 +873,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "A filter on the type of approval requests to retrieve. Must be one of the\nfollowing values:\n<ol>\n  <li>[not set]: Requests that are pending or have active approvals.<\/li>\n  <li>ALL: All requests.<\/li>\n  <li>PENDING: Only pending requests.<\/li>\n  <li>ACTIVE: Only active (i.e. currently approved) requests.<\/li>\n  <li>DISMISSED: Only dismissed (including expired) requests.<\/li>\n<\/ol>",
+                  "description": "A filter on the type of approval requests to retrieve. Must be one of the\nfollowing values:\n<ol>\n  <li>[not set]: Requests that are pending or have active approvals.<\/li>\n  <li>ALL: All requests.<\/li>\n  <li>PENDING: Only pending requests.<\/li>\n  <li>ACTIVE: Only active (i.e. currently approved) requests.<\/li>\n  <li>DISMISSED: Only dismissed (including expired) requests.<\/li>\n  <li>HISTORY: Active and dismissed (including expired) requests.<\/li>\n<\/ol>",
                   "location": "query",
                   "type": "string"
                 },

@@ -17,6 +17,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import exceptions
@@ -36,16 +37,24 @@ def CommonFlags(parser):
       help='Build with a given Cloud Native Computing Foundation Buildpack '
       'builder.')
 
+  builder_group.add_argument(
+      '--appengine',
+      action='store_true',
+      default=False,
+      help='Build with a Cloud Native Computing Foundation Buildpack builder '
+      'selected from gcr.io/gae-runtimes/buildpacks, according to the App '
+      'Engine runtime specified in app.yaml.')
+
   parser.add_argument(
       '--service-name', required=False, help='Name of the service.')
 
   parser.add_argument(
-      '--image-name', required=False, help='Name for the built docker image.')
+      '--image', required=False, help='Name for the built image.')
 
   parser.add_argument(
-      '--build-context-directory',
-      help='If set, use this as the context directory when building the '
-      'container image. If not specified, the current directory is used.')
+      '--source',
+      help='The directory containing the source to build. '
+      'If not specified, the current directory is used.')
 
   credential_group = parser.add_mutually_exclusive_group(required=False)
   credential_group.add_argument(
@@ -74,13 +83,13 @@ def CommonFlags(parser):
       '<project>:<region>:<instance>.')
 
   parser.add_argument(
-      '--cpu-limit',
+      '--cpu',
       type=arg_parsers.BoundedFloat(lower_bound=0.0),
       help='Container CPU limit. Limit is expressed as a number of CPUs. '
       'Fractional CPU limits are allowed (e.g. 1.5).')
 
   parser.add_argument(
-      '--memory-limit',
+      '--memory',
       type=arg_parsers.BinarySize(default_unit='B'),
       help='Container memory limit. Limit is expressed either as an integer '
       'representing the number of bytes or an integer followed by a unit '
@@ -103,6 +112,59 @@ def CommonFlags(parser):
           key_type=six.text_type, value_type=six.text_type),
       help='Path to a local YAML file with definitions for all environment '
       'variables.')
+
+  # TODO(b/161154732): The following flags are deprecated and should be kept at
+  # the bottom. They have the same dest at the replacement flags, and
+  # moving them above their replacements may remove the new flags from the
+  # help text.
+
+  parser.add_argument(
+      '--image-name',
+      required=False,
+      help='Name for the built docker image.',
+      dest='image',
+      action=actions.DeprecationAction(
+          '--image-name',
+          warn='The {flag_name} option is deprecated; use --image instead.',
+          removed=False,
+      ))
+
+  parser.add_argument(
+      '--cpu-limit',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0),
+      help='Container CPU limit. Limit is expressed as a number of CPUs. '
+      'Fractional CPU limits are allowed (e.g. 1.5).',
+      dest='cpu',
+      action=actions.DeprecationAction(
+          '--cpu-limit',
+          warn='The {flag_name} option is deprecated; use --cpu instead.',
+          removed=False,
+      ))
+
+  parser.add_argument(
+      '--memory-limit',
+      type=arg_parsers.BinarySize(default_unit='B'),
+      help='Container memory limit. Limit is expressed either as an integer '
+      'representing the number of bytes or an integer followed by a unit '
+      'suffix. Valid unit suffixes are "B", "KB", "MB", "GB", "TB", "KiB", '
+      '"MiB", "GiB", "TiB", or "PiB".',
+      dest='memory',
+      action=actions.DeprecationAction(
+          '--memory-limit',
+          warn='The {flag_name} option is deprecated; use --memory instead.',
+          removed=False,
+      ))
+
+  parser.add_argument(
+      '--build-context-directory',
+      help='If set, use this as the context directory when building the '
+      'container image. If not specified, the current directory is used.',
+      dest='source',
+      action=actions.DeprecationAction(
+          '--build-context-directory',
+          warn='The {flag_name} option is deprecated; use --source instead.',
+          removed=False,
+      ))
 
 
 class InvalidFlagError(exceptions.Error):

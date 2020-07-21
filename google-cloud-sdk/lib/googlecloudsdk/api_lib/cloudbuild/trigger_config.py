@@ -60,6 +60,7 @@ def AddTriggerArgs(parser):
   # Trigger configuration
   flag_config = trigger_config.add_argument_group(
       help='Flag based trigger configuration')
+  flag_config.add_argument('--name', help='Build trigger name.')
   flag_config.add_argument('--description', help='Build trigger description.')
 
   return flag_config
@@ -85,6 +86,7 @@ def ParseTriggerArgs(args, messages):
     return trigger, True
 
   trigger = messages.BuildTrigger()
+  trigger.name = args.name
   trigger.description = args.description
   return trigger, False
 

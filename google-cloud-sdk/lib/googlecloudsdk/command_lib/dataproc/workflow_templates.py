@@ -54,8 +54,7 @@ def AddDagTimeoutFlag(parser, is_required):
           The duration for which a DAG of jobs can run before being
           auto-cancelled, such as "10m" or "16h".
           See $ gcloud topic datetimes for information on duration formats.
-          """,
-      hidden=True)
+          """)
 
 
 def CreateWorkflowTemplateOrderedJob(args, dataproc):

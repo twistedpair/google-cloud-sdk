@@ -518,8 +518,9 @@ class CreateClusterOptions(object):
       release_channel=None,
       notification_config=None,
       auto_gke=None,
+      private_ipv6_google_access_type=None,
+      enable_confidential_nodes=None,
   ):
-
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -642,6 +643,8 @@ class CreateClusterOptions(object):
     self.release_channel = release_channel
     self.notification_config = notification_config
     self.auto_gke = auto_gke
+    self.private_ipv6_google_access_type = private_ipv6_google_access_type
+    self.enable_confidential_nodes = enable_confidential_nodes
 
 
 class UpdateClusterOptions(object):
@@ -713,7 +716,8 @@ class UpdateClusterOptions(object):
                enable_master_global_access=None,
                enable_tpu_service_networking=None,
                enable_gvnic=None,
-               notification_config=None):
+               notification_config=None,
+               private_ipv6_google_access_type=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -781,6 +785,7 @@ class UpdateClusterOptions(object):
     self.enable_master_global_access = enable_master_global_access
     self.enable_gvnic = enable_gvnic
     self.notification_config = notification_config
+    self.private_ipv6_google_access_type = private_ipv6_google_access_type
 
 
 class SetMasterAuthOptions(object):
@@ -1314,6 +1319,10 @@ class APIAdapter(object):
       cluster.autogke = self.messages.AutoGKE()
       cluster.autogke.enabled = True
 
+    if options.enable_confidential_nodes:
+      cluster.confidentialNodes = self.messages.ConfidentialNodes(
+          enabled=options.enable_confidential_nodes)
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -1620,8 +1629,9 @@ class APIAdapter(object):
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
+        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
-            disabled=False)
+            disabled=False, loadBalancerType=load_balancer_type)
 
     if options.workload_pool:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
@@ -1991,9 +2001,10 @@ class APIAdapter(object):
 
     if options.disable_addons is not None:
       if options.disable_addons.get(CLOUDRUN) is not None:
+        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN)))
+                disabled=options.disable_addons.get(CLOUDRUN), loadBalancerType=load_balancer_type))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -2900,8 +2911,9 @@ class V1Beta1Adapter(V1Adapter):
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
+        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
-            disabled=False)
+            disabled=False, loadBalancerType=load_balancer_type)
       # CloudBuild is disabled by default.
       if CLOUDBUILD in options.addons:
         if not options.enable_stackdriver_kubernetes:
@@ -2960,6 +2972,27 @@ class V1Beta1Adapter(V1Adapter):
       else:
         cluster.ipAllocationPolicy.useRoutes = True
 
+    if options.datapath_provider is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      if options.datapath_provider.lower() == 'legacy':
+        cluster.networkConfig.datapathProvider = \
+            self.messages.NetworkConfig.DatapathProviderValueValuesEnum.LEGACY_DATAPATH
+      elif options.datapath_provider.lower() == 'advanced':
+        cluster.networkConfig.datapathProvider = \
+            self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
+      else:
+        raise util.Error(
+            DATAPATH_PROVIDER_ILL_SPECIFIED_ERROR_MSG.format(
+                provider=options.datapath_provider))
+
+    if options.private_ipv6_google_access_type is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.privateIpv6GoogleAccess = util.GetPrivateIpv6GoogleAccessTypeMapper(
+          self.messages,
+          hidden=True).GetEnumForChoice(options.private_ipv6_google_access_type)
+
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 
     req = self.messages.CreateClusterRequest(
@@ -3003,6 +3036,13 @@ class V1Beta1Adapter(V1Adapter):
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
               type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
 
+    if options.private_ipv6_google_access_type is not None:
+      update = self.messages.ClusterUpdate(
+          desiredPrivateIpv6GoogleAccess=util
+          .GetPrivateIpv6GoogleAccessTypeMapperForUpdate(
+              self.messages, hidden=True).GetEnumForChoice(
+                  options.private_ipv6_google_access_type))
+
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:
       update = self.messages.ClusterUpdate(desiredMaster=master)
@@ -3029,9 +3069,10 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
       if options.disable_addons.get(CLOUDRUN) is not None:
+        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN)))
+                disabled=options.disable_addons.get(CLOUDRUN), loadBalancerType=load_balancer_type))
       if options.disable_addons.get(APPLICATIONMANAGER) is not None:
         update.desiredAddonsConfig.kalmConfig = (
             self.messages.KalmConfig(
@@ -3332,12 +3373,20 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         raise util.Error(
             DATAPATH_PROVIDER_ILL_SPECIFIED_ERROR_MSG.format(
                 provider=options.datapath_provider))
+
     if not options.enable_ip_alias and options.enable_ip_alias is not None:
       if cluster.ipAllocationPolicy is None:
         cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy(
             useRoutes=True)
       else:
         cluster.ipAllocationPolicy.useRoutes = True
+
+    if options.private_ipv6_google_access_type is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.privateIpv6GoogleAccess = util.GetPrivateIpv6GoogleAccessTypeMapper(
+          self.messages,
+          hidden=True).GetEnumForChoice(options.private_ipv6_google_access_type)
 
     cluster.master = _GetMasterForClusterCreate(options, self.messages)
 
@@ -3397,6 +3446,13 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredClusterTelemetry=self.messages.ClusterTelemetry(
               type=self.messages.ClusterTelemetry.TypeValueValuesEnum.DISABLED))
+
+    if options.private_ipv6_google_access_type is not None:
+      update = self.messages.ClusterUpdate(
+          desiredPrivateIpv6GoogleAccess=util
+          .GetPrivateIpv6GoogleAccessTypeMapperForUpdate(
+              self.messages, hidden=True).GetEnumForChoice(
+                  options.private_ipv6_google_access_type))
 
     master = _GetMasterForClusterUpdate(options, self.messages)
     if master is not None:

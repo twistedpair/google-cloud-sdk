@@ -1173,8 +1173,6 @@ class Registry(object):
     self.registered_apis = collections.defaultdict(list)
 
 
-# TODO(b/35870654): Deglobalize this object, force gcloud to manage it on its
-# own.
 REGISTRY = Registry()
 
 

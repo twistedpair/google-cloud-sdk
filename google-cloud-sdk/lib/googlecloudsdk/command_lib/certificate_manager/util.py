@@ -26,6 +26,7 @@ from googlecloudsdk.core import resources
 
 _OPERATIONS_COLLECTION = 'certificatemanager.projects.locations.operations'
 _CERTIFICATE_MAPS_COLLECTION = 'certificatemanager.projects.locations.certificateMaps'
+_CERTIFICATE_MAP_ENTRIES_COLLECTION = 'certificatemanager.projects.locations.certificateMaps.certificateMapEntries'
 _CERTIFICATES_COLLECTION = 'certificatemanager.projects.locations.certificates'
 _PROJECT = lambda: properties.VALUES.core.project.Get(required=True)
 
@@ -54,6 +55,17 @@ def _ParseCertificateMap(certificate_map):
           'locationsId': 'global'
       },
       collection=_CERTIFICATE_MAPS_COLLECTION)
+
+
+def _ParseCertificateMapEntry(certificate_map_entry):
+  return _GetRegistry().Parse(
+      certificate_map_entry,
+      params={
+          'projectsId': _PROJECT,
+          'locationsId': 'global',
+          'certificateMapId': _CERTIFICATE_MAPS_COLLECTION,
+      },
+      collection=_CERTIFICATE_MAP_ENTRIES_COLLECTION)
 
 
 def _ParseCertificate(certificate):
@@ -89,6 +101,10 @@ def WaitForOperation(response, is_async=False):
 
 def CertificateMapUriFunc(resource):
   return _ParseCertificateMap(resource.name).SelfLink()
+
+
+def CertificateMapEntryUriFunc(resource):
+  return _ParseCertificateMapEntry(resource.name).SelfLink()
 
 
 def CertificateUriFunc(resource):

@@ -25,6 +25,7 @@ import os.path
 import re
 
 from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.auth import auth_util
 from googlecloudsdk.command_lib.code import yaml_helper
@@ -110,27 +111,39 @@ class DockerfileBuilder(DataObject):
   NAMES = ('dockerfile',)
 
 
+def _GaeBuilder(runtime):
+  """GCR package path for a builder that works on the given appengine runtime.
+
+  Args:
+    runtime: Name of a runtime from app.yaml, e.g. 'python38'.
+
+  Returns:
+    gcr.io image path.
+  """
+  return 'gcr.io/gae-runtimes/buildpacks/%s/builder:argo_current' % runtime
+
+
 class Settings(DataObject):
   """Settings for local development environments.
 
     Attributes:
       service_name: Name of the kuberntes service.
-      image_name: Docker image tag.
+      image: Docker image tag.
       credential: Credential setting for either service account or application
         default credential.
-      build_context_directory: Path to directory to use as the current working
+      context: Path to directory to use as the current working
         directory for the docker build.
       builder: Buildpack builder.
       local_port: Local port to which to forward the service connection.
       env_vars: Container environment variables.
       cloudsql_instances: Cloud SQL instances.
-      memory_limit: Memory limit.
-      cpu_limit: CPU limit.
+      memory: Memory limit.
+      cpu: CPU limit.
   """
 
-  NAMES = ('service_name', 'image_name', 'credential',
-           'build_context_directory', 'builder', 'local_port', 'env_vars',
-           'cloudsql_instances', 'memory_limit', 'cpu_limit')
+  NAMES = ('service_name', 'image', 'credential', 'context', 'builder',
+           'local_port', 'env_vars', 'cloudsql_instances', 'memory', 'cpu',
+           'namespace')
 
   @classmethod
   def FromArgs(cls, args):
@@ -143,15 +156,15 @@ class Settings(DataObject):
       dir_name = os.path.basename(files.GetCWD())
       service_name = dir_name.replace('_', '-')
 
-    if not args.IsSpecified('image_name'):
+    if not args.IsSpecified('image'):
       if project_name:
-        image_name = 'gcr.io/{project}/{service}'.format(
+        image = 'gcr.io/{project}/{service}'.format(
             project=project_name, service=service_name)
       else:
-        image_name = service_name
+        image = service_name
 
     else:
-      image_name = args.image_name
+      image = args.image
 
     if args.IsSpecified('application_default_credential'):
       credential = ApplicationDefaultCredentialSetting()
@@ -160,26 +173,34 @@ class Settings(DataObject):
     else:
       credential = None
 
-    context = os.path.abspath(args.build_context_directory or files.GetCWD())
+    context = os.path.abspath(args.source or files.GetCWD())
 
     builder = cls._CreateBuilder(args, context)
 
     return cls(
         service_name=service_name,
-        image_name=image_name,
+        image=image,
         credential=credential,
-        build_context_directory=context,
+        context=context,
         builder=builder,
         local_port=args.local_port,
         env_vars=args.env_vars or args.env_vars_file,
         cloudsql_instances=args.cloudsql_instances,
-        memory_limit=args.memory_limit,
-        cpu_limit=args.cpu_limit)
+        memory=args.memory,
+        cpu=args.cpu,
+        namespace=args.namespace if 'namespace' in args else None)
 
   @classmethod
   def _CreateBuilder(cls, args, context):
     if args.IsSpecified('builder'):
       return BuildpackBuilder(builder=args.builder)
+    elif args.IsSpecified('appengine'):
+      rel_path_to_app_yaml = os.path.relpath(os.path.join(context, 'app.yaml'))
+      # Undo __future__.unicode_literals so we get a str in py2:
+      app_yaml_str = six.ensure_str(rel_path_to_app_yaml)
+      service_config = yaml_parsing.ServiceYamlInfo.FromFile(app_yaml_str)
+      builder = _GaeBuilder(service_config.parsed.runtime)
+      return BuildpackBuilder(builder=builder)
     else:
       dockerfile = os.path.abspath(args.dockerfile)
       return DockerfileBuilder(
@@ -233,7 +254,8 @@ ports:
 def CreateDeployment(service_name,
                      image_name,
                      memory_limit=None,
-                     cpu_limit=None):
+                     cpu_limit=None,
+                     cpu_request=None):
   """Create a deployment specification for a service.
 
   Args:
@@ -241,6 +263,7 @@ def CreateDeployment(service_name,
     image_name: Image tag.
     memory_limit: Container memory limit.
     cpu_limit: Container cpu limit.
+    cpu_request: Container cpu request.
 
   Returns:
     Dictionary object representing the deployment yaml.
@@ -254,6 +277,9 @@ def CreateDeployment(service_name,
   if cpu_limit is not None:
     limits = yaml_helper.GetOrCreate(container, ('resources', 'limits'))
     limits['cpu'] = six.text_type(cpu_limit)
+  if cpu_request is not None:
+    requests = yaml_helper.GetOrCreate(container, ('resources', 'requests'))
+    requests['cpu'] = six.text_type(cpu_request)
   containers = yaml_helper.GetOrCreate(
       deployment, ('spec', 'template', 'spec', 'containers'), constructor=list)
   containers.append(container)
@@ -527,16 +553,19 @@ class AppContainerGenerator(KubeConfigGenerator):
                image_name,
                env_vars=None,
                memory_limit=None,
-               cpu_limit=None):
+               cpu_limit=None,
+               cpu_request=None):
     self._service_name = service_name
     self._image_name = image_name
     self._env_vars = env_vars
     self._memory_limit = memory_limit
     self._cpu_limit = cpu_limit
+    self._cpu_request = cpu_request
 
   def CreateConfigs(self):
     deployment = CreateDeployment(self._service_name, self._image_name,
-                                  self._memory_limit, self._cpu_limit)
+                                  self._memory_limit, self._cpu_limit,
+                                  self._cpu_request)
     default_env_vars = {
         'K_SERVICE': self._service_name,
         'K_CONFIGURATION': 'dev',

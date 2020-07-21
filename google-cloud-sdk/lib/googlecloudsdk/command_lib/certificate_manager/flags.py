@@ -35,6 +35,26 @@ def AddDescriptionFlagToParser(parser, resource_name):
       category=base.COMMONLY_USED_FLAGS).AddToParser(parser)
 
 
+def AddMapEntryMatcherFlagsToParser(parser):
+  """Adds flags defining certificate map entry matcher."""
+  is_primary_flag = base.Argument(
+      '--set-primary',
+      help='The certificate will be used as the default cert if no other certificate in the map matches on SNI.',
+      action='store_true')
+  hostname_flag = base.Argument(
+      '--hostname',
+      help='A domain name (FQDN), which controls when list of certificates specified in the resource will be taken under consideration for certificate selection.'
+  )
+  group = base.ArgumentGroup(
+      help='Arguments to configure matcher for the certificate map entry.',
+      required=True,
+      mutex=True,
+      category=base.COMMONLY_USED_FLAGS)
+  group.AddArgument(is_primary_flag)
+  group.AddArgument(hostname_flag)
+  group.AddToParser(parser)
+
+
 def AddSelfManagedCertificateDataFlagsToParser(parser, is_required):
   """Adds certificate file and private key file flags."""
   # If the group itself is not required, the command will fail if
@@ -58,3 +78,19 @@ def AddSelfManagedCertificateDataFlagsToParser(parser, is_required):
   group.AddArgument(cert_flag)
   group.AddArgument(key_flag)
   group.AddToParser(parser)
+
+
+def AddAttachedCertificatesFlagsToParser(parser):
+  """Adds flags describing certificate update without resource args."""
+  is_clear_certificates = base.Argument(
+      '--clear-certificates',
+      help='Removes all certificates from the entry',
+      action='store_true')
+
+  group = base.ArgumentGroup(
+      help='Arguments to update list of certificates attached to map entry.',
+      required=False,
+      mutex=True,
+      category=base.COMMONLY_USED_FLAGS)
+  group.AddArgument(is_clear_certificates)
+  return group.AddToParser(parser)

@@ -165,9 +165,12 @@ class Configuration(object):
     return cls(content, path)
 
 
-def DefaultAuthenticatedRegistries():
+def DefaultAuthenticatedRegistries(include_artifact_registry=False):
   """Return list of default gcloud credential helper registires."""
-  return constants.DEFAULT_REGISTRIES_TO_AUTHENTICATE
+  if include_artifact_registry:
+    return constants.DEFAULT_REGISTRIES_TO_AUTHENTICATE + constants.REGIONAL_AR_REGISTRIES
+  else:
+    return constants.DEFAULT_REGISTRIES_TO_AUTHENTICATE
 
 
 def SupportedRegistries():
@@ -198,7 +201,8 @@ def BuildOrderedCredentialHelperRegistries(registries):
   ])
 
 
-def GetGcloudCredentialHelperConfig(registries=None):
+def GetGcloudCredentialHelperConfig(registries=None,
+                                    include_artifact_registry=False):
   """Gets the credHelpers Docker config entry for gcloud supported registries.
 
   Returns a Docker configuration JSON entry that will register gcloud as the
@@ -207,12 +211,15 @@ def GetGcloudCredentialHelperConfig(registries=None):
   Args:
       registries: list, the registries to create the mappings for. If not
         supplied, will use DefaultAuthenticatedRegistries().
+      include_artifact_registry: bool, whether to include all Artifact Registry
+        domains as well as GCR domains registries when called with no list of
+        registries to add.
 
   Returns:
     The config used to register gcloud as the credential helper for all
     supported Docker registries.
   """
   registered_helpers = BuildOrderedCredentialHelperRegistries(
-      registries or DefaultAuthenticatedRegistries())
+      registries or DefaultAuthenticatedRegistries(include_artifact_registry))
 
   return {CREDENTIAL_HELPER_KEY: registered_helpers}

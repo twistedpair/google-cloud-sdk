@@ -35,21 +35,21 @@ def _CreateGroupLabels(policy_group_labels):
   return group_labels
 
 
-def _ExtractDescriptionAndAgents(guest_policy_description):
-  """Extract Ops Agents policy's description and agents.
+def _ExtractDescriptionAndAgentRules(guest_policy_description):
+  """Extract Ops Agents policy's description and agent rules.
 
-  Extract Ops Agents policy's description and agents from description of
+  Extract Ops Agents policy's description and agent rules from description of
   OS Config guest policy.
 
   Args:
     guest_policy_description: OS Config guest policy's description.
 
   Returns:
-    extracted description and agents for ops agents policy.
+    extracted description and agent rules for ops agents policy.
 
   Raises:
     BadArgumentException: If guest policy's description is illformed JSON
-    object, or if it does not have keys description or agents.
+    object, or if it does not have keys description or agentRules.
   """
 
   try:
@@ -68,36 +68,37 @@ def _ExtractDescriptionAndAgents(guest_policy_description):
     raise exceptions.BadArgumentException(
         'description.description', 'missing a required key description: %s' % e)
   try:
-    decoded_agents = decode_description['agents']
+    decoded_agent_rules = decode_description['agentRules']
   except KeyError as e:
     raise exceptions.BadArgumentException(
-        'description.agents', 'missing a required key agents: %s' %e)
+        'description.agentRules', 'missing a required key agentRules: %s' % e)
 
-  return (decoded_description, decoded_agents)
+  return (decoded_description, decoded_agent_rules)
 
 
-def _CreateAgents(agents):
-  """Create agents in ops agent policy.
+def _CreateAgentRules(agent_rules):
+  """Create agent rules in ops agent policy.
 
   Args:
-    agents: json objects.
+    agent_rules: json objects.
 
   Returns:
-    agents in ops agent policy.
+    agent rules in ops agent policy.
   """
-  ops_agents = []
+  ops_agent_rules = []
 
-  for agent in agents or []:
+  for agent_rule in agent_rules or []:
     try:
-      ops_agents.append(
-          agent_policy.OpsAgentPolicy.Agent(agent['type'], agent['version'],
-                                            agent['packageState'],
-                                            agent['enableAutoupgrade']))
+      ops_agent_rules.append(
+          agent_policy.OpsAgentPolicy.AgentRule(
+              agent_rule['type'], agent_rule['version'],
+              agent_rule['packageState'], agent_rule['enableAutoupgrade']))
     except KeyError as e:
       raise exceptions.BadArgumentException(
-          'description.agents',
-          'agent specification %s missing a required key: %s' % (agent, e))
-  return ops_agents
+          'description.agentRules',
+          'agent rule specification %s missing a required key: %s' % (
+              agent_rule, e))
+  return ops_agent_rules
 
 
 def _CreateAssignment(guest_policy_assignment):
@@ -122,9 +123,11 @@ def _CreateAssignment(guest_policy_assignment):
 
 
 def ConvertGuestPolicyToOpsAgentPolicy(guest_policy):
-  description, agents = _ExtractDescriptionAndAgents(guest_policy.description)
+  description, agent_rules = _ExtractDescriptionAndAgentRules(
+      guest_policy.description)
   ops_agent_policy = agent_policy.OpsAgentPolicy(
-      _CreateAssignment(guest_policy.assignment), _CreateAgents(agents),
+      _CreateAssignment(guest_policy.assignment),
+      _CreateAgentRules(agent_rules),
       description, guest_policy.etag, guest_policy.name,
       guest_policy.updateTime, guest_policy.createTime)
   return ops_agent_policy

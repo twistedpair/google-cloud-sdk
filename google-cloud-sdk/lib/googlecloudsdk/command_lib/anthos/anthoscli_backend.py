@@ -319,6 +319,10 @@ def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
       prompt_message = prompt_message + override_warning.format(auth_method)
     # do the prompting
     providers = cluster_config.GetAuthProviders()
+    if not providers:
+      raise AnthosAuthException(
+          'No Authentication Providers found in [{}]'.format(config_file))
+
     index = console_io.PromptChoice(providers,
                                     message=prompt_message,
                                     cancel_option=True)

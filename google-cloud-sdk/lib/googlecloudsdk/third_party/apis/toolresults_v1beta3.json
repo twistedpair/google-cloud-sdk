@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20200706",
+ "revision": "20200713",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -485,6 +485,10 @@
     "crashed": {
      "type": "boolean",
      "description": "If the failure was severe because the system (app) under test crashed."
+    },
+    "failedRoboscript": {
+     "type": "boolean",
+     "description": "If the Roboscript failed to complete successfully, e.g., because a Roboscript action or assertion failed or a Roboscript action could not be matched during the entire crawl."
     },
     "notInstalled": {
      "type": "boolean",

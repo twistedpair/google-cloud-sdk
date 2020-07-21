@@ -250,10 +250,9 @@ def AddSubscriptionSettingsFlags(parser,
         '--enable-message-ordering',
         action='store_true',
         default=None,
-        help="""Whether or not to receive messages with the same ordering key in
-            order. If true, messages with the same ordering key will by sent to
-            subscribers in the order in which they were received by Cloud
-            Pub/Sub.""")
+        help="""Whether to receive messages with the same ordering key in order.
+            If set, messages with the same ordering key are sent to subscribers
+            in the order that Pub/Sub receives them.""")
   if support_filtering and not is_update:
     parser.add_argument(
         '--message-filter',
@@ -370,9 +369,9 @@ def AddPublishMessageFlags(parser,
   if support_message_ordering:
     parser.add_argument(
         '--ordering-key',
-        help="""The key to use for ordering delivery to subscribers. All
-            messages with the same key will be sent to subcribers in the order
-            in which they were received by Cloud Pub/Sub.""")
+        help="""The key for ordering delivery to subscribers. All messages with
+            the same ordering key are sent to subscribers in the order that
+            Pub/Sub receives them.""")
 
 
 def ParseMessageBody(args):

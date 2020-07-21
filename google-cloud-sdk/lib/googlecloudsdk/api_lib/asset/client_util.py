@@ -43,7 +43,6 @@ V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
 V1P4BETA1_API_VERSION = 'v1p4beta1'
 V1P5ALPHA1_API_VERSION = 'v1p5alpha1'
 V1P5BETA1_API_VERSION = 'v1p5beta1'
-BASE_URL = 'https://cloudasset.googleapis.com'
 _HEADERS = {
     'Content-Type': 'application/x-www-form-urlencoded',
     'X-HTTP-Method-Override': 'GET'
@@ -120,8 +119,9 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
                           times.FormatDateTime(args.end_time))])
   parent = asset_utils.GetParentNameForGetHistory(args.organization,
                                                   args.project)
-  url = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
-                                 'batchGetAssetsHistory')
+  endpoint = apis.GetEffectiveApiEndpoint(API_NAME, api_version)
+  url = '{0}{1}/{2}:{3}'.format(endpoint, api_version, parent,
+                                'batchGetAssetsHistory')
   encoded_query_params = six.moves.urllib.parse.urlencode(query_params)
   response, raw_content = http_client.request(
       uri=url, headers=_HEADERS, method='POST', body=encoded_query_params)
@@ -193,8 +193,9 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
 
   parent = asset_utils.GetParentNameForAnalyzeIamPolicy(args.organization,
                                                         folder)
-  url = '{0}/{1}/{2}:{3}'.format(BASE_URL, api_version, parent,
-                                 'analyzeIamPolicy')
+  endpoint = apis.GetEffectiveApiEndpoint(API_NAME, api_version)
+  url = '{0}{1}/{2}:{3}'.format(endpoint, api_version, parent,
+                                'analyzeIamPolicy')
 
   params = []
   if args.IsSpecified('full_resource_name'):
@@ -422,6 +423,8 @@ class AssetFeedClient(object):
 class AssetSearchClient(object):
   """Client for search assets."""
 
+  _DEFAULT_PAGE_SIZE = 20
+
   def __init__(self, api_version):
     self.message_module = GetMessages(api_version)
     if api_version == V1P1BETA1_API_VERSION:
@@ -451,7 +454,7 @@ class AssetSearchClient(object):
         request,
         method=self.search_all_resources_method,
         field='results',
-        batch_size=args.page_size,
+        batch_size=args.page_size or self._DEFAULT_PAGE_SIZE,
         batch_size_attribute='pageSize',
         current_token_attribute='pageToken',
         next_token_attribute='nextPageToken')
@@ -465,7 +468,7 @@ class AssetSearchClient(object):
         request,
         method=self.search_all_iam_policies_method,
         field='results',
-        batch_size=args.page_size,
+        batch_size=args.page_size or self._DEFAULT_PAGE_SIZE,
         batch_size_attribute='pageSize',
         current_token_attribute='pageToken',
         next_token_attribute='nextPageToken')

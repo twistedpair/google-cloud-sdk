@@ -18,10 +18,24 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
 import threading
 
-GCS_PREFIX = 'gs'
-AWS_S3_PREFIX = 's3'
+
+class ProviderPrefix(enum.Enum):
+  """Prefix strings for cloud storage provider URLs."""
+  GCS = 'gs'
+  S3 = 's3'
+
+
+class FieldsScope(enum.Enum):
+  """Values used to determine fields and projection values for API calls."""
+  FULL = 1
+  NO_ACL = 2
+  SHORT = 3
+
+
+NUM_ITEMS_PER_LIST_PAGE = 1000
 
 # Module variable for holding one API instance per thread per provider.
 _cloud_api_thread_local_storage = threading.local()
@@ -34,19 +48,19 @@ def GetApi(provider):
   per thread per provider.
 
   Args:
-    provider (string): Cloud provider prefix (i.e. "gs").
+    provider (ProviderPrefix): Cloud provider prefix (i.e. "gs").
 
   Raises:
-     ValueError for invalid API providers.
+     ValueError: Recevied invalid API provider.
 
   Returns:
     API for cloud provider or None if unrecognized provider.
   """
   if getattr(_cloud_api_thread_local_storage, provider, None) is None:
-    if provider == GCS_PREFIX:
+    if provider == ProviderPrefix.GCS:
       # TODO(b/159164504): Update with implemented GCS API.
       _cloud_api_thread_local_storage.gs = CloudApi()
-    elif provider == AWS_S3_PREFIX:
+    elif provider == ProviderPrefix.S3:
       # TODO(b/159164385): Update with implemented S3 API.
       _cloud_api_thread_local_storage.s3 = CloudApi()
     else:
@@ -63,58 +77,49 @@ class CloudApi(object):
   a separate instance of the Cloud API should be instantiated per-thread.
   """
 
-  def ListBuckets(self, project_id=None, provider=None, fields_scope=None):
+  def ListBuckets(self, fields_scope=None):
     """Lists bucket metadata for the given project.
 
     Args:
-      project_id: Project owning the buckets, default from config if None.
-      provider: Cloud storage provider to connect to.  If not present,
-        class-wide default is used.
-      fields_scope: Determines the fields and projection parameters of API call.
+      fields_scope (FieldsScope): Determines the fields and projection
+          parameters of API call.
+
+    Yields:
+      Iterator over Bucket objects.
 
     Raises:
-      InvalidArgumentException for errors during input validation.
-      CloudProviderException for errors interacting with cloud storage
-      providers.
-
-    Returns:
-      Iterator over Bucket objects.
+      ValueError: Invalid fields_scope.
     """
-    raise NotImplementedError('ListBuckets must be overloaded')
+    raise NotImplementedError('ListBuckets must be overloaded.')
 
   def ListObjects(self,
                   bucket_name,
                   prefix=None,
                   delimiter=None,
                   all_versions=None,
-                  provider=None,
                   fields_scope=None):
     """Lists objects (with metadata) and prefixes in a bucket.
 
     Args:
-      bucket_name: Bucket containing the objects.
-      prefix: Prefix for directory-like behavior.
-      delimiter: Delimiter for directory-like behavior.
-      all_versions: If true, list all object versions.
-      provider: Cloud storage provider to connect to.  If not present,
-        class-wide default is used.
-      fields_scope: Determines the fields and projection parameters of API call.
+      bucket_name (string): Bucket containing the objects.
+      prefix (string): Prefix for directory-like behavior.
+      delimiter (string): Delimiter for directory-like behavior.
+      all_versions (boolean): If true, list all object versions.
+      fields_scope (FieldsScope): Determines the fields and projection
+          parameters of API call.
+
+    Yields:
+      Iterator over CsObjectOrPrefix wrapper class.
 
     Raises:
-      InvalidArgumentException for errors during input validation.
-      CloudProviderException for errors interacting with cloud storage
-      providers.
-
-    Returns:
-      Iterator over CsObjectOrPrefix wrapper class.
+      ValueError: Invalid fields_scope.
     """
-    raise NotImplementedError('ListObjects must be overloaded')
+    raise NotImplementedError('ListObjects must be overloaded.')
 
   def GetObjectMetadata(self,
                         bucket_name,
                         object_name,
                         generation=None,
-                        provider=None,
                         fields_scope=None):
     """Gets object metadata.
 
@@ -123,22 +128,19 @@ class CloudApi(object):
     encrypted objects with the correct key.
 
     Args:
-      bucket_name: Bucket containing the object.
-      object_name: Object name.
-      generation: Generation of the object to retrieve.
-      provider: Cloud storage provider to connect to.  If not present,
-        class-wide default is used.
-      fields_scope: Determines the fields and projection parameters of API call.
+      bucket_name (string): Bucket containing the object.
+      object_name (string): Object name.
+      generation (long): Generation of the object to retrieve.
+      fields_scope (FieldsScope): Determines the fields and projection
+          parameters of API call.
 
     Raises:
-      InvalidArgumentException for errors during input validation.
-      CloudProviderException for errors interacting with cloud storage
-      providers.
+      ValueError: Invalid fields_scope.
 
     Returns:
-      Object object.
+      Apitools messages Object object.
     """
-    raise NotImplementedError('GetObjectMetadata must be overloaded')
+    raise NotImplementedError('GetObjectMetadata must be overloaded.')
 
   def PatchObjectMetadata(self,
                           bucket_name,

@@ -198,13 +198,17 @@ class MatrixCreator(object):
         for additional_apk in getattr(self._args, 'additional_apks', []) or []
     ]
 
+    grant_permissions = getattr(self._args, 'grant_permissions',
+                                'all') == 'all'
+
     setup = self._messages.TestSetup(
         filesToPush=device_files,
         account=account,
         environmentVariables=environment_variables,
         directoriesToPull=directories_to_pull,
         networkProfile=getattr(self._args, 'network_profile', None),
-        additionalApks=additional_apks)
+        additionalApks=additional_apks,
+        dontAutograntPermissions=not grant_permissions)
 
     return self._messages.TestSpecification(
         testTimeout=matrix_ops.ReformatDuration(self._args.timeout),

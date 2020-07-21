@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.container import util
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -2418,6 +2419,13 @@ This is currently only available on Alpha clusters, specified by using
       action='store_true')
 
 
+def AddPrivateIpv6GoogleAccessTypeFlag(api_version, parser, hidden=False):
+  """Adds --private-ipv6-google-access-type={disabled|outbound-only|bidirectional} flag."""
+  messages = apis.GetMessagesModule('container', api_version)
+  util.GetPrivateIpv6GoogleAccessTypeMapper(
+      messages, hidden).choice_arg.AddToParser(parser)
+
+
 def AddEnableIntraNodeVisibilityFlag(parser, hidden=False):
   """Adds --enable-intra-node-visibility flag to the parser.
 
@@ -3097,4 +3105,18 @@ either a node-pool upgrade or node-pool creation.
       '--enable-gvnic',
       help=help_text,
       default=None,
+      action='store_true')
+
+
+def AddEnableConfidentialNodesFlag(parser):
+  """Adds a --enable-confidential-nodes flag to the given parser."""
+  help_text = """
+Enable Confidential Nodes for this cluster. Enabling Confidential Nodes will create nodes using confidential vm.
+"""
+
+  parser.add_argument(
+      '--enable-confidential-nodes',
+      help=help_text,
+      default=None,
+      hidden=True,
       action='store_true')

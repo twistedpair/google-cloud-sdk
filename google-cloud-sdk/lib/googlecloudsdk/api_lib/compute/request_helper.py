@@ -30,8 +30,11 @@ from six.moves import zip  # pylint: disable=redefined-builtin
 
 
 def _RequestsAreListRequests(requests):
+  """Checks if all requests are of list requests."""
   list_requests = [
-      method in ('List', 'AggregatedList') for _, method, _ in requests
+      method in (
+          'List', 'AggregatedList', 'ListInstances', 'ListManagedInstances'
+          ) for _, method, _ in requests
   ]
   if all(list_requests):
     return True
@@ -62,8 +65,10 @@ def _HandleJsonList(response, service, method, errors):
   response = json.loads(response)
 
   # If the request is a list call, then yield the items directly.
-  if method == 'List':
+  if method in ('List', 'ListInstances'):
     items = response.get('items', [])
+  elif method == 'ListManagedInstances':
+    items = response.get('managedInstances', [])
 
   # If the request is an aggregatedList call, then do all the
   # magic necessary to get the actual resources because the
@@ -89,9 +94,10 @@ def _HandleMessageList(response, service, method, errors):
   items = []
 
   # If the request is a list call, then yield the items directly.
-  if method == 'List':
+  if method in ('List', 'ListInstances'):
     items = response.items
-
+  elif method == 'ListManagedInstances':
+    items = response.managedInstances
   # If the request is an aggregatedList call, then do all the
   # magic necessary to get the actual resources because the
   # aggregatedList responses are very complicated data

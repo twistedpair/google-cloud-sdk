@@ -675,14 +675,14 @@ class BinaryBackedCommand(six.with_metaclass(abc.ABCMeta, Command)):
   def _DefaultOperationResponseHandler(response):
     """Process results of BinaryOperation Execution."""
     if response.stdout:
-      log.status.Print(response.stdout)
-
-    if response.failed:
-      log.error(response.stderr)
-      return None
+      log.Print(response.stdout)
 
     if response.stderr:
       log.status.Print(response.stderr)
+
+    if response.failed:
+      return None
+
     return response.stdout
 
 

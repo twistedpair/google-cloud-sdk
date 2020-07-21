@@ -235,11 +235,10 @@ Learn more about regional endpoints and see a list of available regions:
 """
 
 
-def GetRegionArg(hidden=True):
+def GetRegionArg():
   """Adds --region flag to determine endpoint for models and versions."""
   return base.Argument(
       '--region',
-      hidden=hidden,
       # TODO(b/144662044) Add more regions.
       choices=['asia-east1', 'europe-west4', 'us-central1'],
       help=_REGION_FLAG_HELPTEXT)
@@ -603,15 +602,15 @@ def GetAcceleratorFlag():
               'count': int,
           }, required_keys=['type', 'count']),
       help="""\
-Manage the accelerator config for GPU serving. When deploying a model with the
-new Alpha Google Compute Engine Machine Types, a GPU accelerator may also
-be selected. Accelerator config for version creation is currently available
-in us-central1 only.
+Manage the accelerator config for GPU serving. When deploying a model with
+Compute Engine Machine Types, a GPU accelerator may also
+be selected.
 
 *type*::: The type of the accelerator. Choices are {}.
 
 *count*::: The number of accelerators to attach to each machine running the job.
-""".format(', '.join(
+ This is usually 1; scaling parameters are configured using `manualScaling` or
+`autoScaling` flags.""".format(', '.join(
     ["'{}'".format(c) for c in _OP_ACCELERATOR_TYPE_MAPPER.choices])))
 
 
@@ -889,7 +888,7 @@ def AddMachineTypeFlagToParser(parser):
       '--machine-type',
       help="""\
 Type of machine on which to serve the model. Currently only applies to online prediction. For available machine types,
-see https://cloud.google.com/ml-engine/docs/tensorflow/online-predict#machine-types.
+see https://cloud.google.com/ai-platform/prediction/docs/machine-types-online-prediction#available_machine_types.
 """).AddToParser(parser)
 
 

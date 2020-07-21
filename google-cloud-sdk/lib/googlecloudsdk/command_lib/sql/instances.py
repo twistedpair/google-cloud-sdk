@@ -489,6 +489,9 @@ class _BaseInstances(object):
           sql_messages.DatabaseInstance.FailoverReplicaValue(
               name=args.failover_replica_name))
 
+    if args.collation:
+      instance_resource.settings.collation = args.collation
+
     # BETA: Config for creating a replica of an external master instance.
     if _IsBetaOrNewer(release_track) and args.IsSpecified('master_username'):
       # Ensure that the master instance name is specified.

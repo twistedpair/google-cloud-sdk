@@ -94,6 +94,13 @@ class MavenPomNotSupported(exceptions.Error):
         'Maven source deployment is not supported for Java8 GAE project.')
 
 
+class GradleBuildNotSupported(exceptions.Error):
+
+  def __init__(self):
+    super(GradleBuildNotSupported, self).__init__(
+        'Gradle source deployment is not supported for Java8 GAE project.')
+
+
 class StagingCommandFailedError(exceptions.Error):
 
   def __init__(self, args, return_code, output_message):
@@ -228,8 +235,8 @@ class NoopCommand(_Command):
     return isinstance(other, NoopCommand)
 
 
-class CreateJava11MavenProjectCommand(_Command):
-  """A command that creates a java11 runtime app.yaml from a jar file."""
+class CreateJava11ProjectCommand(_Command):
+  """A command that creates a java11 runtime app.yaml from a build.gradle file."""
 
   def EnsureInstalled(self):
     pass
@@ -237,11 +244,11 @@ class CreateJava11MavenProjectCommand(_Command):
   def GetPath(self):
     return
 
-  def GetArgs(self, descriptor, pom_file, staging_dir, appyaml=None):
+  def GetArgs(self, descriptor, staging_dir, appyaml=None):
     return
 
-  def Run(self, staging_area, pom_file, project_dir, explicit_appyaml=None):
-    # Logic is: copy/symlink the Maven project in the staged area, and create a
+  def Run(self, staging_area, config_file, project_dir, explicit_appyaml=None):
+    # Logic is: copy/symlink the project in the staged area, and create a
     # simple file app.yaml for runtime: java11 if it does not exist.
     # If it exists in the standard and documented default location
     # (in project_dir/src/main/appengine/app.yaml), copy it in the staged
@@ -249,7 +256,7 @@ class CreateJava11MavenProjectCommand(_Command):
     appenginewebxml = os.path.join(project_dir, 'src', 'main', 'webapp',
                                    'WEB-INF', 'appengine-web.xml')
     if os.path.exists(appenginewebxml):
-      raise MavenPomNotSupported()
+      raise self.error()
     if explicit_appyaml:
       shutil.copyfile(explicit_appyaml, os.path.join(staging_area, 'app.yaml'))
     else:
@@ -266,7 +273,7 @@ class CreateJava11MavenProjectCommand(_Command):
 
     for name in os.listdir(project_dir):
       # Do not deploy locally built artifacts, buildpack will clean this anyway.
-      if name == 'target':
+      if name == self.ignore:
         continue
       srcname = os.path.join(project_dir, name)
       dstname = os.path.join(staging_area, name)
@@ -284,7 +291,31 @@ class CreateJava11MavenProjectCommand(_Command):
     return staging_area
 
   def __eq__(self, other):
-    return isinstance(other, CreateJava11MavenProjectCommand)
+    return isinstance(other, CreateJava11ProjectCommand)
+
+
+class CreateJava11MavenProjectCommand(CreateJava11ProjectCommand):
+  """A command that creates a java11 runtime app.yaml from a pom.xml file."""
+
+  def __init__(self):
+    self.error = MavenPomNotSupported
+    self.ignore = 'target'
+    super(CreateJava11MavenProjectCommand, self).__init__()
+
+  def __eq__(self, other):
+    return isinstance(other, CreateJava11GradleProjectCommand)
+
+
+class CreateJava11GradleProjectCommand(CreateJava11ProjectCommand):
+  """A command that creates a java11 runtime app.yaml from a build.gradle file."""
+
+  def __init__(self):
+    self.error = GradleBuildNotSupported
+    self.ignore = 'build'
+    super(CreateJava11GradleProjectCommand, self).__init__()
+
+  def __eq__(self, other):
+    return isinstance(other, CreateJava11GradleProjectCommand)
 
 
 class CreateJava11YamlCommand(_Command):
@@ -515,6 +546,8 @@ _STAGING_REGISTRY = {
         CreateJava11YamlCommand(),
     runtime_registry.RegistryEntry('java-maven-project', {env.STANDARD}):
         CreateJava11MavenProjectCommand(),
+    runtime_registry.RegistryEntry('java-gradle-project', {env.STANDARD}):
+        CreateJava11GradleProjectCommand(),
     runtime_registry.RegistryEntry('generic-copy', {env.STANDARD}):
         StageAppWithoutAppYamlCommand(),
 }

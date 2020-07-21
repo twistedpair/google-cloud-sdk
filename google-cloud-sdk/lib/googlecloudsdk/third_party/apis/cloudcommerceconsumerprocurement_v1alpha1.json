@@ -438,7 +438,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Parameter": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Parameter",
-      "description": "User provided Parameters.",
+      "description": "LINT.IfChange\nUser provided Parameters.",
       "type": "object",
       "properties": {
         "name": {
@@ -798,7 +798,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement",
-      "description": "Entitlement represents the ability to use a product or services associated\nwith a purchase within a Project. When the customer creates an Order, the\nsystem will create Entitlement resources under projects associated with the\nsame billing account as the order, for all products\/services procured in the\norder. Users can enable\/disable Entitlements to allow\/disallow using the\nproduct\/service in a project.\n\nNext Id: 14",
+      "description": "Entitlement represents the ability to use a product or services associated\nwith a purchase within a Project. When the customer creates an Order, the\nsystem will create Entitlement resources under projects associated with the\nsame billing account as the order, for all products\/services procured in the\norder. Users can enable\/disable Entitlements to allow\/disallow using the\nproduct\/service in a project.\n\nNext Id: 15",
       "type": "object",
       "properties": {
         "name": {
@@ -811,10 +811,6 @@
         },
         "provider": {
           "description": "Output only. Provider associated with this Entitlement. In the format of\n`providers\/{provider_id}`.",
-          "type": "string"
-        },
-        "account": {
-          "description": "Output only. Account associated with this entitlement, field is empty if the entitlement\nis not based on an account. In the format of\n`billingAccounts\/<billing-account-id>\/accounts\/{account_id}`.",
           "type": "string"
         },
         "productExternalName": {

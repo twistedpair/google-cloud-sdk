@@ -87,18 +87,23 @@ def IsValidImageVersionUpgrade(env_ref,
   # Checks for the use of an alias and confirms that a valid airflow upgrade has
   # been requested.
   cand_image_ver = _ImageVersionItem(image_ver=image_version_id)
+  env_details = environments_api_util.Get(env_ref, release_track)
+  cur_image_ver = _ImageVersionItem(
+      image_ver=env_details.config.softwareConfig.imageVersion)
+  if not (CompareVersions(MIN_UPGRADEABLE_COMPOSER_VER,
+                          cur_image_ver.composer_ver) <= 0):
+    raise InvalidImageVersionError(
+        'This environment does not support upgrades.')
   if cand_image_ver.composer_contains_alias:
-    env_details = environments_api_util.Get(env_ref, release_track)
-    cur_image_ver = _ImageVersionItem(
-        image_ver=env_details.config.softwareConfig.imageVersion)
     if _IsAirflowVersionUpgradeCompatible(cur_image_ver.airflow_ver,
                                           cand_image_ver.airflow_ver):
       return True
   else:
-    # Checks if supplied image_version_id matches an eligible env upgrade.
-    valid_image_versions = ListImageVersionUpgrades(env_ref, release_track)
-    return any(True for version in valid_image_versions
-               if version.imageVersionId.startswith(image_version_id))
+    # Leaves the validity check to the Composer backend request validation.
+    if _ValidateCandidateImageVersionId(cur_image_ver.GetImageVersionString(),
+                                        cand_image_ver.GetImageVersionString()):
+      return True
+  return False
 
 
 def ImageVersionFromAirflowVersion(airflow_version):

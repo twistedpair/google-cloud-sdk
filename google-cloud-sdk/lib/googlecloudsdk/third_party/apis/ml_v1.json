@@ -920,7 +920,7 @@
           "$ref": "GoogleCloudMlV1__AblationAttribution"
         },
         "integratedGradientsAttribution": {
-          "description": "Attributes credit by computing the Aumann-Shapley value taking advantage\nof the model's fully differentiable structure. Refer to this paper for\nmore details: http:\/\/proceedings.mlr.press\/v70\/sundararajan17a.html",
+          "description": "Attributes credit by computing the Aumann-Shapley value taking advantage\nof the model's fully differentiable structure. Refer to this paper for\nmore details: https:\/\/arxiv.org\/abs\/1703.01365",
           "$ref": "GoogleCloudMlV1__IntegratedGradientsAttribution"
         },
         "sampledShapleyAttribution": {

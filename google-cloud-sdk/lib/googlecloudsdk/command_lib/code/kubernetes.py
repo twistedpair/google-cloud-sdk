@@ -211,6 +211,8 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
         cmd.append('--vm-driver=' + vm_driver)
         if vm_driver == 'docker':
           cmd.append('--container-runtime=docker')
+      if debug:
+        cmd.extend(['--alsologtostderr', '-v8'])
 
       print("Starting development environment '%s' ..." % cluster_name)
       run_subprocess.Run(cmd, timeout_sec=150, show_output=debug)

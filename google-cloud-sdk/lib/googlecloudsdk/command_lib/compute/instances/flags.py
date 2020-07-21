@@ -756,9 +756,9 @@ def AddCreateDiskArgs(parser,
     spec['multi-writer'] = str
     disk_help += """
       *multi-writer*::: If ``yes'', create the disk in multi-writer mode so that
-      it can be attached with read-write access to multiple VMs. Cannot be used
-      with regional disks. Disks in multi-writer mode do not yet support resize
-      and snapshot operations. The default value is ``no''.
+      it can be attached with read-write access to multiple VMs. Can only be
+      used with zonal SSD persistent disks. Disks in multi-writer mode do not
+      support resize and snapshot operations. The default value is ``no''.
     """
 
   parser.add_argument(

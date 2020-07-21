@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.compute.instances.ops_agents import ops_agents_polic
 from googlecloudsdk.core import log
 
 _PINNED_MAJOR_VERSION_RE = re.compile(r'^\d+\.\*\.\*$')
+_PINNED_LEGACY_VERSION_RE = re.compile(r'^5\.5\.2-\d+$')
 _PINNED_VERSION_RE = re.compile(r'^\d+\.\d+\.\d+$')
 _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS: [
@@ -55,7 +56,7 @@ _OS_SHORT_NAMES_WITH_OS_AGENT_PREINSTALLED = (
 )
 
 
-class AgentTypesUniquenessError(exceptions.OpsAgentsPolicyValidationError):
+class AgentTypesUniquenessError(exceptions.PolicyValidationError):
   """Raised when agent type is not unique."""
 
   def __init__(self, agent_type):
@@ -63,8 +64,7 @@ class AgentTypesUniquenessError(exceptions.OpsAgentsPolicyValidationError):
         'At most one agent with type [{}] is allowed.'.format(agent_type))
 
 
-class AgentVersionInvalidFormatError(
-    exceptions.OpsAgentsPolicyValidationError):
+class AgentVersionInvalidFormatError(exceptions.PolicyValidationError):
   """Raised when agent version format is invalid."""
 
   def __init__(self, version):
@@ -76,7 +76,7 @@ class AgentVersionInvalidFormatError(
 
 
 class AgentVersionAndEnableAutoupgradeConflictError(
-    exceptions.OpsAgentsPolicyValidationError):
+    exceptions.PolicyValidationError):
   """Raised when agent version is pinned but autoupgrade is enabled."""
 
   def __init__(self, version):
@@ -85,7 +85,7 @@ class AgentVersionAndEnableAutoupgradeConflictError(
         '[enable-autoupgrade] is set to true for that agent.'.format(version))
 
 
-class OsTypesMoreThanOneError(exceptions.OpsAgentsPolicyValidationError):
+class OsTypesMoreThanOneError(exceptions.PolicyValidationError):
   """Raised when more than one OS types are specified."""
 
   def __init__(self):
@@ -93,7 +93,7 @@ class OsTypesMoreThanOneError(exceptions.OpsAgentsPolicyValidationError):
         'Only one OS type is allowed in the instance filters.')
 
 
-class OsTypeNotSupportedError(exceptions.OpsAgentsPolicyValidationError):
+class OsTypeNotSupportedError(exceptions.PolicyValidationError):
   """Raised when the OS short name and version combination is not supported."""
 
   def __init__(self, short_name, version):
@@ -114,7 +114,7 @@ def ValidateOpsAgentsPolicy(policy):
     policy: ops_agents.OpsAgentPolicy. The policy that manages Ops agents.
 
   Raises:
-    OpsAgentsPolicyValidationMultiError that contains a list of validation
+    PolicyValidationMultiError that contains a list of validation
     errors from the following list.
     * AgentTypesUniquenessError:
       Multiple agents with the same type are specified.
@@ -127,22 +127,22 @@ def ValidateOpsAgentsPolicy(policy):
     * OsTypeNotSupportedError:
       The combination of the OS short name and version is not supported.
   """
-  errors = (_ValidateAgents(policy.agents) +
+  errors = (_ValidateAgentRules(policy.agent_rules) +
             _ValidateOsTypes(policy.assignment.os_types))
   if errors:
-    raise exceptions.OpsAgentsPolicyValidationMultiError(errors)
+    raise exceptions.PolicyValidationMultiError(errors)
   log.debug('Ops Agents policy validation passed.')
 
 
-def _ValidateAgents(agents):
-  """Validates semantics of the ops-agents-policy.agents field.
+def _ValidateAgentRules(agent_rules):
+  """Validates semantics of the ops-agents-policy.agent-rules field.
 
   This validation happens after the arg parsing stage. At this point, we can
-  assume that the field is a list of OpsAgentPolicy.Agent object.
+  assume that the field is a list of OpsAgentPolicy.AgentRule object.
 
   Args:
-    agents: list of OpsAgentPolicy.Agent. The list of agents to be managed by
-      the Ops Agents policy.
+    agent_rules: list of OpsAgentPolicy.AgentRule. The list of agent rules to be
+      managed by the Ops Agents policy.
 
   Returns:
     An empty list if the validation passes. A list of errors from the following
@@ -154,22 +154,22 @@ def _ValidateAgents(agents):
     * AgentVersionAndEnableAutoupgradeConflictError:
       Agent version is pinned but autoupgrade is enabled.
   """
-  errors = _ValidateAgentTypesUniqueness(agents)
-  for agent in agents:
-    errors.extend(_ValidateAgent(agent))
+  errors = _ValidateAgentTypesUniqueness(agent_rules)
+  for agent_rule in agent_rules:
+    errors.extend(_ValidateAgentRule(agent_rule))
   return errors
 
 
-def _ValidateAgentTypesUniqueness(agents):
+def _ValidateAgentTypesUniqueness(agent_rules):
   """Validates that each type of agent occurs at most once.
 
   This validation happens after the arg parsing stage. At this point, we can
-  assume that the field is a list of OpsAgentPolicy.Agent object. Each
+  assume that the field is a list of OpsAgentPolicy.AgentRule object. Each
   OpsAgentPolicy object's 'type' field already complies with the allowed values.
 
   Args:
-    agents: list of OpsAgentPolicy.Agent. The list of agents to be managed by
-      the Ops Agents policy.
+    agent_rules: list of OpsAgentPolicy.AgentRule. The list of agent rules to be
+      managed by the Ops Agents policy.
 
   Returns:
     An empty list if the validation passes. A list that contains one or more
@@ -177,20 +177,21 @@ def _ValidateAgentTypesUniqueness(agents):
     * AgentTypesUniquenessError:
       Multiple agents with the same type are specified.
   """
-  agent_types = collections.Counter(agent.type for agent in agents)
+  agent_types = collections.Counter(
+      agent_rule.type for agent_rule in agent_rules)
   duplicate_types = [k for k, v in agent_types.items() if v > 1]
   return [AgentTypesUniquenessError(t) for t in sorted(duplicate_types)]
 
 
-def _ValidateAgent(agent):
-  """Validates semantics of an individual OpsAgentPolicy.Agent.
+def _ValidateAgentRule(agent_rule):
+  """Validates semantics of an individual OpsAgentPolicy.AgentRule.
 
   This validation happens after the arg parsing stage. At this point, we can
-  assume that the field is an OpsAgentPolicy.Agent object.
+  assume that the field is an OpsAgentPolicy.AgentRule object.
 
   Args:
-    agent: OpsAgentPolicy.Agent. The agent to be managed by the Ops Agents
-      policy.
+    agent_rule: OpsAgentPolicy.AgentRule. The agent rule to enforce by the Ops
+      Agents policy.
 
   Returns:
     An empty list if the validation passes. A list of errors from the following
@@ -200,9 +201,9 @@ def _ValidateAgent(agent):
     * AgentVersionAndEnableAutoupgradeConflictError:
       Agent version is pinned but autoupgrade is enabled.
   """
-  return (_ValidateAgentVersion(agent.version) +
+  return (_ValidateAgentVersion(agent_rule.version) +
           _ValidateAgentVersionAndEnableAutoupgrade(
-              agent.version, agent.enable_autoupgrade))
+              agent_rule.version, agent_rule.enable_autoupgrade))
 
 
 def _ValidateAgentVersion(version):
@@ -224,10 +225,11 @@ def _ValidateAgentVersion(version):
     * AgentVersionInvalidFormatError:
       Agent version format is invalid.
   """
-  version_enum = agent_policy.OpsAgentPolicy.Agent.Version
+  version_enum = agent_policy.OpsAgentPolicy.AgentRule.Version
   if not (version in {version_enum.LATEST_OF_ALL,
                       version_enum.CURRENT_MAJOR} or
           _PINNED_MAJOR_VERSION_RE.search(version) or
+          _PINNED_LEGACY_VERSION_RE.search(version) or
           _PINNED_VERSION_RE.search(version)):
     return [AgentVersionInvalidFormatError(version)]
   return []

@@ -318,7 +318,7 @@
           "$ref": "Environment"
         },
         "steps": {
-          "description": "Exactly one of step or steps_location should be specified.\n\nThe top-level steps that constitute the entire job.",
+          "description": "Exactly one of step or steps_location should be specified.\n\nThe top-level steps that constitute the entire job. Only retrieved with\nJOB_VIEW_ALL.",
           "type": "array",
           "items": {
             "$ref": "Step"

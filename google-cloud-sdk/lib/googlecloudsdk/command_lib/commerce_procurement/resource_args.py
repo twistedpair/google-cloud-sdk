@@ -38,6 +38,21 @@ def EntitlementAttributeConfig():
       help_text='Procurement Entitlement for the {resource}.')
 
 
+def FreeTrialAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='free-trial', help_text='Procurement Free Trial for the {resource}.')
+
+
+def OrderAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='order', help_text='Procurement Order for the {resource}.')
+
+
+def OperationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='operation', help_text='Procurement Operation for the {resource}.')
+
+
 def GetBillingAccountResourceSpec():
   return concepts.ResourceSpec(
       'cloudcommerceconsumerprocurement.billingAccounts',
@@ -61,6 +76,24 @@ def GetEntitlementResourceSpec():
       entitlementsId=EntitlementAttributeConfig())
 
 
+def GetOrderOperationResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudcommerceconsumerprocurement.billingAccounts.orders.operations',
+      resource_name='order-operation',
+      billingAccountsId=BillingAccountAttributeConfig(),
+      ordersId=OrderAttributeConfig(),
+      operationsId=OperationAttributeConfig())
+
+
+def GetFreeTrialOperationResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudcommerceconsumerprocurement.projects.freeTrials.operations',
+      resource_name='free-trial-operation',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      freeTrialsId=FreeTrialAttributeConfig(),
+      operationsId=OperationAttributeConfig())
+
+
 def AddBillingAccountResourceArg(parser, description):
   concept_parsers.ConceptParser.ForResource(
       '--billing-account',
@@ -79,3 +112,15 @@ def AddEntitlementResourceArg(parser, description):
   concept_parsers.ConceptParser.ForResource(
       'entitlement', GetEntitlementResourceSpec(), description,
       required=True).AddToParser(parser)
+
+
+def AddFreeTrialOperationResourceArg(parser, description):
+  concept_parsers.ConceptParser.ForResource('--free-trial-operation',
+                                            GetFreeTrialOperationResourceSpec(),
+                                            description).AddToParser(parser)
+
+
+def AddOrderOperationResourceArg(parser, description):
+  concept_parsers.ConceptParser.ForResource('--order-operation',
+                                            GetOrderOperationResourceSpec(),
+                                            description).AddToParser(parser)

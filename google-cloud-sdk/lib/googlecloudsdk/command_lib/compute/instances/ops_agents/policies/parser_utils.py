@@ -30,16 +30,15 @@ class ArgEnum(object):
   Example usage:
 
     parser.add_argument(
-      '--agents',
-      metavar='KEY=VALUE',
+      '--agent-rules',
+      metavar='type=TYPE,version=VERSION,package-state=PACKAGE-STATE,
+               enable-autoupgrade=ENABLE-AUTOUPGRADE',
       action='store',
       required=True,
       type=arg_parsers.ArgList(
           custom_delim_char=';',
           element_type=arg_parsers.ArgDict(spec={
-              'type': ArgEnum('type', [
-                  OpsAgentPolicy.Agent.Type.LOGGING,
-                  OpsAgentPolicy.Agent.Type.METRICS]),
+              'type': ArgEnum('type', [OpsAgentPolicy.AgentRule.Type]),
               'version': str,
               'package_state': str,
               'enable_autoupgrade': arg_parsers.ArgBoolean(),
@@ -50,7 +49,8 @@ class ArgEnum(object):
   Example error:
 
     ERROR: (gcloud.alpha.compute.instances.ops-agents.policies.create) argument
-    --agents: Invalid value [what] from field [type], expected one of [logging,
+    --agent-rules: Invalid value [what] from field [type], expected one of
+    [logging,
     metrics].
   """
 
@@ -123,8 +123,9 @@ def AddMutationArgs(parser, required=True):
       help='Description of the policy.',
   )
   parser.add_argument(
-      '--agents',
-      metavar='type=TYPE,version=VERSION,package-state=PACKAGE-STATE,enable-autoupgrade=ENABLE-AUTOUPGRADE',
+      '--agent-rules',
+      metavar=('type=TYPE,version=VERSION,package-state=PACKAGE-STATE,'
+               'enable-autoupgrade=ENABLE-AUTOUPGRADE'),
       action='store',
       required=required,
       type=arg_parsers.ArgList(
@@ -133,13 +134,15 @@ def AddMutationArgs(parser, required=True):
               spec={
                   'type':
                       ArgEnum('type',
-                              list(agent_policy.OpsAgentPolicy.Agent.Type)),
+                              list(agent_policy.OpsAgentPolicy.AgentRule.Type)),
                   'version':
                       str,
                   'package-state':
                       ArgEnum(
                           'package-state',
-                          list(agent_policy.OpsAgentPolicy.Agent.PackageState)),
+                          list(
+                              agent_policy.OpsAgentPolicy.
+                              AgentRule.PackageState)),
                   'enable-autoupgrade':
                       arg_parsers.ArgBoolean(),
               },
@@ -208,9 +211,9 @@ def AddMutationArgs(parser, required=True):
       *version=current-major*::::
 
       With this setting, the version field is automatically set to
-      ```version=MAJOR_VERSION.*.*```, where ``MAJOR_VERSION'' is the current latest major
-      version released. Refer to the ```version=MAJOR_VERSION.*.*``` section for
-      the expected behavior.
+      ```version=MAJOR_VERSION.*.*```, where ``MAJOR_VERSION'' is the current
+      latest major version released. Refer to the
+      ```version=MAJOR_VERSION.*.*``` section for the expected behavior.
 
       *version=MAJOR_VERSION.MINOR_VERSION.PATCH_VERSION*::::
 
@@ -221,6 +224,25 @@ def AddMutationArgs(parser, required=True):
       This setting is not recommended since it prevents the policy from
       installing new versions of the agent that include bug fixes and other
       improvements.
+
+      One limitation of this setting is that if the agent gets manually
+      uninstalled from the instances after the policy gets applied, the policy
+      can only ensure that the agent is re-installed. It is not able to restore
+      the expected exact version of the agent.
+
+      ```version=5.5.2-BUILD_NUMBER```::::
+
+      Allowed for the metrics agent (``type=metrics'') only.
+
+      With this setting, the specified exact build number of the deprecated
+      5.5.2 metrics agent is installed at the time when the policy is applied
+      to an instance. enable-autoupgrade must be false for this setting.
+
+      This setting is deprecated and will be decommissioned along with the 5.5.2
+      metrics agent on Apr 28, 2021
+      (https://cloud.google.com/stackdriver/docs/deprecations/mon-agent).
+      It is not recommended since it prevents the policy from installing new
+      versions of the agent that include bug fixes and other improvements.
 
       One limitation of this setting is that if the agent gets manually
       uninstalled from the instances after the policy gets applied, the policy
@@ -332,8 +354,8 @@ def _AddGroupLabelsArgument(parser):
       A list of label maps to filter instances that the policy applies to.
 
       Optional. The ``--group-labels'' flag needs to be quoted. Each label map
-      item in the list are separated by ```;```. To manage instance labels, refer
-      to the ```gcloud beta compute instances add-labels``` and the
+      item in the list are separated by ```;```. To manage instance labels,
+      refer to the ```gcloud beta compute instances add-labels``` and the
       ```gcloud beta compute instances remove-labels``` commands.
 
       Each label map item in the ``--group-labels'' list is a map in the format

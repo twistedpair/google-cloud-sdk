@@ -327,6 +327,10 @@
           "additionalProperties": {
             "$ref": "TimeSpan"
           }
+        },
+        "serviceAccount": {
+          "description": "IAM service account whose credentials will be used at build runtime.\nMust be of the format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nACCOUNT can be email address or uniqueId of the service account.\n",
+          "type": "string"
         }
       }
     },
@@ -824,6 +828,21 @@
           "items": {
             "$ref": "Volume"
           }
+        },
+        "cluster": {
+          "description": "Details about how this build should be executed on a GKE cluster.",
+          "$ref": "ClusterOptions"
+        }
+      }
+    },
+    "ClusterOptions": {
+      "id": "ClusterOptions",
+      "description": "Details of the GKE Cluster for builds that should execute on-cluster.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Identifier of the GKE Cluster this build should execute on.\n\nExample: projects\/{project_id}\/locations\/{location}\/cluster\/{cluster_name}\n\nThe cluster's project ID must be the same project ID that is running the\nbuild. The cluster must exist and have the CloudBuild add-on enabled.",
+          "type": "string"
         }
       }
     },
@@ -924,7 +943,7 @@
           "format": "google-datetime"
         },
         "disabled": {
-          "description": "If true, the trigger will never result in a build.",
+          "description": "If true, the trigger will never automatically execute a build.",
           "type": "boolean"
         },
         "substitutions": {
@@ -975,6 +994,14 @@
         "push": {
           "description": "filter to match changes in refs like branches, tags.",
           "$ref": "PushFilter"
+        },
+        "enterpriseConfigResourceName": {
+          "description": "Optional: The resource name of the github enterprise config that should be\napplied to this installation.\nFor example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+          "type": "string"
+        },
+        "enterpriseConfig": {
+          "description": "Output only. The GitHubEnterpriseConfig enterprise config specified in the\nenterprise_config_resource_name field.\nThis field is output only.",
+          "$ref": "GitHubEnterpriseConfig"
         }
       }
     },
@@ -1024,6 +1051,55 @@
         }
       }
     },
+    "GitHubEnterpriseConfig": {
+      "id": "GitHubEnterpriseConfig",
+      "description": "GitHubEnterpriseConfig represents a configuration for a GitHub Enterprise\nserver.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The full resource name for the GitHubEnterpriseConfig\nFor example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+          "type": "string"
+        },
+        "hostUrl": {
+          "description": "The URL of the github enterprise host the configuration is for.",
+          "type": "string"
+        },
+        "appId": {
+          "description": "The GitHub app id of the Cloud Build app on the GitHub Enterprise server.",
+          "type": "string",
+          "format": "int64"
+        },
+        "appConfigJson": {
+          "description": "GCS location of the encrypted GitHub App config information.",
+          "$ref": "GCSLocation"
+        },
+        "createTime": {
+          "description": "Output only. Time when the installation was associated with the project.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GCSLocation": {
+      "id": "GCSLocation",
+      "description": "Represents a storage location in GCS",
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "description": "Google Cloud Storage bucket. See\nhttps:\/\/cloud.google.com\/storage\/docs\/naming#requirements",
+          "type": "string"
+        },
+        "object": {
+          "description": "Google Cloud Storage object. See\nhttps:\/\/cloud.google.com\/storage\/docs\/naming#objectnames",
+          "type": "string"
+        },
+        "generation": {
+          "description": "Google Cloud Storage generation for the object. If the generation is\nomitted, the latest generation will be used.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ListBuildTriggersResponse": {
       "id": "ListBuildTriggersResponse",
       "description": "Response containing existing `BuildTriggers`.",
@@ -1038,6 +1114,153 @@
         },
         "nextPageToken": {
           "description": "Token to receive the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "HttpBody": {
+      "id": "HttpBody",
+      "description": "Message that represents an arbitrary HTTP body. It should only be used for\npayload formats that can't be represented as JSON, such as raw binary or\nan HTML page.\n\n\nThis message can be used both in streaming and non-streaming API methods in\nthe request as well as the response.\n\nIt can be used as a top-level request field, which is convenient if one\nwants to extract parameters from either the URL or HTTP template into the\nrequest fields and also want access to the raw HTTP body.\n\nExample:\n\n    message GetResourceRequest {\n      \/\/ A unique request id.\n      string request_id = 1;\n\n      \/\/ The raw HTTP body is bound to this field.\n      google.api.HttpBody http_body = 2;\n    }\n\n    service ResourceService {\n      rpc GetResource(GetResourceRequest) returns (google.api.HttpBody);\n      rpc UpdateResource(google.api.HttpBody) returns\n      (google.protobuf.Empty);\n    }\n\nExample with streaming methods:\n\n    service CaldavService {\n      rpc GetCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n      rpc UpdateCalendar(stream google.api.HttpBody)\n        returns (stream google.api.HttpBody);\n    }\n\nUse of this type only changes how the request and response bodies are\nhandled, all other features will continue to work unchanged.",
+      "type": "object",
+      "properties": {
+        "contentType": {
+          "description": "The HTTP Content-Type header value specifying the content type of the body.",
+          "type": "string"
+        },
+        "data": {
+          "description": "The HTTP request\/response body as raw binary.",
+          "type": "string",
+          "format": "byte"
+        },
+        "extensions": {
+          "description": "Application specific response metadata. Must be set in the first response\nfor streaming APIs.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "Installation": {
+      "id": "Installation",
+      "description": "A GitHub-app installation.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "GitHub installation ID, created by GitHub.",
+          "type": "string",
+          "format": "int64"
+        },
+        "projectNum": {
+          "description": "Numerical ID of the project.",
+          "type": "string",
+          "format": "int64"
+        },
+        "projectId": {
+          "description": "The project ID of the GCP project the installation is associated with.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time when the installation was associated with the project. This field is\nimmutable and cannot be updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "repositorySettingList": {
+          "description": "The GitHub repositories that we should respond to for this installation.\nIf this is not set, we will respect the default_check_suite_events boolean\nfor any repository visible for that installation.",
+          "$ref": "GitHubRepositorySettingList"
+        },
+        "enterpriseConfigResourceName": {
+          "description": "Optional: The resource name of the github enterprise config that should be\napplied to this installation.\nFor example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+          "type": "string"
+        },
+        "enterpriseConfig": {
+          "description": "Output only. The GitHubEnterpriseConfig enterprise config specified in the\nenterprise_config_resource_name field.\nThis field is output only.",
+          "$ref": "GitHubEnterpriseConfig"
+        }
+      }
+    },
+    "GitHubRepositorySettingList": {
+      "id": "GitHubRepositorySettingList",
+      "description": "A wrapper message for a list of GitHubRepositorySettings.",
+      "type": "object",
+      "properties": {
+        "repositorySettings": {
+          "description": "A list of GitHubRepositorySettings.",
+          "type": "array",
+          "items": {
+            "$ref": "GitHubRepositorySetting"
+          }
+        }
+      }
+    },
+    "GitHubRepositorySetting": {
+      "id": "GitHubRepositorySetting",
+      "description": "Represents a GitHub repository setting.",
+      "type": "object",
+      "properties": {
+        "owner": {
+          "description": "GitHub user or organization name.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name of the repository.",
+          "type": "string"
+        }
+      }
+    },
+    "ListGitHubInstallationsResponse": {
+      "id": "ListGitHubInstallationsResponse",
+      "description": "RPC response object accepted by the ListGitHubInstallations RPC method.",
+      "type": "object",
+      "properties": {
+        "installations": {
+          "description": "Installations matching the requested installation ID.",
+          "type": "array",
+          "items": {
+            "$ref": "Installation"
+          }
+        }
+      }
+    },
+    "ListGitHubInstallationsForProjectResponse": {
+      "id": "ListGitHubInstallationsForProjectResponse",
+      "description": "RPC response object returned by the ListGitHubInstallations RPC method.",
+      "type": "object",
+      "properties": {
+        "installations": {
+          "description": "Installations belonging to the specified project_id.",
+          "type": "array",
+          "items": {
+            "$ref": "Installation"
+          }
+        }
+      }
+    },
+    "ListGithubEnterpriseConfigsResponse": {
+      "id": "ListGithubEnterpriseConfigsResponse",
+      "description": "RPC response object returned by ListGithubEnterpriseConfigs RPC method.",
+      "type": "object",
+      "properties": {
+        "configs": {
+          "description": "A list of GitHubEnterpriseConfigs",
+          "type": "array",
+          "items": {
+            "$ref": "GitHubEnterpriseConfig"
+          }
+        }
+      }
+    },
+    "OAuthRegistrationURI": {
+      "id": "OAuthRegistrationURI",
+      "description": "RPC Response object returned by GetOAuthRegistrationURL",
+      "type": "object",
+      "properties": {
+        "registrationUri": {
+          "description": "The URL that the user should be redirected to in order to start the OAuth\nflow. When the user is redirected to this URL, they will be sent to the\nsource provider specified in the request to authorize CloudBuild to access\ntheir oauth credentials. After the authorization is completed, the user\nwill be redirected to the Cloud Build console.",
           "type": "string"
         }
       }
@@ -1727,6 +1950,709 @@
               "description": "Runs a `BuildTrigger` at a particular source revision."
             }
           }
+        },
+        "github": {
+          "resources": {
+            "installations": {
+              "methods": {
+                "create": {
+                  "id": "cloudbuild.projects.github.installations.create",
+                  "path": "v1/projects/{projectId}/github/installations",
+                  "flatPath": "v1/projects/{projectId}/github/installations",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "projectId": {
+                      "description": "ID of the project.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "userOauthCode": {
+                      "description": "GitHub user code.\nIf a GitHub credential is already associated with the user this can be\nomitted, else the code is used to exchange and store an OAuth token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId"
+                  ],
+                  "request": {
+                    "$ref": "Installation"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create an association between a GCP project and a GitHub installation.\n\nThis API is experimental."
+                },
+                "create": {
+                  "id": "cloudbuild.projects.github.installations.create",
+                  "path": "v1/projects/{projectId}/github/installations",
+                  "flatPath": "v1/projects/{projectId}/github/installations",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The project ID of the GCP project the installation is associated with.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "projectId1": {
+                      "description": "ID of the project.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "userOauthCode": {
+                      "description": "GitHub user code.\nIf a GitHub credential is already associated with the user this can be\nomitted, else the code is used to exchange and store an OAuth token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId"
+                  ],
+                  "request": {
+                    "$ref": "Installation"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create an association between a GCP project and a GitHub installation.\n\nThis API is experimental."
+                },
+                "patch": {
+                  "id": "cloudbuild.projects.github.installations.patch",
+                  "path": "v1/projects/{projectId}/github/installations/{id}",
+                  "flatPath": "v1/projects/{projectId}/github/installations/{id}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The project ID of the GCP project the installation is associated with.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "id": {
+                      "description": "GitHub installation ID, created by GitHub.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string",
+                      "format": "int64"
+                    },
+                    "projectId1": {
+                      "description": "ID of the project.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "installationId": {
+                      "description": "Unique identifier of the GitHub installation. Deprecated.\nShould set installation.id",
+                      "location": "query",
+                      "type": "string",
+                      "format": "int64"
+                    },
+                    "updateMask": {
+                      "description": "Update mask for the Installation resource. If this is set,\nthe server will only update the fields specified in the field mask.\nOtherwise, a full update of the resource will be performed.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "id"
+                  ],
+                  "request": {
+                    "$ref": "Installation"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Update settings for a GCP project to GitHub installation mapping.\n\nThis API is experimental."
+                },
+                "delete": {
+                  "id": "cloudbuild.projects.github.installations.delete",
+                  "path": "v1/projects/{projectId}/github/installations/{installationId}",
+                  "flatPath": "v1/projects/{projectId}/github/installations/{installationId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "projectId": {
+                      "description": "Cloud Project ID.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "installationId": {
+                      "description": "GitHub app installation ID.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string",
+                      "format": "int64"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "installationId"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Delete an association between a GCP project and a GitHub installation.\n\nThis API is experimental."
+                },
+                "list": {
+                  "id": "cloudbuild.projects.github.installations.list",
+                  "path": "v1/projects/{projectId}/github/installations",
+                  "flatPath": "v1/projects/{projectId}/github/installations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "projectId": {
+                      "description": "Project id",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId"
+                  ],
+                  "response": {
+                    "$ref": "ListGitHubInstallationsForProjectResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List all Installations for a given project id.\n\nThis API is experimental."
+                }
+              }
+            }
+          }
+        },
+        "installations": {
+          "methods": {
+            "create": {
+              "id": "cloudbuild.projects.installations.create",
+              "path": "v1/projects/{projectId}/installations",
+              "flatPath": "v1/projects/{projectId}/installations",
+              "httpMethod": "POST",
+              "parameters": {
+                "projectId": {
+                  "description": "ID of the project.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "userOauthCode": {
+                  "description": "GitHub user code.\nIf a GitHub credential is already associated with the user this can be\nomitted, else the code is used to exchange and store an OAuth token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "request": {
+                "$ref": "Installation"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Create an association between a GCP project and a GitHub installation.\n\nThis API is experimental."
+            },
+            "patch": {
+              "id": "cloudbuild.projects.installations.patch",
+              "path": "v1/projects/{projectNum}/installations/{id}",
+              "flatPath": "v1/projects/{projectNum}/installations/{id}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "projectNum": {
+                  "description": "Numerical ID of the project.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "id": {
+                  "description": "GitHub installation ID, created by GitHub.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "projectId": {
+                  "description": "ID of the project.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "installationId": {
+                  "description": "Unique identifier of the GitHub installation. Deprecated.\nShould set installation.id",
+                  "location": "query",
+                  "type": "string",
+                  "format": "int64"
+                },
+                "updateMask": {
+                  "description": "Update mask for the Installation resource. If this is set,\nthe server will only update the fields specified in the field mask.\nOtherwise, a full update of the resource will be performed.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "projectNum",
+                "id"
+              ],
+              "request": {
+                "$ref": "Installation"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update settings for a GCP project to GitHub installation mapping.\n\nThis API is experimental."
+            },
+            "delete": {
+              "id": "cloudbuild.projects.installations.delete",
+              "path": "v1/projects/{projectId}/installations/{installationId}",
+              "flatPath": "v1/projects/{projectId}/installations/{installationId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "projectId": {
+                  "description": "Cloud Project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "installationId": {
+                  "description": "GitHub app installation ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "installationId"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Delete an association between a GCP project and a GitHub installation.\n\nThis API is experimental."
+            },
+            "list": {
+              "id": "cloudbuild.projects.installations.list",
+              "path": "v1/projects/{projectId}/installations",
+              "flatPath": "v1/projects/{projectId}/installations",
+              "httpMethod": "GET",
+              "parameters": {
+                "projectId": {
+                  "description": "Project id",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "ListGitHubInstallationsForProjectResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "List all Installations for a given project id.\n\nThis API is experimental."
+            }
+          }
+        },
+        "githubEnterpriseConfigs": {
+          "methods": {
+            "create": {
+              "id": "cloudbuild.projects.githubEnterpriseConfigs.create",
+              "path": "v1/{+parent}/githubEnterpriseConfigs",
+              "flatPath": "v1/projects/{projectsId}/githubEnterpriseConfigs",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "Name of the parent project.\nFor example: projects\/{$project_number} or projects\/{$project_id}",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "projectId": {
+                  "description": "ID of the project.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GitHubEnterpriseConfig"
+              },
+              "response": {
+                "$ref": "GitHubEnterpriseConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Create an association between a GCP project and a GitHub Enterprise server.\n\nThis API is experimental."
+            },
+            "patch": {
+              "id": "cloudbuild.projects.githubEnterpriseConfigs.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/githubEnterpriseConfigs/{githubEnterpriseConfigsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "The full resource name for the GitHubEnterpriseConfig\nFor example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Update mask for the resource. If this is set,\nthe server will only update the fields specified in the field mask.\nOtherwise, a full update of the mutable resource fields will be performed.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GitHubEnterpriseConfig"
+              },
+              "response": {
+                "$ref": "GitHubEnterpriseConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update an association between a GCP project and a GitHub Enterprise server.\n\nThis API is experimental."
+            },
+            "get": {
+              "id": "cloudbuild.projects.githubEnterpriseConfigs.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/githubEnterpriseConfigs/{githubEnterpriseConfigsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "This field should contain the name of the enterprise config resource.\nFor example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
+                  "type": "string"
+                },
+                "projectId": {
+                  "description": "ID of the project",
+                  "location": "query",
+                  "type": "string"
+                },
+                "configId": {
+                  "description": "Unique identifier of the `GitHubEnterpriseConfig`",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GitHubEnterpriseConfig"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Retrieve a GitHubEnterpriseConfig.\n\nThis API is experimental."
+            },
+            "list": {
+              "id": "cloudbuild.projects.githubEnterpriseConfigs.list",
+              "path": "v1/{+parent}/githubEnterpriseConfigs",
+              "flatPath": "v1/projects/{projectsId}/githubEnterpriseConfigs",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Name of the parent project.\nFor example: projects\/{$project_number} or projects\/{$project_id}",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "projectId": {
+                  "description": "ID of the project",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListGithubEnterpriseConfigsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "List all GitHubEnterpriseConfigs for a given project.\n\nThis API is experimental."
+            },
+            "delete": {
+              "id": "cloudbuild.projects.githubEnterpriseConfigs.delete",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/githubEnterpriseConfigs/{githubEnterpriseConfigsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "This field should contain the name of the enterprise config resource.\nFor example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
+                  "type": "string"
+                },
+                "projectId": {
+                  "description": "ID of the project",
+                  "location": "query",
+                  "type": "string"
+                },
+                "configId": {
+                  "description": "Unique identifier of the `GitHubEnterpriseConfig`",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Delete an association between a GCP project and a GitHub Enterprise server.\n\nThis API is experimental."
+            }
+          }
+        }
+      }
+    },
+    "v1": {
+      "methods": {
+        "webhook": {
+          "id": "cloudbuild.webhook",
+          "path": "v1/webhook",
+          "flatPath": "v1/webhook",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "HttpBody"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "description": "ReceiveWebhook is called when the API receives a GitHub webhook."
+        }
+      }
+    },
+    "github": {
+      "resources": {
+        "installations": {
+          "resources": {
+            "projects": {
+              "methods": {
+                "list": {
+                  "id": "cloudbuild.github.installations.projects.list",
+                  "path": "v1/github/installations/{installationId}/projects",
+                  "flatPath": "v1/github/installations/{installationId}/projects",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "installationId": {
+                      "description": "Installation ID",
+                      "location": "path",
+                      "required": true,
+                      "type": "string",
+                      "format": "int64"
+                    }
+                  },
+                  "parameterOrder": [
+                    "installationId"
+                  ],
+                  "response": {
+                    "$ref": "ListGitHubInstallationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "For given installation id, list project-installation mappings across all\nGCB projects visible to the caller.\n\nThis API is experimental."
+                }
+              }
+            },
+            "installations": {
+              "methods": {
+                "list": {
+                  "id": "cloudbuild.github.installations.installations.list",
+                  "path": "v1/github/installations/{installationId}/installations",
+                  "flatPath": "v1/github/installations/{installationId}/installations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "installationId": {
+                      "description": "Installation ID",
+                      "location": "path",
+                      "required": true,
+                      "type": "string",
+                      "format": "int64"
+                    }
+                  },
+                  "parameterOrder": [
+                    "installationId"
+                  ],
+                  "response": {
+                    "$ref": "ListGitHubInstallationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "For given installation id, list project-installation mappings across all\nGCB projects visible to the caller.\n\nThis API is experimental."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "installations": {
+      "resources": {
+        "installations": {
+          "methods": {
+            "list": {
+              "id": "cloudbuild.installations.installations.list",
+              "path": "v1/installations/{installationId}/installations",
+              "flatPath": "v1/installations/{installationId}/installations",
+              "httpMethod": "GET",
+              "parameters": {
+                "installationId": {
+                  "description": "Installation ID",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                }
+              },
+              "parameterOrder": [
+                "installationId"
+              ],
+              "response": {
+                "$ref": "ListGitHubInstallationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "For given installation id, list project-installation mappings across all\nGCB projects visible to the caller.\n\nThis API is experimental."
+            }
+          }
+        }
+      }
+    },
+    "oauth": {
+      "methods": {
+        "getRegistration": {
+          "id": "cloudbuild.oauth.getRegistration",
+          "path": "v1/oauth/registration",
+          "flatPath": "v1/oauth/registration",
+          "httpMethod": "GET",
+          "parameters": {
+            "hostUrl": {
+              "description": "The host url that the oauth credentials are associated with. For GitHub,\nthis would be \"https:\/\/github.com\". For GitHubEnterprise, this would be\nthe host name of their github enterprise instance.",
+              "location": "query",
+              "type": "string"
+            },
+            "namespace": {
+              "description": "The namespace that the credential belongs to.",
+              "location": "query",
+              "type": "string",
+              "enum": [
+                "NAMESPACE_UNSPECIFIED",
+                "GITHUB_ENTERPRISE"
+              ]
+            },
+            "githubEnterpriseConfig": {
+              "description": "The full resource name of the github enterprise resource if applicable.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "OAuthRegistrationURI"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get a URL that a customer should use to initiate an OAuth flow on an\nexternal source provider.\n\nThis API is experimental."
+        },
+        "processOAuthCallback": {
+          "id": "cloudbuild.oauth.processOAuthCallback",
+          "path": "v1/oauth:processOAuthCallback",
+          "flatPath": "v1/oauth:processOAuthCallback",
+          "httpMethod": "GET",
+          "parameters": {
+            "namespace": {
+              "description": "The namespace that the oauth callback credential should be processed for.\nThis should map to the string name of the enum defined in the\nGetOAuthRegistrationURLRequest.",
+              "location": "query",
+              "type": "string"
+            },
+            "code": {
+              "description": "GitHub generated temproary authorization code.",
+              "location": "query",
+              "type": "string"
+            },
+            "state": {
+              "description": "The XSRF token that was sent as part of the initial request to start the\nOAuth flow.",
+              "location": "query",
+              "type": "string"
+            },
+            "hostUrl": {
+              "description": "The host url of the site that the OAuth token is issued for.",
+              "location": "query",
+              "type": "string"
+            },
+            "githubEnterpriseConfig": {
+              "description": "For github enterprise, the full resource name of the github enterprise\nresource.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "ProcessOAuthCallback fulfills the last leg of the OAuth dance with a\nsource provider.\nFor GitHub this is as defined by\nhttps:\/\/developer.github.com\/apps\/building-oauth-apps\/authorizing-oauth-apps\/#2-users-are-redirected-back-to-your-site-by-github\nUsers will not be able to call this in any meaningful way since they don't\nhave access to the OAuth code used in the exchange.\nFor now, this rpc only supports GitHubEnterprise, but will eventually\nreplace GenerateGitHubAccessToken"
         }
       }
     }

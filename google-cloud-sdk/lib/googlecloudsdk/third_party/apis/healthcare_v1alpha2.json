@@ -781,6 +781,7 @@
           "type": "string"
         },
         "state": {
+          "description": "Indicates the current state of this consent.",
           "enumDescriptions": [
             "No state specified.",
             "The consent is active and is considered when evaluating user's consent\non resources.",
@@ -858,7 +859,7 @@
     },
     "RevokeConsentRequest": {
       "id": "RevokeConsentRequest",
-      "description": "Revokes the current version of the specified Consent.",
+      "description": "Revokes the latest revision of the specified Consent by committing a\nnew revision with `state` updated to `REVOKED`. If the latest revision of the\ngiven consent is in the `REVOKED` state, no new revision is committed.",
       "type": "object",
       "properties": {
       }
@@ -1506,7 +1507,7 @@
           "type": "string"
         },
         "force": {
-          "description": "This flag is only used for ExportDicomData\noperations.\nIf the destination table already exists and this flag is `TRUE`, the table\nis overwritten by the contents of the DICOM store. If the flag is not\nset and the destination table already exists, the export call returns an\nerror.",
+          "description": "This flag is being replaced by write_disposition which provides additional\noptions. force=false is equivalent to WRITE_EMPTY and force=true is\nequivalent to WRITE_TRUNCATE.",
           "type": "boolean"
         }
       }
@@ -4221,7 +4222,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes the specified Attribute definition. Fails if it\nis referenced in any Consent or User data mapping."
+                          "description": "Deletes the specified Attribute definition. Fails if it\nis referenced by the latest revision of any Consent or User data mapping."
                         },
                         "patch": {
                           "id": "healthcare.projects.locations.datasets.consentStores.attributeDefinitions.patch",
@@ -4378,7 +4379,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes the specified Consent artifact. Fails if it is\nreferenced by any Consent."
+                          "description": "Deletes the specified Consent artifact. Fails if it is\nreferenced by the latest revision of any Consent."
                         },
                         "list": {
                           "id": "healthcare.projects.locations.datasets.consentStores.consentArtifacts.list",
@@ -4460,7 +4461,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "name": {
-                              "description": "The resource name of the consent to retrieve.",
+                              "description": "The resource name of the consent to retrieve, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.\n\nIn order to retrieve a previous revision of the consent, also provide the\nrevision ID:\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}@{revision_id}`",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
@@ -4476,7 +4477,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Gets the specified Consent."
+                          "description": "Gets the specified revision of a Consent, or the latest revision\nif `revision_id` is not specified in the resource name."
                         },
                         "delete": {
                           "id": "healthcare.projects.locations.datasets.consentStores.consents.delete",
@@ -4485,7 +4486,7 @@
                           "httpMethod": "DELETE",
                           "parameters": {
                             "name": {
-                              "description": "The resource name of the consent to delete.",
+                              "description": "The resource name of the consent to delete, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.\nAn INVALID_ARGUMENT error occurs if\n`revision_id` is specified in the name.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
@@ -4501,7 +4502,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes the Consent and\nits history. To keep a record of the Consent but mark it inactive, see\n[RevokeConsent]. To delete the history of a Consent, see\n[DeleteAllConsentHistory]. This operation does not affect the related\nconsent artifact."
+                          "description": "Deletes the Consent and\nits revisions. To keep a record of the Consent but mark it inactive, see\n[RevokeConsent]. To delete a revision of a Consent, see\n[DeleteConsentRevision]. This operation does not delete the related\nconsent artifact."
                         },
                         "patch": {
                           "id": "healthcare.projects.locations.datasets.consentStores.consents.patch",
@@ -4535,7 +4536,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Updates the Consent.\nThe existing consent is archived and replaced with the one that has updated\nfields. Only active consents can be updated. To view previous versions, use\nthe [ListConsentHistory] operation."
+                          "description": "Updates the latest revision of the specified\nConsent by committing a\nnew revision with the changes. A FAILED_PRECONDITION error occurs if the latest revision\nof the given consent is in the `REJECTED` or `REVOKED` state."
                         },
                         "list": {
                           "id": "healthcare.projects.locations.datasets.consentStores.consents.list",
@@ -4576,7 +4577,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Lists the Consent in\nthe given Consent store."
+                          "description": "Lists the Consent in\nthe given Consent store, returning each\nconsent's latest revision."
                         },
                         "revoke": {
                           "id": "healthcare.projects.locations.datasets.consentStores.consents.revoke",
@@ -4585,7 +4586,7 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "name": {
-                              "description": "The resource name of the consent to revoke.",
+                              "description": "The resource name of the consent to revoke, of the form\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.\nAn INVALID_ARGUMENT error occurs if\n`revision_id` is specified in the name.",
                               "location": "path",
                               "required": true,
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
@@ -4604,7 +4605,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Revokes the current version of the specified Consent."
+                          "description": "Revokes the latest revision of the specified Consent by committing a\nnew revision with `state` updated to `REVOKED`. If the latest revision of\nthe given consent is in the `REVOKED` state, no new revision is committed.\nA FAILED_PRECONDITION error occurs\nif the latest revision of the given consent is in `DRAFT` or `REJECTED`\nstate."
                         }
                       }
                       ,
@@ -4963,6 +4964,105 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
+                    }
+                  }
+                }
+              }
+            },
+            "services": {
+              "resources": {
+                "dataEnclave": {
+                  "resources": {
+                    "enclaves": {
+                      "methods": {
+                        "setIamPolicy": {
+                          "id": "healthcare.projects.locations.services.dataEnclave.enclaves.setIamPolicy",
+                          "path": "v1alpha2/{+resource}:setIamPolicy",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/services/dataEnclave/enclaves/{enclavesId}:setIamPolicy",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/dataEnclave\/enclaves\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "request": {
+                            "$ref": "SetIamPolicyRequest"
+                          },
+                          "response": {
+                            "$ref": "Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                        },
+                        "getIamPolicy": {
+                          "id": "healthcare.projects.locations.services.dataEnclave.enclaves.getIamPolicy",
+                          "path": "v1alpha2/{+resource}:getIamPolicy",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/services/dataEnclave/enclaves/{enclavesId}:getIamPolicy",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/dataEnclave\/enclaves\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "options.requestedPolicyVersion": {
+                              "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM\ndocumentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "response": {
+                            "$ref": "Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
+                        },
+                        "testIamPermissions": {
+                          "id": "healthcare.projects.locations.services.dataEnclave.enclaves.testIamPermissions",
+                          "path": "v1alpha2/{+resource}:testIamPermissions",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/services/dataEnclave/enclaves/{enclavesId}:testIamPermissions",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/dataEnclave\/enclaves\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "request": {
+                            "$ref": "TestIamPermissionsRequest"
+                          },
+                          "response": {
+                            "$ref": "TestIamPermissionsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+                        }
+                      }
                     }
                   }
                 }

@@ -338,7 +338,8 @@ def AddUpdateTrafficFlags(parser, release_track):
       'You can use "LATEST" as a special revision name to always put the given '
       'percentage of traffic on the latest ready revision.')
 
-  if release_track and base.ReleaseTrack.ALPHA == release_track:
+  if release_track and (base.ReleaseTrack.BETA == release_track or
+                        base.ReleaseTrack.ALPHA == release_track):
     group.add_argument(
         '--to-tags',
         metavar='TAG=PERCENTAGE',
@@ -478,8 +479,8 @@ def AddConcurrencyFlag(parser):
       '--concurrency',
       type=arg_parsers.CustomFunctionValidator(
           _ConcurrencyValue, 'must be an integer greater than 0 or "default".'),
-      help='Set the number of concurrent requests allowed per '
-      'container instance. A concurrency of 0 or unspecified indicates '
+      help='Set the maximum number of concurrent requests allowed per '
+      'container instance. If concurrency is unspecified, '
       'any number of concurrent requests are allowed. To unset '
       'this field, provide the special value `default`.')
 
@@ -628,7 +629,7 @@ def AddLabelsFlags(parser):
 
 
 class _ScaleValue(object):
-  """Type for min/max-instaces flag values."""
+  """Type for min/max-instances flag values."""
 
   def __init__(self, value):
     self.restore_default = value == 'default'
@@ -690,7 +691,7 @@ def AddArgsFlag(parser):
 def _PortValue(value):
   """Returns True if port value is an int within range or 'default'."""
   try:
-    return value == 'default' or (int(value) >= 1 and int(value) <= 65535)
+    return value == 'default' or (1 <= int(value) <= 65535)
   except ValueError:
     return False
 

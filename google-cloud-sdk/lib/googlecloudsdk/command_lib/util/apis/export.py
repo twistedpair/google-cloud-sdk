@@ -81,8 +81,12 @@ def _NormalizeTypeName(name):
   s = six.text_type(name).lower()
   if re.match(r'.?int64', s):
     return 'string'
+  if re.match(r'.?int32', s):
+    return 'integer'
   if re.match(r'^int\d*$', s):
     return 'integer'
+  if s == 'float':
+    return 'number'
   if s == 'bool':
     return 'boolean'
   if s == 'bytes':

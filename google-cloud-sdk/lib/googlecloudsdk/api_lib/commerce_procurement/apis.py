@@ -199,3 +199,56 @@ class FreeTrials(object):
       return FreeTrials.GetService().List(request)
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error)
+
+
+class Operations(object):
+  """The Operations set of Commerce Procurement Consumer API functions."""
+
+  GET_FREE_TRIAL_OPERATION_REQUEST = GetMessagesModule(
+  ).CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsGetRequest
+  GET_ORDER_OPERATION_REQUEST = GetMessagesModule(
+  ).CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsGetRequest
+
+  @staticmethod
+  def GetFreeTrialOperationService():
+    return GetClientInstance().projects_freeTrials_operations
+
+  @staticmethod
+  def GetOrderOperationService():
+    return GetClientInstance().billingAccounts_orders_operations
+
+  @staticmethod
+  def GetFreeTrialOperation(operation_name):
+    """Calls the Procurement Consumer FreeTrials.Operations.Get method.
+
+    Args:
+      operation_name: Name of the free trial operation.
+
+    Returns:
+      Free trial operation.
+    """
+    request = GetMessagesModule(
+    ).CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsGetRequest(
+        name=operation_name)
+    try:
+      return Operations.GetFreeTrialOperationService().Get(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
+
+  @staticmethod
+  def GetOrderOperation(operation_name):
+    """Calls the Procurement Consumer Orders.Operations.Get method.
+
+    Args:
+      operation_name: Name of the order operation.
+
+    Returns:
+      Order operation.
+    """
+    request = GetMessagesModule(
+    ).CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsGetRequest(
+        name=operation_name)
+    try:
+      return Operations.GetOrderOperationService().Get(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)

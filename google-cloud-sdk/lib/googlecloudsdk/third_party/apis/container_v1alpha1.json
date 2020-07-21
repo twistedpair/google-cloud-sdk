@@ -324,6 +324,10 @@
           "description": "Notification configuration of the cluster.",
           "$ref": "NotificationConfig"
         },
+        "confidentialNodes": {
+          "description": "Configuration of Confidential Nodes",
+          "$ref": "ConfidentialNodes"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -2018,6 +2022,17 @@
         "topic": {
           "description": "The desired Pub\/Sub topic to which notifications will be\nsent by GKE. Format is `projects\/{project}\/topics\/{topic}`.",
           "type": "string"
+        }
+      }
+    },
+    "ConfidentialNodes": {
+      "id": "ConfidentialNodes",
+      "description": "ConfidentialNodes is configuration for the confidential nodes feature, which\nmakes nodes run on confidential VMs.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Confidential Nodes feature is enabled for all nodes in this\ncluster.",
+          "type": "boolean"
         }
       }
     },

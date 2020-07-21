@@ -204,3 +204,14 @@ def AddDiskSizeFlag(parser):
       minimum size is 20GB and the maximum is 500GB. Specified value must be an
       integer multiple of Gigabytes.
       """)
+
+
+def AddMachineTypeArgs(parser):
+  return parser.add_argument(
+      '--machine-type',
+      default='n1-standard-1',
+      help="""\
+      Specifies the machine type used for the Compute Engine VM. To get a
+      list of available machine types, run 'gcloud compute
+      machine-types list'. If unspecified, the default type is n1-standard-1.
+      """)

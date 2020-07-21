@@ -589,7 +589,8 @@
             "TPU VM memory is low.",
             "TPU runtime is out of memory.",
             "TPU runtime execution has timed out.",
-            "TPU runtime fails to construct a mesh that recognizes each TPU device's\nneighbors."
+            "TPU runtime fails to construct a mesh that recognizes each TPU device's\nneighbors.",
+            "TPU HBM is out of memory."
           ],
           "type": "string",
           "enum": [
@@ -597,7 +598,8 @@
             "LOW_MEMORY",
             "OUT_OF_MEMORY",
             "EXECUTE_TIMED_OUT",
-            "MESH_BUILD_FAIL"
+            "MESH_BUILD_FAIL",
+            "HBM_OUT_OF_MEMORY"
           ]
         },
         "details": {

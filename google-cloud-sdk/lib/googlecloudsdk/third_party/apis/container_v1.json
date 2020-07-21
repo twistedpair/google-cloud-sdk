@@ -713,6 +713,10 @@
         "dnsCacheConfig": {
           "description": "Configuration for NodeLocalDNS, a dns cache running on cluster nodes",
           "$ref": "DnsCacheConfig"
+        },
+        "configConnectorConfig": {
+          "description": "Configuration for the ConfigConnector add-on, a Kubernetes\nextension to manage hosted GCP services through the Kubernetes API",
+          "$ref": "ConfigConnectorConfig"
         }
       }
     },
@@ -792,6 +796,17 @@
       "properties": {
         "enabled": {
           "description": "Whether NodeLocal DNSCache is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ConfigConnectorConfig": {
+      "id": "ConfigConnectorConfig",
+      "description": "Configuration options for the Config Connector add-on.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether Cloud Connector is enabled for this cluster.",
           "type": "boolean"
         }
       }

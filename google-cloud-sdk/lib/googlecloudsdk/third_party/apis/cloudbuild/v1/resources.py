@@ -48,6 +48,17 @@ class Collections(enum.Enum):
       ['projectId', 'id'],
       True
   )
+  PROJECTS_GITHUBENTERPRISECONFIGS = (
+      'projects.githubEnterpriseConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/githubEnterpriseConfigs/'
+              '{githubEnterpriseConfigsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',

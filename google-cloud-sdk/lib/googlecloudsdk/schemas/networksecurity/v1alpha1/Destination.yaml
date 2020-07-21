@@ -63,4 +63,4 @@ properties:
     description: List of destination ports to match.
     type: array
     items:
-      type: uint32
+      type: integer

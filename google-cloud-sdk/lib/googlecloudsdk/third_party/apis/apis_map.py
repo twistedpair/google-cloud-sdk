@@ -317,14 +317,6 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
-        'v1p1alpha1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.cloudasset.v1p1alpha1',
-                client_classpath='cloudasset_v1p1alpha1_client.CloudassetV1p1alpha1',
-                messages_modulepath='cloudasset_v1p1alpha1_messages',
-                default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
         'v1p1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.cloudasset.v1p1beta1',
@@ -406,6 +398,14 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.cloudbuild.v1alpha2',
                 client_classpath='cloudbuild_v1alpha2_client.CloudbuildV1alpha2',
                 messages_modulepath='cloudbuild_v1alpha2_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudbuild.v1beta1',
+                client_classpath='cloudbuild_v1beta1_client.CloudbuildV1beta1',
+                messages_modulepath='cloudbuild_v1beta1_messages',
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -664,7 +664,8 @@ MAP = {
                 messages_modulepath='compute_alpha_messages',
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/alpha/'),
+                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/alpha/'
+            ),
         'beta':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.compute.beta',
@@ -672,7 +673,8 @@ MAP = {
                 messages_modulepath='compute_beta_messages',
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/beta/'),
+                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/beta/'
+            ),
         'v1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.compute.v1',
@@ -680,7 +682,8 @@ MAP = {
                 messages_modulepath='compute_v1_messages',
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/v1/'),
+                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/v1/'
+            ),
     },
     'container': {
         'v1':

@@ -34,6 +34,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_ANALYTICS_DATASTORES = (
+      'organizations.analytics.datastores',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/analytics/datastores/'
+              '{datastoresId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_APIPRODUCTS = (
       'organizations.apiproducts',
       '{+name}',
@@ -167,6 +178,17 @@ class Collections(enum.Enum):
       {
           '':
               'organizations/{organizationsId}/environments/{environmentsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_ENVIRONMENTS_ANALYTICS_EXPORTS = (
+      'organizations.environments.analytics.exports',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/environments/{environmentsId}/'
+              'analytics/exports/{exportsId}',
       },
       ['name'],
       True

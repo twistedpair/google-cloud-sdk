@@ -725,51 +725,6 @@
         }
       }
     },
-    "OperationMetadataV1Beta2": {
-      "id": "OperationMetadataV1Beta2",
-      "description": "Metadata describing an Operation",
-      "type": "object",
-      "properties": {
-        "target": {
-          "description": "Target of the operation - for example\nprojects\/project-1\/locations\/region-1\/functions\/function-1",
-          "type": "string"
-        },
-        "type": {
-          "description": "Type of operation.",
-          "enumDescriptions": [
-            "Unknown operation type.",
-            "Triggered by CreateFunction call",
-            "Triggered by UpdateFunction call",
-            "Triggered by DeleteFunction call."
-          ],
-          "type": "string",
-          "enum": [
-            "OPERATION_UNSPECIFIED",
-            "CREATE_FUNCTION",
-            "UPDATE_FUNCTION",
-            "DELETE_FUNCTION"
-          ]
-        },
-        "request": {
-          "description": "The original request that started the operation.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "versionId": {
-          "description": "Version id of the function created or updated by an API call.\nThis field is only populated for Create and Update operations.",
-          "type": "string",
-          "format": "int64"
-        },
-        "updateTime": {
-          "description": "The last update timestamp of the operation.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
     "OperationMetadataV1": {
       "id": "OperationMetadataV1",
       "description": "Metadata describing an Operation",

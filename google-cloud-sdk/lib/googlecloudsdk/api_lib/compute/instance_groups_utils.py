@@ -18,8 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import encoding
 import enum
+from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import lister
@@ -266,7 +266,7 @@ def CreateInstanceReferences(
         region=igm_ref.region,
         project=igm_ref.project)
     results = compute_client.MakeRequests(requests=[
-        (service, 'ListManagedInstances', request)])[0].managedInstances
+        (service, 'ListManagedInstances', request)])
     # here we assume that instances are uniquely named within RMIG
     return [instance_ref.instance for instance_ref in results
             if path_simplifier.Name(instance_ref.instance) in instance_names

@@ -114,9 +114,6 @@
         },
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
-        },
-        "https://www.googleapis.com/auth/userinfo.profile": {
-          "description": "See your personal info, including any personal info you've made publicly available"
         }
       }
     }
@@ -132,7 +129,7 @@
           "$ref": "Device"
         },
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. You can use the 'customers\/my_customer' alias to represent\nyour account's customerId. To find the customer ID for your organization,\nuse the command:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.\nIf you're using this API to manage another\norganization, use `customers\/{customer_id}`, where `customer_id` is the\ncustomer to whom the device belongs.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -456,7 +453,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -467,7 +464,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -478,7 +475,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         },
         "pin": {
@@ -493,7 +490,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -504,7 +501,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -643,7 +640,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -654,7 +651,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -665,7 +662,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -676,7 +673,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -687,7 +684,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -698,7 +695,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -709,7 +706,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -720,7 +717,7 @@
       "type": "object",
       "properties": {
         "customer": {
-          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+          "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
           "type": "string"
         }
       }
@@ -1648,7 +1645,7 @@
           "response": {
             "$ref": "Device"
           },
-          "description": "Retrieves a device."
+          "description": "Retrieves the specified device."
         },
         "list": {
           "id": "cloudidentity.devices.list",
@@ -1719,7 +1716,7 @@
               "type": "string"
             },
             "customer": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.\ncustomer to whom the device belongs.",
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
               "location": "query",
               "type": "string"
             },
@@ -1739,7 +1736,7 @@
           "response": {
             "$ref": "Operation"
           },
-          "description": "Updates a device."
+          "description": "Updates the specified device."
         },
         "delete": {
           "id": "cloudidentity.devices.delete",
@@ -1755,7 +1752,7 @@
               "type": "string"
             },
             "customer": {
-              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. To find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.\nIf you're using this API to manage another\norganization, use `customers\/{customer_id}`, where `customer_id` is the\ncustomer to whom the device belongs.",
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
               "location": "query",
               "type": "string"
             }
@@ -1766,7 +1763,7 @@
           "response": {
             "$ref": "Operation"
           },
-          "description": "Deletes a device."
+          "description": "Deletes the specified device."
         },
         "ring": {
           "id": "cloudidentity.devices.ring",
@@ -1791,7 +1788,7 @@
           "response": {
             "$ref": "Operation"
           },
-          "description": "Rings the device"
+          "description": "Rings the specified device"
         },
         "lock": {
           "id": "cloudidentity.devices.lock",
@@ -1816,7 +1813,7 @@
           "response": {
             "$ref": "Operation"
           },
-          "description": "Locks the device, without signing out the user"
+          "description": "Locks the specified device, without signing out the user"
         },
         "resetPin": {
           "id": "cloudidentity.devices.resetPin",
@@ -1841,7 +1838,7 @@
           "response": {
             "$ref": "Operation"
           },
-          "description": "Resets the device's pin"
+          "description": "Resets the specified device's pin"
         },
         "wipe": {
           "id": "cloudidentity.devices.wipe",
@@ -1866,7 +1863,7 @@
           "response": {
             "$ref": "Operation"
           },
-          "description": "Wipes all data on a device."
+          "description": "Wipes all data on the specified device."
         },
         "cancelWipe": {
           "id": "cloudidentity.devices.cancelWipe",
@@ -1979,7 +1976,7 @@
                   "type": "string"
                 },
                 "customer": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1990,7 +1987,7 @@
               "response": {
                 "$ref": "DeviceUser"
               },
-              "description": "Retrieves a DeviceUser"
+              "description": "Retrieves the specified DeviceUser"
             },
             "list": {
               "id": "cloudidentity.devices.deviceUsers.list",
@@ -2006,7 +2003,7 @@
                   "type": "string"
                 },
                 "customer": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
                   "location": "query",
                   "type": "string"
                 },
@@ -2059,7 +2056,7 @@
                   "type": "string"
                 },
                 "customer": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
                   "location": "query",
                   "type": "string"
                 },
@@ -2079,7 +2076,7 @@
               "response": {
                 "$ref": "Operation"
               },
-              "description": "Updates a DeviceUser."
+              "description": "Updates the specified DeviceUser."
             },
             "delete": {
               "id": "cloudidentity.devices.deviceUsers.delete",
@@ -2095,7 +2092,7 @@
                   "type": "string"
                 },
                 "customer": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
                   "location": "query",
                   "type": "string"
                 }
@@ -2106,7 +2103,7 @@
               "response": {
                 "$ref": "Operation"
               },
-              "description": "Deletes a DeviceUser. This also revokes the user's access to device data."
+              "description": "Deletes the specified DeviceUser. This also revokes the user's access to\ndevice data."
             },
             "collectBugReport": {
               "id": "cloudidentity.devices.deviceUsers.collectBugReport",
@@ -2131,7 +2128,7 @@
               "response": {
                 "$ref": "Operation"
               },
-              "description": "Collects bug report on a device, which can be later downloaded from\n[Admin Console](https:\/\/admin.google.com)."
+              "description": "Collects bug report on the specified device, which can be later downloaded\nfrom [Admin Console](https:\/\/admin.google.com)."
             },
             "sync": {
               "id": "cloudidentity.devices.deviceUsers.sync",
@@ -2181,7 +2178,7 @@
               "response": {
                 "$ref": "Operation"
               },
-              "description": "Signs out the user from the device"
+              "description": "Signs out the user from the specified device"
             },
             "approve": {
               "id": "cloudidentity.devices.deviceUsers.approve",
@@ -2327,7 +2324,7 @@
                       "type": "string"
                     },
                     "customer": {
-                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2374,7 +2371,7 @@
                       "type": "string"
                     },
                     "customer": {
-                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2385,7 +2382,7 @@
                   "response": {
                     "$ref": "ClientState"
                   },
-                  "description": "Get client state for a device user"
+                  "description": "Gets the client state for the device user"
                 },
                 "list": {
                   "id": "cloudidentity.devices.deviceUsers.clientStates.list",
@@ -2401,7 +2398,7 @@
                       "type": "string"
                     },
                     "customer": {
-                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2427,7 +2424,7 @@
                   "response": {
                     "$ref": "ListClientStatesResponse"
                   },
-                  "description": "List client states for the given search query."
+                  "description": "Lists the client states for the given search query."
                 },
                 "patch": {
                   "id": "cloudidentity.devices.deviceUsers.clientStates.patch",
@@ -2443,7 +2440,7 @@
                       "type": "string"
                     },
                     "customer": {
-                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe Customer in format: `customers\/{customer_id}`, where\ncustomer_id is the customer to whom the device belongs.\nTo find the customer ID for your organization, use the\ncommand:\n```\ngcloud alpha organizations list\n```\nThe customer ID you need to use appears under the heading\n`DIRECTORY_CUSTOMER_ID`. The value is the letter \"C\" followed by\nletters and numbers. Use the value after the letter \"C\". So if\nthe Directory Customer ID displayed is, say `C00zqsgyx`, then the\ncustomer ID value to use in the API is: `customers\/00zqsgyx`.",
+                      "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of\nthe customer. If you're using this API for your own organization, use\n`customers\/my_customer` If you're using this API to manage another\norganization, use `customers\/{customer_id}`, where customer_id is the\ncustomer to whom the device belongs.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2463,7 +2460,7 @@
                   "response": {
                     "$ref": "Operation"
                   },
-                  "description": "Update client state for a device user"
+                  "description": "Updates the client state for the device user"
                 }
               }
             }
@@ -2512,10 +2509,9 @@
                     "$ref": "LookupSelfDeviceUsersResponse"
                   },
                   "scopes": [
-                    "https://www.googleapis.com/auth/cloud-identity.devices.lookup",
-                    "https://www.googleapis.com/auth/userinfo.profile"
+                    "https://www.googleapis.com/auth/cloud-identity.devices.lookup"
                   ],
-                  "description": "Looks up resource names of the DeviceUsers associated with the\ncaller's credentials, as well as the properties provided in the request."
+                  "description": "Looks up resource names of the DeviceUsers associated with the\ncaller's credentials, as well as the properties provided in the request.\n\nThis method must be called with end-user credentials with the scope:\nhttps:\/\/www.googleapis.com\/auth\/cloud-identity.devices.lookup\n\nIf multiple properties are provided, only DeviceUsers having all of these\nproperties are considered as matches - i.e. the query behaves like an AND.\n\nDifferent platforms require different amounts of information from the\ncaller to ensure that the DeviceUser is uniquely identified.\n\n- iOS: No properties need to be passed, the caller's credentials are\nsufficient to identify the corresponding DeviceUser.\n- Android: Specifying the 'android_id' field is required.\n- Desktop: Specifying the 'raw_resource_id' field is required."
                 }
               }
             }

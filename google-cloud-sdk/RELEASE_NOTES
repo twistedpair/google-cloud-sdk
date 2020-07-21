@@ -6,6 +6,93 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 302.0.0 (2020-07-21)
+
+### AI Platform
+
+* Promoted `--machine-type` and `--accelerator` flags to GA.  While these
+  flags are GA, some machine types themselves may be in beta; for more
+  information, see
+  <https://cloud.google.com/ai-platform/prediction/docs/machine-types-online-prediction#available_machine_types>.
+* Promoted `--region` to GA to enable regional endpoint specification;
+  this is the preferred method for using online prediction for
+  n1* machine types.
+
+### App Engine
+
+* Added support for directly deploying the Gradle project 'build.gradle' file.
+
+### Cloud Asset Inventory
+
+* Modified `gcloud asset search-all-resources` and `gcloud asset search-all-iam-policies` to apply `--page-size=20` by default.
+
+### Cloud Dataproc
+
+*   Added `--dag-timeout` flag to `gcloud dataproc workflow-templates create` to
+    allow timeouts to be set on Workflow jobs DAGs.
+*   Added `gcloud dataproc workflow-templates set-dag-timeout` to allow DAG
+    timeouts to be updated or set on existing Workflows.
+*   Added `gcloud dataproc workflow-templates remove-dag-timeout` to allow DAG
+    timeouts to be removed from Workflows.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.5
+  * Bug fix for camel case query parameters
+  * Add support for `!=` style queries
+
+### Cloud Pub/Sub
+
+* Promoted `--enable-message-ordering` flag of `gcloud pubsub subscriptions
+  create` and `--ordering-key` flag of `gcloud pubsub topics publish` to beta.
+
+### Cloud Resource Manager
+
+* Promoted `gcloud resource-manager org-policies` command group to GA.
+
+### Cloud Run
+
+* Promoted `--tag` flag of `gcloud run deploy` to beta.
+* Promoted `--tag` flag of `gcloud run services update` to beta.
+* Promoted `--to-tags`, `--set-tags`, `--update-tags`, `--remove-tags`, and
+  `--clear-tags` flags of `gcloud run services update-traffic` to beta.
+
+### Cloud SQL
+
+* Promoted server-level `--collation` flag of
+  `gcloud sql instances create` to GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.52.
+
+### Compute Engine
+
+* Promoted `--rollout-mode`, `--rollout-disruption-budget`, and `--rollout-disruption-budget-percent` flags of `gcloud compute os-config patch-jobs execute` to beta.
+* Promoted `gcloud compute health-checks <create|update> grpc` commands to GA.
+
+### Firebase Test Lab
+
+*   Added `--grant-permissions` flag to
+    `gcloud beta firebase test android run`. This flag allows you to specify if
+    runtime permissions should be granted prior to running a test.
+*   Modified the limit for `--num-uniform-shards` and `--test-targets-for-shard`
+    to be 250 when no physical devices are selected.
+
+### Kubernetes Engine
+
+* Added flag `--private-ipv6-access-type` of `gcloud container clusters create` and `gcloud container clusters update` to beta. This flag is used to allow GKE pods to connect to Google services over a low latency, secure, IPv6 network path.
+* Promoted `--release-channel` of `gcloud container clusters create` and `gcloud container clusters update` to GA. This flag is used to configure the cluster release channel.
+
+### Secret Manager
+
+* Updated `gcloud secrets create` command to default to an automatic replication policy if a replication policy is not provided.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 301.0.0 (2020-07-14)
 
 ### Cloud SDK

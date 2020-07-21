@@ -311,7 +311,11 @@ def AddPredictiveAutoscaling(parser):
           'standard':
               ('Standard predictive autoscaling  predicts the future values of '
                'the scaling metric and then scales a MIG to ensure that new VM '
-               'instances are ready in time to cover the predicted peak.')
+               'instances are ready in time to cover the predicted peak.'),
+          'optimize-availability':
+              ('Predictive autoscaling predicts the future values of the '
+               'scaling metric and scales a MIG in advance to ensure that new '
+               'VM instances are ready in time to cover the predicted peak.')
       },
       help='Indicates which method of prediction is used for CPU utilization metric, if any.'
   )

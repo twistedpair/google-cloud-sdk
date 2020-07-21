@@ -22,6 +22,7 @@ import io
 import os
 
 from googlecloudsdk.api_lib.container import kubeconfig as kconfig
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -536,3 +537,56 @@ def _CheckNodeConfigValueType(name, value, value_type):
   if not isinstance(value, value_type):
     raise NodeConfigError('value of "{0}" must be {1}'.format(
         name, value_type.__name__))
+
+
+def _GetPrivateIPv6CustomMappings():
+  return {
+      'PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED': 'disabled',
+      'PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE': 'outbound-only',
+      'PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL': 'bidirectional'
+  }
+
+
+def GetPrivateIpv6GoogleAccessTypeMapper(messages, hidden=False):
+  """Returns a mapper from text options to the PrivateIpv6GoogleAccess enum.
+
+  Args:
+    messages: The message module.
+    hidden: Whether the flag should be hidden in the choice_arg
+  """
+
+  help_text = """
+Selects the type of private access to Google services over IPv6. Defaults to
+`disabled`.
+outbound-only allows GKE pods to make fast, secure requests to Google services
+over IPv6. This is the most common use of private IPv6 access.
+bidirectional access allows Google services to initiate connections to GKE pods
+in this cluster. This is not intended for common use, and requires previous
+integration with Google services.
+
+$ {command} --private-ipv6-google-access-type=disabled
+$ {command} --private-ipv6-google-access-type=outbound-only
+$ {command} --private-ipv6-google-access-type=bidirectional
+"""
+  return arg_utils.ChoiceEnumMapper(
+      '--private-ipv6-google-access-type',
+      messages.NetworkConfig.PrivateIpv6GoogleAccessValueValuesEnum,
+      _GetPrivateIPv6CustomMappings(),
+      hidden=hidden,
+      help_str=help_text)
+
+
+def GetPrivateIpv6GoogleAccessTypeMapperForUpdate(messages, hidden=False):
+  """Returns a mapper from the text options to the PrivateIpv6GoogleAccess enum.
+
+  Args:
+    messages: The message module.
+    hidden: Whether the flag should be hidden in the choice_arg.
+    The choice_arg will never actually be used for this mode.
+  """
+  return arg_utils.ChoiceEnumMapper(
+      '--private-ipv6-google-access-type',
+      messages.ClusterUpdate.DesiredPrivateIpv6GoogleAccessValueValuesEnum,
+      _GetPrivateIPv6CustomMappings(),
+      hidden=hidden,
+      help_str='')

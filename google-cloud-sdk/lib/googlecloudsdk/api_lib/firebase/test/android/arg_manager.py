@@ -79,6 +79,7 @@ def SharedArgRules():
           'device_ids',
           'directories_to_pull',
           'environment_variables',
+          'grant_permissions',
           'locales',
           'network_profile',
           'num_flaky_test_attempts',
@@ -100,6 +101,7 @@ def SharedArgRules():
           'performance_metrics': True,
           'record_video': True,
           'timeout': 900,  # 15 minutes
+          'grant_permissions': 'all',
       }
   }
 

@@ -264,7 +264,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "Represents a Data Fusion instance.\nNext available ID: 23",
+      "description": "Represents a Data Fusion instance.",
       "type": "object",
       "properties": {
         "name": {
@@ -376,7 +376,7 @@
           "type": "string"
         },
         "serviceAccount": {
-          "description": "Output only. Service account which will be used to access resources in\nthe customer project.\"",
+          "description": "Output only. Service account output for use in peering&mdash;see\n[Set up VPC Network\nPeering](\/data-fusion\/docs\/how-to\/create-private-ip#set_up_network_peering).",
           "type": "string"
         },
         "displayName": {

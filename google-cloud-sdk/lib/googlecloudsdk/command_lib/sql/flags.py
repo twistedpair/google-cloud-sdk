@@ -269,7 +269,6 @@ def AddDatabaseFlags(parser, update=False):
 def AddDatabaseVersion(parser, restrict_choices=True):
   """Adds `--database-version` to the parser with choices restricted or not."""
   choices = [
-      'MYSQL_5_5',
       'MYSQL_5_6',
       'MYSQL_5_7',
       'POSTGRES_9_6',
@@ -315,6 +314,13 @@ def _GetKwargsForBoolFlag(show_negated_in_help):
     }
   else:
     return {'action': 'store_true', 'default': None}
+
+
+def AddInstanceCollation(parser):
+  parser.add_argument(
+      '--collation',
+      help='Cloud SQL server-level collation setting, which specifies '
+      'the set of rules for comparing characters in a character set.')
 
 
 def AddEnableBinLog(parser, show_negated_in_help=False):

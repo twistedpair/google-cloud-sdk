@@ -78,6 +78,7 @@ TIMEOUT_PARSER = arg_parsers.Duration(lower_bound='1m', upper_bound='6h')
 TIMEOUT_PARSER_US = arg_parsers.Duration(
     lower_bound='1m', upper_bound='6h', parsed_unit='us')
 ORIENTATION_LIST = ['portrait', 'landscape', 'default']
+PERMISSIONS_LIST = ['all', 'none']
 
 
 def ValidateStringList(arg_internal_name, arg_value):
@@ -205,6 +206,14 @@ def _ValidateOrientation(orientation):
     raise test_exceptions.OrientationNotFoundError(orientation)
 
 
+def _ValidatePermissions(arg_internal_name, arg_value):
+  if arg_value not in PERMISSIONS_LIST:
+    raise test_exceptions.InvalidArgException(
+        arg_internal_name,
+        'Invalid permissions specified. Must be either "all" or "none"')
+  return arg_value
+
+
 def _ValidateObbFileList(arg_internal_name, arg_value):
   """Validates that 'obb-files' contains at most 2 entries."""
   arg_value = ValidateStringList(arg_internal_name, arg_value)
@@ -268,6 +277,7 @@ _FILE_ARG_VALIDATORS = {
     'device_ids': ValidateStringList,
     'directories_to_pull': ValidateStringList,
     'environment_variables': _ValidateKeyValueStringPairs,
+    'grant_permissions': _ValidatePermissions,
     'locales': ValidateStringList,
     'orientations': _ValidateOrientationList,
     'obb_files': _ValidateObbFileList,
