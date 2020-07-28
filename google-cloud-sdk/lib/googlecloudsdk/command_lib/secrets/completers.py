@@ -18,37 +18,34 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.resource_manager import completers as resource_manager_completers
 from googlecloudsdk.command_lib.util import completers
-from googlecloudsdk.core import resources
+from googlecloudsdk.command_lib.util import parameter_info_lib
 
 
 class SecretsCompleter(completers.ListCommandCompleter):
-  """A secrets completer for a resource argument.
+  """A completer for the secret resource argument."""
 
-  The Complete() method override bypasses the completion cache.
-  """
+  def __init__(self,
+               collection='secretmanager.projects.secrets',
+               list_command='secrets list --uri',
+               **kwargs):
+    super(SecretsCompleter, self).__init__(
+        collection=collection, list_command=list_command, **kwargs)
+
+  def ParameterInfo(self, parsed_args, argument):
+    return parameter_info_lib.ParameterInfoByConvention(
+        parsed_args,
+        argument,
+        self.collection,
+        updaters={
+            'projectsId': (resource_manager_completers.ProjectCompleter, True)
+        },
+    )
+
+
+class BetaSecretsCompleter(SecretsCompleter):
 
   def __init__(self, **kwargs):
-    super(SecretsCompleter, self).__init__(
-        collection='secretmanager.projects.secrets',
-        list_command='secrets list --uri',
-        **kwargs)
-
-  def Complete(self, prefix, parameter_info):
-    """Bypasses the cache and returns completions matching prefix."""
-    command = self.GetListCommand(parameter_info)
-    items = self.GetAllItems(command, parameter_info)
-
-    if not items:
-      return
-
-    # We only want to get the secret name from the response, which returns
-    # projects/PROJECT_NUMBER/secrets/SECRET_NAME
-    def _parse(item):
-      return resources.REGISTRY.Parse(
-          item, collection='secretmanager.projects.secrets').Name()
-
-    return [
-        x for x in (_parse(item) for item in items)
-        if x and x.startswith(prefix)
-    ]
+    super(BetaSecretsCompleter, self).__init__(
+        list_command='beta secrets list --uri', **kwargs)

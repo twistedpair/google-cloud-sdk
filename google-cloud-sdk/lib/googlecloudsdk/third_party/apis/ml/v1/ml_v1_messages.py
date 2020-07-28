@@ -1957,10 +1957,15 @@ class GoogleCloudMlV1Scheduling(_messages.Message):
       jobs#formatting_your_configuration_parameters). For example:  ```yaml
       trainingInput:   ...   scheduling:     maxRunningTime: 7200s   ... ```
     maxWaitTime: A string attribute.
+    resilientToWorkerRestart: Optional. If true, reschedules an entire job if
+      a worker gets restarted. This feature can be used by distributed
+      training jobs that are not resilient to workers leaving and joining a
+      job.
   """
 
   maxRunningTime = _messages.StringField(1)
   maxWaitTime = _messages.StringField(2)
+  resilientToWorkerRestart = _messages.BooleanField(3)
 
 
 class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):

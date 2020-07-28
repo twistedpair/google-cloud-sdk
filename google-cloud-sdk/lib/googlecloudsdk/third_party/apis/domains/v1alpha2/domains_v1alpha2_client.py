@@ -55,9 +55,7 @@ class DomainsV1alpha2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (DomainsProjectsLocationsOperationsGetRequest) input message
@@ -84,16 +82,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (DomainsProjectsLocationsOperationsListRequest) input message
@@ -130,8 +119,7 @@ is the parent resource, without the operations collection id.
           }
 
     def ConfigureContactSettings(self, request, global_params=None):
-      r"""Updates a `Registration`'s contact settings. Some changes require.
-confirmation by the domain's registrant contact .
+      r"""Updates a `Registration`'s contact settings. Some changes require confirmation by the domain's registrant contact .
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsConfigureContactSettingsRequest) input message
@@ -212,12 +200,7 @@ confirmation by the domain's registrant contact .
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a `Registration` resource.
-
-This method only works on resources in one of the following states:
-
-* `state` is `EXPORTED` with `expire_time` in the past
-* `state` is `REGISTRATION_FAILED`
+      r"""Deletes a `Registration` resource. This method only works on resources in one of the following states: * `state` is `EXPORTED` with `expire_time` in the past * `state` is `REGISTRATION_FAILED`.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsDeleteRequest) input message
@@ -244,20 +227,7 @@ This method only works on resources in one of the following states:
     )
 
     def Export(self, request, global_params=None):
-      r"""Exports a `Registration` that you no longer want to use with.
-Cloud Domains. You can continue to use the domain in
-[Google Domains](https://domains.google/) until it expires.
-
-If the export is successful:
-
-* The resource's `state` becomes `EXPORTED`, meaning that it is no longer
-managed by Cloud Domains
-* Because individual users can own domains in Google Domains, the calling
-user becomes the domain's sole owner. Permissions for the domain are
-subsequently managed in Google Domains.
-* Without further action, the domain does not renew automatically.
-The new owner can set up billing in Google Domains to renew the domain
-if needed.
+      r"""Exports a `Registration` that you no longer want to use with Cloud Domains. You can continue to use the domain in [Google Domains](https://domains.google/) until it expires. If the export is successful: * The resource's `state` becomes `EXPORTED`, meaning that it is no longer managed by Cloud Domains * Because individual users can own domains in Google Domains, the calling user becomes the domain's sole owner. Permissions for the domain are subsequently managed in Google Domains. * Without further action, the domain does not renew automatically. The new owner can set up billing in Google Domains to renew the domain if needed.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsExportRequest) input message
@@ -311,9 +281,7 @@ if needed.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsGetIamPolicyRequest) input message
@@ -367,12 +335,7 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates select fields of a `Registration` resource, notably `labels`. To.
-update other fields, use the appropriate custom update method:
-
-* To update management settings, see `ConfigureManagementSettings`
-* To update DNS configuration, see `ConfigureDnsSettings`
-* To update contact information, see `ConfigureContactSettings`
+      r"""Updates select fields of a `Registration` resource, notably `labels`. To update other fields, use the appropriate custom update method: * To update management settings, see `ConfigureManagementSettings` * To update DNS configuration, see `ConfigureDnsSettings` * To update contact information, see `ConfigureContactSettings`.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsPatchRequest) input message
@@ -399,19 +362,7 @@ update other fields, use the appropriate custom update method:
     )
 
     def Register(self, request, global_params=None):
-      r"""Registers a new domain name and creates a corresponding `Registration`.
-resource.
-
-Call `RetrieveRegisterParameters` first to check availability of the domain
-name and determine parameters like price that are needed to build a call to
-this method.
-
-A successful call creates a `Registration` resource in state
-`REGISTRATION_PENDING`, which resolves to `ACTIVE` within 1-2
-minutes, indicating that the domain was successfully registered. If the
-resource ends up in state `REGISTRATION_FAILED`, it indicates that the
-domain was not registered successfully, and you can safely delete the
-resource and retry registration.
+      r"""Registers a new domain name and creates a corresponding `Registration` resource. Call `RetrieveRegisterParameters` first to check availability of the domain name and determine parameters like price that are needed to build a call to this method. A successful call creates a `Registration` resource in state `REGISTRATION_PENDING`, which resolves to `ACTIVE` within 1-2 minutes, indicating that the domain was successfully registered. If the resource ends up in state `REGISTRATION_FAILED`, it indicates that the domain was not registered successfully, and you can safely delete the resource and retry registration.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsRegisterRequest) input message
@@ -438,10 +389,7 @@ resource and retry registration.
     )
 
     def ResetAuthorizationCode(self, request, global_params=None):
-      r"""Resets the authorization code of the `Registration` to a new random string.
-
-You can call this method only after 60 days have elapsed since the initial
-domain registration.
+      r"""Resets the authorization code of the `Registration` to a new random string. You can call this method only after 60 days have elapsed since the initial domain registration.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsResetAuthorizationCodeRequest) input message
@@ -468,11 +416,7 @@ domain registration.
     )
 
     def RetrieveAuthorizationCode(self, request, global_params=None):
-      r"""Gets the authorization code of the `Registration` for the purpose of.
-transferring the domain to another registrar.
-
-You can call this method only after 60 days have elapsed since the initial
-domain registration.
+      r"""Gets the authorization code of the `Registration` for the purpose of transferring the domain to another registrar. You can call this method only after 60 days have elapsed since the initial domain registration.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsRetrieveAuthorizationCodeRequest) input message
@@ -499,8 +443,7 @@ domain registration.
     )
 
     def RetrieveRegisterParameters(self, request, global_params=None):
-      r"""Gets parameters needed to register a new domain name, including price and.
-up-to-date availability. Use the returned values to call `RegisterDomain`.
+      r"""Gets parameters needed to register a new domain name, including price and up-to-date availability. Use the returned values to call `RegisterDomain`.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsRetrieveRegisterParametersRequest) input message
@@ -527,11 +470,7 @@ up-to-date availability. Use the returned values to call `RegisterDomain`.
     )
 
     def SearchDomains(self, request, global_params=None):
-      r"""Searches for available domain names similar to the provided query.
-
-Availability results from this method are approximate; call
-`RetrieveRegisterParameters` on a domain before registering to confirm
-availability.
+      r"""Searches for available domain names similar to the provided query. Availability results from this method are approximate; call `RetrieveRegisterParameters` on a domain before registering to confirm availability.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsSearchDomainsRequest) input message
@@ -558,10 +497,7 @@ availability.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsSetIamPolicyRequest) input message
@@ -588,13 +524,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsTestIamPermissionsRequest) input message

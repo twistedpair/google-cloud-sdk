@@ -3028,7 +3028,7 @@ revision number of the API proxy.
         method_id='apigee.organizations.environments.apis.revisions.deployments',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['sequencedRollout'],
         relative_path='v1/{+name}/deployments',
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsRequest',

@@ -457,6 +457,9 @@ apis:
       default: true
     v1alpha2:
       discovery_doc: domains_v1alpha2.json
+  eventarc:
+    v1beta1:
+      discovery_doc: eventarc_v1beta1.json
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json
@@ -541,9 +544,12 @@ apis:
   iam:
     v1:
       discovery_doc: iam_v1.json
+      default: true
       resources:
         iamPolicies:
           path: iamPolicies
+    v2alpha1:
+      discovery_doc: iam_v2alpha1.json
   iamassist:
     v1alpha2:
       resources:

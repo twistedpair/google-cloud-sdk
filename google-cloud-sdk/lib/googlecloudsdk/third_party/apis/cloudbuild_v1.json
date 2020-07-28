@@ -203,6 +203,7 @@
           "description": "Output only. Status of the build.",
           "enumDescriptions": [
             "Status of the build is unknown.",
+            "Build has been created and is pending execution and queuing. It has not\nbeen queued.",
             "Build or step is queued; work has not yet begun.",
             "Build or step is being executed.",
             "Build or step finished successfully.",
@@ -215,6 +216,7 @@
           "type": "string",
           "enum": [
             "STATUS_UNKNOWN",
+            "PENDING",
             "QUEUED",
             "WORKING",
             "SUCCESS",
@@ -327,6 +329,10 @@
           "additionalProperties": {
             "$ref": "TimeSpan"
           }
+        },
+        "approval": {
+          "description": "Output only. Describes this build's approval configuration, status, and result.",
+          "$ref": "BuildApproval"
         },
         "serviceAccount": {
           "description": "IAM service account whose credentials will be used at build runtime.\nMust be of the format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nACCOUNT can be email address or uniqueId of the service account.\n",
@@ -484,6 +490,7 @@
           "description": "Output only. Status of the build step. At this time, build step status is\nonly updated on build completion; step status is not updated in real-time\nas the build progresses.",
           "enumDescriptions": [
             "Status of the build is unknown.",
+            "Build has been created and is pending execution and queuing. It has not\nbeen queued.",
             "Build or step is queued; work has not yet begun.",
             "Build or step is being executed.",
             "Build or step finished successfully.",
@@ -496,6 +503,7 @@
           "type": "string",
           "enum": [
             "STATUS_UNKNOWN",
+            "PENDING",
             "QUEUED",
             "WORKING",
             "SUCCESS",
@@ -794,10 +802,11 @@
           "description": "Option to specify the logging mode, which determines if and where build\nlogs are stored.",
           "enumDescriptions": [
             "The service determines the logging mode. The default is `LEGACY`. Do not\nrely on the default logging behavior as it may change in the future.",
-            "Cloud Logging (Stackdriver) and Cloud Storage logging are enabled.",
+            "Cloud Logging and Cloud Storage logging are enabled.",
             "Only Cloud Storage logging is enabled.",
-            "Only Cloud Logging (Stackdriver) is enabled. Note that logs for both the\nCloud Console UI and Cloud SDK are based on Cloud Storage logs, so\nneither will provide logs if this option is chosen.",
-            "Turn off all logging. No build logs will be captured."
+            "This option is the same as CLOUD_LOGGING_ONLY.",
+            "Only Cloud Logging is enabled. Note that logs for both the Cloud Console\nUI and Cloud SDK are based on Cloud Storage logs, so neither will provide\nlogs if this option is chosen.",
+            "Turn off all logging. No build logs will be captured.\nNext ID: 6"
           ],
           "type": "string",
           "enum": [
@@ -805,6 +814,7 @@
             "LEGACY",
             "GCS_ONLY",
             "STACKDRIVER_ONLY",
+            "CLOUD_LOGGING_ONLY",
             "NONE"
           ]
         },
@@ -865,6 +875,88 @@
         }
       }
     },
+    "BuildApproval": {
+      "id": "BuildApproval",
+      "description": "BuildApproval describes a build's approval configuration, state, and\nresult.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The state of this build's approval.",
+          "enumDescriptions": [
+            "Default enum type. This should not be used.",
+            "Build approval is pending.",
+            "Build approval has been approved.",
+            "Build approval has been rejected.",
+            "Build was cancelled while it was still pending approval."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "APPROVED",
+            "REJECTED",
+            "CANCELLED"
+          ]
+        },
+        "config": {
+          "description": "Output only. Configuration for manual approval of this build.",
+          "$ref": "ApprovalConfig"
+        },
+        "result": {
+          "description": "Output only. Result of manual approval for this Build.",
+          "$ref": "ApprovalResult"
+        }
+      }
+    },
+    "ApprovalConfig": {
+      "id": "ApprovalConfig",
+      "description": "ApprovalConfig describes configuration for manual approval of a build.",
+      "type": "object",
+      "properties": {
+        "approvalRequired": {
+          "description": "Whether or not approval is needed. If this is set on a build, it will\nbecome pending when created, and will need to be explicitly approved\nto start.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ApprovalResult": {
+      "id": "ApprovalResult",
+      "description": "ApprovalResult describes the decision and associated metadata of a manual\napproval of a build.",
+      "type": "object",
+      "properties": {
+        "approverAccount": {
+          "description": "Output only. Email of the user that called the ApproveBuild API to\napprove or reject a build at the time that the API was called (the user's\nactual email that is tied to their GAIA ID may have changed).",
+          "type": "string"
+        },
+        "approvalTime": {
+          "description": "Output only. The time when the approval decision was made.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "decision": {
+          "description": "Required. The decision of this manual approval.",
+          "enumDescriptions": [
+            "Default enum type. This should not be used.",
+            "Build is approved.",
+            "Build is rejected."
+          ],
+          "type": "string",
+          "enum": [
+            "DECISION_UNSPECIFIED",
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        "comment": {
+          "description": "Optional. An optional comment for this manual approval result.",
+          "type": "string"
+        },
+        "url": {
+          "description": "Optional. An optional URL tied to this manual approval result. This field is\nessentially the same as comment, except that it will be rendered\nby the UI differently. An example use case is a link to an external\njob that approved this Build.",
+          "type": "string"
+        }
+      }
+    },
     "ListBuildsResponse": {
       "id": "ListBuildsResponse",
       "description": "Response including listed builds.",
@@ -895,6 +987,17 @@
       "description": "Specifies a build to retry.",
       "type": "object",
       "properties": {
+      }
+    },
+    "ApproveBuildRequest": {
+      "id": "ApproveBuildRequest",
+      "description": "Request to approve or reject a pending build.",
+      "type": "object",
+      "properties": {
+        "approvalResult": {
+          "description": "Approval decision and metadata.",
+          "$ref": "ApprovalResult"
+        }
       }
     },
     "BuildTrigger": {
@@ -966,6 +1069,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "approvalConfig": {
+          "description": "Configuration for manual approval to start a build invocation of this\nBuildTrigger.",
+          "$ref": "ApprovalConfig"
         }
       }
     },
@@ -1018,12 +1125,14 @@
           "description": "Configure builds to run whether a repository owner or collaborator need to\ncomment `\/gcbrun`.",
           "enumDescriptions": [
             "Do not require comments on Pull Requests before builds are triggered.",
-            "Enforce that repository owners or collaborators must comment on Pull\nRequests before builds are triggered."
+            "Enforce that repository owners or collaborators must comment on Pull\nRequests before builds are triggered.",
+            "Enforce that repository owners or collaborators must comment on external\ncontributors' Pull Requests before builds are triggered."
           ],
           "type": "string",
           "enum": [
             "COMMENTS_DISABLED",
-            "COMMENTS_ENABLED"
+            "COMMENTS_ENABLED",
+            "COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY"
           ]
         },
         "invertRegex": {
@@ -1752,6 +1861,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Creates a new build based on the specified build.\n\nThis method creates a new build using the original build request, which may\nor may not result in an identical build.\n\nFor triggered builds:\n\n* Triggered builds resolve to a precise revision; therefore a retry of a\ntriggered build will result in a build that uses the same revision.\n\nFor non-triggered builds that specify `RepoSource`:\n\n* If the original build built from the tip of a branch, the retried build\nwill build from the tip of that branch, which may not be the same revision\nas the original build.\n* If the original build specified a commit sha or revision ID, the retried\nbuild will use the identical source.\n\nFor builds that specify `StorageSource`:\n\n* If the original build pulled source from Google Cloud Storage without\nspecifying the generation of the object, the new build will use the current\nobject, which may be different from the original build source.\n* If the original build pulled source from Cloud Storage and specified the\ngeneration of the object, the new build will attempt to use the same\nobject, which may or may not be available depending on the bucket's\nlifecycle management settings."
+            },
+            "approve": {
+              "id": "cloudbuild.projects.builds.approve",
+              "path": "v1/{+name}:approve",
+              "flatPath": "v1/projects/{projectsId}/builds/{buildsId}:approve",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of the target build.\nFor example: \"projects\/{$project_id}\/builds\/{$build_id}\"",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/builds\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "ApproveBuildRequest"
+              },
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Approves or rejects a pending build.\n\nIf approved, the returned LRO will be analogous to the LRO returned from\na CreateBuild call.\n\nIf rejected, the returned LRO will be immediately done."
             }
           }
         },

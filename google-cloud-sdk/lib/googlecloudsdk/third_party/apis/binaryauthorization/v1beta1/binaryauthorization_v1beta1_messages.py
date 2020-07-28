@@ -538,8 +538,11 @@ class PkixPublicKey(_messages.Message):
       RSA_SIGN_PKCS1_4096_SHA512: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
         SHA512 digest.
       ECDSA_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
+      EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       ECDSA_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+      EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
       ECDSA_P521_SHA512: ECDSA on the NIST P-521 curve with a SHA512 digest.
+      EC_SIGN_P521_SHA512: ECDSA on the NIST P-521 curve with a SHA512 digest.
     """
     SIGNATURE_ALGORITHM_UNSPECIFIED = 0
     RSA_PSS_2048_SHA256 = 1
@@ -551,8 +554,11 @@ class PkixPublicKey(_messages.Message):
     RSA_SIGN_PKCS1_4096_SHA256 = 7
     RSA_SIGN_PKCS1_4096_SHA512 = 8
     ECDSA_P256_SHA256 = 9
-    ECDSA_P384_SHA384 = 10
-    ECDSA_P521_SHA512 = 11
+    EC_SIGN_P256_SHA256 = 10
+    ECDSA_P384_SHA384 = 11
+    EC_SIGN_P384_SHA384 = 12
+    ECDSA_P521_SHA512 = 13
+    EC_SIGN_P521_SHA512 = 14
 
   publicKeyPem = _messages.StringField(1)
   signatureAlgorithm = _messages.EnumField('SignatureAlgorithmValueValuesEnum', 2)

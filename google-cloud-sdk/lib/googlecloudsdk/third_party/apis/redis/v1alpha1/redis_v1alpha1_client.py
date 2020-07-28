@@ -55,16 +55,7 @@ class RedisV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Redis instance based on the specified tier and memory size.
-
-By default, the instance is peered to the project's
-[default network](/compute/docs/networks-and-firewalls#networks).
-
-The creation is executed asynchronously and callers may check the returned
-operation to track its progress. Once the operation is completed the Redis
-instance will be fully functional.
-The returned operation is automatically deleted after a few hours, so there
-is no need to call DeleteOperation.
+      r"""Creates a Redis instance based on the specified tier and memory size. By default, the instance is peered to the project's [default network](/compute/docs/networks-and-firewalls#networks). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the Redis instance will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
 
       Args:
         request: (RedisProjectsLocationsInstancesCreateRequest) input message
@@ -91,8 +82,7 @@ is no need to call DeleteOperation.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a specific Redis instance.  Instance stops serving and data is.
-deleted.
+      r"""Deletes a specific Redis instance. Instance stops serving and data is deleted.
 
       Args:
         request: (RedisProjectsLocationsInstancesDeleteRequest) input message
@@ -119,10 +109,7 @@ deleted.
     )
 
     def Export(self, request, global_params=None):
-      r"""Redis will continue serving during this operation.
-
-The returned operation is automatically deleted after a few hours, so
-there is no need to call DeleteOperation.
+      r"""Redis will continue serving during this operation. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
 
       Args:
         request: (RedisProjectsLocationsInstancesExportRequest) input message
@@ -176,14 +163,7 @@ there is no need to call DeleteOperation.
     )
 
     def Import(self, request, global_params=None):
-      r"""Import a Redis RDB snapshot file from Cloud Storage into a Redis instance.
-
-Redis may stop serving during this operation. Instance state will be
-IMPORTING for entire operation. When complete, the instance will contain
-only data from the imported file.
-
-The returned operation is automatically deleted after a few hours, so
-there is no need to call DeleteOperation.
+      r"""Import a Redis RDB snapshot file from Cloud Storage into a Redis instance. Redis may stop serving during this operation. Instance state will be IMPORTING for entire operation. When complete, the instance will contain only data from the imported file. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
 
       Args:
         request: (RedisProjectsLocationsInstancesImportRequest) input message
@@ -210,14 +190,7 @@ there is no need to call DeleteOperation.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all Redis instances owned by a project in either the specified.
-location (region) or all locations.
-
-The location should have the following format:
-* `projects/{project_id}/locations/{location_id}`
-
-If `location_id` is specified as `-` (wildcard), then all regions
-available to the project are queried, and the results are aggregated.
+      r"""Lists all Redis instances owned by a project in either the specified location (region) or all locations. The location should have the following format: * `projects/{project_id}/locations/{location_id}` If `location_id` is specified as `-` (wildcard), then all regions available to the project are queried, and the results are aggregated.
 
       Args:
         request: (RedisProjectsLocationsInstancesListRequest) input message
@@ -271,8 +244,7 @@ available to the project are queried, and the results are aggregated.
     )
 
     def Upgrade(self, request, global_params=None):
-      r"""Upgrades Redis instance to the newer Redis version specified in the.
-request.
+      r"""Upgrades Redis instance to the newer Redis version specified in the request.
 
       Args:
         request: (RedisProjectsLocationsInstancesUpgradeRequest) input message
@@ -309,16 +281,7 @@ request.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (RedisProjectsLocationsOperationsCancelRequest) input message
@@ -345,10 +308,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (RedisProjectsLocationsOperationsDeleteRequest) input message
@@ -375,9 +335,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (RedisProjectsLocationsOperationsGetRequest) input message
@@ -404,16 +362,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (RedisProjectsLocationsOperationsListRequest) input message

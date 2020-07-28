@@ -50,8 +50,6 @@ MANIFEST_DISCLAIMER = """# DISCLAIMER:
 
 """
 
-USER_DATA_KEY = 'user-data'
-
 CONTAINER_MANIFEST_KEY = 'google-container-manifest'
 
 GCE_CONTAINER_DECLARATION = 'gce-container-declaration'
@@ -131,7 +129,7 @@ def ValidateUserMetadata(metadata):
     metadata
   """
   for entry in metadata.items:
-    if entry.key in [USER_DATA_KEY, CONTAINER_MANIFEST_KEY, GKE_DOCKER]:
+    if entry.key in [CONTAINER_MANIFEST_KEY, GKE_DOCKER]:
       raise InvalidMetadataKeyException(entry.key)
 
 
@@ -486,7 +484,7 @@ def CreateKonletMetadataMessage(messages, args, instance_name, user_metadata,
               container_mount_disk_enabled=container_mount_disk_enabled,
               container_mount_disk=container_mount_disk),
       # Since COS 69, having logs for Container-VMs written requires enabling
-      # Stackdriver Logging agent.
+      # Cloud Logging agent.
       STACKDRIVER_LOGGING_AGENT_CONFIGURATION: 'true',
   }
   return metadata_utils.ConstructMetadataMessage(

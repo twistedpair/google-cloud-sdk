@@ -6,6 +6,55 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 303.0.0 (2020-07-28)
+
+### AI Platform
+
+* Promoted `--kms-key` flag of `gcloud ai-platform jobs submit training` to GA.
+
+### Cloud Bigtable
+
+*  Promoted `gcloud bigtable backups` commands group to GA.
+*  Promated `gcloud bigtable instances tables restore` and `gcloud bigtable instances tables list` to GA.
+
+### Cloud Build
+
+* Added `--comment-control` flag option COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY to `gcloud builds triggers create github` in alpha and beta.
+
+### Cloud Composer
+
+* Added `--cloud-sql-machine-type` flag to `gcloud beta composer environments`
+commands to specify the Cloud SQL machine type used by the Airflow database.
+
+### Cloud Data Catalog
+
+* Added `--restricted-locations` to  `gcloud data-catalog search` to enable regional search.
+
+### Compute Engine
+
+* Added `--log-location` flag to `gcloud compute instances import` and `gcloud beta compute machine-images import`.
+* Promoted `--condition` flag for
+  * `gcloud compute images add-iam-policy-binding`
+  * `gcloud compute images remove-iam-policy-binding`
+  to GA.
+* Promoted `--rollout-mode`, `--rollout-disruption-budget`, and `--rollout-disruption-budget-percent` flags of `gcloud compute os-config patch-jobs execute` to GA.
+* Allowed using `user-data` key in metadata with `gcloud compute instances create-with-container`.
+* Promoted `--condition` flag to GA for
+  * `gcloud compute images add-iam-policy-binding`
+  * `gcloud compute images remove-iam-policy-binding`
+  * `gcloud compute snapshots add-iam-policy-binding`
+  * `gcloud compute snapshots remove-iam-policy-binding`.
+
+### Kubernetes Engine
+
+* Added `--identity-provider` to `gcloud beta container clusters create` and `gcloud beta container clusters update`. This flag is used to enable a 3P identity provider on a cluster.
+* Added flag `--enable-dataplane-v2` to `gcloud <alpha|beta> container clusters create`. This flag allows GKE clusters to use the new and improved datapath with additional visibility and observability features.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 302.0.0 (2020-07-21)
 
 ### AI Platform

@@ -1118,7 +1118,7 @@
     },
     "ResourceSearchResult": {
       "id": "ResourceSearchResult",
-      "description": "A result of Resource Search, containing information of a cloud resoure.",
+      "description": "A result of Resource Search, containing information of a cloud resource.",
       "type": "object",
       "properties": {
         "name": {

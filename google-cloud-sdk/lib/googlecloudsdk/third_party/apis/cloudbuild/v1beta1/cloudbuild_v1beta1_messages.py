@@ -337,19 +337,20 @@ class BuildOptions(_messages.Message):
       LOGGING_UNSPECIFIED: The service determines the logging mode. The
         default is `LEGACY`. Do not rely on the default logging behavior as it
         may change in the future.
-      LEGACY: Cloud Logging (Stackdriver) and Cloud Storage logging are
-        enabled.
+      LEGACY: Cloud Logging and Cloud Storage logging are enabled.
       GCS_ONLY: Only Cloud Storage logging is enabled.
-      STACKDRIVER_ONLY: Only Cloud Logging (Stackdriver) is enabled. Note that
-        logs for both the Cloud Console UI and Cloud SDK are based on Cloud
-        Storage logs, so neither will provide logs if this option is chosen.
-      NONE: Turn off all logging. No build logs will be captured.
+      STACKDRIVER_ONLY: This option is the same as CLOUD_LOGGING_ONLY.
+      CLOUD_LOGGING_ONLY: Only Cloud Logging is enabled. Note that logs for
+        both the Cloud Console UI and Cloud SDK are based on Cloud Storage
+        logs, so neither will provide logs if this option is chosen.
+      NONE: Turn off all logging. No build logs will be captured. Next ID: 6
     """
     LOGGING_UNSPECIFIED = 0
     LEGACY = 1
     GCS_ONLY = 2
     STACKDRIVER_ONLY = 3
-    NONE = 4
+    CLOUD_LOGGING_ONLY = 4
+    NONE = 5
 
   class MachineTypeValueValuesEnum(_messages.Enum):
     r"""Compute Engine machine type on which to run the build.
@@ -567,8 +568,8 @@ class CloudbuildProjectsLocationsWorkerPoolsCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsWorkerPoolsCreateRequest object.
 
   Fields:
-    parent: Required. The parent resource where this book will be created.
-      Format: `projects/{project}/locations/{location}`
+    parent: Required. The parent resource where this worker pool will be
+      created. Format: `projects/{project}/locations/{location}`.
     workerPool: A WorkerPool resource to be passed as the request body.
     workerPoolId: Required. Immutable. The ID to use for the `WorkerPool`,
       which will become the final component of the resource name.  This value
@@ -585,7 +586,7 @@ class CloudbuildProjectsLocationsWorkerPoolsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the `WorkerPool` to delete. Format:
-      `projects/{project}/locations/{workerPool}/workerPools/{workerPool}`
+      `projects/{project}/locations/{workerPool}/workerPools/{workerPool}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -596,7 +597,7 @@ class CloudbuildProjectsLocationsWorkerPoolsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the `WorkerPool` to retrieve. Format:
-      `projects/{project}/locations/{location}/workerPools/{workerPool}`
+      `projects/{project}/locations/{location}/workerPools/{workerPool}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -607,7 +608,7 @@ class CloudbuildProjectsLocationsWorkerPoolsListRequest(_messages.Message):
 
   Fields:
     parent: Required. The parent of the collection of `WorkerPools`. Format:
-      `projects/{project}/locations/location`
+      `projects/{project}/locations/location`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -617,11 +618,11 @@ class CloudbuildProjectsLocationsWorkerPoolsPatchRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsWorkerPoolsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the `WorkerPool`, with format:
+    name: Output only. The resource name of the `WorkerPool`, with format
       `projects/{project}/locations/{location}/workerPools/{worker_pool}`. The
-      value of {worker_pool} is provided by `worker_pool_id` in
-      CreateWorkerPool request and the value of {location} is determined by
-      the endpoint accessed.
+      value of `{worker_pool}` is provided by `worker_pool_id` in
+      `CreateWorkerPool` request and the value of `{location}` is determined
+      by the endpoint accessed.
     updateMask: A mask specifying which fields in `WorkerPool` to update.
     workerPool: A WorkerPool resource to be passed as the request body.
   """
@@ -705,10 +706,13 @@ class NetworkConfig(_messages.Message):
   Fields:
     peeredNetwork: Required. Immutable. The network definition that the
       workers are peered to. If this section is left empty, the workers will
-      be peered to WorkerPool.project_id on the default network. Must be in
-      the format `projects/{project}/global/networks/{network}`, where
-      {project} is a project number, such as `12345`, and {network} is the
-      name of a VPC network in the project.
+      be peered to `WorkerPool.project_id` on the service producer network.
+      Must be in the format `projects/{project}/global/networks/{network}`,
+      where `{project}` is a project number, such as `12345`, and `{network}`
+      is the name of a VPC network in the project. See [Understanding network
+      configuration options](https://cloud.google.com/cloud-build/docs/custom-
+      workers/set-up-custom-worker-pool-
+      environment#understanding_the_network_configuration_options)
   """
 
   peeredNetwork = _messages.StringField(1)
@@ -1366,17 +1370,17 @@ class Volume(_messages.Message):
 
 
 class WorkerConfig(_messages.Message):
-  r"""WorkerConfig defines the configuration to be used for a creating workers
-  in the pool.
+  r"""Defines the configuration to be used for creating workers in the pool.
 
   Fields:
-    diskSizeGb: Size of the disk attached to the worker, in GB. See
-      https://cloud.google.com/compute/docs/disks/ If `0` is specified, Cloud
-      Build will use a standard disk size.
-    machineType: Machine Type of the worker, such as n1-standard-1. See
-      https://cloud.google.com/compute/docs/machine-types. If left blank,
-      Cloud Build will use a standard unspecified machine to create the worker
-      pool.
+    diskSizeGb: Size of the disk attached to the worker, in GB. See [Worker
+      pool config file](https://cloud.google.com/cloud-build/docs/custom-
+      workers/worker-pool-config-file). Specify a value of up to 1000. If `0`
+      is specified, Cloud Build will use a standard disk size.
+    machineType: Machine type of a worker, such as `n1-standard-1`. See
+      [Worker pool config file](https://cloud.google.com/cloud-
+      build/docs/custom-workers/worker-pool-config-file). If left blank, Cloud
+      Build will use `n1-standard-1`.
   """
 
   diskSizeGb = _messages.IntegerField(1)
@@ -1384,35 +1388,35 @@ class WorkerConfig(_messages.Message):
 
 
 class WorkerPool(_messages.Message):
-  r"""Configuration for a WorkerPool to run the builds.  Workers are machines
-  that Cloud Build uses to run your builds. By default, all workers run in a
-  project owned by Cloud Build. To have full control over the workers that
-  execute your builds -- such as enabling them to access private resources on
-  your private network -- you can request Cloud Build to run the workers in
-  your own project by creating a custom workers pool.
+  r"""If your build needs access to resources on a private network, create and
+  use a `WorkerPool` to run your builds. Custom `WorkerPool`s give your builds
+  access to any single VPC network that you administer, including any on-prem
+  resources connected to that VPC network. For an overview of custom worker
+  pools, see [Custom workers overview](https://cloud.google.com/cloud-
+  build/docs/custom-workers/custom-workers-overview).
 
   Enums:
-    StateValueValuesEnum: Output only. WorkerPool state.
+    StateValueValuesEnum: Output only. `WorkerPool` state.
 
   Fields:
     createTime: Output only. Time at which the request to create the
       `WorkerPool` was received.
     deleteTime: Output only. Time at which the request to delete the
       `WorkerPool` was received.
-    name: Output only. The resource name of the `WorkerPool`, with format:
+    name: Output only. The resource name of the `WorkerPool`, with format
       `projects/{project}/locations/{location}/workerPools/{worker_pool}`. The
-      value of {worker_pool} is provided by `worker_pool_id` in
-      CreateWorkerPool request and the value of {location} is determined by
-      the endpoint accessed.
+      value of `{worker_pool}` is provided by `worker_pool_id` in
+      `CreateWorkerPool` request and the value of `{location}` is determined
+      by the endpoint accessed.
     networkConfig: Network configuration for the `WorkerPool`.
-    state: Output only. WorkerPool state.
+    state: Output only. `WorkerPool` state.
     updateTime: Output only. Time at which the request to update the
       `WorkerPool` was received.
     workerConfig: Worker configuration for the `WorkerPool`.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. WorkerPool state.
+    r"""Output only. `WorkerPool` state.
 
     Values:
       STATE_UNSPECIFIED: State of the `WorkerPool` is unknown.

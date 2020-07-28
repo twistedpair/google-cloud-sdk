@@ -83,9 +83,7 @@ class DatamigrationV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Database Migration Service connection profile.
-A connection profile can only be deleted if it is not in use by any
-active migration jobs.
+      r"""Deletes a single Database Migration Service connection profile. A connection profile can only be deleted if it is not in use by any active migration jobs.
 
       Args:
         request: (DatamigrationProjectsLocationsConnectionProfilesDeleteRequest) input message
@@ -257,8 +255,7 @@ active migration jobs.
     )
 
     def GenerateSshScript(self, request, global_params=None):
-      r"""Generate a SSH configuration script to configure the reverse SSH.
-connectivity.
+      r"""Generate a SSH configuration script to configure the reverse SSH connectivity.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsGenerateSshScriptRequest) input message
@@ -366,8 +363,7 @@ connectivity.
     )
 
     def Promote(self, request, global_params=None):
-      r"""Promote a migration job, stopping replication to the destination and.
-promoting the destination to be a standalone database.
+      r"""Promote a migration job, stopping replication to the destination and promoting the destination to be a standalone database.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsPromoteRequest) input message
@@ -394,9 +390,7 @@ promoting the destination to be a standalone database.
     )
 
     def Restart(self, request, global_params=None):
-      r"""Restart a stopped or failed migration job, resetting the destination.
-instance to its original state and starting the migration process from
-scratch.
+      r"""Restart a stopped or failed migration job, resetting the destination instance to its original state and starting the migration process from scratch.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsRestartRequest) input message
@@ -423,8 +417,7 @@ scratch.
     )
 
     def Resume(self, request, global_params=None):
-      r"""Resume a migration job that is currently stopped and is resumable (was.
-stopped during CDC phase).
+      r"""Resume a migration job that is currently stopped and is resumable (was stopped during CDC phase).
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsResumeRequest) input message
@@ -505,8 +498,7 @@ stopped during CDC phase).
     )
 
     def Verify(self, request, global_params=None):
-      r"""Verify a migration job, making sure the destination can reach the source.
-and that all configuration and prerequisites are met.
+      r"""Verify a migration job, making sure the destination can reach the source and that all configuration and prerequisites are met.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsVerifyRequest) input message
@@ -543,16 +535,7 @@ and that all configuration and prerequisites are met.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (DatamigrationProjectsLocationsOperationsCancelRequest) input message
@@ -579,10 +562,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (DatamigrationProjectsLocationsOperationsDeleteRequest) input message
@@ -609,9 +589,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (DatamigrationProjectsLocationsOperationsGetRequest) input message
@@ -638,16 +616,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (DatamigrationProjectsLocationsOperationsListRequest) input message

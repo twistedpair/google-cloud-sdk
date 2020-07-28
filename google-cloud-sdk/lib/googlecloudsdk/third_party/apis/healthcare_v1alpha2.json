@@ -1085,6 +1085,98 @@
         }
       }
     },
+    "EvaluateUserConsentsRequest": {
+      "id": "EvaluateUserConsentsRequest",
+      "description": "Evaluate an end user's Consents for all matching\nUser data mappings.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "description": "Required. User ID to evaluate consents for.",
+          "type": "string"
+        },
+        "resourceAttributes": {
+          "description": "The values of resources attributes associated with the type of data being\nrequested. If no values are specified, then all data types are queried.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "requestAttributes": {
+          "description": "The values of request attributes associated with this access request.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "consentList": {
+          "description": "The resource names of the consents to evaluate against.\nConsents must be in the current `consent_store` and belong to the current\n`user_id`. Consents can be either active or draft.\n\nIf this field is empty, the default behavior is to use all\nactive consents that belong to `user_id`.\nA maximum of 100 consents can be provided here.",
+          "$ref": "ConsentList"
+        },
+        "responseView": {
+          "description": "The view for EvaluateUserConsentsResponse.",
+          "enumDescriptions": [
+            "No response view specified. The API will default to the BASIC view.",
+            "Only the `consented` field is populated in the response.",
+            "All fields within the response are populated. When set to `FULL`, all\n`ACTIVE` consents are evaluated even if a matching policy is found during\nevaluation."
+          ],
+          "type": "string",
+          "enum": [
+            "RESPONSE_VIEW_UNSPECIFIED",
+            "BASIC",
+            "FULL"
+          ]
+        },
+        "pageSize": {
+          "description": "Limit on the number of user data mappings to return in a single response.\nIf zero the default page size of 100 is used.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "Token to retrieve the next page of results to get the first page.",
+          "type": "string"
+        }
+      }
+    },
+    "EvaluateUserConsentsResponse": {
+      "id": "EvaluateUserConsentsResponse",
+      "description": "Evaluate an end user's Consents for all matching\nUser data mappings.",
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "The consent evaluation result for each `data_id`.",
+          "type": "array",
+          "items": {
+            "$ref": "Result"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more\nresults in the list. This token is valid for 72 hours after it is created.",
+          "type": "string"
+        }
+      }
+    },
+    "Result": {
+      "id": "Result",
+      "description": "The consent evaluation result for a single `data_id`.",
+      "type": "object",
+      "properties": {
+        "dataId": {
+          "description": "The unique identifier of the data the consents were checked for.",
+          "type": "string"
+        },
+        "consented": {
+          "description": "Whether the requested data is consented for the given use.",
+          "type": "boolean"
+        },
+        "consentDetails": {
+          "description": "The resource names of all evaluated Consents mapped to their\nevaluation.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ConsentEvaluation"
+          }
+        }
+      }
+    },
     "Dataset": {
       "id": "Dataset",
       "description": "A message representing a health dataset.\n\nA health dataset represents a collection of healthcare data pertaining to one\nor more patients. This may include multiple modalities of healthcare data,\nsuch as electronic medical records or medical imaging data.",
@@ -1572,6 +1664,69 @@
         }
       }
     },
+    "ExportMessagesRequest": {
+      "id": "ExportMessagesRequest",
+      "description": "Request to schedule an export.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "The start of the range in `send_time` (MSH.7,\nhttps:\/\/www.hl7.org\/documentcenter\/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D\/wg\/conf\/HL7MSH.htm)\nto process. If not specified, the UNIX epoch (1970-01-01T00:00:00Z) is\nused.\n\nThis value has to come before the `end_time` defined below. Only messages\nwhose `send_times` lie in the range defined by this value and `end_time`\nare exported.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The end of the range in `send_time` (MSH.7,\nhttps:\/\/www.hl7.org\/documentcenter\/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D\/wg\/conf\/HL7MSH.htm)\nto process. If not specified, the time when the export is scheduled is\nused.\n\nThis value has to be after the `start_time` defined above. Only messages\nwhose `send_times` lie in the range defined by this value and the\n`start_time` above are exported.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "gcsDestination": {
+          "$ref": "GoogleCloudHealthcareV1alpha2Hl7v2GcsDestination"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1alpha2Hl7v2GcsDestination": {
+      "id": "GoogleCloudHealthcareV1alpha2Hl7v2GcsDestination",
+      "description": "The Cloud Storage output destination.\n\nThe Cloud Storage location requires the `roles\/storage.objectAdmin` Cloud IAM\nrole.",
+      "type": "object",
+      "properties": {
+        "uriPrefix": {
+          "description": "URI for a Cloud Storage directory where the server writes result files, in\nthe format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no\ntrailing slash, the service appends one when composing the object path.\nThe user is responsible for creating the Cloud Storage bucket referenced in\n`uri_prefix`.",
+          "type": "string"
+        },
+        "messageView": {
+          "description": "Specifies the parts of the Message resource to include in the export. If\nnot specified, FULL is used.",
+          "enumDescriptions": [
+            "Not specified, equivalent to FULL for getMessage, equivalent to BASIC for\nlistMessages.",
+            "Server responses include all the message fields except parsed_data and\nschematized_data fields.",
+            "Server responses include all the message fields except data and\nschematized_data fields.",
+            "Server responses include all the message fields.",
+            "Server responses include all the message fields except data and\nparsed_data fields.",
+            "Server responses include only the name field."
+          ],
+          "type": "string",
+          "enum": [
+            "MESSAGE_VIEW_UNSPECIFIED",
+            "RAW_ONLY",
+            "PARSED_ONLY",
+            "FULL",
+            "SCHEMATIZED_ONLY",
+            "BASIC"
+          ]
+        },
+        "contentStructure": {
+          "description": "The format of the exported HL7v2 message files.",
+          "enumDescriptions": [
+            "If the content structure is not specified, the default value\n`MESSAGE_JSON` will be used.",
+            "Messages are printed using the JSON format returned from the `GetMessage`\nAPI. Messages are delimited with newlines."
+          ],
+          "type": "string",
+          "enum": [
+            "CONTENT_STRUCTURE_UNSPECIFIED",
+            "MESSAGE_JSON"
+          ]
+        }
+      }
+    },
     "ImportMessagesRequest": {
       "id": "ImportMessagesRequest",
       "description": "Request to import messages.",
@@ -1861,7 +2016,7 @@
       "type": "object",
       "properties": {
         "annotationStore": {
-          "description": "The annotation_store used for the export operation, in the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+          "description": "The annotation_store used for the export operation,\nin the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
           "type": "string"
         },
         "successCount": {
@@ -1873,7 +2028,7 @@
     },
     "ExportAnnotationsErrorDetails": {
       "id": "ExportAnnotationsErrorDetails",
-      "description": "Response for failed annotation export operations. This structure is\nincluded in the details field of the\nerror upon operation completion.",
+      "description": "Response for failed annotation export operations. This structure\nis included in the details field of the\nerror upon operation completion.",
       "type": "object",
       "properties": {
         "annotationStore": {
@@ -1898,11 +2053,11 @@
       "type": "object",
       "properties": {
         "annotationStore": {
-          "description": "The annotation_store that the annotations were imported to. The name\nis in the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+          "description": "The annotation_store that the annotations were imported to,\nin the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
           "type": "string"
         },
         "successCount": {
-          "description": "The number of the input annotations. All input have been imported\nsuccessfully.",
+          "description": "The number of the input annotations. All input have been\nimported successfully.",
           "type": "string",
           "format": "int64"
         }
@@ -3165,6 +3320,34 @@
                       ],
                       "description": "Updates the HL7v2 store."
                     },
+                    "export": {
+                      "id": "healthcare.projects.locations.datasets.hl7V2Stores.export",
+                      "path": "v1alpha2/{+name}:export",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:export",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the source HL7v2 store, in the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ExportMessagesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Exports the messages to a destination in the store with transformations.\nOnly FHIR stores in the same dataset as the source store are supported as\ndestinations. Start and\/or end time relative to message generation time\n(MSH.7) can be specified to filter messages in a range instead of exporting\nall at once.\n\nThis API returns an Operation that can\nbe used to track the status of the job by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field.\nOtherwise, when the operation finishes, a detailed response of type\nExportMessagesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
+                    },
                     "import": {
                       "id": "healthcare.projects.locations.datasets.hl7V2Stores.import",
                       "path": "v1alpha2/{+name}:import",
@@ -3191,7 +3374,42 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Import messages to the HL7v2 store by loading data from the specified\nsources. This method is optimized to load large quantities of data using\nimport semantics that ignore some HL7v2 store configuration options and are\nnot suitable for all use cases. It is primarily intended to load data into\nan empty HL7v2 store that is not being used by other clients.\n\nAn existing message will be overwritten if a duplicate message is imported.\nA duplicate message is a message with the same raw bytes as a message that\nalready exists in this HL7v2 store. When a message is overwritten, its\nlabels will also be overwritten.\n\nThe import operation is idempotent unless the input data contains multiple\nvalid messages with the same raw bytes but different labels. In that case,\nafter the import completes, the store contains exactly one message\nwith those raw bytes but there is no ordering guarantee on which version\nof the labels it has. The operation result counters do not count\nduplicated raw bytes as an error and count one success for each message in\nthe input, which might result in a success count larger than the number\nof messages in the HL7v2 store.\n\nIf some messages fail to import, for example due to parsing errors,\nsuccessfully imported messages are not rolled back.\n\nThis method returns an Operation that can\nbe used to track the status of the import by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field.\nOtherwise, when the operation finishes, a detailed response of type\nImportMessagesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
+                      "description": "Import messages to the HL7v2 store by loading data from the specified\nsources. This method is optimized to load large quantities of data using\nimport semantics that ignore some HL7v2 store configuration options and are\nnot suitable for all use cases. It is primarily intended to load data into\nan empty HL7v2 store that is not being used by other clients.\n\nAn existing message will be overwritten if a duplicate message is imported.\nA duplicate message is a message with the same raw bytes as a message that\nalready exists in this HL7v2 store. When a message is overwritten, its\nlabels will also be overwritten.\n\nThe import operation is idempotent unless the input data contains multiple\nvalid messages with the same raw bytes but different labels. In that case,\nafter the import completes, the store contains exactly one message\nwith those raw bytes but there is no ordering guarantee on which version\nof the labels it has. The operation result counters do not count\nduplicated raw bytes as an error and count one success for each message in\nthe input, which might result in a success count larger than the number\nof messages in the HL7v2 store.\n\nIf some messages fail to import, for example due to parsing errors,\nsuccessfully imported messages are not rolled back.\n\nThis method returns an Operation that can\nbe used to track the status of the import by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field, errors are also logged\nto Cloud Logging (see [Viewing\nlogs](\/healthcare\/docs\/how-tos\/logging)). Otherwise, when the operation\nfinishes, a response of type ImportMessagesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "messages": {
+                      "methods": {
+                        "export": {
+                          "id": "healthcare.projects.locations.datasets.hl7V2Stores.messages.export",
+                          "path": "v1alpha2/{+name}/messages:export",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}/messages:export",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the source HL7v2 store, in the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "ExportMessagesRequest"
+                          },
+                          "response": {
+                            "$ref": "Operation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Exports the messages to a destination in the store with transformations.\nOnly FHIR stores in the same dataset as the source store are supported as\ndestinations. Start and\/or end time relative to message generation time\n(MSH.7) can be specified to filter messages in a range instead of exporting\nall at once.\n\nThis API returns an Operation that can\nbe used to track the status of the job by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field.\nOtherwise, when the operation finishes, a detailed response of type\nExportMessagesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
+                        }
+                      }
                     }
                   }
                 },
@@ -3754,7 +3972,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "annotationStore": {
-                          "description": "The name of the Annotation store to which the server imports annotations,\nin the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+                          "description": "The name of the Annotation store to which the server imports\nannotations, in the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
@@ -3782,7 +4000,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "annotationStore": {
-                          "description": "The name of the Annotation store to export annotations to, in the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+                          "description": "The name of the Annotation store to export annotations to, in\nthe format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
@@ -3810,7 +4028,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "evalStore": {
-                          "description": "The Annotation store to compare against `golden_store`, in the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+                          "description": "The Annotation store to compare against `golden_store`, in the\nformat of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
@@ -4135,6 +4353,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Queries all data_ids that are consented for a given use in the given\nConsent store and\nwrites them to a specified destination.\n\nThe returned Operation includes a progress\ncounter for the number of User data mappings processed.\n\nErrors are logged to Cloud Logging (see [Viewing logs]\n(\/healthcare\/docs\/how-tos\/logging)). For example, the following\nsample log entry shows a `failed to evaluate consent policy` error that\noccurred during a QueryAccessibleData call to consent store\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}`.\n```json\njsonPayload: {\n  @type:\n  \"type.googleapis.com\/google.cloud.healthcare.logging.QueryAccessibleDataLogEntry\"\n  error: {\n    code:  9\n    message:  \"failed to evaluate consent policy\"\n  }\n  resourceName:\n  \"projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}\"\n}\nlogName:\n\"projects\/{project_id}\/logs\/healthcare.googleapis.com%2Fquery_accessible_data\"\noperation: {\n  id:\n  \"projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/operations\/{operation_id}\"\n  producer:  \"healthcare.googleapis.com\/QueryAccessibleData\"\n}\nreceiveTimestamp:  \"TIMESTAMP\"\nresource: {\n  labels: {\n    consent_store_id:  \"{consent_store_id}\"\n    dataset_id:  \"{dataset_id}\"\n    location:  \"{location_id}\"\n    project_id:  \"{project_id}\"\n  }\n  type:  \"healthcare_consent_store\"\n}\nseverity:  \"ERROR\"\ntimestamp:  \"TIMESTAMP\"\n```"
+                    },
+                    "evaluateUserConsents": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.evaluateUserConsents",
+                      "path": "v1alpha2/{+consentStore}:evaluateUserConsents",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:evaluateUserConsents",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "consentStore": {
+                          "description": "Name of the Consent store to retrieve user data mappings from.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "consentStore"
+                      ],
+                      "request": {
+                        "$ref": "EvaluateUserConsentsRequest"
+                      },
+                      "response": {
+                        "$ref": "EvaluateUserConsentsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Evaluates the end user's Consents for all matching\nUser data mappings.\n\nNote: User data mappings are indexed asynchronously, so there might be a\nslight delay between the time a mapping is created or updated and when it\nis included in the results of EvaluateUserConsents."
                     }
                   }
                   ,

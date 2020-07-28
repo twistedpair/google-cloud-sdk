@@ -29,23 +29,19 @@ class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices",           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE"             },             {
-  "log_type": "ADMIN_READ"             }           ]         },         {
-  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
-  {               "log_type": "DATA_READ"             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:aliya@example.com"               ]             }           ]         }
-  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
-  and aliya@example.com from DATA_WRITE logging.
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -59,12 +55,11 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE"         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  jose@example.com from DATA_READ logging.
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -113,9 +108,9 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding.  If the
+    condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
-      request.  If the condition evaluates to `false`, then this binding does
+      request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
@@ -123,35 +118,35 @@ class Binding(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -162,19 +157,19 @@ class Binding(_messages.Message):
 
 
 class ConfigMapEnvSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   ConfigMapEnvSource selects a ConfigMap to populate the environment variables
-  with.  The contents of the target ConfigMap's Data field will represent the
+  with. The contents of the target ConfigMap's Data field will represent the
   key-value pairs as environment variables.
 
   Fields:
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The ConfigMap to select from.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Specify whether the ConfigMap must be defined
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The ConfigMap to select from.
+    optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Specify whether the ConfigMap must be defined
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
@@ -183,19 +178,19 @@ class ConfigMapEnvSource(_messages.Message):
 
 
 class ConfigMapKeySelector(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   Selects a key from a ConfigMap.
 
   Fields:
-    key: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The key to select.
+    key: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The key to select.
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The ConfigMap to select from.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Specify whether the ConfigMap or its key must be
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The ConfigMap to select from.
+    optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Specify whether the ConfigMap or its key must be
       defined
   """
 
@@ -206,30 +201,30 @@ class ConfigMapKeySelector(_messages.Message):
 
 
 class ConfigMapVolumeSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   Adapts a ConfigMap into a volume. The contents of the target ConfigMap's
   Data field will be presented in a volume as files using the keys in the Data
   field as the file names, unless the items element is populated with specific
   mappings of keys to paths.
 
   Fields:
-    defaultMode: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Mode bits to use on created files by default.
-      Must be a value between 0 and 0777. Defaults to 0644. Directories within
-      the path are not affected by this setting. This might be in conflict
-      with other options that affect the file mode, like fsGroup, and the
-      result can be other mode bits set.
-    items: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  If unspecified, each key-value pair in the Data field
+    defaultMode: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Mode bits to use on created files by default. Must
+      be a value between 0 and 0777. Defaults to 0644. Directories within the
+      path are not affected by this setting. This might be in conflict with
+      other options that affect the file mode, like fsGroup, and the result
+      can be other mode bits set.
+    items: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported If unspecified, each key-value pair in the Data field
       of the referenced Secret will be projected into the volume as a file
       whose name is the key and content is the value. If specified, the listed
       keys will be projected into the specified paths, and unlisted keys will
       not be present. If a key is specified which is not present in the
       Secret, the volume setup will error unless it is marked optional.
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  Name of the config.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Specify whether the Secret or its keys must be
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported Name of the config.
+    optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Specify whether the Secret or its keys must be
       defined.
   """
 
@@ -300,7 +295,7 @@ class ConfigurationStatus(_messages.Message):
     observedGeneration: ObservedGeneration is the 'Generation' of the
       Configuration that was last processed by the controller. The observed
       generation is updated even if the controller failed to process the spec
-      and create the Revision.  Clients polling for completed reconciliation
+      and create the Revision. Clients polling for completed reconciliation
       should poll until observedGeneration = metadata.generation, and the
       Ready condition's status is True or False.
   """
@@ -318,81 +313,79 @@ class Container(_messages.Message):
   container at runtime.
 
   Fields:
-    args: (Optional)  Cloud Run fully managed: supported  Cloud Run for
-      Anthos: supported  Arguments to the entrypoint. The docker image's CMD
-      is used if this is not provided. Variable references $(VAR_NAME) are
-      expanded using the container's environment. If a variable cannot be
-      resolved, the reference in the input string will be unchanged. The
-      $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME).
-      Escaped references will never be expanded, regardless of whether the
-      variable exists or not. More info:
-      https://kubernetes.io/docs/tasks/inject-data-application/define-command-
-      argument-container/#running-a-command-in-a-shell
+    args: (Optional) Cloud Run fully managed: supported Cloud Run for Anthos:
+      supported Arguments to the entrypoint. The docker image's CMD is used if
+      this is not provided. Variable references $(VAR_NAME) are expanded using
+      the container's environment. If a variable cannot be resolved, the
+      reference in the input string will be unchanged. The $(VAR_NAME) syntax
+      can be escaped with a double $$, ie: $$(VAR_NAME). Escaped references
+      will never be expanded, regardless of whether the variable exists or
+      not. More info: https://kubernetes.io/docs/tasks/inject-data-
+      application/define-command-argument-container/#running-a-command-in-a-
+      shell
     command: A string attribute.
-    env: (Optional)  Cloud Run fully managed: supported  Cloud Run for Anthos:
-      supported  List of environment variables to set in the container.
-    envFrom: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  List of sources to populate environment variables in
+    env: (Optional) Cloud Run fully managed: supported Cloud Run for Anthos:
+      supported List of environment variables to set in the container.
+    envFrom: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported List of sources to populate environment variables in
       the container. The keys defined within a source must be a C_IDENTIFIER.
       All invalid keys will be reported as an event when the container is
       starting. When a key exists in multiple sources, the value associated
       with the last source will take precedence. Values defined by an Env with
       a duplicate key will take precedence. Cannot be updated.
     image: Cloud Run fully managed: only supports containers from Google
-      Container Registry  Cloud Run for Anthos: supported  URL of the
-      Container image. More info:
-      https://kubernetes.io/docs/concepts/containers/images
-    imagePullPolicy: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  Image pull policy. One of Always, Never,
+      Container Registry Cloud Run for Anthos: supported URL of the Container
+      image. More info: https://kubernetes.io/docs/concepts/containers/images
+    imagePullPolicy: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported Image pull policy. One of Always, Never,
       IfNotPresent. Defaults to Always if :latest tag is specified, or
       IfNotPresent otherwise. More info:
       https://kubernetes.io/docs/concepts/containers/images#updating-images
-    livenessProbe: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  Periodic probe of container liveness.
-      Container will be restarted if the probe fails. More info:
+    livenessProbe: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Periodic probe of container liveness. Container
+      will be restarted if the probe fails. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
-    name: (Optional)  Name of the container specified as a DNS_LABEL.
-    ports: (Optional)  List of ports to expose from the container. Only a
+    name: (Optional) Name of the container specified as a DNS_LABEL.
+    ports: (Optional) List of ports to expose from the container. Only a
       single port can be specified. The specified ports must be listening on
-      all interfaces (0.0.0.0) within the container to be accessible.  If
+      all interfaces (0.0.0.0) within the container to be accessible. If
       omitted, a port number will be chosen and passed to the container
       through the PORT environment variable for the container to listen on.
-    readinessProbe: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  Periodic probe of container service
-      readiness. Container will be removed from service endpoints if the probe
-      fails. More info:
-      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+    readinessProbe: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported Periodic probe of container service readiness.
+      Container will be removed from service endpoints if the probe fails.
+      More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
-    resources: (Optional)  Cloud Run fully managed: supported  Cloud Run for
-      Anthos: supported  Compute Resources required by this container. More
+    resources: (Optional) Cloud Run fully managed: supported Cloud Run for
+      Anthos: supported Compute Resources required by this container. More
       info: https://kubernetes.io/docs/concepts/storage/persistent-
       volumes#resources
-    securityContext: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  Security options the pod should run with.
-      More info: https://kubernetes.io/docs/concepts/policy/security-context/
-      More info: https://kubernetes.io/docs/tasks/configure-pod-
-      container/security-context/
-    terminationMessagePath: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run for Anthos: supported  Path at which the file to which the
+    securityContext: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported Security options the pod should run with. More
+      info: https://kubernetes.io/docs/concepts/policy/security-context/ More
+      info: https://kubernetes.io/docs/tasks/configure-pod-container/security-
+      context/
+    terminationMessagePath: (Optional) Cloud Run fully managed: not supported
+      Cloud Run for Anthos: supported Path at which the file to which the
       container's termination message will be written is mounted into the
       container's filesystem. Message written is intended to be brief final
       status, such as an assertion failure message. Will be truncated by the
       node if greater than 4096 bytes. The total message length across all
       containers will be limited to 12kb. Defaults to /dev/termination-log.
-    terminationMessagePolicy: (Optional)  Cloud Run fully managed: not
-      supported  Cloud Run for Anthos: supported  Indicate how the termination
+    terminationMessagePolicy: (Optional) Cloud Run fully managed: not
+      supported Cloud Run for Anthos: supported Indicate how the termination
       message should be populated. File will use the contents of
       terminationMessagePath to populate the container status message on both
       success and failure. FallbackToLogsOnError will use the last chunk of
       container log output if the termination message file is empty and the
       container exited with an error. The log output is limited to 2048 bytes
       or 80 lines, whichever is smaller. Defaults to File. Cannot be updated.
-    volumeMounts: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  Pod volumes to mount into the container's
+    volumeMounts: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Pod volumes to mount into the container's
       filesystem.
-    workingDir: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Container's working directory. If not specified,
+    workingDir: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Container's working directory. If not specified,
       the container runtime's default will be used, which might be configured
       in the container image.
   """
@@ -419,14 +412,13 @@ class ContainerPort(_messages.Message):
   r"""ContainerPort represents a network port in a single container.
 
   Fields:
-    containerPort: (Optional)  Port number the container listens on. This must
+    containerPort: (Optional) Port number the container listens on. This must
       be a valid port number, 0 < x < 65536.
-    name: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  If specified, used to specify which protocol to use.
+    name: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported If specified, used to specify which protocol to use.
       Allowed values are "http1" and "h2c".
-    protocol: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Protocol for port. Must be "TCP". Defaults to
-      "TCP".
+    protocol: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Protocol for port. Must be "TCP". Defaults to "TCP".
   """
 
   containerPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -496,14 +488,13 @@ class DomainMappingStatus(_messages.Message):
     mappedRouteName: The name of the route that the mapping currently points
       to.
     observedGeneration: ObservedGeneration is the 'Generation' of the
-      DomainMapping that was last processed by the controller.  Clients
-      polling for completed reconciliation should poll until
-      observedGeneration = metadata.generation and the Ready condition's
-      status is True or False.
+      DomainMapping that was last processed by the controller. Clients polling
+      for completed reconciliation should poll until observedGeneration =
+      metadata.generation and the Ready condition's status is True or False.
     resourceRecords: The resource records required to configure this domain
       mapping. These records must be added to the domain's DNS configuration
       in order to serve the application via this domain mapping.
-    url: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+    url: Cloud Run fully managed: not supported Cloud Run on GKE: supported
       Holds the URL that will serve the traffic of the DomainMapping.
       +optional
   """
@@ -516,17 +507,17 @@ class DomainMappingStatus(_messages.Message):
 
 
 class EnvFromSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   EnvFromSource represents the source of a set of ConfigMaps
 
   Fields:
-    configMapRef: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  The ConfigMap to select from
-    prefix: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  An optional identifier to prepend to each key in the
+    configMapRef: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported The ConfigMap to select from
+    prefix: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported An optional identifier to prepend to each key in the
       ConfigMap. Must be a C_IDENTIFIER.
-    secretRef: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  The Secret to select from
+    secretRef: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported The Secret to select from
   """
 
   configMapRef = _messages.MessageField('ConfigMapEnvSource', 1)
@@ -539,16 +530,16 @@ class EnvVar(_messages.Message):
 
   Fields:
     name: Name of the environment variable. Must be a C_IDENTIFIER.
-    value: (Optional)  Variable references $(VAR_NAME) are expanded using the
+    value: (Optional) Variable references $(VAR_NAME) are expanded using the
       previous defined environment variables in the container and any route
       environment variables. If a variable cannot be resolved, the reference
       in the input string will be unchanged. The $(VAR_NAME) syntax can be
       escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
       never be expanded, regardless of whether the variable exists or not.
       Defaults to "".
-    valueFrom: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Source for the environment variable's value.
-      Cannot be used if value is not empty.
+    valueFrom: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Source for the environment variable's value. Cannot be
+      used if value is not empty.
   """
 
   name = _messages.StringField(1)
@@ -557,15 +548,14 @@ class EnvVar(_messages.Message):
 
 
 class EnvVarSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   EnvVarSource represents a source for the value of an EnvVar.
 
   Fields:
-    configMapKeyRef: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  Selects a key of a ConfigMap.
-    secretKeyRef: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  Selects a key of a secret in the pod's
-      namespace
+    configMapKeyRef: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported Selects a key of a ConfigMap.
+    secretKeyRef: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Selects a key of a secret in the pod's namespace
   """
 
   configMapKeyRef = _messages.MessageField('ConfigMapKeySelector', 1)
@@ -573,13 +563,13 @@ class EnvVarSource(_messages.Message):
 
 
 class ExecAction(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   ExecAction describes a "run in container" action.
 
   Fields:
-    command: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  Command is the command line to execute inside the
-      container, the working directory for the command  is root ('/') in the
+    command: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Command is the command line to execute inside the
+      container, the working directory for the command is root ('/') in the
       container's filesystem. The command is simply exec'd, it is not run
       inside a shell, so traditional shell instructions ('|', etc) won't work.
       To use a shell, you need to explicitly call out to that shell. Exit
@@ -592,20 +582,20 @@ class ExecAction(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -653,20 +643,20 @@ class GoogleCloudRunV1Condition(_messages.Message):
 
 
 class HTTPGetAction(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   HTTPGetAction describes an action based on HTTP Get requests.
 
   Fields:
-    host: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  Host name to connect to, defaults to the pod IP. You
+    host: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Host name to connect to, defaults to the pod IP. You
       probably want to set "Host" in httpHeaders instead.
-    httpHeaders: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Custom headers to set in the request. HTTP allows
+    httpHeaders: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Custom headers to set in the request. HTTP allows
       repeated headers.
-    path: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  Path to access on the HTTP server.
-    scheme: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  Scheme to use for connecting to the host. Defaults to
+    path: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Path to access on the HTTP server.
+    scheme: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Scheme to use for connecting to the host. Defaults to
       HTTP.
   """
 
@@ -677,14 +667,14 @@ class HTTPGetAction(_messages.Message):
 
 
 class HTTPHeader(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   HTTPHeader describes a custom header to be used in HTTP probes
 
   Fields:
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The header field name
-    value: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The header field value
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The header field name
+    value: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The header field value
   """
 
   name = _messages.StringField(1)
@@ -692,21 +682,21 @@ class HTTPHeader(_messages.Message):
 
 
 class KeyToPath(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   Maps a string key to a path within a volume.
 
   Fields:
-    key: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The key to project.
-    mode: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  Mode bits to use on this file, must be a value
-      between 0 and 0777. If not specified, the volume defaultMode will be
-      used. This might be in conflict with other options that affect the file
-      mode, like fsGroup, and the result can be other mode bits set.
-    path: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The relative path of the file to map the key to. May not be
-      an absolute path. May not contain the path element '..'. May not start
-      with the string '..'.
+    key: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The key to project.
+    mode: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Mode bits to use on this file, must be a value between
+      0 and 0777. If not specified, the volume defaultMode will be used. This
+      might be in conflict with other options that affect the file mode, like
+      fsGroup, and the result can be other mode bits set.
+    path: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The relative path of the file to map the key to. May not be an
+      absolute path. May not contain the path element '..'. May not start with
+      the string '..'.
   """
 
   key = _messages.StringField(1)
@@ -864,13 +854,13 @@ class ListServicesResponse(_messages.Message):
 
 
 class LocalObjectReference(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   LocalObjectReference contains enough information to let you locate the
   referenced object inside the same namespace.
 
   Fields:
-    name: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  Name of the referent. More info:
+    name: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Name of the referent. More info:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/names/#names
   """
@@ -959,7 +949,7 @@ class Location(_messages.Message):
 
 
 class Namespace(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   Namespace provides a scope for Names. Use of multiple namespaces is
   optional.
 
@@ -981,7 +971,7 @@ class Namespace(_messages.Message):
 
 
 class NamespaceSpec(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   NamespaceSpec describes the attributes on a Namespace.
 
   Fields:
@@ -994,7 +984,7 @@ class NamespaceSpec(_messages.Message):
 
 
 class NamespaceStatus(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   NamespaceStatus is information about the current status of a Namespace.
 
   Fields:
@@ -1010,47 +1000,47 @@ class ObjectMeta(_messages.Message):
   persisted resources must have, which includes all objects users must create.
 
   Messages:
-    AnnotationsValue: (Optional)  Annotations is an unstructured key value map
+    AnnotationsValue: (Optional) Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
       preserved when modifying objects. More info:
       http://kubernetes.io/docs/user-guide/annotations
-    LabelsValue: (Optional)  Map of string keys and values that can be used to
+    LabelsValue: (Optional) Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
       http://kubernetes.io/docs/user-guide/labels
 
   Fields:
-    annotations: (Optional)  Annotations is an unstructured key value map
+    annotations: (Optional) Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
       preserved when modifying objects. More info:
       http://kubernetes.io/docs/user-guide/annotations
-    clusterName: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  The name of the cluster which the object belongs
+    clusterName: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported The name of the cluster which the object belongs
       to. This is used to distinguish resources with same name and namespace
       in different clusters. This field is not set anywhere right now and
       apiserver is going to ignore it if set in create or update request.
-    creationTimestamp: (Optional)  CreationTimestamp is a timestamp
+    creationTimestamp: (Optional) CreationTimestamp is a timestamp
       representing the server time when this object was created. It is not
       guaranteed to be set in happens-before order across separate operations.
       Clients may not set this value. It is represented in RFC3339 form and is
-      in UTC.  Populated by the system. Read-only. Null for lists. More info:
+      in UTC. Populated by the system. Read-only. Null for lists. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata
-    deletionGracePeriodSeconds: (Optional)  Cloud Run fully managed: not
-      supported  Cloud Run for Anthos: supported  Number of seconds allowed
-      for this object to gracefully terminate before it will be removed from
-      the system. Only set when deletionTimestamp is also set. May only be
+    deletionGracePeriodSeconds: (Optional) Cloud Run fully managed: not
+      supported Cloud Run for Anthos: supported Number of seconds allowed for
+      this object to gracefully terminate before it will be removed from the
+      system. Only set when deletionTimestamp is also set. May only be
       shortened. Read-only.
-    deletionTimestamp: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run for Anthos: supported  DeletionTimestamp is RFC 3339 date and
-      time at which this resource will be deleted. This field is set by the
-      server when a graceful deletion is requested by the user, and is not
-      directly settable by a client. The resource is expected to be deleted
-      (no longer visible from resource lists, and not reachable by name) after
-      the time in this field, once the finalizers list is empty. As long as
-      the finalizers list contains items, deletion is blocked. Once the
+    deletionTimestamp: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported DeletionTimestamp is RFC 3339 date and time at
+      which this resource will be deleted. This field is set by the server
+      when a graceful deletion is requested by the user, and is not directly
+      settable by a client. The resource is expected to be deleted (no longer
+      visible from resource lists, and not reachable by name) after the time
+      in this field, once the finalizers list is empty. As long as the
+      finalizers list contains items, deletion is blocked. Once the
       deletionTimestamp is set, this value may not be unset or be set further
       into the future, although it may be shortened or the resource may be
       deleted prior to this time. For example, a user may request that a pod
@@ -1061,35 +1051,34 @@ class ObjectMeta(_messages.Message):
       presence of network partitions, this object may still exist after this
       timestamp, until an administrator or automated process can determine the
       resource is fully terminated. If not set, graceful deletion of the
-      object has not been requested.  Populated by the system when a graceful
+      object has not been requested. Populated by the system when a graceful
       deletion is requested. Read-only. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata
-    finalizers: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Must be empty before the object is deleted from
+    finalizers: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Must be empty before the object is deleted from
       the registry. Each entry is an identifier for the responsible component
       that will remove the entry from the list. If the deletionTimestamp of
       the object is non-nil, entries in this list can only be removed.
       +patchStrategy=merge
-    generateName: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  GenerateName is an optional prefix, used by
-      the server, to generate a unique name ONLY IF the Name field has not
-      been provided. If this field is used, the name returned to the client
-      will be different than the name passed. This value will also be combined
-      with a unique suffix. The provided value has the same validation rules
-      as the Name field, and may be truncated by the length of the suffix
-      required to make the value unique on the server.  If this field is
-      specified and the generated name exists, the server will NOT return a
-      409 - instead, it will either return 201 Created or 500 with Reason
-      ServerTimeout indicating a unique name could not be found in the time
-      allotted, and the client should retry (optionally after the time
-      indicated in the Retry-After header).  Applied only if Name is not
-      specified. More info:
+    generateName: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported GenerateName is an optional prefix, used by the
+      server, to generate a unique name ONLY IF the Name field has not been
+      provided. If this field is used, the name returned to the client will be
+      different than the name passed. This value will also be combined with a
+      unique suffix. The provided value has the same validation rules as the
+      Name field, and may be truncated by the length of the suffix required to
+      make the value unique on the server. If this field is specified and the
+      generated name exists, the server will NOT return a 409 - instead, it
+      will either return 201 Created or 500 with Reason ServerTimeout
+      indicating a unique name could not be found in the time allotted, and
+      the client should retry (optionally after the time indicated in the
+      Retry-After header). Applied only if Name is not specified. More info:
       https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#idempotency  string generateName = 2;
-    generation: (Optional)  A sequence number representing a specific
+      conventions.md#idempotency string generateName = 2;
+    generation: (Optional) A sequence number representing a specific
       generation of the desired state. Populated by the system. Read-only.
-    labels: (Optional)  Map of string keys and values that can be used to
+    labels: (Optional) Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
       http://kubernetes.io/docs/user-guide/labels
@@ -1102,32 +1091,32 @@ class ObjectMeta(_messages.Message):
     namespace: Namespace defines the space within each name must be unique,
       within a Cloud Run region. In Cloud Run the namespace must be equal to
       either the project ID or project number.
-    ownerReferences: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  List of objects that own this object. If ALL
+    ownerReferences: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported List of objects that own this object. If ALL
       objects in the list have been deleted, this object will be garbage
       collected.
-    resourceVersion: (Optional)  An opaque value that represents the internal
+    resourceVersion: (Optional) An opaque value that represents the internal
       version of this object that can be used by clients to determine when
       objects have changed. May be used for optimistic concurrency, change
       detection, and the watch operation on a resource or set of resources.
       Clients must treat these values as opaque and passed unmodified back to
       the server. They may only be valid for a particular resource or set of
-      resources.  Populated by the system. Read-only. Value must be treated as
+      resources. Populated by the system. Read-only. Value must be treated as
       opaque by clients and . More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#concurrency-control-and-consistency
-    selfLink: (Optional)  SelfLink is a URL representing this object.
-      Populated by the system. Read-only.  string selfLink = 4;
-    uid: (Optional)  UID is the unique in time and space value for this
-      object. It is typically generated by the server on successful creation
-      of a resource and is not allowed to change on PUT operations.  Populated
-      by the system. Read-only. More info: http://kubernetes.io/docs/user-
+    selfLink: (Optional) SelfLink is a URL representing this object. Populated
+      by the system. Read-only. string selfLink = 4;
+    uid: (Optional) UID is the unique in time and space value for this object.
+      It is typically generated by the server on successful creation of a
+      resource and is not allowed to change on PUT operations. Populated by
+      the system. Read-only. More info: http://kubernetes.io/docs/user-
       guide/identifiers#uids
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""(Optional)  Annotations is an unstructured key value map stored with a
+    r"""(Optional) Annotations is an unstructured key value map stored with a
     resource that may be set by external tools to store and retrieve arbitrary
     metadata. They are not queryable and should be preserved when modifying
     objects. More info: http://kubernetes.io/docs/user-guide/annotations
@@ -1155,7 +1144,7 @@ class ObjectMeta(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""(Optional)  Map of string keys and values that can be used to organize
+    r"""(Optional) Map of string keys and values that can be used to organize
     and categorize (scope and select) objects. May match selectors of
     replication controllers and routes. More info:
     http://kubernetes.io/docs/user-guide/labels
@@ -1230,37 +1219,33 @@ class OwnerReference(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  For some types of
+  be an IAM predefined role or a user-created custom role. For some types of
   Google Cloud resources, a `binding` can also specify a `condition`, which is
   a logical expression that allows access to a resource only if the expression
   evaluates to `true`. A condition can add constraints based on attributes of
   the request, the resource, or both. To learn which resources support
   conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies).  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members": [
-  "user:eve@example.com"           ],           "condition": {
-  "title": "expirable access",             "description": "Does not grant
-  access after Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -1275,24 +1260,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.  To learn which resources support
+      version or leave the field unset. To learn which resources support
       conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -1305,40 +1290,39 @@ class Policy(_messages.Message):
 
 
 class Probe(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   Probe describes a health check to be performed against a container to
   determine whether it is alive or ready to receive traffic.
 
   Fields:
-    exec_: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  One and only one of the following should be
-      specified. Exec specifies the action to take.  A field inlined from the
-      Handler message.
-    failureThreshold: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run for Anthos: supported  Minimum consecutive failures for the
-      probe to be considered failed after having succeeded. Defaults to 3.
-      Minimum value is 1.
-    httpGet: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  HTTPGet specifies the http request to perform.  A
-      field inlined from the Handler message.
-    initialDelaySeconds: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run for Anthos: supported  Number of seconds after the container
+    exec_: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported One and only one of the following should be specified.
+      Exec specifies the action to take. A field inlined from the Handler
+      message.
+    failureThreshold: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported Minimum consecutive failures for the probe to
+      be considered failed after having succeeded. Defaults to 3. Minimum
+      value is 1.
+    httpGet: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported HTTPGet specifies the http request to perform. A field
+      inlined from the Handler message.
+    initialDelaySeconds: (Optional) Cloud Run fully managed: not supported
+      Cloud Run for Anthos: supported Number of seconds after the container
       has started before liveness probes are initiated. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
-    periodSeconds: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  How often (in seconds) to perform the probe.
+    periodSeconds: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported How often (in seconds) to perform the probe.
       Default to 10 seconds. Minimum value is 1.
-    successThreshold: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run for Anthos: supported  Minimum consecutive successes for the
-      probe to be considered successful after having failed. Defaults to 1.
-      Must be 1 for liveness. Minimum value is 1.
-    tcpSocket: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  TCPSocket specifies an action involving a TCP
-      port. TCP hooks not yet supported  A field inlined from the Handler
-      message.
-    timeoutSeconds: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  Number of seconds after which the probe times
+    successThreshold: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported Minimum consecutive successes for the probe to
+      be considered successful after having failed. Defaults to 1. Must be 1
+      for liveness. Minimum value is 1.
+    tcpSocket: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported TCPSocket specifies an action involving a TCP port.
+      TCP hooks not yet supported A field inlined from the Handler message.
+    timeoutSeconds: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported Number of seconds after which the probe times
       out. Defaults to 1 second. Minimum value is 1. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-
       lifecycle#container-probes
@@ -1391,15 +1375,15 @@ class ResourceRequirements(_messages.Message):
   r"""ResourceRequirements describes the compute resource requirements.
 
   Messages:
-    LimitsValue: (Optional)  Cloud Run fully managed: Only memory and CPU are
-      supported. Note: The only supported value for CPU is '1'.  Cloud Run for
-      Anthos: supported  Limits describes the maximum amount of compute
+    LimitsValue: (Optional) Cloud Run fully managed: Only memory and CPU are
+      supported. Note: The only supported value for CPU is '1'. Cloud Run for
+      Anthos: supported Limits describes the maximum amount of compute
       resources allowed. The values of the map is string form of the
       'quantity' k8s type: https://github.com/kubernetes/kubernetes/blob/maste
       r/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
-    RequestsValue: (Optional)  Cloud Run fully managed: Only memory and CPU
-      are supported. Note: The only supported value for CPU is '1'.  Cloud Run
-      for Anthos: supported  Requests describes the minimum amount of compute
+    RequestsValue: (Optional) Cloud Run fully managed: Only memory and CPU are
+      supported. Note: The only supported value for CPU is '1'. Cloud Run for
+      Anthos: supported Requests describes the minimum amount of compute
       resources required. If Requests is omitted for a container, it defaults
       to Limits if that is explicitly specified, otherwise to an
       implementation-defined value. The values of the map is string form of
@@ -1407,15 +1391,15 @@ class ResourceRequirements(_messages.Message):
       aster/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
 
   Fields:
-    limits: (Optional)  Cloud Run fully managed: Only memory and CPU are
-      supported. Note: The only supported value for CPU is '1'.  Cloud Run for
-      Anthos: supported  Limits describes the maximum amount of compute
+    limits: (Optional) Cloud Run fully managed: Only memory and CPU are
+      supported. Note: The only supported value for CPU is '1'. Cloud Run for
+      Anthos: supported Limits describes the maximum amount of compute
       resources allowed. The values of the map is string form of the
       'quantity' k8s type: https://github.com/kubernetes/kubernetes/blob/maste
       r/staging/src/k8s.io/apimachinery/pkg/api/resource/quantity.go
-    requests: (Optional)  Cloud Run fully managed: Only memory and CPU are
-      supported. Note: The only supported value for CPU is '1'.  Cloud Run for
-      Anthos: supported  Requests describes the minimum amount of compute
+    requests: (Optional) Cloud Run fully managed: Only memory and CPU are
+      supported. Note: The only supported value for CPU is '1'. Cloud Run for
+      Anthos: supported Requests describes the minimum amount of compute
       resources required. If Requests is omitted for a container, it defaults
       to Limits if that is explicitly specified, otherwise to an
       implementation-defined value. The values of the map is string form of
@@ -1425,12 +1409,12 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LimitsValue(_messages.Message):
-    r"""(Optional)  Cloud Run fully managed: Only memory and CPU are
-    supported. Note: The only supported value for CPU is '1'.  Cloud Run for
-    Anthos: supported  Limits describes the maximum amount of compute
-    resources allowed. The values of the map is string form of the 'quantity'
-    k8s type: https://github.com/kubernetes/kubernetes/blob/master/staging/src
-    /k8s.io/apimachinery/pkg/api/resource/quantity.go
+    r"""(Optional) Cloud Run fully managed: Only memory and CPU are supported.
+    Note: The only supported value for CPU is '1'. Cloud Run for Anthos:
+    supported Limits describes the maximum amount of compute resources
+    allowed. The values of the map is string form of the 'quantity' k8s type:
+    https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/ap
+    imachinery/pkg/api/resource/quantity.go
 
     Messages:
       AdditionalProperty: An additional property for a LimitsValue object.
@@ -1454,14 +1438,14 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestsValue(_messages.Message):
-    r"""(Optional)  Cloud Run fully managed: Only memory and CPU are
-    supported. Note: The only supported value for CPU is '1'.  Cloud Run for
-    Anthos: supported  Requests describes the minimum amount of compute
-    resources required. If Requests is omitted for a container, it defaults to
-    Limits if that is explicitly specified, otherwise to an implementation-
-    defined value. The values of the map is string form of the 'quantity' k8s
-    type: https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s
-    .io/apimachinery/pkg/api/resource/quantity.go
+    r"""(Optional) Cloud Run fully managed: Only memory and CPU are supported.
+    Note: The only supported value for CPU is '1'. Cloud Run for Anthos:
+    supported Requests describes the minimum amount of compute resources
+    required. If Requests is omitted for a container, it defaults to Limits if
+    that is explicitly specified, otherwise to an implementation-defined
+    value. The values of the map is string form of the 'quantity' k8s type: ht
+    tps://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apim
+    achinery/pkg/api/resource/quantity.go
 
     Messages:
       AdditionalProperty: An additional property for a RequestsValue object.
@@ -1488,10 +1472,10 @@ class ResourceRequirements(_messages.Message):
 
 
 class Revision(_messages.Message):
-  r"""Revision is an immutable snapshot of code and configuration.  A revision
+  r"""Revision is an immutable snapshot of code and configuration. A revision
   references a container image. Revisions are created by updates to a
-  Configuration.  See also: https://github.com/knative/serving/blob/master/doc
-  s/spec/overview.md#revision
+  Configuration. See also: https://github.com/knative/serving/blob/master/docs
+  /spec/overview.md#revision
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1515,9 +1499,9 @@ class RevisionSpec(_messages.Message):
   r"""RevisionSpec holds the desired state of the Revision (from the client).
 
   Fields:
-    containerConcurrency: (Optional)  ContainerConcurrency specifies the
+    containerConcurrency: (Optional) ContainerConcurrency specifies the
       maximum allowed in-flight (concurrent) requests per container instance
-      of the Revision.  Cloud Run fully managed: supported, defaults to 80
+      of the Revision. Cloud Run fully managed: supported, defaults to 80
       Cloud Run for Anthos: supported, defaults to 0, which means concurrency
       to the application is not limited, and the system decides the target
       concurrency for the autoscaler.
@@ -1533,9 +1517,9 @@ class RevisionSpec(_messages.Message):
       revision has. If not provided, the revision will use the project's
       default service account.
     timeoutSeconds: TimeoutSeconds holds the max duration the instance is
-      allowed for responding to a request.  Cloud Run fully managed: defaults
+      allowed for responding to a request. Cloud Run fully managed: defaults
       to 300 seconds (5 minutes). Maximum allowed value is 900 seconds (15
-      minutes).  Cloud Run for Anthos: defaults to 300 seconds (5 minutes).
+      minutes). Cloud Run for Anthos: defaults to 300 seconds (5 minutes).
       Maximum allowed value is configurable by the cluster operator.
     volumes: A Volume attribute.
   """
@@ -1554,7 +1538,7 @@ class RevisionStatus(_messages.Message):
   Fields:
     conditions: Conditions communicates information about ongoing/complete
       reconciliation processes that bring the "spec" inline with the observed
-      state of the world.  As a Revision is being prepared, it will
+      state of the world. As a Revision is being prepared, it will
       incrementally update conditions. Revision-specific conditions include: *
       "ResourcesAvailable": True when underlying resources have been
       provisioned. * "ContainerHealthy": True when the Revision readiness
@@ -1567,8 +1551,8 @@ class RevisionStatus(_messages.Message):
       based on the revision url template specified in the controller's config.
       +optional
     observedGeneration: ObservedGeneration is the 'Generation' of the Revision
-      that was last processed by the controller.  Clients polling for
-      completed reconciliation should poll until observedGeneration =
+      that was last processed by the controller. Clients polling for completed
+      reconciliation should poll until observedGeneration =
       metadata.generation, and the Ready condition's status is True or False.
     serviceName: Not currently used by Cloud Run.
   """
@@ -1653,8 +1637,8 @@ class RouteStatus(_messages.Message):
       reconciliation processes that bring the "spec" inline with the observed
       state of the world.
     observedGeneration: ObservedGeneration is the 'Generation' of the Route
-      that was last processed by the controller.  Clients polling for
-      completed reconciliation should poll until observedGeneration =
+      that was last processed by the controller. Clients polling for completed
+      reconciliation should poll until observedGeneration =
       metadata.generation and the Ready condition's status is True or False.
       Note that providing a trafficTarget that only has a configurationName
       will result in a Route that does not increment either its
@@ -2421,10 +2405,10 @@ class RunProjectsLocationsServicesGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -2523,7 +2507,7 @@ class RunProjectsLocationsServicesTestIamPermissionsRequest(_messages.Message):
 
 
 class Secret(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   Secret holds secret data of a certain type. The total bytes of the values in
   the Data field must be less than MaxSecretSize bytes.
 
@@ -2618,7 +2602,7 @@ class Secret(_messages.Message):
 
 
 class SecretEnvSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   SecretEnvSource selects a Secret to populate the environment variables with.
   The contents of the target Secret's Data field will represent the key-value
   pairs as environment variables.
@@ -2627,10 +2611,10 @@ class SecretEnvSource(_messages.Message):
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The Secret to select from.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Specify whether the Secret must be defined
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The Secret to select from.
+    optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Specify whether the Secret must be defined
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
@@ -2639,21 +2623,20 @@ class SecretEnvSource(_messages.Message):
 
 
 class SecretKeySelector(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   SecretKeySelector selects a key of a Secret.
 
   Fields:
-    key: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The key of the secret to select from.  Must be a valid secret
+    key: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The key of the secret to select from. Must be a valid secret
       key.
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The name of the secret in the pod's namespace to select from.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Specify whether the Secret or its key must be
-      defined
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The name of the secret in the pod's namespace to select from.
+    optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Specify whether the Secret or its key must be defined
   """
 
   key = _messages.StringField(1)
@@ -2663,29 +2646,29 @@ class SecretKeySelector(_messages.Message):
 
 
 class SecretVolumeSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   The contents of the target Secret's Data field will be presented in a volume
   as files using the keys in the Data field as the file names.
 
   Fields:
-    defaultMode: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Mode bits to use on created files by default.
-      Must be a value between 0 and 0777. Defaults to 0644. Directories within
-      the path are not affected by this setting. This might be in conflict
-      with other options that affect the file mode, like fsGroup, and the
-      result can be other mode bits set.
-    items: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  If unspecified, each key-value pair in the Data field
+    defaultMode: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Mode bits to use on created files by default. Must
+      be a value between 0 and 0777. Defaults to 0644. Directories within the
+      path are not affected by this setting. This might be in conflict with
+      other options that affect the file mode, like fsGroup, and the result
+      can be other mode bits set.
+    items: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported If unspecified, each key-value pair in the Data field
       of the referenced Secret will be projected into the volume as a file
       whose name is the key and content is the value. If specified, the listed
       keys will be projected into the specified paths, and unlisted keys will
       not be present. If a key is specified which is not present in the
       Secret, the volume setup will error unless it is marked optional.
-    optional: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Specify whether the Secret or its keys must be
+    optional: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Specify whether the Secret or its keys must be
       defined.
-    secretName: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  Name of the secret in the container's namespace to use.
+    secretName: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported Name of the secret in the container's namespace to use.
   """
 
   defaultMode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2695,17 +2678,17 @@ class SecretVolumeSource(_messages.Message):
 
 
 class SecurityContext(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   SecurityContext holds security configuration that will be applied to a
   container. Some fields are present in both SecurityContext and
-  PodSecurityContext.  When both are set, the values in SecurityContext take
+  PodSecurityContext. When both are set, the values in SecurityContext take
   precedence.
 
   Fields:
-    runAsUser: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  The UID to run the entrypoint of the container
+    runAsUser: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported The UID to run the entrypoint of the container
       process. Defaults to user specified in image metadata if unspecified.
-      May also be set in PodSecurityContext.  If set in both SecurityContext
+      May also be set in PodSecurityContext. If set in both SecurityContext
       and PodSecurityContext, the value specified in SecurityContext takes
       precedence.
   """
@@ -2720,9 +2703,9 @@ class Service(_messages.Message):
   which encapsulates software lifecycle decisions such as rollout policy and
   team resource ownership. Service acts only as an orchestrator of the
   underlying Routes and Configurations (much as a kubernetes Deployment
-  orchestrates ReplicaSets).  The Service's controller will track the statuses
+  orchestrates ReplicaSets). The Service's controller will track the statuses
   of its owned Configuration and Route, reflecting their statuses and
-  conditions as its own.  See also:
+  conditions as its own. See also:
   https://github.com/knative/serving/blob/master/docs/spec/overview.md#service
 
   Fields:
@@ -2778,8 +2761,8 @@ class ServiceStatus(_messages.Message):
       holds the name of the latest Revision stamped out from this Service's
       Configuration that has had its "Ready" condition become "True".
     observedGeneration: ObservedGeneration is the 'Generation' of the Route
-      that was last processed by the controller.  Clients polling for
-      completed reconciliation should poll until observedGeneration =
+      that was last processed by the controller. Clients polling for completed
+      reconciliation should poll until observedGeneration =
       metadata.generation and the Ready condition's status is True or False.
     traffic: From RouteStatus. Traffic holds the configured traffic
       distribution. These entries will always contain RevisionName references.
@@ -2809,7 +2792,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used:  `paths: "bindings, etag"`
+      provided, the following default mask is used: `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -2884,7 +2867,7 @@ class Status(_messages.Message):
 
   Fields:
     code: Suggested HTTP return code for this status, 0 if not set. +optional
-    details: Extended data associated with the reason.  Each reason may define
+    details: Extended data associated with the reason. Each reason may define
       its own extended details. This field is optional and the data returned
       is not guaranteed to conform to any schema except that defined by the
       reason type. +optional
@@ -2917,12 +2900,12 @@ class StatusCause(_messages.Message):
   Fields:
     field: The field of the resource that has caused this error, as named by
       its JSON serialization. May include dot and postfix notation for nested
-      attributes. Arrays are zero-indexed.  Fields may appear more than once
-      in an array of causes due to fields having multiple errors. Optional.
-      Examples:   "name" - the field "name" on the current resource
+      attributes. Arrays are zero-indexed. Fields may appear more than once in
+      an array of causes due to fields having multiple errors. Optional.
+      Examples: "name" - the field "name" on the current resource
       "items[0].name" - the field "name" on the first array entry in "items"
       +optional
-    message: A human-readable description of the cause of the error.  This
+    message: A human-readable description of the cause of the error. This
       field may be presented as-is to a reader. +optional
     reason: A machine-readable description of the cause of the error. If this
       value is empty there is no information available. +optional
@@ -2971,16 +2954,16 @@ class StatusDetails(_messages.Message):
 
 
 class TCPSocketAction(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   TCPSocketAction describes an action based on opening a socket
 
   Fields:
-    host: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  Optional: Host name to connect to, defaults to the
-      pod IP.
-    port: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  Number or name of the port to access on the container. Number
-      must be in the range 1 to 65535. Name must be an IANA_SVC_NAME.  This
+    host: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Optional: Host name to connect to, defaults to the pod
+      IP.
+    port: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported Number or name of the port to access on the container. Number
+      must be in the range 1 to 65535. Name must be an IANA_SVC_NAME. This
       field is currently limited to integer types only because of proto's
       inability to properly support the IntOrString golang type.
   """
@@ -3030,18 +3013,17 @@ class TrafficTarget(_messages.Message):
       RevisionName is empty; it must be false when RevisionName is non-empty.
       +optional
     percent: Percent specifies percent of the traffic to this Revision or
-      Configuration. This defaults to zero if unspecified.  Cloud Run
-      currently requires 100 percent for a single ConfigurationName
-      TrafficTarget entry.
+      Configuration. This defaults to zero if unspecified. Cloud Run currently
+      requires 100 percent for a single ConfigurationName TrafficTarget entry.
     revisionName: RevisionName of a specific revision to which to send this
       portion of traffic. This is mutually exclusive with ConfigurationName.
       Providing RevisionName in spec is not currently supported by Cloud Run.
     tag: Tag is optionally used to expose a dedicated url for referencing this
-      target exclusively.  Not currently supported in Cloud Run. +optional
+      target exclusively. Not currently supported in Cloud Run. +optional
     url: Output only. URL displays the URL for accessing tagged traffic
       targets. URL is displayed in status, and is disallowed on spec. URL must
       contain a scheme (e.g. http://) and a hostname, but may not contain
-      anything else (e.g. basic auth, url path, etc.  Not currently supported
+      anything else (e.g. basic auth, url path, etc. Not currently supported
       in Cloud Run.
   """
 
@@ -3054,15 +3036,15 @@ class TrafficTarget(_messages.Message):
 
 
 class Volume(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   Volume represents a named volume in a container.
 
   Fields:
-    configMap: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+    configMap: Cloud Run fully managed: not supported Cloud Run for Anthos:
       supported
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  Volume's name.
-    secret: Cloud Run fully managed: not supported  Cloud Run for Anthos:
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported Volume's name.
+    secret: Cloud Run fully managed: not supported Cloud Run for Anthos:
       supported
   """
 
@@ -3072,19 +3054,19 @@ class Volume(_messages.Message):
 
 
 class VolumeMount(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   VolumeMount describes a mounting of a Volume within a container.
 
   Fields:
-    mountPath: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  Path within the container at which the volume should be
-      mounted.  Must not contain ':'.
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  This must match the Name of a Volume.
-    readOnly: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Only true is accepted. Defaults to true.
-    subPath: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  Path within the volume from which the container's
+    mountPath: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported Path within the container at which the volume should be
+      mounted. Must not contain ':'.
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported This must match the Name of a Volume.
+    readOnly: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Only true is accepted. Defaults to true.
+    subPath: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Path within the volume from which the container's
       volume should be mounted. Defaults to "" (volume's root).
   """
 

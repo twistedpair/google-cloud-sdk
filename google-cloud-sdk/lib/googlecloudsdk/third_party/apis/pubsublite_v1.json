@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/pubsub/docs",
+  "documentationLink": "https://cloud.google.com/pubsub/lite/docs",
   "protocol": "rest",
   "rootUrl": "https://pubsublite.googleapis.com/",
   "mtlsRootUrl": "https://pubsublite.mtls.googleapis.com/",

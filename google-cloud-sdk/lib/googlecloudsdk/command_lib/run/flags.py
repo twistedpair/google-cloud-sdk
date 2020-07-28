@@ -1212,6 +1212,13 @@ def FlagIsExplicitlySet(args, flag):
 
 def VerifyOnePlatformFlags(args, release_track, product):
   """Raise ConfigurationError if args includes GKE only arguments."""
+
+  if product == Product.EVENTS and release_track != base.ReleaseTrack.ALPHA:
+    raise serverless_exceptions.ConfigurationError(
+        'The flag --platform={} is only compatible with "gcloud alpha events".'
+        ' Please provide an alternative platform value or use "gcloud alpha '
+        'events".'.format(PLATFORM_MANAGED))
+
   error_msg = ('The `{flag}` flag is not supported on the fully managed '
                'version of Cloud Run. Specify `--platform {platform}` or run '
                '`gcloud config set run/platform {platform}` to work with '

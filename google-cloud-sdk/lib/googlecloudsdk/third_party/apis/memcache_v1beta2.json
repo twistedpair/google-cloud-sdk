@@ -580,6 +580,43 @@
         }
       }
     },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of a long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. Time when the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Time when the operation finished running.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "type": "string"
+        },
+        "statusDetail": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "type": "string"
+        },
+        "cancelRequested": {
+          "description": "Output only. Identifies whether the user has requested cancellation\nof the operation. Operations that have successfully been cancelled\nhave Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudSaasacceleratorManagementProvidersV1Instance": {
       "id": "GoogleCloudSaasacceleratorManagementProvidersV1Instance",
       "type": "object",

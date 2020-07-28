@@ -22,7 +22,6 @@ import time
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
-
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
@@ -166,16 +165,15 @@ class ImageOperation(object):
   EXPORT = 'export'
 
 
-def AddCommonDaisyArgs(parser, add_log_location=True, operation='a build'):
+def AddCommonDaisyArgs(parser, operation='a build'):
   """Common arguments for Daisy builds."""
 
-  if add_log_location:
-    parser.add_argument(
-        '--log-location',
-        help='Directory in Cloud Storage to hold build logs. If not '
-        'set, ```gs://<project num>.cloudbuild-logs.googleusercontent.com/``` '
-        'is created and used.',
-    )
+  parser.add_argument(
+      '--log-location',
+      help='Directory in Cloud Storage to hold build logs. If not '
+      'set, ```gs://<project num>.cloudbuild-logs.googleusercontent.com/``` '
+      'is created and used.',
+  )
 
   parser.add_argument(
       '--timeout',
@@ -239,7 +237,7 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
   project = projects_api.Get(project_id)
   # If the user's project doesn't have cloudbuild enabled yet, then the service
   # account won't even exist. If so, then ask to enable it before continuing.
-  # Also prompt them to enable Stackdriver Logging if they haven't yet.
+  # Also prompt them to enable Cloud Logging if they haven't yet.
   expected_services = ['cloudbuild.googleapis.com', 'logging.googleapis.com',
                        'compute.googleapis.com']
   for service_name in expected_services:
@@ -631,11 +629,12 @@ def _RunCloudBuild(args,
       timeout='{0}s'.format(args.timeout),
   )
   if log_location:
-    gcs_log_dir = resources.REGISTRY.Parse(
-        args.log_location, collection='storage.objects')
-
-    build_config.logsBucket = ('gs://{0}/{1}'.format(gcs_log_dir.bucket,
-                                                     gcs_log_dir.object))
+    gcs_log_ref = resources.REGISTRY.Parse(args.log_location)
+    if hasattr(gcs_log_ref, 'object'):
+      build_config.logsBucket = ('gs://{0}/{1}'.format(gcs_log_ref.bucket,
+                                                       gcs_log_ref.object))
+    else:
+      build_config.logsBucket = 'gs://{0}'.format(gcs_log_ref.bucket)
 
   # Start the build.
   build, build_ref = _CreateCloudBuild(build_config, client, messages)
@@ -758,7 +757,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
 
   return _RunCloudBuild(args, _OVF_IMPORT_BUILDER.format(args.docker_image_tag),
                         ovf_importer_args, build_tags, output_filter,
-                        backoff=backoff)
+                        backoff=backoff, log_location=args.log_location)
 
 
 def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
@@ -834,7 +833,7 @@ def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
 
   return _RunCloudBuild(args, _OVF_IMPORT_BUILDER.format(args.docker_image_tag),
                         ovf_importer_args, build_tags, output_filter,
-                        backoff=backoff)
+                        backoff=backoff, log_location=args.log_location)
 
 
 def _AppendNodeAffinityLabelArgs(

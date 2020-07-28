@@ -58,9 +58,7 @@ class GameservicesV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new game server config in a given project, location, and game.
-server deployment. Game server configs are immutable, and are not applied
-until referenced in the game server deployment rollout resource.
+      r"""Creates a new game server config in a given project, location, and game server deployment. Game server configs are immutable, and are not applied until referenced in the game server deployment rollout resource.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest) input message
@@ -87,8 +85,7 @@ until referenced in the game server deployment rollout resource.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single game server config. The deletion will fail if the game.
-server config is referenced in a game server deployment rollout.
+      r"""Deletes a single game server config. The deletion will fail if the game server config is referenced in a game server deployment rollout.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest) input message
@@ -142,8 +139,7 @@ server config is referenced in a game server deployment rollout.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists game server configs in a given project, location, and game server.
-deployment.
+      r"""Lists game server configs in a given project, location, and game server deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest) input message
@@ -234,9 +230,7 @@ deployment.
     )
 
     def FetchDeploymentState(self, request, global_params=None):
-      r"""Retrieves information about the current state of the game server.
-deployment. Gathers all the Agones fleets and Agones autoscalers,
-including fleets running an older version of the game server deployment.
+      r"""Retrieves information about the current state of the game server deployment. Gathers all the Agones fleets and Agones autoscalers, including fleets running an older version of the game server deployment.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequest) input message
@@ -290,9 +284,7 @@ including fleets running an older version of the game server deployment.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsGetIamPolicyRequest) input message
@@ -400,8 +392,7 @@ set.
     )
 
     def PreviewRollout(self, request, global_params=None):
-      r"""Previews the game server deployment rollout. This API does not mutate the.
-rollout resource.
+      r"""Previews the game server deployment rollout. This API does not mutate the rollout resource.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest) input message
@@ -428,10 +419,7 @@ rollout resource.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsSetIamPolicyRequest) input message
@@ -458,13 +446,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsTestIamPermissionsRequest) input message
@@ -491,12 +473,7 @@ may "fail open" without warning.
     )
 
     def UpdateRollout(self, request, global_params=None):
-      r"""Patches a single game server deployment rollout.
-The method will not return an error if the update does not affect any
-existing realms. For example - if the default_game_server_config is changed
-but all existing realms use the override, that is valid. Similarly, if a
-non existing realm is explicitly called out in game_server_config_overrides
-field, that will also not result in an error.
+      r"""Patches a single game server deployment rollout. The method will not return an error if the update does not affect any existing realms. For example - if the default_game_server_config is changed but all existing realms use the override, that is valid. Similarly, if a non existing realm is explicitly called out in game_server_config_overrides field, that will also not result in an error.
 
       Args:
         request: (GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest) input message
@@ -533,16 +510,7 @@ field, that will also not result in an error.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (GameservicesProjectsLocationsOperationsCancelRequest) input message
@@ -569,10 +537,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (GameservicesProjectsLocationsOperationsDeleteRequest) input message
@@ -599,9 +564,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (GameservicesProjectsLocationsOperationsGetRequest) input message
@@ -628,16 +591,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (GameservicesProjectsLocationsOperationsListRequest) input message
@@ -809,8 +763,7 @@ is the parent resource, without the operations collection id.
     )
 
     def PreviewCreate(self, request, global_params=None):
-      r"""Previews creation of a new game server cluster in a given project and.
-location.
+      r"""Previews creation of a new game server cluster in a given project and location.
 
       Args:
         request: (GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest) input message

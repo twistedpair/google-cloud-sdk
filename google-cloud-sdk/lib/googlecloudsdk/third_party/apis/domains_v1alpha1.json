@@ -130,15 +130,15 @@
     },
     "Operation": {
       "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -146,7 +146,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
           "type": "boolean"
         },
         "error": {
@@ -154,7 +154,7 @@
           "$ref": "Status"
         },
         "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -165,7 +165,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -174,11 +174,11 @@
           "format": "int32"
         },
         "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -216,12 +216,18 @@
         "available": {
           "description": "Availability of the domain.",
           "enumDescriptions": [
-            "The system might return AVAILABILITY_UNSPECIFIED if something prevents\nthe service from being able to determine domain availability.",
+            "The system might return AVAILABILITY_UNSPECIFIED if something prevents the service from being able to determine domain availability.",
             "Domain is available for registration.",
-            "Domain is not available for registration, e.g. it is registered by\nsomeone else.",
+            "Domain is not available for registration, e.g. it is registered by someone else.",
             "Domain is not supported by Cloud Domains, but may be available elsewhere."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The system might return AVAILABILITY_UNSPECIFIED if something prevents the service from being able to determine domain availability.",
+            "Domain is available for registration.",
+            "Domain is not available for registration, e.g. it is registered by someone else.",
+            "Domain is not supported by Cloud Domains, but may be available elsewhere."
+          ],
           "enum": [
             "AVAILABILITY_UNSPECIFIED",
             "AVAILABLE",
@@ -238,12 +244,18 @@
           "enumDescriptions": [
             "The Privacy settings are undefined.",
             "All the data from WHOIS config is publicly available (not supported yet).",
-            "Your contact info won't be available to the public. To help protect your\ninfo and prevent spam, a third party provides alternate contact info for\nyour domain in the WHOIS directory at no extra cost.",
-            "Limited personal info will be available to the public. The actual\ninformation redacted depends on the domain."
+            "Your contact info won't be available to the public. To help protect your info and prevent spam, a third party provides alternate contact info for your domain in the WHOIS directory at no extra cost.",
+            "Limited personal info will be available to the public. The actual information redacted depends on the domain."
           ],
           "type": "array",
           "items": {
             "type": "string",
+            "enumDescriptions": [
+              "The Privacy settings are undefined.",
+              "All the data from WHOIS config is publicly available (not supported yet).",
+              "Your contact info won't be available to the public. To help protect your info and prevent spam, a third party provides alternate contact info for your domain in the WHOIS directory at no extra cost.",
+              "Limited personal info will be available to the public. The actual information redacted depends on the domain."
+            ],
             "enum": [
               "WHOIS_PRIVACY_UNSPECIFIED",
               "PUBLISH_CONTACT_DATA",
@@ -256,11 +268,15 @@
           "description": "Notices about special properties of certain domains.",
           "enumDescriptions": [
             "The notice is undefined.",
-            "HSTS_PRELOADED indicates that the domain is preloaded on the HTTP Strict\nTransport Security list in browsers.\nServing a website on such domain will require an SSL certificate.\nSee https:\/\/support.google.com\/domains\/answer\/7638036 for details."
+            "HSTS_PRELOADED indicates that the domain is preloaded on the HTTP Strict Transport Security list in browsers. Serving a website on such domain will require an SSL certificate. See https:\/\/support.google.com\/domains\/answer\/7638036 for details."
           ],
           "type": "array",
           "items": {
             "type": "string",
+            "enumDescriptions": [
+              "The notice is undefined.",
+              "HSTS_PRELOADED indicates that the domain is preloaded on the HTTP Strict Transport Security list in browsers. Serving a website on such domain will require an SSL certificate. See https:\/\/support.google.com\/domains\/answer\/7638036 for details."
+            ],
             "enum": [
               "NOTICE_UNSPECIFIED",
               "HSTS_PRELOADED"
@@ -279,12 +295,12 @@
           "type": "string"
         },
         "units": {
-          "description": "The whole units of the amount.\nFor example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
+          "description": "The whole units of the amount. For example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
           "type": "string",
           "format": "int64"
         },
         "nanos": {
-          "description": "Number of nano (10^-9) units of the amount.\nThe value must be between -999,999,999 and +999,999,999 inclusive.\nIf `units` is positive, `nanos` must be positive or zero.\nIf `units` is zero, `nanos` can be positive, zero, or negative.\nIf `units` is negative, `nanos` must be negative or zero.\nFor example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
+          "description": "Number of nano (10^-9) units of the amount. The value must be between -999,999,999 and +999,999,999 inclusive. If `units` is positive, `nanos` must be positive or zero. If `units` is zero, `nanos` can be positive, zero, or negative. If `units` is negative, `nanos` must be negative or zero. For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
           "type": "integer",
           "format": "int32"
         }
@@ -307,11 +323,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Name of the Registration resource. It matches pattern\n`projects\/*\/locations\/*\/registrations\/<domain_name>`.",
+          "description": "Output only. Name of the Registration resource. It matches pattern `projects\/*\/locations\/*\/registrations\/`.",
           "type": "string"
         },
         "domainName": {
-          "description": "Required. Immutable. The domain name in ASCII-only format, without a dot at the end.\nUnicode domain names have to be converted to Punycode.",
+          "description": "Required. Immutable. The domain name in ASCII-only format, without a dot at the end. Unicode domain names have to be converted to Punycode.",
           "type": "string"
         },
         "createTime": {
@@ -325,12 +341,12 @@
           "format": "google-datetime"
         },
         "expireTime": {
-          "description": "Output only. The expiration timestamp of the Registration. For\nregistrations in state DETACHED this is the expiration timestamp at detach\ntime.",
+          "description": "Output only. The expiration timestamp of the Registration. For registrations in state DETACHED this is the expiration timestamp at detach time.",
           "type": "string",
           "format": "google-datetime"
         },
         "detachTime": {
-          "description": "Output only. The detach timestamp of the Registration. Set only for\nRegistrations in state DETACHED.",
+          "description": "Output only. The detach timestamp of the Registration. Set only for Registrations in state DETACHED.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -339,11 +355,18 @@
           "enumDescriptions": [
             "The state is undefined.",
             "The registration operation is not yet completed.",
-            "The domain is registered and operational. It will automatically renew\naround expire_time. Check the outstanding_issues list to see if there are\nany unresolved issues with the registration.",
-            "The registration is suspended and the domain is inaccessible.\nThis may mean e.g. that the registrant email has not been verified for\ntoo long. Check the outstanding_issues list to learn the exact problem.\nCheck emails received from the registrar and follow the provided steps to\nresolve the problem.",
-            "The registration has been detached from Cloud and moved directly to\nGoogle Domains for individual management.\nThe domain will remain valid until it expires and during that\nperiod you'll be able to reclaim it at https:\/\/domains.google.com\/ using\nWHOIS contact information. For more information, see\nhttps:\/\/support.google.com\/domains\/answer\/6339340."
+            "The domain is registered and operational. It will automatically renew around expire_time. Check the outstanding_issues list to see if there are any unresolved issues with the registration.",
+            "The registration is suspended and the domain is inaccessible. This may mean e.g. that the registrant email has not been verified for too long. Check the outstanding_issues list to learn the exact problem. Check emails received from the registrar and follow the provided steps to resolve the problem.",
+            "The registration has been detached from Cloud and moved directly to Google Domains for individual management. The domain will remain valid until it expires and during that period you'll be able to reclaim it at https:\/\/domains.google.com\/ using WHOIS contact information. For more information, see https:\/\/support.google.com\/domains\/answer\/6339340."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The state is undefined.",
+            "The registration operation is not yet completed.",
+            "The domain is registered and operational. It will automatically renew around expire_time. Check the outstanding_issues list to see if there are any unresolved issues with the registration.",
+            "The registration is suspended and the domain is inaccessible. This may mean e.g. that the registrant email has not been verified for too long. Check the outstanding_issues list to learn the exact problem. Check emails received from the registrar and follow the provided steps to resolve the problem.",
+            "The registration has been detached from Cloud and moved directly to Google Domains for individual management. The domain will remain valid until it expires and during that period you'll be able to reclaim it at https:\/\/domains.google.com\/ using WHOIS contact information. For more information, see https:\/\/support.google.com\/domains\/answer\/6339340."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "PROVISIONING",
@@ -368,14 +391,18 @@
           }
         },
         "notices": {
-          "description": "Input only. Create only. List of accepted Notices about the domain.\nNeeded e.g. for accepting the HSTS notice when registering .app domains.\nThe list of notices for each domain can be retrieved with\nCheckDomainAvailability call.",
+          "description": "Input only. Create only. List of accepted Notices about the domain. Needed e.g. for accepting the HSTS notice when registering .app domains. The list of notices for each domain can be retrieved with CheckDomainAvailability call.",
           "enumDescriptions": [
             "The notice is undefined.",
-            "HSTS_PRELOADED indicates that the domain is preloaded on the HTTP Strict\nTransport Security list in browsers.\nServing a website on such domain will require an SSL certificate.\nSee https:\/\/support.google.com\/domains\/answer\/7638036 for details."
+            "HSTS_PRELOADED indicates that the domain is preloaded on the HTTP Strict Transport Security list in browsers. Serving a website on such domain will require an SSL certificate. See https:\/\/support.google.com\/domains\/answer\/7638036 for details."
           ],
           "type": "array",
           "items": {
             "type": "string",
+            "enumDescriptions": [
+              "The notice is undefined.",
+              "HSTS_PRELOADED indicates that the domain is preloaded on the HTTP Strict Transport Security list in browsers. Serving a website on such domain will require an SSL certificate. See https:\/\/support.google.com\/domains\/answer\/7638036 for details."
+            ],
             "enum": [
               "NOTICE_UNSPECIFIED",
               "HSTS_PRELOADED"
@@ -383,7 +410,7 @@
           }
         },
         "yearlyPrice": {
-          "description": "Required. Input only. Create only. Yearly price to register or renew the domain.\nUsed for confirmation of the price when creating a new registration.\nYearly price that should be put here can be obtained from\nCheckAvailability or SearchAvailability calls.",
+          "description": "Required. Input only. Create only. Yearly price to register or renew the domain. Used for confirmation of the price when creating a new registration. Yearly price that should be put here can be obtained from CheckAvailability or SearchAvailability calls.",
           "$ref": "Money"
         }
       }
@@ -412,10 +439,16 @@
           "enumDescriptions": [
             "The Privacy settings are undefined.",
             "All the data from WHOIS config is publicly available (not supported yet).",
-            "Your contact info won't be available to the public. To help protect your\ninfo and prevent spam, a third party provides alternate contact info for\nyour domain in the WHOIS directory at no extra cost.",
-            "Limited personal info will be available to the public. The actual\ninformation redacted depends on the domain."
+            "Your contact info won't be available to the public. To help protect your info and prevent spam, a third party provides alternate contact info for your domain in the WHOIS directory at no extra cost.",
+            "Limited personal info will be available to the public. The actual information redacted depends on the domain."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The Privacy settings are undefined.",
+            "All the data from WHOIS config is publicly available (not supported yet).",
+            "Your contact info won't be available to the public. To help protect your info and prevent spam, a third party provides alternate contact info for your domain in the WHOIS directory at no extra cost.",
+            "Limited personal info will be available to the public. The actual information redacted depends on the domain."
+          ],
           "enum": [
             "WHOIS_PRIVACY_UNSPECIFIED",
             "PUBLISH_CONTACT_DATA",
@@ -450,51 +483,51 @@
     },
     "PostalAddress": {
       "id": "PostalAddress",
-      "description": "Represents a postal address, e.g. for postal delivery or payments addresses.\nGiven a postal address, a postal service can deliver items to a premise, P.O.\nBox or similar.\nIt is not intended to model geographical locations (roads, towns,\nmountains).\n\nIn typical usage an address would be created via user input or from importing\nexisting data, depending on the type of process.\n\nAdvice on address input \/ editing:\n - Use an i18n-ready address widget such as\n   https:\/\/github.com\/google\/libaddressinput)\n- Users should not be presented with UI elements for input or editing of\n  fields outside countries where that field is used.\n\nFor more guidance on how to use this schema, please see:\nhttps:\/\/support.google.com\/business\/answer\/6397478",
+      "description": "Represents a postal address, e.g. for postal delivery or payments addresses. Given a postal address, a postal service can deliver items to a premise, P.O. Box or similar. It is not intended to model geographical locations (roads, towns, mountains). In typical usage an address would be created via user input or from importing existing data, depending on the type of process. Advice on address input \/ editing: - Use an i18n-ready address widget such as https:\/\/github.com\/google\/libaddressinput) - Users should not be presented with UI elements for input or editing of fields outside countries where that field is used. For more guidance on how to use this schema, please see: https:\/\/support.google.com\/business\/answer\/6397478",
       "type": "object",
       "properties": {
         "revision": {
-          "description": "The schema revision of the `PostalAddress`. This must be set to 0, which is\nthe latest revision.\n\nAll new revisions **must** be backward compatible with old revisions.",
+          "description": "The schema revision of the `PostalAddress`. This must be set to 0, which is the latest revision. All new revisions **must** be backward compatible with old revisions.",
           "type": "integer",
           "format": "int32"
         },
         "regionCode": {
-          "description": "Required. CLDR region code of the country\/region of the address. This\nis never inferred and it is up to the user to ensure the value is\ncorrect. See http:\/\/cldr.unicode.org\/ and\nhttp:\/\/www.unicode.org\/cldr\/charts\/30\/supplemental\/territory_information.html\nfor details. Example: \"CH\" for Switzerland.",
+          "description": "Required. CLDR region code of the country\/region of the address. This is never inferred and it is up to the user to ensure the value is correct. See http:\/\/cldr.unicode.org\/ and http:\/\/www.unicode.org\/cldr\/charts\/30\/supplemental\/territory_information.html for details. Example: \"CH\" for Switzerland.",
           "type": "string"
         },
         "languageCode": {
-          "description": "Optional. BCP-47 language code of the contents of this address (if\nknown). This is often the UI language of the input form or is expected\nto match one of the languages used in the address' country\/region, or their\ntransliterated equivalents.\nThis can affect formatting in certain countries, but is not critical\nto the correctness of the data and will never affect any validation or\nother non-formatting related operations.\n\nIf this value is not known, it should be omitted (rather than specifying a\npossibly incorrect default).\n\nExamples: \"zh-Hant\", \"ja\", \"ja-Latn\", \"en\".",
+          "description": "Optional. BCP-47 language code of the contents of this address (if known). This is often the UI language of the input form or is expected to match one of the languages used in the address' country\/region, or their transliterated equivalents. This can affect formatting in certain countries, but is not critical to the correctness of the data and will never affect any validation or other non-formatting related operations. If this value is not known, it should be omitted (rather than specifying a possibly incorrect default). Examples: \"zh-Hant\", \"ja\", \"ja-Latn\", \"en\".",
           "type": "string"
         },
         "postalCode": {
-          "description": "Optional. Postal code of the address. Not all countries use or require\npostal codes to be present, but where they are used, they may trigger\nadditional validation with other parts of the address (e.g. state\/zip\nvalidation in the U.S.A.).",
+          "description": "Optional. Postal code of the address. Not all countries use or require postal codes to be present, but where they are used, they may trigger additional validation with other parts of the address (e.g. state\/zip validation in the U.S.A.).",
           "type": "string"
         },
         "sortingCode": {
-          "description": "Optional. Additional, country-specific, sorting code. This is not used\nin most regions. Where it is used, the value is either a string like\n\"CEDEX\", optionally followed by a number (e.g. \"CEDEX 7\"), or just a number\nalone, representing the \"sector code\" (Jamaica), \"delivery area indicator\"\n(Malawi) or \"post office indicator\" (e.g. C\u00F4te d'Ivoire).",
+          "description": "Optional. Additional, country-specific, sorting code. This is not used in most regions. Where it is used, the value is either a string like \"CEDEX\", optionally followed by a number (e.g. \"CEDEX 7\"), or just a number alone, representing the \"sector code\" (Jamaica), \"delivery area indicator\" (Malawi) or \"post office indicator\" (e.g. C\u00F4te d'Ivoire).",
           "type": "string"
         },
         "administrativeArea": {
-          "description": "Optional. Highest administrative subdivision which is used for postal\naddresses of a country or region.\nFor example, this can be a state, a province, an oblast, or a prefecture.\nSpecifically, for Spain this is the province and not the autonomous\ncommunity (e.g. \"Barcelona\" and not \"Catalonia\").\nMany countries don't use an administrative area in postal addresses. E.g.\nin Switzerland this should be left unpopulated.",
+          "description": "Optional. Highest administrative subdivision which is used for postal addresses of a country or region. For example, this can be a state, a province, an oblast, or a prefecture. Specifically, for Spain this is the province and not the autonomous community (e.g. \"Barcelona\" and not \"Catalonia\"). Many countries don't use an administrative area in postal addresses. E.g. in Switzerland this should be left unpopulated.",
           "type": "string"
         },
         "locality": {
-          "description": "Optional. Generally refers to the city\/town portion of the address.\nExamples: US city, IT comune, UK post town.\nIn regions of the world where localities are not well defined or do not fit\ninto this structure well, leave locality empty and use address_lines.",
+          "description": "Optional. Generally refers to the city\/town portion of the address. Examples: US city, IT comune, UK post town. In regions of the world where localities are not well defined or do not fit into this structure well, leave locality empty and use address_lines.",
           "type": "string"
         },
         "sublocality": {
-          "description": "Optional. Sublocality of the address.\nFor example, this can be neighborhoods, boroughs, districts.",
+          "description": "Optional. Sublocality of the address. For example, this can be neighborhoods, boroughs, districts.",
           "type": "string"
         },
         "addressLines": {
-          "description": "Unstructured address lines describing the lower levels of an address.\n\nBecause values in address_lines do not have type information and may\nsometimes contain multiple values in a single field (e.g.\n\"Austin, TX\"), it is important that the line order is clear. The order of\naddress lines should be \"envelope order\" for the country\/region of the\naddress. In places where this can vary (e.g. Japan), address_language is\nused to make it explicit (e.g. \"ja\" for large-to-small ordering and\n\"ja-Latn\" or \"en\" for small-to-large). This way, the most specific line of\nan address can be selected based on the language.\n\nThe minimum permitted structural representation of an address consists\nof a region_code with all remaining information placed in the\naddress_lines. It would be possible to format such an address very\napproximately without geocoding, but no semantic reasoning could be\nmade about any of the address components until it was at least\npartially resolved.\n\nCreating an address only containing a region_code and address_lines, and\nthen geocoding is the recommended way to handle completely unstructured\naddresses (as opposed to guessing which parts of the address should be\nlocalities or administrative areas).",
+          "description": "Unstructured address lines describing the lower levels of an address. Because values in address_lines do not have type information and may sometimes contain multiple values in a single field (e.g. \"Austin, TX\"), it is important that the line order is clear. The order of address lines should be \"envelope order\" for the country\/region of the address. In places where this can vary (e.g. Japan), address_language is used to make it explicit (e.g. \"ja\" for large-to-small ordering and \"ja-Latn\" or \"en\" for small-to-large). This way, the most specific line of an address can be selected based on the language. The minimum permitted structural representation of an address consists of a region_code with all remaining information placed in the address_lines. It would be possible to format such an address very approximately without geocoding, but no semantic reasoning could be made about any of the address components until it was at least partially resolved. Creating an address only containing a region_code and address_lines, and then geocoding is the recommended way to handle completely unstructured addresses (as opposed to guessing which parts of the address should be localities or administrative areas).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "recipients": {
-          "description": "Optional. The recipient at the address.\nThis field may, under certain circumstances, contain multiline information.\nFor example, it might contain \"care of\" information.",
+          "description": "Optional. The recipient at the address. This field may, under certain circumstances, contain multiline information. For example, it might contain \"care of\" information.",
           "type": "array",
           "items": {
             "type": "string"
@@ -519,7 +552,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If there might be more results than those appearing in this response, then\n`next_page_token` is included. To get the next set of results, call this\nmethod again using the value of `next_page_token` as `page_token`.",
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
           "type": "string"
         }
       }
@@ -537,7 +570,7 @@
       "type": "object",
       "properties": {
         "code": {
-          "description": "The Authorization Code in ASCII. It can be used to e.g. transfer the domain\nto another registrar.",
+          "description": "The Authorization Code in ASCII. It can be used to e.g. transfer the domain to another registrar.",
           "type": "string"
         }
       }
@@ -573,7 +606,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name for the location, which may vary between implementations.\nFor example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
           "type": "string"
         },
         "locationId": {
@@ -581,18 +614,18 @@
           "type": "string"
         },
         "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
           "type": "string"
         },
         "labels": {
-          "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given\nlocation.",
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -607,11 +640,11 @@
       "type": "object",
       "properties": {
         "policy": {
-          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
           "$ref": "Policy"
         },
         "updateMask": {
-          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\n\n`paths: \"bindings, etag\"`",
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only the fields in the mask will be modified. If no mask is provided, the following default mask is used: `paths: \"bindings, etag\"`",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -619,16 +652,16 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access\ncontrols for Google Cloud resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions; each `role` can be an IAM predefined role or a user-created\ncustom role.\n\nFor some types of Google Cloud resources, a `binding` can also specify a\n`condition`, which is a logical expression that allows access to a resource\nonly if the expression evaluates to `true`. A condition can add constraints\nbased on attributes of the request, the resource, or both. To learn which\nresources support conditions in their IAM policies, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).\n\n**JSON example:**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\n            \"user:eve@example.com\"\n          ],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ],\n      \"etag\": \"BwWWja0YfJA=\",\n      \"version\": 3\n    }\n\n**YAML example:**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n    - etag: BwWWja0YfJA=\n    - version: 3\n\nFor a description of IAM and its features, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
-          "description": "Specifies the format of the policy.\n\nValid values are `0`, `1`, and `3`. Requests that specify an invalid value\nare rejected.\n\nAny operation that affects conditional role bindings must specify version\n`3`. This requirement applies to the following operations:\n\n* Getting a policy that includes a conditional role binding\n* Adding a conditional role binding to a policy\n* Changing a conditional role binding in a policy\n* Removing any role binding, with or without a condition, from a policy\n  that includes conditions\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.\n\nIf a policy does not include any conditions, operations on that policy may\nspecify any valid version or leave the field unset.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "description": "Specifies the format of the policy. Valid values are `0`, `1`, and `3`. Requests that specify an invalid value are rejected. Any operation that affects conditional role bindings must specify version `3`. This requirement applies to the following operations: * Getting a policy that includes a conditional role binding * Adding a conditional role binding to a policy * Changing a conditional role binding in a policy * Removing any role binding, with or without a condition, from a policy that includes conditions **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost. If a policy does not include any conditions, operations on that policy may specify any valid version or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "type": "integer",
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally, may specify a\n`condition` that determines how and when the `bindings` are applied. Each\nof the `bindings` must contain at least one member.",
+          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
           "type": "array",
           "items": {
             "$ref": "Binding"
@@ -642,14 +675,14 @@
           }
         },
         "rules": {
-          "description": "If more than one rule is specified, the rules are applied in the following\nmanner:\n- All matching LOG rules are always applied.\n- If any DENY\/DENY_WITH_LOG rule matches, permission is denied.\n  Logging will be applied if one or more matching rule requires logging.\n- Otherwise, if any ALLOW\/ALLOW_WITH_LOG rule matches, permission is\n  granted.\n  Logging will be applied if one or more matching rule requires logging.\n- Otherwise, if no rule applies, permission is denied.",
+          "description": "If more than one rule is specified, the rules are applied in the following manner: - All matching LOG rules are always applied. - If any DENY\/DENY_WITH_LOG rule matches, permission is denied. Logging will be applied if one or more matching rule requires logging. - Otherwise, if any ALLOW\/ALLOW_WITH_LOG rule matches, permission is granted. Logging will be applied if one or more matching rule requires logging. - Otherwise, if no rule applies, permission is denied.",
           "type": "array",
           "items": {
             "$ref": "Rule"
           }
         },
         "etag": {
-          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.",
+          "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy. **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.",
           "type": "string",
           "format": "byte"
         },
@@ -664,52 +697,52 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example, `alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.\n\nIf the condition evaluates to `true`, then this binding applies to the\ncurrent request.\n\nIf the condition evaluates to `false`, then this binding does not apply to\nthe current request. However, a different role binding might grant the same\nrole to one or more of the members in this binding.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM\ndocumentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
         }
       }
     },
     "Expr": {
       "id": "Expr",
-      "description": "Represents a textual expression in the Common Expression Language (CEL)\nsyntax. CEL is a C-like expression language. The syntax and semantics of CEL\nare documented at https:\/\/github.com\/google\/cel-spec.\n\nExample (Comparison):\n\n    title: \"Summary size limit\"\n    description: \"Determines if a summary is less than 100 chars\"\n    expression: \"document.summary.size() < 100\"\n\nExample (Equality):\n\n    title: \"Requestor is owner\"\n    description: \"Determines if requestor is the document owner\"\n    expression: \"document.owner == request.auth.claims.email\"\n\nExample (Logic):\n\n    title: \"Public documents\"\n    description: \"Determine whether the document should be publicly visible\"\n    expression: \"document.type != 'private' && document.type != 'internal'\"\n\nExample (Data Manipulation):\n\n    title: \"Notification string\"\n    description: \"Create a notification string with a timestamp.\"\n    expression: \"'New message received at ' + string(document.create_time)\"\n\nThe exact variables and functions that may be referenced within an expression\nare determined by the service that evaluates it. See the service\ndocumentation for additional information.",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
       "type": "object",
       "properties": {
         "expression": {
-          "description": "Textual representation of an expression in Common Expression Language\nsyntax.",
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
           "type": "string"
         },
         "title": {
-          "description": "Optional. Title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. Description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
           "type": "string"
         },
         "location": {
-          "description": "Optional. String indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }
     },
     "AuditConfig": {
       "id": "AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\",\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:jose@example.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\"\n            },\n            {\n              \"log_type\": \"ADMIN_READ\"\n            }\n          ]\n        },\n        {\n          \"service\": \"sampleservice.googleapis.com\",\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\"\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:aliya@example.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts jose@example.com from DATA_READ logging, and\naliya@example.com from DATA_WRITE logging.",
+      "description": "Specifies the audit configuration for a service. The configuration determines which permission types are logged, and what identities, if any, are exempted from logging. An AuditConfig must have one or more AuditLogConfigs. If there are AuditConfigs for both `allServices` and a specific service, the union of the two AuditConfigs is used for that service: the log_types specified in each AuditConfig are enabled, and the exempted_members in each AuditLogConfig are exempted. Example Policy with multiple AuditConfigs: { \"audit_configs\": [ { \"service\": \"allServices\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" }, { \"log_type\": \"ADMIN_READ\" } ] }, { \"service\": \"sampleservice.googleapis.com\", \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\" }, { \"log_type\": \"DATA_WRITE\", \"exempted_members\": [ \"user:aliya@example.com\" ] } ] } ] } For sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging, and aliya@example.com from DATA_WRITE logging.",
       "type": "object",
       "properties": {
         "service": {
-          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
+          "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
           "type": "string"
         },
         "exemptedMembers": {
@@ -729,7 +762,7 @@
     },
     "AuditLogConfig": {
       "id": "AuditLogConfig",
-      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:jose@example.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\"\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\njose@example.com from DATA_READ logging.",
+      "description": "Provides the configuration for logging a type of permissions. Example: { \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:jose@example.com\" ] }, { \"log_type\": \"DATA_WRITE\" } ] } This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from DATA_READ logging.",
       "type": "object",
       "properties": {
         "logType": {
@@ -741,6 +774,12 @@
             "Data reads. Example: CloudSQL Users list"
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default case. Should never be this.",
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
+          ],
           "enum": [
             "LOG_TYPE_UNSPECIFIED",
             "ADMIN_READ",
@@ -749,7 +788,7 @@
           ]
         },
         "exemptedMembers": {
-          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
+          "description": "Specifies the identities that do not cause logging for this type of permission. Follows the same format of Binding.members.",
           "type": "array",
           "items": {
             "type": "string"
@@ -770,7 +809,7 @@
           "type": "string"
         },
         "permissions": {
-          "description": "A permission is a string of form '<service>.<resource type>.<verb>'\n(e.g., 'storage.buckets.list'). A value of '*' matches all permissions,\nand a verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.",
+          "description": "A permission is a string of form '..' (e.g., 'storage.buckets.list'). A value of '*' matches all permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.",
           "type": "array",
           "items": {
             "type": "string"
@@ -781,12 +820,20 @@
           "enumDescriptions": [
             "Default no action.",
             "Matching 'Entries' grant access.",
-            "Matching 'Entries' grant access and the caller promises to log\nthe request per the returned log_configs.",
+            "Matching 'Entries' grant access and the caller promises to log the request per the returned log_configs.",
             "Matching 'Entries' deny access.",
-            "Matching 'Entries' deny access and the caller promises to log\nthe request per the returned log_configs.",
+            "Matching 'Entries' deny access and the caller promises to log the request per the returned log_configs.",
             "Matching 'Entries' tell IAM.Check callers to generate logs."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default no action.",
+            "Matching 'Entries' grant access.",
+            "Matching 'Entries' grant access and the caller promises to log the request per the returned log_configs.",
+            "Matching 'Entries' deny access.",
+            "Matching 'Entries' deny access and the caller promises to log the request per the returned log_configs.",
+            "Matching 'Entries' tell IAM.Check callers to generate logs."
+          ],
           "enum": [
             "NO_ACTION",
             "ALLOW",
@@ -797,28 +844,28 @@
           ]
         },
         "in": {
-          "description": "If one or more 'in' clauses are specified, the rule matches if\nthe PRINCIPAL\/AUTHORITY_SELECTOR is in at least one of these entries.",
+          "description": "If one or more 'in' clauses are specified, the rule matches if the PRINCIPAL\/AUTHORITY_SELECTOR is in at least one of these entries.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "notIn": {
-          "description": "If one or more 'not_in' clauses are specified, the rule matches\nif the PRINCIPAL\/AUTHORITY_SELECTOR is in none of the entries.\nThe format for in and not_in entries can be found at in the Local IAM\ndocumentation (see go\/local-iam#features).",
+          "description": "If one or more 'not_in' clauses are specified, the rule matches if the PRINCIPAL\/AUTHORITY_SELECTOR is in none of the entries. The format for in and not_in entries can be found at in the Local IAM documentation (see go\/local-iam#features).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "conditions": {
-          "description": "Additional restrictions that must be met. All conditions must pass for the\nrule to match.",
+          "description": "Additional restrictions that must be met. All conditions must pass for the rule to match.",
           "type": "array",
           "items": {
             "$ref": "Condition"
           }
         },
         "logConfig": {
-          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries\nthat match the LOG action.",
+          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries that match the LOG action.",
           "type": "array",
           "items": {
             "$ref": "LogConfig"
@@ -836,14 +883,24 @@
           "enumDescriptions": [
             "Default non-attribute.",
             "Either principal or (if present) authority selector.",
-            "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
-            "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". Note that a value can be:\n - 'self' (i.e., allow connections from clients that are in the same\n security realm)\n - 'self:metro' (i.e., clients that are in the same metro)\n - 'self:cloud-region' (i.e., allow connections from clients that are in\n the same cloud region)\n - 'guardians' (i.e., allow connections from its guardian realms. See\n go\/security-realms-glossary#guardian for more information.)\n - a realm (e.g., 'campus-abc')\n - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups)\nA match is determined by a realm group\nmembership check performed by a RealmAclRep object (go\/realm-acl-howto).\nIt is not permitted to grant access based on the *absence* of a realm, so\nrealm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN\nor DENY\/NOT_IN).",
-            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).",
-            "What types of justifications have been supplied with this request.\nString values should match enum names from\nsecurity.credentials.JustificationType, e.g. \"MANUAL_STRING\". It is not\npermitted to grant access based on the *absence* of a justification, so\njustification conditions can only be used in a \"positive\" context\n(e.g., ALLOW\/IN or DENY\/NOT_IN).\n\nMultiple justifications, e.g., a Buganizer ID and a manually-entered\nreason, are normal and supported.",
-            "What type of credentials have been supplied with this request.\nString values should match enum names from\nsecurity_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY\nis supported.\nIt is not permitted to grant access based on the *absence* of a\ncredentials type, so the conditions can only be used in a \"positive\"\ncontext (e.g., ALLOW\/IN or DENY\/NOT_IN).",
-            "EXPERIMENTAL -- DO NOT USE.\n"
+            "The principal (even if an authority selector is present), which must only be used for attribution, not authorization.",
+            "Any of the security realms in the IAMContext (go\/security-realms). When used with IN, the condition indicates \"any of the request's realms match one of the given values; with NOT_IN, \"none of the realms match any of the given values\". Note that a value can be: - 'self' (i.e., allow connections from clients that are in the same security realm) - 'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-region' (i.e., allow connections from clients that are in the same cloud region) - 'guardians' (i.e., allow connections from its guardian realms. See go\/security-realms-glossary#guardian for more information.) - a realm (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups) A match is determined by a realm group membership check performed by a RealmAclRep object (go\/realm-acl-howto). It is not permitted to grant access based on the *absence* of a realm, so realm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
+            "An approver (distinct from the requester) that has authorized this request. When used with IN, the condition indicates that one of the approvers associated with the request matches the specified principal, or is a member of the specified group. Approvers can only grant additional access, and are thus only used in a strictly positive context (e.g. ALLOW\/IN or DENY\/NOT_IN).",
+            "What types of justifications have been supplied with this request. String values should match enum names from security.credentials.JustificationType, e.g. \"MANUAL_STRING\". It is not permitted to grant access based on the *absence* of a justification, so justification conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN). Multiple justifications, e.g., a Buganizer ID and a manually-entered reason, are normal and supported.",
+            "What type of credentials have been supplied with this request. String values should match enum names from security_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access based on the *absence* of a credentials type, so the conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
+            "EXPERIMENTAL -- DO NOT USE. "
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default non-attribute.",
+            "Either principal or (if present) authority selector.",
+            "The principal (even if an authority selector is present), which must only be used for attribution, not authorization.",
+            "Any of the security realms in the IAMContext (go\/security-realms). When used with IN, the condition indicates \"any of the request's realms match one of the given values; with NOT_IN, \"none of the realms match any of the given values\". Note that a value can be: - 'self' (i.e., allow connections from clients that are in the same security realm) - 'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-region' (i.e., allow connections from clients that are in the same cloud region) - 'guardians' (i.e., allow connections from its guardian realms. See go\/security-realms-glossary#guardian for more information.) - a realm (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups) A match is determined by a realm group membership check performed by a RealmAclRep object (go\/realm-acl-howto). It is not permitted to grant access based on the *absence* of a realm, so realm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
+            "An approver (distinct from the requester) that has authorized this request. When used with IN, the condition indicates that one of the approvers associated with the request matches the specified principal, or is a member of the specified group. Approvers can only grant additional access, and are thus only used in a strictly positive context (e.g. ALLOW\/IN or DENY\/NOT_IN).",
+            "What types of justifications have been supplied with this request. String values should match enum names from security.credentials.JustificationType, e.g. \"MANUAL_STRING\". It is not permitted to grant access based on the *absence* of a justification, so justification conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN). Multiple justifications, e.g., a Buganizer ID and a manually-entered reason, are normal and supported.",
+            "What type of credentials have been supplied with this request. String values should match enum names from security_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access based on the *absence* of a credentials type, so the conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
+            "EXPERIMENTAL -- DO NOT USE. "
+          ],
           "enum": [
             "NO_ATTR",
             "AUTHORITY",
@@ -856,7 +913,7 @@
           ]
         },
         "sys": {
-          "description": "Trusted attributes supplied by any service that owns resources and uses\nthe IAM system for access control.",
+          "description": "Trusted attributes supplied by any service that owns resources and uses the IAM system for access control.",
           "enumDescriptions": [
             "Default non-attribute type",
             "Region of the resource",
@@ -865,6 +922,13 @@
             "IP address of the caller"
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default non-attribute type",
+            "Region of the resource",
+            "Service name",
+            "Resource name",
+            "IP address of the caller"
+          ],
           "enum": [
             "NO_ATTR",
             "REGION",
@@ -883,11 +947,19 @@
             "Default no-op.",
             "DEPRECATED. Use IN instead.",
             "DEPRECATED. Use NOT_IN instead.",
-            "The condition is true if the subject (or any element of it if it is\na set) matches any of the supplied values.",
-            "The condition is true if the subject (or every element of it if it is\na set) matches none of the supplied values.",
+            "The condition is true if the subject (or any element of it if it is a set) matches any of the supplied values.",
+            "The condition is true if the subject (or every element of it if it is a set) matches none of the supplied values.",
             "Subject is discharged"
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default no-op.",
+            "DEPRECATED. Use IN instead.",
+            "DEPRECATED. Use NOT_IN instead.",
+            "The condition is true if the subject (or any element of it if it is a set) matches any of the supplied values.",
+            "The condition is true if the subject (or every element of it if it is a set) matches none of the supplied values.",
+            "Subject is discharged"
+          ],
           "enum": [
             "NO_OP",
             "EQUALS",
@@ -927,7 +999,7 @@
     },
     "CounterOptions": {
       "id": "CounterOptions",
-      "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nSupported field names:\n   - \"authority\", which is \"[token]\" if IAMContext.token is present,\n     otherwise the value of IAMContext.authority_selector if present, and\n     otherwise a representation of IAMContext.principal; or\n   - \"iam_principal\", a representation of IAMContext.principal even if a\n     token or authority selector is present; or\n   - \"\" (empty string), resulting in a counter with no fields.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}",
+      "description": "Increment a streamz counter with the specified metric and field names. Metric names should start with a '\/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"\/iam\/policy\" prepended. Field names correspond to IAM request parameters and field values are their respective values. Supported field names: - \"authority\", which is \"[token]\" if IAMContext.token is present, otherwise the value of IAMContext.authority_selector if present, and otherwise a representation of IAMContext.principal; or - \"iam_principal\", a representation of IAMContext.principal even if a token or authority selector is present; or - \"\" (empty string), resulting in a counter with no fields. Examples: counter { metric: \"\/debug_access_count\" field: \"iam_principal\" } ==> increment counter \/iam\/policy\/debug_access_count {iam_principal=[value of IAMContext.principal]}",
       "type": "object",
       "properties": {
         "metric": {
@@ -949,7 +1021,7 @@
     },
     "CustomField": {
       "id": "CustomField",
-      "description": "Custom fields.\nThese can be used to create a counter with arbitrary field\/value\npairs.\nSee: go\/rpcsp-custom-fields.",
+      "description": "Custom fields. These can be used to create a counter with arbitrary field\/value pairs. See: go\/rpcsp-custom-fields.",
       "type": "object",
       "properties": {
         "name": {
@@ -957,7 +1029,7 @@
           "type": "string"
         },
         "value": {
-          "description": "Value is the field value. It is important that in contrast to the\nCounterOptions.field, the value here is a constant that is not\nderived from the IAMContext.",
+          "description": "Value is the field value. It is important that in contrast to the CounterOptions.field, the value here is a constant that is not derived from the IAMContext.",
           "type": "string"
         }
       }
@@ -969,10 +1041,14 @@
       "properties": {
         "logMode": {
           "enumDescriptions": [
-            "Client is not required to write a partial Gin log immediately after\nthe authorization check. If client chooses to write one and it fails,\nclient may either fail open (allow the operation to continue) or\nfail closed (handle as a DENY outcome).",
-            "The application's operation in the context of which this authorization\ncheck is being made may only be performed if it is successfully logged\nto Gin. For instance, the authorization library may satisfy this\nobligation by emitting a partial log entry at authorization check time\nand only returning ALLOW to the application if it succeeds.\n\nIf a matching Rule has this directive, but the client has not indicated\nthat it will honor such requirements, then the IAM check will result in\nauthorization failure by setting CheckPolicyResponse.success=false."
+            "Client is not required to write a partial Gin log immediately after the authorization check. If client chooses to write one and it fails, client may either fail open (allow the operation to continue) or fail closed (handle as a DENY outcome).",
+            "The application's operation in the context of which this authorization check is being made may only be performed if it is successfully logged to Gin. For instance, the authorization library may satisfy this obligation by emitting a partial log entry at authorization check time and only returning ALLOW to the application if it succeeds. If a matching Rule has this directive, but the client has not indicated that it will honor such requirements, then the IAM check will result in authorization failure by setting CheckPolicyResponse.success=false."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Client is not required to write a partial Gin log immediately after the authorization check. If client chooses to write one and it fails, client may either fail open (allow the operation to continue) or fail closed (handle as a DENY outcome).",
+            "The application's operation in the context of which this authorization check is being made may only be performed if it is successfully logged to Gin. For instance, the authorization library may satisfy this obligation by emitting a partial log entry at authorization check time and only returning ALLOW to the application if it succeeds. If a matching Rule has this directive, but the client has not indicated that it will honor such requirements, then the IAM check will result in authorization failure by setting CheckPolicyResponse.success=false."
+          ],
           "enum": [
             "LOG_MODE_UNSPECIFIED",
             "LOG_FAIL_CLOSED"
@@ -993,6 +1069,11 @@
             "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "Corresponds to \"cloudaudit.googleapis.com\/activity\"",
+            "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
+          ],
           "enum": [
             "UNSPECIFIED_LOG_NAME",
             "ADMIN_ACTIVITY",
@@ -1020,6 +1101,13 @@
             "A write of standard data."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "A read of admin (meta) data.",
+            "A write of admin (meta) data.",
+            "A read of standard data.",
+            "A write of standard data."
+          ],
           "enum": [
             "PERMISSION_TYPE_UNSPECIFIED",
             "ADMIN_READ",
@@ -1036,7 +1124,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
           "type": "array",
           "items": {
             "type": "string"
@@ -1050,7 +1138,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is\nallowed.",
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is allowed.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1116,7 +1204,7 @@
                   "type": "string"
                 },
                 "includeUnrevealedLocations": {
-                  "description": "If true, the returned list will include locations which are not yet\nrevealed.",
+                  "description": "If true, the returned list will include locations which are not yet revealed.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -1212,7 +1300,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
                 },
                 "get": {
                   "id": "domains.projects.locations.operations.get",
@@ -1237,7 +1325,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
                 }
               }
             },
@@ -1250,7 +1338,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource of the Registration. Must be in the\nformat `projects\/*\/locations\/*`.",
+                      "description": "Required. The parent resource of the Registration. Must be in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1271,7 +1359,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Searches available domains similar to the given query.\nReturned domain availability allows some staleness."
+                  "description": "Searches available domains similar to the given query. Returned domain availability allows some staleness."
                 },
                 "checkAvailability": {
                   "id": "domains.projects.locations.registrations.checkAvailability",
@@ -1280,14 +1368,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource of the Registration. Must be in the\nformat `projects\/*\/locations\/*`.",
+                      "description": "Required. The parent resource of the Registration. Must be in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "domainName": {
-                      "description": "Required. The domain name in ASCII-only format, without a dot at the end.\nUnicode domain names have to be converted to Punycode.",
+                      "description": "Required. The domain name in ASCII-only format, without a dot at the end. Unicode domain names have to be converted to Punycode.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1310,14 +1398,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource of the Registration. Must be in the\nformat `projects\/*\/locations\/*`.",
+                      "description": "Required. The parent resource of the Registration. Must be in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "validateOnly": {
-                      "description": "When true, only validation will be performed, without actually registering\nthe domain. Follows:\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
+                      "description": "When true, only validation will be performed, without actually registering the domain. Follows: https:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1334,7 +1422,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Registration, i.e. attempts to register the domain, in a\ngiven project and location"
+                  "description": "Creates a new Registration, i.e. attempts to register the domain, in a given project and location"
                 },
                 "list": {
                   "id": "domains.projects.locations.registrations.list",
@@ -1343,7 +1431,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location from which the Registrations should be\nlisted, specified in the format `projects\/*\/locations\/*`.",
+                      "description": "Required. The project and location from which the Registrations should be listed, specified in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1356,12 +1444,12 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The value returned by the last `ListRegistrationsResponse`.\nIndicates that this is a continuation of a prior `ListRegistrations` call,\nand that the system should return the next page of data.",
+                      "description": "The value returned by the last `ListRegistrationsResponse`. Indicates that this is a continuation of a prior `ListRegistrations` call, and that the system should return the next page of data.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Filter expression to restrict the Registrations returned. For details see\nhttps:\/\/cloud.google.com\/sdk\/gcloud\/reference\/topic\/filters.",
+                      "description": "Filter expression to restrict the Registrations returned. For details see https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/topic\/filters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1384,7 +1472,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Registration to get. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. A name of the Registration to get. Must be in the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1409,20 +1497,20 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. Name of the Registration resource. It matches pattern\n`projects\/*\/locations\/*\/registrations\/<domain_name>`.",
+                      "description": "Output only. Name of the Registration resource. It matches pattern `projects\/*\/locations\/*\/registrations\/`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource. For the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "Required. The update mask applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "validateOnly": {
-                      "description": "When true, only validation will be performed, without actually updating the\ndomain. Follows:\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
+                      "description": "When true, only validation will be performed, without actually updating the domain. Follows: https:\/\/cloud.google.com\/apis\/design\/design_patterns#request_validation",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1448,7 +1536,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Registration to detach. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. A name of the Registration to detach. Must be in the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1467,7 +1555,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Detach a Registration from Cloud Domains management, leaving it registered\nat Google Domains registrar."
+                  "description": "Detach a Registration from Cloud Domains management, leaving it registered at Google Domains registrar."
                 },
                 "detach": {
                   "id": "domains.projects.locations.registrations.detach",
@@ -1476,7 +1564,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Registration to detach. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. A name of the Registration to detach. Must be in the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1495,7 +1583,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Detach a Registration from Cloud Domains management, leaving it registered\nat Google Domains registrar."
+                  "description": "Detach a Registration from Cloud Domains management, leaving it registered at Google Domains registrar."
                 },
                 "delete": {
                   "id": "domains.projects.locations.registrations.delete",
@@ -1504,7 +1592,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Registration to delete. Must be in the format\n`projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. A name of the Registration to delete. Must be in the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1520,7 +1608,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single Registration.\nCan only be called on Registrations in state DETACHED with expire_time\nin the past."
+                  "description": "Deletes a single Registration. Can only be called on Registrations in state DETACHED with expire_time in the past."
                 },
                 "getAuthorizationCode": {
                   "id": "domains.projects.locations.registrations.getAuthorizationCode",
@@ -1529,7 +1617,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. A name of the Registration to get Authorization Code for. Must be\nin the format `projects\/*\/locations\/*\/registrations\/*`.",
+                      "description": "Required. A name of the Registration to get Authorization Code for. Must be in the format `projects\/*\/locations\/*\/registrations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1545,7 +1633,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets Authorization Code of a Registration.\nCan only be called after 60 days have elapsed since initial registration."
+                  "description": "Gets Authorization Code of a Registration. Can only be called after 60 days have elapsed since initial registration."
                 },
                 "setIamPolicy": {
                   "id": "domains.projects.locations.registrations.setIamPolicy",
@@ -1554,7 +1642,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1573,7 +1661,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
                 },
                 "getIamPolicy": {
                   "id": "domains.projects.locations.registrations.getIamPolicy",
@@ -1582,14 +1670,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM\ndocumentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -1604,7 +1692,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
                 },
                 "testIamPermissions": {
                   "id": "domains.projects.locations.registrations.testIamPermissions",
@@ -1613,7 +1701,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1632,7 +1720,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
               ,
@@ -1646,7 +1734,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required. A name of the Registration to reset Authorization Code for. Must\nbe in the format `projects\/*\/locations\/*\/registrations\/*`.",
+                          "description": "Required. A name of the Registration to reset Authorization Code for. Must be in the format `projects\/*\/locations\/*\/registrations\/*`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
@@ -1665,7 +1753,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Resets the Authorization Code of the registration.\nCan only be called after 60 days have elapsed since initial registration."
+                      "description": "Resets the Authorization Code of the registration. Can only be called after 60 days have elapsed since initial registration."
                     }
                   }
                 }

@@ -233,7 +233,7 @@
     },
     "StartEnvironmentResponse": {
       "id": "StartEnvironmentResponse",
-      "description": "Message included in the response field of operations returned from\nStartEnvironment once the\noperation is complete.",
+      "description": "Message included in the response field of operations returned from\nStartEnvironment\nonce the operation is complete.",
       "type": "object",
       "properties": {
         "environment": {

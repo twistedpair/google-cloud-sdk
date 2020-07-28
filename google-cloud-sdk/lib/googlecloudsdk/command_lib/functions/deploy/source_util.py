@@ -75,8 +75,7 @@ def _ValidateUnpackedSourceSize(path, ignore_file=None):
         six.text_type(size_b) + 'B', six.text_type(size_limit_b) + 'B')
 
 
-def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None,
-                          update_date=False):
+def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None):
   """Prepare zip file with source of the function to upload.
 
   Args:
@@ -85,7 +84,6 @@ def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None,
     source_path: str, directory containing the sources to be zipped.
     ignore_file: custom ignore_file name.
         Override .gcloudignore file to customize files to be skipped.
-    update_date: bool, update file date in archive if it is older than 1980.
   Returns:
     Path to the zip file (str).
   Raises:
@@ -100,8 +98,7 @@ def _CreateSourcesZipFile(zip_dir, source_path, ignore_file=None,
   try:
     chooser = _GetChooser(source_path, ignore_file)
     predicate = chooser.IsIncluded
-    archive.MakeZipFromDir(zip_file_name, source_path, predicate=predicate,
-                           update_date=update_date)
+    archive.MakeZipFromDir(zip_file_name, source_path, predicate=predicate)
   except ValueError as e:
     raise exceptions.FunctionsError(
         'Error creating a ZIP archive with the source code '
@@ -210,8 +207,11 @@ def UploadFile(source, stage_bucket, messages, service, function_ref):
   return _UploadFileToGeneratedUrl(source, messages, service, function_ref)
 
 
-def SetFunctionSourceProps(function, function_ref, source_arg, stage_bucket,
-                           ignore_file=None, update_date=False):
+def SetFunctionSourceProps(function,
+                           function_ref,
+                           source_arg,
+                           stage_bucket,
+                           ignore_file=None):
   """Add sources to function.
 
   Args:
@@ -222,7 +222,6 @@ def SetFunctionSourceProps(function, function_ref, source_arg, stage_bucket,
         will be stored.
     ignore_file: custom ignore_file name.
         Override .gcloudignore file to customize files to be skipped.
-    update_date: update file date in archive if it is older than 1980.
   Returns:
     A list of fields on the function that have been changed.
   """
@@ -252,8 +251,7 @@ def SetFunctionSourceProps(function, function_ref, source_arg, stage_bucket,
     )
     return ['sourceRepository']
   with file_utils.TemporaryDirectory() as tmp_dir:
-    zip_file = _CreateSourcesZipFile(tmp_dir, source_arg, ignore_file,
-                                     update_date=update_date)
+    zip_file = _CreateSourcesZipFile(tmp_dir, source_arg, ignore_file)
     service = api_util.GetApiClientInstance().projects_locations_functions
 
     upload_url = UploadFile(

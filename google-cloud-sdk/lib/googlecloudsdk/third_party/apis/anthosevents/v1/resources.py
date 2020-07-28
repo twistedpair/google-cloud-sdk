@@ -38,6 +38,17 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_CONFIGMAPS = (
+      'projects.locations.configmaps',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/configmaps/'
+              '{configmapsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_NAMESPACES = (
       'projects.locations.namespaces',
       '{+name}',
@@ -60,6 +71,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICEACCOUNTS = (
+      'projects.locations.serviceaccounts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/serviceaccounts/'
+              '{serviceaccountsId}',
+      },
+      ['name'],
+      True
+  )
   API_V1_NAMESPACES = (
       'api.v1.namespaces',
       '{+name}',
@@ -70,12 +92,32 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  API_V1_NAMESPACES_CONFIGMAPS = (
+      'api.v1.namespaces.configmaps',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/configmaps/{configmapsId}',
+      },
+      ['name'],
+      True
+  )
   API_V1_NAMESPACES_SECRETS = (
       'api.v1.namespaces.secrets',
       '{+name}',
       {
           '':
               'namespaces/{namespacesId}/secrets/{secretsId}',
+      },
+      ['name'],
+      True
+  )
+  API_V1_NAMESPACES_SERVICEACCOUNTS = (
+      'api.v1.namespaces.serviceaccounts',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/serviceaccounts/{serviceaccountsId}',
       },
       ['name'],
       True

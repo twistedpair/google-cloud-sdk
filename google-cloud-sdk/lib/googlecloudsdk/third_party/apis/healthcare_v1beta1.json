@@ -1373,7 +1373,7 @@
       "type": "object",
       "properties": {
         "schematizedParsingType": {
-          "description": "Determines how messages that don't parse successfully are handled.",
+          "description": "Determines how messages that fail to parse are handled.",
           "enumDescriptions": [
             "Unspecified schematized parsing type, equivalent to `SOFT_FAIL`.",
             "Messages that fail to parse are still stored and ACKed but a parser error\nis stored in place of the schematized data.",
@@ -1802,6 +1802,28 @@
         }
       }
     },
+    "ImportMessagesRequest": {
+      "id": "ImportMessagesRequest",
+      "description": "Request to import messages.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Cloud Storage source data location and import configuration.\n\nThe Cloud Storage location requires the `roles\/storage.objectViewer`\nCloud IAM role.",
+          "$ref": "GcsSource"
+        }
+      }
+    },
+    "GcsSource": {
+      "id": "GcsSource",
+      "description": "Specifies the configuration for importing data from Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Points to a Cloud Storage URI containing file(s) to import.\n\nThe URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`.\nThe URI can include wildcards in `object_id` and thus identify multiple\nfiles. Supported wildcards:\n\n*  `*` to match 0 or more non-separator characters\n*  `**` to match 0 or more characters (including separators). Must be used\nat the end of a path and with no other wildcards in the\npath. Can also be used with a file extension (such as .ndjson), which\nimports all files with the extension in the specified directory and\nits sub-directories. For example, `gs:\/\/my-bucket\/my-directory\/**.ndjson`\nimports all files with `.ndjson` extensions in `my-directory\/` and its\nsub-directories.\n*  `?` to match 1 character\n\nFiles matching the wildcard are expected to contain content only, no\nmetadata.",
+          "type": "string"
+        }
+      }
+    },
     "SearchResourcesRequest": {
       "id": "SearchResourcesRequest",
       "description": "Request to search the resources in the specified FHIR store.",
@@ -2106,7 +2128,7 @@
       "type": "object",
       "properties": {
         "annotationStore": {
-          "description": "The annotation_store used for the export operation, in the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+          "description": "The annotation_store used for the export operation,\nin the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
           "type": "string"
         },
         "successCount": {
@@ -2118,7 +2140,7 @@
     },
     "ExportAnnotationsErrorDetails": {
       "id": "ExportAnnotationsErrorDetails",
-      "description": "Response for failed annotation export operations. This structure is\nincluded in error\ndetails upon operation completion.",
+      "description": "Response for failed annotation export operations. This structure\nis included in error\ndetails upon operation completion.",
       "type": "object",
       "properties": {
         "annotationStore": {
@@ -2143,11 +2165,11 @@
       "type": "object",
       "properties": {
         "annotationStore": {
-          "description": "The annotation_store that the annotations were imported to. The name\nis in the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+          "description": "The annotation_store that the annotations were imported to,\nin the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
           "type": "string"
         },
         "successCount": {
-          "description": "The number of the input annotations. All input have been imported\nsuccessfully.",
+          "description": "The number of the input annotations. All input have been\nimported successfully.",
           "type": "string",
           "format": "int64"
         }
@@ -2377,6 +2399,13 @@
           "type": "string",
           "format": "int64"
         }
+      }
+    },
+    "ImportMessagesResponse": {
+      "id": "ImportMessagesResponse",
+      "description": "Final response of importing messages.\nThis structure is included in the\nresponse to describe the detailed\noutcome. It is only included when the operation finishes successfully.",
+      "type": "object",
+      "properties": {
       }
     }
   },
@@ -3999,6 +4028,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Updates the HL7v2 store."
+                    },
+                    "import": {
+                      "id": "healthcare.projects.locations.datasets.hl7V2Stores.import",
+                      "path": "v1beta1/{+name}:import",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the target HL7v2 store, in the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ImportMessagesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Import messages to the HL7v2 store by loading data from the specified\nsources. This method is optimized to load large quantities of data using\nimport semantics that ignore some HL7v2 store configuration options and are\nnot suitable for all use cases. It is primarily intended to load data into\nan empty HL7v2 store that is not being used by other clients.\n\nAn existing message will be overwritten if a duplicate message is imported.\nA duplicate message is a message with the same raw bytes as a message that\nalready exists in this HL7v2 store. When a message is overwritten, its\nlabels will also be overwritten.\n\nThe import operation is idempotent unless the input data contains multiple\nvalid messages with the same raw bytes but different labels. In that case,\nafter the import completes, the store contains exactly one message\nwith those raw bytes but there is no ordering guarantee on which version\nof the labels it has. The operation result counters do not count\nduplicated raw bytes as an error and count one success for each message in\nthe input, which might result in a success count larger than the number\nof messages in the HL7v2 store.\n\nIf some messages fail to import, for example due to parsing errors,\nsuccessfully imported messages are not rolled back.\n\nThis method returns an Operation that can\nbe used to track the status of the import by calling\nGetOperation.\n\nImmediate fatal errors appear in the\nerror field, errors are also logged\nto Cloud Logging (see [Viewing\nlogs](\/healthcare\/docs\/how-tos\/logging)). Otherwise, when the operation\nfinishes, a response of type ImportMessagesResponse is returned in the\nresponse field.\nThe metadata field type for this\noperation is OperationMetadata."
                     }
                   }
                   ,
@@ -4031,7 +4088,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Ingests a new HL7v2 message from the hospital and sends a notification to\nthe Cloud Pub\/Sub topic. Return is an HL7v2 ACK message if the message was\nsuccessfully stored. Otherwise an error is returned."
+                          "description": "Parses and stores an HL7v2 message. This method triggers an asynchronous\nnotification to any Cloud Pub\/Sub topic configured in\nprojects.locations.datasets.hl7V2Stores.Hl7V2NotificationConfig, if the\nfiltering matches the message. If an MLLP adapter is configured to listen\nto a Cloud Pub\/Sub topic, the adapter transmits the message when a\nnotification is received. This method also generates a response\ncontaining an HL7v2 acknowledgement (`ACK`) message when successful or a\nnegative acknowledgement (`NACK`) message in case of error, suitable for\nreplying to HL7v2 interface systems that expect these acknowledgements."
                         },
                         "create": {
                           "id": "healthcare.projects.locations.datasets.hl7V2Stores.messages.create",
@@ -4059,7 +4116,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Creates a message and sends a notification to the Cloud Pub\/Sub topic. If\nconfigured, the MLLP adapter listens to messages created by this method and\nsends those back to the hospital. A successful response indicates the\nmessage has been persisted to storage and a Cloud Pub\/Sub notification has\nbeen sent. Sending to the hospital by the MLLP adapter happens\nasynchronously."
+                          "description": "Parses and stores an HL7v2 message. This method triggers an asynchronous\nnotification to any Cloud Pub\/Sub topic configured in\nprojects.locations.datasets.hl7V2Stores.Hl7V2NotificationConfig, if the\nfiltering matches the message. If an MLLP adapter is configured to listen\nto a Cloud Pub\/Sub topic, the adapter transmits the message when a\nnotification is received."
                         },
                         "get": {
                           "id": "healthcare.projects.locations.datasets.hl7V2Stores.messages.get",
@@ -5512,7 +5569,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "annotationStore": {
-                          "description": "The name of the Annotation store to which the server imports annotations,\nin the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+                          "description": "The name of the Annotation store to which the server imports\nannotations, in the format\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",
@@ -5568,7 +5625,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "evalStore": {
-                          "description": "The Annotation store to compare against `golden_store`, in the format of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
+                          "description": "The Annotation store to compare against `golden_store`, in the\nformat of\n`projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/annotationStores\/[^\/]+$",

@@ -22,6 +22,7 @@ import re
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_property
@@ -30,36 +31,35 @@ from googlecloudsdk.core.util import files
 import six
 
 _API_NAME = 'cloudbuild'
-_API_VERSION = 'v1'
+_GA_API_VERSION = 'v1'
+_BETA_API_VERSION = 'v1beta1'
 _ALPHA_API_VERSION = 'v1alpha2'
+
+RELEASE_TRACK_TO_API_VERSION = {
+    base.ReleaseTrack.GA: _GA_API_VERSION,
+    base.ReleaseTrack.BETA: _BETA_API_VERSION,
+    base.ReleaseTrack.ALPHA: _ALPHA_API_VERSION,
+}
 
 WORKERPOOL_NAME_MATCHER = r'projects/.*/workerPools/.*'
 WORKERPOOL_NAME_SELECTOR = r'projects/.*/workerPools/(.*)'
 
 
-def GetMessagesModule():
-  return apis.GetMessagesModule(_API_NAME, _API_VERSION)
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
+  return apis.GetMessagesModule(_API_NAME,
+                                RELEASE_TRACK_TO_API_VERSION[release_track])
 
 
-def GetClientClass():
-  return apis.GetClientClass(_API_NAME, _API_VERSION)
+def GetClientClass(release_track=base.ReleaseTrack.GA):
+  return apis.GetClientClass(_API_NAME,
+                             RELEASE_TRACK_TO_API_VERSION[release_track])
 
 
-def GetClientInstance(use_http=True):
-  return apis.GetClientInstance(_API_NAME, _API_VERSION, no_http=(not use_http))
-
-
-def GetMessagesModuleAlpha():
-  return apis.GetMessagesModule(_API_NAME, _ALPHA_API_VERSION)
-
-
-def GetClientClassAlpha():
-  return apis.GetClientClass(_API_NAME, _ALPHA_API_VERSION)
-
-
-def GetClientInstanceAlpha(use_http=True):
+def GetClientInstance(release_track=base.ReleaseTrack.GA, use_http=True):
   return apis.GetClientInstance(
-      _API_NAME, _ALPHA_API_VERSION, no_http=(not use_http))
+      _API_NAME,
+      RELEASE_TRACK_TO_API_VERSION[release_track],
+      no_http=(not use_http))
 
 
 def EncodeSubstitutions(substitutions, messages):

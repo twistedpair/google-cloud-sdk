@@ -35,6 +35,16 @@ _DATAPATH_PROVIDER = {
     'advanced': 'Selects advanced datapath for the cluster.',
 }
 
+_DNS_PROVIDER = {
+    'clouddns': 'Selects CloudDNS as the DNS provider for the cluster.',
+    'default': 'Selects the default DNS provider(kube-dns) for the cluster.',
+}
+
+_DNS_SCOPE = {
+    'cluster': 'Configures the CloudDNS zone to be private to the cluster.',
+    'vpc': 'Configures the CloudDNS zone to be private to the VPC Network.',
+}
+
 
 def AddBasicAuthFlags(parser):
   """Adds basic auth flags to the given parser.
@@ -734,6 +744,7 @@ used for production workloads."""
   parser.add_argument(
       '--enable-cloud-run-alpha', action='store_true', help=help_text)
 
+
 def AddCloudRunConfigFlag(parser, suppressed=False):
   """Adds a --cloud-run-config flag to parser."""
   help_text = """\
@@ -763,14 +774,16 @@ def ValidateCloudRunConfigCreateArgs(cloud_run_config_args, addons_args):
     addons_args: parsed commandline arguments for --addons.
 
   Raises:
-    InvalidArgumentException: when load-balancer-type is not EXTERNAL nor INTERNAL,
+    InvalidArgumentException: when load-balancer-type is not EXTERNAL nor
+    INTERNAL,
     or --addons=CloudRun is not specified
   """
   if cloud_run_config_args:
     load_balancer_type = cloud_run_config_args.get('load-balancer-type', '')
     if load_balancer_type not in ['EXTERNAL', 'INTERNAL']:
       raise exceptions.InvalidArgumentException(
-          '--cloudrun-config', 'load-balancer-type is either EXTERNAL or INTERNAL'
+          '--cloudrun-config',
+          'load-balancer-type is either EXTERNAL or INTERNAL'
           'e.g. --cloudrun-config load-balancer-type=EXTERNAL')
     if 'CloudRun' not in addons_args:
       raise exceptions.InvalidArgumentException(
@@ -786,7 +799,8 @@ def ValidateCloudRunConfigUpdateArgs(cloud_run_config_args, update_addons_args):
     update_addons_args: parsed comandline arguments for --update-addons.
 
   Raises:
-    InvalidArgumentException: when load-balancer-type is not MTLS_PERMISSIVE nor MTLS_STRICT,
+    InvalidArgumentException: when load-balancer-type is not MTLS_PERMISSIVE nor
+    MTLS_STRICT,
     or --update-addons=CloudRun=ENABLED is not specified
   """
   if cloud_run_config_args:
@@ -798,7 +812,8 @@ def ValidateCloudRunConfigUpdateArgs(cloud_run_config_args, update_addons_args):
     disable_cloud_run = update_addons_args.get('CloudRun')
     if disable_cloud_run is None or disable_cloud_run:
       raise exceptions.InvalidArgumentException(
-          '--cloud-run-config', '--update-addons=CloudRun=ENABLED must be specified '
+          '--cloud-run-config',
+          '--update-addons=CloudRun=ENABLED must be specified '
           'when --cloud-run-config is given')
 
 
@@ -1169,6 +1184,46 @@ def AddILBSubsettingFlags(parser, hidden=True):
       default=None,
       hidden=hidden,
       help='Enable Subsetting for L4 ILB services created on this cluster.')
+
+
+def AddClusterDNSFlags(parser, hidden=True):
+  """Adds flags related to clusterDNS to parser.
+
+  This includes:
+  --cluster-dns={clouddns|default},
+  --cluster-dns-scope={cluster|vpc},
+  --cluster-dns-domain=string
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+  group = parser.add_argument_group('ClusterDNS', hidden=hidden)
+  group.add_argument(
+      '--cluster-dns',
+      choices=_DNS_PROVIDER,
+      help=('DNS provider to use for this Cluster.'),
+      hidden=hidden,
+      )
+  group.add_argument(
+      '--cluster-dns-scope',
+      choices=_DNS_SCOPE,
+      help=("""
+            DNS Scope for the CloudDNS zone created - valid only with
+             `--cluster-dns=clouddns`"""),
+      hidden=hidden,
+      )
+  group.add_argument(
+      '--cluster-dns-domain',
+      help=("""
+            DNS Domain for this cluster.
+            The default value is ``cluster.local''.
+            is configurable when `--cluster-dns=clouddns` and
+             `--cluster-dns-scope=vpc`.
+            The value must be a valid DNS Subdomain as defined in RFC 1123.
+            """),
+      hidden=hidden,
+      )
 
 
 def AddPrivateClusterFlags(parser, with_deprecated=False):
@@ -2256,7 +2311,7 @@ of RAM:
   parser.add_argument('--machine-type', '-m', help=help_text)
 
 
-def AddWorkloadIdentityFlags(parser, use_workload_pool=True):
+def AddWorkloadIdentityFlags(parser, use_identity_provider=False):
   """Adds Workload Identity flags to the parser."""
   parser.add_argument(
       '--workload-pool',
@@ -2273,24 +2328,22 @@ the Cloud project containing the cluster, `PROJECT_ID.svc.id.goog`.
 For more information on Workload Identity, see
 
             https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
-  """)
-  if not use_workload_pool:
+  """,
+      required=False,
+      type=arg_parsers.RegexpValidator(
+          r'^[a-z][-a-z0-9]{4,}[a-z0-9]\.(svc|hub)\.id\.goog$',
+          "Must be in format of '[PROJECT_ID].svc.id.goog' or '[PROJECT_ID].hub.id.goog'"
+      ),
+  )
+  if use_identity_provider:
     parser.add_argument(
-        '--identity-namespace',
+        '--identity-provider',
         default=None,
-        hidden=True,
         help="""\
-Enable Workload Identity on the cluster.
+  Enable 3P identity provider on the cluster.
 
-When enabled, Kubernetes service accounts will be able to act as Cloud IAM
-Service Accounts, through the provided identity namespace.
-
-Currently, the only accepted identity namespace is the identity namespace of
-the Cloud project containing the cluster, `PROJECT_ID.svc.id.goog`.
-
-For more information on Workload Identity, see
-
-            https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+  Currently, the only accepted identity provider is the identity provider of Hub
+  membership for hub workload pool `PROJECT_ID.hub.id.goog`.
     """)
 
 
@@ -2729,6 +2782,8 @@ def ValidateNotificationConfigFlag(args):
         raise exceptions.InvalidArgumentException(
             '--notification-config',
             'when [pubsub] is ENABLED, [pubsub-topic] must not be empty')
+
+
 # pylint: enable=protected-access
 
 
@@ -3082,6 +3137,19 @@ $ {command} --datapath-provider=advanced
       hidden=hidden)
 
 
+def AddDataplaneV2Flag(parser, hidden=False):
+  """Adds --enable-dataplane-v2 boolean flag."""
+  help_text = """
+Enables the new eBPF dataplane for GKE clusters that is required for
+network security, scalability and visibility features.
+"""
+  parser.add_argument(
+      '--enable-dataplane-v2',
+      action='store_true',
+      help=help_text,
+      hidden=hidden)
+
+
 def AddMasterGlobalAccessFlag(parser):
   help_text = """
 Use with private clusters to allow access to the master's private endpoint from any Google Cloud region or on-premises environment regardless of the
@@ -3102,10 +3170,7 @@ either a node-pool upgrade or node-pool creation.
 """
 
   parser.add_argument(
-      '--enable-gvnic',
-      help=help_text,
-      default=None,
-      action='store_true')
+      '--enable-gvnic', help=help_text, default=None, action='store_true')
 
 
 def AddEnableConfidentialNodesFlag(parser):

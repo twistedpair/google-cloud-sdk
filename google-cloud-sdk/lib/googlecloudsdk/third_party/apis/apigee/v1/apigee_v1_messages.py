@@ -1180,9 +1180,19 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsRequest(_messages.M
     name: Required. Name of the API proxy revision deployment in the following
       format:
       `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
+    sequencedRollout: If true, a best-effort attempt will be made to remove
+      the environment group routing rules corresponding to this deployment
+      before removing the deployment from the runtime. This is likely to be a
+      rare use case; it is only needed when the intended effect of undeploying
+      this proxy is to cause the traffic it currently handles to be rerouted
+      to some other existing proxy in the environment group. The
+      GenerateUndeployChangeReport API may be used to examine routing changes
+      before issuing the undeployment request, and its response will indicate
+      if a sequenced rollout is recommended for the undeployment.
   """
 
   name = _messages.StringField(1, required=True)
+  sequencedRollout = _messages.BooleanField(2)
 
 
 class ApigeeOrganizationsEnvironmentsApisRevisionsGetDeploymentsRequest(_messages.Message):
@@ -1997,8 +2007,8 @@ class ApigeeOrganizationsGetDeployedIngressConfigRequest(_messages.Message):
   r"""A ApigeeOrganizationsGetDeployedIngressConfigRequest object.
 
   Fields:
-    name: Name of the deployed configuration for the organization in the
-      following format: 'organizations/{org}/deployedIngressConfig'.
+    name: Required. Name of the deployed configuration for the organization in
+      the following format: 'organizations/{org}/deployedIngressConfig'.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2104,8 +2114,8 @@ class ApigeeOrganizationsInstancesDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsInstancesDeleteRequest object.
 
   Fields:
-    name: Name of the instance. Use the following structure in your request:
-      `organizations/{org}/instance/{instance}`.
+    name: Required. Name of the instance. Use the following structure in your
+      request:   `organizations/{org}/instance/{instance}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2115,8 +2125,8 @@ class ApigeeOrganizationsInstancesGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsInstancesGetRequest object.
 
   Fields:
-    name: Name of the instance. Use the following structure in your request:
-      `organizations/{org}/instances/{instance}`.
+    name: Required. Name of the instance. Use the following structure in your
+      request:   `organizations/{org}/instances/{instance}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2129,8 +2139,8 @@ class ApigeeOrganizationsInstancesListRequest(_messages.Message):
     pageSize: Maximum number of instances to return. Defaults to 25.
     pageToken: Page token, returned from a previous ListInstances call, that
       you can use to retrieve the next page of content.
-    parent: Name of the organization. Use the following structure in your
-      request:   `organizations/{org}`.
+    parent: Required. Name of the organization. Use the following structure in
+      your request:   `organizations/{org}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3920,24 +3930,22 @@ class GoogleCloudApigeeV1IngressConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1IngressConfig object.
 
   Fields:
-    createTime: Time at which the IngressConfig was created.
     environmentGroups: List of environment groups in the organization.
     name: Name of the resource in the following format:
       `organizations/{org}/deployedIngressConfig`.
+    revisionCreateTime: Time at which the IngressConfig revision was created.
     revisionId: Revision id that defines the ordering on IngressConfig
       resources. The higher the revision, the more recently the configuration
       was deployed.
-    sequenceNumber: DEPRECATED: Use revision_id
     uid: A unique id for the ingress config that will only change if the
       organization is deleted and recreated.
   """
 
-  createTime = _messages.StringField(1)
-  environmentGroups = _messages.MessageField('GoogleCloudApigeeV1EnvironmentGroupConfig', 2, repeated=True)
-  name = _messages.StringField(3)
+  environmentGroups = _messages.MessageField('GoogleCloudApigeeV1EnvironmentGroupConfig', 1, repeated=True)
+  name = _messages.StringField(2)
+  revisionCreateTime = _messages.StringField(3)
   revisionId = _messages.IntegerField(4)
-  sequenceNumber = _messages.IntegerField(5)
-  uid = _messages.StringField(6)
+  uid = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1Instance(_messages.Message):

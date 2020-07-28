@@ -123,7 +123,7 @@
           }
         },
         "nextPageToken": {
-          "description": "If not empty, indicates that there may be more workflow executions that\nmatch the request; this value should be passed in a new\ncloud.eventworkflows.v1alpha.ListWorkflowExecutionsRequest\nto get more workflows.",
+          "description": "If not empty, indicates that there may be more workflow executions that match the request; this value should be passed in a new cloud.eventworkflows.v1alpha.ListWorkflowExecutionsRequest to get more workflows.",
           "type": "string"
         }
       }
@@ -134,7 +134,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the Cloud Workflow Execution. It must have\nthe format of \"projects\/*\/locations\/*\/workflows\/*\/executions\/*\".\nFor example:\n\"projects\/project1\/locations\/us-central1\/workflows\/workflow1\/executions\/execution1\".",
+          "description": "Output only. Resource name of the Cloud Workflow Execution. It must have the format of \"projects\/*\/locations\/*\/workflows\/*\/executions\/*\". For example: \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\/executions\/execution1\".",
           "type": "string"
         },
         "startTime": {
@@ -157,6 +157,13 @@
             "The Workflow Execution has been stopped intentionally."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Invalid state.",
+            "The Workflow Execution is in progress.",
+            "The Workflow Execution has finished successfully.",
+            "The Workflow Execution failed with an error.",
+            "The Workflow Execution has been stopped intentionally."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
@@ -170,11 +177,11 @@
           "type": "string"
         },
         "result": {
-          "description": "Output only. Output of the Cloud Workflow represented as a JSON string. The\nvalue is only present if the execution's state is FINISHED.",
+          "description": "Output only. Output of the Cloud Workflow represented as a JSON string. The value is only present if the execution's state is FINISHED.",
           "type": "string"
         },
         "error": {
-          "description": "Output only. The error which caused the execution to fail. The value is\nonly present if the execution's state is FAILED.",
+          "description": "Output only. The error which caused the execution to fail. The value is only present if the execution's state is FAILED.",
           "type": "string"
         },
         "workflowVersionId": {
@@ -208,7 +215,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Name of the workflow from which the executions should be listed,\nfor example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\".",
+                          "description": "Required. Name of the workflow from which the executions should be listed, for example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
@@ -221,7 +228,7 @@
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "The value returned by the last\n`ListExecutionsResponse` indicates that\nthis is a continuation of a prior `ListExecutions` call, and that\nthe system should return the next page of data.",
+                          "description": "The value returned by the last `ListExecutionsResponse` indicates that this is a continuation of a prior `ListExecutions` call, and that the system should return the next page of data.",
                           "location": "query",
                           "type": "string"
                         },
@@ -240,7 +247,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Returns a list of workflow executions which belong to the workflow with\nthe specified name. The method returns executions from all workflow\nversions."
+                      "description": "Returns a list of workflow executions which belong to the workflow with the specified name. The method returns executions from all workflow versions."
                     },
                     "create": {
                       "id": "workflowexecutions.projects.locations.workflows.executions.create",
@@ -249,7 +256,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Name of the workflow for which an execution should be created,\nfor example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\".",
+                          "description": "Required. Name of the workflow for which an execution should be created, for example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
@@ -277,7 +284,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required. Name of the workflow execution which should be cancelled.\n\"projects\/project1\/locations\/us-central1\/workflows\/workflow1\/executions\/execution1\"",
+                          "description": "Required. Name of the workflow execution which should be cancelled. \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\/executions\/execution1\"",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
@@ -305,7 +312,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. Name of the workflow execution which information should be\nretrieved, for example,\n\"projects\/project1\/locations\/us-central1\/workflows\/workflow1\/executions\/execution1\"",
+                          "description": "Required. Name of the workflow execution which information should be retrieved, for example, \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\/executions\/execution1\"",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",

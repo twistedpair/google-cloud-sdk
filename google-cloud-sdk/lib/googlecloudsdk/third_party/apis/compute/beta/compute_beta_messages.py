@@ -2751,13 +2751,13 @@ class BackendBucketCdnPolicy(_messages.Message):
   Fields:
     cacheMode: A CacheModeValueValuesEnum attribute.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
-      from the TTL for Cloud CDN?s edge caches. Leaving this empty will use
+      from the TTL for Cloud CDN's edge caches. Leaving this empty will use
       the same cache TTL for both Cloud CDN and the client-facing response.
       The maximum allowed value is 86400s (1 day).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
-      s-max-age). Setting a TTL of ?0? means ?always revalidate? and a value
-      of ?-1? disables caching for that status code. The value of defaultTTL
+      s-max-age). Setting a TTL of "0" means "always revalidate" and a value
+      of "-1" disables caching for that status code. The value of defaultTTL
       cannot be set to a value greater than that of maxTTL, but can be equal.
       When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL will
       overwrite the TTL set in all responses. The maximum allowed value is
@@ -2767,8 +2767,8 @@ class BackendBucketCdnPolicy(_messages.Message):
       this origin. Cache directives that attempt to set a max-age or s-maxage
       higher than this, or an Expires header more than maxTTL seconds in the
       future will be capped at the value of maxTTL, as if it were the value of
-      an s-maxage Cache-Control directive. Setting a TTL of ?0? means ?always
-      revalidate? and a value of ?-1? disables caching for that status code.
+      an s-maxage Cache-Control directive. Setting a TTL of "0" means "always
+      revalidate" and a value of "-1" disables caching for that status code.
       The maximum allowed value is 31,622,400s (1 year), noting that
       infrequently accessed objects may be evicted from the cache before the
       defined TTL.
@@ -2784,7 +2784,7 @@ class BackendBucketCdnPolicy(_messages.Message):
     negativeCachingPolicys: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
-      negative_caching enabled will use Cloud CDN?s default cache TTLs. Note
+      negative_caching enabled will use Cloud CDN's default cache TTLs. Note
       that when specifying an explicit negative_caching_policy, you should
       take care to specify a cache TTL for all response codes that you wish to
       cache. Cloud CDN will not apply any default negative caching when a
@@ -2833,7 +2833,7 @@ class BackendBucketCdnPolicyNegativeCachingPolicy(_messages.Message):
       300, 301, 308, 404, 405, 410, 414, 451 and 501 are can be specified as
       values, and you cannot specify a status code more than once.
     ttl: The TTL (in seconds) to cache responses with the corresponding status
-      code for. A TTL of ?0? means ?always revalidate? and a value of ?-1?
+      code for. A TTL of "0" means "always revalidate" and a value of "-1"
       disables caching for that status code. The maximum allowed value is
       1800s (30 minutes), noting that infrequently accessed objects may be
       evicted from the cache before the defined TTL.
@@ -3014,9 +3014,9 @@ class BackendService(_messages.Message):
       RING_HASH, session affinity settings will not take effect.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP,
-      SSL, or UDP. depending on the chosen load balancer or Traffic Director
-      configuration. Refer to the documentation for the load balancer or for
-      Traffic Director for more information.
+      SSL, UDP or GRPC. depending on the chosen load balancer or Traffic
+      Director configuration. Refer to the documentation for the load balancer
+      or for Traffic Director for more information.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE. Session affinity is not applicable if the --protocol is
       UDP.  When the loadBalancingScheme is EXTERNAL, possible values are
@@ -3146,10 +3146,10 @@ class BackendService(_messages.Message):
       no meaning if the backends are NEGs.    Must be omitted when the
       loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
     protocol: The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
-      depending on the chosen load balancer or Traffic Director configuration.
-      Refer to the documentation for the load balancer or for Traffic Director
-      for more information.
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or
+      GRPC. depending on the chosen load balancer or Traffic Director
+      configuration. Refer to the documentation for the load balancer or for
+      Traffic Director for more information.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services. You
       must specify this field as part of the HTTP request URL. It is not
@@ -3241,9 +3241,9 @@ class BackendService(_messages.Message):
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
-    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP. depending on the
-    chosen load balancer or Traffic Director configuration. Refer to the
-    documentation for the load balancer or for Traffic Director for more
+    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or GRPC. depending
+    on the chosen load balancer or Traffic Director configuration. Refer to
+    the documentation for the load balancer or for Traffic Director for more
     information.
 
     Values:
@@ -3484,13 +3484,13 @@ class BackendServiceCdnPolicy(_messages.Message):
     cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
     cacheMode: A CacheModeValueValuesEnum attribute.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
-      from the TTL for Cloud CDN?s edge caches. Leaving this empty will use
+      from the TTL for Cloud CDN's edge caches. Leaving this empty will use
       the same cache TTL for both Cloud CDN and the client-facing response.
       The maximum allowed value is 86400s (1 day).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
-      s-max-age). Setting a TTL of ?0? means ?always revalidate? and a value
-      of ?-1? disables caching for that status code. The value of defaultTTL
+      s-max-age). Setting a TTL of "0" means "always revalidate" and a value
+      of "-1" disables caching for that status code. The value of defaultTTL
       cannot be set to a value greater than that of maxTTL, but can be equal.
       When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL will
       overwrite the TTL set in all responses. The maximum allowed value is
@@ -3500,8 +3500,8 @@ class BackendServiceCdnPolicy(_messages.Message):
       this origin. Cache directives that attempt to set a max-age or s-maxage
       higher than this, or an Expires header more than maxTTL seconds in the
       future will be capped at the value of maxTTL, as if it were the value of
-      an s-maxage Cache-Control directive. Setting a TTL of ?0? means ?always
-      revalidate? and a value of ?-1? disables caching for that status code.
+      an s-maxage Cache-Control directive. Setting a TTL of "0" means "always
+      revalidate" and a value of "-1" disables caching for that status code.
       The maximum allowed value is 31,622,400s (1 year), noting that
       infrequently accessed objects may be evicted from the cache before the
       defined TTL.
@@ -3517,7 +3517,7 @@ class BackendServiceCdnPolicy(_messages.Message):
     negativeCachingPolicys: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
-      negative_caching enabled will use Cloud CDN?s default cache TTLs. Note
+      negative_caching enabled will use Cloud CDN's default cache TTLs. Note
       that when specifying an explicit negative_caching_policy, you should
       take care to specify a cache TTL for all response codes that you wish to
       cache. Cloud CDN will not apply any default negative caching when a
@@ -3567,7 +3567,7 @@ class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
       300, 301, 308, 404, 405, 410, 414, 451 and 501 are can be specified as
       values, and you cannot specify a status code more than once.
     ttl: The TTL (in seconds) to cache responses with the corresponding status
-      code for. A TTL of ?0? means ?always revalidate? and a value of ?-1?
+      code for. A TTL of "0" means "always revalidate" and a value of "-1"
       disables caching for that status code. The maximum allowed value is
       1800s (30 minutes), noting that infrequently accessed objects may be
       evicted from the cache before the defined TTL.
@@ -4325,6 +4325,11 @@ class Commitment(_messages.Message):
   {$api_version}.regionCommitments ==)
 
   Enums:
+    CategoryValueValuesEnum: The category of the commitment. Category MACHINE
+      specifies commitments composed of machine resources such as VCPU or
+      MEMORY, listed in resources. Category LICENSE specifies commitments
+      composed of software licenses, listed in licenseResources. Note that
+      only MACHINE commitments should have a Type specified.
     PlanValueValuesEnum: The plan for this commitment, which determines
       duration and discount rate. The currently supported plans are
       TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).
@@ -4338,6 +4343,11 @@ class Commitment(_messages.Message):
       accelerator optimized machines.
 
   Fields:
+    category: The category of the commitment. Category MACHINE specifies
+      commitments composed of machine resources such as VCPU or MEMORY, listed
+      in resources. Category LICENSE specifies commitments composed of
+      software licenses, listed in licenseResources. Note that only MACHINE
+      commitments should have a Type specified.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -4347,6 +4357,8 @@ class Commitment(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#commitment for
       commitments.
+    licenseResource: The license specification required as part of a license
+      commitment.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -4375,6 +4387,22 @@ class Commitment(_messages.Message):
       specifies a commitment that will only apply to accelerator optimized
       machines.
   """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""The category of the commitment. Category MACHINE specifies commitments
+    composed of machine resources such as VCPU or MEMORY, listed in resources.
+    Category LICENSE specifies commitments composed of software licenses,
+    listed in licenseResources. Note that only MACHINE commitments should have
+    a Type specified.
+
+    Values:
+      CATEGORY_UNSPECIFIED: <no description>
+      LICENSE: <no description>
+      MACHINE: <no description>
+    """
+    CATEGORY_UNSPECIFIED = 0
+    LICENSE = 1
+    MACHINE = 2
 
   class PlanValueValuesEnum(_messages.Enum):
     r"""The plan for this commitment, which determines duration and discount
@@ -4432,21 +4460,23 @@ class Commitment(_messages.Message):
     MEMORY_OPTIMIZED = 6
     TYPE_UNSPECIFIED = 7
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  endTimestamp = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#commitment')
-  name = _messages.StringField(6)
-  plan = _messages.EnumField('PlanValueValuesEnum', 7)
-  region = _messages.StringField(8)
-  reservations = _messages.MessageField('Reservation', 9, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 10, repeated=True)
-  selfLink = _messages.StringField(11)
-  startTimestamp = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  statusMessage = _messages.StringField(14)
-  type = _messages.EnumField('TypeValueValuesEnum', 15)
+  category = _messages.EnumField('CategoryValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  endTimestamp = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#commitment')
+  licenseResource = _messages.MessageField('LicenseResourceCommitment', 7)
+  name = _messages.StringField(8)
+  plan = _messages.EnumField('PlanValueValuesEnum', 9)
+  region = _messages.StringField(10)
+  reservations = _messages.MessageField('Reservation', 11, repeated=True)
+  resources = _messages.MessageField('ResourceCommitment', 12, repeated=True)
+  selfLink = _messages.StringField(13)
+  startTimestamp = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  statusMessage = _messages.StringField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -24552,12 +24582,13 @@ class ForwardingRule(_messages.Message):
       a target pool. Do not use with a forwarding rule that points to a
       backend service. This field is used along with the target field for
       TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy,
-      TargetVpnGateway, TargetPool, TargetInstance.  Applicable only when
-      IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the
-      specified range will be forwarded to target. Forwarding rules with the
-      same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
-      types of forwarding target have constraints on the acceptable ports:   -
-      TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
+      TargetGrpcProxy, TargetVpnGateway, TargetPool, TargetInstance.
+      Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets
+      addressed to ports in the specified range will be forwarded to target.
+      Forwarding rules with the same [IPAddress, IPProtocol] pair must have
+      disjoint port ranges.  Some types of forwarding target have constraints
+      on the acceptable ports:   - TargetHttpProxy: 80, 8080  -
+      TargetHttpsProxy: 443  - TargetGrpcProxy: Any ports  - TargetTcpProxy:
       25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  -
       TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
       1688, 1883, 5222  - TargetVpnGateway: 500, 4500
@@ -24598,7 +24629,8 @@ class ForwardingRule(_messages.Message):
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
       appropriate to the target object. For INTERNAL_SELF_MANAGED load
-      balancing, only targetHttpProxy is valid, not targetHttpsProxy.
+      balancing, only targetHttpProxy and targetGrpcProxy are valid, not
+      targetHttpsProxy.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -27818,8 +27850,9 @@ class Instance(_messages.Message):
     shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
     shieldedInstanceIntegrityPolicy: A ShieldedInstanceIntegrityPolicy
       attribute.
-    shieldedVmConfig: A ShieldedVmConfig attribute.
-    shieldedVmIntegrityPolicy: A ShieldedVmIntegrityPolicy attribute.
+    shieldedVmConfig: Deprecating, please use shielded_instance_config.
+    shieldedVmIntegrityPolicy: Deprecating, please use
+      shielded_instance_integrity_policy.
     sourceMachineImage: Source machine image
     sourceMachineImageEncryptionKey: Source GMI encryption key when creating
       an instance from GMI.
@@ -32790,6 +32823,21 @@ class LicenseCodeLicenseAlias(_messages.Message):
   selfLink = _messages.StringField(2)
 
 
+class LicenseResourceCommitment(_messages.Message):
+  r"""Commitment for a particular license resource.
+
+  Fields:
+    amount: The number of licenses purchased.
+    coresPerLicense: Specifies the core range of the instance for which this
+      license applies.
+    license: Any applicable license URI.
+  """
+
+  amount = _messages.IntegerField(1)
+  coresPerLicense = _messages.StringField(2)
+  license = _messages.StringField(3)
+
+
 class LicenseResourceRequirements(_messages.Message):
   r"""A LicenseResourceRequirements object.
 
@@ -34199,7 +34247,8 @@ class NetworkEndpointGroup(_messages.Message):
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
       network endpoint group. Can be one of GCE_VM_IP_PORT,
-      INTERNET_FQDN_PORT, INTERNET_IP_PORT, or SERVERLESS.
+      NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, or
+      SERVERLESS.
 
   Messages:
     AnnotationsValue: Metadata defined as annotations on the network endpoint
@@ -34236,8 +34285,8 @@ class NetworkEndpointGroup(_messages.Message):
     network: The URL of the network to which all network endpoints in the NEG
       belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
-      group. Can be one of GCE_VM_IP_PORT, INTERNET_FQDN_PORT,
-      INTERNET_IP_PORT, or SERVERLESS.
+      group. Can be one of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
+      INTERNET_FQDN_PORT, INTERNET_IP_PORT, or SERVERLESS.
     region: [Output Only] The URL of the region where the network endpoint
       group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -34251,18 +34300,21 @@ class NetworkEndpointGroup(_messages.Message):
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
     r"""Type of network endpoints in this network endpoint group. Can be one
-    of GCE_VM_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, or SERVERLESS.
+    of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT,
+    INTERNET_IP_PORT, or SERVERLESS.
 
     Values:
       GCE_VM_IP_PORT: <no description>
       INTERNET_FQDN_PORT: <no description>
       INTERNET_IP_PORT: <no description>
+      NON_GCP_PRIVATE_IP_PORT: <no description>
       SERVERLESS: <no description>
     """
     GCE_VM_IP_PORT = 0
     INTERNET_FQDN_PORT = 1
     INTERNET_IP_PORT = 2
-    SERVERLESS = 3
+    NON_GCP_PRIVATE_IP_PORT = 3
+    SERVERLESS = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -46640,7 +46692,7 @@ class TargetGrpcProxy(_messages.Message):
   component of load balancers intended for load balancing gRPC traffic. Global
   forwarding rules reference a target gRPC proxy. The Target gRPC Proxy
   references a URL map which specifies how traffic routes to gRPC backend
-  services.
+  services. (== resource_for {$api_version}.targetGrpcProxies ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -46674,12 +46726,12 @@ class TargetGrpcProxy(_messages.Message):
       referenced by the urlMap may be accessed by gRPC applications without
       using a sidecar proxy. This will enable configuration checks on urlMap
       and its referenced BackendServices to not allow unsupported features. A
-      gRPC application must use "xds-experimental:///" scheme in the target
-      URI of the service it is connecting to. If false, indicates that the
+      gRPC application must use "xds:///" scheme in the target URI of the
+      service it is connecting to. If false, indicates that the
       BackendServices referenced by the urlMap will be accessed by gRPC
       applications via a sidecar proxy. In this case, a gRPC application must
-      not use "xds-experimental:///" scheme in the target URI of the service
-      it is connecting to
+      not use "xds:///" scheme in the target URI of the service it is
+      connecting to
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -51340,7 +51392,7 @@ class VpnGatewaysScopedList(_messages.Message):
 
 class VpnTunnel(_messages.Message):
   r"""Represents a Cloud VPN Tunnel resource.  For more information about VPN,
-  read the the Cloud VPN Overview. (== resource_for {$api_version}.vpnTunnels
+  read the  the Cloud VPN Overview. (== resource_for {$api_version}.vpnTunnels
   ==)
 
   Enums:

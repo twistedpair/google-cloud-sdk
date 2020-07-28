@@ -14,9 +14,7 @@ package = 'workflowexecutions'
 
 
 class CancelExecutionRequest(_messages.Message):
-  r"""Request for the
-CancelExecution
-method."""
+  r"""Request for the CancelExecution method."""
 
 
 class Error(_messages.Message):
@@ -208,9 +206,11 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsGetRequest(_messages
     returned execution. The API will default to the FULL view.
 
     Values:
-      EXECUTION_VIEW_UNSPECIFIED: <no description>
-      BASIC: <no description>
-      FULL: <no description>
+      EXECUTION_VIEW_UNSPECIFIED: The default / unset value.
+      BASIC: Includes only basic metadata about the execution. Following
+        fields are returned: name, start_time, end_time, state and
+        workflow_revision_id.
+      FULL: Includes all data.
     """
     EXECUTION_VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -236,8 +236,8 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest(_message
       100, regardless of the selected view. Values greater than the max value
       will be coerced down to it.
     pageToken: A page token, received from a previous `ListExecutions` call.
-      Provide this to retrieve the subsequent page.  When paginating, all
-      other parameters provided to `ListExecutions` must match the call that
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListExecutions` must match the call that
       provided the page token.
     parent: Required. Name of the workflow of which the executions should be
       listed. Format:
@@ -251,9 +251,11 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest(_message
     returned executions. The API will default to the BASIC view.
 
     Values:
-      EXECUTION_VIEW_UNSPECIFIED: <no description>
-      BASIC: <no description>
-      FULL: <no description>
+      EXECUTION_VIEW_UNSPECIFIED: The default / unset value.
+      BASIC: Includes only basic metadata about the execution. Following
+        fields are returned: name, start_time, end_time, state and
+        workflow_revision_id.
+      FULL: Includes all data.
     """
     EXECUTION_VIEW_UNSPECIFIED = 0
     BASIC = 1

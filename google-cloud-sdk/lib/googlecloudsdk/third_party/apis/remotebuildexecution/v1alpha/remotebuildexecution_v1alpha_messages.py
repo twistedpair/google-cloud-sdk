@@ -889,6 +889,10 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         runtime because of permission denied.
       DOCKER_CREATE_PROCESS_FILE_NOT_FOUND: Docker failed to create process
         because of file not found.
+      DOCKER_CREATE_COMPUTE_SYSTEM_INCORRECT_PARAMETER_ERROR: Docker failed to
+        run containers with CreateComputeSystem error that involves an
+        incorrect parameter (more specific version of
+        DOCKER_CREATE_COMPUTE_SYSTEM_ERROR that is user-caused).
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -927,6 +931,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_CREATE_RUNTIME_FILE_NOT_FOUND = 34
     DOCKER_CREATE_RUNTIME_PERMISSION_DENIED = 35
     DOCKER_CREATE_PROCESS_FILE_NOT_FOUND = 36
+    DOCKER_CREATE_COMPUTE_SYSTEM_INCORRECT_PARAMETER_ERROR = 37
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

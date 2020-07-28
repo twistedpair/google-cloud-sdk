@@ -2898,12 +2898,12 @@ may "fail open" without warning.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a message and sends a notification to the Cloud Pub/Sub topic. If.
-configured, the MLLP adapter listens to messages created by this method and
-sends those back to the hospital. A successful response indicates the
-message has been persisted to storage and a Cloud Pub/Sub notification has
-been sent. Sending to the hospital by the MLLP adapter happens
-asynchronously.
+      r"""Parses and stores an HL7v2 message. This method triggers an asynchronous.
+notification to any Cloud Pub/Sub topic configured in
+projects.locations.datasets.hl7V2Stores.Hl7V2NotificationConfig, if the
+filtering matches the message. If an MLLP adapter is configured to listen
+to a Cloud Pub/Sub topic, the adapter transmits the message when a
+notification is received.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesCreateRequest) input message
@@ -2984,9 +2984,15 @@ asynchronously.
     )
 
     def Ingest(self, request, global_params=None):
-      r"""Ingests a new HL7v2 message from the hospital and sends a notification to.
-the Cloud Pub/Sub topic. Return is an HL7v2 ACK message if the message was
-successfully stored. Otherwise an error is returned.
+      r"""Parses and stores an HL7v2 message. This method triggers an asynchronous.
+notification to any Cloud Pub/Sub topic configured in
+projects.locations.datasets.hl7V2Stores.Hl7V2NotificationConfig, if the
+filtering matches the message. If an MLLP adapter is configured to listen
+to a Cloud Pub/Sub topic, the adapter transmits the message when a
+notification is received. This method also generates a response
+containing an HL7v2 acknowledgement (`ACK`) message when successful or a
+negative acknowledgement (`NACK`) message in case of error, suitable for
+replying to HL7v2 interface systems that expect these acknowledgements.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesIngestRequest) input message
@@ -3194,6 +3200,67 @@ set.
         request_field='',
         request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Import messages to the HL7v2 store by loading data from the specified.
+sources. This method is optimized to load large quantities of data using
+import semantics that ignore some HL7v2 store configuration options and are
+not suitable for all use cases. It is primarily intended to load data into
+an empty HL7v2 store that is not being used by other clients.
+
+An existing message will be overwritten if a duplicate message is imported.
+A duplicate message is a message with the same raw bytes as a message that
+already exists in this HL7v2 store. When a message is overwritten, its
+labels will also be overwritten.
+
+The import operation is idempotent unless the input data contains multiple
+valid messages with the same raw bytes but different labels. In that case,
+after the import completes, the store contains exactly one message
+with those raw bytes but there is no ordering guarantee on which version
+of the labels it has. The operation result counters do not count
+duplicated raw bytes as an error and count one success for each message in
+the input, which might result in a success count larger than the number
+of messages in the HL7v2 store.
+
+If some messages fail to import, for example due to parsing errors,
+successfully imported messages are not rolled back.
+
+This method returns an Operation that can
+be used to track the status of the import by calling
+GetOperation.
+
+Immediate fatal errors appear in the
+error field, errors are also logged
+to Cloud Logging (see [Viewing
+logs](/healthcare/docs/how-tos/logging)). Otherwise, when the operation
+finishes, a response of type ImportMessagesResponse is returned in the
+response field.
+The metadata field type for this
+operation is OperationMetadata.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsHl7V2StoresImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:import',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.import',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:import',
+        request_field='importMessagesRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

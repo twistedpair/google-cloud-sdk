@@ -95,6 +95,7 @@ def ConstructPatch(env_ref=None,
                    update_env_variables=None,
                    update_image_version=None,
                    update_web_server_access_control=None,
+                   cloud_sql_machine_type=None,
                    release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch.
 
@@ -127,6 +128,8 @@ def ConstructPatch(env_ref=None,
     update_image_version: string, image version to use for environment upgrade
     update_web_server_access_control: [{string: string}], Webserver access
         control to set
+    cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
+        Airflow database.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -172,6 +175,9 @@ def ConstructPatch(env_ref=None,
   if update_web_server_access_control is not None:
     return _ConstructWebServerAccessControlPatch(
         update_web_server_access_control, release_track=release_track)
+  if cloud_sql_machine_type:
+    return _ConstructCloudSqlMachineTypePatch(
+        cloud_sql_machine_type, release_track=release_track)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
 
@@ -383,4 +389,24 @@ def _ConstructWebServerAccessControlPatch(web_server_access_control,
       .BuildWebServerNetworkAccessControl(web_server_access_control,
                                           release_track))
   return 'config.web_server_network_access_control', messages.Environment(
+      config=config)
+
+
+def _ConstructCloudSqlMachineTypePatch(cloud_sql_machine_type, release_track):
+  """Constructs an environment patch for Cloud SQL machine type.
+
+  Args:
+    cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
+      Airflow database.
+    release_track: base.ReleaseTrack, the release track of command. It dictates
+      which Composer client library is used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  config = messages.EnvironmentConfig(
+      databaseConfig=messages.DatabaseConfig(
+          machineType=cloud_sql_machine_type))
+  return 'config.database_config.machine_type', messages.Environment(
       config=config)

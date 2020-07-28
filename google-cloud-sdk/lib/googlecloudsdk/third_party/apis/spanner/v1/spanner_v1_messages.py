@@ -480,11 +480,12 @@ class ExecuteSqlRequest(_messages.Message):
     ParamsValue: Parameter names and values that bind to placeholders in the
       SQL string.  A parameter placeholder consists of the `@` character
       followed by the parameter name (for example, `@firstName`). Parameter
-      names can contain letters, numbers, and underscores.  Parameters can
-      appear anywhere that a literal value is expected.  The same parameter
-      name can be used more than once, for example:  `"WHERE id > @msg_id AND
-      id < @msg_id + 100"`  It is an error to execute a SQL statement with
-      unbound parameters.
+      names must conform to the naming requirements of identifiers as
+      specified at https://cloud.google.com/spanner/docs/lexical#identifiers.
+      Parameters can appear anywhere that a literal value is expected.  The
+      same parameter name can be used more than once, for example:  `"WHERE id
+      > @msg_id AND id < @msg_id + 100"`  It is an error to execute a SQL
+      statement with unbound parameters.
 
   Fields:
     paramTypes: It is not always possible for Cloud Spanner to infer the right
@@ -495,12 +496,13 @@ class ExecuteSqlRequest(_messages.Message):
       more information about SQL types.
     params: Parameter names and values that bind to placeholders in the SQL
       string.  A parameter placeholder consists of the `@` character followed
-      by the parameter name (for example, `@firstName`). Parameter names can
-      contain letters, numbers, and underscores.  Parameters can appear
-      anywhere that a literal value is expected.  The same parameter name can
-      be used more than once, for example:  `"WHERE id > @msg_id AND id <
-      @msg_id + 100"`  It is an error to execute a SQL statement with unbound
-      parameters.
+      by the parameter name (for example, `@firstName`). Parameter names must
+      conform to the naming requirements of identifiers as specified at
+      https://cloud.google.com/spanner/docs/lexical#identifiers.  Parameters
+      can appear anywhere that a literal value is expected.  The same
+      parameter name can be used more than once, for example:  `"WHERE id >
+      @msg_id AND id < @msg_id + 100"`  It is an error to execute a SQL
+      statement with unbound parameters.
     partitionToken: If present, results will be restricted to the specified
       partition previously created using PartitionQuery().  There must be an
       exact match for the values of fields common to this message and the
@@ -582,11 +584,13 @@ class ExecuteSqlRequest(_messages.Message):
   class ParamsValue(_messages.Message):
     r"""Parameter names and values that bind to placeholders in the SQL
     string.  A parameter placeholder consists of the `@` character followed by
-    the parameter name (for example, `@firstName`). Parameter names can
-    contain letters, numbers, and underscores.  Parameters can appear anywhere
-    that a literal value is expected.  The same parameter name can be used
-    more than once, for example:  `"WHERE id > @msg_id AND id < @msg_id +
-    100"`  It is an error to execute a SQL statement with unbound parameters.
+    the parameter name (for example, `@firstName`). Parameter names must
+    conform to the naming requirements of identifiers as specified at
+    https://cloud.google.com/spanner/docs/lexical#identifiers.  Parameters can
+    appear anywhere that a literal value is expected.  The same parameter name
+    can be used more than once, for example:  `"WHERE id > @msg_id AND id <
+    @msg_id + 100"`  It is an error to execute a SQL statement with unbound
+    parameters.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.

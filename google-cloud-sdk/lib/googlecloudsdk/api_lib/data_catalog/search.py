@@ -35,6 +35,7 @@ class SearchClient(object):
   def Search(self, query,
              include_gcp_public_datasets,
              include_organization_ids,
+             restricted_locations,
              include_project_ids,
              order_by, page_size, limit):
     """Parses search args into the request."""
@@ -60,6 +61,10 @@ class SearchClient(object):
       arg_utils.SetFieldInMessage(
           request, 'scope.includeProjectIds',
           include_project_ids)
+    if restricted_locations:
+      arg_utils.SetFieldInMessage(
+          request, 'scope.restrictedLocations',
+          restricted_locations)
 
     return list_pager.YieldFromList(
         self.service, request,

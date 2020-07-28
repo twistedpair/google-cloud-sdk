@@ -24,6 +24,59 @@ DOCS_URL = 'https://cloud.google.com/recommender/docs/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  BILLINGACCOUNTS = (
+      'billingAccounts',
+      'billingAccounts/{billingAccountsId}',
+      {},
+      ['billingAccountsId'],
+      True
+  )
+  BILLINGACCOUNTS_LOCATIONS = (
+      'billingAccounts.locations',
+      'billingAccounts/{billingAccountsId}/locations/{locationsId}',
+      {},
+      ['billingAccountsId', 'locationsId'],
+      True
+  )
+  BILLINGACCOUNTS_LOCATIONS_INSIGHTTYPES = (
+      'billingAccounts.locations.insightTypes',
+      'billingAccounts/{billingAccountsId}/locations/{locationsId}/'
+      'insightTypes/{insightTypesId}',
+      {},
+      ['billingAccountsId', 'locationsId', 'insightTypesId'],
+      True
+  )
+  BILLINGACCOUNTS_LOCATIONS_INSIGHTTYPES_INSIGHTS = (
+      'billingAccounts.locations.insightTypes.insights',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/locations/{locationsId}/'
+              'insightTypes/{insightTypesId}/insights/{insightsId}',
+      },
+      ['name'],
+      True
+  )
+  BILLINGACCOUNTS_LOCATIONS_RECOMMENDERS = (
+      'billingAccounts.locations.recommenders',
+      'billingAccounts/{billingAccountsId}/locations/{locationsId}/'
+      'recommenders/{recommendersId}',
+      {},
+      ['billingAccountsId', 'locationsId', 'recommendersId'],
+      True
+  )
+  BILLINGACCOUNTS_LOCATIONS_RECOMMENDERS_RECOMMENDATIONS = (
+      'billingAccounts.locations.recommenders.recommendations',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/locations/{locationsId}/'
+              'recommenders/{recommendersId}/recommendations/'
+              '{recommendationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

@@ -911,6 +911,130 @@ class EvaluateAnnotationStoreResponse(_messages.Message):
   matchedCount = _messages.IntegerField(4)
 
 
+class EvaluateUserConsentsRequest(_messages.Message):
+  r"""Evaluate an end user's Consents for all matching User data mappings.
+
+  Enums:
+    ResponseViewValueValuesEnum: The view for EvaluateUserConsentsResponse.
+
+  Messages:
+    RequestAttributesValue: The values of request attributes associated with
+      this access request.
+    ResourceAttributesValue: The values of resources attributes associated
+      with the type of data being requested. If no values are specified, then
+      all data types are queried.
+
+  Fields:
+    consentList: The resource names of the consents to evaluate against.
+      Consents must be in the current `consent_store` and belong to the
+      current `user_id`. Consents can be either active or draft.  If this
+      field is empty, the default behavior is to use all active consents that
+      belong to `user_id`. A maximum of 100 consents can be provided here.
+    pageSize: Limit on the number of user data mappings to return in a single
+      response. If zero the default page size of 100 is used.
+    pageToken: Token to retrieve the next page of results to get the first
+      page.
+    requestAttributes: The values of request attributes associated with this
+      access request.
+    resourceAttributes: The values of resources attributes associated with the
+      type of data being requested. If no values are specified, then all data
+      types are queried.
+    responseView: The view for EvaluateUserConsentsResponse.
+    userId: Required. User ID to evaluate consents for.
+  """
+
+  class ResponseViewValueValuesEnum(_messages.Enum):
+    r"""The view for EvaluateUserConsentsResponse.
+
+    Values:
+      RESPONSE_VIEW_UNSPECIFIED: No response view specified. The API will
+        default to the BASIC view.
+      BASIC: Only the `consented` field is populated in the response.
+      FULL: All fields within the response are populated. When set to `FULL`,
+        all `ACTIVE` consents are evaluated even if a matching policy is found
+        during evaluation.
+    """
+    RESPONSE_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestAttributesValue(_messages.Message):
+    r"""The values of request attributes associated with this access request.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        RequestAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceAttributesValue(_messages.Message):
+    r"""The values of resources attributes associated with the type of data
+    being requested. If no values are specified, then all data types are
+    queried.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consentList = _messages.MessageField('ConsentList', 1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  requestAttributes = _messages.MessageField('RequestAttributesValue', 4)
+  resourceAttributes = _messages.MessageField('ResourceAttributesValue', 5)
+  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 6)
+  userId = _messages.StringField(7)
+
+
+class EvaluateUserConsentsResponse(_messages.Message):
+  r"""Evaluate an end user's Consents for all matching User data mappings.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results or empty if
+      there are no more results in the list. This token is valid for 72 hours
+      after it is created.
+    results: The consent evaluation result for each `data_id`.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  results = _messages.MessageField('Result', 2, repeated=True)
+
+
 class ExportAnnotationsErrorDetails(_messages.Message):
   r"""Response for failed annotation export operations. This structure is
   included in the details field of the error upon operation completion.
@@ -983,6 +1107,31 @@ class ExportDicomDataResponse(_messages.Message):
   export.
   """
 
+
+
+class ExportMessagesRequest(_messages.Message):
+  r"""Request to schedule an export.
+
+  Fields:
+    endTime: The end of the range in `send_time` (MSH.7, https://www.hl7.org/d
+      ocumentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/conf/HL
+      7MSH.htm) to process. If not specified, the time when the export is
+      scheduled is used.  This value has to be after the `start_time` defined
+      above. Only messages whose `send_times` lie in the range defined by this
+      value and the `start_time` above are exported.
+    gcsDestination: A GoogleCloudHealthcareV1alpha2Hl7v2GcsDestination
+      attribute.
+    startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
+      rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/con
+      f/HL7MSH.htm) to process. If not specified, the UNIX epoch
+      (1970-01-01T00:00:00Z) is used.  This value has to come before the
+      `end_time` defined below. Only messages whose `send_times` lie in the
+      range defined by this value and `end_time` are exported.
+  """
+
+  endTime = _messages.StringField(1)
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2Hl7v2GcsDestination', 2)
+  startTime = _messages.StringField(3)
 
 
 class ExportMessagesResponse(_messages.Message):
@@ -1579,6 +1728,68 @@ class GoogleCloudHealthcareV1alpha2FhirRestImportResourcesResponse(_messages.Mes
   inputSize = _messages.IntegerField(2)
 
 
+class GoogleCloudHealthcareV1alpha2Hl7v2GcsDestination(_messages.Message):
+  r"""The Cloud Storage output destination.  The Cloud Storage location
+  requires the `roles/storage.objectAdmin` Cloud IAM role.
+
+  Enums:
+    ContentStructureValueValuesEnum: The format of the exported HL7v2 message
+      files.
+    MessageViewValueValuesEnum: Specifies the parts of the Message resource to
+      include in the export. If not specified, FULL is used.
+
+  Fields:
+    contentStructure: The format of the exported HL7v2 message files.
+    messageView: Specifies the parts of the Message resource to include in the
+      export. If not specified, FULL is used.
+    uriPrefix: URI for a Cloud Storage directory where the server writes
+      result files, in the format `gs://{bucket-
+      id}/{path/to/destination/dir}`. If there is no trailing slash, the
+      service appends one when composing the object path. The user is
+      responsible for creating the Cloud Storage bucket referenced in
+      `uri_prefix`.
+  """
+
+  class ContentStructureValueValuesEnum(_messages.Enum):
+    r"""The format of the exported HL7v2 message files.
+
+    Values:
+      CONTENT_STRUCTURE_UNSPECIFIED: If the content structure is not
+        specified, the default value `MESSAGE_JSON` will be used.
+      MESSAGE_JSON: Messages are printed using the JSON format returned from
+        the `GetMessage` API. Messages are delimited with newlines.
+    """
+    CONTENT_STRUCTURE_UNSPECIFIED = 0
+    MESSAGE_JSON = 1
+
+  class MessageViewValueValuesEnum(_messages.Enum):
+    r"""Specifies the parts of the Message resource to include in the export.
+    If not specified, FULL is used.
+
+    Values:
+      MESSAGE_VIEW_UNSPECIFIED: Not specified, equivalent to FULL for
+        getMessage, equivalent to BASIC for listMessages.
+      RAW_ONLY: Server responses include all the message fields except
+        parsed_data and schematized_data fields.
+      PARSED_ONLY: Server responses include all the message fields except data
+        and schematized_data fields.
+      FULL: Server responses include all the message fields.
+      SCHEMATIZED_ONLY: Server responses include all the message fields except
+        data and parsed_data fields.
+      BASIC: Server responses include only the name field.
+    """
+    MESSAGE_VIEW_UNSPECIFIED = 0
+    RAW_ONLY = 1
+    PARSED_ONLY = 2
+    FULL = 3
+    SCHEMATIZED_ONLY = 4
+    BASIC = 5
+
+  contentStructure = _messages.EnumField('ContentStructureValueValuesEnum', 1)
+  messageView = _messages.EnumField('MessageViewValueValuesEnum', 2)
+  uriPrefix = _messages.StringField(3)
+
+
 class HealthcareProjectsLocationsDatasetsAnnotationStoresCreateRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsAnnotationStoresCreateRequest
   object.
@@ -2091,6 +2302,22 @@ class HealthcareProjectsLocationsDatasetsConsentStoresDeleteRequest(_messages.Me
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresEvaluateUserConsentsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresEvaluateUserConsentsRequest
+  object.
+
+  Fields:
+    consentStore: Name of the Consent store to retrieve user data mappings
+      from.
+    evaluateUserConsentsRequest: A EvaluateUserConsentsRequest resource to be
+      passed as the request body.
+  """
+
+  consentStore = _messages.StringField(1, required=True)
+  evaluateUserConsentsRequest = _messages.MessageField('EvaluateUserConsentsRequest', 2)
 
 
 class HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest(_messages.Message):
@@ -2775,6 +3002,21 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresDeleteRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest object.
+
+  Fields:
+    exportMessagesRequest: A ExportMessagesRequest resource to be passed as
+      the request body.
+    name: The name of the source HL7v2 store, in the format `projects/{project
+      _id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores/{hl7v2_st
+      ore_id}`
+  """
+
+  exportMessagesRequest = _messages.MessageField('ExportMessagesRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest
   object.
@@ -2840,6 +3082,22 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesExportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesExportRequest
+  object.
+
+  Fields:
+    exportMessagesRequest: A ExportMessagesRequest resource to be passed as
+      the request body.
+    name: The name of the source HL7v2 store, in the format `projects/{project
+      _id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores/{hl7v2_st
+      ore_id}`
+  """
+
+  exportMessagesRequest = _messages.MessageField('ExportMessagesRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest(_messages.Message):
@@ -3233,8 +3491,8 @@ class ImportAnnotationsResponse(_messages.Message):
 
   Fields:
     annotationStore: The annotation_store that the annotations were imported
-      to. The name is in the format of `projects/{project_id}/locations/{locat
-      ion_id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+      to, in the format of `projects/{project_id}/locations/{location_id}/data
+      sets/{dataset_id}/annotationStores/{annotation_store_id}`.
     successCount: The number of the input annotations. All input have been
       imported successfully.
   """
@@ -4016,6 +4274,51 @@ class ReplaceWithInfoTypeConfig(_messages.Message):
   is [PERSON_NAME]." The TRANSFORM action is equivalent to redacting.
   """
 
+
+
+class Result(_messages.Message):
+  r"""The consent evaluation result for a single `data_id`.
+
+  Messages:
+    ConsentDetailsValue: The resource names of all evaluated Consents mapped
+      to their evaluation.
+
+  Fields:
+    consentDetails: The resource names of all evaluated Consents mapped to
+      their evaluation.
+    consented: Whether the requested data is consented for the given use.
+    dataId: The unique identifier of the data the consents were checked for.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConsentDetailsValue(_messages.Message):
+    r"""The resource names of all evaluated Consents mapped to their
+    evaluation.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConsentDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConsentDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConsentDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ConsentEvaluation attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ConsentEvaluation', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consentDetails = _messages.MessageField('ConsentDetailsValue', 1)
+  consented = _messages.BooleanField(2)
+  dataId = _messages.StringField(3)
 
 
 class RevokeConsentRequest(_messages.Message):

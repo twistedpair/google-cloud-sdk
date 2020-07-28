@@ -18,9 +18,9 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding.  If the
+    condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
-      request.  If the condition evaluates to `false`, then this binding does
+      request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
@@ -28,35 +28,35 @@ class Binding(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -73,14 +73,14 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
     linkedResource: The full name of the Google Cloud Platform resource the
       Data Catalog entry represents. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name.
-      Full names are case-sensitive.  Examples:   * //bigquery.googleapis.com/
-      projects/projectId/datasets/datasetId/tables/tableId  *
+      Full names are case-sensitive. Examples: * //bigquery.googleapis.com/pro
+      jects/projectId/datasets/datasetId/tables/tableId *
       //pubsub.googleapis.com/projects/projectId/topics/topicId
     sqlResource: The SQL name of the entry. SQL names are case-sensitive.
-      Examples:    * `pubsub.project_id.topic_id`   *
-      ``pubsub.project_id.`topic.id.with.dots` ``   *
-      `bigquery.table.project_id.dataset_id.table_id`   *
-      `bigquery.dataset.project_id.dataset_id`   *
+      Examples: * `pubsub.project_id.topic_id` *
+      ``pubsub.project_id.`topic.id.with.dots` `` *
+      `bigquery.table.project_id.dataset_id.table_id` *
+      `bigquery.dataset.project_id.dataset_id` *
       `datacatalog.entry.project_id.location_id.entry_group_id.entry_id`
       `*_id`s shoud satisfy the standard SQL rules for identifiers.
       https://cloud.google.com/bigquery/docs/reference/standard-sql/lexical.
@@ -100,7 +100,7 @@ class DatacatalogProjectsLocationsEntryGroupsCreateRequest(_messages.Message):
     googleCloudDatacatalogV1EntryGroup: A GoogleCloudDatacatalogV1EntryGroup
       resource to be passed as the request body.
     parent: Required. The name of the project this entry group is in. Example:
-      * projects/{project_id}/locations/{location}  Note that this EntryGroup
+      * projects/{project_id}/locations/{location} Note that this EntryGroup
       and its child resources may not actually be stored in the location in
       this name.
   """
@@ -131,8 +131,7 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest(_messages.Mess
     entryId: Required. The id of the entry to create.
     googleCloudDatacatalogV1Entry: A GoogleCloudDatacatalogV1Entry resource to
       be passed as the request body.
-    parent: Required. The name of the entry group this entry is in. Example:
-      *
+    parent: Required. The name of the entry group this entry is in. Example: *
       projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
       Note that this Entry and its child resources may not actually be stored
       in the location in this name.
@@ -147,8 +146,8 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest(_messages.Mess
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest object.
 
   Fields:
-    name: Required. The name of the entry. Example:  * projects/{project_id}/l
-      ocations/{location}/entryGroups/{entry_group_id}/entries/{entry_id}
+    name: Required. The name of the entry. Example: * projects/{project_id}/lo
+      cations/{location}/entryGroups/{entry_group_id}/entries/{entry_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -174,8 +173,8 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest(_messages.Message
   r"""A DatacatalogProjectsLocationsEntryGroupsEntriesGetRequest object.
 
   Fields:
-    name: Required. The name of the entry. Example:  * projects/{project_id}/l
-      ocations/{location}/entryGroups/{entry_group_id}/entries/{entry_id}
+    name: Required. The name of the entry. Example: * projects/{project_id}/lo
+      cations/{location}/entryGroups/{entry_group_id}/entries/{entry_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -190,7 +189,7 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesListRequest(_messages.Messag
     pageToken: Token that specifies which page is requested. If empty, the
       first page is returned.
     parent: Required. The name of the entry group that contains the entries,
-      which can be provided in URL format. Example:  *
+      which can be provided in URL format. Example: *
       projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
     readMask: The fields to return for each Entry. If not set or empty, all
       fields are returned. For example, setting read_mask to contain only one
@@ -212,16 +211,16 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Messa
       be passed as the request body.
     name: The Data Catalog resource name of the entry in URL format. Example:
       * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
-      }/entries/{entry_id}  Note that this Entry and its child resources may
+      }/entries/{entry_id} Note that this Entry and its child resources may
       not actually be stored in the location in this name.
     updateMask: The fields to update on the entry. If absent or empty, all
-      modifiable fields are updated.  The following fields are modifiable: *
-      For entries with type `DATA_STREAM`:    * `schema` * For entries with
-      type `FILESET`    * `schema`    * `display_name`    * `description`    *
-      `gcs_fileset_spec`    * `gcs_fileset_spec.file_patterns` * For entries
-      with `user_specified_type`    * `schema`    * `display_name`    *
-      `description`    * user_specified_type    * user_specified_system    *
-      linked_resource    * source_system_timestamps
+      modifiable fields are updated. The following fields are modifiable: *
+      For entries with type `DATA_STREAM`: * `schema` * For entries with type
+      `FILESET` * `schema` * `display_name` * `description` *
+      `gcs_fileset_spec` * `gcs_fileset_spec.file_patterns` * For entries with
+      `user_specified_type` * `schema` * `display_name` * `description` *
+      user_specified_type * user_specified_system * linked_resource *
+      source_system_timestamps
   """
 
   googleCloudDatacatalogV1Entry = _messages.MessageField('GoogleCloudDatacatalogV1Entry', 1)
@@ -237,10 +236,10 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest(_messages.
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
     parent: Required. The name of the resource to attach this tag to. Tags can
-      be attached to Entries. Example:  * projects/{project_id}/locations/{loc
-      ation}/entryGroups/{entry_group_id}/entries/{entry_id}  Note that this
-      Tag and its child resources may not actually be stored in the location
-      in this name.
+      be attached to Entries. Example: * projects/{project_id}/locations/{loca
+      tion}/entryGroups/{entry_group_id}/entries/{entry_id} Note that this Tag
+      and its child resources may not actually be stored in the location in
+      this name.
   """
 
   googleCloudDatacatalogV1Tag = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1)
@@ -252,9 +251,9 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsDeleteRequest(_messages.
   object.
 
   Fields:
-    name: Required. The name of the tag to delete. Example:  * projects/{proje
-      ct_id}/locations/{location}/entryGroups/{entry_group_id}/entries/{entry_
-      id}/tags/{tag_id}
+    name: Required. The name of the tag to delete. Example: * projects/{projec
+      t_id}/locations/{location}/entryGroups/{entry_group_id}/entries/{entry_i
+      d}/tags/{tag_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -269,7 +268,7 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsListRequest(_messages.Me
     pageToken: Token that specifies which page is requested. If empty, the
       first page is returned.
     parent: Required. The name of the Data Catalog resource to list the tags
-      of. The resource could be an Entry or an EntryGroup.  Examples:  *
+      of. The resource could be an Entry or an EntryGroup. Examples: *
       projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
       * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
       }/entries/{entry_id}
@@ -286,9 +285,9 @@ class DatacatalogProjectsLocationsEntryGroupsEntriesTagsPatchRequest(_messages.M
   Fields:
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
-    name: The resource name of the tag in URL format. Example:  * projects/{pr
-      oject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{ent
-      ry_id}/tags/{tag_id}  where `tag_id` is a system-generated identifier.
+    name: The resource name of the tag in URL format. Example: * projects/{pro
+      ject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entr
+      y_id}/tags/{tag_id} where `tag_id` is a system-generated identifier.
       Note that this Tag may not actually be stored in the location in this
       name.
     updateMask: The fields to update on the Tag. If absent or empty, all
@@ -357,7 +356,7 @@ class DatacatalogProjectsLocationsEntryGroupsListRequest(_messages.Message):
     pageToken: Optional. Token that specifies which page is requested. If
       empty, the first page is returned.
     parent: Required. The name of the location that contains the entry groups,
-      which can be provided in URL format. Example:  *
+      which can be provided in URL format. Example: *
       projects/{project_id}/locations/{location}
   """
 
@@ -372,7 +371,7 @@ class DatacatalogProjectsLocationsEntryGroupsPatchRequest(_messages.Message):
   Fields:
     googleCloudDatacatalogV1EntryGroup: A GoogleCloudDatacatalogV1EntryGroup
       resource to be passed as the request body.
-    name: The resource name of the entry group in URL format. Example:  *
+    name: The resource name of the entry group in URL format. Example: *
       projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
       Note that this EntryGroup and its child resources may not actually be
       stored in the location in this name.
@@ -407,10 +406,10 @@ class DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest(_messages.Message
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
     parent: Required. The name of the resource to attach this tag to. Tags can
-      be attached to Entries. Example:  * projects/{project_id}/locations/{loc
-      ation}/entryGroups/{entry_group_id}/entries/{entry_id}  Note that this
-      Tag and its child resources may not actually be stored in the location
-      in this name.
+      be attached to Entries. Example: * projects/{project_id}/locations/{loca
+      tion}/entryGroups/{entry_group_id}/entries/{entry_id} Note that this Tag
+      and its child resources may not actually be stored in the location in
+      this name.
   """
 
   googleCloudDatacatalogV1Tag = _messages.MessageField('GoogleCloudDatacatalogV1Tag', 1)
@@ -421,9 +420,9 @@ class DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest(_messages.Message
   r"""A DatacatalogProjectsLocationsEntryGroupsTagsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the tag to delete. Example:  * projects/{proje
-      ct_id}/locations/{location}/entryGroups/{entry_group_id}/entries/{entry_
-      id}/tags/{tag_id}
+    name: Required. The name of the tag to delete. Example: * projects/{projec
+      t_id}/locations/{location}/entryGroups/{entry_group_id}/entries/{entry_i
+      d}/tags/{tag_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -438,7 +437,7 @@ class DatacatalogProjectsLocationsEntryGroupsTagsListRequest(_messages.Message):
     pageToken: Token that specifies which page is requested. If empty, the
       first page is returned.
     parent: Required. The name of the Data Catalog resource to list the tags
-      of. The resource could be an Entry or an EntryGroup.  Examples:  *
+      of. The resource could be an Entry or an EntryGroup. Examples: *
       projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
       * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
       }/entries/{entry_id}
@@ -455,9 +454,9 @@ class DatacatalogProjectsLocationsEntryGroupsTagsPatchRequest(_messages.Message)
   Fields:
     googleCloudDatacatalogV1Tag: A GoogleCloudDatacatalogV1Tag resource to be
       passed as the request body.
-    name: The resource name of the tag in URL format. Example:  * projects/{pr
-      oject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{ent
-      ry_id}/tags/{tag_id}  where `tag_id` is a system-generated identifier.
+    name: The resource name of the tag in URL format. Example: * projects/{pro
+      ject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entr
+      y_id}/tags/{tag_id} where `tag_id` is a system-generated identifier.
       Note that this Tag may not actually be stored in the location in this
       name.
     updateMask: The fields to update on the Tag. If absent or empty, all
@@ -494,7 +493,7 @@ class DatacatalogProjectsLocationsTagTemplatesCreateRequest(_messages.Message):
       resource to be passed as the request body.
     parent: Required. The name of the project and the template location
       [region](https://cloud.google.com/data-catalog/docs/concepts/regions).
-      Example:  * projects/{project_id}/locations/us-central1
+      Example: * projects/{project_id}/locations/us-central1
     tagTemplateId: Required. The id of the tag template to create.
   """
 
@@ -510,7 +509,7 @@ class DatacatalogProjectsLocationsTagTemplatesDeleteRequest(_messages.Message):
     force: Required. Currently, this field must always be set to `true`. This
       confirms the deletion of any possible tags using this template. `force =
       false` will be supported in the future.
-    name: Required. The name of the tag template to delete. Example:  *
+    name: Required. The name of the tag template to delete. Example: *
       projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
       }
   """
@@ -528,7 +527,7 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest(_messages.Mess
       request body.
     parent: Required. The name of the project and the template location
       [region](https://cloud.google.com/data-catalog/docs/concepts/regions).
-      Example:  * projects/{project_id}/locations/us-
+      Example: * projects/{project_id}/locations/us-
       central1/tagTemplates/{tag_template_id}
     tagTemplateFieldId: Required. The ID of the tag template field to create.
       Field ids can contain letters (both uppercase and lowercase), numbers
@@ -549,9 +548,9 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsDeleteRequest(_messages.Mess
     force: Required. Currently, this field must always be set to `true`. This
       confirms the deletion of this field from any tags using this field.
       `force = false` will be supported in the future.
-    name: Required. The name of the tag template field to delete. Example:  *
-      projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
-      }/fields/{tag_template_field_id}
+    name: Required. The name of the tag template field to delete. Example: * p
+      rojects/{project_id}/locations/{location}/tagTemplates/{tag_template_id}
+      /fields/{tag_template_field_id}
   """
 
   force = _messages.BooleanField(1)
@@ -566,9 +565,9 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsEnumValuesRenameRequest(_mes
     googleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest: A
       GoogleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest resource
       to be passed as the request body.
-    name: Required. The name of the enum field value. Example:  * projects/{pr
-      oject_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{ta
-      g_template_field_id}/enumValues/{enum_value_display_name}
+    name: Required. The name of the enum field value. Example: * projects/{pro
+      ject_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{tag
+      _template_field_id}/enumValues/{enum_value_display_name}
   """
 
   googleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest = _messages.MessageField('GoogleCloudDatacatalogV1RenameTagTemplateFieldEnumValueRequest', 1)
@@ -582,17 +581,16 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest(_messages.Messa
     googleCloudDatacatalogV1TagTemplateField: A
       GoogleCloudDatacatalogV1TagTemplateField resource to be passed as the
       request body.
-    name: Required. The name of the tag template field. Example:  * projects/{
-      project_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{
-      tag_template_field_id}
+    name: Required. The name of the tag template field. Example: * projects/{p
+      roject_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{t
+      ag_template_field_id}
     updateMask: Optional. The field mask specifies the parts of the template
-      to be updated. Allowed fields:    * `display_name`   * `type.enum_type`
-      * `is_required`  If `update_mask` is not set or empty, all of the
-      allowed fields above will be updated.  When updating an enum type, the
-      provided values will be merged with the existing values. Therefore, enum
-      values can only be added, existing enum values cannot be deleted nor
-      renamed. Updating a template field from optional to required is NOT
-      allowed.
+      to be updated. Allowed fields: * `display_name` * `type.enum_type` *
+      `is_required` If `update_mask` is not set or empty, all of the allowed
+      fields above will be updated. When updating an enum type, the provided
+      values will be merged with the existing values. Therefore, enum values
+      can only be added, existing enum values cannot be deleted nor renamed.
+      Updating a template field from optional to required is NOT allowed.
   """
 
   googleCloudDatacatalogV1TagTemplateField = _messages.MessageField('GoogleCloudDatacatalogV1TagTemplateField', 1)
@@ -607,9 +605,9 @@ class DatacatalogProjectsLocationsTagTemplatesFieldsRenameRequest(_messages.Mess
     googleCloudDatacatalogV1RenameTagTemplateFieldRequest: A
       GoogleCloudDatacatalogV1RenameTagTemplateFieldRequest resource to be
       passed as the request body.
-    name: Required. The name of the tag template. Example:  * projects/{projec
-      t_id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{tag_te
-      mplate_field_id}
+    name: Required. The name of the tag template. Example: * projects/{project
+      _id}/locations/{location}/tagTemplates/{tag_template_id}/fields/{tag_tem
+      plate_field_id}
   """
 
   googleCloudDatacatalogV1RenameTagTemplateFieldRequest = _messages.MessageField('GoogleCloudDatacatalogV1RenameTagTemplateFieldRequest', 1)
@@ -635,7 +633,7 @@ class DatacatalogProjectsLocationsTagTemplatesGetRequest(_messages.Message):
   r"""A DatacatalogProjectsLocationsTagTemplatesGetRequest object.
 
   Fields:
-    name: Required. The name of the tag template. Example:  *
+    name: Required. The name of the tag template. Example: *
       projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
       }
   """
@@ -649,13 +647,13 @@ class DatacatalogProjectsLocationsTagTemplatesPatchRequest(_messages.Message):
   Fields:
     googleCloudDatacatalogV1TagTemplate: A GoogleCloudDatacatalogV1TagTemplate
       resource to be passed as the request body.
-    name: The resource name of the tag template in URL format. Example:  *
+    name: The resource name of the tag template in URL format. Example: *
       projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
-      }  Note that this TagTemplate and its child resources may not actually
-      be stored in the location in this name.
+      } Note that this TagTemplate and its child resources may not actually be
+      stored in the location in this name.
     updateMask: The field mask specifies the parts of the template to
-      overwrite.  Allowed fields:    * `display_name`  If absent or empty, all
-      of the allowed fields above will be updated.
+      overwrite. Allowed fields: * `display_name` If absent or empty, all of
+      the allowed fields above will be updated.
   """
 
   googleCloudDatacatalogV1TagTemplate = _messages.MessageField('GoogleCloudDatacatalogV1TagTemplate', 1)
@@ -697,9 +695,9 @@ class DatacatalogProjectsLocationsTagTemplatesTestIamPermissionsRequest(_message
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -707,20 +705,20 @@ class Empty(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -756,10 +754,10 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -846,11 +844,11 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1Entry(_messages.Message):
-  r"""Entry Metadata.  A Data Catalog Entry resource represents another
+  r"""Entry Metadata. A Data Catalog Entry resource represents another
   resource in Google Cloud Platform (such as a BigQuery dataset or a Pub/Sub
   topic) or outside of Google Cloud Platform. Clients can use the
   `linked_resource` field in the Entry resource to refer to the original
-  resource ID of the source system.  An Entry resource contains resource
+  resource ID of the source system. An Entry resource contains resource
   details, such as its schema. An Entry can also be used to attach flexible
   metadata, such as a Tag.
 
@@ -878,17 +876,17 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       This is only valid on entries of type FILESET.
     integratedSystem: Output only. This field indicates the entry's source
       system that Data Catalog integrates with, such as BigQuery or Pub/Sub.
-    linkedResource: The resource this metadata entry refers to.  For Google
+    linkedResource: The resource this metadata entry refers to. For Google
       Cloud Platform resources, `linked_resource` is the [full name of the res
       ource](https://cloud.google.com/apis/design/resource_names#full_resource
       _name). For example, the `linked_resource` for a table resource from
-      BigQuery is:  * //bigquery.googleapis.com/projects/projectId/datasets/da
-      tasetId/tables/tableId  Output only when Entry is of type in the
-      EntryType enum. For entries with user_specified_type, this field is
-      optional and defaults to an empty string.
+      BigQuery is: * //bigquery.googleapis.com/projects/projectId/datasets/dat
+      asetId/tables/tableId Output only when Entry is of type in the EntryType
+      enum. For entries with user_specified_type, this field is optional and
+      defaults to an empty string.
     name: The Data Catalog resource name of the entry in URL format. Example:
       * projects/{project_id}/locations/{location}/entryGroups/{entry_group_id
-      }/entries/{entry_id}  Note that this Entry and its child resources may
+      }/entries/{entry_id} Note that this Entry and its child resources may
       not actually be stored in the location in this name.
     schema: Schema of the entry. An entry might not have any schema attached
       to it.
@@ -910,7 +908,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       `user_specified_type` strings must begin with a letter or underscore and
       can only contain letters, numbers, and underscores; are case
       insensitive; must be at least 1 character and at most 64 characters
-      long.  Currently, only FILESET enum value is allowed. All other entries
+      long. Currently, only FILESET enum value is allowed. All other entries
       created through Data Catalog must use `user_specified_type`.
   """
 
@@ -964,7 +962,7 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
-  r"""EntryGroup Metadata.  An EntryGroup resource represents a logical
+  r"""EntryGroup Metadata. An EntryGroup resource represents a logical
   grouping of zero or more Data Catalog Entry resources.
 
   Fields:
@@ -975,7 +973,7 @@ class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
       value is an empty string.
     displayName: A short name to identify the entry group, for example,
       "analytics data - jan 2011". Default value is an empty string.
-    name: The resource name of the entry group in URL format. Example:  *
+    name: The resource name of the entry group in URL format. Example: *
       projects/{project_id}/locations/{location}/entryGroups/{entry_group_id}
       Note that this EntryGroup and its child resources may not actually be
       stored in the location in this name.
@@ -1064,23 +1062,21 @@ class GoogleCloudDatacatalogV1GcsFilesetSpec(_messages.Message):
     filePatterns: Required. Patterns to identify a set of files in Google
       Cloud Storage. See [Cloud Storage documentation](https://cloud.google.co
       m/storage/docs/gsutil/addlhelp/WildcardNames) for more information. Note
-      that bucket wildcards are currently not supported.  Examples of valid
-      file_patterns:   * `gs://bucket_name/dir/*`: matches all files within
-      `bucket_name/dir`                              directory.  *
-      `gs://bucket_name/dir/**`: matches all files in `bucket_name/dir`
-      spanning all subdirectories.  * `gs://bucket_name/file*`: matches files
-      prefixed by `file` in                              `bucket_name`  *
-      `gs://bucket_name/??.txt`: matches files with two characters followed by
-      `.txt` in `bucket_name`  * `gs://bucket_name/[aeiou].txt`: matches files
-      that contain a single                                    vowel character
-      followed by `.txt` in                                    `bucket_name`
-      * `gs://bucket_name/[a-m].txt`: matches files that contain `a`, `b`, ...
-      or `m` followed by `.txt` in `bucket_name`  * `gs://bucket_name/a/*/b`:
-      matches all files in `bucket_name` that match
-      `a/*/b` pattern, such as `a/c/b`, `a/d/b`  *
-      `gs://another_bucket/a.txt`: matches `gs://another_bucket/a.txt`  You
-      can combine wildcards to provide more powerful matches, for example:   *
-      `gs://bucket_name/[a-m]??.j*g`
+      that bucket wildcards are currently not supported. Examples of valid
+      file_patterns: * `gs://bucket_name/dir/*`: matches all files within
+      `bucket_name/dir` directory. * `gs://bucket_name/dir/**`: matches all
+      files in `bucket_name/dir` spanning all subdirectories. *
+      `gs://bucket_name/file*`: matches files prefixed by `file` in
+      `bucket_name` * `gs://bucket_name/??.txt`: matches files with two
+      characters followed by `.txt` in `bucket_name` *
+      `gs://bucket_name/[aeiou].txt`: matches files that contain a single
+      vowel character followed by `.txt` in `bucket_name` *
+      `gs://bucket_name/[a-m].txt`: matches files that contain `a`, `b`, ...
+      or `m` followed by `.txt` in `bucket_name` * `gs://bucket_name/a/*/b`:
+      matches all files in `bucket_name` that match `a/*/b` pattern, such as
+      `a/c/b`, `a/d/b` * `gs://another_bucket/a.txt`: matches
+      `gs://another_bucket/a.txt` You can combine wildcards to provide more
+      powerful matches, for example: * `gs://bucket_name/[a-m]??.j*g`
     sampleGcsFileSpecs: Output only. Sample files contained in this fileset,
       not all files contained in this fileset are represented here.
   """
@@ -1166,9 +1162,9 @@ class GoogleCloudDatacatalogV1SearchCatalogRequest(_messages.Message):
 
   Fields:
     orderBy: Specifies the ordering of results, currently supported case-
-      sensitive choices are:    * `relevance`, only supports descending   *
+      sensitive choices are: * `relevance`, only supports descending *
       `last_modified_timestamp [asc|desc]`, defaults to descending if not
-      specified  If not specified, defaults to `relevance` descending.
+      specified If not specified, defaults to `relevance` descending.
     pageSize: Number of results in the search page. If <=0 then defaults to
       10. Max limit for page_size is 1000. Throws an invalid argument for
       page_size > 1000.
@@ -1178,8 +1174,8 @@ class GoogleCloudDatacatalogV1SearchCatalogRequest(_messages.Message):
       should return the next page of data. If empty, the first page is
       returned.
     query: Required. The query string in search query syntax. The query must
-      be non-empty.  Query strings can be simple as "x" or more qualified as:
-      * name:x * column:x * description:y  Note: Query tokens need to have a
+      be non-empty. Query strings can be simple as "x" or more qualified as: *
+      name:x * column:x * description:y Note: Query tokens need to have a
       minimum of 3 characters for substring matching to work correctly. See
       [Data Catalog Search Syntax](https://cloud.google.com/data-
       catalog/docs/how-to/search-reference) for more information.
@@ -1218,13 +1214,12 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
       Typical usage is to leave this field empty. When a location is
       unreachable as returned in the `SearchCatalogResponse.unreachable`
       field, users can repeat the search request with this parameter set to
-      get additional information on the error.  Valid locations:  * asia-east1
-      * asia-east2  * asia-northeast1  * asia-northeast2  * asia-northeast3  *
-      asia-south1  * asia-southeast1  * australia-southeast1  * eu  * europe-
-      north1  * europe-west1  * europe-west2  * europe-west3  * europe-west4
-      * europe-west6  * global  * northamerica-northeast1  * southamerica-
-      east1  * us  * us-central1  * us-east1  * us-east4  * us-west1  * us-
-      west2
+      get additional information on the error. Valid locations: * asia-east1 *
+      asia-east2 * asia-northeast1 * asia-northeast2 * asia-northeast3 * asia-
+      south1 * asia-southeast1 * australia-southeast1 * eu * europe-north1 *
+      europe-west1 * europe-west2 * europe-west3 * europe-west4 * europe-west6
+      * global * northamerica-northeast1 * southamerica-east1 * us * us-
+      central1 * us-east1 * us-east4 * us-west1 * us-west2
   """
 
   includeGcpPublicDatasets = _messages.BooleanField(1)
@@ -1271,15 +1266,15 @@ class GoogleCloudDatacatalogV1SearchCatalogResult(_messages.Message):
     linkedResource: The full name of the cloud resource the entry belongs to.
       See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name.
-      Example:   * `//bigquery.googleapis.com/projects/projectId/datasets/data
-      setId/tables/tableId`
+      Example: * `//bigquery.googleapis.com/projects/projectId/datasets/datase
+      tId/tables/tableId`
     relativeResourceName: The relative resource name of the resource in URL
-      format. Examples:   * `projects/{project_id}/locations/{location_id}/ent
-      ryGroups/{entry_group_id}/entries/{entry_id}`  *
+      format. Examples: * `projects/{project_id}/locations/{location_id}/entry
+      Groups/{entry_group_id}/entries/{entry_id}` *
       `projects/{project_id}/tagTemplates/{tag_template_id}`
     searchResultSubtype: Sub-type of the search result. This is a dot-
       delimited description of the resource's full type, and is the same as
-      the value callers would provide in the "type" search facet.  Examples:
+      the value callers would provide in the "type" search facet. Examples:
       `entry.table`, `entry.dataStream`, `tagTemplate`.
     searchResultType: Type of the search result. This field can be used to
       determine which Get method to call to fetch the full resource.
@@ -1355,7 +1350,7 @@ class GoogleCloudDatacatalogV1TableSpec(_messages.Message):
 
 class GoogleCloudDatacatalogV1Tag(_messages.Message):
   r"""Tags are used to attach custom metadata to Data Catalog resources. Tags
-  conform to the specifications within their tag template.  See [Data Catalog
+  conform to the specifications within their tag template. See [Data Catalog
   IAM](https://cloud.google.com/data-catalog/docs/concepts/iam) for
   information on the permissions needed to create or view tags.
 
@@ -1368,20 +1363,20 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
   Fields:
     column: Resources like Entry can have schemas associated with them. This
       scope allows users to attach tags to an individual column based on that
-      schema.  For attaching a tag to a nested column, use `.` to separate the
-      column names. Example:  * `outer_column.inner_column`
+      schema. For attaching a tag to a nested column, use `.` to separate the
+      column names. Example: * `outer_column.inner_column`
     fields: Required. This maps the ID of a tag field to the value of and
       additional information about that field. Valid field IDs are defined by
       the tag's template. A tag must have at least 1 field and at most 500
       fields.
-    name: The resource name of the tag in URL format. Example:  * projects/{pr
-      oject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{ent
-      ry_id}/tags/{tag_id}  where `tag_id` is a system-generated identifier.
+    name: The resource name of the tag in URL format. Example: * projects/{pro
+      ject_id}/locations/{location}/entrygroups/{entry_group_id}/entries/{entr
+      y_id}/tags/{tag_id} where `tag_id` is a system-generated identifier.
       Note that this Tag may not actually be stored in the location in this
       name.
     template: Required. The resource name of the tag template that this tag
-      uses. Example:  * projects/{project_id}/locations/{location}/tagTemplate
-      s/{tag_template_id}  This field cannot be modified after creation.
+      uses. Example: * projects/{project_id}/locations/{location}/tagTemplates
+      /{tag_template_id} This field cannot be modified after creation.
     templateDisplayName: Output only. The display name of the tag template.
   """
 
@@ -1468,7 +1463,7 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
   Messages:
     FieldsValue: Required. Map of tag template field IDs to the settings for
       the field. This map is an exhaustive list of the allowed fields. This
-      map must contain at least one field and at most 500 fields.  The keys to
+      map must contain at least one field and at most 500 fields. The keys to
       this map are tag template field IDs. Field IDs can contain letters (both
       uppercase and lowercase), numbers (0-9) and underscores (_). Field IDs
       must be at least 1 character long and at most 64 characters long. Field
@@ -1479,22 +1474,22 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
       string.
     fields: Required. Map of tag template field IDs to the settings for the
       field. This map is an exhaustive list of the allowed fields. This map
-      must contain at least one field and at most 500 fields.  The keys to
-      this map are tag template field IDs. Field IDs can contain letters (both
+      must contain at least one field and at most 500 fields. The keys to this
+      map are tag template field IDs. Field IDs can contain letters (both
       uppercase and lowercase), numbers (0-9) and underscores (_). Field IDs
       must be at least 1 character long and at most 64 characters long. Field
       IDs must start with a letter or underscore.
-    name: The resource name of the tag template in URL format. Example:  *
+    name: The resource name of the tag template in URL format. Example: *
       projects/{project_id}/locations/{location}/tagTemplates/{tag_template_id
-      }  Note that this TagTemplate and its child resources may not actually
-      be stored in the location in this name.
+      } Note that this TagTemplate and its child resources may not actually be
+      stored in the location in this name.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):
     r"""Required. Map of tag template field IDs to the settings for the field.
     This map is an exhaustive list of the allowed fields. This map must
-    contain at least one field and at most 500 fields.  The keys to this map
+    contain at least one field and at most 500 fields. The keys to this map
     are tag template field IDs. Field IDs can contain letters (both uppercase
     and lowercase), numbers (0-9) and underscores (_). Field IDs must be at
     least 1 character long and at most 64 characters long. Field IDs must
@@ -1532,9 +1527,9 @@ class GoogleCloudDatacatalogV1TagTemplateField(_messages.Message):
     displayName: The display name for this field. Defaults to an empty string.
     isRequired: Whether this is a required field. Defaults to false.
     name: Output only. The resource name of the tag template field in URL
-      format. Example:  * projects/{project_id}/locations/{location}/tagTempla
-      tes/{tag_template}/fields/{field}  Note that this TagTemplateField may
-      not actually be stored in the location in this name.
+      format. Example: * projects/{project_id}/locations/{location}/tagTemplat
+      es/{tag_template}/fields/{field} Note that this TagTemplateField may not
+      actually be stored in the location in this name.
     order: The order of this field with respect to other fields in this tag
       template. For example, a higher value can indicate a more important
       field. The value can be negative. Multiple fields can have the same
@@ -1561,37 +1556,33 @@ class GoogleCloudDatacatalogV1ViewSpec(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  For some types of
+  be an IAM predefined role or a user-created custom role. For some types of
   Google Cloud resources, a `binding` can also specify a `condition`, which is
   a logical expression that allows access to a resource only if the expression
   evaluates to `true`. A condition can add constraints based on attributes of
   the request, the resource, or both. To learn which resources support
   conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies).  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members": [
-  "user:eve@example.com"           ],           "condition": {
-  "title": "expirable access",             "description": "Does not grant
-  access after Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -1605,24 +1596,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.  To learn which resources support
+      version or leave the field unset. To learn which resources support
       conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).

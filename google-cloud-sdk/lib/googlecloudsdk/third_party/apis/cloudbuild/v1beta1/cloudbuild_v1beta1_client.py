@@ -132,8 +132,8 @@ service.
     def Create(self, request, global_params=None):
       r"""Creates a `WorkerPool` to run the builds, and returns the new worker pool.
 
-NOTE: As of now, this method returns an Operation that is always complete
-and that is not queryable from this service's Operations API.
+NOTE: As of now, this method returns an `Operation` that is always
+complete.
 
       Args:
         request: (CloudbuildProjectsLocationsWorkerPoolsCreateRequest) input message
@@ -162,8 +162,8 @@ and that is not queryable from this service's Operations API.
     def Delete(self, request, global_params=None):
       r"""Deletes a `WorkerPool`.
 
-NOTE: As of now, this method returns an Operation that is always complete
-and that is not queryable from this service's Operations API.
+NOTE: As of now, this method returns an `Operation` that is always
+complete.
 
       Args:
         request: (CloudbuildProjectsLocationsWorkerPoolsDeleteRequest) input message
@@ -217,7 +217,7 @@ and that is not queryable from this service's Operations API.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists `WorkerPool`s by project.
+      r"""Lists `WorkerPool`s in the given project.
 
       Args:
         request: (CloudbuildProjectsLocationsWorkerPoolsListRequest) input message
@@ -246,8 +246,8 @@ and that is not queryable from this service's Operations API.
     def Patch(self, request, global_params=None):
       r"""Updates a `WorkerPool`.
 
-NOTE: As of now, this method returns an Operation that is always complete
-and that is not queryable from this service's Operations API.
+NOTE: As of now, this method returns an `Operation` that is always
+complete.
 
       Args:
         request: (CloudbuildProjectsLocationsWorkerPoolsPatchRequest) input message

@@ -136,10 +136,7 @@ class WorkflowexecutionsV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of executions which belong to the workflow with.
-the given name. The method returns executions of all workflow
-revisions. Returned executions are ordered by their start time (newest
-first).
+      r"""Returns a list of executions which belong to the workflow with the given name. The method returns executions of all workflow revisions. Returned executions are ordered by their start time (newest first).
 
       Args:
         request: (WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest) input message

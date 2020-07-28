@@ -62,9 +62,13 @@ class Converter(completion_cache.Completer):
         qualified.  Use the name 'collection' to qualify collections.
   """
 
-  def __init__(self, additional_params=None, api=None,
-               qualified_parameter_names=None, style=None,
-               parse_all=False, **kwargs):
+  def __init__(self,
+               additional_params=None,
+               api=None,
+               qualified_parameter_names=None,
+               style=None,
+               parse_all=False,
+               **kwargs):
     super(Converter, self).__init__(**kwargs)
     if api:
       self.api = api
@@ -88,9 +92,9 @@ class Converter(completion_cache.Completer):
       self._row_to_string = self._FLAGS_RowToString
     self._parse_all = parse_all
 
-  def StringToRow(self, string):
+  def StringToRow(self, string, parameter_info=None):
     """Returns the row representation of string."""
-    return self._string_to_row(string)
+    return self._string_to_row(string, parameter_info)
 
   def RowToString(self, row, parameter_info=None):
     """Returns the string representation of row."""
@@ -114,25 +118,59 @@ class Converter(completion_cache.Completer):
     Returns:
       The parameter info object.
     """
-    return parameter_info_lib.ParameterInfoByConvention(
-        parsed_args, argument, self.api)
+    return parameter_info_lib.ParameterInfoByConvention(parsed_args, argument,
+                                                        self.api)
 
-  def _GRI_StringToRow(self, string):
+  @staticmethod
+  def _ConvertProjectNumberToID(row, parameter_info):
+    """Convert project number into ID, if it's not one already.
+
+    Get the project ID from command parameters and compare it to project IDs
+    returned by list commands. If a project number is found instead, replace it
+    with the project ID before storing it in completion cache.
+    Idempotent. Does nothing if there's no project parameter, which is the case
+    for resources without a parent project, e.g. organization resources.
+
+    Args:
+      row: a dict containing the values necessary for tab completion of resource
+      args.
+      parameter_info: Program state, contains the available information on
+      the CLI command executed, such as param values, etc.
+
+    Returns:
+      None, modifies the provided dict in-place.
+    """
+    project_key = [
+        k for k in row if k in ['project', 'projectId', 'projectsId']
+    ]
+    project_key = project_key[0] if project_key else None
+    if project_key and row[project_key].isnumeric():
+      row[project_key] = parameter_info.GetValue(
+          project_key, check_properties=True)
+
+  def _GRI_StringToRow(self, string, parameter_info=None):
     try:
       # '' is not parsable so treat it like None to match all.
-      return self.parse(string or None)
+      row = self.parse(string or None)
+      if parameter_info:
+        self._ConvertProjectNumberToID(row, parameter_info)
+      row = list(row.values())
+      return row
     except resources.RequiredFieldOmittedException:
       fields = resources.GRI.FromString(string, self.collection).path_fields
       if len(fields) < self.columns:
         fields += [''] * (self.columns - len(fields))
       return list(reversed(fields))
 
-  def _StringToRow(self, string):
+  def _StringToRow(self, string, parameter_info=None):
     if string and (string.startswith('https://') or
                    string.startswith('http://') or
                    self._parse_all):
       try:
         row = self.parse(string or None)
+        if parameter_info:
+          self._ConvertProjectNumberToID(row, parameter_info)
+        row = list(row.values())
         return row
       except resources.RequiredFieldOmittedException:
         pass
@@ -218,8 +256,11 @@ class ResourceCompleter(Converter):
       parse = resources.REGISTRY.Parse
 
       def _Parse(string):
-        return parse(string, collection=collection, enforce_collection=False,
-                     validate=False).AsList()
+        return parse(
+            string,
+            collection=collection,
+            enforce_collection=False,
+            validate=False).AsDict()
 
       self.parse = _Parse
     else:
@@ -246,7 +287,10 @@ class ListCommandCompleter(ResourceCompleter):
       the list of items.
   """
 
-  def __init__(self, list_command=None, flags=None, parse_output=False,
+  def __init__(self,
+               list_command=None,
+               flags=None,
+               parse_output=False,
                **kwargs):
     self._list_command = list_command
     self._flags = flags or []
@@ -313,7 +357,7 @@ class ListCommandCompleter(ResourceCompleter):
             ' '.join(command), six.text_type(e).rstrip()))
       except TypeError:
         raise e
-    return [self.StringToRow(item) for item in items]
+    return [self.StringToRow(item, parameter_info) for item in items]
 
 
 class ResourceSearchCompleter(ResourceCompleter):
@@ -331,7 +375,7 @@ class ResourceSearchCompleter(ResourceCompleter):
       log.info(six.text_type(e).rstrip())
       raise (type(e))('Update resource query [{}]: {}'.format(
           query, six.text_type(e).rstrip()))
-    return [self.StringToRow(item) for item in items]
+    return [self.StringToRow(item, parameter_info) for item in items]
 
 
 class ResourceParamCompleter(ListCommandCompleter):

@@ -213,8 +213,13 @@ class Updater(BaseUpdater):
       to represent in a persistent cache tuple which holds strings and numbers).
   """
 
-  def __init__(self, cache=None, collection=None, columns=0, column=0,
-               parameters=None, timeout=DEFAULT_TIMEOUT):
+  def __init__(self,
+               cache=None,
+               collection=None,
+               columns=0,
+               column=0,
+               parameters=None,
+               timeout=DEFAULT_TIMEOUT):
     """Updater constructor.
 
     Args:
@@ -242,11 +247,21 @@ class Updater(BaseUpdater):
     self.parameters = parameters or []
     self.timeout = timeout or 0
 
-  def _GetTableName(self):
-    """Returns the table name [prefix], the module path if no collection."""
+  def _GetTableName(self, suffix_list=None):
+    """Returns the table name; the module path if no collection.
+
+    Args:
+      suffix_list: a list of values to attach to the end of the table name.
+        Typically, these will be aggregator values, like project ID.
+    Returns: a name to use for the table in the cache DB.
+    """
     if self.collection:
-      return self.collection
-    return module_util.GetModulePath(self)
+      name = [self.collection]
+    else:
+      name = [module_util.GetModulePath(self)]
+    if suffix_list:
+      name.extend(suffix_list)
+    return '.'.join(name)
 
   def _GetRuntimeParameters(self, parameter_info):
     """Constructs and returns the _RuntimeParameter list.
@@ -385,7 +400,7 @@ class Updater(BaseUpdater):
       # aggregators needed to be updated in the first place.
       if None in aggregation_values:
         return []
-      table_name = '.'.join([self._GetTableName()] + aggregation_values)
+      table_name = self._GetTableName(suffix_list=aggregation_values)
       table = self.cache.Table(
           table_name,
           columns=self.columns,
@@ -443,7 +458,7 @@ class Updater(BaseUpdater):
     for perm in values:
       temp_perm = [val for val in perm]
       table = self.cache.Table(
-          '.'.join([self._GetTableName()] + perm),
+          self._GetTableName(suffix_list=perm),
           columns=self.columns,
           keys=self.columns,
           timeout=self.timeout)
@@ -477,7 +492,7 @@ class Updater(BaseUpdater):
     parameters = self._GetRuntimeParameters(parameter_info)
     values = [row[p.column] for p in parameters if p.aggregator]
     return self.cache.Table(
-        '.'.join([self._GetTableName()] + values),
+        self._GetTableName(suffix_list=values),
         columns=self.columns,
         keys=self.columns,
         timeout=self.timeout,

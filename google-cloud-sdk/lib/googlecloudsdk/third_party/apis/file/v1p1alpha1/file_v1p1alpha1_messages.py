@@ -136,9 +136,9 @@ class CancelOperationRequest(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -161,7 +161,7 @@ class FileProjectsLocationsBackupsCreateRequest(_messages.Message):
   Fields:
     backup: A Backup resource to be passed as the request body.
     backupId: Required. The ID to use for the backup. The ID must be unique
-      within the specified project and location.  This value must start with a
+      within the specified project and location. This value must start with a
       lowercase letter followed by up to 62 lowercase letters, numbers, or
       hyphens, and cannot end with a hyphen.
     parent: Required. The backup's project and location, in the format
@@ -227,7 +227,7 @@ class FileProjectsLocationsBackupsPatchRequest(_messages.Message):
     backup: A Backup resource to be passed as the request body.
     name: Output only. The resource name of the backup, in the format
       projects/{project_id}/locations/{location_id}/backups/{backup_id}.
-    updateMask: Required. Mask of fields to update.  At least one path must be
+    updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
   """
 
@@ -252,7 +252,7 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     instanceId: Required. The ID of the instance to create. The ID must be
-      unique within the specified project and location.  This value must start
+      unique within the specified project and location. This value must start
       with a lowercase letter followed by up to 62 lowercase letters, numbers,
       or hyphens, and cannot end with a hyphen.
     parent: Required. The instance's project and location, in the format
@@ -318,9 +318,9 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
     instance: A Instance resource to be passed as the request body.
     name: Output only. The resource name of the instance, in the format
       projects/{project_id}/locations/{location_id}/instances/{instance_id}.
-    updateMask: Required. Mask of fields to update.  At least one path must be
-      supplied in this field.  The elements of the repeated paths field may
-      only include these fields:  * "description" * "file_shares" * "labels"
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. The elements of the repeated paths field may
+      only include these fields: * "description" * "file_shares" * "labels"
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -420,7 +420,7 @@ class FileProjectsLocationsSnapshotsCreateRequest(_messages.Message):
       snapshots and to GCP regions, for example **us-west1**, otherwise.
     snapshot: A Snapshot resource to be passed as the request body.
     snapshotId: Required. The ID to use for the snapshot. The ID must be
-      unique within the specified project and location.  This value must start
+      unique within the specified project and location. This value must start
       with a lowercase letter followed by up to 62 lowercase letters, numbers,
       or hyphens, and cannot end with a hyphen.
   """
@@ -484,7 +484,7 @@ class FileProjectsLocationsSnapshotsPatchRequest(_messages.Message):
     name: Output only. The resource name of the snapshot, in the format
       projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.
     snapshot: A Snapshot resource to be passed as the request body.
-    updateMask: Required. Mask of fields to update.  At least one path must be
+    updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
   """
 
@@ -863,8 +863,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Mess
   SLOs.
 
   Fields:
-    duration: Exclusion duration. No restrictions on the possible values.
-      When an ongoing operation is taking longer than initially expected, an
+    duration: Exclusion duration. No restrictions on the possible values. When
+      an ongoing operation is taking longer than initially expected, an
       existing entry in the exclusion list can be updated by extending the
       duration. This is supported by the subsystem exporting eligibility data
       as long as such extension is committed at least 10 minutes before the
@@ -895,11 +895,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
     exclusions: List of SLO exclusion windows. When multiple entries in the
       list match (matching the exclusion time-window against current time
       point) the exclusion reason used in the first matching entry will be
-      published.  It is not needed to include expired exclusion in this list,
+      published. It is not needed to include expired exclusion in this list,
       as only the currently applicable exclusions are taken into account by
       the eligibility exporting subsystem (the historical state of exclusions
       will be reflected in the historically produced timeseries regardless of
-      the current state).  This field can be used to mark the instance as
+      the current state). This field can be used to mark the instance as
       temporary ineligible for the purpose of SLO calculation. For permanent
       instance SLO exclusion, use of custom instance eligibility is
       recommended. See 'eligibility' field below.
@@ -1033,7 +1033,7 @@ class ListBackupsResponse(_messages.Message):
   r"""ListBackupsResponse is the result of ListBackupsRequest.
 
   Fields:
-    backups: A list of backups in the project for the specified location.  If
+    backups: A list of backups in the project for the specified location. If
       the {location} value in the request is "-", the response contains a list
       of backups from all locations. If any location is unreachable, the
       response will only return backups in reachable locations and the
@@ -1223,8 +1223,8 @@ class NetworkConfig(_messages.Message):
     r"""ModesValueListEntryValuesEnum enum type.
 
     Values:
-      ADDRESS_MODE_UNSPECIFIED: <no description>
-      MODE_IPV4: <no description>
+      ADDRESS_MODE_UNSPECIFIED: Internet protocol not set.
+      MODE_IPV4: Use the IPv4 internet protocol.
     """
     ADDRESS_MODE_UNSPECIFIED = 0
     MODE_IPV4 = 1
@@ -1252,11 +1252,11 @@ class NfsExportOptions(_messages.Message):
       requests. The default is READ_WRITE.
     anonGid: An integer representing the anonymous group id with a default
       value of 65534. Anon_gid may only be set with squash_mode of
-      ROOT_SQUASH.  An error will be returned if this field is specified for
+      ROOT_SQUASH. An error will be returned if this field is specified for
       other squash_mode settings.
     anonUid: An integer representing the anonymous user id with a default
       value of 65534. Anon_uid may only be set with squash_mode of
-      ROOT_SQUASH.  An error will be returned if this field is specified for
+      ROOT_SQUASH. An error will be returned if this field is specified for
       other squash_mode settings.
     ipRanges: List of either an IPv4 addresses in the format {octet 1}.{octet
       2}.{octet 3}.{octet 4} or CIDR ranges in the format {octet 1}.{octet
@@ -1310,17 +1310,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1329,29 +1329,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1377,12 +1377,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1664,7 +1664,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1673,7 +1673,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

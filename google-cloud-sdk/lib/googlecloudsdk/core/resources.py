@@ -412,7 +412,11 @@ class Resource(object):
 
   def AsDict(self):
     """Returns resource reference parameters and its values."""
-    return {k: getattr(self, k) for k in self._params}
+    return collections.OrderedDict(
+        [
+            [param, getattr(self, param)] for param in self._params
+        ]
+    )
 
   def AsList(self):
     """Returns resource reference values."""

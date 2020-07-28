@@ -664,8 +664,7 @@ MAP = {
                 messages_modulepath='compute_alpha_messages',
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/alpha/'
-            ),
+                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/alpha/'),
         'beta':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.compute.beta',
@@ -673,8 +672,7 @@ MAP = {
                 messages_modulepath='compute_beta_messages',
                 default_version=False,
                 enable_mtls=True,
-                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/beta/'
-            ),
+                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/beta/'),
         'v1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.compute.v1',
@@ -682,8 +680,7 @@ MAP = {
                 messages_modulepath='compute_v1_messages',
                 default_version=True,
                 enable_mtls=True,
-                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/v1/'
-            ),
+                mtls_endpoint_override='https://compute.mtls.googleapis.com/compute/v1/'),
     },
     'container': {
         'v1':
@@ -929,6 +926,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'eventarc': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.eventarc.v1beta1',
+                client_classpath='eventarc_v1beta1_client.EventarcV1beta1',
+                messages_modulepath='eventarc_v1beta1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'eventflow': {
         'v1beta2':
             APIDef(
@@ -1112,6 +1119,14 @@ MAP = {
                 client_classpath='iam_v1_client.IamV1',
                 messages_modulepath='iam_v1_messages',
                 default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v2alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.iam.v2alpha1',
+                client_classpath='iam_v2alpha1_client.IamV2alpha1',
+                messages_modulepath='iam_v2alpha1_messages',
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

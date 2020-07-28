@@ -31,23 +31,19 @@ class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices",           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE"             },             {
-  "log_type": "ADMIN_READ"             }           ]         },         {
-  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
-  {               "log_type": "DATA_READ"             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:aliya@example.com"               ]             }           ]         }
-  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
-  and aliya@example.com from DATA_WRITE logging.
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -61,12 +57,11 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE"         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  jose@example.com from DATA_READ logging.
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -115,9 +110,9 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding.  If the
+    condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
-      request.  If the condition evaluates to `false`, then this binding does
+      request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
@@ -125,35 +120,35 @@ class Binding(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -546,17 +541,17 @@ class Condition(_messages.Message):
 
 class ConfigMapEnvSource(_messages.Message):
   r"""ConfigMapEnvSource selects a ConfigMap to populate the environment
-  variables with.  The contents of the target ConfigMap's Data field will
+  variables with. The contents of the target ConfigMap's Data field will
   represent the key-value pairs as environment variables.
 
   Fields:
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The ConfigMap to select from.
-    optional: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  Specify whether the ConfigMap must be defined +optional
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The ConfigMap to select from.
+    optional: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported Specify whether the ConfigMap must be defined +optional
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
@@ -565,19 +560,19 @@ class ConfigMapEnvSource(_messages.Message):
 
 
 class ConfigMapKeySelector(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   Selects a key from a ConfigMap.
 
   Fields:
-    key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+    key: Cloud Run fully managed: not supported Cloud Run on GKE: supported
       The key to select.
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+    name: Cloud Run fully managed: not supported Cloud Run on GKE: supported
       The ConfigMap to select from.
-    optional: Cloud Run fully managed: not supported  Cloud Run on GKE:
-      supported  Specify whether the ConfigMap or its key must be defined
+    optional: Cloud Run fully managed: not supported Cloud Run on GKE:
+      supported Specify whether the ConfigMap or its key must be defined
       +optional
   """
 
@@ -676,7 +671,7 @@ class ConfigurationSpec(_messages.Message):
   Fields:
     generation: Deprecated and not currently populated by Cloud Run. See
       metadata.generation instead, which is the sequence number containing the
-      latest generation of the desired state.  Read-only.
+      latest generation of the desired state. Read-only.
     revisionTemplate: RevisionTemplate holds the latest specification for the
       Revision to be stamped out. The template references the container image,
       and may also include labels and annotations that should be attached to
@@ -684,8 +679,8 @@ class ConfigurationSpec(_messages.Message):
       created when the spec doesn't otherwise change, a nonce label may be
       provided in the template metadata. For more details, see:
       https://github.com/knative/serving/blob/master/docs/client-
-      conventions.md#associate-modifications-with-revisions  Cloud Run does
-      not currently support referencing a build that is responsible for
+      conventions.md#associate-modifications-with-revisions Cloud Run does not
+      currently support referencing a build that is responsible for
       materializing the container image from source.
     template: Template holds the latest specification for the Revision to be
       stamped out.
@@ -713,7 +708,7 @@ class ConfigurationStatus(_messages.Message):
     observedGeneration: ObservedGeneration is the 'Generation' of the
       Configuration that was last processed by the controller. The observed
       generation is updated even if the controller failed to process the spec
-      and create the Revision.  Clients polling for completed reconciliation
+      and create the Revision. Clients polling for completed reconciliation
       should poll until observedGeneration = metadata.generation, and the
       Ready condition's status is True or False.
   """
@@ -977,14 +972,13 @@ class DomainMappingStatus(_messages.Message):
     mappedRouteName: The name of the route that the mapping currently points
       to.
     observedGeneration: ObservedGeneration is the 'Generation' of the
-      DomainMapping that was last processed by the controller.  Clients
-      polling for completed reconciliation should poll until
-      observedGeneration = metadata.generation and the Ready condition's
-      status is True or False.
+      DomainMapping that was last processed by the controller. Clients polling
+      for completed reconciliation should poll until observedGeneration =
+      metadata.generation and the Ready condition's status is True or False.
     resourceRecords: The resource records required to configure this domain
       mapping. These records must be added to the domain's DNS configuration
       in order to serve the application via this domain mapping.
-    url: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+    url: Cloud Run fully managed: not supported Cloud Run on GKE: supported
       Holds the URL that will serve the traffic of the DomainMapping.
       +optional
   """
@@ -999,9 +993,9 @@ class DomainMappingStatus(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -1033,9 +1027,9 @@ class EnvVar(_messages.Message):
       double $$, ie: $$(VAR_NAME). Escaped references will never be expanded,
       regardless of whether the variable exists or not. Defaults to "".
       +optional
-    valueFrom: Cloud Run fully managed: not supported  Cloud Run on GKE:
-      supported  Source for the environment variable's value. Cannot be used
-      if value is not empty. +optional
+    valueFrom: Cloud Run fully managed: not supported Cloud Run on GKE:
+      supported Source for the environment variable's value. Cannot be used if
+      value is not empty. +optional
   """
 
   name = _messages.StringField(1)
@@ -1044,14 +1038,14 @@ class EnvVar(_messages.Message):
 
 
 class EnvVarSource(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   EnvVarSource represents a source for the value of an EnvVar.
 
   Fields:
-    configMapKeyRef: Cloud Run fully managed: not supported  Cloud Run on GKE:
-      supported  Selects a key of a ConfigMap. +optional
-    secretKeyRef: Cloud Run fully managed: not supported  Cloud Run on GKE:
-      supported  Selects a key of a secret in the pod's namespace +optional
+    configMapKeyRef: Cloud Run fully managed: not supported Cloud Run on GKE:
+      supported Selects a key of a ConfigMap. +optional
+    secretKeyRef: Cloud Run fully managed: not supported Cloud Run on GKE:
+      supported Selects a key of a secret in the pod's namespace +optional
   """
 
   configMapKeyRef = _messages.MessageField('ConfigMapKeySelector', 1)
@@ -1063,7 +1057,7 @@ class ExecAction(_messages.Message):
 
   Fields:
     command: Command is the command line to execute inside the container, the
-      working directory for the command  is root ('/') in the container's
+      working directory for the command is root ('/') in the container's
       filesystem. The command is simply exec'd, it is not run inside a shell,
       so traditional shell instructions ('|', etc) won't work. To use a shell,
       you need to explicitly call out to that shell. Exit status of 0 is
@@ -1076,20 +1070,20 @@ class ExecAction(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -1160,9 +1154,9 @@ class Handler(_messages.Message):
 
 
 class IntOrString(_messages.Message):
-  r"""IntOrString is a type that can hold an int32 or a string.  When used in
+  r"""IntOrString is a type that can hold an int32 or a string. When used in
   JSON or YAML marshalling and unmarshalling, it produces or consumes the
-  inner type.  This allows you to have, for example, a JSON field that can
+  inner type. This allows you to have, for example, a JSON field that can
   accept a name or number.
 
   Fields:
@@ -1583,19 +1577,19 @@ class ObjectMeta(_messages.Message):
       arbitrary metadata. They are not queryable and should be preserved when
       modifying objects. More info: http://kubernetes.io/docs/user-
       guide/annotations +optional
-    clusterName: Not currently supported by Cloud Run.  The name of the
-      cluster which the object belongs to. This is used to distinguish
-      resources with same name and namespace in different clusters. This field
-      is not set anywhere right now and apiserver is going to ignore it if set
-      in create or update request. +optional
+    clusterName: Not currently supported by Cloud Run. The name of the cluster
+      which the object belongs to. This is used to distinguish resources with
+      same name and namespace in different clusters. This field is not set
+      anywhere right now and apiserver is going to ignore it if set in create
+      or update request. +optional
     creationTimestamp: CreationTimestamp is a timestamp representing the
       server time when this object was created. It is not guaranteed to be set
       in happens-before order across separate operations. Clients may not set
-      this value. It is represented in RFC3339 form and is in UTC.  Populated
+      this value. It is represented in RFC3339 form and is in UTC. Populated
       by the system. Read-only. Null for lists. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata +optional
-    deletionGracePeriodSeconds: Not currently supported by Cloud Run.  Number
+    deletionGracePeriodSeconds: Not currently supported by Cloud Run. Number
       of seconds allowed for this object to gracefully terminate before it
       will be removed from the system. Only set when deletionTimestamp is also
       set. May only be shortened. Read-only. +optional
@@ -1615,30 +1609,30 @@ class ObjectMeta(_messages.Message):
       remove the pod from the API. In the presence of network partitions, this
       object may still exist after this timestamp, until an administrator or
       automated process can determine the resource is fully terminated. If not
-      set, graceful deletion of the object has not been requested.  Populated
+      set, graceful deletion of the object has not been requested. Populated
       by the system when a graceful deletion is requested. Read-only. More
       info: https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata +optional
-    finalizers: Not currently supported by Cloud Run.  Must be empty before
-      the object is deleted from the registry. Each entry is an identifier for
-      the responsible component that will remove the entry from the list. If
-      the deletionTimestamp of the object is non-nil, entries in this list can
+    finalizers: Not currently supported by Cloud Run. Must be empty before the
+      object is deleted from the registry. Each entry is an identifier for the
+      responsible component that will remove the entry from the list. If the
+      deletionTimestamp of the object is non-nil, entries in this list can
       only be removed. +optional +patchStrategy=merge
-    generateName: Not currently supported by Cloud Run.  GenerateName is an
+    generateName: Not currently supported by Cloud Run. GenerateName is an
       optional prefix, used by the server, to generate a unique name ONLY IF
       the Name field has not been provided. If this field is used, the name
       returned to the client will be different than the name passed. This
       value will also be combined with a unique suffix. The provided value has
       the same validation rules as the Name field, and may be truncated by the
-      length of the suffix required to make the value unique on the server.
-      If this field is specified and the generated name exists, the server
-      will NOT return a 409 - instead, it will either return 201 Created or
-      500 with Reason ServerTimeout indicating a unique name could not be
-      found in the time allotted, and the client should retry (optionally
-      after the time indicated in the Retry-After header).  Applied only if
-      Name is not specified. More info:
+      length of the suffix required to make the value unique on the server. If
+      this field is specified and the generated name exists, the server will
+      NOT return a 409 - instead, it will either return 201 Created or 500
+      with Reason ServerTimeout indicating a unique name could not be found in
+      the time allotted, and the client should retry (optionally after the
+      time indicated in the Retry-After header). Applied only if Name is not
+      specified. More info:
       https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#idempotency +optional  string generateName = 2;
+      conventions.md#idempotency +optional string generateName = 2;
     generation: A sequence number representing a specific generation of the
       desired state. Populated by the system. Read-only. +optional
     labels: Map of string keys and values that can be used to organize and
@@ -1668,11 +1662,11 @@ class ObjectMeta(_messages.Message):
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#concurrency-control-and-consistency +optional
     selfLink: SelfLink is a URL representing this object. Populated by the
-      system. Read-only. +optional  string selfLink = 4;
+      system. Read-only. +optional string selfLink = 4;
     uid: UID is the unique in time and space value for this object. It is
       typically generated by the server on successful creation of a resource
-      and is not allowed to change on PUT operations.  Populated by the
-      system. Read-only. More info: http://kubernetes.io/docs/user-
+      and is not allowed to change on PUT operations. Populated by the system.
+      Read-only. More info: http://kubernetes.io/docs/user-
       guide/identifiers#uids +optional
   """
 
@@ -1823,37 +1817,33 @@ class OwnerReference(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  For some types of
+  be an IAM predefined role or a user-created custom role. For some types of
   Google Cloud resources, a `binding` can also specify a `condition`, which is
   a logical expression that allows access to a resource only if the expression
   evaluates to `true`. A condition can add constraints based on attributes of
   the request, the resource, or both. To learn which resources support
   conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies).  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members": [
-  "user:eve@example.com"           ],           "condition": {
-  "title": "expirable access",             "description": "Does not grant
-  access after Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -1868,24 +1858,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.  To learn which resources support
+      version or leave the field unset. To learn which resources support
       conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -1983,9 +1973,9 @@ class ResourceRequirements(_messages.Message):
       type: https://github.com/kubernetes/kubernetes/blob/master/staging/src/k
       8s.io/apimachinery/pkg/api/resource/quantity.go
     LimitsInMapValue: Limits describes the maximum amount of compute resources
-      allowed. This is a temporary field created to migrate away from the
-      map<string, Quantity> limits field. This is done to become compliant
-      with k8s style API. This field is deprecated in favor of limits field.
+      allowed. This is a temporary field created to migrate away from the map
+      limits field. This is done to become compliant with k8s style API. This
+      field is deprecated in favor of limits field.
     RequestsValue: Requests describes the minimum amount of compute resources
       required. If Requests is omitted for a container, it defaults to Limits
       if that is explicitly specified, otherwise to an implementation-defined
@@ -1996,9 +1986,9 @@ class ResourceRequirements(_messages.Message):
       resources required. If Requests is omitted for a container, it defaults
       to Limits if that is explicitly specified, otherwise to an
       implementation-defined value. This is a temporary field created to
-      migrate away from the map<string, Quantity> requests field. This is done
-      to become compliant with k8s style API. This field is deprecated in
-      favor of requests field.
+      migrate away from the map requests field. This is done to become
+      compliant with k8s style API. This field is deprecated in favor of
+      requests field.
 
   Fields:
     limits: Limits describes the maximum amount of compute resources allowed.
@@ -2006,9 +1996,9 @@ class ResourceRequirements(_messages.Message):
       /github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimach
       inery/pkg/api/resource/quantity.go
     limitsInMap: Limits describes the maximum amount of compute resources
-      allowed. This is a temporary field created to migrate away from the
-      map<string, Quantity> limits field. This is done to become compliant
-      with k8s style API. This field is deprecated in favor of limits field.
+      allowed. This is a temporary field created to migrate away from the map
+      limits field. This is done to become compliant with k8s style API. This
+      field is deprecated in favor of limits field.
     requests: Requests describes the minimum amount of compute resources
       required. If Requests is omitted for a container, it defaults to Limits
       if that is explicitly specified, otherwise to an implementation-defined
@@ -2018,17 +2008,17 @@ class ResourceRequirements(_messages.Message):
     requestsInMap: Requests describes the minimum amount of compute resources
       required. If Requests is omitted for a container, it defaults to Limits
       if that is explicitly specified, otherwise to an implementation-defined
-      value. This is a temporary field created to migrate away from the
-      map<string, Quantity> requests field. This is done to become compliant
-      with k8s style API. This field is deprecated in favor of requests field.
+      value. This is a temporary field created to migrate away from the map
+      requests field. This is done to become compliant with k8s style API.
+      This field is deprecated in favor of requests field.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LimitsInMapValue(_messages.Message):
     r"""Limits describes the maximum amount of compute resources allowed. This
-    is a temporary field created to migrate away from the map<string,
-    Quantity> limits field. This is done to become compliant with k8s style
-    API. This field is deprecated in favor of limits field.
+    is a temporary field created to migrate away from the map limits field.
+    This is done to become compliant with k8s style API. This field is
+    deprecated in favor of limits field.
 
     Messages:
       AdditionalProperty: An additional property for a LimitsInMapValue
@@ -2083,9 +2073,9 @@ class ResourceRequirements(_messages.Message):
     r"""Requests describes the minimum amount of compute resources required.
     If Requests is omitted for a container, it defaults to Limits if that is
     explicitly specified, otherwise to an implementation-defined value. This
-    is a temporary field created to migrate away from the map<string,
-    Quantity> requests field. This is done to become compliant with k8s style
-    API. This field is deprecated in favor of requests field.
+    is a temporary field created to migrate away from the map requests field.
+    This is done to become compliant with k8s style API. This field is
+    deprecated in favor of requests field.
 
     Messages:
       AdditionalProperty: An additional property for a RequestsInMapValue
@@ -2144,12 +2134,12 @@ class ResourceRequirements(_messages.Message):
 
 
 class Revision(_messages.Message):
-  r"""Revision is an immutable snapshot of code and configuration.  A revision
+  r"""Revision is an immutable snapshot of code and configuration. A revision
   references a container image. Revisions are created by updates to a
-  Configuration.  Cloud Run does not currently support referencing a build
-  that is responsible for materializing the container image from source.  See
-  also: https://github.com/knative/serving/blob/master/docs/spec/overview.md#r
-  evision
+  Configuration. Cloud Run does not currently support referencing a build that
+  is responsible for materializing the container image from source. See also:
+  https://github.com/knative/serving/blob/master/docs/spec/overview.md#revisio
+  n
 
   Fields:
     apiVersion: The API version for this call such as
@@ -2185,7 +2175,7 @@ class RevisionCondition(_messages.Message):
     type: RevisionConditionType is used to communicate the status of the
       reconciliation process. See also: https://github.com/knative/serving/blo
       b/master/docs/spec/errors.md#error-conditions-and-reporting Types
-      include:  * "Ready": True when the Revision is ready. *
+      include: * "Ready": True when the Revision is ready. *
       "ResourcesAvailable": True when underlying resources have been
       provisioned. * "ContainerHealthy": True when the Revision readiness
       check completes. * "Active": True when the Revision may receive traffic.
@@ -2206,7 +2196,7 @@ class RevisionSpec(_messages.Message):
     ServingStateValueValuesEnum: ServingState holds a value describing the
       state the resources are in for this Revision. Users must not specify
       this when creating a revision. It is expected that the system will
-      manipulate this based on routability and load.  Populated by the system.
+      manipulate this based on routability and load. Populated by the system.
       Read-only.
 
   Fields:
@@ -2218,9 +2208,9 @@ class RevisionSpec(_messages.Message):
       Container, including: name, ports, and volumeMounts. The runtime
       contract is documented here:
       https://github.com/knative/serving/blob/master/docs/runtime-contract.md
-    containerConcurrency: (Optional)  ContainerConcurrency specifies the
+    containerConcurrency: (Optional) ContainerConcurrency specifies the
       maximum allowed in-flight (concurrent) requests per container instance
-      of the Revision.  Cloud Run fully managed: supported, defaults to 80
+      of the Revision. Cloud Run fully managed: supported, defaults to 80
       Cloud Run on GKE: supported, defaults to 0, which means concurrency to
       the application is not limited, and the system decides the target
       concurrency for the autoscaler.
@@ -2230,7 +2220,7 @@ class RevisionSpec(_messages.Message):
       Cloud Run, only a single container may be provided.
     generation: Deprecated and not currently populated by Cloud Run. See
       metadata.generation instead, which is the sequence number containing the
-      latest generation of the desired state.  Read-only.
+      latest generation of the desired state. Read-only.
     serviceAccountName: Email address of the IAM service account associated
       with the revision of the service. The service account represents the
       identity of the running revision, and determines what permissions the
@@ -2239,7 +2229,7 @@ class RevisionSpec(_messages.Message):
     servingState: ServingState holds a value describing the state the
       resources are in for this Revision. Users must not specify this when
       creating a revision. It is expected that the system will manipulate this
-      based on routability and load.  Populated by the system. Read-only.
+      based on routability and load. Populated by the system. Read-only.
     timeoutSeconds: TimeoutSeconds holds the max duration the instance is
       allowed for responding to a request. Not currently used by Cloud Run.
     volumes: A Volume attribute.
@@ -2249,7 +2239,7 @@ class RevisionSpec(_messages.Message):
     r"""ServingState holds a value describing the state the resources are in
     for this Revision. Users must not specify this when creating a revision.
     It is expected that the system will manipulate this based on routability
-    and load.  Populated by the system. Read-only.
+    and load. Populated by the system. Read-only.
 
     Values:
       REVISION_SERVING_STATE_UNSPECIFIED: The revision serving state hasn't
@@ -2284,7 +2274,7 @@ class RevisionStatus(_messages.Message):
   Fields:
     conditions: Conditions communicates information about ongoing/complete
       reconciliation processes that bring the "spec" inline with the observed
-      state of the world.  As a Revision is being prepared, it will
+      state of the world. As a Revision is being prepared, it will
       incrementally update conditions "ResourcesAvailable",
       "ContainerHealthy", and "Active", which contribute to the overall
       "Ready" condition.
@@ -2296,8 +2286,8 @@ class RevisionStatus(_messages.Message):
       based on the revision url template specified in the controller's config.
       +optional
     observedGeneration: ObservedGeneration is the 'Generation' of the Revision
-      that was last processed by the controller.  Clients polling for
-      completed reconciliation should poll until observedGeneration =
+      that was last processed by the controller. Clients polling for completed
+      reconciliation should poll until observedGeneration =
       metadata.generation, and the Ready condition's status is True or False.
     serviceName: Not currently used by Cloud Run.
   """
@@ -2393,7 +2383,7 @@ class RouteSpec(_messages.Message):
   Fields:
     generation: Deprecated and not currently populated by Cloud Run. See
       metadata.generation instead, which is the sequence number containing the
-      latest generation of the desired state.  Read-only.
+      latest generation of the desired state. Read-only.
     traffic: Traffic specifies how to distribute traffic over a collection of
       Knative Revisions and Configurations. Cloud Run currently supports a
       single configurationName.
@@ -2418,8 +2408,8 @@ class RouteStatus(_messages.Message):
     domainInternal: Deprecated - use address instead. For Cloud Run,
       identifical to domain.
     observedGeneration: ObservedGeneration is the 'Generation' of the Route
-      that was last processed by the controller.  Clients polling for
-      completed reconciliation should poll until observedGeneration =
+      that was last processed by the controller. Clients polling for completed
+      reconciliation should poll until observedGeneration =
       metadata.generation and the Ready condition's status is True or False.
       Note that providing a trafficTarget that only has a configurationName
       will result in a Route that does not increment either its
@@ -3813,10 +3803,10 @@ class RunProjectsLocationsServicesGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -4009,17 +3999,17 @@ class SELinuxOptions(_messages.Message):
 
 class SecretEnvSource(_messages.Message):
   r"""SecretEnvSource selects a Secret to populate the environment variables
-  with.  The contents of the target Secret's Data field will represent the
-  key-value pairs as environment variables.
+  with. The contents of the target Secret's Data field will represent the key-
+  value pairs as environment variables.
 
   Fields:
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  The Secret to select from.
-    optional: Cloud Run fully managed: not supported  Cloud Run for Anthos:
-      supported  Specify whether the Secret must be defined +optional
+    name: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported The Secret to select from.
+    optional: Cloud Run fully managed: not supported Cloud Run for Anthos:
+      supported Specify whether the Secret must be defined +optional
   """
 
   localObjectReference = _messages.MessageField('LocalObjectReference', 1)
@@ -4028,19 +4018,19 @@ class SecretEnvSource(_messages.Message):
 
 
 class SecretKeySelector(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   SecretKeySelector selects a key of a Secret.
 
   Fields:
-    key: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
-      The key of the secret to select from.  Must be a valid secret key.
+    key: Cloud Run fully managed: not supported Cloud Run on GKE: supported
+      The key of the secret to select from. Must be a valid secret key.
     localObjectReference: This field should not be used directly as it is
       meant to be inlined directly into the message. Use the "name" field
       instead.
-    name: Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+    name: Cloud Run fully managed: not supported Cloud Run on GKE: supported
       The name of the secret in the pod's namespace to select from.
-    optional: Cloud Run fully managed: not supported  Cloud Run on GKE:
-      supported  Specify whether the Secret or its key must be defined
+    optional: Cloud Run fully managed: not supported Cloud Run on GKE:
+      supported Specify whether the Secret or its key must be defined
       +optional
   """
 
@@ -4079,7 +4069,7 @@ class SecretVolumeSource(_messages.Message):
 class SecurityContext(_messages.Message):
   r"""SecurityContext holds security configuration that will be applied to a
   container. Some fields are present in both SecurityContext and
-  PodSecurityContext.  When both are set, the values in SecurityContext take
+  PodSecurityContext. When both are set, the values in SecurityContext take
   precedence.
 
   Fields:
@@ -4097,24 +4087,24 @@ class SecurityContext(_messages.Message):
     readOnlyRootFilesystem: Whether this container has a read-only root
       filesystem. Default is false. +optional
     runAsGroup: The GID to run the entrypoint of the container process. Uses
-      runtime default if unset. May also be set in PodSecurityContext.  If set
+      runtime default if unset. May also be set in PodSecurityContext. If set
       in both SecurityContext and PodSecurityContext, the value specified in
       SecurityContext takes precedence. +optional
     runAsNonRoot: Indicates that the container must run as a non-root user. If
       true, the Kubelet will validate the image at runtime to ensure that it
       does not run as UID 0 (root) and fail to start the container if it does.
       If unset or false, no such validation will be performed. May also be set
-      in PodSecurityContext.  If set in both SecurityContext and
+      in PodSecurityContext. If set in both SecurityContext and
       PodSecurityContext, the value specified in SecurityContext takes
       precedence. +optional
     runAsUser: The UID to run the entrypoint of the container process.
       Defaults to user specified in image metadata if unspecified. May also be
-      set in PodSecurityContext.  If set in both SecurityContext and
+      set in PodSecurityContext. If set in both SecurityContext and
       PodSecurityContext, the value specified in SecurityContext takes
       precedence. +optional
     seLinuxOptions: The SELinux context to be applied to the container. If
       unspecified, the container runtime will allocate a random SELinux
-      context for each container.  May also be set in PodSecurityContext.  If
+      context for each container. May also be set in PodSecurityContext. If
       set in both SecurityContext and PodSecurityContext, the value specified
       in SecurityContext takes precedence. +optional
   """
@@ -4136,9 +4126,9 @@ class Service(_messages.Message):
   which encapsulates software lifecycle decisions such as rollout policy and
   team resource ownership. Service acts only as an orchestrator of the
   underlying Routes and Configurations (much as a kubernetes Deployment
-  orchestrates ReplicaSets).  The Service's controller will track the statuses
+  orchestrates ReplicaSets). The Service's controller will track the statuses
   of its owned Configuration and Route, reflecting their statuses and
-  conditions as its own.  See also:
+  conditions as its own. See also:
   https://github.com/knative/serving/blob/master/docs/spec/overview.md#service
 
   Fields:
@@ -4174,7 +4164,7 @@ class ServiceCondition(_messages.Message):
     status: Status of the condition, one of True, False, Unknown.
     type: ServiceConditionType is used to communicate the status of the
       reconciliation process. See also: https://github.com/knative/serving/blo
-      b/master/docs/spec/errors.md#error-conditions-and-reporting  Types
+      b/master/docs/spec/errors.md#error-conditions-and-reporting Types
       include: "Ready", "ConfigurationsReady", and "RoutesReady". "Ready" will
       be true when the underlying Route and Configuration are ready.
   """
@@ -4194,15 +4184,15 @@ class ServiceSpec(_messages.Message):
   Fields:
     generation: Deprecated and not currently populated by Cloud Run. See
       metadata.generation instead, which is the sequence number containing the
-      latest generation of the desired state.  Read-only.
+      latest generation of the desired state. Read-only.
     manual: Manual contains the options for configuring a manual service. See
-      ServiceSpec for more details.  Not currently supported by Cloud Run.
+      ServiceSpec for more details. Not currently supported by Cloud Run.
     pinned: Pins this service to a specific revision name. The revision must
-      be owned by the configuration provided.  Deprecated and not supported by
+      be owned by the configuration provided. Deprecated and not supported by
       Cloud Run. +optional
     release: Release enables gradual promotion of new revisions by allowing
       traffic to be split between two revisions. This type replaces the
-      deprecated Pinned type.  Not currently supported by Cloud Run.
+      deprecated Pinned type. Not currently supported by Cloud Run.
     runLatest: RunLatest defines a simple Service. It will automatically
       configure a route that keeps the latest ready revision from the supplied
       configuration running. +optional
@@ -4223,7 +4213,7 @@ class ServiceSpec(_messages.Message):
 
 class ServiceSpecManualType(_messages.Message):
   r"""ServiceSpecManualType contains the options for configuring a manual
-  service. See ServiceSpec for more details.  Not currently supported by Cloud
+  service. See ServiceSpec for more details. Not currently supported by Cloud
   Run.
   """
 
@@ -4231,7 +4221,7 @@ class ServiceSpecManualType(_messages.Message):
 
 class ServiceSpecPinnedType(_messages.Message):
   r"""ServiceSpecPinnedType Pins this service to a specific revision name. The
-  revision must be owned by the configuration provided.  Deprecated and not
+  revision must be owned by the configuration provided. Deprecated and not
   supported by Cloud Run.
 
   Fields:
@@ -4246,7 +4236,7 @@ class ServiceSpecPinnedType(_messages.Message):
 
 class ServiceSpecReleaseType(_messages.Message):
   r"""ServiceSpecReleaseType contains the options for slowly releasing
-  revisions. See ServiceSpec for more details.  Not currently supported by
+  revisions. See ServiceSpec for more details. Not currently supported by
   Cloud Run.
 
   Fields:
@@ -4298,8 +4288,8 @@ class ServiceStatus(_messages.Message):
       holds the name of the latest Revision stamped out from this Service's
       Configuration that has had its "Ready" condition become "True".
     observedGeneration: ObservedGeneration is the 'Generation' of the Route
-      that was last processed by the controller.  Clients polling for
-      completed reconciliation should poll until observedGeneration =
+      that was last processed by the controller. Clients polling for completed
+      reconciliation should poll until observedGeneration =
       metadata.generation and the Ready condition's status is True or False.
     traffic: From RouteStatus. Traffic holds the configured traffic
       distribution. These entries will always contain RevisionName references.
@@ -4330,7 +4320,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used:  `paths: "bindings, etag"`
+      provided, the following default mask is used: `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -4454,21 +4444,20 @@ class TrafficTarget(_messages.Message):
       RevisionName is empty; it must be false when RevisionName is non-empty.
       +optional
     name: Name is optionally used to expose a dedicated hostname for
-      referencing this target exclusively.  Not currently supported by Cloud
+      referencing this target exclusively. Not currently supported by Cloud
       Run. +optional
     percent: Percent specifies percent of the traffic to this Revision or
-      Configuration. This defaults to zero if unspecified.  Cloud Run
-      currently requires 100 percent for a single ConfigurationName
-      TrafficTarget entry.
+      Configuration. This defaults to zero if unspecified. Cloud Run currently
+      requires 100 percent for a single ConfigurationName TrafficTarget entry.
     revisionName: RevisionName of a specific revision to which to send this
       portion of traffic. This is mutually exclusive with ConfigurationName.
       Providing RevisionName in spec is not currently supported by Cloud Run.
     tag: Tag is optionally used to expose a dedicated url for referencing this
-      target exclusively.  Not currently supported in Cloud Run. +optional
+      target exclusively. Not currently supported in Cloud Run. +optional
     url: Output only. URL displays the URL for accessing named traffic
       targets. URL is displayed in status, and is disallowed on spec. URL must
       contain a scheme (e.g. http://) and a hostname, but may not contain
-      anything else (e.g. basic auth, url path, etc.  Not currently supported
+      anything else (e.g. basic auth, url path, etc. Not currently supported
       in Cloud Run.
   """
 
@@ -4532,7 +4521,7 @@ class TriggerFilter(_messages.Message):
     AttributesValue: Optional. Attributes filters events by exact match on
       event context attributes. Each key in the map is compared with the
       equivalent key in the event context. An event passes the filter if all
-      values are equal to the specified values.  Nested context attributes are
+      values are equal to the specified values. Nested context attributes are
       not supported as keys. Only string values are supported. Note that this
       field is optional in knative. In fully managed, 'type' attribute is
       required due to different broker implementation.
@@ -4541,7 +4530,7 @@ class TriggerFilter(_messages.Message):
     attributes: Optional. Attributes filters events by exact match on event
       context attributes. Each key in the map is compared with the equivalent
       key in the event context. An event passes the filter if all values are
-      equal to the specified values.  Nested context attributes are not
+      equal to the specified values. Nested context attributes are not
       supported as keys. Only string values are supported. Note that this
       field is optional in knative. In fully managed, 'type' attribute is
       required due to different broker implementation.
@@ -4552,7 +4541,7 @@ class TriggerFilter(_messages.Message):
     r"""Optional. Attributes filters events by exact match on event context
     attributes. Each key in the map is compared with the equivalent key in the
     event context. An event passes the filter if all values are equal to the
-    specified values.  Nested context attributes are not supported as keys.
+    specified values. Nested context attributes are not supported as keys.
     Only string values are supported. Note that this field is optional in
     knative. In fully managed, 'type' attribute is required due to different
     broker implementation.
@@ -4585,7 +4574,7 @@ class TriggerSpec(_messages.Message):
 
   Fields:
     broker: Broker is the broker that this trigger receives events from. If
-      not specified, will default to 'default'.  Not currently supported by
+      not specified, will default to 'default'. Not currently supported by
       Cloud Run.
     filter: Optional. Filter is the filter to apply against all events from
       the Broker. Only events that pass this filter will be sent to the
@@ -4649,7 +4638,7 @@ class VolumeMount(_messages.Message):
 
   Fields:
     mountPath: Path within the container at which the volume should be
-      mounted.  Must not contain ':'.
+      mounted. Must not contain ':'.
     mountPropagation: mountPropagation determines how mounts are propagated
       from the host to container and the other way around. When not set,
       MountPropagationHostToContainer is used. This field is beta in 1.10.

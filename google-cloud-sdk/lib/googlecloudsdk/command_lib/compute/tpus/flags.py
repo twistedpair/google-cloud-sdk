@@ -215,3 +215,22 @@ def AddMachineTypeArgs(parser):
       list of available machine types, run 'gcloud compute
       machine-types list'. If unspecified, the default type is n1-standard-1.
       """)
+
+
+def AddNetworkArgs(parser, help_text_override=None):
+  help_text = """\
+    Specifies the network the Cloud TPU and associated VM should be created in.
+    If unspecified, the network "default" is picked.
+    """
+  return parser.add_argument(
+      '--network',
+      default='default',
+      help=help_text_override or help_text)
+
+
+def AddNetworkArgsForResume(parser):
+  help_text_override = """\
+    Set to the network that was originally used creating the suspended Cloud TPU
+    and Compute Engine VM. (It defaults to using the 'default' network.)
+    """
+  return AddNetworkArgs(parser, help_text_override)

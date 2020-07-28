@@ -692,12 +692,14 @@ class Address(_messages.Message):
       DNS_RESOLVER: <no description>
       GCE_ENDPOINT: <no description>
       NAT_AUTO: <no description>
+      SHARED_LOADBALANCER_VIP: <no description>
       VPC_PEERING: <no description>
     """
     DNS_RESOLVER = 0
     GCE_ENDPOINT = 1
     NAT_AUTO = 2
-    VPC_PEERING = 3
+    SHARED_LOADBALANCER_VIP = 3
+    VPC_PEERING = 4
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -2816,9 +2818,9 @@ class BackendService(_messages.Message):
       RING_HASH, session affinity settings will not take effect.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP,
-      SSL, or UDP. depending on the chosen load balancer or Traffic Director
-      configuration. Refer to the documentation for the load balancer or for
-      Traffic Director for more information.
+      SSL, UDP or GRPC. depending on the chosen load balancer or Traffic
+      Director configuration. Refer to the documentation for the load balancer
+      or for Traffic Director for more information.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE. Session affinity is not applicable if the --protocol is
       UDP.  When the loadBalancingScheme is EXTERNAL, possible values are
@@ -2946,10 +2948,10 @@ class BackendService(_messages.Message):
       no meaning if the backends are NEGs.    Must be omitted when the
       loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
     protocol: The protocol this BackendService uses to communicate with
-      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP.
-      depending on the chosen load balancer or Traffic Director configuration.
-      Refer to the documentation for the load balancer or for Traffic Director
-      for more information.
+      backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or
+      GRPC. depending on the chosen load balancer or Traffic Director
+      configuration. Refer to the documentation for the load balancer or for
+      Traffic Director for more information.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services. You
       must specify this field as part of the HTTP request URL. It is not
@@ -3036,9 +3038,9 @@ class BackendService(_messages.Message):
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
-    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, or UDP. depending on the
-    chosen load balancer or Traffic Director configuration. Refer to the
-    documentation for the load balancer or for Traffic Director for more
+    Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or GRPC. depending
+    on the chosen load balancer or Traffic Director configuration. Refer to
+    the documentation for the load balancer or for Traffic Director for more
     information.
 
     Values:
@@ -3785,6 +3787,11 @@ class Commitment(_messages.Message):
   {$api_version}.regionCommitments ==)
 
   Enums:
+    CategoryValueValuesEnum: The category of the commitment. Category MACHINE
+      specifies commitments composed of machine resources such as VCPU or
+      MEMORY, listed in resources. Category LICENSE specifies commitments
+      composed of software licenses, listed in licenseResources. Note that
+      only MACHINE commitments should have a Type specified.
     PlanValueValuesEnum: The plan for this commitment, which determines
       duration and discount rate. The currently supported plans are
       TWELVE_MONTH (1 year), and THIRTY_SIX_MONTH (3 years).
@@ -3793,6 +3800,11 @@ class Commitment(_messages.Message):
       the following values: NOT_YET_ACTIVE, ACTIVE, EXPIRED.
 
   Fields:
+    category: The category of the commitment. Category MACHINE specifies
+      commitments composed of machine resources such as VCPU or MEMORY, listed
+      in resources. Category LICENSE specifies commitments composed of
+      software licenses, listed in licenseResources. Note that only MACHINE
+      commitments should have a Type specified.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -3802,6 +3814,8 @@ class Commitment(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#commitment for
       commitments.
+    licenseResource: The license specification required as part of a license
+      commitment.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -3825,6 +3839,22 @@ class Commitment(_messages.Message):
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
   """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""The category of the commitment. Category MACHINE specifies commitments
+    composed of machine resources such as VCPU or MEMORY, listed in resources.
+    Category LICENSE specifies commitments composed of software licenses,
+    listed in licenseResources. Note that only MACHINE commitments should have
+    a Type specified.
+
+    Values:
+      CATEGORY_UNSPECIFIED: <no description>
+      LICENSE: <no description>
+      MACHINE: <no description>
+    """
+    CATEGORY_UNSPECIFIED = 0
+    LICENSE = 1
+    MACHINE = 2
 
   class PlanValueValuesEnum(_messages.Enum):
     r"""The plan for this commitment, which determines duration and discount
@@ -3856,20 +3886,22 @@ class Commitment(_messages.Message):
     EXPIRED = 2
     NOT_YET_ACTIVE = 3
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  endTimestamp = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#commitment')
-  name = _messages.StringField(6)
-  plan = _messages.EnumField('PlanValueValuesEnum', 7)
-  region = _messages.StringField(8)
-  reservations = _messages.MessageField('Reservation', 9, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 10, repeated=True)
-  selfLink = _messages.StringField(11)
-  startTimestamp = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  statusMessage = _messages.StringField(14)
+  category = _messages.EnumField('CategoryValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  endTimestamp = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#commitment')
+  licenseResource = _messages.MessageField('LicenseResourceCommitment', 7)
+  name = _messages.StringField(8)
+  plan = _messages.EnumField('PlanValueValuesEnum', 9)
+  region = _messages.StringField(10)
+  reservations = _messages.MessageField('Reservation', 11, repeated=True)
+  resources = _messages.MessageField('ResourceCommitment', 12, repeated=True)
+  selfLink = _messages.StringField(13)
+  startTimestamp = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  statusMessage = _messages.StringField(16)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -14417,6 +14449,126 @@ class ComputeRegionInstanceGroupsSetNamedPortsRequest(_messages.Message):
   requestId = _messages.StringField(5)
 
 
+class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsDeleteRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group to delete. It
+      should comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsGetRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsGetRequest object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group. It should
+      comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionNetworkEndpointGroupsInsertRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsInsertRequest object.
+
+  Fields:
+    networkEndpointGroup: A NetworkEndpointGroup resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    region: The name of the region where you want to create the network
+      endpoint group. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.MessageField('NetworkEndpointGroup', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      `=`, `!=`, `>`, or `<`.  For example, if you are filtering Compute
+      Engine instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`.  You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels.  To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first.  Currently, only sorting by `name`
+      or `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
 class ComputeRegionNotificationEndpointsDeleteRequest(_messages.Message):
   r"""A ComputeRegionNotificationEndpointsDeleteRequest object.
 
@@ -22147,12 +22299,13 @@ class ForwardingRule(_messages.Message):
       a target pool. Do not use with a forwarding rule that points to a
       backend service. This field is used along with the target field for
       TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy,
-      TargetVpnGateway, TargetPool, TargetInstance.  Applicable only when
-      IPProtocol is TCP, UDP, or SCTP, only packets addressed to ports in the
-      specified range will be forwarded to target. Forwarding rules with the
-      same [IPAddress, IPProtocol] pair must have disjoint port ranges.  Some
-      types of forwarding target have constraints on the acceptable ports:   -
-      TargetHttpProxy: 80, 8080  - TargetHttpsProxy: 443  - TargetTcpProxy:
+      TargetGrpcProxy, TargetVpnGateway, TargetPool, TargetInstance.
+      Applicable only when IPProtocol is TCP, UDP, or SCTP, only packets
+      addressed to ports in the specified range will be forwarded to target.
+      Forwarding rules with the same [IPAddress, IPProtocol] pair must have
+      disjoint port ranges.  Some types of forwarding target have constraints
+      on the acceptable ports:   - TargetHttpProxy: 80, 8080  -
+      TargetHttpsProxy: 443  - TargetGrpcProxy: Any ports  - TargetTcpProxy:
       25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995, 1688, 1883, 5222  -
       TargetSslProxy: 25, 43, 110, 143, 195, 443, 465, 587, 700, 993, 995,
       1688, 1883, 5222  - TargetVpnGateway: 500, 4500
@@ -22193,7 +22346,8 @@ class ForwardingRule(_messages.Message):
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
       appropriate to the target object. For INTERNAL_SELF_MANAGED load
-      balancing, only targetHttpProxy is valid, not targetHttpsProxy.
+      balancing, only targetHttpProxy and targetGrpcProxy are valid, not
+      targetHttpsProxy.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -30034,6 +30188,21 @@ class LicenseCodeLicenseAlias(_messages.Message):
   selfLink = _messages.StringField(2)
 
 
+class LicenseResourceCommitment(_messages.Message):
+  r"""Commitment for a particular license resource.
+
+  Fields:
+    amount: The number of licenses purchased.
+    coresPerLicense: Specifies the core range of the instance for which this
+      license applies.
+    license: Any applicable license URI.
+  """
+
+  amount = _messages.IntegerField(1)
+  coresPerLicense = _messages.StringField(2)
+  license = _messages.StringField(3)
+
+
 class LicenseResourceRequirements(_messages.Message):
   r"""A LicenseResourceRequirements object.
 
@@ -31240,7 +31409,8 @@ class NetworkEndpointGroup(_messages.Message):
   Enums:
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
       network endpoint group. Can be one of GCE_VM_IP_PORT,
-      INTERNET_FQDN_PORT, INTERNET_IP_PORT, or SERVERLESS.
+      NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, or
+      SERVERLESS.
 
   Messages:
     AnnotationsValue: Metadata defined as annotations on the network endpoint
@@ -31249,6 +31419,12 @@ class NetworkEndpointGroup(_messages.Message):
   Fields:
     annotations: Metadata defined as annotations on the network endpoint
       group.
+    appEngine: Only valid when networkEndpointType is "SERVERLESS". Only one
+      of cloudRun, appEngine or cloudFunction may be set.
+    cloudFunction: Only valid when networkEndpointType is "SERVERLESS". Only
+      one of cloudRun, appEngine or cloudFunction may be set.
+    cloudRun: Only valid when networkEndpointType is "SERVERLESS". Only one of
+      cloudRun, appEngine or cloudFunction may be set.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     defaultPort: The default port used if the port number is not specified in
@@ -31269,8 +31445,10 @@ class NetworkEndpointGroup(_messages.Message):
     network: The URL of the network to which all network endpoints in the NEG
       belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
-      group. Can be one of GCE_VM_IP_PORT, INTERNET_FQDN_PORT,
-      INTERNET_IP_PORT, or SERVERLESS.
+      group. Can be one of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
+      INTERNET_FQDN_PORT, INTERNET_IP_PORT, or SERVERLESS.
+    region: [Output Only] The URL of the region where the network endpoint
+      group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
     size: [Output only] Number of network endpoints in the network endpoint
       group.
@@ -31282,16 +31460,21 @@ class NetworkEndpointGroup(_messages.Message):
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
     r"""Type of network endpoints in this network endpoint group. Can be one
-    of GCE_VM_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT, or SERVERLESS.
+    of GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT,
+    INTERNET_IP_PORT, or SERVERLESS.
 
     Values:
       GCE_VM_IP_PORT: <no description>
       INTERNET_FQDN_PORT: <no description>
       INTERNET_IP_PORT: <no description>
+      NON_GCP_PRIVATE_IP_PORT: <no description>
+      SERVERLESS: <no description>
     """
     GCE_VM_IP_PORT = 0
     INTERNET_FQDN_PORT = 1
     INTERNET_IP_PORT = 2
+    NON_GCP_PRIVATE_IP_PORT = 3
+    SERVERLESS = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -31319,18 +31502,22 @@ class NetworkEndpointGroup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  creationTimestamp = _messages.StringField(2)
-  defaultPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  description = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#networkEndpointGroup')
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 9)
-  selfLink = _messages.StringField(10)
-  size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(12)
-  zone = _messages.StringField(13)
+  appEngine = _messages.MessageField('NetworkEndpointGroupAppEngine', 2)
+  cloudFunction = _messages.MessageField('NetworkEndpointGroupCloudFunction', 3)
+  cloudRun = _messages.MessageField('NetworkEndpointGroupCloudRun', 4)
+  creationTimestamp = _messages.StringField(5)
+  defaultPort = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  description = _messages.StringField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default='compute#networkEndpointGroup')
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 12)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  size = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(16)
+  zone = _messages.StringField(17)
 
 
 class NetworkEndpointGroupAggregatedList(_messages.Message):
@@ -31483,6 +31670,86 @@ class NetworkEndpointGroupAggregatedList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class NetworkEndpointGroupAppEngine(_messages.Message):
+  r"""Configuration for an App Engine network endpoint group (NEG). The
+  service is optional, may be provided explicitly or in the URL mask. The
+  version is optional and can only be provided explicitly or in the URL mask
+  when service is present.  Note: App Engine service must be in the same
+  project and located in the same region as the Serverless NEG.
+
+  Fields:
+    service: Optional serving service.  The service name must be 1-63
+      characters long, and comply with RFC1035.  Example value: "default",
+      "my-service".
+    urlMask: A template to parse service and version fields from a request
+      URL. URL mask allows for routing to multiple App Engine services without
+      having to create multiple Network Endpoint Groups and backend services.
+      For example, the request URLs "foo1-dot-appname.appspot.com/v1" and
+      "foo1-dot-appname.appspot.com/v2" can be backed by the same Serverless
+      NEG with URL mask "-dot-appname.appspot.com/". The URL mask will parse
+      them to { service = "foo1", version = "v1" } and { service = "foo1",
+      version = "v2" } respectively.
+    version: Optional serving version.  The version must be 1-63 characters
+      long, and comply with RFC1035.  Example value: "v1", "v2".
+  """
+
+  service = _messages.StringField(1)
+  urlMask = _messages.StringField(2)
+  version = _messages.StringField(3)
+
+
+class NetworkEndpointGroupCloudFunction(_messages.Message):
+  r"""Configuration for a Cloud Function network endpoint group (NEG). The
+  function must be provided explicitly or in the URL mask.  Note: Cloud
+  Function must be in the same project and located in the same region as the
+  Serverless NEG.
+
+  Fields:
+    function: A user-defined name of the Cloud Function.  The function name is
+      case-sensitive and must be 1-63 characters long.  Example value:
+      "func1".
+    urlMask: A template to parse function field from a request URL. URL mask
+      allows for routing to multiple Cloud Functions without having to create
+      multiple Network Endpoint Groups and backend services.  For example,
+      request URLs "mydomain.com/function1" and "mydomain.com/function2" can
+      be backed by the same Serverless NEG with URL mask "/". The URL mask
+      will parse them to { function = "function1" } and { function =
+      "function2" } respectively.
+  """
+
+  function = _messages.StringField(1)
+  urlMask = _messages.StringField(2)
+
+
+class NetworkEndpointGroupCloudRun(_messages.Message):
+  r"""Configuration for a Cloud Run network endpoint group (NEG). The service
+  must be provided explicitly or in the URL mask. The tag is optional, may be
+  provided explicitly or in the URL mask.  Note: Cloud Run service must be in
+  the same project and located in the same region as the Serverless NEG.
+
+  Fields:
+    service: Cloud Run service is the main resource of Cloud Run.  The service
+      must be 1-63 characters long, and comply with RFC1035.  Example value:
+      "run-service".
+    tag: Optional Cloud Run tag represents the "named-revision" to provide
+      additional fine-grained traffic routing information.  The tag must be
+      1-63 characters long, and comply with RFC1035.  Example value:
+      "revision-0010".
+    urlMask: A template to parse service and tag fields from a request URL.
+      URL mask allows for routing to multiple Run services without having to
+      create multiple network endpoint groups and backend services.  For
+      example, request URLs "foo1.domain.com/bar1" and "foo1.domain.com/bar2"
+      can be backed by the same Serverless Network Endpoint Group (NEG) with
+      URL mask ".domain.com/". The URL mask will parse them to {
+      service="bar1", tag="foo1" } and { service="bar2", tag="foo2" }
+      respectively.
+  """
+
+  service = _messages.StringField(1)
+  tag = _messages.StringField(2)
+  urlMask = _messages.StringField(3)
 
 
 class NetworkEndpointGroupList(_messages.Message):
@@ -32645,9 +32912,11 @@ class NodeGroupNode(_messages.Message):
   r"""A NodeGroupNode object.
 
   Enums:
+    CpuOvercommitTypeValueValuesEnum: CPU overcommit.
     StatusValueValuesEnum:
 
   Fields:
+    cpuOvercommitType: CPU overcommit.
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
@@ -32655,6 +32924,18 @@ class NodeGroupNode(_messages.Message):
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
   """
+
+  class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
+    r"""CPU overcommit.
+
+    Values:
+      CPU_OVERCOMMIT_TYPE_UNSPECIFIED: <no description>
+      ENABLED: <no description>
+      NONE: <no description>
+    """
+    CPU_OVERCOMMIT_TYPE_UNSPECIFIED = 0
+    ENABLED = 1
+    NONE = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""StatusValueValuesEnum enum type.
@@ -32672,12 +32953,13 @@ class NodeGroupNode(_messages.Message):
     READY = 3
     REPAIRING = 4
 
-  instances = _messages.StringField(1, repeated=True)
-  name = _messages.StringField(2)
-  nodeType = _messages.StringField(3)
-  serverBinding = _messages.MessageField('ServerBinding', 4)
-  serverId = _messages.StringField(5)
-  status = _messages.EnumField('StatusValueValuesEnum', 6)
+  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 1)
+  instances = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  nodeType = _messages.StringField(4)
+  serverBinding = _messages.MessageField('ServerBinding', 5)
+  serverId = _messages.StringField(6)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -32959,6 +33241,7 @@ class NodeTemplate(_messages.Message):
   {$api_version}.nodeTemplates ==)
 
   Enums:
+    CpuOvercommitTypeValueValuesEnum: CPU overcommit.
     StatusValueValuesEnum: [Output Only] The status of the node template. One
       of the following values: CREATING, READY, and DELETING.
 
@@ -32967,6 +33250,7 @@ class NodeTemplate(_messages.Message):
       used in instance scheduling.
 
   Fields:
+    cpuOvercommitType: CPU overcommit.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -33003,6 +33287,18 @@ class NodeTemplate(_messages.Message):
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
   """
+
+  class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
+    r"""CPU overcommit.
+
+    Values:
+      CPU_OVERCOMMIT_TYPE_UNSPECIFIED: <no description>
+      ENABLED: <no description>
+      NONE: <no description>
+    """
+    CPU_OVERCOMMIT_TYPE_UNSPECIFIED = 0
+    ENABLED = 1
+    NONE = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the node template. One of the following
@@ -33046,19 +33342,20 @@ class NodeTemplate(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default='compute#nodeTemplate')
-  name = _messages.StringField(5)
-  nodeAffinityLabels = _messages.MessageField('NodeAffinityLabelsValue', 6)
-  nodeType = _messages.StringField(7)
-  nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  serverBinding = _messages.MessageField('ServerBinding', 11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  statusMessage = _messages.StringField(13)
+  cpuOvercommitType = _messages.EnumField('CpuOvercommitTypeValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default='compute#nodeTemplate')
+  name = _messages.StringField(6)
+  nodeAffinityLabels = _messages.MessageField('NodeAffinityLabelsValue', 7)
+  nodeType = _messages.StringField(8)
+  nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  serverBinding = _messages.MessageField('ServerBinding', 12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  statusMessage = _messages.StringField(14)
 
 
 class NodeTemplateAggregatedList(_messages.Message):
@@ -40127,6 +40424,8 @@ class Scheduling(_messages.Message):
       instances. Preemptible instances cannot be automatically restarted.  By
       default, this is set to true so an instance is automatically restarted
       if it is terminated by Compute Engine.
+    minNodeCpus: The minimum number of virtual CPUs this instance will consume
+      when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
       Refer to Configuring node affinity for more information. Overrides
       reservationAffinity.
@@ -40154,9 +40453,10 @@ class Scheduling(_messages.Message):
     TERMINATE = 1
 
   automaticRestart = _messages.BooleanField(1)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 2, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 3)
-  preemptible = _messages.BooleanField(4)
+  minNodeCpus = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 3, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 4)
+  preemptible = _messages.BooleanField(5)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -42778,7 +43078,7 @@ class TargetGrpcProxy(_messages.Message):
   component of load balancers intended for load balancing gRPC traffic. Global
   forwarding rules reference a target gRPC proxy. The Target gRPC Proxy
   references a URL map which specifies how traffic routes to gRPC backend
-  services.
+  services. (== resource_for {$api_version}.targetGrpcProxies ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -42812,12 +43112,12 @@ class TargetGrpcProxy(_messages.Message):
       referenced by the urlMap may be accessed by gRPC applications without
       using a sidecar proxy. This will enable configuration checks on urlMap
       and its referenced BackendServices to not allow unsupported features. A
-      gRPC application must use "xds-experimental:///" scheme in the target
-      URI of the service it is connecting to. If false, indicates that the
+      gRPC application must use "xds:///" scheme in the target URI of the
+      service it is connecting to. If false, indicates that the
       BackendServices referenced by the urlMap will be accessed by gRPC
       applications via a sidecar proxy. In this case, a gRPC application must
-      not use "xds-experimental:///" scheme in the target URI of the service
-      it is connecting to
+      not use "xds:///" scheme in the target URI of the service it is
+      connecting to
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -47307,7 +47607,7 @@ class VpnGatewaysScopedList(_messages.Message):
 
 class VpnTunnel(_messages.Message):
   r"""Represents a Cloud VPN Tunnel resource.  For more information about VPN,
-  read the the Cloud VPN Overview. (== resource_for {$api_version}.vpnTunnels
+  read the  the Cloud VPN Overview. (== resource_for {$api_version}.vpnTunnels
   ==)
 
   Enums:

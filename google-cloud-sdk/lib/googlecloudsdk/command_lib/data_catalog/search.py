@@ -28,6 +28,7 @@ def Search(args, version_label):
       args.query,
       args.include_gcp_public_datasets,
       args.include_organization_ids,
+      args.restricted_locations,
       args.include_project_ids,
       args.order_by,
       args.page_size,

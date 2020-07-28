@@ -12,6 +12,55 @@ from apitools.base.py import encoding
 package = 'anthosevents'
 
 
+class AnthoseventsApiV1NamespacesConfigmapsCreateRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesConfigmapsCreateRequest object.
+
+  Fields:
+    configMap: A ConfigMap resource to be passed as the request body.
+    parent: Required. The namespace to create the configmap in
+  """
+
+  configMap = _messages.MessageField('ConfigMap', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AnthoseventsApiV1NamespacesConfigmapsGetRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesConfigmapsGetRequest object.
+
+  Fields:
+    name: Required. The name of the config map being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AnthoseventsApiV1NamespacesConfigmapsPatchRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesConfigmapsPatchRequest object.
+
+  Fields:
+    configMap: A ConfigMap resource to be passed as the request body.
+    name: The name of the configMap being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  configMap = _messages.MessageField('ConfigMap', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AnthoseventsApiV1NamespacesConfigmapsReplaceConfigMapRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesConfigmapsReplaceConfigMapRequest object.
+
+  Fields:
+    configMap: A ConfigMap resource to be passed as the request body.
+    name: Required. The name of the configMap being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  configMap = _messages.MessageField('ConfigMap', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AnthoseventsApiV1NamespacesCreateRequest(_messages.Message):
   r"""A AnthoseventsApiV1NamespacesCreateRequest object.
 
@@ -202,6 +251,122 @@ class AnthoseventsApiV1NamespacesSecretsReplaceSecretRequest(_messages.Message):
   secret = _messages.MessageField('Secret', 2)
 
 
+class AnthoseventsApiV1NamespacesServiceaccountsCreateRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesServiceaccountsCreateRequest object.
+
+  Fields:
+    parent: Required. The namespace in which this service account should be
+      created.
+    serviceAccount: A ServiceAccount resource to be passed as the request
+      body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
+
+
+class AnthoseventsApiV1NamespacesServiceaccountsGetRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesServiceaccountsGetRequest object.
+
+  Fields:
+    name: Required. The name of the service account being retrieved. If
+      needed, replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AnthoseventsApiV1NamespacesServiceaccountsListRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesServiceaccountsListRequest object.
+
+  Fields:
+    parent: The project ID or project number from which the service account
+      should be listed.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class AnthoseventsApiV1NamespacesServiceaccountsReplaceServiceAccountRequest(_messages.Message):
+  r"""A AnthoseventsApiV1NamespacesServiceaccountsReplaceServiceAccountRequest
+  object.
+
+  Fields:
+    name: Required. The name of the serviceAccount being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+    serviceAccount: A ServiceAccount resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
+
+
+class AnthoseventsProjectServiceaccountsCreateRequest(_messages.Message):
+  r"""A AnthoseventsProjectServiceaccountsCreateRequest object.
+
+  Fields:
+    parent: Required. The namespace in which this service account should be
+      created.
+    serviceAccount: A ServiceAccount resource to be passed as the request
+      body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
+
+
+class AnthoseventsProjectsLocationsConfigmapsCreateRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsConfigmapsCreateRequest object.
+
+  Fields:
+    configMap: A ConfigMap resource to be passed as the request body.
+    parent: Required. The namespace to create the configmap in
+  """
+
+  configMap = _messages.MessageField('ConfigMap', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AnthoseventsProjectsLocationsConfigmapsGetRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsConfigmapsGetRequest object.
+
+  Fields:
+    name: Required. The name of the config map being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AnthoseventsProjectsLocationsNamespacesConfigmapsPatchRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsNamespacesConfigmapsPatchRequest object.
+
+  Fields:
+    configMap: A ConfigMap resource to be passed as the request body.
+    name: The name of the configMap being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+  """
+
+  configMap = _messages.MessageField('ConfigMap', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AnthoseventsProjectsLocationsNamespacesConfigmapsReplaceConfigMapRequest(_messages.Message):
+  r"""A
+  AnthoseventsProjectsLocationsNamespacesConfigmapsReplaceConfigMapRequest
+  object.
+
+  Fields:
+    configMap: A ConfigMap resource to be passed as the request body.
+    name: Required. The name of the configMap being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  configMap = _messages.MessageField('ConfigMap', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AnthoseventsProjectsLocationsNamespacesCreateRequest(_messages.Message):
   r"""A AnthoseventsProjectsLocationsNamespacesCreateRequest object.
 
@@ -305,6 +470,21 @@ class AnthoseventsProjectsLocationsNamespacesReplaceNamespaceRequest(_messages.M
   namespace = _messages.MessageField('Namespace', 2)
 
 
+class AnthoseventsProjectsLocationsNamespacesServiceaccountsReplaceServiceAccountRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsNamespacesServiceaccountsReplaceServiceAc
+  countRequest object.
+
+  Fields:
+    name: Required. The name of the serviceAccount being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+    serviceAccount: A ServiceAccount resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceAccount = _messages.MessageField('ServiceAccount', 2)
+
+
 class AnthoseventsProjectsLocationsSecretsCreateRequest(_messages.Message):
   r"""A AnthoseventsProjectsLocationsSecretsCreateRequest object.
 
@@ -392,6 +572,130 @@ class AnthoseventsProjectsLocationsSecretsReplaceSecretRequest(_messages.Message
   secret = _messages.MessageField('Secret', 2)
 
 
+class AnthoseventsProjectsLocationsServiceaccountsGetRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsServiceaccountsGetRequest object.
+
+  Fields:
+    name: Required. The name of the service account being retrieved. If
+      needed, replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AnthoseventsProjectsLocationsServiceaccountsListRequest(_messages.Message):
+  r"""A AnthoseventsProjectsLocationsServiceaccountsListRequest object.
+
+  Fields:
+    parent: The project ID or project number from which the service account
+      should be listed.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
+class ConfigMap(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  ConfigMap holds configuration data for pods to consume.
+
+  Messages:
+    BinaryDataValue: BinaryData contains the binary data. Each key must
+      consist of alphanumeric characters, '-', '_' or '.'. BinaryData can
+      contain byte sequences that are not in the UTF-8 range. The keys stored
+      in BinaryData must not overlap with the ones in the Data field, this is
+      enforced during validation process. Using this field will require 1.10+
+      apiserver and kubelet.
+    DataValue: Data contains the configuration data. Each key must consist of
+      alphanumeric characters, '-', '_' or '.'. Values with non-UTF-8 byte
+      sequences must use the BinaryData field. The keys stored in Data must
+      not overlap with the keys in the BinaryData field, this is enforced
+      during validation process.
+
+  Fields:
+    binaryData: BinaryData contains the binary data. Each key must consist of
+      alphanumeric characters, '-', '_' or '.'. BinaryData can contain byte
+      sequences that are not in the UTF-8 range. The keys stored in BinaryData
+      must not overlap with the ones in the Data field, this is enforced
+      during validation process. Using this field will require 1.10+ apiserver
+      and kubelet.
+    data: Data contains the configuration data. Each key must consist of
+      alphanumeric characters, '-', '_' or '.'. Values with non-UTF-8 byte
+      sequences must use the BinaryData field. The keys stored in Data must
+      not overlap with the keys in the BinaryData field, this is enforced
+      during validation process.
+    immutable: Immutable, if set to true, ensures that data stored in the
+      ConfigMap cannot be updated (only object metadata can be modified). If
+      not set to true, the field can be modified at any time. Defaulted to
+      nil. This is a beta field enabled by ImmutableEphemeralVolumes feature
+      gate.
+    metadata: Standard object's metadata. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#metadata
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BinaryDataValue(_messages.Message):
+    r"""BinaryData contains the binary data. Each key must consist of
+    alphanumeric characters, '-', '_' or '.'. BinaryData can contain byte
+    sequences that are not in the UTF-8 range. The keys stored in BinaryData
+    must not overlap with the ones in the Data field, this is enforced during
+    validation process. Using this field will require 1.10+ apiserver and
+    kubelet.
+
+    Messages:
+      AdditionalProperty: An additional property for a BinaryDataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type BinaryDataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BinaryDataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A byte attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BytesField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""Data contains the configuration data. Each key must consist of
+    alphanumeric characters, '-', '_' or '.'. Values with non-UTF-8 byte
+    sequences must use the BinaryData field. The keys stored in Data must not
+    overlap with the keys in the BinaryData field, this is enforced during
+    validation process.
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  binaryData = _messages.MessageField('BinaryDataValue', 1)
+  data = _messages.MessageField('DataValue', 2)
+  immutable = _messages.BooleanField(3)
+  metadata = _messages.MessageField('ObjectMeta', 4)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -471,6 +775,39 @@ class ListSecretsResponse(_messages.Message):
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListServiceAccountsResponse(_messages.Message):
+  r"""ListServiceAccountsResponse is a list of Service Account resources.
+
+  Fields:
+    apiVersion: The API version for this call such as "core/v1". The core API
+      group that Service Account are part of do not specify an explicit group
+      name in the api version. So the api version here is just "v1".
+    items: List of Service Accounts.
+    kind: The kind of this resource, in this case "ServiceAccountList".
+    metadata: Metadata associated with this Service Account list.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('ServiceAccount', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+
+
+class LocalObjectReference(_messages.Message):
+  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  LocalObjectReference contains enough information to let you locate the
+  referenced object inside the same namespace.
+
+  Fields:
+    name: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
+      Anthos: supported  Name of the referent. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/#names
+  """
+
+  name = _messages.StringField(1)
 
 
 class Namespace(_messages.Message):
@@ -712,6 +1049,47 @@ class ObjectMeta(_messages.Message):
   uid = _messages.StringField(15)
 
 
+class ObjectReference(_messages.Message):
+  r"""ObjectReference contains enough information to let you inspect or modify
+  the referred object.
+
+  Fields:
+    apiVersion: API version of the referent. +optional
+    fieldPath: If referring to a piece of an object instead of an entire
+      object, this string should contain a valid JSON/Go field access
+      statement, such as desiredState.manifest.containers[2]. For example, if
+      the object reference is to a container within a pod, this would take on
+      a value like: "spec.containers{name}" (where "name" refers to the name
+      of the container that triggered the event) or if no container name is
+      specified "spec.containers[2]" (container with index 2 in this pod).
+      This syntax is chosen only to have some well-defined way of referencing
+      a part of an object.
+    kind: Kind of the referent. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#types-kinds +optional
+    name: Name of the referent. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/#names +optional
+    namespace: Namespace of the referent. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/namespaces/ +optional
+    resourceVersion: Specific resourceVersion to which this reference is made,
+      if any. More info: https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#concurrency-control-and-consistency +optional
+    uid: UID of the referent. More info:
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/#uids +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  fieldPath = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  name = _messages.StringField(4)
+  namespace = _messages.StringField(5)
+  resourceVersion = _messages.StringField(6)
+  uid = _messages.StringField(7)
+
+
 class OwnerReference(_messages.Message):
   r"""OwnerReference contains enough information to let you identify an owning
   object. Currently, an owning object must be in the same namespace, so there
@@ -836,6 +1214,35 @@ class Secret(_messages.Message):
   metadata = _messages.MessageField('ObjectMeta', 2)
   stringData = _messages.MessageField('StringDataValue', 3)
   type = _messages.StringField(4)
+
+
+class ServiceAccount(_messages.Message):
+  r"""A ServiceAccount object.
+
+  Fields:
+    automountServiceAccountToken: AutomountServiceAccountToken indicates
+      whether pods running as this service account should have an API token
+      automatically mounted. Can be overridden at the pod level. +optional
+    imagePullSecrets: ImagePullSecrets is a list of references to secrets in
+      the same namespace to use for pulling any images in pods that reference
+      this ServiceAccount. ImagePullSecrets are distinct from Secrets because
+      Secrets can be mounted in the pod, but ImagePullSecrets are only
+      accessed by the kubelet. More info:
+      https://kubernetes.io/docs/concepts/containers/images/#specifying-
+      imagepullsecrets-on-a-pod +optional
+    metadata: Standard object's metadata. More info:
+      https://git.k8s.io/community/contributors/devel/api-
+      conventions.md#metadata +optional
+    secrets: Secrets is the list of secrets allowed to be used by pods running
+      using this ServiceAccount. More info:
+      https://kubernetes.io/docs/concepts/configuration/secret +optional
+      +patchMergeKey=name +patchStrategy=merge
+  """
+
+  automountServiceAccountToken = _messages.BooleanField(1)
+  imagePullSecrets = _messages.MessageField('LocalObjectReference', 2, repeated=True)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  secrets = _messages.MessageField('ObjectReference', 4, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -43,8 +43,8 @@ class CloudSqlSettings(_messages.Message):
   Enums:
     ActivationPolicyValueValuesEnum: The activation policy specifies when the
       instance is activated; it is applicable only when the instance state is
-      'RUNNABLE'. Valid values:  'ALWAYS': The instance is on, and remains so
-      even in the absence of connection requests.  `NEVER`: The instance is
+      'RUNNABLE'. Valid values: 'ALWAYS': The instance is on, and remains so
+      even in the absence of connection requests. `NEVER`: The instance is
       off; it is not activated, even if a connection request arrives.
     DataDiskTypeValueValuesEnum: The type of storage: `PD_SSD` (default) or
       `PD_HDD`.
@@ -57,14 +57,14 @@ class CloudSqlSettings(_messages.Message):
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
     UserLabelsValue: The resource labels for a Cloud SQL instance to use to
       annotate any related underlying resources such as Compute Engine VMs. An
-      object containing a list of "key": "value" pairs.  Example: `{ "name":
+      object containing a list of "key": "value" pairs. Example: `{ "name":
       "wrench", "mass": "18kg", "count": "3" }`.
 
   Fields:
     activationPolicy: The activation policy specifies when the instance is
       activated; it is applicable only when the instance state is 'RUNNABLE'.
-      Valid values:  'ALWAYS': The instance is on, and remains so even in the
-      absence of connection requests.  `NEVER`: The instance is off; it is not
+      Valid values: 'ALWAYS': The instance is on, and remains so even in the
+      absence of connection requests. `NEVER`: The instance is off; it is not
       activated, even if a connection request arrives.
     autoStorageIncrease: [default: ON] If you enable this setting, Cloud SQL
       checks your available storage every 30 seconds. If the available storage
@@ -98,7 +98,7 @@ class CloudSqlSettings(_messages.Message):
       Settings](/sql/docs/db_path/instance-settings).
     userLabels: The resource labels for a Cloud SQL instance to use to
       annotate any related underlying resources such as Compute Engine VMs. An
-      object containing a list of "key": "value" pairs.  Example: `{ "name":
+      object containing a list of "key": "value" pairs. Example: `{ "name":
       "wrench", "mass": "18kg", "count": "3" }`.
     zone: The Google Cloud Platform zone where your Cloud SQL datdabse
       instance is located.
@@ -108,7 +108,7 @@ class CloudSqlSettings(_messages.Message):
     r"""The activation policy specifies when the instance is activated; it is
     applicable only when the instance state is 'RUNNABLE'. Valid values:
     'ALWAYS': The instance is on, and remains so even in the absence of
-    connection requests.  `NEVER`: The instance is off; it is not activated,
+    connection requests. `NEVER`: The instance is off; it is not activated,
     even if a connection request arrives.
 
     Values:
@@ -181,7 +181,7 @@ class CloudSqlSettings(_messages.Message):
   class UserLabelsValue(_messages.Message):
     r"""The resource labels for a Cloud SQL instance to use to annotate any
     related underlying resources such as Compute Engine VMs. An object
-    containing a list of "key": "value" pairs.  Example: `{ "name": "wrench",
+    containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
     "mass": "18kg", "count": "3" }`.
 
     Messages:
@@ -231,8 +231,8 @@ class ConnectionProfile(_messages.Message):
   Messages:
     LabelsValue: The resource labels for connection profile to use to annotate
       any related underlying resources such as Compute Engine VMs. An object
-      containing a list of "key": "value" pairs.  Example: `{ "name":
-      "wrench", "mass": "1.3kg", "count": "3" }`.
+      containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
+      "mass": "1.3kg", "count": "3" }`.
 
   Fields:
     cloudsql: A CloudSQL database connection profile.
@@ -243,8 +243,8 @@ class ConnectionProfile(_messages.Message):
     error: Output only. The error details in case of state FAILED.
     labels: The resource labels for connection profile to use to annotate any
       related underlying resources such as Compute Engine VMs. An object
-      containing a list of "key": "value" pairs.  Example: `{ "name":
-      "wrench", "mass": "1.3kg", "count": "3" }`.
+      containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
+      "mass": "1.3kg", "count": "3" }`.
     mysql: A MySQL database connection profile.
     name: The name of this connection profile resource in the form of
       projects/{project}/locations/{location}/instances/{instance}.
@@ -295,7 +295,7 @@ class ConnectionProfile(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""The resource labels for connection profile to use to annotate any
     related underlying resources such as Compute Engine VMs. An object
-    containing a list of "key": "value" pairs.  Example: `{ "name": "wrench",
+    containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
     "mass": "1.3kg", "count": "3" }`.
 
     Messages:
@@ -382,7 +382,7 @@ class DatamigrationProjectsLocationsConnectionProfilesCreateRequest(_messages.Me
     parent: The parent, which owns this collection of connection profiles.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
-      ignored.  It is recommended to always set this value to a UUID.  The id
+      ignored. It is recommended to always set this value to a UUID. The id
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -402,7 +402,7 @@ class DatamigrationProjectsLocationsConnectionProfilesDeleteRequest(_messages.Me
     name: Name of the connection profile resource to delete.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
-      ignored.  It is recommended to always set this value to a UUID.  The id
+      ignored. It is recommended to always set this value to a UUID. The id
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -431,19 +431,19 @@ class DatamigrationProjectsLocationsConnectionProfilesListRequest(_messages.Mess
       operator, and the value that you want to use for filtering. The value
       must be a string, a number, or a boolean. The comparison operator must
       be either =, !=, >, or <. For example, list connection profiles created
-      this year by specifying <b>createTime %gt;
-      2020-01-01T00:00:00.000000000Z</b>. You can also filter nested fields.
-      For example, you could specify <b>mySql.username =
-      %lt;my_username%gt;</b> to list all connection profiles configured to
-      connect with a specific username.
+      this year by specifying *createTime %gt;
+      2020-01-01T00:00:00.000000000Z*. You can also filter nested fields. For
+      example, you could specify *mySql.username = %lt;my_username%gt;* to
+      list all connection profiles configured to connect with a specific
+      username.
     orderBy: the order by fields for the result.
     pageSize: The maximum number of connection profiles to return. The service
       may return fewer than this value. If unspecified, at most 50 connection
       profiles will be returned. The maximum value is 1000; values above 1000
       will be coerced to 1000.
     pageToken: A page token, received from a previous `ListConnectionProfiles`
-      call. Provide this to retrieve the subsequent page.  When paginating,
-      all other parameters provided to `ListConnectionProfiles` must match the
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListConnectionProfiles` must match the
       call that provided the page token.
     parent: The parent, which owns this collection of connection profiles.
   """
@@ -465,7 +465,7 @@ class DatamigrationProjectsLocationsConnectionProfilesPatchRequest(_messages.Mes
       projects/{project}/locations/{location}/instances/{instance}.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
-      ignored.  It is recommended to always set this value to a UUID.  The id
+      ignored. It is recommended to always set this value to a UUID. The id
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -516,7 +516,7 @@ class DatamigrationProjectsLocationsMigrationJobsCreateRequest(_messages.Message
     parent: The parent, which owns this collection of migration jobs.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
-      ignored.  It is recommended to always set this value to a UUID.  The id
+      ignored. It is recommended to always set this value to a UUID. The id
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -537,7 +537,7 @@ class DatamigrationProjectsLocationsMigrationJobsDeleteRequest(_messages.Message
     name: Name of the migration job resource to delete.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
-      ignored.  It is recommended to always set this value to a UUID.  The id
+      ignored. It is recommended to always set this value to a UUID. The id
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -580,11 +580,10 @@ class DatamigrationProjectsLocationsMigrationJobsListRequest(_messages.Message):
       operator, and the value that you want to use for filtering. The value
       must be a string, a number, or a boolean. The comparison operator must
       be either =, !=, >, or <. For example, list migration jobs created this
-      year by specifying <b>createTime %gt;
-      2020-01-01T00:00:00.000000000Z.</b> You can also filter nested fields.
-      For example, you could specify <b>reverseSshConnectivity.vmIp =
-      "1.2.3.4"</b> to select all migration jobs connecting through the
-      specific SSH tunnel bastion.
+      year by specifying *createTime %gt; 2020-01-01T00:00:00.000000000Z.* You
+      can also filter nested fields. For example, you could specify
+      *reverseSshConnectivity.vmIp = "1.2.3.4"* to select all migration jobs
+      connecting through the specific SSH tunnel bastion.
     orderBy: Sort the results based on the migration job name. Valid values
       are: "name", "name asc", and "name desc".
     pageSize: The maximum number of migration jobs to return. The service may
@@ -615,7 +614,7 @@ class DatamigrationProjectsLocationsMigrationJobsPatchRequest(_messages.Message)
       projects/{project}/locations/{location}/instances/{instance}.
     requestId: A unique id used to identify the request. If the server
       receives two requests with the same id, then the second request will be
-      ignored.  It is recommended to always set this value to a UUID.  The id
+      ignored. It is recommended to always set this value to a UUID. The id
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -758,9 +757,9 @@ class DatamigrationProjectsLocationsOperationsListRequest(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -955,8 +954,8 @@ class MigrationJob(_messages.Message):
   Messages:
     LabelsValue: The resource labels for migration job to use to annotate any
       related underlying resources such as Compute Engine VMs. An object
-      containing a list of "key": "value" pairs.  Example: `{ "name":
-      "wrench", "mass": "1.3kg", "count": "3" }`.
+      containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
+      "mass": "1.3kg", "count": "3" }`.
 
   Fields:
     createTime: Output only. The timestamp when the migration job resource was
@@ -977,8 +976,8 @@ class MigrationJob(_messages.Message):
     error: Output only. The error details in case of state FAILED.
     labels: The resource labels for migration job to use to annotate any
       related underlying resources such as Compute Engine VMs. An object
-      containing a list of "key": "value" pairs.  Example: `{ "name":
-      "wrench", "mass": "1.3kg", "count": "3" }`.
+      containing a list of "key": "value" pairs. Example: `{ "name": "wrench",
+      "mass": "1.3kg", "count": "3" }`.
     name: The name (URI) of this migration job resource, in the form of:
       projects/{project}/locations/{location}/instances/{instance}.
     phase: Output only. The current migration job phase.
@@ -1073,7 +1072,7 @@ class MigrationJob(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""The resource labels for migration job to use to annotate any related
     underlying resources such as Compute Engine VMs. An object containing a
-    list of "key": "value" pairs.  Example: `{ "name": "wrench", "mass":
+    list of "key": "value" pairs. Example: `{ "name": "wrench", "mass":
     "1.3kg", "count": "3" }`.
 
     Messages:
@@ -1224,17 +1223,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1243,29 +1242,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1291,12 +1290,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1564,7 +1563,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1573,7 +1572,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

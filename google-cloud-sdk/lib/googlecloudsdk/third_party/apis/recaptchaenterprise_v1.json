@@ -738,7 +738,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get some aggregated metrics for a Key. This method is used by Pantheon\nto build simple dashboards."
+              "description": "Get some aggregated metrics for a Key. This data can be used to build\ndashboards."
             }
           }
         }

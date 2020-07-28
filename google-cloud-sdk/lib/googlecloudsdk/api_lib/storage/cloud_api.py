@@ -50,11 +50,11 @@ def GetApi(provider):
   Args:
     provider (ProviderPrefix): Cloud provider prefix (i.e. "gs").
 
-  Raises:
-     ValueError: Recevied invalid API provider.
-
   Returns:
     API for cloud provider or None if unrecognized provider.
+
+  Raises:
+    ValueError: Invalid API provider.
   """
   if getattr(_cloud_api_thread_local_storage, provider, None) is None:
     if provider == ProviderPrefix.GCS:
@@ -68,6 +68,17 @@ def GetApi(provider):
   return getattr(_cloud_api_thread_local_storage, provider)
 
 
+class RequestConfig(object):
+  """Arguments object for parameters shared between cloud providers.
+
+  Attributes:
+      predefined_acl_string (string): ACL to be set on the object.
+  """
+
+  def __init__(self, predefined_acl_string=None):
+    self.predefined_acl_string = predefined_acl_string
+
+
 class CloudApi(object):
   """Abstract base class for interacting with cloud storage providers.
 
@@ -76,6 +87,24 @@ class CloudApi(object):
   threads is undefined and doing so will likely cause errors. Therefore,
   a separate instance of the Cloud API should be instantiated per-thread.
   """
+
+  def GetBucket(self, bucket_name, fields_scope=None):
+    """Gets Bucket metadata.
+
+    Args:
+      bucket_name (string): Name of the bucket.
+      fields_scope (FieldsScope): Determines the fields and projection
+          parameters of API call.
+
+    Return:
+      Apitools messages bucket object.
+
+    Raises:
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+      ValueError: Invalid fields_scope.
+    """
+    raise NotImplementedError('GetBucket must be overridden.')
 
   def ListBuckets(self, fields_scope=None):
     """Lists bucket metadata for the given project.
@@ -88,9 +117,11 @@ class CloudApi(object):
       Iterator over Bucket objects.
 
     Raises:
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
       ValueError: Invalid fields_scope.
     """
-    raise NotImplementedError('ListBuckets must be overloaded.')
+    raise NotImplementedError('ListBuckets must be overridden.')
 
   def ListObjects(self,
                   bucket_name,
@@ -112,9 +143,11 @@ class CloudApi(object):
       Iterator over CsObjectOrPrefix wrapper class.
 
     Raises:
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
       ValueError: Invalid fields_scope.
     """
-    raise NotImplementedError('ListObjects must be overloaded.')
+    raise NotImplementedError('ListObjects must be overridden.')
 
   def GetObjectMetadata(self,
                         bucket_name,
@@ -135,53 +168,52 @@ class CloudApi(object):
           parameters of API call.
 
     Raises:
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
       ValueError: Invalid fields_scope.
 
     Returns:
-      Apitools messages Object object.
+      Apitools messages object.
     """
-    raise NotImplementedError('GetObjectMetadata must be overloaded.')
+    raise NotImplementedError('GetObjectMetadata must be overridden.')
 
   def PatchObjectMetadata(self,
                           bucket_name,
                           object_name,
                           metadata,
-                          canned_acl=None,
+                          fields_scope=None,
                           generation=None,
-                          preconditions=None,
-                          provider=None,
-                          fields_scope=None):
+                          request_config=None):
     """Updates object metadata with patch semantics.
 
     Args:
-      bucket_name: Bucket containing the object.
-      object_name: Object name for object.
-      metadata: Object object defining metadata to be updated.
-      canned_acl: Canned ACL to be set on the object.
-      generation: Generation (or version) of the object to update.
-      preconditions: Preconditions for the request.
-      provider: Cloud storage provider to connect to.  If not present,
-        class-wide default is used.
-      fields_scope: Determines the fields and projection parameters of API call.
-
-    Raises:
-      InvalidArgumentException for errors during input validation.
-      CloudProviderException for errors interacting with cloud storage
-      providers.
+      bucket_name (string): Bucket containing the object.
+      object_name (string): Object name.
+      metadata (object): Object defining metadata to be updated.
+      fields_scope (FieldsScope): Determines the fields and projection
+          parameters of API call.
+      generation (long): Generation (or version) of the object to update.
+      request_config (RequestConfig): Object containing general API function
+          arguments. Subclasses for specific cloud providers are available.
 
     Returns:
-      Updated object metadata.
+      Apitools messages object containing updated metadata.
+
+    Raises:
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+      ValueError: Invalid fields_scope.
     """
-    raise NotImplementedError('PatchObjectMetadata must be overloaded')
+    raise NotImplementedError('PatchObjectMetadata must be overridden.')
 
   def UploadObject(self,
                    upload_stream,
                    object_metadata,
                    canned_acl=None,
+                   crypto_key_wrapper=None,
                    size=None,
                    preconditions=None,
                    progress_callback=None,
-                   encryption_tuple=None,
                    provider=None,
                    fields_scope=None,
                    gzip_encoded=False):
@@ -193,12 +225,12 @@ class CloudApi(object):
         object name.
       canned_acl: Optional canned ACL to apply to object. Overrides ACL set in
         object_metadata.
+      crypto_key_wrapper: Optional utils.encryption_helper.CryptoKeyWrapper for
+        encrypting the uploaded object.
       size: Optional object size.
       preconditions: Preconditions for the request.
       progress_callback: Optional callback function for progress notifications.
         Receives calls with arguments (bytes_transferred, total_size).
-      encryption_tuple: Optional utils.encryption_helper.CryptoKeyWrapper for
-        encrypting the uploaded object.
       provider: Cloud storage provider to connect to.  If not present,
         class-wide default is used.
       fields_scope: Determines the fields and projection parameters of API call.
@@ -212,4 +244,4 @@ class CloudApi(object):
     Returns:
       Object object for newly created destination object.
     """
-    raise NotImplementedError('UploadObject must be overloaded')
+    raise NotImplementedError('UploadObject must be overridden.')

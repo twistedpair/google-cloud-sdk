@@ -7,7 +7,7 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Notebooks API",
-  "description": "AI Platform Notebooks API (beta) is used to manage notebook resources in Google Cloud. AI Platform Notebooks API is in a pre-release state and might change or have limited support. For more information, see the <a href=\"\/products#product-launch-stages\">product launch stages<\/a>.",
+  "description": "AI Platform Notebooks API (beta) is used to manage notebook resources in Google Cloud. AI Platform Notebooks API is in a pre-release state and might change or have limited support. For more information, see the product launch stages.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -134,7 +134,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name for the location, which may vary between implementations.\nFor example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
           "type": "string"
         },
         "locationId": {
@@ -142,18 +142,18 @@
           "type": "string"
         },
         "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
           "type": "string"
         },
         "labels": {
-          "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given\nlocation.",
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -182,15 +182,15 @@
     },
     "Operation": {
       "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -198,7 +198,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
           "type": "boolean"
         },
         "error": {
@@ -206,7 +206,7 @@
           "$ref": "Status"
         },
         "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -217,7 +217,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -226,11 +226,11 @@
           "format": "int32"
         },
         "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -244,7 +244,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
       }
@@ -269,11 +269,11 @@
           }
         },
         "nextPageToken": {
-          "description": "Page token that can be used to continue listing from the last result in the\nnext list call.",
+          "description": "Page token that can be used to continue listing from the last result in the next list call.",
           "type": "string"
         },
         "unreachable": {
-          "description": "Locations that could not be reached. For example,\n['us-west1-a', 'us-central1-b'].\nA ListInstancesResponse will only contain either instances or unreachables,",
+          "description": "Locations that could not be reached. For example, ['us-west1-a', 'us-central1-b']. A ListInstancesResponse will only contain either instances or unreachables,",
           "type": "array",
           "items": {
             "type": "string"
@@ -287,7 +287,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The name of this notebook instance. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+          "description": "Output only. The name of this notebook instance. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
           "type": "string"
         },
         "vmImage": {
@@ -299,7 +299,7 @@
           "$ref": "ContainerImage"
         },
         "postStartupScript": {
-          "description": "Path to a Bash script that automatically runs after a notebook instance\nfully boots up. The path must be a URL or\nCloud Storage path (gs:\/\/path-to-file\/file-name).",
+          "description": "Path to a Bash script that automatically runs after a notebook instance fully boots up. The path must be a URL or Cloud Storage path (gs:\/\/path-to-file\/file-name).",
           "type": "string"
         },
         "proxyUri": {
@@ -307,22 +307,22 @@
           "type": "string"
         },
         "instanceOwners": {
-          "description": "Input only. The owner of this instance after creation. Format: `alias@example.com`\n\nCurrently supports one owner only. If not specified, all of the service\naccount users of your VM instance's service account can use\nthe instance.",
+          "description": "Input only. The owner of this instance after creation. Format: `alias@example.com` Currently supports one owner only. If not specified, all of the service account users of your VM instance's service account can use the instance.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "serviceAccount": {
-          "description": "The service account on this instance, giving access to other Google\nCloud services.\nYou can use any service account within the same project, but you\nmust have the service account user permission to use the instance.\n\nIf not specified, the [Compute Engine default service\naccount](\/compute\/docs\/access\/service-accounts#default_service_account)\nis used.",
+          "description": "The service account on this instance, giving access to other Google Cloud services. You can use any service account within the same project, but you must have the service account user permission to use the instance. If not specified, the [Compute Engine default service account](\/compute\/docs\/access\/service-accounts#default_service_account) is used.",
           "type": "string"
         },
         "machineType": {
-          "description": "Required. The [Compute Engine machine type](\/compute\/docs\/machine-types) of this\ninstance.",
+          "description": "Required. The [Compute Engine machine type](\/compute\/docs\/machine-types) of this instance.",
           "type": "string"
         },
         "acceleratorConfig": {
-          "description": "The hardware accelerator used on this instance. If you use\naccelerators, make sure that your configuration has\n[enough vCPUs and memory to support the `machine_type` you\nhave selected](\/compute\/docs\/gpus\/#gpus-list).",
+          "description": "The hardware accelerator used on this instance. If you use accelerators, make sure that your configuration has [enough vCPUs and memory to support the `machine_type` you have selected](\/compute\/docs\/gpus\/#gpus-list).",
           "$ref": "AcceleratorConfig"
         },
         "state": {
@@ -330,13 +330,24 @@
           "enumDescriptions": [
             "State is not specified.",
             "The control logic is starting the instance.",
-            "The control logic is installing required frameworks and registering the\ninstance with notebook proxy",
+            "The control logic is installing required frameworks and registering the instance with notebook proxy",
             "The instance is running.",
             "The control logic is stopping the instance.",
             "The instance is stopped.",
-            "The instance is deleted."
+            "The instance is deleted.",
+            "The instance is upgrading."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "State is not specified.",
+            "The control logic is starting the instance.",
+            "The control logic is installing required frameworks and registering the instance with notebook proxy",
+            "The instance is running.",
+            "The control logic is stopping the instance.",
+            "The instance is stopped.",
+            "The instance is deleted.",
+            "The instance is upgrading."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "STARTING",
@@ -344,25 +355,31 @@
             "ACTIVE",
             "STOPPING",
             "STOPPED",
-            "DELETED"
+            "DELETED",
+            "UPGRADING"
           ]
         },
         "installGpuDriver": {
-          "description": "Whether the end user authorizes Google Cloud to install GPU driver\non this instance.\nIf this field is empty or set to false, the GPU driver won't be installed.\nOnly applicable to instances with GPUs.",
+          "description": "Whether the end user authorizes Google Cloud to install GPU driver on this instance. If this field is empty or set to false, the GPU driver won't be installed. Only applicable to instances with GPUs.",
           "type": "boolean"
         },
         "customGpuDriverPath": {
-          "description": "Specify a custom Cloud Storage path where the GPU driver is stored.\nIf not specified, we'll automatically choose from official GPU drivers.",
+          "description": "Specify a custom Cloud Storage path where the GPU driver is stored. If not specified, we'll automatically choose from official GPU drivers.",
           "type": "string"
         },
         "bootDiskType": {
-          "description": "Input only. The type of the boot disk attached to this instance, defaults to\nstandard persistent disk (`PD_STANDARD`).",
+          "description": "Input only. The type of the boot disk attached to this instance, defaults to standard persistent disk (`PD_STANDARD`).",
           "enumDescriptions": [
             "Disk type not set.",
             "Standard persistent disk type.",
             "SSD persistent disk type."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Disk type not set.",
+            "Standard persistent disk type.",
+            "SSD persistent disk type."
+          ],
           "enum": [
             "DISK_TYPE_UNSPECIFIED",
             "PD_STANDARD",
@@ -370,18 +387,23 @@
           ]
         },
         "bootDiskSizeGb": {
-          "description": "Input only. The size of the boot disk in GB attached to this instance, up to a maximum\nof 64000&nbsp;GB (64&nbsp;TB). The minimum recommended value is\n100&nbsp;GB. If not specified, this defaults to 100.",
+          "description": "Input only. The size of the boot disk in GB attached to this instance, up to a maximum of 64000 GB (64 TB). The minimum recommended value is 100 GB. If not specified, this defaults to 100.",
           "type": "string",
           "format": "int64"
         },
         "dataDiskType": {
-          "description": "Input only. The type of the data disk attached to this instance, defaults to\nstandard persistent disk (`PD_STANDARD`).",
+          "description": "Input only. The type of the data disk attached to this instance, defaults to standard persistent disk (`PD_STANDARD`).",
           "enumDescriptions": [
             "Disk type not set.",
             "Standard persistent disk type.",
             "SSD persistent disk type."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Disk type not set.",
+            "Standard persistent disk type.",
+            "SSD persistent disk type."
+          ],
           "enum": [
             "DISK_TYPE_UNSPECIFIED",
             "PD_STANDARD",
@@ -389,7 +411,7 @@
           ]
         },
         "dataDiskSizeGb": {
-          "description": "Input only. The size of the data disk in GB attached to this instance, up to a maximum\nof 64000&nbsp;GB (64&nbsp;TB). You can choose the size of the data disk\nbased on how big your notebooks and data are. If not specified, this\ndefaults to 100.",
+          "description": "Input only. The size of the data disk in GB attached to this instance, up to a maximum of 64000 GB (64 TB). You can choose the size of the data disk based on how big your notebooks and data are. If not specified, this defaults to 100.",
           "type": "string",
           "format": "int64"
         },
@@ -405,6 +427,11 @@
             "Use customer managed encryption keys to encrypt the boot disk."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Disk encryption is not specified.",
+            "Use Google managed encryption keys to encrypt the boot disk.",
+            "Use customer managed encryption keys to encrypt the boot disk."
+          ],
           "enum": [
             "DISK_ENCRYPTION_UNSPECIFIED",
             "GMEK",
@@ -412,7 +439,7 @@
           ]
         },
         "kmsKey": {
-          "description": "Input only. The KMS key used to encrypt the disks, only applicable if disk_encryption\nis CMEK.\nFormat:\n`projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}`\n\nLearn more about [using your own encryption keys](\/kms\/docs\/quickstart).",
+          "description": "Input only. The KMS key used to encrypt the disks, only applicable if disk_encryption is CMEK. Format: `projects\/{project_id}\/locations\/{location}\/keyRings\/{key_ring_id}\/cryptoKeys\/{key_id}` Learn more about [using your own encryption keys](\/kms\/docs\/quickstart).",
           "type": "string"
         },
         "noPublicIp": {
@@ -424,15 +451,15 @@
           "type": "boolean"
         },
         "network": {
-          "description": "The name of the VPC that this instance is in.\nFormat:\n`projects\/{project_id}\/global\/networks\/{network_id}`",
+          "description": "The name of the VPC that this instance is in. Format: `projects\/{project_id}\/global\/networks\/{network_id}`",
           "type": "string"
         },
         "subnet": {
-          "description": "The name of the subnet that this instance is in.\nFormat:\n`projects\/{project_id}\/regions\/{region}\/subnetworks\/{subnetwork_id}`",
+          "description": "The name of the subnet that this instance is in. Format: `projects\/{project_id}\/regions\/{region}\/subnetworks\/{subnetwork_id}`",
           "type": "string"
         },
         "labels": {
-          "description": "Labels to apply to this instance.\nThese can be later modified by the setLabels method.",
+          "description": "Labels to apply to this instance. These can be later modified by the setLabels method.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -459,11 +486,11 @@
     },
     "VmImage": {
       "id": "VmImage",
-      "description": "Definition of a custom Compute Engine virtual machine image for starting a\nnotebook instance with the environment installed directly on the VM.",
+      "description": "Definition of a custom Compute Engine virtual machine image for starting a notebook instance with the environment installed directly on the VM.",
       "type": "object",
       "properties": {
         "project": {
-          "description": "Required. The name of the Google Cloud project that this VM image belongs to.\nFormat: `projects\/{project_id}`",
+          "description": "Required. The name of the Google Cloud project that this VM image belongs to. Format: `projects\/{project_id}`",
           "type": "string"
         },
         "imageName": {
@@ -471,29 +498,29 @@
           "type": "string"
         },
         "imageFamily": {
-          "description": "Use this VM image family to find the image; the newest image in this\nfamily will be used.",
+          "description": "Use this VM image family to find the image; the newest image in this family will be used.",
           "type": "string"
         }
       }
     },
     "ContainerImage": {
       "id": "ContainerImage",
-      "description": "Definition of a container image for starting a notebook instance with the\nenvironment installed in a container.",
+      "description": "Definition of a container image for starting a notebook instance with the environment installed in a container.",
       "type": "object",
       "properties": {
         "repository": {
-          "description": "Required. The path to the container image repository. For example:\n`gcr.io\/{project_id}\/{image_name}`",
+          "description": "Required. The path to the container image repository. For example: `gcr.io\/{project_id}\/{image_name}`",
           "type": "string"
         },
         "tag": {
-          "description": "The tag of the container image. If not specified, this defaults\nto the latest tag.",
+          "description": "The tag of the container image. If not specified, this defaults to the latest tag.",
           "type": "string"
         }
       }
     },
     "AcceleratorConfig": {
       "id": "AcceleratorConfig",
-      "description": "Definition of a hardware accelerator. Note that not all combinations\nof `type` and `core_count` are valid. Check [GPUs on\nCompute Engine](\/compute\/docs\/gpus\/#gpus-list) to find a valid\ncombination. TPUs are not supported.",
+      "description": "Definition of a hardware accelerator. Note that not all combinations of `type` and `core_count` are valid. Check [GPUs on Compute Engine](\/compute\/docs\/gpus\/#gpus-list) to find a valid combination. TPUs are not supported.",
       "type": "object",
       "properties": {
         "type": {
@@ -512,6 +539,19 @@
             "(Coming soon) Accelerator type is TPU V3."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Accelerator type is not specified.",
+            "Accelerator type is Nvidia Tesla K80.",
+            "Accelerator type is Nvidia Tesla P100.",
+            "Accelerator type is Nvidia Tesla V100.",
+            "Accelerator type is Nvidia Tesla P4.",
+            "Accelerator type is Nvidia Tesla T4.",
+            "Accelerator type is NVIDIA Tesla T4 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P100 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P4 Virtual Workstations.",
+            "(Coming soon) Accelerator type is TPU V2.",
+            "(Coming soon) Accelerator type is TPU V3."
+          ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
             "NVIDIA_TESLA_K80",
@@ -539,7 +579,7 @@
       "type": "object",
       "properties": {
         "instanceId": {
-          "description": "Required. User defined unique ID of this instance. The `instance_id` must\nbe 1 to 63 characters long and contain only lowercase letters,\nnumeric characters, and dashes. The first character must be a lowercase\nletter and the last character cannot be a dash.",
+          "description": "Required. User defined unique ID of this instance. The `instance_id` must be 1 to 63 characters long and contain only lowercase letters, numeric characters, and dashes. The first character must be a lowercase letter and the last character cannot be a dash.",
           "type": "string"
         }
       }
@@ -565,6 +605,19 @@
             "(Coming soon) Accelerator type is TPU V3."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Accelerator type is not specified.",
+            "Accelerator type is Nvidia Tesla K80.",
+            "Accelerator type is Nvidia Tesla P100.",
+            "Accelerator type is Nvidia Tesla V100.",
+            "Accelerator type is Nvidia Tesla P4.",
+            "Accelerator type is Nvidia Tesla T4.",
+            "Accelerator type is NVIDIA Tesla T4 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P100 Virtual Workstations.",
+            "Accelerator type is NVIDIA Tesla P4 Virtual Workstations.",
+            "(Coming soon) Accelerator type is TPU V2.",
+            "(Coming soon) Accelerator type is TPU V3."
+          ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
             "NVIDIA_TESLA_K80",
@@ -580,7 +633,7 @@
           ]
         },
         "coreCount": {
-          "description": "Required. Count of cores of this accelerator. Note that not all combinations\nof `type` and `core_count` are valid. Check [GPUs on\nCompute Engine](\/compute\/docs\/gpus\/#gpus-list) to find a valid\ncombination. TPUs are not supported.",
+          "description": "Required. Count of cores of this accelerator. Note that not all combinations of `type` and `core_count` are valid. Check [GPUs on Compute Engine](\/compute\/docs\/gpus\/#gpus-list) to find a valid combination. TPUs are not supported.",
           "type": "string",
           "format": "int64"
         }
@@ -603,7 +656,7 @@
       "type": "object",
       "properties": {
         "labels": {
-          "description": "Labels to apply to this instance.\nThese can be later modified by the setLabels method",
+          "description": "Labels to apply to this instance. These can be later modified by the setLabels method",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -638,11 +691,11 @@
       "type": "object",
       "properties": {
         "vmId": {
-          "description": "Required. The VM hardware token for authenticating the VM.\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
+          "description": "Required. The VM hardware token for authenticating the VM. https:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
           "type": "string"
         },
         "metadata": {
-          "description": "The metadata reported to Notebooks API. This will be merged to the instance\nmetadata store",
+          "description": "The metadata reported to Notebooks API. This will be merged to the instance metadata store",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -660,7 +713,7 @@
           "type": "boolean"
         },
         "upgradeVersion": {
-          "description": "The version this instance will be upgraded to if calling the upgrade\nendpoint. This field will only be populated if field upgradeable is true.",
+          "description": "The version this instance will be upgraded to if calling the upgrade endpoint. This field will only be populated if field upgradeable is true.",
           "type": "string"
         }
       }
@@ -678,7 +731,7 @@
       "type": "object",
       "properties": {
         "vmId": {
-          "description": "Required. The VM hardware token for authenticating the VM.\nhttps:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
+          "description": "Required. The VM hardware token for authenticating the VM. https:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
           "type": "string"
         }
       }
@@ -696,7 +749,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A page token that can be used to continue listing from the last result\nin the next list call.",
+          "description": "A page token that can be used to continue listing from the last result in the next list call.",
           "type": "string"
         },
         "unreachable": {
@@ -710,11 +763,11 @@
     },
     "Environment": {
       "id": "Environment",
-      "description": "Definition of a software environment that is used to start a notebook\ninstance.",
+      "description": "Definition of a software environment that is used to start a notebook instance.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Name of this environment.\nFormat:\n`projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
+          "description": "Output only. Name of this environment. Format: `projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
           "type": "string"
         },
         "displayName": {
@@ -734,7 +787,7 @@
           "$ref": "ContainerImage"
         },
         "postStartupScript": {
-          "description": "Path to a Bash script that automatically runs after a notebook instance\nfully boots up. The path must be a URL or\nCloud Storage path. Example: `\"gs:\/\/path-to-file\/file-name\"`",
+          "description": "Path to a Bash script that automatically runs after a notebook instance fully boots up. The path must be a URL or Cloud Storage path. Example: `\"gs:\/\/path-to-file\/file-name\"`",
           "type": "string"
         },
         "createTime": {
@@ -750,30 +803,30 @@
       "type": "object",
       "properties": {
         "policy": {
-          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of the policy is limited to a few 10s of KB. An empty policy is a valid policy but certain Cloud Platform services (such as Projects) might reject them.",
           "$ref": "Policy"
         }
       }
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access\ncontrols for Google Cloud resources.\n\n\nA `Policy` is a collection of `bindings`. A `binding` binds one or more\n`members` to a single `role`. Members can be user accounts, service accounts,\nGoogle groups, and domains (such as G Suite). A `role` is a named list of\npermissions; each `role` can be an IAM predefined role or a user-created\ncustom role.\n\nFor some types of Google Cloud resources, a `binding` can also specify a\n`condition`, which is a logical expression that allows access to a resource\nonly if the expression evaluates to `true`. A condition can add constraints\nbased on attributes of the request, the resource, or both. To learn which\nresources support conditions in their IAM policies, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).\n\n**JSON example:**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/resourcemanager.organizationAdmin\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-project-id@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/resourcemanager.organizationViewer\",\n          \"members\": [\n            \"user:eve@example.com\"\n          ],\n          \"condition\": {\n            \"title\": \"expirable access\",\n            \"description\": \"Does not grant access after Sep 2020\",\n            \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\",\n          }\n        }\n      ],\n      \"etag\": \"BwWWja0YfJA=\",\n      \"version\": 3\n    }\n\n**YAML example:**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-project-id@appspot.gserviceaccount.com\n      role: roles\/resourcemanager.organizationAdmin\n    - members:\n      - user:eve@example.com\n      role: roles\/resourcemanager.organizationViewer\n      condition:\n        title: expirable access\n        description: Does not grant access after Sep 2020\n        expression: request.time < timestamp('2020-10-01T00:00:00.000Z')\n    - etag: BwWWja0YfJA=\n    - version: 3\n\nFor a description of IAM and its features, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
-          "description": "Specifies the format of the policy.\n\nValid values are `0`, `1`, and `3`. Requests that specify an invalid value\nare rejected.\n\nAny operation that affects conditional role bindings must specify version\n`3`. This requirement applies to the following operations:\n\n* Getting a policy that includes a conditional role binding\n* Adding a conditional role binding to a policy\n* Changing a conditional role binding in a policy\n* Removing any role binding, with or without a condition, from a policy\n  that includes conditions\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.\n\nIf a policy does not include any conditions, operations on that policy may\nspecify any valid version or leave the field unset.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "description": "Specifies the format of the policy. Valid values are `0`, `1`, and `3`. Requests that specify an invalid value are rejected. Any operation that affects conditional role bindings must specify version `3`. This requirement applies to the following operations: * Getting a policy that includes a conditional role binding * Adding a conditional role binding to a policy * Changing a conditional role binding in a policy * Removing any role binding, with or without a condition, from a policy that includes conditions **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost. If a policy does not include any conditions, operations on that policy may specify any valid version or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "type": "integer",
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally, may specify a\n`condition` that determines how and when the `bindings` are applied. Each\nof the `bindings` must contain at least one member.",
+          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
           "type": "array",
           "items": {
             "$ref": "Binding"
           }
         },
         "etag": {
-          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\n**Important:** If you use IAM Conditions, you must include the `etag` field\nwhenever you call `setIamPolicy`. If you omit this field, then IAM allows\nyou to overwrite a version `3` policy with a version `1` policy, and all of\nthe conditions in the version `3` policy are lost.",
+          "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy. **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.",
           "type": "string",
           "format": "byte"
         }
@@ -785,41 +838,41 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@example.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n* `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a user that has been recently deleted. For\n   example, `alice@example.com?uid=123456789012345678901`. If the user is\n   recovered, this value reverts to `user:{emailid}` and the recovered user\n   retains the role in the binding.\n\n* `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus\n   unique identifier) representing a service account that has been recently\n   deleted. For example,\n   `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`.\n   If the service account is undeleted, this value reverts to\n   `serviceAccount:{emailid}` and the undeleted service account retains the\n   role in the binding.\n\n* `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique\n   identifier) representing a Google group that has been recently\n   deleted. For example, `admins@example.com?uid=123456789012345678901`. If\n   the group is recovered, this value reverts to `group:{emailid}` and the\n   recovered group retains the role in the binding.\n\n\n* `domain:{domain}`: The G Suite domain (primary) that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.\n\nIf the condition evaluates to `true`, then this binding applies to the\ncurrent request.\n\nIf the condition evaluates to `false`, then this binding does not apply to\nthe current request. However, a different role binding might grant the same\nrole to one or more of the members in this binding.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM\ndocumentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
         }
       }
     },
     "Expr": {
       "id": "Expr",
-      "description": "Represents a textual expression in the Common Expression Language (CEL)\nsyntax. CEL is a C-like expression language. The syntax and semantics of CEL\nare documented at https:\/\/github.com\/google\/cel-spec.\n\nExample (Comparison):\n\n    title: \"Summary size limit\"\n    description: \"Determines if a summary is less than 100 chars\"\n    expression: \"document.summary.size() < 100\"\n\nExample (Equality):\n\n    title: \"Requestor is owner\"\n    description: \"Determines if requestor is the document owner\"\n    expression: \"document.owner == request.auth.claims.email\"\n\nExample (Logic):\n\n    title: \"Public documents\"\n    description: \"Determine whether the document should be publicly visible\"\n    expression: \"document.type != 'private' && document.type != 'internal'\"\n\nExample (Data Manipulation):\n\n    title: \"Notification string\"\n    description: \"Create a notification string with a timestamp.\"\n    expression: \"'New message received at ' + string(document.create_time)\"\n\nThe exact variables and functions that may be referenced within an expression\nare determined by the service that evaluates it. See the service\ndocumentation for additional information.",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
       "type": "object",
       "properties": {
         "expression": {
-          "description": "Textual representation of an expression in Common Expression Language\nsyntax.",
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
           "type": "string"
         },
         "title": {
-          "description": "Optional. Title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. Description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
           "type": "string"
         },
         "location": {
-          "description": "Optional. String indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }
@@ -830,7 +883,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "description": "The set of permissions to check for the `resource`. Permissions with wildcards (such as '*' or 'storage.*') are not allowed. For more information see [IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
           "type": "array",
           "items": {
             "type": "string"
@@ -844,7 +897,7 @@
       "type": "object",
       "properties": {
         "permissions": {
-          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is\nallowed.",
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is allowed.",
           "type": "array",
           "items": {
             "type": "string"
@@ -880,7 +933,7 @@
           "type": "string"
         },
         "requestedCancellation": {
-          "description": "Identifies whether the user has requested cancellation\nof the operation. Operations that have successfully been cancelled\nhave Operation.error value with a\ngoogle.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "description": "Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
           "type": "boolean"
         },
         "apiVersion": {
@@ -1005,7 +1058,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
                 },
                 "get": {
                   "id": "notebooks.projects.locations.operations.get",
@@ -1030,7 +1083,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
                 },
                 "delete": {
                   "id": "notebooks.projects.locations.operations.delete",
@@ -1055,7 +1108,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
                 },
                 "cancel": {
                   "id": "notebooks.projects.locations.operations.cancel",
@@ -1083,7 +1136,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                 }
               }
             },
@@ -1096,7 +1149,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Format:\n`parent=projects\/{project_id}\/locations\/{location}`",
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1109,7 +1162,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A previous returned page token that can be used to continue listing\nfrom the last result.",
+                      "description": "A previous returned page token that can be used to continue listing from the last result.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1132,7 +1185,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1157,7 +1210,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Format:\n`parent=projects\/{project_id}\/locations\/{location}`",
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1190,7 +1243,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Format:\n`parent=projects\/{project_id}\/locations\/{location}`",
+                      "description": "Required. Format: `parent=projects\/{project_id}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1209,7 +1262,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Registers an existing legacy notebook instance to the Notebooks API server.\nLegacy instances are instances created with the legacy Compute Engine\ncalls. They are not manageable by the Notebooks API out of the box. This\ncall makes these instances manageable by the Notebooks API."
+                  "description": "Registers an existing legacy notebook instance to the Notebooks API server. Legacy instances are instances created with the legacy Compute Engine calls. They are not manageable by the Notebooks API out of the box. This call makes these instances manageable by the Notebooks API."
                 },
                 "setAccelerator": {
                   "id": "notebooks.projects.locations.instances.setAccelerator",
@@ -1218,7 +1271,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1246,7 +1299,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1274,7 +1327,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1302,7 +1355,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1327,7 +1380,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1355,7 +1408,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1383,7 +1436,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1411,7 +1464,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1430,7 +1483,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Allows notebook instances to\nreport their latest instance information to the Notebooks\nAPI server. The server will merge the reported information to\nthe instance metadata store. Do not use this method directly."
+                  "description": "Allows notebook instances to report their latest instance information to the Notebooks API server. The server will merge the reported information to the instance metadata store. Do not use this method directly."
                 },
                 "isUpgradeable": {
                   "id": "notebooks.projects.locations.instances.isUpgradeable",
@@ -1439,7 +1492,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "notebookInstance": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1464,7 +1517,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1492,7 +1545,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1511,7 +1564,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Allows notebook instances to\ncall this endpoint to upgrade themselves. Do not use this method directly."
+                  "description": "Allows notebook instances to call this endpoint to upgrade themselves. Do not use this method directly."
                 },
                 "setIamPolicy": {
                   "id": "notebooks.projects.locations.instances.setIamPolicy",
@@ -1520,7 +1573,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1539,7 +1592,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
                 },
                 "getIamPolicy": {
                   "id": "notebooks.projects.locations.instances.getIamPolicy",
@@ -1548,14 +1601,14 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned.\n\nValid values are 0, 1, and 3. Requests specifying an invalid value will be\nrejected.\n\nRequests for policies with any conditional bindings must specify version 3.\nPolicies without any conditional bindings may specify any valid value or\nleave the field unset.\n\nTo learn which resources support conditions in their IAM policies, see the\n[IAM\ndocumentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -1570,7 +1623,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
                 },
                 "testIamPermissions": {
                   "id": "notebooks.projects.locations.instances.testIamPermissions",
@@ -1579,7 +1632,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
@@ -1598,7 +1651,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay \"fail open\" without warning."
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
             },
@@ -1624,7 +1677,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A previous returned page token that can be used to continue listing from\nthe last result.",
+                      "description": "A previous returned page token that can be used to continue listing from the last result.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1647,7 +1700,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
@@ -1679,7 +1732,7 @@
                       "type": "string"
                     },
                     "environmentId": {
-                      "description": "Required. User-defined unique ID of this environment. The `environment_id` must\nbe 1 to 63 characters long and contain only lowercase letters,\nnumeric characters, and dashes. The first character must be a lowercase\nletter and the last character cannot be a dash.",
+                      "description": "Required. User-defined unique ID of this environment. The `environment_id` must be 1 to 63 characters long and contain only lowercase letters, numeric characters, and dashes. The first character must be a lowercase letter and the last character cannot be a dash.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1705,7 +1758,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format:\n`projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",

@@ -55,10 +55,11 @@ class TPUNode(object):
     self.client = apis.GetClientInstance('tpu', self._api_version)
     self.messages = apis.GetMessagesModule('tpu', self._api_version)
 
-  def _CreateDefaultNode(self, accelerator_type, tf_version, preemptible):
+  def _CreateDefaultNode(
+      self, accelerator_type, tf_version, preemptible, network):
     node = self.messages.Node()
     node.acceleratorType = accelerator_type
-    node.network = ''
+    node.network = network
     node.tensorflowVersion = tf_version
     node.schedulingConfig = self.messages.SchedulingConfig(
         preemptible=preemptible)
@@ -69,7 +70,8 @@ class TPUNode(object):
     return resources.REGISTRY.ParseRelativeName(
         operation.name, collection='tpu.projects.locations.operations')
 
-  def Create(self, name, accelerator_type, tf_version, zone, preemptible):
+  def Create(
+      self, name, accelerator_type, tf_version, zone, preemptible, network):
     """Create builds and issues a request to create a TPU node.
 
     Args:
@@ -78,6 +80,7 @@ class TPUNode(object):
       tf_version: Tensorflow Version like '1.1', '1.5'.
       zone: Zone to create the TPU Node in.
       preemptible: Boolean argument, to create a Preemptible node.
+      network: The network to create the node in
     Returns:
       A TPU Create response which needs to be polled on.
     """
@@ -89,7 +92,8 @@ class TPUNode(object):
     request = self.messages.TpuProjectsLocationsNodesCreateRequest(
         parent=parent_ref.RelativeName(),
         nodeId=name,
-        node=self._CreateDefaultNode(accelerator_type, tf_version, preemptible))
+        node=self._CreateDefaultNode(
+            accelerator_type, tf_version, preemptible, network))
     operation = self.client.projects_locations_nodes.Create(request)
     return self._GetTpuOperationRef(operation)
 
@@ -367,8 +371,14 @@ class Instance(object):
     image = self.client.images.GetFromFamily(request)
     return image and image.selfLink
 
-  def _BuildInstanceSpec(self, name, zone, machine_type, disk_size,
-                         preemptible, source_image=None):
+  def BuildInstanceSpec(self,
+                        name,
+                        zone,
+                        machine_type,
+                        disk_size,
+                        preemptible,
+                        network,
+                        source_image=None):
     """Builds an instance spec to be used for Instance creation."""
 
     disk = self.messages.AttachedDisk(
@@ -381,7 +391,8 @@ class Instance(object):
     project_number = p_util.GetProjectNumber(
         properties.VALUES.core.project.Get(required=True))
     network_interface = self.messages.NetworkInterface(
-        network='projects/{}/global/networks/default'.format(project_number),
+        network='projects/{}/global/networks/{}'.format(
+            project_number, network),
         accessConfigs=[self.messages.AccessConfig(
             name='External NAT',
             type=self.messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT)]
@@ -417,13 +428,15 @@ class Instance(object):
     return resources.REGISTRY.Parse(
         operation.selfLink, collection='compute.zoneOperations')
 
-  def Create(self, name, zone, machine_type, disk_size, preemptible, gce_image):
+  def Create(self, name, zone, machine_type, disk_size, preemptible, gce_image,
+             network):
     """Issue request to create an Instance."""
     request = self.messages.ComputeInstancesInsertRequest(
         project=properties.VALUES.core.project.Get(required=True),
         zone=zone,
-        instance=self._BuildInstanceSpec(
-            name, zone, machine_type, disk_size, preemptible, gce_image))
+        instance=self.BuildInstanceSpec(
+            name, zone, machine_type, disk_size, preemptible, network,
+            gce_image))
     operation = self.client.instances.Insert(request)
     return self._GetComputeZoneOperationRef(operation)
 

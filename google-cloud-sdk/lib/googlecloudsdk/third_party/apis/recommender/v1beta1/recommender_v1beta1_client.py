@@ -39,12 +39,332 @@ class RecommenderV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.billingAccounts_locations_insightTypes_insights = self.BillingAccountsLocationsInsightTypesInsightsService(self)
+    self.billingAccounts_locations_insightTypes = self.BillingAccountsLocationsInsightTypesService(self)
+    self.billingAccounts_locations_recommenders_recommendations = self.BillingAccountsLocationsRecommendersRecommendationsService(self)
+    self.billingAccounts_locations_recommenders = self.BillingAccountsLocationsRecommendersService(self)
+    self.billingAccounts_locations = self.BillingAccountsLocationsService(self)
+    self.billingAccounts = self.BillingAccountsService(self)
     self.projects_locations_insightTypes_insights = self.ProjectsLocationsInsightTypesInsightsService(self)
     self.projects_locations_insightTypes = self.ProjectsLocationsInsightTypesService(self)
     self.projects_locations_recommenders_recommendations = self.ProjectsLocationsRecommendersRecommendationsService(self)
     self.projects_locations_recommenders = self.ProjectsLocationsRecommendersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class BillingAccountsLocationsInsightTypesInsightsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_insightTypes_insights resource."""
+
+    _NAME = 'billingAccounts_locations_insightTypes_insights'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.BillingAccountsLocationsInsightTypesInsightsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the requested insight. Requires the recommender.*.get IAM permission.
+for the specified insight type.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsInsightTypesInsightsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Insight) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}',
+        http_method='GET',
+        method_id='recommender.billingAccounts.locations.insightTypes.insights.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='RecommenderBillingAccountsLocationsInsightTypesInsightsGetRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Insight',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM.
+permission for the specified insight type.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsInsightTypesInsightsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1ListInsightsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights',
+        http_method='GET',
+        method_id='recommender.billingAccounts.locations.insightTypes.insights.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/insights',
+        request_field='',
+        request_type_name='RecommenderBillingAccountsLocationsInsightTypesInsightsListRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1ListInsightsResponse',
+        supports_download=False,
+    )
+
+    def MarkAccepted(self, request, global_params=None):
+      r"""Marks the Insight State as Accepted. Users can use this method to.
+indicate to the Recommender API that they have applied some action based
+on the insight. This stops the insight content from being updated.
+
+MarkInsightAccepted can be applied to insights in ACTIVE state. Requires
+the recommender.*.update IAM permission for the specified insight.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Insight) The response message.
+      """
+      config = self.GetMethodConfig('MarkAccepted')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkAccepted.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/insightTypes/{insightTypesId}/insights/{insightsId}:markAccepted',
+        http_method='POST',
+        method_id='recommender.billingAccounts.locations.insightTypes.insights.markAccepted',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:markAccepted',
+        request_field='googleCloudRecommenderV1beta1MarkInsightAcceptedRequest',
+        request_type_name='RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Insight',
+        supports_download=False,
+    )
+
+  class BillingAccountsLocationsInsightTypesService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_insightTypes resource."""
+
+    _NAME = 'billingAccounts_locations_insightTypes'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.BillingAccountsLocationsInsightTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class BillingAccountsLocationsRecommendersRecommendationsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_recommenders_recommendations resource."""
+
+    _NAME = 'billingAccounts_locations_recommenders_recommendations'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.BillingAccountsLocationsRecommendersRecommendationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the requested recommendation. Requires the recommender.*.get.
+IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsRecommendersRecommendationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}',
+        http_method='GET',
+        method_id='recommender.billingAccounts.locations.recommenders.recommendations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='RecommenderBillingAccountsLocationsRecommendersRecommendationsGetRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list.
+IAM permission for the specified recommender.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsRecommendersRecommendationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1ListRecommendationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations',
+        http_method='GET',
+        method_id='recommender.billingAccounts.locations.recommenders.recommendations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/recommendations',
+        request_field='',
+        request_type_name='RecommenderBillingAccountsLocationsRecommendersRecommendationsListRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1ListRecommendationsResponse',
+        supports_download=False,
+    )
+
+    def MarkClaimed(self, request, global_params=None):
+      r"""Marks the Recommendation State as Claimed. Users can use this method to.
+indicate to the Recommender API that they are starting to apply the
+recommendation themselves. This stops the recommendation content from being
+updated. Associated insights are frozen and placed in the ACCEPTED state.
+
+MarkRecommendationClaimed can be applied to recommendations in CLAIMED or
+ACTIVE state.
+
+Requires the recommender.*.update IAM permission for the specified
+recommender.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClaimedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkClaimed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkClaimed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markClaimed',
+        http_method='POST',
+        method_id='recommender.billingAccounts.locations.recommenders.recommendations.markClaimed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:markClaimed',
+        request_field='googleCloudRecommenderV1beta1MarkRecommendationClaimedRequest',
+        request_type_name='RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClaimedRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
+        supports_download=False,
+    )
+
+    def MarkFailed(self, request, global_params=None):
+      r"""Marks the Recommendation State as Failed. Users can use this method to.
+indicate to the Recommender API that they have applied the recommendation
+themselves, and the operation failed. This stops the recommendation content
+from being updated. Associated insights are frozen and placed in the
+ACCEPTED state.
+
+MarkRecommendationFailed can be applied to recommendations in ACTIVE,
+CLAIMED, SUCCEEDED, or FAILED state.
+
+Requires the recommender.*.update IAM permission for the specified
+recommender.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFailedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkFailed')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkFailed.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markFailed',
+        http_method='POST',
+        method_id='recommender.billingAccounts.locations.recommenders.recommendations.markFailed',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:markFailed',
+        request_field='googleCloudRecommenderV1beta1MarkRecommendationFailedRequest',
+        request_type_name='RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFailedRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
+        supports_download=False,
+    )
+
+    def MarkSucceeded(self, request, global_params=None):
+      r"""Marks the Recommendation State as Succeeded. Users can use this method to.
+indicate to the Recommender API that they have applied the recommendation
+themselves, and the operation was successful. This stops the recommendation
+content from being updated. Associated insights are frozen and placed in
+the ACCEPTED state.
+
+MarkRecommendationSucceeded can be applied to recommendations in ACTIVE,
+CLAIMED, SUCCEEDED, or FAILED state.
+
+Requires the recommender.*.update IAM permission for the specified
+recommender.
+
+      Args:
+        request: (RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucceededRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecommenderV1beta1Recommendation) The response message.
+      """
+      config = self.GetMethodConfig('MarkSucceeded')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MarkSucceeded.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/billingAccounts/{billingAccountsId}/locations/{locationsId}/recommenders/{recommendersId}/recommendations/{recommendationsId}:markSucceeded',
+        http_method='POST',
+        method_id='recommender.billingAccounts.locations.recommenders.recommendations.markSucceeded',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:markSucceeded',
+        request_field='googleCloudRecommenderV1beta1MarkRecommendationSucceededRequest',
+        request_type_name='RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucceededRequest',
+        response_type_name='GoogleCloudRecommenderV1beta1Recommendation',
+        supports_download=False,
+    )
+
+  class BillingAccountsLocationsRecommendersService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_recommenders resource."""
+
+    _NAME = 'billingAccounts_locations_recommenders'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.BillingAccountsLocationsRecommendersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class BillingAccountsLocationsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations resource."""
+
+    _NAME = 'billingAccounts_locations'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.BillingAccountsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class BillingAccountsService(base_api.BaseApiService):
+    """Service class for the billingAccounts resource."""
+
+    _NAME = 'billingAccounts'
+
+    def __init__(self, client):
+      super(RecommenderV1beta1.BillingAccountsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsInsightTypesInsightsService(base_api.BaseApiService):
     """Service class for the projects_locations_insightTypes_insights resource."""

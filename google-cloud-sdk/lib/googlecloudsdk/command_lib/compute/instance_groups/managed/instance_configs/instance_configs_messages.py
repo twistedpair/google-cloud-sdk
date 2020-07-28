@@ -49,15 +49,16 @@ def MakePreservedStateDiskEntry(messages, stateful_disk_data, disk_getter):
         device_name=stateful_disk_data.get('device-name'))
     if disk is None:
       if disk_getter.instance_exists:
-        error_message = ('[source] must be given while defining stateful disks'
-                         ' in instance configs for non existing disks in given'
-                         ' instance')
+        error_message = ('[source] is required because the disk with the '
+                         '[device-name]: `{0}` is not yet configured in the '
+                         'instance config'.format(
+                             stateful_disk_data.get('device-name')))
       else:
-        error_message = ('[source] must be given while defining stateful disks'
-                         ' in instance configs for non existing instances')
-      raise exceptions.BadArgumentException('source', error_message)
+        error_message = ('[source] must be given while defining stateful disks '
+                         'in instance configs for new instances')
+      raise exceptions.BadArgumentException('stateful_disk', error_message)
     source = disk.source
-    mode = disk.mode
+    mode = stateful_disk_data.get('mode') or disk.mode
   preserved_disk = \
       messages.PreservedStatePreservedDisk(
           autoDelete=(stateful_disk_data.get('auto-delete') or

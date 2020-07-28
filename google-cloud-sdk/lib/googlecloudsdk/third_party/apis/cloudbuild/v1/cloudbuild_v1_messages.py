@@ -14,6 +14,68 @@ from apitools.base.py import extra_types
 package = 'cloudbuild'
 
 
+class ApprovalConfig(_messages.Message):
+  r"""ApprovalConfig describes configuration for manual approval of a build.
+
+  Fields:
+    approvalRequired: Whether or not approval is needed. If this is set on a
+      build, it will become pending when created, and will need to be
+      explicitly approved to start.
+  """
+
+  approvalRequired = _messages.BooleanField(1)
+
+
+class ApprovalResult(_messages.Message):
+  r"""ApprovalResult describes the decision and associated metadata of a
+  manual approval of a build.
+
+  Enums:
+    DecisionValueValuesEnum: Required. The decision of this manual approval.
+
+  Fields:
+    approvalTime: Output only. The time when the approval decision was made.
+    approverAccount: Output only. Email of the user that called the
+      ApproveBuild API to approve or reject a build at the time that the API
+      was called (the user's actual email that is tied to their GAIA ID may
+      have changed).
+    comment: Optional. An optional comment for this manual approval result.
+    decision: Required. The decision of this manual approval.
+    url: Optional. An optional URL tied to this manual approval result. This
+      field is essentially the same as comment, except that it will be
+      rendered by the UI differently. An example use case is a link to an
+      external job that approved this Build.
+  """
+
+  class DecisionValueValuesEnum(_messages.Enum):
+    r"""Required. The decision of this manual approval.
+
+    Values:
+      DECISION_UNSPECIFIED: Default enum type. This should not be used.
+      APPROVED: Build is approved.
+      REJECTED: Build is rejected.
+    """
+    DECISION_UNSPECIFIED = 0
+    APPROVED = 1
+    REJECTED = 2
+
+  approvalTime = _messages.StringField(1)
+  approverAccount = _messages.StringField(2)
+  comment = _messages.StringField(3)
+  decision = _messages.EnumField('DecisionValueValuesEnum', 4)
+  url = _messages.StringField(5)
+
+
+class ApproveBuildRequest(_messages.Message):
+  r"""Request to approve or reject a pending build.
+
+  Fields:
+    approvalResult: Approval decision and metadata.
+  """
+
+  approvalResult = _messages.MessageField('ApprovalResult', 1)
+
+
 class ArtifactObjects(_messages.Message):
   r"""Files in the workspace to upload to Cloud Storage upon successful
   completion of all build steps.
@@ -97,6 +159,8 @@ class Build(_messages.Message):
       included.
 
   Fields:
+    approval: Output only. Describes this build's approval configuration,
+      status, and result.
     artifacts: Artifacts produced by the build that should be uploaded upon
       successful completion of all build steps.
     buildTriggerId: Output only. The ID of the `BuildTrigger` that triggered
@@ -153,6 +217,8 @@ class Build(_messages.Message):
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
+      PENDING: Build has been created and is pending execution and queuing. It
+        has not been queued.
       QUEUED: Build or step is queued; work has not yet begun.
       WORKING: Build or step is being executed.
       SUCCESS: Build or step finished successfully.
@@ -163,14 +229,15 @@ class Build(_messages.Message):
       EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
     """
     STATUS_UNKNOWN = 0
-    QUEUED = 1
-    WORKING = 2
-    SUCCESS = 3
-    FAILURE = 4
-    INTERNAL_ERROR = 5
-    TIMEOUT = 6
-    CANCELLED = 7
-    EXPIRED = 8
+    PENDING = 1
+    QUEUED = 2
+    WORKING = 3
+    SUCCESS = 4
+    FAILURE = 5
+    INTERNAL_ERROR = 6
+    TIMEOUT = 7
+    CANCELLED = 8
+    EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
@@ -224,30 +291,65 @@ class Build(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  artifacts = _messages.MessageField('Artifacts', 1)
-  buildTriggerId = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  finishTime = _messages.StringField(4)
-  id = _messages.StringField(5)
-  images = _messages.StringField(6, repeated=True)
-  logUrl = _messages.StringField(7)
-  logsBucket = _messages.StringField(8)
-  options = _messages.MessageField('BuildOptions', 9)
-  projectId = _messages.StringField(10)
-  queueTtl = _messages.StringField(11)
-  results = _messages.MessageField('Results', 12)
-  secrets = _messages.MessageField('Secret', 13, repeated=True)
-  serviceAccount = _messages.StringField(14)
-  source = _messages.MessageField('Source', 15)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 16)
-  startTime = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusDetail = _messages.StringField(19)
-  steps = _messages.MessageField('BuildStep', 20, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 21)
-  tags = _messages.StringField(22, repeated=True)
-  timeout = _messages.StringField(23)
-  timing = _messages.MessageField('TimingValue', 24)
+  approval = _messages.MessageField('BuildApproval', 1)
+  artifacts = _messages.MessageField('Artifacts', 2)
+  buildTriggerId = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  finishTime = _messages.StringField(5)
+  id = _messages.StringField(6)
+  images = _messages.StringField(7, repeated=True)
+  logUrl = _messages.StringField(8)
+  logsBucket = _messages.StringField(9)
+  options = _messages.MessageField('BuildOptions', 10)
+  projectId = _messages.StringField(11)
+  queueTtl = _messages.StringField(12)
+  results = _messages.MessageField('Results', 13)
+  secrets = _messages.MessageField('Secret', 14, repeated=True)
+  serviceAccount = _messages.StringField(15)
+  source = _messages.MessageField('Source', 16)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 17)
+  startTime = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusDetail = _messages.StringField(20)
+  steps = _messages.MessageField('BuildStep', 21, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 22)
+  tags = _messages.StringField(23, repeated=True)
+  timeout = _messages.StringField(24)
+  timing = _messages.MessageField('TimingValue', 25)
+
+
+class BuildApproval(_messages.Message):
+  r"""BuildApproval describes a build's approval configuration, state, and
+  result.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of this build's approval.
+
+  Fields:
+    config: Output only. Configuration for manual approval of this build.
+    result: Output only. Result of manual approval for this Build.
+    state: Output only. The state of this build's approval.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of this build's approval.
+
+    Values:
+      STATE_UNSPECIFIED: Default enum type. This should not be used.
+      PENDING: Build approval is pending.
+      APPROVED: Build approval has been approved.
+      REJECTED: Build approval has been rejected.
+      CANCELLED: Build was cancelled while it was still pending approval.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    APPROVED = 2
+    REJECTED = 3
+    CANCELLED = 4
+
+  config = _messages.MessageField('ApprovalConfig', 1)
+  result = _messages.MessageField('ApprovalResult', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -343,19 +445,20 @@ class BuildOptions(_messages.Message):
       LOGGING_UNSPECIFIED: The service determines the logging mode. The
         default is `LEGACY`. Do not rely on the default logging behavior as it
         may change in the future.
-      LEGACY: Cloud Logging (Stackdriver) and Cloud Storage logging are
-        enabled.
+      LEGACY: Cloud Logging and Cloud Storage logging are enabled.
       GCS_ONLY: Only Cloud Storage logging is enabled.
-      STACKDRIVER_ONLY: Only Cloud Logging (Stackdriver) is enabled. Note that
-        logs for both the Cloud Console UI and Cloud SDK are based on Cloud
-        Storage logs, so neither will provide logs if this option is chosen.
-      NONE: Turn off all logging. No build logs will be captured.
+      STACKDRIVER_ONLY: This option is the same as CLOUD_LOGGING_ONLY.
+      CLOUD_LOGGING_ONLY: Only Cloud Logging is enabled. Note that logs for
+        both the Cloud Console UI and Cloud SDK are based on Cloud Storage
+        logs, so neither will provide logs if this option is chosen.
+      NONE: Turn off all logging. No build logs will be captured. Next ID: 6
     """
     LOGGING_UNSPECIFIED = 0
     LEGACY = 1
     GCS_ONLY = 2
     STACKDRIVER_ONLY = 3
-    NONE = 4
+    CLOUD_LOGGING_ONLY = 4
+    NONE = 5
 
   class MachineTypeValueValuesEnum(_messages.Enum):
     r"""Compute Engine machine type on which to run the build.
@@ -493,6 +596,8 @@ class BuildStep(_messages.Message):
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
+      PENDING: Build has been created and is pending execution and queuing. It
+        has not been queued.
       QUEUED: Build or step is queued; work has not yet begun.
       WORKING: Build or step is being executed.
       SUCCESS: Build or step finished successfully.
@@ -503,14 +608,15 @@ class BuildStep(_messages.Message):
       EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
     """
     STATUS_UNKNOWN = 0
-    QUEUED = 1
-    WORKING = 2
-    SUCCESS = 3
-    FAILURE = 4
-    INTERNAL_ERROR = 5
-    TIMEOUT = 6
-    CANCELLED = 7
-    EXPIRED = 8
+    PENDING = 1
+    QUEUED = 2
+    WORKING = 3
+    SUCCESS = 4
+    FAILURE = 5
+    INTERNAL_ERROR = 6
+    TIMEOUT = 7
+    CANCELLED = 8
+    EXPIRED = 9
 
   args = _messages.StringField(1, repeated=True)
   dir = _messages.StringField(2)
@@ -537,6 +643,8 @@ class BuildTrigger(_messages.Message):
       conflict with the keys in bindings.
 
   Fields:
+    approvalConfig: Configuration for manual approval to start a build
+      invocation of this BuildTrigger.
     build: Contents of the build template.
     createTime: Output only. Time when the trigger was created.
     description: Human-readable description of this trigger.
@@ -603,19 +711,20 @@ class BuildTrigger(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  build = _messages.MessageField('Build', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  disabled = _messages.BooleanField(4)
-  filename = _messages.StringField(5)
-  github = _messages.MessageField('GitHubEventsConfig', 6)
-  id = _messages.StringField(7)
-  ignoredFiles = _messages.StringField(8, repeated=True)
-  includedFiles = _messages.StringField(9, repeated=True)
-  name = _messages.StringField(10)
-  substitutions = _messages.MessageField('SubstitutionsValue', 11)
-  tags = _messages.StringField(12, repeated=True)
-  triggerTemplate = _messages.MessageField('RepoSource', 13)
+  approvalConfig = _messages.MessageField('ApprovalConfig', 1)
+  build = _messages.MessageField('Build', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  disabled = _messages.BooleanField(5)
+  filename = _messages.StringField(6)
+  github = _messages.MessageField('GitHubEventsConfig', 7)
+  id = _messages.StringField(8)
+  ignoredFiles = _messages.StringField(9, repeated=True)
+  includedFiles = _messages.StringField(10, repeated=True)
+  name = _messages.StringField(11)
+  substitutions = _messages.MessageField('SubstitutionsValue', 12)
+  tags = _messages.StringField(13, repeated=True)
+  triggerTemplate = _messages.MessageField('RepoSource', 14)
 
 
 class BuiltImage(_messages.Message):
@@ -745,6 +854,20 @@ class CloudbuildOperationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsBuildsApproveRequest(_messages.Message):
+  r"""A CloudbuildProjectsBuildsApproveRequest object.
+
+  Fields:
+    approveBuildRequest: A ApproveBuildRequest resource to be passed as the
+      request body.
+    name: Required. Name of the target build. For example:
+      "projects/{$project_id}/builds/{$build_id}"
+  """
+
+  approveBuildRequest = _messages.MessageField('ApproveBuildRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudbuildProjectsBuildsCancelRequest(_messages.Message):
@@ -1712,9 +1835,13 @@ class PullRequestFilter(_messages.Message):
         builds are triggered.
       COMMENTS_ENABLED: Enforce that repository owners or collaborators must
         comment on Pull Requests before builds are triggered.
+      COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY: Enforce that repository
+        owners or collaborators must comment on external contributors' Pull
+        Requests before builds are triggered.
     """
     COMMENTS_DISABLED = 0
     COMMENTS_ENABLED = 1
+    COMMENTS_ENABLED_FOR_EXTERNAL_CONTRIBUTORS_ONLY = 2
 
   branch = _messages.StringField(1)
   commentControl = _messages.EnumField('CommentControlValueValuesEnum', 2)

@@ -17,9 +17,9 @@ package = 'redis'
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -422,8 +422,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Mess
   SLOs.
 
   Fields:
-    duration: Exclusion duration. No restrictions on the possible values.
-      When an ongoing operation is taking longer than initially expected, an
+    duration: Exclusion duration. No restrictions on the possible values. When
+      an ongoing operation is taking longer than initially expected, an
       existing entry in the exclusion list can be updated by extending the
       duration. This is supported by the subsystem exporting eligibility data
       as long as such extension is committed at least 10 minutes before the
@@ -454,11 +454,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
     exclusions: List of SLO exclusion windows. When multiple entries in the
       list match (matching the exclusion time-window against current time
       point) the exclusion reason used in the first matching entry will be
-      published.  It is not needed to include expired exclusion in this list,
+      published. It is not needed to include expired exclusion in this list,
       as only the currently applicable exclusions are taken into account by
       the eligibility exporting subsystem (the historical state of exclusions
       will be reflected in the historically produced timeseries regardless of
-      the current state).  This field can be used to mark the instance as
+      the current state). This field can be used to mark the instance as
       temporary ineligible for the purpose of SLO calculation. For permanent
       instance SLO exclusion, use of custom instance eligibility is
       recommended. See 'eligibility' field below.
@@ -511,9 +511,8 @@ class Instance(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata
     RedisConfigsValue: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
-      are:   Redis 3.2 and above:   *   maxmemory-policy  *   notify-keyspace-
-      events   Redis 4.0 and above:   *   activedefrag  *   lfu-log-factor  *
-      lfu-decay-time
+      are: Redis 3.2 and above: * maxmemory-policy * notify-keyspace-events
+      Redis 4.0 and above: * activedefrag * lfu-log-factor * lfu-decay-time
 
   Fields:
     alternativeLocationId: Optional. Only applicable to standard tier which
@@ -554,20 +553,18 @@ class Instance(_messages.Message):
       [alternative_location_id] fields for more details.
     persistenceIamIdentity: Output only. Cloud IAM identity used by import /
       export operations to transfer data to/from Cloud Storage. Format is
-      "serviceAccount:<service_account_email>". The value may change over time
-      for a given instance so should be checked before each import/export
-      operation.
+      "serviceAccount:". The value may change over time for a given instance
+      so should be checked before each import/export operation.
     port: Output only. The port number of the exposed redis endpoint.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
-      are:   Redis 3.2 and above:   *   maxmemory-policy  *   notify-keyspace-
-      events   Redis 4.0 and above:   *   activedefrag  *   lfu-log-factor  *
-      lfu-decay-time
+      are: Redis 3.2 and above: * maxmemory-policy * notify-keyspace-events
+      Redis 4.0 and above: * activedefrag * lfu-log-factor * lfu-decay-time
     redisVersion: Optional. The version of Redis software. If not provided,
       latest supported version will be used. Updating the version will perform
       an upgrade/downgrade to the new version. Currently, the supported values
-      are:   *   `REDIS_4_0` for Redis 4.0 compatibility  *   `REDIS_3_2` for
-      Redis 3.2 compatibility (default)
+      are: * `REDIS_4_0` for Redis 4.0 compatibility * `REDIS_3_2` for Redis
+      3.2 compatibility (default)
     reservedIpRange: Optional. The CIDR range of internal addresses that are
       reserved for this instance. If not provided, the service will choose an
       unused /29 block, for example, 10.0.0.0/29 or 192.168.0.0/29. Ranges
@@ -664,9 +661,8 @@ class Instance(_messages.Message):
   class RedisConfigsValue(_messages.Message):
     r"""Optional. Redis configuration parameters, according to
     http://redis.io/topics/config. Currently, the only supported parameters
-    are:   Redis 3.2 and above:   *   maxmemory-policy  *   notify-keyspace-
-    events   Redis 4.0 and above:   *   activedefrag  *   lfu-log-factor  *
-    lfu-decay-time
+    are: Redis 3.2 and above: * maxmemory-policy * notify-keyspace-events
+    Redis 4.0 and above: * activedefrag * lfu-log-factor * lfu-decay-time
 
     Messages:
       AdditionalProperty: An additional property for a RedisConfigsValue
@@ -715,7 +711,7 @@ class ListInstancesResponse(_messages.Message):
 
   Fields:
     instances: A list of Redis instances in the project in the specified
-      location, or across all locations.  If the `location_id` in the parent
+      location, or across all locations. If the `location_id` in the parent
       field of the request is "-", all regions available to the project are
       queried, and the results aggregated. If in such an aggregated query a
       location is unavailable, a dummy Redis entry is included in the response
@@ -899,21 +895,21 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: {  `createTime`: The time the operation was created.
-      `endTime`: The time the operation finished running.  `target`: Server-
-      defined resource path for the target of the operation.  `verb`: Name of
-      the verb executed by the operation.  `statusDetail`: Human-readable
-      status of the operation, if any.  `cancelRequested`: Identifies whether
+    MetadataValue: { `createTime`: The time the operation was created.
+      `endTime`: The time the operation finished running. `target`: Server-
+      defined resource path for the target of the operation. `verb`: Name of
+      the verb executed by the operation. `statusDetail`: Human-readable
+      status of the operation, if any. `cancelRequested`: Identifies whether
       the user has requested cancellation of the operation. Operations that
       have successfully been cancelled have Operation.error value with a
       google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-      `apiVersion`: API version used to start the operation.  }
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      `apiVersion`: API version used to start the operation. }
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -922,39 +918,39 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: {  `createTime`: The time the operation was created.  `endTime`:
-      The time the operation finished running.  `target`: Server-defined
-      resource path for the target of the operation.  `verb`: Name of the verb
-      executed by the operation.  `statusDetail`: Human-readable status of the
-      operation, if any.  `cancelRequested`: Identifies whether the user has
+    metadata: { `createTime`: The time the operation was created. `endTime`:
+      The time the operation finished running. `target`: Server-defined
+      resource path for the target of the operation. `verb`: Name of the verb
+      executed by the operation. `statusDetail`: Human-readable status of the
+      operation, if any. `cancelRequested`: Identifies whether the user has
       requested cancellation of the operation. Operations that have
       successfully been cancelled have Operation.error value with a
       google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-      `apiVersion`: API version used to start the operation.  }
+      `apiVersion`: API version used to start the operation. }
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""{  `createTime`: The time the operation was created.  `endTime`: The
-    time the operation finished running.  `target`: Server-defined resource
-    path for the target of the operation.  `verb`: Name of the verb executed
-    by the operation.  `statusDetail`: Human-readable status of the operation,
-    if any.  `cancelRequested`: Identifies whether the user has requested
+    r"""{ `createTime`: The time the operation was created. `endTime`: The
+    time the operation finished running. `target`: Server-defined resource
+    path for the target of the operation. `verb`: Name of the verb executed by
+    the operation. `statusDetail`: Human-readable status of the operation, if
+    any. `cancelRequested`: Identifies whether the user has requested
     cancellation of the operation. Operations that have successfully been
     cancelled have Operation.error value with a google.rpc.Status.code of 1,
-    corresponding to `Code.CANCELLED`.  `apiVersion`: API version used to
-    start the operation.  }
+    corresponding to `Code.CANCELLED`. `apiVersion`: API version used to start
+    the operation. }
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -979,12 +975,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1041,12 +1037,12 @@ class RedisProjectsLocationsInstancesCreateRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     instanceId: Required. The logical name of the Redis instance in the
-      customer project with the following restrictions:  * Must contain only
+      customer project with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *
       Must be between 1-40 characters. * Must end with a number or a letter. *
       Must be unique within the customer project / location
     parent: Required. The resource name of the instance location using the
-      form:     `projects/{project_id}/locations/{location_id}` where
+      form: `projects/{project_id}/locations/{location_id}` where
       `location_id` refers to a GCP region.
   """
 
@@ -1113,7 +1109,7 @@ class RedisProjectsLocationsInstancesListRequest(_messages.Message):
   r"""A RedisProjectsLocationsInstancesListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return.  If not specified, a
+    pageSize: The maximum number of items to return. If not specified, a
       default value of 1000 will be used by the service. Regardless of the
       page_size value, the response may include a partial list and a caller
       should only rely on response's next_page_token to determine if there are
@@ -1121,7 +1117,7 @@ class RedisProjectsLocationsInstancesListRequest(_messages.Message):
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: Required. The resource name of the instance location using the
-      form:     `projects/{project_id}/locations/{location_id}` where
+      form: `projects/{project_id}/locations/{location_id}` where
       `location_id` refers to a GCP region.
   """
 
@@ -1298,7 +1294,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1307,7 +1303,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

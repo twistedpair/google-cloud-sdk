@@ -236,7 +236,7 @@
     },
     "StartEnvironmentRequest": {
       "id": "StartEnvironmentRequest",
-      "description": "Request message for StartEnvironment.",
+      "description": "Request message for\nStartEnvironment.",
       "type": "object",
       "properties": {
         "accessToken": {
@@ -316,7 +316,7 @@
     },
     "AuthorizeEnvironmentRequest": {
       "id": "AuthorizeEnvironmentRequest",
-      "description": "Request message for AuthorizeEnvironment.",
+      "description": "Request message for\nAuthorizeEnvironment.",
       "type": "object",
       "properties": {
         "accessToken": {
@@ -343,7 +343,7 @@
     },
     "CreatePublicKeyRequest": {
       "id": "CreatePublicKeyRequest",
-      "description": "Request message for CreatePublicKey.",
+      "description": "Request message for\nCreatePublicKey.",
       "type": "object",
       "properties": {
         "key": {
@@ -381,7 +381,7 @@
     },
     "StartEnvironmentResponse": {
       "id": "StartEnvironmentResponse",
-      "description": "Message included in the response field of operations returned from\nStartEnvironment once the\noperation is complete.",
+      "description": "Message included in the response field of operations returned from\nStartEnvironment\nonce the operation is complete.",
       "type": "object",
       "properties": {
         "environment": {

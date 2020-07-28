@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://pubsublite.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/pubsub/docs'
+DOCS_URL = 'https://cloud.google.com/pubsub/lite/docs'
 
 
 class Collections(enum.Enum):

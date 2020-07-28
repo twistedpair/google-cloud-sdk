@@ -112,7 +112,7 @@
   "schemas": {
     "ListExecutionsResponse": {
       "id": "ListExecutionsResponse",
-      "description": "Response for the\nListExecutions\nmethod.",
+      "description": "Response for the ListExecutions method.",
       "type": "object",
       "properties": {
         "executions": {
@@ -123,7 +123,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages.",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         }
       }
@@ -134,7 +134,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the execution.\nFormat:\nprojects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+          "description": "Output only. The resource name of the execution. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
           "type": "string"
         },
         "startTime": {
@@ -157,6 +157,13 @@
             "The execution was stopped intentionally."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Invalid state.",
+            "The execution is in progress.",
+            "The execution finished successfully.",
+            "The execution failed with an error.",
+            "The execution was stopped intentionally."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
@@ -166,15 +173,15 @@
           ]
         },
         "argument": {
-          "description": "Input parameters of the execution represented as a JSON string.\nThe size limit is 32KB.",
+          "description": "Input parameters of the execution represented as a JSON string. The size limit is 32KB.",
           "type": "string"
         },
         "result": {
-          "description": "Output only. Output of the execution represented as a JSON string. The\nvalue can only be present if the execution's state is `SUCCEEDED`.",
+          "description": "Output only. Output of the execution represented as a JSON string. The value can only be present if the execution's state is `SUCCEEDED`.",
           "type": "string"
         },
         "error": {
-          "description": "Output only. The error which caused the execution to finish prematurely.\nThe value is only present if the execution's state is `FAILED`\nor `CANCELLED`.",
+          "description": "Output only. The error which caused the execution to finish prematurely. The value is only present if the execution's state is `FAILED` or `CANCELLED`.",
           "$ref": "Error"
         },
         "workflowRevisionId": {
@@ -200,7 +207,7 @@
     },
     "CancelExecutionRequest": {
       "id": "CancelExecutionRequest",
-      "description": "Request for the\nCancelExecution\nmethod.",
+      "description": "Request for the CancelExecution method.",
       "type": "object",
       "properties": {
       }
@@ -222,27 +229,32 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Name of the workflow of which the executions should be listed.\nFormat: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
+                          "description": "Required. Name of the workflow of which the executions should be listed. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Maximum number of executions to return per call.\nMax supported value depends on the selected Execution view: it's 10000 for\nBASIC and 100 for FULL. The default value used if the field is not\nspecified is 100, regardless of the selected view. Values greater than\nthe max value will be coerced down to it.",
+                          "description": "Maximum number of executions to return per call. Max supported value depends on the selected Execution view: it's 10000 for BASIC and 100 for FULL. The default value used if the field is not specified is 100, regardless of the selected view. Values greater than the max value will be coerced down to it.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListExecutions` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListExecutions` must\nmatch the call that provided the page token.",
+                          "description": "A page token, received from a previous `ListExecutions` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListExecutions` must match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         },
                         "view": {
-                          "description": "Optional. A view defining which fields should be filled in the returned executions.\nThe API will default to the BASIC view.",
+                          "description": "Optional. A view defining which fields should be filled in the returned executions. The API will default to the BASIC view.",
                           "location": "query",
                           "type": "string",
+                          "enumDescriptions": [
+                            "The default \/ unset value.",
+                            "Includes only basic metadata about the execution. Following fields are returned: name, start_time, end_time, state and workflow_revision_id.",
+                            "Includes all data."
+                          ],
                           "enum": [
                             "EXECUTION_VIEW_UNSPECIFIED",
                             "BASIC",
@@ -259,7 +271,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Returns a list of executions which belong to the workflow with\nthe given name. The method returns executions of all workflow\nrevisions. Returned executions are ordered by their start time (newest\nfirst)."
+                      "description": "Returns a list of executions which belong to the workflow with the given name. The method returns executions of all workflow revisions. Returned executions are ordered by their start time (newest first)."
                     },
                     "create": {
                       "id": "workflowexecutions.projects.locations.workflows.executions.create",
@@ -268,7 +280,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Name of the workflow for which an execution should be created.\nFormat: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\nThe latest revision of the workflow will be used.",
+                          "description": "Required. Name of the workflow for which an execution should be created. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow} The latest revision of the workflow will be used.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
@@ -296,16 +308,21 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. Name of the execution to be retrieved.\nFormat:\nprojects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+                          "description": "Required. Name of the execution to be retrieved. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",
                           "type": "string"
                         },
                         "view": {
-                          "description": "Optional. A view defining which fields should be filled in the returned execution.\nThe API will default to the FULL view.",
+                          "description": "Optional. A view defining which fields should be filled in the returned execution. The API will default to the FULL view.",
                           "location": "query",
                           "type": "string",
+                          "enumDescriptions": [
+                            "The default \/ unset value.",
+                            "Includes only basic metadata about the execution. Following fields are returned: name, start_time, end_time, state and workflow_revision_id.",
+                            "Includes all data."
+                          ],
                           "enum": [
                             "EXECUTION_VIEW_UNSPECIFIED",
                             "BASIC",
@@ -331,7 +348,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required. Name of the execution to be cancelled.\nFormat:\nprojects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+                          "description": "Required. Name of the execution to be cancelled. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/executions\/[^\/]+$",

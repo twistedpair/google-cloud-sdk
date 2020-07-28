@@ -1599,7 +1599,10 @@ class VirtualMachine(_messages.Message):
       cache. The disks will be mounted into the Docker folder in a way that
       the images present in the cache will not need to be pulled. The digests
       of the cached images must match those of the tags used or the latest
-      version will still be pulled. Only a single image is supported.
+      version will still be pulled. The root directory of the ext4 image must
+      contain `image` and `overlay2` directories copied from the Docker
+      directory of a VM where the desired Docker images have already been
+      pulled. Only a single image is supported.
     enableStackdriverMonitoring: Whether Stackdriver monitoring should be
       enabled on the VM.
     labels: Optional set of labels to apply to the VM and any attached disk

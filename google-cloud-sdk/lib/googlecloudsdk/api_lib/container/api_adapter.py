@@ -479,8 +479,8 @@ class CreateClusterOptions(object):
       metadata=None,
       enable_network_egress_metering=None,
       enable_resource_consumption_metering=None,
-      identity_namespace=None,
       workload_pool=None,
+      identity_provider=None,
       enable_shielded_nodes=None,
       linux_sysctls=None,
       disable_default_snat=None,
@@ -520,6 +520,9 @@ class CreateClusterOptions(object):
       auto_gke=None,
       private_ipv6_google_access_type=None,
       enable_confidential_nodes=None,
+      cluster_dns=None,
+      cluster_dns_scope=None,
+      cluster_dns_domain=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -604,8 +607,8 @@ class CreateClusterOptions(object):
     self.metadata = metadata
     self.enable_network_egress_metering = enable_network_egress_metering
     self.enable_resource_consumption_metering = enable_resource_consumption_metering
-    self.identity_namespace = identity_namespace
     self.workload_pool = workload_pool
+    self.identity_provider = identity_provider
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
     self.disable_default_snat = disable_default_snat
@@ -645,6 +648,9 @@ class CreateClusterOptions(object):
     self.auto_gke = auto_gke
     self.private_ipv6_google_access_type = private_ipv6_google_access_type
     self.enable_confidential_nodes = enable_confidential_nodes
+    self.cluster_dns = cluster_dns
+    self.cluster_dns_scope = cluster_dns_scope
+    self.cluster_dns_domain = cluster_dns_domain
 
 
 class UpdateClusterOptions(object):
@@ -683,8 +689,8 @@ class UpdateClusterOptions(object):
                security_profile_runtime_rules=None,
                autoscaling_profile=None,
                enable_peering_route_sharing=None,
-               identity_namespace=None,
                workload_pool=None,
+               identity_provider=None,
                disable_workload_identity=None,
                enable_shielded_nodes=None,
                disable_default_snat=None,
@@ -750,8 +756,8 @@ class UpdateClusterOptions(object):
     self.autoscaling_profile = autoscaling_profile
     self.enable_intra_node_visibility = enable_intra_node_visibility
     self.enable_peering_route_sharing = enable_peering_route_sharing
-    self.identity_namespace = identity_namespace
     self.workload_pool = workload_pool
+    self.identity_provider = identity_provider
     self.disable_workload_identity = disable_workload_identity
     self.enable_shielded_nodes = enable_shielded_nodes
     self.disable_default_snat = disable_default_snat
@@ -1211,6 +1217,7 @@ class APIAdapter(object):
       else:
         cluster.networkConfig.enableL4ilbSubsetting = options.enable_l4_ilb_subsetting
 
+    self.ParseClusterDNSOptions(options, cluster)
     if options.enable_legacy_authorization is not None:
       cluster.legacyAbac = self.messages.LegacyAbac(
           enabled=bool(options.enable_legacy_authorization))
@@ -1606,6 +1613,42 @@ class APIAdapter(object):
               self.messages.CidrBlock(cidrBlock=network))
       cluster.masterAuthorizedNetworksConfig = authorized_networks
 
+  def ParseClusterDNSOptions(self, options, cluster):
+    """Parses the options for ClusterDNS."""
+    if options.cluster_dns is None:
+      if options.cluster_dns_scope:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='cluster-dns', opt='cluster-dns-scope'))
+      if options.cluster_dns_domain:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='cluster-dns', opt='cluster-dns-domain'))
+      return
+
+    dns_config = self.messages.DNSConfig()
+    provider_enum = self.messages.DNSConfig.ClusterDnsValueValuesEnum
+    if options.cluster_dns.lower() == 'clouddns':
+      dns_config.clusterDns = provider_enum.CLOUD_DNS
+    else:
+      dns_config.clusterDns = provider_enum.PLATFORM_DEFAULT
+
+    if options.cluster_dns_scope is not None:
+      scope_enum = self.messages.DNSConfig.ClusterDnsScopeValueValuesEnum
+      if options.cluster_dns_scope.lower() == 'cluster':
+        dns_config.clusterDnsScope = scope_enum.CLUSTER_SCOPE
+      else:
+        dns_config.clusterDnsScope = scope_enum.VPC_SCOPE
+
+    if options.cluster_dns_domain is not None:
+      dns_config.clusterDnsDomain = options.cluster_dns_domain
+
+    if cluster.networkConfig is None:
+      cluster.networkConfig = self.messages.NetworkConfig(
+          dnsConfig=dns_config)
+    else:
+      cluster.networkConfig.dnsConfig = dns_config
+
   def CreateCluster(self, cluster_ref, options):
     """Handles CreateCluster options that are specific to a release track.
 
@@ -1629,9 +1672,8 @@ class APIAdapter(object):
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
-        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
-            disabled=False, loadBalancerType=load_balancer_type)
+            disabled=False)
 
     if options.workload_pool:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
@@ -2001,10 +2043,10 @@ class APIAdapter(object):
 
     if options.disable_addons is not None:
       if options.disable_addons.get(CLOUDRUN) is not None:
-        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN), loadBalancerType=load_balancer_type))
+                disabled=options.disable_addons.get(CLOUDRUN)))
+
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -2911,9 +2953,8 @@ class V1Beta1Adapter(V1Adapter):
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
-        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
-            disabled=False, loadBalancerType=load_balancer_type)
+            disabled=False)
       # CloudBuild is disabled by default.
       if CLOUDBUILD in options.addons:
         if not options.enable_stackdriver_kubernetes:
@@ -2939,9 +2980,8 @@ class V1Beta1Adapter(V1Adapter):
     if options.workload_pool:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           workloadPool=options.workload_pool)
-    elif options.identity_namespace:
-      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
-          identityNamespace=options.identity_namespace)
+      if options.identity_provider:
+        cluster.workloadIdentityConfig.identityProvider = options.identity_provider
     if options.enable_master_global_access is not None:
       if not options.enable_private_nodes:
         raise util.Error(
@@ -2986,6 +3026,12 @@ class V1Beta1Adapter(V1Adapter):
             DATAPATH_PROVIDER_ILL_SPECIFIED_ERROR_MSG.format(
                 provider=options.datapath_provider))
 
+    if options.dataplane_v2 is not None and options.dataplane_v2:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.datapathProvider = \
+            self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
+
     if options.private_ipv6_google_access_type is not None:
       if cluster.networkConfig is None:
         cluster.networkConfig = self.messages.NetworkConfig()
@@ -3008,10 +3054,10 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               workloadPool=options.workload_pool))
-    elif options.identity_namespace:
+    elif options.identity_provider:
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
-              identityNamespace=options.identity_namespace))
+              identityProvider=options.identity_provider))
     elif options.disable_workload_identity:
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
@@ -3069,10 +3115,9 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
       if options.disable_addons.get(CLOUDRUN) is not None:
-        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN), loadBalancerType=load_balancer_type))
+                disabled=options.disable_addons.get(CLOUDRUN)))
       if options.disable_addons.get(APPLICATIONMANAGER) is not None:
         update.desiredAddonsConfig.kalmConfig = (
             self.messages.KalmConfig(
@@ -3293,9 +3338,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
         enable_alpha_features = options.enable_cloud_run_alpha if \
             options.enable_cloud_run_alpha is not None else False
-        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
+        load_balancer_type = _GetCloudRunLoadBalancerType(
+            options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
-            disabled=False, enableAlphaFeatures=enable_alpha_features, loadBalancerType=load_balancer_type)
+            disabled=False,
+            enableAlphaFeatures=enable_alpha_features,
+            loadBalancerType=load_balancer_type)
       # Cloud Build is disabled by default.
       if CLOUDBUILD in options.addons:
         if not options.enable_stackdriver_kubernetes:
@@ -3317,9 +3365,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.workload_pool:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           workloadPool=options.workload_pool)
-    elif options.identity_namespace:
-      cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
-          identityNamespace=options.identity_namespace)
+      if options.identity_provider:
+        cluster.workloadIdentityConfig.identityProvider = options.identity_provider
     if options.security_profile is not None:
       cluster.securityProfile = self.messages.SecurityProfile(
           name=options.security_profile)
@@ -3374,6 +3421,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             DATAPATH_PROVIDER_ILL_SPECIFIED_ERROR_MSG.format(
                 provider=options.datapath_provider))
 
+    if options.dataplane_v2 is not None and options.dataplane_v2:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.datapathProvider = \
+            self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
+
     if not options.enable_ip_alias and options.enable_ip_alias is not None:
       if cluster.ipAllocationPolicy is None:
         cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy(
@@ -3403,10 +3456,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               workloadPool=options.workload_pool))
-    elif options.identity_namespace:
+    elif options.identity_provider:
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
-              identityNamespace=options.identity_namespace))
+              identityProvider=options.identity_provider))
     elif options.disable_workload_identity:
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
@@ -3480,10 +3533,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
       if options.disable_addons.get(CLOUDRUN) is not None:
-        load_balancer_type = _GetCloudRunLoadBalancerType(options, self.messages)
+        load_balancer_type = _GetCloudRunLoadBalancerType(
+            options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN), loadBalancerType=load_balancer_type))
+                disabled=options.disable_addons.get(CLOUDRUN),
+                loadBalancerType=load_balancer_type))
       if options.disable_addons.get(APPLICATIONMANAGER) is not None:
         update.desiredAddonsConfig.kalmConfig = (
             self.messages.KalmConfig(
@@ -3683,7 +3738,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
 def _GetCloudRunLoadBalancerType(options, messages):
   if options.cloud_run_config is not None:
-    input_load_balancer_type = options.cloud_run_config.get('load-balancer-type')
+    input_load_balancer_type = options.cloud_run_config.get(
+        'load-balancer-type')
     if input_load_balancer_type is not None:
       if input_load_balancer_type == 'INTERNAL':
         return messages.CloudRunConfig.LoadBalancerTypeValueValuesEnum.LOAD_BALANCER_TYPE_INTERNAL

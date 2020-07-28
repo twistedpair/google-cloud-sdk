@@ -1195,6 +1195,27 @@ class Finding(_messages.Message):
   start = _messages.IntegerField(4)
 
 
+class GcsSource(_messages.Message):
+  r"""Specifies the configuration for importing data from Cloud Storage.
+
+  Fields:
+    uri: Points to a Cloud Storage URI containing file(s) to import.  The URI
+      must be in the following format: `gs://{bucket_id}/{object_id}`. The URI
+      can include wildcards in `object_id` and thus identify multiple files.
+      Supported wildcards:  *  `*` to match 0 or more non-separator characters
+      *  `**` to match 0 or more characters (including separators). Must be
+      used at the end of a path and with no other wildcards in the path. Can
+      also be used with a file extension (such as .ndjson), which imports all
+      files with the extension in the specified directory and its sub-
+      directories. For example, `gs://my-bucket/my-directory/**.ndjson`
+      imports all files with `.ndjson` extensions in `my-directory/` and its
+      sub-directories. *  `?` to match 1 character  Files matching the
+      wildcard are expected to contain content only, no metadata.
+  """
+
+  uri = _messages.StringField(1)
+
+
 class GoogleCloudHealthcareV1beta1AnnotationBigQueryDestination(_messages.Message):
   r"""The BigQuery table for export.
 
@@ -2905,6 +2926,21 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetRequest(_messages.Message
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsHl7V2StoresImportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresImportRequest object.
+
+  Fields:
+    importMessagesRequest: A ImportMessagesRequest resource to be passed as
+      the request body.
+    name: The name of the target HL7v2 store, in the format `projects/{project
+      _id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores/{hl7v2_st
+      ore_id}`
+  """
+
+  importMessagesRequest = _messages.MessageField('ImportMessagesRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest object.
 
@@ -3604,8 +3640,8 @@ class ImportAnnotationsResponse(_messages.Message):
 
   Fields:
     annotationStore: The annotation_store that the annotations were imported
-      to. The name is in the format `projects/{project_id}/locations/{location
-      _id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+      to, in the format `projects/{project_id}/locations/{location_id}/dataset
+      s/{dataset_id}/annotationStores/{annotation_store_id}`.
     successCount: The number of the input annotations. All input have been
       imported successfully.
   """
@@ -3643,6 +3679,26 @@ class ImportDicomDataRequest(_messages.Message):
 class ImportDicomDataResponse(_messages.Message):
   r"""Returns additional information in regards to a completed DICOM store
   import.
+  """
+
+
+
+class ImportMessagesRequest(_messages.Message):
+  r"""Request to import messages.
+
+  Fields:
+    gcsSource: Cloud Storage source data location and import configuration.
+      The Cloud Storage location requires the `roles/storage.objectViewer`
+      Cloud IAM role.
+  """
+
+  gcsSource = _messages.MessageField('GcsSource', 1)
+
+
+class ImportMessagesResponse(_messages.Message):
+  r"""Final response of importing messages. This structure is included in the
+  response to describe the detailed outcome. It is only included when the
+  operation finishes successfully.
   """
 
 
@@ -4439,8 +4495,8 @@ class SchemaPackage(_messages.Message):
   r"""A schema package contains a set of schemas and type definitions.
 
   Enums:
-    SchematizedParsingTypeValueValuesEnum: Determines how messages that don't
-      parse successfully are handled.
+    SchematizedParsingTypeValueValuesEnum: Determines how messages that fail
+      to parse are handled.
 
   Fields:
     ignoreMinOccurs: Flag to ignore all min_occurs restrictions in the schema.
@@ -4450,8 +4506,8 @@ class SchemaPackage(_messages.Message):
       that match the incoming message. Schema configs present in higher
       indices override those in lower indices with the same message type and
       trigger event if their VersionSources all match an incoming message.
-    schematizedParsingType: Determines how messages that don't parse
-      successfully are handled.
+    schematizedParsingType: Determines how messages that fail to parse are
+      handled.
     types: Schema type definitions that are layered based on their
       VersionSources that match the incoming message. Type definitions present
       in higher indices override those in lower indices with the same type
@@ -4459,7 +4515,7 @@ class SchemaPackage(_messages.Message):
   """
 
   class SchematizedParsingTypeValueValuesEnum(_messages.Enum):
-    r"""Determines how messages that don't parse successfully are handled.
+    r"""Determines how messages that fail to parse are handled.
 
     Values:
       SCHEMATIZED_PARSING_TYPE_UNSPECIFIED: Unspecified schematized parsing

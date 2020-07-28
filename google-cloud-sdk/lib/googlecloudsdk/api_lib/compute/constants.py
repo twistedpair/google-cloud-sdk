@@ -209,6 +209,7 @@ SCOPES = {
     'datastore': ['https://www.googleapis.com/auth/datastore'],
     'logging-write': [_LOGGING_WRITE],
     'monitoring': [_MONITORING],
+    'monitoring-read': ['https://www.googleapis.com/auth/monitoring.read'],
     'monitoring-write': [_MONITORING_WRITE],
     'service-control': [_SERVICE_CONTROL_SCOPE],
     'service-management': [_SERVICE_MANAGEMENT_SCOPE],

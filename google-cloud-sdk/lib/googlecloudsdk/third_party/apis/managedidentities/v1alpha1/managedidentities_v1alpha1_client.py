@@ -56,8 +56,7 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
           }
 
     def AttachTrust(self, request, global_params=None):
-      r"""Adds AD trust in a given domain.
-Operation<response: google.protobuf.Empty>
+      r"""Adds AD trust in a given domain. Operation.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsAttachTrustRequest) input message
@@ -84,8 +83,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a Microsoft AD Domain in a given project.
-Operation<response: google.protobuf.Empty>
+      r"""Creates a Microsoft AD Domain in a given project. Operation.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest) input message
@@ -112,8 +110,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes identified domain.
-Operation<response: google.protobuf.Empty>
+      r"""Deletes identified domain. Operation.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsDeleteRequest) input message
@@ -140,8 +137,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def DetachTrust(self, request, global_params=None):
-      r"""Removes identified trust.
-Operation<response: google.protobuf.Empty>
+      r"""Removes identified trust. Operation.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsDetachTrustRequest) input message
@@ -195,9 +191,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest) input message
@@ -251,8 +245,7 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the metadata and configuration of a specified domain.
-Operation<response: google.protobuf.Empty>
+      r"""Updates the metadata and configuration of a specified domain. Operation.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsPatchRequest) input message
@@ -279,8 +272,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def ReconfigureTrust(self, request, global_params=None):
-      r"""Updates the dns conditional forwarder.
-Operation<response: google.protobuf.Empty>
+      r"""Updates the dns conditional forwarder. Operation.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsReconfigureTrustRequest) input message
@@ -307,8 +299,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def ResetAdminPassword(self, request, global_params=None):
-      r"""Resets managed identities admin password identified by.
-managed_identities_admin_name
+      r"""Resets managed identities admin password identified by managed_identities_admin_name.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsResetAdminPasswordRequest) input message
@@ -335,10 +326,7 @@ managed_identities_admin_name
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest) input message
@@ -365,13 +353,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest) input message
@@ -398,8 +380,7 @@ may "fail open" without warning.
     )
 
     def ValidateTrust(self, request, global_params=None):
-      r"""Validate the trust state.
-Operation<response: google.protobuf.Empty>
+      r"""Validate the trust state Operation.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalDomainsValidateTrustRequest) input message
@@ -436,16 +417,7 @@ Operation<response: google.protobuf.Empty>
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalOperationsCancelRequest) input message
@@ -472,10 +444,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalOperationsDeleteRequest) input message
@@ -502,9 +471,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalOperationsGetRequest) input message
@@ -531,16 +498,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (ManagedidentitiesProjectsLocationsGlobalOperationsListRequest) input message

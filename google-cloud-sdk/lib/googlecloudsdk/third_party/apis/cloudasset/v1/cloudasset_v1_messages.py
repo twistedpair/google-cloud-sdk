@@ -1670,7 +1670,7 @@ class Resource(_messages.Message):
 
 
 class ResourceSearchResult(_messages.Message):
-  r"""A result of Resource Search, containing information of a cloud resoure.
+  r"""A result of Resource Search, containing information of a cloud resource.
 
   Messages:
     AdditionalAttributesValue: The additional attributes of this resource. The

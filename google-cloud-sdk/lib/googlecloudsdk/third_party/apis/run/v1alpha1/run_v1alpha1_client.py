@@ -457,14 +457,7 @@ class RunV1alpha1(base_api.BaseApiClient):
     )
 
     def ReplaceCloudSchedulerSource(self, request, global_params=None):
-      r"""Rpc to replace a cloudschedulersource.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a cloudschedulersource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunNamespacesCloudschedulersourcesReplaceCloudSchedulerSourceRequest) input message
@@ -609,14 +602,7 @@ optimistic concurrency control.
     )
 
     def ReplaceCloudStorageSource(self, request, global_params=None):
-      r"""Rpc to replace a cloudstoragesource.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a cloudstoragesource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunNamespacesCloudstoragesourcesReplaceCloudStorageSourceRequest) input message
@@ -1017,9 +1003,7 @@ optimistic concurrency control.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Rpc to delete a service.
-This will cause the Service to stop serving traffic and will delete the
-child entities like Routes, Configurations and Revisions.
+      r"""Rpc to delete a service. This will cause the Service to stop serving traffic and will delete the child entities like Routes, Configurations and Revisions.
 
       Args:
         request: (RunNamespacesServicesDeleteRequest) input message
@@ -1100,14 +1084,7 @@ child entities like Routes, Configurations and Revisions.
     )
 
     def ReplaceService(self, request, global_params=None):
-      r"""Rpc to replace a service.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a service. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunNamespacesServicesReplaceServiceRequest) input message
@@ -1653,14 +1630,7 @@ optimistic concurrency control.
     )
 
     def ReplaceCloudSchedulerSource(self, request, global_params=None):
-      r"""Rpc to replace a cloudschedulersource.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a cloudschedulersource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunProjectsLocationsCloudschedulersourcesReplaceCloudSchedulerSourceRequest) input message
@@ -1805,14 +1775,7 @@ optimistic concurrency control.
     )
 
     def ReplaceCloudStorageSource(self, request, global_params=None):
-      r"""Rpc to replace a cloudstoragesource.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a cloudstoragesource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunProjectsLocationsCloudstoragesourcesReplaceCloudStorageSourceRequest) input message
@@ -2213,9 +2176,7 @@ optimistic concurrency control.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Rpc to delete a service.
-This will cause the Service to stop serving traffic and will delete the
-child entities like Routes, Configurations and Revisions.
+      r"""Rpc to delete a service. This will cause the Service to stop serving traffic and will delete the child entities like Routes, Configurations and Revisions.
 
       Args:
         request: (RunProjectsLocationsServicesDeleteRequest) input message
@@ -2269,8 +2230,7 @@ child entities like Routes, Configurations and Revisions.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Get the IAM Access Control policy currently in effect for the given.
-Cloud Run service. This result does not include any inherited policies.
+      r"""Get the IAM Access Control policy currently in effect for the given Cloud Run service. This result does not include any inherited policies.
 
       Args:
         request: (RunProjectsLocationsServicesGetIamPolicyRequest) input message
@@ -2324,14 +2284,7 @@ Cloud Run service. This result does not include any inherited policies.
     )
 
     def ReplaceService(self, request, global_params=None):
-      r"""Rpc to replace a service.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a service. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (RunProjectsLocationsServicesReplaceServiceRequest) input message
@@ -2358,8 +2311,7 @@ optimistic concurrency control.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the IAM Access control policy for the specified Service. Overwrites.
-any existing policy.
+      r"""Sets the IAM Access control policy for the specified Service. Overwrites any existing policy.
 
       Args:
         request: (RunProjectsLocationsServicesSetIamPolicyRequest) input message
@@ -2386,9 +2338,7 @@ any existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified Project.
-
-There are no permissions required for making this API call.
+      r"""Returns permissions that a caller has on the specified Project. There are no permissions required for making this API call.
 
       Args:
         request: (RunProjectsLocationsServicesTestIamPermissionsRequest) input message

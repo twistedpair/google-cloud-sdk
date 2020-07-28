@@ -278,7 +278,7 @@ def CreateResourceName(parent, collection, resource_id):
     resource, e.g. projects/my-project/logs/my-log.
   """
   # id needs to be escaped to create a valid resource name - i.e it is a
-  # requirement of the Stackdriver Logging API that each component of a resource
+  # requirement of the Cloud Logging API that each component of a resource
   # name must have no slashes.
   return '{0}/{1}/{2}'.format(
       parent, collection, resource_id.replace('/', '%2F'))

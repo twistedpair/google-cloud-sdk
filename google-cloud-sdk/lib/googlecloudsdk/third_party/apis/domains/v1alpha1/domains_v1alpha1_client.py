@@ -56,9 +56,7 @@ class DomainsV1alpha1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (DomainsProjectsLocationsOperationsGetRequest) input message
@@ -85,16 +83,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (DomainsProjectsLocationsOperationsListRequest) input message
@@ -131,8 +120,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Reset(self, request, global_params=None):
-      r"""Resets the Authorization Code of the registration.
-Can only be called after 60 days have elapsed since initial registration.
+      r"""Resets the Authorization Code of the registration. Can only be called after 60 days have elapsed since initial registration.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsAuthorizationCodeResetRequest) input message
@@ -196,8 +184,7 @@ Can only be called after 60 days have elapsed since initial registration.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Registration, i.e. attempts to register the domain, in a.
-given project and location
+      r"""Creates a new Registration, i.e. attempts to register the domain, in a given project and location.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsCreateRequest) input message
@@ -224,9 +211,7 @@ given project and location
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Registration.
-Can only be called on Registrations in state DETACHED with expire_time
-in the past.
+      r"""Deletes a single Registration. Can only be called on Registrations in state DETACHED with expire_time in the past.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsDeleteRequest) input message
@@ -253,8 +238,7 @@ in the past.
     )
 
     def Detach(self, request, global_params=None):
-      r"""Detach a Registration from Cloud Domains management, leaving it registered.
-at Google Domains registrar.
+      r"""Detach a Registration from Cloud Domains management, leaving it registered at Google Domains registrar.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsDetachRequest) input message
@@ -308,8 +292,7 @@ at Google Domains registrar.
     )
 
     def GetAuthorizationCode(self, request, global_params=None):
-      r"""Gets Authorization Code of a Registration.
-Can only be called after 60 days have elapsed since initial registration.
+      r"""Gets Authorization Code of a Registration. Can only be called after 60 days have elapsed since initial registration.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsGetAuthorizationCodeRequest) input message
@@ -336,9 +319,7 @@ Can only be called after 60 days have elapsed since initial registration.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsGetIamPolicyRequest) input message
@@ -419,8 +400,7 @@ set.
     )
 
     def SearchAvailability(self, request, global_params=None):
-      r"""Searches available domains similar to the given query.
-Returned domain availability allows some staleness.
+      r"""Searches available domains similar to the given query. Returned domain availability allows some staleness.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsSearchAvailabilityRequest) input message
@@ -447,10 +427,7 @@ Returned domain availability allows some staleness.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsSetIamPolicyRequest) input message
@@ -477,13 +454,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsTestIamPermissionsRequest) input message

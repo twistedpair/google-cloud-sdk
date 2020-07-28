@@ -50,10 +50,14 @@ _AGENT_RULE_TEMPLATES = {
                     '1.*.*': 'google-cloud-logging-el%s-x86_64-1'
                 },
                 clear_prev_repo=(
-                    'sudo rm /etc/yum.repos.d/google-cloud-logging.repo'),
-                install_with_version=textwrap.dedent("""\
-                    sudo yum remove google-fluentd
-                      sudo yum install -y 'google-fluentd%s'"""),
+                    'sudo rm /etc/yum.repos.d/google-cloud-logging.repo || '
+                    "true; find /var/cache/yum -name '*google-cloud-logging*' "
+                    '| xargs sudo rm -rf || true'
+                ),
+                install_with_version=(
+                    "sudo yum remove -y google-fluentd || true; "
+                    "sudo yum install -y 'google-fluentd%s'; "
+                    "sudo yum install -y google-fluentd-catch-all-config"),
             ),
             zypper_package=_PackageTemplates(
                 repo={
@@ -61,10 +65,14 @@ _AGENT_RULE_TEMPLATES = {
                     '1.*.*': 'google-cloud-logging-sles%s-x86_64-1'
                 },
                 clear_prev_repo=(
-                    'sudo rm /etc/zypp/repos.d/google-cloud-logging.repo'),
-                install_with_version=textwrap.dedent("""\
-                    sudo zypper remove google-fluentd
-                      sudo zypper install -y 'google-fluentd%s'"""),
+                    'sudo rm /etc/zypp/repos.d/google-cloud-logging.repo || '
+                    "true; find /var/cache/zypp -name '*google-cloud-logging*' "
+                    '| xargs sudo rm -rf || true'
+                ),
+                install_with_version=(
+                    "sudo zypper remove -y google-fluentd || true; "
+                    "sudo zypper install -y 'google-fluentd%s'; "
+                    "sudo zypper install -y google-fluentd-catch-all-config"),
             ),
             apt_package=_PackageTemplates(
                 repo={
@@ -72,27 +80,25 @@ _AGENT_RULE_TEMPLATES = {
                     '1.*.*': 'google-cloud-logging-%s-1'
                 },
                 clear_prev_repo=(
-                    'sudo rm /etc/apt/sources.list.d/google-cloud-logging.repo'
+                    'sudo rm /etc/apt/sources.list.d/google-cloud-logging.repo '
+                    '|| true; find /var/cache/apt -name '
+                    "'*google-cloud-logging*' | xargs sudo rm -rf || true"
                 ),
-                install_with_version=textwrap.dedent("""\
-                    sudo apt-get remove google-fluentd
-                      sudo apt-get install -y 'google-fluentd%s'"""),
+                install_with_version=(
+                    "sudo apt-get remove -y google-fluentd || true; "
+                    "sudo apt-get install -y 'google-fluentd%s'; "
+                    "sudo apt-get install -y google-fluentd-catch-all-config"),
             ),
             repo_id='google-cloud-logging',
             display_name='Google Cloud Logging Agent Repository',
             run_agent=textwrap.dedent("""\
-                    #!/bin/bash
+                    #!/bin/bash -e
                     %(clear_prev_repo)s
                     for i in {1..5}; do
-                      %(install)s
-                      sudo service google-fluentd start
-                      sudo service google-fluentd status
-                      ret=$?
-                      if [ $ret -ne 0 ]; then
-                        sleep 1m
-                      else
+                      if (%(install)s; sudo service google-fluentd start); then
                         break
                       fi
+                      sleep 1m
                     done"""),
             recipe_name='set-google-fluentd-version',
             current_major_version='1.*.*',
@@ -106,10 +112,13 @@ _AGENT_RULE_TEMPLATES = {
                     '6.*.*': 'google-cloud-monitoring-el%s-x86_64-6'
                 },
                 clear_prev_repo=(
-                    'sudo rm /etc/yum.repos.d/google-cloud-monitoring.repo'),
-                install_with_version=textwrap.dedent("""\
-                    sudo yum remove stackdriver-agent
-                      sudo yum install -y 'stackdriver-agent%s'"""),
+                    'sudo rm /etc/yum.repos.d/google-cloud-monitoring.repo || '
+                    'true; find /var/cache/yum -name '
+                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"
+                ),
+                install_with_version=(
+                    "sudo yum remove -y stackdriver-agent || true; "
+                    "sudo yum install -y 'stackdriver-agent%s'"),
             ),
             zypper_package=_PackageTemplates(
                 repo={
@@ -118,10 +127,13 @@ _AGENT_RULE_TEMPLATES = {
                     '6.*.*': 'google-cloud-monitoring-sles%s-x86_64-6'
                 },
                 clear_prev_repo=(
-                    'sudo rm /etc/zypp/repos.d/google-cloud-monitoring.repo'),
-                install_with_version=textwrap.dedent("""\
-                    sudo zypper remove stackdriver-agent
-                      sudo zypper install -y 'stackdriver-agent%s'"""),
+                    'sudo rm /etc/zypp/repos.d/google-cloud-monitoring.repo || '
+                    'true; find /var/cache/zypp -name '
+                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"
+                ),
+                install_with_version=(
+                    "sudo zypper remove -y stackdriver-agent || true; "
+                    "sudo zypper install -y 'stackdriver-agent%s'"),
             ),
             apt_package=_PackageTemplates(
                 repo={
@@ -131,27 +143,24 @@ _AGENT_RULE_TEMPLATES = {
                 },
                 clear_prev_repo=(
                     'sudo rm '
-                    '/etc/apt/sources.list.d/google-cloud-monitoring.repo'
+                    '/etc/apt/sources.list.d/google-cloud-monitoring.repo || '
+                    'true; find /var/cache/apt -name '
+                    "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"
                 ),
-                install_with_version=textwrap.dedent("""\
-                    sudo apt-get remove stackdriver-agent
-                      sudo apt-get install -y 'stackdriver-agent%s'"""),
+                install_with_version=(
+                    "sudo apt-get remove -y stackdriver-agent || true; "
+                    "sudo apt-get install -y 'stackdriver-agent%s'"),
             ),
             repo_id='google-cloud-monitoring',
             display_name='Google Cloud Monitoring Agent Repository',
             run_agent=textwrap.dedent("""\
-                    #!/bin/bash
+                    #!/bin/bash -e
                     %(clear_prev_repo)s
                     for i in {1..5}; do
-                      %(install)s
-                      sudo service stackdriver-agent start
-                      sudo service stackdriver-agent status
-                      ret=$?
-                      if [ $ret -ne 0 ]; then
-                        sleep 1m
-                      else
+                      if (%(install)s; sudo service stackdriver-agent start); then
                         break
                       fi
+                      sleep 1m
                     done"""),
             recipe_name='set-stackdriver-agent-version',
             current_major_version='6.*.*',
@@ -356,7 +365,7 @@ def _CreateAptPkgRepo(messages, repo_name):
           uri='http://packages.cloud.google.com/apt',
           distribution=repo_name,
           components=['main'],
-          gpgKey='http://packages.cloud.google.com/apt/doc/apt-key.gpg'))
+          gpgKey='https://packages.cloud.google.com/apt/doc/apt-key.gpg'))
 
 
 def _CreateOstypes(messages, assignment_os_types):
@@ -489,7 +498,7 @@ def _CreateStepInScript(messages, agent_rule, os_type):
     elif '*.*' in agent_rule.version:
       agent_version = '=%s' % agent_rule.version.replace('*.*', '*')
     else:
-      agent_version = '=%s' % version_with_build
+      agent_version = '=%s*' % version_with_build
     clear_prev_repo = _AGENT_RULE_TEMPLATES[
         agent_rule.type].apt_package.clear_prev_repo
     install_with_version = _AGENT_RULE_TEMPLATES[

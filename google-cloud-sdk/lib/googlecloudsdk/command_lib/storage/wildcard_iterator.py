@@ -20,11 +20,16 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import fnmatch
+import re
 
 from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
 import six
+
+
+WILDCARD_REGEX = re.compile(r'[*?\[\]]')
 
 
 class WildcardIterator(six.with_metaclass(abc.ABCMeta)):
@@ -61,3 +66,49 @@ class CloudWildcardIterator(WildcardIterator):
     if url.is_provider():
       for bucket in self._client.ListBuckets():
         yield resource_reference.BucketReference(url, bucket)
+    else:
+      for bucket_resource_ref in self._expand_bucket_wildcards(url):
+        if url.is_bucket():
+          yield bucket_resource_ref
+        else:
+          # TODO(b/161127680) Add wildcard support for object
+          pass
+
+  def _expand_bucket_wildcards(self, url):
+    """Expand bucket names with wildcard.
+
+    Wildcard might be present in other parts of the url string, but this
+    method only deals with expanding the bucket section.
+
+    Args:
+      url (StorageUrl): Represents the actual url.
+
+    Yields:
+      BucketReference objects.
+    """
+    if _contains_wildcard(url.bucket_name):
+      regex = fnmatch.translate(url.bucket_name)
+      bucket_pattern = re.compile(regex)
+      for bucketobj in self._client.ListBuckets():
+        if bucket_pattern.match(bucketobj.name):
+          bucket_url = storage_url.CloudUrl(url.scheme, bucketobj.name)
+          yield resource_reference.BucketReference(bucket_url, bucketobj)
+    else:
+      # TODO(b/161224037) get_bucket has not been implemented yet.
+      bucketobj = self._client.get_bucket()
+      bucket_url = storage_url.CloudUrl(url.scheme, bucketobj.name)
+      yield resource_reference.BucketReference(bucket_url, bucketobj)
+
+
+def _contains_wildcard(url_string):
+  """Checks whether url_string contains a wildcard.
+
+  Args:
+    url_string: URL string to check.
+
+  Returns:
+    bool indicator.
+  """
+  return bool(WILDCARD_REGEX.search(url_string))
+
+

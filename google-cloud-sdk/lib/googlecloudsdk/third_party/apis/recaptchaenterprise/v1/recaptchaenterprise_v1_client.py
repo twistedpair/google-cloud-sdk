@@ -200,8 +200,8 @@ on whether the event turned out to be authentic or fradulent.
     )
 
     def GetMetrics(self, request, global_params=None):
-      r"""Get some aggregated metrics for a Key. This method is used by Pantheon.
-to build simple dashboards.
+      r"""Get some aggregated metrics for a Key. This data can be used to build.
+dashboards.
 
       Args:
         request: (RecaptchaenterpriseProjectsKeysGetMetricsRequest) input message

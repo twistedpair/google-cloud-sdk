@@ -57,15 +57,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new ClusterGroupBackup in a given project and location(region).
-
-The creation is executed asynchronously and callers may check the returned
-operation to track its progress. Once the operation is completed the new
-ClusterGroupBackup will be functional. Completed longrunning.Operation will
-contain the new ClusterGroupBackup object in the response field.
-
-The returned operation is automatically deleted after a few hours, so there
-is no need to call DeleteOperation.
+      r"""Creates a new ClusterGroupBackup in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new ClusterGroupBackup will be functional. Completed longrunning.Operation will contain the new ClusterGroupBackup object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupBackupsCreateRequest) input message
@@ -210,13 +202,7 @@ is no need to call DeleteOperation.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new cluster in a given cluster group.
-
-The creation is executed asynchronously and callers may check the returned
-operation to track its progress. Once the operation is completed the
-cluster will be fully functional.
-The returned operation is automatically deleted after a few hours, so there
-is no need to call DeleteOperation.
+      r"""Creates a new cluster in a given cluster group. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the cluster will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsClustersCreateRequest) input message
@@ -324,7 +310,7 @@ is no need to call DeleteOperation.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the description and labels of a specific cluster.
+      r"""Updates labels of a specific cluster.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsClustersPatchRequest) input message
@@ -350,29 +336,29 @@ is no need to call DeleteOperation.
         supports_download=False,
     )
 
-    def RemoveNode(self, request, global_params=None):
-      r"""Remove a bare metal node from a cluster.
+    def RemoveNodes(self, request, global_params=None):
+      r"""Remove bare metal nodes from a cluster.
 
       Args:
-        request: (SddcProjectsLocationsClusterGroupsClustersRemoveNodeRequest) input message
+        request: (SddcProjectsLocationsClusterGroupsClustersRemoveNodesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
       """
-      config = self.GetMethodConfig('RemoveNode')
+      config = self.GetMethodConfig('RemoveNodes')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    RemoveNode.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}/clusters/{clustersId}:removeNode',
+    RemoveNodes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}/clusters/{clustersId}:removeNodes',
         http_method='POST',
-        method_id='sddc.projects.locations.clusterGroups.clusters.removeNode',
-        ordered_params=['name'],
-        path_params=['name'],
+        method_id='sddc.projects.locations.clusterGroups.clusters.removeNodes',
+        ordered_params=['cluster'],
+        path_params=['cluster'],
         query_params=[],
-        relative_path='v1alpha1/{+name}:removeNode',
-        request_field='removeNodeRequest',
-        request_type_name='SddcProjectsLocationsClusterGroupsClustersRemoveNodeRequest',
+        relative_path='v1alpha1/{+cluster}:removeNodes',
+        request_field='removeNodesRequest',
+        request_type_name='SddcProjectsLocationsClusterGroupsClustersRemoveNodesRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -388,13 +374,7 @@ is no need to call DeleteOperation.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new ClusterGroup in a given project and location(region).
-
-The creation is executed asynchronously and callers may check the returned
-operation to track its progress. Once the operation is completed the new
-ClusterGroup will be fully functional.
-The returned operation is automatically deleted after a few hours, so there
-is no need to call DeleteOperation.
+      r"""Creates a new ClusterGroup in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new ClusterGroup will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsCreateRequest) input message
@@ -475,9 +455,7 @@ is no need to call DeleteOperation.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsGetIamPolicyRequest) input message
@@ -531,7 +509,7 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the description and labels of a specific clusterGroup.
+      r"""Updates description, labels and network config of a specific clusterGroup.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsPatchRequest) input message
@@ -558,10 +536,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsSetIamPolicyRequest) input message
@@ -588,13 +563,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsTestIamPermissionsRequest) input message
@@ -631,16 +600,7 @@ may "fail open" without warning.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (SddcProjectsLocationsOperationsCancelRequest) input message
@@ -667,10 +627,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (SddcProjectsLocationsOperationsDeleteRequest) input message
@@ -697,9 +654,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (SddcProjectsLocationsOperationsGetRequest) input message
@@ -726,16 +681,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (SddcProjectsLocationsOperationsListRequest) input message

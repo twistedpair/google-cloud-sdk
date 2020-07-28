@@ -62,22 +62,7 @@ class DatacatalogV1(base_api.BaseApiClient):
           }
 
     def Search(self, request, global_params=None):
-      r"""Searches Data Catalog for multiple resources like entries, tags that.
-match a query.
-
-This is a custom method
-(https://cloud.google.com/apis/design/custom_methods) and does not return
-the complete resource, only the resource identifier and high level
-fields. Clients can subsequentally call `Get` methods.
-
-Note that Data Catalog search queries do not guarantee full recall. Query
-results that match your query may not be returned, even in subsequent
-result pages. Also note that results returned (and not returned) can vary
-across repeated search queries.
-
-See [Data Catalog Search
-Syntax](https://cloud.google.com/data-catalog/docs/how-to/search-reference)
-for more information.
+      r"""Searches Data Catalog for multiple resources like entries, tags that match a query. This is a custom method (https://cloud.google.com/apis/design/custom_methods) and does not return the complete resource, only the resource identifier and high level fields. Clients can subsequentally call `Get` methods. Note that Data Catalog search queries do not guarantee full recall. Query results that match your query may not be returned, even in subsequent result pages. Also note that results returned (and not returned) can vary across repeated search queries. See [Data Catalog Search Syntax](https://cloud.google.com/data-catalog/docs/how-to/search-reference) for more information.
 
       Args:
         request: (GoogleCloudDatacatalogV1SearchCatalogRequest) input message
@@ -113,9 +98,7 @@ for more information.
           }
 
     def Lookup(self, request, global_params=None):
-      r"""Get an entry by target resource name. This method allows clients to use.
-the resource name from the source Google Cloud Platform service to get the
-Data Catalog Entry.
+      r"""Get an entry by target resource name. This method allows clients to use the resource name from the source Google Cloud Platform service to get the Data Catalog Entry.
 
       Args:
         request: (DatacatalogEntriesLookupRequest) input message
@@ -151,13 +134,7 @@ Data Catalog Entry.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a tag on an Entry.
-Note: The project identified by the `parent` parameter for the
-[tag](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)
-and the
-[tag
-template](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
-used to create the tag must be from the same organization.
+      r"""Creates a tag on an Entry. Note: The project identified by the `parent` parameter for the [tag](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters) and the [tag template](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters) used to create the tag must be from the same organization.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesTagsCreateRequest) input message
@@ -275,15 +252,7 @@ used to create the tag must be from the same organization.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an entry. Only entries of 'FILESET' type or user-specified type can.
-be created.
-
-Users should enable the Data Catalog API in the project identified by
-the `parent` parameter (see [Data Catalog Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
-
-A maximum of 100,000 entries may be created per entry group.
+      r"""Creates an entry. Only entries of 'FILESET' type or user-specified type can be created. Users should enable the Data Catalog API in the project identified by the `parent` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information). A maximum of 100,000 entries may be created per entry group.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesCreateRequest) input message
@@ -310,13 +279,7 @@ A maximum of 100,000 entries may be created per entry group.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing entry. Only entries created through.
-CreateEntry
-method can be deleted.
-Users should enable the Data Catalog API in the project identified by
-the `name` parameter (see [Data Catalog Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
+      r"""Deletes an existing entry. Only entries created through CreateEntry method can be deleted. Users should enable the Data Catalog API in the project identified by the `name` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesDeleteRequest) input message
@@ -370,22 +333,7 @@ more information).
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. A `NOT_FOUND` error.
-is returned if the resource does not exist. An empty policy is returned
-if the resource exists but does not have a policy set on it.
-
-Supported resources are:
-  - Tag templates.
-  - Entries.
-  - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-and any external Google Cloud Platform resources synced to Data Catalog.
-
-Callers must have following Google IAM permission
-  - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
-    templates.
-  - `datacatalog.entries.getIamPolicy` to get policies on entries.
-  - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
+      r"""Gets the access control policy for a resource. A `NOT_FOUND` error is returned if the resource does not exist. An empty policy is returned if the resource exists but does not have a policy set on it. Supported resources are: - Tag templates. - Entries. - Entry groups. Note, this method cannot be used to manage policies for BigQuery, Pub/Sub and any external Google Cloud Platform resources synced to Data Catalog. Callers must have following Google IAM permission - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag templates. - `datacatalog.entries.getIamPolicy` to get policies on entries. - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesGetIamPolicyRequest) input message
@@ -439,11 +387,7 @@ Callers must have following Google IAM permission
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing entry.
-Users should enable the Data Catalog API in the project identified by
-the `entry.name` parameter (see [Data Catalog Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
+      r"""Updates an existing entry. Users should enable the Data Catalog API in the project identified by the `entry.name` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesPatchRequest) input message
@@ -470,19 +414,7 @@ more information).
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the caller's permissions on a resource.
-If the resource does not exist, an empty set of permissions is returned
-(We don't return a `NOT_FOUND` error).
-
-Supported resources are:
-  - Tag templates.
-  - Entries.
-  - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-and any external Google Cloud Platform resources synced to Data Catalog.
-
-A caller is not required to have Google IAM permission to make this
-request.
+      r"""Returns the caller's permissions on a resource. If the resource does not exist, an empty set of permissions is returned (We don't return a `NOT_FOUND` error). Supported resources are: - Tag templates. - Entries. - Entry groups. Note, this method cannot be used to manage policies for BigQuery, Pub/Sub and any external Google Cloud Platform resources synced to Data Catalog. A caller is not required to have Google IAM permission to make this request.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesTestIamPermissionsRequest) input message
@@ -519,13 +451,7 @@ request.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a tag on an Entry.
-Note: The project identified by the `parent` parameter for the
-[tag](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters)
-and the
-[tag
-template](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
-used to create the tag must be from the same organization.
+      r"""Creates a tag on an Entry. Note: The project identified by the `parent` parameter for the [tag](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters) and the [tag template](https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters) used to create the tag must be from the same organization.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsTagsCreateRequest) input message
@@ -643,25 +569,7 @@ used to create the tag must be from the same organization.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an EntryGroup.
-
-An entry group contains logically related entries together with Cloud
-Identity and Access Management policies that specify the users who can
-create, edit, and view entries within the entry group.
-
-Data Catalog automatically creates an entry group for BigQuery entries
-("@bigquery") and Pub/Sub topics ("@pubsub"). Users create their own entry
-group to contain Cloud Storage fileset entries or custom type entries,
-and the IAM policies associated with those entries. Entry groups, like
-entries, can be searched.
-
-A maximum of 10,000 entry groups may be created per organization across all
-locations.
-
-Users should enable the Data Catalog API in the project identified by
-the `parent` parameter (see [Data Catalog Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
+      r"""Creates an EntryGroup. An entry group contains logically related entries together with Cloud Identity and Access Management policies that specify the users who can create, edit, and view entries within the entry group. Data Catalog automatically creates an entry group for BigQuery entries ("@bigquery") and Pub/Sub topics ("@pubsub"). Users create their own entry group to contain Cloud Storage fileset entries or custom type entries, and the IAM policies associated with those entries. Entry groups, like entries, can be searched. A maximum of 10,000 entry groups may be created per organization across all locations. Users should enable the Data Catalog API in the project identified by the `parent` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsCreateRequest) input message
@@ -688,11 +596,7 @@ more information).
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an EntryGroup. Only entry groups that do not contain entries can be.
-deleted. Users should enable the Data Catalog API in the project
-identified by the `name` parameter (see [Data Catalog Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
+      r"""Deletes an EntryGroup. Only entry groups that do not contain entries can be deleted. Users should enable the Data Catalog API in the project identified by the `name` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsDeleteRequest) input message
@@ -746,22 +650,7 @@ more information).
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. A `NOT_FOUND` error.
-is returned if the resource does not exist. An empty policy is returned
-if the resource exists but does not have a policy set on it.
-
-Supported resources are:
-  - Tag templates.
-  - Entries.
-  - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-and any external Google Cloud Platform resources synced to Data Catalog.
-
-Callers must have following Google IAM permission
-  - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
-    templates.
-  - `datacatalog.entries.getIamPolicy` to get policies on entries.
-  - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
+      r"""Gets the access control policy for a resource. A `NOT_FOUND` error is returned if the resource does not exist. An empty policy is returned if the resource exists but does not have a policy set on it. Supported resources are: - Tag templates. - Entries. - Entry groups. Note, this method cannot be used to manage policies for BigQuery, Pub/Sub and any external Google Cloud Platform resources synced to Data Catalog. Callers must have following Google IAM permission - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag templates. - `datacatalog.entries.getIamPolicy` to get policies on entries. - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsGetIamPolicyRequest) input message
@@ -815,11 +704,7 @@ Callers must have following Google IAM permission
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an EntryGroup. The user should enable the Data Catalog API in the.
-project identified by the `entry_group.name` parameter (see [Data Catalog
-Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
+      r"""Updates an EntryGroup. The user should enable the Data Catalog API in the project identified by the `entry_group.name` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsPatchRequest) input message
@@ -846,20 +731,7 @@ more information).
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for a resource. Replaces any existing.
-policy.
-Supported resources are:
-  - Tag templates.
-  - Entries.
-  - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-and any external Google Cloud Platform resources synced to Data Catalog.
-
-Callers must have following Google IAM permission
-  - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
-    templates.
-  - `datacatalog.entries.setIamPolicy` to set policies on entries.
-  - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
+      r"""Sets the access control policy for a resource. Replaces any existing policy. Supported resources are: - Tag templates. - Entries. - Entry groups. Note, this method cannot be used to manage policies for BigQuery, Pub/Sub and any external Google Cloud Platform resources synced to Data Catalog. Callers must have following Google IAM permission - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag templates. - `datacatalog.entries.setIamPolicy` to set policies on entries. - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsSetIamPolicyRequest) input message
@@ -886,19 +758,7 @@ Callers must have following Google IAM permission
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the caller's permissions on a resource.
-If the resource does not exist, an empty set of permissions is returned
-(We don't return a `NOT_FOUND` error).
-
-Supported resources are:
-  - Tag templates.
-  - Entries.
-  - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-and any external Google Cloud Platform resources synced to Data Catalog.
-
-A caller is not required to have Google IAM permission to make this
-request.
+      r"""Returns the caller's permissions on a resource. If the resource does not exist, an empty set of permissions is returned (We don't return a `NOT_FOUND` error). Supported resources are: - Tag templates. - Entries. - Entry groups. Note, this method cannot be used to manage policies for BigQuery, Pub/Sub and any external Google Cloud Platform resources synced to Data Catalog. A caller is not required to have Google IAM permission to make this request.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsTestIamPermissionsRequest) input message
@@ -935,8 +795,7 @@ request.
           }
 
     def Rename(self, request, global_params=None):
-      r"""Renames an enum value in a tag template. The enum values have to be unique.
-within one enum field.
+      r"""Renames an enum value in a tag template. The enum values have to be unique within one enum field.
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsEnumValuesRenameRequest) input message
@@ -973,11 +832,7 @@ within one enum field.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a field in a tag template. The user should enable the Data Catalog.
-API in the project identified by the `parent` parameter (see
-[Data Catalog Resource
-Project](https://cloud.google.com/data-catalog/docs/concepts/resource-project)
-for more information).
+      r"""Creates a field in a tag template. The user should enable the Data Catalog API in the project identified by the `parent` parameter (see [Data Catalog Resource Project](https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsCreateRequest) input message
@@ -1004,11 +859,7 @@ for more information).
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a field in a tag template and all uses of that field.
-Users should enable the Data Catalog API in the project identified by
-the `name` parameter (see [Data Catalog Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
+      r"""Deletes a field in a tag template and all uses of that field. Users should enable the Data Catalog API in the project identified by the `name` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsDeleteRequest) input message
@@ -1035,11 +886,7 @@ more information).
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a field in a tag template. This method cannot be used to update the.
-field type. Users should enable the Data Catalog API in the project
-identified by the `name` parameter (see [Data Catalog Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
+      r"""Updates a field in a tag template. This method cannot be used to update the field type. Users should enable the Data Catalog API in the project identified by the `name` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsPatchRequest) input message
@@ -1066,11 +913,7 @@ more information).
     )
 
     def Rename(self, request, global_params=None):
-      r"""Renames a field in a tag template. The user should enable the Data Catalog.
-API in the project identified by the `name` parameter (see [Data Catalog
-Resource
-Project](https://cloud.google.com/data-catalog/docs/concepts/resource-project)
-for more information).
+      r"""Renames a field in a tag template. The user should enable the Data Catalog API in the project identified by the `name` parameter (see [Data Catalog Resource Project](https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesFieldsRenameRequest) input message
@@ -1107,11 +950,7 @@ for more information).
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a tag template. The user should enable the Data Catalog API in.
-the project identified by the `parent` parameter (see [Data Catalog
-Resource
-Project](https://cloud.google.com/data-catalog/docs/concepts/resource-project)
-for more information).
+      r"""Creates a tag template. The user should enable the Data Catalog API in the project identified by the `parent` parameter (see [Data Catalog Resource Project](https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesCreateRequest) input message
@@ -1138,11 +977,7 @@ for more information).
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a tag template and all tags using the template.
-Users should enable the Data Catalog API in the project identified by
-the `name` parameter (see [Data Catalog Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
+      r"""Deletes a tag template and all tags using the template. Users should enable the Data Catalog API in the project identified by the `name` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesDeleteRequest) input message
@@ -1196,22 +1031,7 @@ more information).
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. A `NOT_FOUND` error.
-is returned if the resource does not exist. An empty policy is returned
-if the resource exists but does not have a policy set on it.
-
-Supported resources are:
-  - Tag templates.
-  - Entries.
-  - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-and any external Google Cloud Platform resources synced to Data Catalog.
-
-Callers must have following Google IAM permission
-  - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag
-    templates.
-  - `datacatalog.entries.getIamPolicy` to get policies on entries.
-  - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
+      r"""Gets the access control policy for a resource. A `NOT_FOUND` error is returned if the resource does not exist. An empty policy is returned if the resource exists but does not have a policy set on it. Supported resources are: - Tag templates. - Entries. - Entry groups. Note, this method cannot be used to manage policies for BigQuery, Pub/Sub and any external Google Cloud Platform resources synced to Data Catalog. Callers must have following Google IAM permission - `datacatalog.tagTemplates.getIamPolicy` to get policies on tag templates. - `datacatalog.entries.getIamPolicy` to get policies on entries. - `datacatalog.entryGroups.getIamPolicy` to get policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesGetIamPolicyRequest) input message
@@ -1238,13 +1058,7 @@ Callers must have following Google IAM permission
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a tag template. This method cannot be used to update the fields of.
-a template. The tag template fields are represented as separate resources
-and should be updated using their own create/update/delete methods.
-Users should enable the Data Catalog API in the project identified by
-the `tag_template.name` parameter (see [Data Catalog Resource Project]
-(https://cloud.google.com/data-catalog/docs/concepts/resource-project) for
-more information).
+      r"""Updates a tag template. This method cannot be used to update the fields of a template. The tag template fields are represented as separate resources and should be updated using their own create/update/delete methods. Users should enable the Data Catalog API in the project identified by the `tag_template.name` parameter (see [Data Catalog Resource Project] (https://cloud.google.com/data-catalog/docs/concepts/resource-project) for more information).
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesPatchRequest) input message
@@ -1271,20 +1085,7 @@ more information).
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for a resource. Replaces any existing.
-policy.
-Supported resources are:
-  - Tag templates.
-  - Entries.
-  - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-and any external Google Cloud Platform resources synced to Data Catalog.
-
-Callers must have following Google IAM permission
-  - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag
-    templates.
-  - `datacatalog.entries.setIamPolicy` to set policies on entries.
-  - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
+      r"""Sets the access control policy for a resource. Replaces any existing policy. Supported resources are: - Tag templates. - Entries. - Entry groups. Note, this method cannot be used to manage policies for BigQuery, Pub/Sub and any external Google Cloud Platform resources synced to Data Catalog. Callers must have following Google IAM permission - `datacatalog.tagTemplates.setIamPolicy` to set policies on tag templates. - `datacatalog.entries.setIamPolicy` to set policies on entries. - `datacatalog.entryGroups.setIamPolicy` to set policies on entry groups.
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesSetIamPolicyRequest) input message
@@ -1311,19 +1112,7 @@ Callers must have following Google IAM permission
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the caller's permissions on a resource.
-If the resource does not exist, an empty set of permissions is returned
-(We don't return a `NOT_FOUND` error).
-
-Supported resources are:
-  - Tag templates.
-  - Entries.
-  - Entry groups.
-Note, this method cannot be used to manage policies for BigQuery, Pub/Sub
-and any external Google Cloud Platform resources synced to Data Catalog.
-
-A caller is not required to have Google IAM permission to make this
-request.
+      r"""Returns the caller's permissions on a resource. If the resource does not exist, an empty set of permissions is returned (We don't return a `NOT_FOUND` error). Supported resources are: - Tag templates. - Entries. - Entry groups. Note, this method cannot be used to manage policies for BigQuery, Pub/Sub and any external Google Cloud Platform resources synced to Data Catalog. A caller is not required to have Google IAM permission to make this request.
 
       Args:
         request: (DatacatalogProjectsLocationsTagTemplatesTestIamPermissionsRequest) input message

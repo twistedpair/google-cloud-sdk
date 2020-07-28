@@ -127,9 +127,8 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
-      <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
-      <code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;</code>. For more
-      information, read [how to specify min CPU
+      `minCpuPlatform: "Intel Haswell"` or `minCpuPlatform: "Intel Sandy
+      Bridge"`. For more information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform) To unset the min cpu platform field pass "automatic" as
       field value.
@@ -2115,9 +2114,9 @@ class MaintenancePolicy(_messages.Message):
     resourceVersion: A hash identifying the version of this policy, so that
       updates to fields of the policy won't accidentally undo intermediate
       changes (and so that users of the API unaware of some fields won't
-      accidentally remove other fields). Make a <code>get()</code> request to
-      the cluster to get the current resource version and include it with
-      requests to set the policy.
+      accidentally remove other fields). Make a `get()` request to the cluster
+      to get the current resource version and include it with requests to set
+      the policy.
     window: Specifies the maintenance window in which maintenance may be
       performed.
   """
@@ -2442,21 +2441,21 @@ class NodeConfig(_messages.Message):
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/labels/
     MetadataValue: The metadata key/value pairs assigned to instances in the
-      cluster.  Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less
+      cluster.  Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
-      "configure-sh"  "containerd-configure-sh"  "enable-os-login"  "gci-
-      ensure-gke-docker"  "gci-metrics-enabled"  "gci-update-strategy"
-      "instance-template"  "kube-env"  "startup-script"  "user-data"
-      "disable-address-manager"  "windows-startup-script-ps1"  "common-psm1"
-      "k8s-node-setup-psm1"  "install-ssh-psm1"  "user-profile-psm1"  "serial-
-      port-logging-enable" Values are free-form strings, and only have meaning
-      as interpreted by the image running in the instance. The only
-      restriction placed on them is that each value's size must be less than
-      or equal to 32 KB.  The total size of all keys and values must be less
-      than 512 KB.
+      reserved keys:  - "cluster-location"  - "cluster-name"  - "cluster-uid"
+      - "configure-sh"  - "containerd-configure-sh"  - "enable-os-login"  -
+      "gci-ensure-gke-docker"  - "gci-metrics-enabled"  - "gci-update-
+      strategy"  - "instance-template"  - "kube-env"  - "startup-script"  -
+      "user-data"  - "disable-address-manager"  - "windows-startup-script-ps1"
+      - "common-psm1"  - "k8s-node-setup-psm1"  - "install-ssh-psm1"  - "user-
+      profile-psm1"  - "serial-port-logging-enable"  Values are free-form
+      strings, and only have meaning as interpreted by the image running in
+      the instance. The only restriction placed on them is that each value's
+      size must be less than or equal to 32 KB.  The total size of all keys
+      and values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2496,27 +2495,26 @@ class NodeConfig(_messages.Message):
       type](/compute/docs/machine-types) (e.g. `n1-standard-1`).  If
       unspecified, the default machine type is `n1-standard-1`.
     metadata: The metadata key/value pairs assigned to instances in the
-      cluster.  Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less
+      cluster.  Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
-      "configure-sh"  "containerd-configure-sh"  "enable-os-login"  "gci-
-      ensure-gke-docker"  "gci-metrics-enabled"  "gci-update-strategy"
-      "instance-template"  "kube-env"  "startup-script"  "user-data"
-      "disable-address-manager"  "windows-startup-script-ps1"  "common-psm1"
-      "k8s-node-setup-psm1"  "install-ssh-psm1"  "user-profile-psm1"  "serial-
-      port-logging-enable" Values are free-form strings, and only have meaning
-      as interpreted by the image running in the instance. The only
-      restriction placed on them is that each value's size must be less than
-      or equal to 32 KB.  The total size of all keys and values must be less
-      than 512 KB.
+      reserved keys:  - "cluster-location"  - "cluster-name"  - "cluster-uid"
+      - "configure-sh"  - "containerd-configure-sh"  - "enable-os-login"  -
+      "gci-ensure-gke-docker"  - "gci-metrics-enabled"  - "gci-update-
+      strategy"  - "instance-template"  - "kube-env"  - "startup-script"  -
+      "user-data"  - "disable-address-manager"  - "windows-startup-script-ps1"
+      - "common-psm1"  - "k8s-node-setup-psm1"  - "install-ssh-psm1"  - "user-
+      profile-psm1"  - "serial-port-logging-enable"  Values are free-form
+      strings, and only have meaning as interpreted by the image running in
+      the instance. The only restriction placed on them is that each value's
+      size must be less than or equal to 32 KB.  The total size of all keys
+      and values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
-      <code>minCpuPlatform: &quot;Intel Haswell&quot;</code> or
-      <code>minCpuPlatform: &quot;Intel Sandy Bridge&quot;</code>. For more
-      information, read [how to specify min CPU
+      `minCpuPlatform: "Intel Haswell"` or `minCpuPlatform: "Intel Sandy
+      Bridge"`. For more
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform)
     nodeGroup: Setting this field will assign instances of this pool to run on
@@ -2592,20 +2590,20 @@ class NodeConfig(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""The metadata key/value pairs assigned to instances in the cluster.
-    Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes
-    in length. These are reflected as part of a URL in the metadata server.
-    Additionally, to avoid ambiguity, keys must not conflict with any other
-    metadata keys for the project or be one of the reserved keys:  "cluster-
-    location"  "cluster-name"  "cluster-uid"  "configure-sh"  "containerd-
-    configure-sh"  "enable-os-login"  "gci-ensure-gke-docker"  "gci-metrics-
-    enabled"  "gci-update-strategy"  "instance-template"  "kube-env"
-    "startup-script"  "user-data"  "disable-address-manager"  "windows-
-    startup-script-ps1"  "common-psm1"  "k8s-node-setup-psm1"  "install-ssh-
-    psm1"  "user-profile-psm1"  "serial-port-logging-enable" Values are free-
-    form strings, and only have meaning as interpreted by the image running in
-    the instance. The only restriction placed on them is that each value's
-    size must be less than or equal to 32 KB.  The total size of all keys and
-    values must be less than 512 KB.
+    Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less than 128
+    bytes in length. These are reflected as part of a URL in the metadata
+    server. Additionally, to avoid ambiguity, keys must not conflict with any
+    other metadata keys for the project or be one of the reserved keys:  -
+    "cluster-location"  - "cluster-name"  - "cluster-uid"  - "configure-sh"  -
+    "containerd-configure-sh"  - "enable-os-login"  - "gci-ensure-gke-docker"
+    - "gci-metrics-enabled"  - "gci-update-strategy"  - "instance-template"  -
+    "kube-env"  - "startup-script"  - "user-data"  - "disable-address-manager"
+    - "windows-startup-script-ps1"  - "common-psm1"  - "k8s-node-setup-psm1"
+    - "install-ssh-psm1"  - "user-profile-psm1"  - "serial-port-logging-
+    enable"  Values are free-form strings, and only have meaning as
+    interpreted by the image running in the instance. The only restriction
+    placed on them is that each value's size must be less than or equal to 32
+    KB.  The total size of all keys and values must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3085,21 +3083,21 @@ class RecurringTimeWindow(_messages.Message):
     recurrence: An RRULE (https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
       for how this window reccurs. They go on for the span of time between the
       start and end time.  For example, to have something repeat every
-      weekday, you'd use:   <code>FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR</code> To
-      repeat some window daily (equivalent to the DailyMaintenanceWindow):
-      <code>FREQ=DAILY</code> For the first weekend of every month:
-      <code>FREQ=MONTHLY;BYSETPOS=1;BYDAY=SA,SU</code> This specifies how
-      frequently the window starts. Eg, if you wanted to have a 9-5 UTC-4
-      window every weekday, you'd use something like: <code>   start time =
-      2019-01-01T09:00:00-0400   end time = 2019-01-01T17:00:00-0400
-      recurrence = FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR </code> Windows can span
-      multiple days. Eg, to make the window encompass every weekend from
-      midnight Saturday till the last minute of Sunday UTC: <code>   start
-      time = 2019-01-05T00:00:00Z   end time = 2019-01-07T23:59:00Z
-      recurrence = FREQ=WEEKLY;BYDAY=SA </code> Note the start and end time's
-      specific dates are largely arbitrary except to specify duration of the
-      window and when it first starts. The FREQ values of HOURLY, MINUTELY,
-      and SECONDLY are not supported.
+      weekday, you'd use: `FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR`  To repeat some
+      window daily (equivalent to the DailyMaintenanceWindow): `FREQ=DAILY`
+      For the first weekend of every month:
+      `FREQ=MONTHLY;BYSETPOS=1;BYDAY=SA,SU`  This specifies how frequently the
+      window starts. Eg, if you wanted to have a 9-5 UTC-4 window every
+      weekday, you'd use something like: ``` start time =
+      2019-01-01T09:00:00-0400 end time = 2019-01-01T17:00:00-0400 recurrence
+      = FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR ```  Windows can span multiple days.
+      Eg, to make the window encompass every weekend from midnight Saturday
+      till the last minute of Sunday UTC: ``` start time =
+      2019-01-05T00:00:00Z end time = 2019-01-07T23:59:00Z recurrence =
+      FREQ=WEEKLY;BYDAY=SA ```  Note the start and end time's specific dates
+      are largely arbitrary except to specify duration of the window and when
+      it first starts. The FREQ values of HOURLY, MINUTELY, and SECONDLY are
+      not supported.
     window: The window of the first recurrence.
   """
 

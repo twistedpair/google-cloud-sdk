@@ -56,6 +56,7 @@ def Create(environment_ref,
            web_server_ipv4_cidr=None,
            cloud_sql_ipv4_cidr=None,
            web_server_access_control=None,
+           cloud_sql_machine_type=None,
            release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Create method.
 
@@ -106,6 +107,8 @@ def Create(environment_ref,
     cloud_sql_ipv4_cidr: IPv4 CIDR range to use for Cloud SQL network.
     web_server_access_control: [{string: string}], List of IP ranges with
         descriptions to allow access to the web server.
+    cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
+        Airflow database.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -190,6 +193,10 @@ def Create(environment_ref,
   if web_server_access_control is not None:
     config.webServerNetworkAccessControl = BuildWebServerNetworkAccessControl(
         web_server_access_control, release_track)
+
+  if cloud_sql_machine_type:
+    config.databaseConfig = messages.DatabaseConfig(
+        machineType=cloud_sql_machine_type)
 
   # Builds environment message and attaches the configuration
   environment = messages.Environment(name=environment_ref.RelativeName())

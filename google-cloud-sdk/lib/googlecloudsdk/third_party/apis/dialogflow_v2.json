@@ -4772,6 +4772,28 @@
           "format": "byte"
         }
       }
+    },
+    "GoogleCloudDialogflowV2beta1AutoApproveSmartMessagingEntriesResponse": {
+      "id": "GoogleCloudDialogflowV2beta1AutoApproveSmartMessagingEntriesResponse",
+      "description": "Response message for [Documents.AutoApproveSmartMessagingEntries].",
+      "type": "object",
+      "properties": {
+        "enabledCount": {
+          "description": "Number of smart messaging entries enabled.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "disabledCount": {
+          "description": "Number of smart messaging entries disabled.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "unreviewedCount": {
+          "description": "Number of smart messaging entries unreviewed.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
     }
   },
   "resources": {

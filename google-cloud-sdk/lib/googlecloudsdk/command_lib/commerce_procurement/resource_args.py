@@ -76,6 +76,14 @@ def GetEntitlementResourceSpec():
       entitlementsId=EntitlementAttributeConfig())
 
 
+def GetOrderResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudcommerceconsumerprocurement.billingAccounts.orders',
+      resource_name='order',
+      billingAccountsId=BillingAccountAttributeConfig(),
+      ordersId=OrderAttributeConfig())
+
+
 def GetOrderOperationResourceSpec():
   return concepts.ResourceSpec(
       'cloudcommerceconsumerprocurement.billingAccounts.orders.operations',
@@ -111,6 +119,12 @@ def AddAccountResourceArg(parser, description):
 def AddEntitlementResourceArg(parser, description):
   concept_parsers.ConceptParser.ForResource(
       'entitlement', GetEntitlementResourceSpec(), description,
+      required=True).AddToParser(parser)
+
+
+def AddOrderResourceArg(parser, description):
+  concept_parsers.ConceptParser.ForResource(
+      'order', GetOrderResourceSpec(), description,
       required=True).AddToParser(parser)
 
 

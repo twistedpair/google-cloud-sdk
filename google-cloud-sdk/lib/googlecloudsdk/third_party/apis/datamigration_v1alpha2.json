@@ -130,15 +130,15 @@
     },
     "Operation": {
       "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -146,7 +146,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
           "type": "boolean"
         },
         "error": {
@@ -154,7 +154,7 @@
           "$ref": "Status"
         },
         "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -165,7 +165,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -174,11 +174,11 @@
           "format": "int32"
         },
         "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -192,7 +192,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
       }
@@ -217,7 +217,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages.",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -235,21 +235,21 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name (URI) of this migration job resource, in the form of:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}.",
+          "description": "The name (URI) of this migration job resource, in the form of: projects\/{project}\/locations\/{location}\/instances\/{instance}.",
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. The timestamp when the migration job resource was created.\nA timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.\nExample: \"2014-10-02T15:01:23.045123456Z\".",
+          "description": "Output only. The timestamp when the migration job resource was created. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The timestamp when the migration job resource was last updated.\nA timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.\nExample: \"2014-10-02T15:01:23.045123456Z\".",
+          "description": "Output only. The timestamp when the migration job resource was last updated. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
-          "description": "The resource labels for migration job to use to annotate any related\nunderlying resources such as Compute Engine VMs. An object containing a\nlist of \"key\": \"value\" pairs.\n\nExample: `{ \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }`.",
+          "description": "The resource labels for migration job to use to annotate any related underlying resources such as Compute Engine VMs. An object containing a list of \"key\": \"value\" pairs. Example: `{ \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }`.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -280,6 +280,24 @@
             "The migration job is resuming."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The state of the migration job is unknown.",
+            "The migration job is down for maintenance.",
+            "The migration job is in draft mode and no resources are created.",
+            "The migration job is being created.",
+            "The migration job is created, not started and is fully editable.",
+            "The migration job is running.",
+            "The migration job failed.",
+            "The migration job has been completed.",
+            "The migration job is being deleted.",
+            "The migration job is being stopped.",
+            "The migration job is currently stopped.",
+            "The migration job has been deleted.",
+            "The migration job is being updated.",
+            "The migration job is starting.",
+            "The migration job is restarting.",
+            "The migration job is resuming."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "MAINTENANCE",
@@ -310,6 +328,14 @@
             "Only RDS flow - the sources writes stopped, waiting for dump to begin"
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The phase of the migration job is unknown.",
+            "The migration job is in the full dump phase.",
+            "The migration job is CDC phase.",
+            "The migration job is running the promote phase.",
+            "Only RDS flow - waiting for source writes to stop",
+            "Only RDS flow - the sources writes stopped, waiting for dump to begin"
+          ],
           "enum": [
             "PHASE_UNSPECIFIED",
             "FULL_DUMP",
@@ -327,6 +353,11 @@
             "The migration job is a continuous migration."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The type of the migration job is unknown.",
+            "The migration job is a one time migration.",
+            "The migration job is a continuous migration."
+          ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "ONE_TIME",
@@ -334,7 +365,7 @@
           ]
         },
         "dumpPath": {
-          "description": "The path to the dump file in Google Cloud Storage,\nin the format: (gs:\/\/[BUCKET_NAME]\/[OBJECT_NAME]).",
+          "description": "The path to the dump file in Google Cloud Storage, in the format: (gs:\/\/[BUCKET_NAME]\/[OBJECT_NAME]).",
           "type": "string"
         },
         "source": {
@@ -346,7 +377,7 @@
           "type": "string"
         },
         "reverseSshConnectivity": {
-          "description": "The details needed to communicate to the source over Reverse SSH\ntunnel connectivity.",
+          "description": "The details needed to communicate to the source over Reverse SSH tunnel connectivity.",
           "$ref": "ReverseSshConnectivity"
         },
         "vpcPeeringConnectivity": {
@@ -358,7 +389,7 @@
           "$ref": "StaticIpConnectivity"
         },
         "duration": {
-          "description": "Output only. The duration of the migration job (in seconds). A duration in seconds\nwith up to nine fractional digits, terminated by 's'. Example: \"3.5s\".",
+          "description": "Output only. The duration of the migration job (in seconds). A duration in seconds with up to nine fractional digits, terminated by 's'. Example: \"3.5s\".",
           "type": "string",
           "format": "google-duration"
         },
@@ -383,20 +414,20 @@
     },
     "ReverseSshConnectivity": {
       "id": "ReverseSshConnectivity",
-      "description": "The details needed to configure a reverse SSH tunnel between the source and\ndestination databases. These details will be used when calling the\ngenerateSshScript method (see\nhttps:\/\/cloud.google.com\/database-migration\/docs\/reference\/rest\/v1alpha2\/projects.locations.migrationJobs\/generateSshScript)\nto produce the script that will help set up the reverse SSH tunnel, and to\nset up the VPC peering between the Cloud SQL private network and the VPC.",
+      "description": "The details needed to configure a reverse SSH tunnel between the source and destination databases. These details will be used when calling the generateSshScript method (see https:\/\/cloud.google.com\/database-migration\/docs\/reference\/rest\/v1alpha2\/projects.locations.migrationJobs\/generateSshScript) to produce the script that will help set up the reverse SSH tunnel, and to set up the VPC peering between the Cloud SQL private network and the VPC.",
       "type": "object",
       "properties": {
         "vmIp": {
-          "description": "Required. The IP of the virtual machine (Compute Engine) used as the bastion server\nfor the SSH tunnel.",
+          "description": "Required. The IP of the virtual machine (Compute Engine) used as the bastion server for the SSH tunnel.",
           "type": "string"
         },
         "vmPort": {
-          "description": "Required. The forwarding port of the virtual machine (Compute Engine) used as the\nbastion server for the SSH tunnel.",
+          "description": "Required. The forwarding port of the virtual machine (Compute Engine) used as the bastion server for the SSH tunnel.",
           "type": "integer",
           "format": "int32"
         },
         "vm": {
-          "description": "The name of the virtual machine (Compute Engine) used as the bastion server\nfor the SSH tunnel.",
+          "description": "The name of the virtual machine (Compute Engine) used as the bastion server for the SSH tunnel.",
           "type": "string"
         },
         "vpc": {
@@ -407,7 +438,7 @@
     },
     "VpcPeeringConnectivity": {
       "id": "VpcPeeringConnectivity",
-      "description": "The details of the VPC where the source database is located in Google Cloud.\nWe will use this information to set up the VPC peering connection between\nCloud SQL and this VPC.",
+      "description": "The details of the VPC where the source database is located in Google Cloud. We will use this information to set up the VPC peering connection between Cloud SQL and this VPC.",
       "type": "object",
       "properties": {
         "vpc": {
@@ -418,7 +449,7 @@
     },
     "StaticIpConnectivity": {
       "id": "StaticIpConnectivity",
-      "description": "The source database will allow incoming connections from the destination\ndatabase's public IP. You can retrieve the Cloud SQL instance's public IP\nfrom the Cloud SQL console or using Cloud SQL APIs. No additional\nconfiguration is required.",
+      "description": "The source database will allow incoming connections from the destination database's public IP. You can retrieve the Cloud SQL instance's public IP from the Cloud SQL console or using Cloud SQL APIs. No additional configuration is required.",
       "type": "object",
       "properties": {
       }
@@ -436,6 +467,11 @@
             "RDS runs the database."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The database provider is unknown.",
+            "CloudSQL runs the database.",
+            "RDS runs the database."
+          ],
           "enum": [
             "DATABASE_PROVIDER_UNSPECIFIED",
             "CLOUDSQL",
@@ -450,6 +486,11 @@
             "The source engine is PostgreSQL."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The source database engine of the migration job is unknown.",
+            "The source engine is MySQL.",
+            "The source engine is PostgreSQL."
+          ],
           "enum": [
             "DATABASE_ENGINE_UNSPECIFIED",
             "MYSQL",
@@ -578,7 +619,7 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages.",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         },
         "unreachable": {
@@ -596,21 +637,21 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of this connection profile resource in the form of\nprojects\/{project}\/locations\/{location}\/instances\/{instance}.",
+          "description": "The name of this connection profile resource in the form of projects\/{project}\/locations\/{location}\/instances\/{instance}.",
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. The timestamp when the resource was created.\nA timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.\nExample: \"2014-10-02T15:01:23.045123456Z\".",
+          "description": "Output only. The timestamp when the resource was created. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The timestamp when the resource was last updated.\nA timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.\nExample: \"2014-10-02T15:01:23.045123456Z\".",
+          "description": "Output only. The timestamp when the resource was last updated. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
           "type": "string",
           "format": "google-datetime"
         },
         "labels": {
-          "description": "The resource labels for connection profile to use to annotate any related\nunderlying resources such as Compute Engine VMs. An object containing a\nlist of \"key\": \"value\" pairs.\n\nExample: `{ \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }`.",
+          "description": "The resource labels for connection profile to use to annotate any related underlying resources such as Compute Engine VMs. An object containing a list of \"key\": \"value\" pairs. Example: `{ \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }`.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -629,6 +670,16 @@
             "The last action on the connection profile failed."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The state of the connection profile is unknown.",
+            "The connection profile is in draft mode and fully editable.",
+            "The connection profile is being created.",
+            "The connection profile is ready.",
+            "The connection profile is being updated.",
+            "The connection profile is being deleted.",
+            "The connection profile has been deleted.",
+            "The last action on the connection profile failed."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "DRAFT",
@@ -668,6 +719,11 @@
             "RDS runs the database."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The database provider is unknown.",
+            "CloudSQL runs the database.",
+            "RDS runs the database."
+          ],
           "enum": [
             "DATABASE_PROVIDER_UNSPECIFIED",
             "CLOUDSQL",
@@ -691,11 +747,11 @@
           "format": "int32"
         },
         "username": {
-          "description": "Required. The username that Database Migration Service will use to connect to the\ndatabase. The value is encrypted when stored in Database Migration Service.",
+          "description": "Required. The username that Database Migration Service will use to connect to the database. The value is encrypted when stored in Database Migration Service.",
           "type": "string"
         },
         "password": {
-          "description": "Required. The password for the user that Database Migration Service will be using to\nconnect to the database. This field is not returned on request, and the\nvalue is encrypted when stored in Database Migration Service.",
+          "description": "Required. The password for the user that Database Migration Service will be using to connect to the database. This field is not returned on request, and the value is encrypted when stored in Database Migration Service.",
           "type": "string"
         },
         "ssl": {
@@ -703,7 +759,7 @@
           "$ref": "SslConfig"
         },
         "cloudSqlId": {
-          "description": "If the source is a Cloud SQL database, use this field to\nprovide the Cloud SQL instance ID of the source.",
+          "description": "If the source is a Cloud SQL database, use this field to provide the Cloud SQL instance ID of the source.",
           "type": "string"
         },
         "hasPassword": {
@@ -718,13 +774,18 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "Output only. The ssl config type according to 'client_key', 'client_certificate' and\n'ca_certificate'.",
+          "description": "Output only. The ssl config type according to 'client_key', 'client_certificate' and 'ca_certificate'.",
           "enumDescriptions": [
             "Unspecified.",
             "Only 'ca_certificate' specified.",
-            "Both server ('ca_certificate'), and client ('client_key',\n'client_certificate') specified."
+            "Both server ('ca_certificate'), and client ('client_key', 'client_certificate') specified."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Only 'ca_certificate' specified.",
+            "Both server ('ca_certificate'), and client ('client_key', 'client_certificate') specified."
+          ],
           "enum": [
             "SSL_TYPE_UNSPECIFIED",
             "SERVER_ONLY",
@@ -732,22 +793,22 @@
           ]
         },
         "clientKey": {
-          "description": "The unencrypted PKCS#1 or PKCS#8 PEM-encoded private key associated with\nthe Client Certificate. If this field is used then the 'client_certificate'\nfield is mandatory",
+          "description": "The unencrypted PKCS#1 or PKCS#8 PEM-encoded private key associated with the Client Certificate. If this field is used then the 'client_certificate' field is mandatory",
           "type": "string"
         },
         "clientCertificate": {
-          "description": "The x509 PEM-encoded certificate that will be used by the replica to\nauthenticate against the source database server.If this field is used then\nthe 'client_key' field is mandatory",
+          "description": "The x509 PEM-encoded certificate that will be used by the replica to authenticate against the source database server.If this field is used then the 'client_key' field is mandatory",
           "type": "string"
         },
         "caCertificate": {
-          "description": "Required. The x509 PEM-encoded certificate of the CA that signed the source database\nserver's certificate. The replica will use this certificate to verify\nit's connecting to the right host.",
+          "description": "Required. The x509 PEM-encoded certificate of the CA that signed the source database server's certificate. The replica will use this certificate to verify it's connecting to the right host.",
           "type": "string"
         }
       }
     },
     "PostgreSqlConnectionProfile": {
       "id": "PostgreSqlConnectionProfile",
-      "description": "Specifies connection parameters required specifically for PostgreSQL\ndatabases.",
+      "description": "Specifies connection parameters required specifically for PostgreSQL databases.",
       "type": "object",
       "properties": {
         "host": {
@@ -760,11 +821,11 @@
           "format": "int32"
         },
         "username": {
-          "description": "Required. The username that Database Migration Service will use to connect to the\ndatabase. The value is encrypted when stored in Database Migration Service.",
+          "description": "Required. The username that Database Migration Service will use to connect to the database. The value is encrypted when stored in Database Migration Service.",
           "type": "string"
         },
         "password": {
-          "description": "Required. The password for the user that Database Migration Service will be using to\nconnect to the database. This field is not returned on request, and the\nvalue is encrypted when stored in Database Migration Service.",
+          "description": "Required. The password for the user that Database Migration Service will be using to connect to the database. This field is not returned on request, and the value is encrypted when stored in Database Migration Service.",
           "type": "string"
         },
         "ssl": {
@@ -772,7 +833,7 @@
           "$ref": "SslConfig"
         },
         "cloudSqlId": {
-          "description": "If the source is a Cloud SQL database, use this field to\nprovide the Cloud SQL instance ID of the source.",
+          "description": "If the source is a Cloud SQL database, use this field to provide the Cloud SQL instance ID of the source.",
           "type": "string"
         },
         "hasPassword": {
@@ -783,7 +844,7 @@
     },
     "CloudSqlConnectionProfile": {
       "id": "CloudSqlConnectionProfile",
-      "description": "Specifies required connection parameters, and, optionally, the parameters\nrequired to create a Cloud SQL destination database instance.",
+      "description": "Specifies required connection parameters, and, optionally, the parameters required to create a Cloud SQL destination database instance.",
       "type": "object",
       "properties": {
         "cloudSqlId": {
@@ -820,6 +881,14 @@
             "PostgreSQL 10."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Unspecified version.",
+            "MySQL 5.6.",
+            "MySQL 5.7.",
+            "PostgreSQL 9.6.",
+            "PostgreSQL 11.",
+            "PostgreSQL 10."
+          ],
           "enum": [
             "SQL_DATABASE_VERSION_UNSPECIFIED",
             "MYSQL_5_6",
@@ -830,29 +899,34 @@
           ]
         },
         "userLabels": {
-          "description": "The resource labels for a Cloud SQL instance to use to annotate any related\nunderlying resources such as Compute Engine VMs.\nAn object containing a list of \"key\": \"value\" pairs.\n\nExample: `{ \"name\": \"wrench\", \"mass\": \"18kg\", \"count\": \"3\" }`.",
+          "description": "The resource labels for a Cloud SQL instance to use to annotate any related underlying resources such as Compute Engine VMs. An object containing a list of \"key\": \"value\" pairs. Example: `{ \"name\": \"wrench\", \"mass\": \"18kg\", \"count\": \"3\" }`.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "tier": {
-          "description": "The tier (or machine type) for this instance, for example:\n`db-n1-standard-1` (MySQL instances) or\n`db-custom-1-3840` (PostgreSQL instances).\nFor more information, see\n[Cloud SQL Instance Settings](\/sql\/docs\/db_path\/instance-settings).",
+          "description": "The tier (or machine type) for this instance, for example: `db-n1-standard-1` (MySQL instances) or `db-custom-1-3840` (PostgreSQL instances). For more information, see [Cloud SQL Instance Settings](\/sql\/docs\/db_path\/instance-settings).",
           "type": "string"
         },
         "storageAutoResizeLimit": {
-          "description": "The maximum size to which storage capacity can be automatically increased.\nThe default value is 0, which specifies that there is no limit.",
+          "description": "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit.",
           "type": "string",
           "format": "int64"
         },
         "activationPolicy": {
-          "description": "The activation policy specifies when the instance is activated; it is\napplicable only when the instance state is 'RUNNABLE'. Valid values:\n\n'ALWAYS': The instance is on, and remains so even in\nthe absence of connection requests.\n\n`NEVER`: The instance is off; it is not activated, even if a\nconnection request arrives.",
+          "description": "The activation policy specifies when the instance is activated; it is applicable only when the instance state is 'RUNNABLE'. Valid values: 'ALWAYS': The instance is on, and remains so even in the absence of connection requests. `NEVER`: The instance is off; it is not activated, even if a connection request arrives.",
           "enumDescriptions": [
             "unspecified policy.",
             "The instance is always up and running.",
             "The instance should never spin up."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "unspecified policy.",
+            "The instance is always up and running.",
+            "The instance should never spin up."
+          ],
           "enum": [
             "SQL_ACTIVATION_POLICY_UNSPECIFIED",
             "ALWAYS",
@@ -860,15 +934,15 @@
           ]
         },
         "ipConfig": {
-          "description": "The settings for IP Management. This allows to enable or disable the\ninstance IP and manage which external networks can connect to the instance.\nThe IPv4 address cannot be disabled.",
+          "description": "The settings for IP Management. This allows to enable or disable the instance IP and manage which external networks can connect to the instance. The IPv4 address cannot be disabled.",
           "$ref": "SqlIpConfig"
         },
         "autoStorageIncrease": {
-          "description": "[default: ON] If you enable this setting, Cloud SQL checks your available\nstorage every 30 seconds. If the available storage falls below a threshold\nsize, Cloud SQL automatically adds additional storage capacity. If the\navailable storage repeatedly falls below the threshold size, Cloud SQL\ncontinues to add storage until it reaches the maximum of 30 TB.",
+          "description": "[default: ON] If you enable this setting, Cloud SQL checks your available storage every 30 seconds. If the available storage falls below a threshold size, Cloud SQL automatically adds additional storage capacity. If the available storage repeatedly falls below the threshold size, Cloud SQL continues to add storage until it reaches the maximum of 30 TB.",
           "type": "boolean"
         },
         "databaseFlags": {
-          "description": "The database flags passed to the Cloud SQL instance at startup.\nAn object containing a list of \"key\": value pairs.\nExample: { \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }.",
+          "description": "The database flags passed to the Cloud SQL instance at startup. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -882,6 +956,11 @@
             "HDD disk."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "SSD disk.",
+            "HDD disk."
+          ],
           "enum": [
             "SQL_DATA_DISK_TYPE_UNSPECIFIED",
             "PD_SSD",
@@ -889,16 +968,16 @@
           ]
         },
         "dataDiskSizeGb": {
-          "description": "The storage capacity available to the database, in GB.\nThe minimum (and default) size is 10GB.",
+          "description": "The storage capacity available to the database, in GB. The minimum (and default) size is 10GB.",
           "type": "string",
           "format": "int64"
         },
         "zone": {
-          "description": "The Google Cloud Platform zone where your Cloud SQL datdabse instance is\nlocated.",
+          "description": "The Google Cloud Platform zone where your Cloud SQL datdabse instance is located.",
           "type": "string"
         },
         "sourceId": {
-          "description": "The Database Migration Service source connection profile ID,\nin the format:\n`projects\/my_project_name\/locations\/us-central1\/connectionProfiles\/connection_profile_ID`",
+          "description": "The Database Migration Service source connection profile ID, in the format: `projects\/my_project_name\/locations\/us-central1\/connectionProfiles\/connection_profile_ID`",
           "type": "string"
         },
         "rootPassword": {
@@ -921,7 +1000,7 @@
           "type": "boolean"
         },
         "privateNetwork": {
-          "description": "The resource link for the VPC network from which the Cloud SQL instance is\naccessible for private IP. For example,\n`\/projects\/myProject\/global\/networks\/default`. This setting can\nbe updated, but it cannot be removed after it is set.",
+          "description": "The resource link for the VPC network from which the Cloud SQL instance is accessible for private IP. For example, `\/projects\/myProject\/global\/networks\/default`. This setting can be updated, but it cannot be removed after it is set.",
           "type": "string"
         },
         "requireSsl": {
@@ -929,7 +1008,7 @@
           "type": "boolean"
         },
         "authorizedNetworks": {
-          "description": "The list of external networks that are allowed to connect to the instance\nusing the IP. See\nhttps:\/\/en.wikipedia.org\/wiki\/CIDR_notation#CIDR_notation, also known as\n'slash' notation (e.g. `192.168.100.0\/24`).",
+          "description": "The list of external networks that are allowed to connect to the instance using the IP. See https:\/\/en.wikipedia.org\/wiki\/CIDR_notation#CIDR_notation, also known as 'slash' notation (e.g. `192.168.100.0\/24`).",
           "type": "array",
           "items": {
             "$ref": "SqlAclEntry"
@@ -947,7 +1026,7 @@
           "type": "string"
         },
         "expireTime": {
-          "description": "The time when this access control entry expires in\n[RFC 3339](https:\/\/tools.ietf.org\/html\/rfc3339) format, for example:\n`2012-11-15T16:19:00.094Z`.",
+          "description": "The time when this access control entry expires in [RFC 3339](https:\/\/tools.ietf.org\/html\/rfc3339) format, for example: `2012-11-15T16:19:00.094Z`.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -981,7 +1060,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name for the location, which may vary between implementations.\nFor example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
           "type": "string"
         },
         "locationId": {
@@ -989,18 +1068,18 @@
           "type": "string"
         },
         "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
           "type": "string"
         },
         "labels": {
-          "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given\nlocation.",
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -1037,7 +1116,7 @@
           "type": "string"
         },
         "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation\nof the operation. Operations that have successfully been cancelled\nhave Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`.",
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
           "type": "boolean"
         },
         "apiVersion": {
@@ -1063,15 +1142,33 @@
             "No pglogical extension installed on databases, applicable for postgres.",
             "pglogical node already exists on databases, applicable for postgres.",
             "The value of parameter wal_level is not set to logical.",
-            "The value of parameter shared_preload_libraries does not include\npglogical.",
+            "The value of parameter shared_preload_libraries does not include pglogical.",
             "The value of parameter max_replication_slots is not sufficient.",
             "The value of parameter max_wal_senders is not sufficient.",
             "The value of parameter max_worker_processes is not sufficient.",
-            "Extensions installed are either not supported or having unsupported\nversions.",
+            "Extensions installed are either not supported or having unsupported versions.",
             "Unsupported migration type.",
             "Invalid RDS logical replication."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "An unknown error occurred",
+            "We failed to connect to one of the connection profile.",
+            "We failed to authenticate to one of the connection profile.",
+            "One of the involved connection profiles has an invalid configuration.",
+            "The versions of the source and the destination are incompatible.",
+            "The types of the source and the destination are incompatible.",
+            "No pglogical extension installed on databases, applicable for postgres.",
+            "pglogical node already exists on databases, applicable for postgres.",
+            "The value of parameter wal_level is not set to logical.",
+            "The value of parameter shared_preload_libraries does not include pglogical.",
+            "The value of parameter max_replication_slots is not sufficient.",
+            "The value of parameter max_wal_senders is not sufficient.",
+            "The value of parameter max_worker_processes is not sufficient.",
+            "Extensions installed are either not supported or having unsupported versions.",
+            "Unsupported migration type.",
+            "Invalid RDS logical replication."
+          ],
           "enum": [
             "ERROR_CODE_UNSPECIFIED",
             "CONNECTION_FAILURE",
@@ -1126,7 +1223,7 @@
                   "type": "string"
                 },
                 "includeUnrevealedLocations": {
-                  "description": "If true, the returned list will include locations which are not yet\nrevealed.",
+                  "description": "If true, the returned list will include locations which are not yet revealed.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -1222,7 +1319,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
                 },
                 "get": {
                   "id": "datamigration.projects.locations.operations.get",
@@ -1247,7 +1344,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
                 },
                 "delete": {
                   "id": "datamigration.projects.locations.operations.delete",
@@ -1272,7 +1369,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
                 },
                 "cancel": {
                   "id": "datamigration.projects.locations.operations.cancel",
@@ -1300,7 +1397,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                 }
               }
             },
@@ -1320,23 +1417,23 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of migration jobs to return. The service may return\nfewer than this value. If unspecified, at most 50 migration jobs will be\nreturned. The maximum value is 1000; values above 1000 will be coerced to\n1000.",
+                      "description": "The maximum number of migration jobs to return. The service may return fewer than this value. If unspecified, at most 50 migration jobs will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "The nextPageToken value received in the previous call to\nmigrationJobs.list, used in the subsequent request to retrieve the next\npage of results. On first call this should be left blank. When paginating,\nall other parameters provided to migrationJobs.list must match the call\nthat provided the page token.",
+                      "description": "The nextPageToken value received in the previous call to migrationJobs.list, used in the subsequent request to retrieve the next page of results. On first call this should be left blank. When paginating, all other parameters provided to migrationJobs.list must match the call that provided the page token.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "A filter expression that filters migration jobs listed in the response.\nThe expression must specify the field name, a comparison operator, and the\nvalue that you want to use for filtering. The value must be a string,\na number, or a boolean. The comparison operator must be\neither =, !=, >, or <. For example, list migration jobs created this year\nby specifying <b>createTime %gt; 2020-01-01T00:00:00.000000000Z.<\/b>\nYou can also filter nested fields. For example, you could specify\n<b>reverseSshConnectivity.vmIp = \"1.2.3.4\"<\/b> to select all migration\njobs connecting through the specific SSH tunnel bastion.",
+                      "description": "A filter expression that filters migration jobs listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, list migration jobs created this year by specifying *createTime %gt; 2020-01-01T00:00:00.000000000Z.* You can also filter nested fields. For example, you could specify *reverseSshConnectivity.vmIp = \"1.2.3.4\"* to select all migration jobs connecting through the specific SSH tunnel bastion.",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "Sort the results based on the migration job name.\nValid values are: \"name\", \"name asc\", and \"name desc\".",
+                      "description": "Sort the results based on the migration job name. Valid values are: \"name\", \"name asc\", and \"name desc\".",
                       "location": "query",
                       "type": "string"
                     }
@@ -1396,7 +1493,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1422,20 +1519,20 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The name (URI) of this migration job resource, in the form of:\nprojects\/{project}\/locations\/{location}\/instances\/{instance}.",
+                      "description": "The name (URI) of this migration job resource, in the form of: projects\/{project}\/locations\/{location}\/instances\/{instance}.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/migrationJobs\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the\nmigration job resource by the update.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the migration job resource by the update.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1468,12 +1565,12 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
                     "force": {
-                      "description": "The destination CloudSQL connection profile is always deleted with the\nmigration job. In case of force delete, the destination CloudSQL replica\ndatabase is also deleted.",
+                      "description": "The destination CloudSQL connection profile is always deleted with the migration job. In case of force delete, the destination CloudSQL replica database is also deleted.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1571,7 +1668,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Resume a migration job that is currently stopped and is resumable (was\nstopped during CDC phase)."
+                  "description": "Resume a migration job that is currently stopped and is resumable (was stopped during CDC phase)."
                 },
                 "promote": {
                   "id": "datamigration.projects.locations.migrationJobs.promote",
@@ -1599,7 +1696,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Promote a migration job, stopping replication to the destination and\npromoting the destination to be a standalone database."
+                  "description": "Promote a migration job, stopping replication to the destination and promoting the destination to be a standalone database."
                 },
                 "verify": {
                   "id": "datamigration.projects.locations.migrationJobs.verify",
@@ -1627,7 +1724,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Verify a migration job, making sure the destination can reach the source\nand that all configuration and prerequisites are met."
+                  "description": "Verify a migration job, making sure the destination can reach the source and that all configuration and prerequisites are met."
                 },
                 "restart": {
                   "id": "datamigration.projects.locations.migrationJobs.restart",
@@ -1655,7 +1752,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Restart a stopped or failed migration job, resetting the destination\ninstance to its original state and starting the migration process from\nscratch."
+                  "description": "Restart a stopped or failed migration job, resetting the destination instance to its original state and starting the migration process from scratch."
                 },
                 "generateSshScript": {
                   "id": "datamigration.projects.locations.migrationJobs.generateSshScript",
@@ -1683,7 +1780,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Generate a SSH configuration script to configure the reverse SSH\nconnectivity."
+                  "description": "Generate a SSH configuration script to configure the reverse SSH connectivity."
                 }
               }
             },
@@ -1703,18 +1800,18 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of connection profiles to return. The service may return\nfewer than this value. If unspecified, at most 50 connection profiles will\nbe returned. The maximum value is 1000; values above 1000 will be coerced\nto 1000.",
+                      "description": "The maximum number of connection profiles to return. The service may return fewer than this value. If unspecified, at most 50 connection profiles will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListConnectionProfiles` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListConnectionProfiles`\nmust match the call that provided the page token.",
+                      "description": "A page token, received from a previous `ListConnectionProfiles` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListConnectionProfiles` must match the call that provided the page token.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "A filter expression that filters connection profiles listed in the\nresponse. The expression must specify the field name, a comparison\noperator, and the value that you want to use for filtering. The value must\nbe a string, a number, or a boolean. The comparison operator must be either\n=, !=, >, or <. For example, list connection profiles created this year by\nspecifying <b>createTime %gt; 2020-01-01T00:00:00.000000000Z<\/b>. You can\nalso filter nested fields. For example, you could specify <b>mySql.username\n= %lt;my_username%gt;<\/b> to list all connection profiles configured to\nconnect with a specific username.",
+                      "description": "A filter expression that filters connection profiles listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, list connection profiles created this year by specifying *createTime %gt; 2020-01-01T00:00:00.000000000Z*. You can also filter nested fields. For example, you could specify *mySql.username = %lt;my_username%gt;* to list all connection profiles configured to connect with a specific username.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1779,7 +1876,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1805,20 +1902,20 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The name of this connection profile resource in the form of\nprojects\/{project}\/locations\/{location}\/instances\/{instance}.",
+                      "description": "The name of this connection profile resource in the form of projects\/{project}\/locations\/{location}\/instances\/{instance}.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/connectionProfiles\/[^\/]+$",
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the\nconnection profile resource by the update.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the connection profile resource by the update.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1851,12 +1948,12 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "A unique id used to identify the request. If the server receives two\nrequests with the same id, then the second request will be ignored.\n\nIt is recommended to always set this value to a UUID.\n\nThe id must contain only letters (a-z, A-Z), numbers (0-9), underscores\n(_), and hyphens (-). The maximum length is 40 characters.",
+                      "description": "A unique id used to identify the request. If the server receives two requests with the same id, then the second request will be ignored. It is recommended to always set this value to a UUID. The id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
                     "force": {
-                      "description": "In case of force delete, the CloudSQL replica database is also deleted\n(only for CloudSQL connection profile).",
+                      "description": "In case of force delete, the CloudSQL replica database is also deleted (only for CloudSQL connection profile).",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1870,7 +1967,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single Database Migration Service connection profile.\nA connection profile can only be deleted if it is not in use by any\nactive migration jobs."
+                  "description": "Deletes a single Database Migration Service connection profile. A connection profile can only be deleted if it is not in use by any active migration jobs."
                 }
               }
             }

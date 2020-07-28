@@ -4585,6 +4585,20 @@ class GoogleCloudDialogflowV2beta1AnnotatedConversationDataset(_messages.Message
   questionTypeName = _messages.StringField(7)
 
 
+class GoogleCloudDialogflowV2beta1AutoApproveSmartMessagingEntriesResponse(_messages.Message):
+  r"""Response message for [Documents.AutoApproveSmartMessagingEntries].
+
+  Fields:
+    disabledCount: Number of smart messaging entries disabled.
+    enabledCount: Number of smart messaging entries enabled.
+    unreviewedCount: Number of smart messaging entries unreviewed.
+  """
+
+  disabledCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  enabledCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  unreviewedCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudDialogflowV2beta1BatchUpdateEntityTypesResponse(_messages.Message):
   r"""The response message for EntityTypes.BatchUpdateEntityTypes.
 
