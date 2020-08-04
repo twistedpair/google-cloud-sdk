@@ -282,6 +282,8 @@ class _Sections(object):
       Cloud SDK.
     emulator: Section, The section containing emulator properties for the Cloud
       SDK.
+    eventarc: Section, The section containing eventarc properties for the Cloud
+      SDK.
     experimental: Section, The section containing experimental properties for
       the Cloud SDK.
     filestore: Section, The section containing filestore properties for the
@@ -353,6 +355,7 @@ class _Sections(object):
     self.devshell = _SectionDevshell()
     self.diagnostics = _SectionDiagnostics()
     self.emulator = _SectionEmulator()
+    self.eventarc = _SectionEventarc()
     self.experimental = _SectionExperimental()
     self.filestore = _SectionFilestore()
     self.functions = _SectionFunctions()
@@ -401,6 +404,7 @@ class _Sections(object):
         self.devshell,
         self.diagnostics,
         self.emulator,
+        self.eventarc,
         self.experimental,
         self.filestore,
         self.functions,
@@ -1777,6 +1781,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.remotebuildexecution = self._Add('remotebuildexecution')
     self.accessapproval = self._Add('accessapproval')
     self.accesscontextmanager = self._Add('accesscontextmanager')
+    self.anthosevents = self._Add('anthosevents')
     self.apigateway = self._Add('apigateway')
     self.apigee = self._Add('apigee')
     self.appengine = self._Add('appengine')
@@ -1805,6 +1810,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.datacatalog = self._Add('datacatalog')
     self.dataflow = self._Add('dataflow')
     self.datafusion = self._Add('datafusion')
+    self.datamigration = self._Add('datamigration')
     self.datapol = self._Add('datapol')
     self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')
@@ -1812,6 +1818,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.discovery = self._Add('discovery')
     self.dns = self._Add('dns')
     self.domains = self._Add('domains')
+    self.eventarc = self._Add('eventarc')
     self.events = self._Add('events')
     self.file = self._Add('file')
     self.firestore = self._Add('firestore')
@@ -1969,6 +1976,18 @@ class _SectionContextAware(_Section):
         validator=ExistingAbsoluteFilepathValidator,
         help_text='File path for auto discovery configuration file.',
         hidden=True)
+
+
+class _SectionEventarc(_Section):
+  """Contains the properties for the 'eventarc' section."""
+
+  def __init__(self):
+    super(_SectionEventarc, self).__init__('eventarc', hidden=True)
+    self.location = self._Add(
+        'location',
+        help_text='The default location to use when working with Eventarc '
+        'resources. When a `--location` flag is required but not provided, the '
+        'command will fall back to this value, if set.')
 
 
 class _SectionMemcache(_Section):

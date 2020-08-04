@@ -3114,7 +3114,7 @@ class BackendBucketCdnPolicy(_messages.Message):
       (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
       Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults
       can be overridden in negative_caching_policy
-    negativeCachingPolicys: Sets a cache TTL for the specified HTTP status
+    negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
       negative_caching enabled will use Cloud CDN's default cache TTLs. Note
@@ -3155,7 +3155,7 @@ class BackendBucketCdnPolicy(_messages.Message):
   defaultTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   maxTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   negativeCaching = _messages.BooleanField(5)
-  negativeCachingPolicys = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 6, repeated=True)
+  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 6, repeated=True)
   requestCoalescing = _messages.BooleanField(7)
   signedUrlCacheMaxAgeSec = _messages.IntegerField(8)
   signedUrlKeyNames = _messages.StringField(9, repeated=True)
@@ -3587,6 +3587,7 @@ class BackendService(_messages.Message):
     information.
 
     Values:
+      ALL: <no description>
       GRPC: <no description>
       HTTP: <no description>
       HTTP2: <no description>
@@ -3595,13 +3596,14 @@ class BackendService(_messages.Message):
       TCP: <no description>
       UDP: <no description>
     """
-    GRPC = 0
-    HTTP = 1
-    HTTP2 = 2
-    HTTPS = 3
-    SSL = 4
-    TCP = 5
-    UDP = 6
+    ALL = 0
+    GRPC = 1
+    HTTP = 2
+    HTTP2 = 3
+    HTTPS = 4
+    SSL = 5
+    TCP = 6
+    UDP = 7
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE. Session affinity
@@ -3861,7 +3863,7 @@ class BackendServiceCdnPolicy(_messages.Message):
       (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
       Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults
       can be overridden in negative_caching_policy
-    negativeCachingPolicys: Sets a cache TTL for the specified HTTP status
+    negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
       negative_caching enabled will use Cloud CDN's default cache TTLs. Note
@@ -3903,7 +3905,7 @@ class BackendServiceCdnPolicy(_messages.Message):
   defaultTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   negativeCaching = _messages.BooleanField(6)
-  negativeCachingPolicys = _messages.MessageField('BackendServiceCdnPolicyNegativeCachingPolicy', 7, repeated=True)
+  negativeCachingPolicy = _messages.MessageField('BackendServiceCdnPolicyNegativeCachingPolicy', 7, repeated=True)
   requestCoalescing = _messages.BooleanField(8)
   signedUrlCacheMaxAgeSec = _messages.IntegerField(9)
   signedUrlKeyNames = _messages.StringField(10, repeated=True)
@@ -50223,7 +50225,8 @@ class SecurityPolicyRuleMatcherConfig(_messages.Message):
       This field may only be specified when versioned_expr is set to FIREWALL.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
       This field may only be specified when versioned_expr is set to FIREWALL.
-    srcIpRanges: CIDR IP address range.
+    srcIpRanges: CIDR IP address range. Maximum number of src_ip_ranges
+      allowed is 10.
   """
 
   destIpRanges = _messages.StringField(1, repeated=True)

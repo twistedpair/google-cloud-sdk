@@ -117,7 +117,7 @@ class ReleaseTrack(object):
       'This command is currently in ALPHA and may change without notice. '
       'If this command fails with API permission errors despite specifying '
       'the right project, you may be trying to access an API with '
-      'an invitation-only early access whitelist.')
+      'an invitation-only early access allowlist.')
   _ALL = [GA, BETA, ALPHA]
 
   @staticmethod

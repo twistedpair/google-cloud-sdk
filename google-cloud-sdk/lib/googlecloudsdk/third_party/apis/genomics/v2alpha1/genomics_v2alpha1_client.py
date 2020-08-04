@@ -43,8 +43,6 @@ class GenomicsV2alpha1(base_api.BaseApiClient):
     self.projects_operations = self.ProjectsOperationsService(self)
     self.projects_workers = self.ProjectsWorkersService(self)
     self.projects = self.ProjectsService(self)
-    self.workers_projects_workers = self.WorkersProjectsWorkersService(self)
-    self.workers_projects = self.WorkersProjectsService(self)
     self.workers = self.WorkersService(self)
 
   class PipelinesService(base_api.BaseApiService):
@@ -252,53 +250,6 @@ provide periodic status updates.
 
     def __init__(self, client):
       super(GenomicsV2alpha1.ProjectsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class WorkersProjectsWorkersService(base_api.BaseApiService):
-    """Service class for the workers_projects_workers resource."""
-
-    _NAME = 'workers_projects_workers'
-
-    def __init__(self, client):
-      super(GenomicsV2alpha1.WorkersProjectsWorkersService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def UploadSosReport(self, request, global_params=None):
-      r"""The worker uses this method to upload SOS reports for unexpected errors.
-
-      Args:
-        request: (GenomicsWorkersProjectsWorkersUploadSosReportRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (UploadSOSReportResponse) The response message.
-      """
-      config = self.GetMethodConfig('UploadSosReport')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UploadSosReport.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2alpha1/workers/projects/{projectsId}/workers/{workersId}:uploadSosReport',
-        http_method='POST',
-        method_id='genomics.workers.projects.workers.uploadSosReport',
-        ordered_params=['id'],
-        path_params=['id'],
-        query_params=[],
-        relative_path='v2alpha1/workers/{+id}:uploadSosReport',
-        request_field='httpBody',
-        request_type_name='GenomicsWorkersProjectsWorkersUploadSosReportRequest',
-        response_type_name='UploadSOSReportResponse',
-        supports_download=False,
-    )
-
-  class WorkersProjectsService(base_api.BaseApiService):
-    """Service class for the workers_projects resource."""
-
-    _NAME = 'workers_projects'
-
-    def __init__(self, client):
-      super(GenomicsV2alpha1.WorkersProjectsService, self).__init__(client)
       self._upload_configs = {
           }
 

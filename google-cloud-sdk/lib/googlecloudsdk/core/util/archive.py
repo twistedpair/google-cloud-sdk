@@ -37,7 +37,11 @@ except ImportError:
 
 
 def MakeZipFromDir(dest_zip_file, src_dir, predicate=None):
-  """Similar to shutil.make_archive (which is available in python >=2.7).
+  """Create a ZIP archive from a directory.
+
+  This is similar to shutil.make_archive. However, prior to Python 3.8,
+  shutil.make_archive cannot create ZIP archives for files with mtimes older
+  than 1980. So that's why this function exists.
 
   Examples:
     Filesystem:

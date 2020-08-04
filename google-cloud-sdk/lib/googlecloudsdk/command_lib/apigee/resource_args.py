@@ -56,10 +56,14 @@ _ENTITY_TUPLES = [
 ENTITIES = {item.singular: item for item in _ENTITY_TUPLES}
 
 
-def ValidPatternForEntity(name):
-  if ENTITIES[name].valid_pattern is None:
-    return re.compile(".")
-  return re.compile(ENTITIES[name].valid_pattern)
+def _ValidPatternForEntity(name):
+  pattern = ENTITIES[name].valid_pattern
+  return r".*" if pattern is None else pattern
+
+
+def ValidPatternForEntity(entity_name):
+  """Returns a compiled regex that matches valid values for `entity_name`."""
+  return re.compile(_ValidPatternForEntity(entity_name))
 
 
 def AttributeConfig(name, fallthroughs=None, help_text=None, validate=False):
@@ -75,9 +79,9 @@ def AttributeConfig(name, fallthroughs=None, help_text=None, validate=False):
       matches the expected pattern.
   """
   validator = None
-  if ENTITIES[name].valid_pattern and validate:
+  if validate:
     validator = arg_parsers.RegexpValidator(
-        ENTITIES[name].valid_pattern,
+        _ValidPatternForEntity(name),
         "Must match the format of a valid {2} ({3})".format(*ENTITIES[name]))
 
   return concepts.ResourceParameterAttributeConfig(

@@ -22,13 +22,13 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.events import trigger
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.events import exceptions
-from googlecloudsdk.command_lib.events import resource_args
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
 
 
 SOURCE_COLLECTION_NAME = 'run.namespaces.{plural_kind}'
+ANTHOS_SOURCE_COLLECTION_NAME = 'anthosevents.namespaces.{plural_kind}'
 
 
 # Max wait time before timing out
@@ -88,16 +88,23 @@ def EventTypeFromTypeString(source_crds, type_string, source=None):
   return possible_matches[index]
 
 
-def GetSourceRef(name, namespace, source_crd):
+def GetSourceRef(name, namespace, source_crd, is_cluster):
   """Returns a resources.Resource from the given source_crd and name."""
+  if is_cluster:
+    collection_name = ANTHOS_SOURCE_COLLECTION_NAME.format(
+        plural_kind=source_crd.source_kind_plural)
+    api_version = 'v1beta1'
+  else:
+    collection_name = SOURCE_COLLECTION_NAME.format(
+        plural_kind=source_crd.source_kind_plural)
+    api_version = 'v1alpha1'
   return resources.REGISTRY.Parse(
-      name,
-      {'namespacesId': namespace},
-      SOURCE_COLLECTION_NAME.format(plural_kind=source_crd.source_kind_plural),
-      api_version=resource_args.EVENTS_ALPHA_API_VERSION)
+      name, {'namespacesId': namespace},
+      collection_name,
+      api_version=api_version)
 
 
-def GetSourceRefAndCrdForTrigger(trigger_obj, source_crds):
+def GetSourceRefAndCrdForTrigger(trigger_obj, source_crds, is_cluster):
   """Returns a tuple of a source ref and its matching CRD."""
   # Get the source depedency on the trigger
   source_obj_ref = trigger_obj.dependency
@@ -111,8 +118,8 @@ def GetSourceRefAndCrdForTrigger(trigger_obj, source_crds):
   if source_crd is None:
     return None, None
 
-  return GetSourceRef(
-      source_obj_ref.name, source_obj_ref.namespace, source_crd), source_crd
+  return GetSourceRef(source_obj_ref.name, source_obj_ref.namespace, source_crd,
+                      is_cluster), source_crd
 
 
 def ValidateTrigger(trigger_obj, expected_source_obj, expected_event_type):

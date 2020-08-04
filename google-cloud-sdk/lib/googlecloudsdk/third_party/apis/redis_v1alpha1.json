@@ -574,11 +574,13 @@
         },
         "createTime": {
           "description": "Output only. Timestamp when the resource was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Timestamp when the resource was last modified.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -600,6 +602,7 @@
             "Instance is being deleted.",
             "Instance encountered an error and is in indeterministic state."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -636,10 +639,12 @@
         },
         "tenantProjectId": {
           "description": "Output only. ID of the associated GCP tenant project. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "string"
         },
         "producerMetadata": {
           "description": "Output only. Custom string attributes used primarily to expose producer-specific information in monitoring dashboards. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -647,6 +652,7 @@
         },
         "provisionedResources": {
           "description": "Output only. The list of data plane resources provisioned for this instance, e.g. compute VMs. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource"
@@ -654,6 +660,7 @@
         },
         "sloMetadata": {
           "description": "Output only. SLO metadata for instance classification in the Standardized dataplane SLO platform. See go\/cloud-ssa-standard-slo for feature description.",
+          "readOnly": true,
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata"
         },
         "maintenanceSchedules": {

@@ -414,6 +414,7 @@ _KNOWN_ERRORS = {
     'oauth2client.client.AccessTokenRefreshError': _GetTokenRefreshError,
     'ssl.SSLError': core_exceptions.NetworkIssueError,
     'socket.error': core_exceptions.NetworkIssueError,
+    'socket.timeout': core_exceptions.NetworkIssueError,
     'builtins.ConnectionAbortedError': core_exceptions.NetworkIssueError,
     'builtins.ConnectionRefusedError': core_exceptions.NetworkIssueError,
     'builtins.ConnectionResetError': core_exceptions.NetworkIssueError,
@@ -443,7 +444,7 @@ def _IsSocketError(exc):
   # specific exceptions in favor of builtin exceptions like OSError. Good
   # for some things, bad for others. For instance, this brittle errno check
   # for "network" errors. We use names because errnos are system dependent.
-  return errno.errorcode[exc.errno] in _SOCKET_ERRNO_NAMES
+  return errno.errorcode.get(exc.errno) in _SOCKET_ERRNO_NAMES
 
 
 def ConvertKnownError(exc):

@@ -78,8 +78,7 @@ def _MasterUpgradeMessage(name, server_conf, cluster, new_version):
       name, version_message, new_version_message))
 
 
-def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
-                        concurrent_node_count):
+def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version):
   """Returns the prompt message during a node upgrade.
 
   Args:
@@ -88,7 +87,6 @@ def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
     node_pool_name: str, the name of the node pool if the upgrade is for a
       specific node pool.
     new_version: str, the name of the new version, if given.
-    concurrent_node_count: int, the number of nodes to upgrade concurrently.
 
   Raises:
     NodePoolError: if the node pool name can't be found in the cluster.
@@ -122,14 +120,8 @@ def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
   else:
     new_version_message = 'the master version'
 
-  concurrent_message = ''
-  if concurrent_node_count:
-    concurrent_message = ' {} {} will be upgraded at a time.'.format(
-        concurrent_node_count, text.Pluralize(concurrent_node_count, 'node'))
-
-  return ('{} of cluster [{}] will be upgraded from {} to {}.{}'.format(
-      node_message, name, version_message, new_version_message,
-      concurrent_message))
+  return ('{} of cluster [{}] will be upgraded from {} to {}.'.format(
+      node_message, name, version_message, new_version_message))
 
 
 def ClusterUpgradeMessage(name,
@@ -137,8 +129,7 @@ def ClusterUpgradeMessage(name,
                           cluster=None,
                           master=False,
                           node_pool_name=None,
-                          new_version=None,
-                          concurrent_node_count=None):
+                          new_version=None):
   """Get a message to print during gcloud container clusters upgrade.
 
   Args:
@@ -149,7 +140,6 @@ def ClusterUpgradeMessage(name,
     node_pool_name: str, the name of the node pool if the upgrade is for a
       specific node pool.
     new_version: str, the name of the new version, if given.
-    concurrent_node_count: int, the number of nodes to upgrade concurrently.
 
   Raises:
     NodePoolError: if the node pool name can't be found in the cluster.
@@ -163,7 +153,7 @@ def ClusterUpgradeMessage(name,
                                             new_version)
   else:
     upgrade_message = _NodeUpgradeMessage(name, cluster, node_pool_name,
-                                          new_version, concurrent_node_count)
+                                          new_version)
 
   return ('{} This operation is long-running and will block other operations '
           'on the cluster (including delete) until it has run to completion.'

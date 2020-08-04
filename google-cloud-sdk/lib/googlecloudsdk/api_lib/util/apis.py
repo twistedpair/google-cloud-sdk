@@ -164,8 +164,6 @@ API_ENABLEMENT_REGEX = re.compile(
 
 
 API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE = 403  # retry status code
-# TODO(b/141556680): delete this special case when KMS throws 403.
-KMS_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE = 400  # retry status code
 
 
 def _GetApiEnablementInfo(exc):
@@ -193,15 +191,6 @@ def _GetApiEnablementInfo(exc):
 _PROJECTS_NOT_TO_ENABLE = {'google.com:cloudsdktool'}
 
 
-# TODO(b/141556680): delete this function when KMS throws 403.
-def _GetApiEnablementInfoKMS(exc):
-  match = API_ENABLEMENT_REGEX.match(exc.payload.status_message)
-  if (exc.payload.status_code == KMS_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE
-      and match is not None):
-    return (match.group(2), match.group(1))
-  return (None, None)
-
-
 def ShouldAttemptProjectEnable(project):
   return project not in _PROJECTS_NOT_TO_ENABLE
 
@@ -221,9 +210,6 @@ def GetApiEnablementInfo(exception):
   """
   parsed_error = api_exceptions.HttpException(exception)
   (project, service_token) = _GetApiEnablementInfo(parsed_error)
-  # TODO(b/141556680): delete this when KMS throws 403.
-  if parsed_error.payload.api_name == 'cloudkms':
-    (project, service_token) = _GetApiEnablementInfoKMS(parsed_error)
   if (project is not None and ShouldAttemptProjectEnable(project)
       and service_token is not None):
     return (project, service_token, parsed_error)

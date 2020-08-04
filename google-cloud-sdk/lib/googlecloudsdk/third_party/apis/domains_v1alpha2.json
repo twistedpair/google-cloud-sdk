@@ -384,6 +384,7 @@
       "properties": {
         "name": {
           "description": "Output only. Name of the `Registration` resource, in the format `projects\/*\/locations\/*\/registrations\/`.",
+          "readOnly": true,
           "type": "string"
         },
         "domainName": {
@@ -392,11 +393,13 @@
         },
         "createTime": {
           "description": "Output only. The creation timestamp of the `Registration` resource.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "expireTime": {
           "description": "Output only. The expiration timestamp of the `Registration`.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -410,6 +413,7 @@
             "The domain is suspended and inoperative. For more details, see the `issues` field.",
             "The domain has been exported from Cloud Domains to [Google Domains](https:\/\/domains.google\/). You can no longer update it with this API, and information shown about it may be stale. Without further action, domains in this state expire at their `expire_time`. You can delete the resource after the `expire_time` has passed."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The state is undefined.",
@@ -435,6 +439,7 @@
             "Contact the Cloud Support team to resolve a problem with this domain.",
             "[ICANN](https:\/\/icann.org\/) requires verification of the email address in the `Registration`'s `contact_settings.registrant_contact` field. To verify the email address, follow the instructions in the email the `registrant_contact` receives following registration. If you do not complete email verification within 14 days of registration, the domain is suspended. To resend the verification email, call ConfigureContactSettings and provide the current `registrant_contact.email`."
           ],
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string",
@@ -471,6 +476,7 @@
         },
         "pendingContactSettings": {
           "description": "Output only. Pending contact settings for the `Registration`. Updates to the `contact_settings` field that change its `registrant_contact` or `privacy` fields require email confirmation by the `registrant_contact` before taking effect. This field is set only if there are pending updates to the `contact_settings` that have not yet been confirmed. To confirm the changes, the `registrant_contact` must follow the instructions in the email they receive.",
+          "readOnly": true,
           "$ref": "ContactSettings"
         },
         "supportedPrivacy": {
@@ -481,6 +487,7 @@
             "None of the data from `ContactSettings` is publicly available. Instead, proxy contact data is published for your domain. Email sent to the proxy email address is forwarded to the registrant's email address. Cloud Domains provides this privacy proxy service at no additional cost.",
             "Some data from `ContactSettings` is publicly available. The actual information redacted depends on the domain. For details, see [the registration privacy article](https:\/\/support.google.com\/domains\/answer\/3251242)."
           ],
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string",
@@ -512,6 +519,7 @@
             "The domain is automatically renewed each year . To disable automatic renewals, export the domain by calling `ExportRegistration` .",
             "The domain must be explicitly renewed each year before its `expire_time`. This option is only available when the `Registration` is in state `EXPORTED`. To manage the domain's current billing and renewal settings, go to [Google Domains](https:\/\/domains.google\/)."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The renewal method is undefined.",
@@ -685,6 +693,7 @@
       "properties": {
         "nameServers": {
           "description": "Output only. A list of name servers that store the DNS zone for this domain. Each name server is a domain name, with Unicode domain names expressed in Punycode format. This field is automatically populated with the name servers assigned to the Google Domains DNS zone.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -711,6 +720,7 @@
         },
         "dsRecords": {
           "description": "Output only. The list of DS records published for this domain. The list is automatically populated when `ds_state` is `DS_RECORDS_PUBLISHED`, otherwise it remains empty.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "DsRecord"

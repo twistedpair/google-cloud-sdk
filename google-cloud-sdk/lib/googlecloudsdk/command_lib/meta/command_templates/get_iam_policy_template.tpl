@@ -29,8 +29,17 @@ help_text:
 
 request:
   collection: ${collection_name}
-  use_relative_name: ${use_rel_name}
   api_version: ${api_version}
+
+iam:
+  # Whether the command can accept 'condition' as part of IAM policy binding.
+  enable_condition: True
+  # IAM Policy version. Valid options are "0", "1", and "3".
+  # (Version 3 allows conditions.)
+  policy_version: 3
+  # Path to the policy_version field, for APIs that use non-standard mapping.
+  # Also commonly "options_requestedPolicyVersion"
+  get_iam_policy_version_path: getIamPolicyRequest.options.requestedPolicyVersion
 
 arguments:
   resource:

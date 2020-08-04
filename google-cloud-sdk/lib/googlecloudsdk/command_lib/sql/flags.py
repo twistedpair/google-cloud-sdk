@@ -808,7 +808,7 @@ USERS_FORMAT_BETA = """
   table(
     name.yesno(no='(anonymous)'),
     host,
-    type.yesno(no='NATIVE')
+    type.yesno(no='BUILT_IN')
   )
 """
 

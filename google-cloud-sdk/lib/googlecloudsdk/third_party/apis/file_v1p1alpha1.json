@@ -236,6 +236,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name of the instance, in the format projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
+          "readOnly": true,
           "type": "string"
         },
         "description": {
@@ -253,6 +254,7 @@
             "The instance is experiencing an issue and might be unusable. You can get further details from the `statusMessage` field of the `Instance` resource.",
             "The instance is restoring a snapshot or backup to an existing file share and may be unusable during this time."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "State not set.",
@@ -275,10 +277,12 @@
         },
         "statusMessage": {
           "description": "Output only. Additional information about the instance state, if available.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. The time when the instance was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -485,6 +489,7 @@
         },
         "ipAddresses": {
           "description": "Output only. IPv4 addresses in the format {octet 1}.{octet 2}.{octet 3}.{octet 4} or IPv6 addresses in the format {block 1}:{block 2}:{block 3}:{block 4}:{block 5}:{block 6}:{block 7}:{block 8}.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -543,6 +548,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name of the snapshot, in the format projects\/{project_id}\/locations\/{location_id}\/snapshots\/{snapshot_id}.",
+          "readOnly": true,
           "type": "string"
         },
         "description": {
@@ -558,6 +564,7 @@
             "Snapshot is available for use.",
             "Snapshot is being deleted."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "State not set.",
@@ -576,6 +583,7 @@
         },
         "createTime": {
           "description": "Output only. The time when the snapshot was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -588,11 +596,13 @@
         },
         "capacityGb": {
           "description": "Output only. Capacity of the snapshot. This would be the size of the file share when the snapshot is restored.",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         },
         "storageBytes": {
           "description": "Output only. The size of the storage used by the snapshot. As snapshots share storage, this number is expected to change with snapshot creation\/deletion. Always equals to capacityGb for local snapshots.",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         },
@@ -614,6 +624,7 @@
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
             "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -688,6 +699,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name of the backup, in the format projects\/{project_id}\/locations\/{location_id}\/backups\/{backup_id}.",
+          "readOnly": true,
           "type": "string"
         },
         "description": {
@@ -703,6 +715,7 @@
             "Backup is available for use.",
             "Backup is being deleted."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "State not set.",
@@ -721,6 +734,7 @@
         },
         "createTime": {
           "description": "Output only. The time when the backup was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -733,11 +747,13 @@
         },
         "capacityGb": {
           "description": "Output only. Capacity of the backup. This would be the size of the file share when the backup is restored.",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         },
         "storageBytes": {
           "description": "Output only. The size of the storage used by the backup. As backups share storage, this number is expected to change with backup creation\/deletion.",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         },
@@ -759,6 +775,7 @@
             "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
             "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -779,6 +796,7 @@
         },
         "downloadBytes": {
           "description": "Output only. Amount of bytes that will be downloaded if the backup is restored",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         }
@@ -883,11 +901,13 @@
         },
         "createTime": {
           "description": "Output only. Timestamp when the resource was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Timestamp when the resource was last modified.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -909,6 +929,7 @@
             "Instance is being deleted.",
             "Instance encountered an error and is in indeterministic state."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -945,10 +966,12 @@
         },
         "tenantProjectId": {
           "description": "Output only. ID of the associated GCP tenant project. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "string"
         },
         "producerMetadata": {
           "description": "Output only. Custom string attributes used primarily to expose producer-specific information in monitoring dashboards. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -956,6 +979,7 @@
         },
         "provisionedResources": {
           "description": "Output only. The list of data plane resources provisioned for this instance, e.g. compute VMs. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource"
@@ -963,6 +987,7 @@
         },
         "sloMetadata": {
           "description": "Output only. SLO metadata for instance classification in the Standardized dataplane SLO platform. See go\/cloud-ssa-standard-slo for feature description.",
+          "readOnly": true,
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata"
         },
         "maintenanceSchedules": {

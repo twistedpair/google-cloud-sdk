@@ -383,7 +383,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "The name of a Google Compute Engine [machine\ntype](https:\/\/cloud.google.com\/compute\/docs\/machine-types) (e.g.\n`n1-standard-1`).\n\nIf unspecified, the default machine type is\n`n1-standard-1`.",
+          "description": "The name of a Google Compute Engine [machine\ntype](https:\/\/cloud.google.com\/compute\/docs\/machine-types)\n\nIf unspecified, the default machine type is `e2-medium`.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -1335,6 +1335,21 @@
         "enableIntraNodeVisibility": {
           "description": "Whether Intra-node visibility is enabled for this cluster.\nThis makes same node pod to pod traffic visible for VPC network.",
           "type": "boolean"
+        },
+        "defaultSnatStatus": {
+          "description": "Whether the cluster disables default in-node sNAT rules. In-node sNAT rules\nwill be disabled when default_snat_status is disabled. When disabled is set\nto false, default IP masquerade rules will be applied to the nodes to\nprevent sNAT on cluster internal traffic.",
+          "$ref": "DefaultSnatStatus"
+        }
+      }
+    },
+    "DefaultSnatStatus": {
+      "id": "DefaultSnatStatus",
+      "description": "DefaultSnatStatus contains the desired state of whether default sNAT should\nbe disabled on the cluster.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Disables cluster default sNAT rules.",
+          "type": "boolean"
         }
       }
     },
@@ -1434,6 +1449,10 @@
       "description": "Configuration for controlling master global access settings.",
       "type": "object",
       "properties": {
+        "enabled": {
+          "description": "Whenever master is accessible globally or not.",
+          "type": "boolean"
+        }
       }
     },
     "DatabaseEncryption": {
@@ -1836,9 +1855,17 @@
           "description": "Cluster-level Vertical Pod Autoscaling configuration.",
           "$ref": "VerticalPodAutoscaling"
         },
+        "desiredPrivateClusterConfig": {
+          "description": "The desired private cluster configuration.",
+          "$ref": "PrivateClusterConfig"
+        },
         "desiredIntraNodeVisibilityConfig": {
           "description": "The desired config of Intra-node visibility.",
           "$ref": "IntraNodeVisibilityConfig"
+        },
+        "desiredDefaultSnatStatus": {
+          "description": "The desired status of whether to disable default sNAT for this cluster.",
+          "$ref": "DefaultSnatStatus"
         },
         "desiredReleaseChannel": {
           "description": "The desired release channel configuration.",

@@ -947,33 +947,33 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
   r"""A ManagedZoneForwardingConfigNameServerTarget object.
 
   Enums:
-    ForwardingPathValueValuesEnum: Forwarding path for this NameServerTarget,
-      if unset or set to DEFAULT, Cloud DNS will make forwarding decision
-      based on address ranges, i.e. RFC1918 addresses go to the VPC, Non-
+    ForwardingPathValueValuesEnum: Forwarding path for this NameServerTarget.
+      If unset or set to DEFAULT, Cloud DNS will make forwarding decision
+      based on address ranges, i.e. RFC1918 addresses go to the VPC, non-
       RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS
-      will always send queries through VPC for this target
+      will always send queries through VPC for this target.
 
   Fields:
-    forwardingPath: Forwarding path for this NameServerTarget, if unset or set
+    forwardingPath: Forwarding path for this NameServerTarget. If unset or set
       to DEFAULT, Cloud DNS will make forwarding decision based on address
-      ranges, i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go
+      ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918 addresses go
       to the Internet. When set to PRIVATE, Cloud DNS will always send queries
-      through VPC for this target
+      through VPC for this target.
     ipv4Address: IPv4 address of a target name server.
     kind: A string attribute.
   """
 
   class ForwardingPathValueValuesEnum(_messages.Enum):
-    r"""Forwarding path for this NameServerTarget, if unset or set to DEFAULT,
+    r"""Forwarding path for this NameServerTarget. If unset or set to DEFAULT,
     Cloud DNS will make forwarding decision based on address ranges, i.e.
-    RFC1918 addresses go to the VPC, Non-RFC1918 addresses go to the Internet.
+    RFC1918 addresses go to the VPC, non-RFC1918 addresses go to the Internet.
     When set to PRIVATE, Cloud DNS will always send queries through VPC for
-    this target
+    this target.
 
     Values:
       default: Cloud DNS will make forwarding decision based on address
         ranges, i.e. RFC1918 addresses forward to the target through the VPC
-        and Non-RFC1918 addresses will forward to the target through the
+        and non-RFC1918 addresses will forward to the target through the
         Internet
       private: Cloud DNS will always forward to this target through the VPC.
     """
@@ -1356,33 +1356,33 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
   r"""A PolicyAlternativeNameServerConfigTargetNameServer object.
 
   Enums:
-    ForwardingPathValueValuesEnum: Forwarding path for this TargetNameServer,
-      if unset or set to DEFAULT, Cloud DNS will make forwarding decision
-      based on address ranges, i.e. RFC1918 addresses go to the VPC, Non-
+    ForwardingPathValueValuesEnum: Forwarding path for this TargetNameServer.
+      If unset or set to DEFAULT, Cloud DNS will make forwarding decision
+      based on address ranges, i.e. RFC1918 addresses go to the VPC, non-
       RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS
-      will always send queries through VPC for this target
+      will always send queries through VPC for this target.
 
   Fields:
-    forwardingPath: Forwarding path for this TargetNameServer, if unset or set
+    forwardingPath: Forwarding path for this TargetNameServer. If unset or set
       to DEFAULT, Cloud DNS will make forwarding decision based on address
-      ranges, i.e. RFC1918 addresses go to the VPC, Non-RFC1918 addresses go
+      ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918 addresses go
       to the Internet. When set to PRIVATE, Cloud DNS will always send queries
-      through VPC for this target
+      through VPC for this target.
     ipv4Address: IPv4 address to forward to.
     kind: A string attribute.
   """
 
   class ForwardingPathValueValuesEnum(_messages.Enum):
-    r"""Forwarding path for this TargetNameServer, if unset or set to DEFAULT,
+    r"""Forwarding path for this TargetNameServer. If unset or set to DEFAULT,
     Cloud DNS will make forwarding decision based on address ranges, i.e.
-    RFC1918 addresses go to the VPC, Non-RFC1918 addresses go to the Internet.
+    RFC1918 addresses go to the VPC, non-RFC1918 addresses go to the Internet.
     When set to PRIVATE, Cloud DNS will always send queries through VPC for
-    this target
+    this target.
 
     Values:
       default: Cloud DNS will make forwarding decision based on address
         ranges, i.e. RFC1918 addresses forward to the target through the VPC
-        and Non-RFC1918 addresses will forward to the target through the
+        and non-RFC1918 addresses will forward to the target through the
         Internet
       private: Cloud DNS will always forward to this target through the VPC.
     """

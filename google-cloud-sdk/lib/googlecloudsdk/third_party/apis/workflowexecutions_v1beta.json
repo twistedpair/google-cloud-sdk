@@ -135,15 +135,18 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name of the execution. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}\/executions\/{execution}",
+          "readOnly": true,
           "type": "string"
         },
         "startTime": {
           "description": "Output only. Marks the beginning of execution.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. Marks the end of execution, successful or not.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -156,6 +159,7 @@
             "The execution failed with an error.",
             "The execution was stopped intentionally."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Invalid state.",
@@ -178,14 +182,17 @@
         },
         "result": {
           "description": "Output only. Output of the execution represented as a JSON string. The value can only be present if the execution's state is `SUCCEEDED`.",
+          "readOnly": true,
           "type": "string"
         },
         "error": {
           "description": "Output only. The error which caused the execution to finish prematurely. The value is only present if the execution's state is `FAILED` or `CANCELLED`.",
+          "readOnly": true,
           "$ref": "Error"
         },
         "workflowRevisionId": {
           "description": "Output only. Revision of the workflow this execution is using.",
+          "readOnly": true,
           "type": "string"
         }
       }

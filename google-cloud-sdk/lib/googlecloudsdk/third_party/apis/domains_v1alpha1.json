@@ -324,6 +324,7 @@
       "properties": {
         "name": {
           "description": "Output only. Name of the Registration resource. It matches pattern `projects\/*\/locations\/*\/registrations\/`.",
+          "readOnly": true,
           "type": "string"
         },
         "domainName": {
@@ -332,21 +333,25 @@
         },
         "createTime": {
           "description": "Output only. The creation timestamp of the Registration.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The update timestamp of the Registration.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "expireTime": {
           "description": "Output only. The expiration timestamp of the Registration. For registrations in state DETACHED this is the expiration timestamp at detach time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "detachTime": {
           "description": "Output only. The detach timestamp of the Registration. Set only for Registrations in state DETACHED.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -359,6 +364,7 @@
             "The registration is suspended and the domain is inaccessible. This may mean e.g. that the registrant email has not been verified for too long. Check the outstanding_issues list to learn the exact problem. Check emails received from the registrar and follow the provided steps to resolve the problem.",
             "The registration has been detached from Cloud and moved directly to Google Domains for individual management. The domain will remain valid until it expires and during that period you'll be able to reclaim it at https:\/\/domains.google.com\/ using WHOIS contact information. For more information, see https:\/\/support.google.com\/domains\/answer\/6339340."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The state is undefined.",

@@ -136,7 +136,7 @@
     },
     "Device": {
       "id": "Device",
-      "description": "Represents a Device known to Google Cloud, independent of the device\nownership, type, and whether it is assigned or in use by a user.",
+      "description": "A Device within the Cloud Identity Devices API.\n\nRepresents a Device known to Google Cloud, independent of the device\nownership, type, and whether it is assigned or in use by a user.",
       "type": "object",
       "properties": {
         "name": {
@@ -508,7 +508,7 @@
     },
     "DeviceUser": {
       "id": "DeviceUser",
-      "description": "A DeviceUser is a resource representing a user's use of a Device",
+      "description": "Represents a user's use of a Device in the Cloud Identity Devices API.\n\nA DeviceUser is a resource representing a user's use of a Device",
       "type": "object",
       "properties": {
         "name": {
@@ -724,7 +724,7 @@
     },
     "ClientState": {
       "id": "ClientState",
-      "description": "Resource representing ClientState and supports updates from API users",
+      "description": "Represents the state associated with an API client calling the Devices API.\n\nResource representing ClientState and supports updates from API users",
       "type": "object",
       "properties": {
         "name": {
@@ -2105,6 +2105,57 @@
               },
               "description": "Deletes the specified DeviceUser. This also revokes the user's access to\ndevice data."
             },
+            "lookup": {
+              "id": "cloudidentity.devices.deviceUsers.lookup",
+              "path": "v1beta1/{+parent}:lookup",
+              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers:lookup",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Must be set to \"devices\/-\/deviceUsers\" to search across all DeviceUser\nbelonging to the user.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^devices\/[^\/]+\/deviceUsers$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of DeviceUsers to return.\nIf unspecified, at most 20 DeviceUsers will be returned.\nThe maximum value is 20; values above 20 will be coerced to 20.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "A page token, received from a previous `LookupDeviceUsers` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `LookupDeviceUsers` must\nmatch the call that provided the page token.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "androidId": {
+                  "description": "Android Id returned by\n[Settings.Secure#ANDROID_ID](https:\/\/developer.android.com\/reference\/android\/provider\/Settings.Secure.html#ANDROID_ID).",
+                  "location": "query",
+                  "type": "string"
+                },
+                "rawResourceId": {
+                  "description": "Raw Resource Id used by Google Endpoint Verification.\n\nIf the user is enrolled into Google Endpoint Verification, this id will be\nsaved as the 'device_resource_id' field in the following platform dependent\nfiles.\n\nMac: ~\/.secureConnect\/context_aware_config.json\nWindows: C:\\Users\\%USERPROFILE%\\.secureConnect\\context_aware_config.json\nLinux: ~\/.secureConnect\/context_aware_config.json",
+                  "location": "query",
+                  "type": "string"
+                },
+                "userId": {
+                  "description": "The user whose DeviceUser's resource name will be fetched. Must be set to\n'me' to fetch the DeviceUser's resource name for the calling user.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "LookupSelfDeviceUsersResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.devices.lookup"
+              ],
+              "description": "Looks up resource names of the DeviceUsers associated with the\ncaller's credentials, as well as the properties provided in the request.\n\nThis method must be called with end-user credentials with the scope:\nhttps:\/\/www.googleapis.com\/auth\/cloud-identity.devices.lookup\n\nIf multiple properties are provided, only DeviceUsers having all of these\nproperties are considered as matches - i.e. the query behaves like an AND.\n\nDifferent platforms require different amounts of information from the\ncaller to ensure that the DeviceUser is uniquely identified.\n\n- iOS: No properties need to be passed, the caller's credentials are\nsufficient to identify the corresponding DeviceUser.\n- Android: Specifying the 'android_id' field is required.\n- Desktop: Specifying the 'raw_resource_id' field is required."
+            },
             "collectBugReport": {
               "id": "cloudidentity.devices.deviceUsers.collectBugReport",
               "path": "v1beta1/{+name}:collectBugReport",
@@ -2461,57 +2512,6 @@
                     "$ref": "Operation"
                   },
                   "description": "Updates the client state for the device user"
-                }
-              }
-            }
-          }
-        },
-        "-": {
-          "resources": {
-            "deviceUsers": {
-              "methods": {
-                "lookup": {
-                  "id": "cloudidentity.devices.-.deviceUsers.lookup",
-                  "path": "v1beta1/devices/-/deviceUsers:lookup",
-                  "flatPath": "v1beta1/devices/-/deviceUsers:lookup",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "pageSize": {
-                      "description": "The maximum number of DeviceUsers to return.\nIf unspecified, at most 20 DeviceUsers will be returned.\nThe maximum value is 20; values above 20 will be coerced to 20.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A page token, received from a previous `LookupDeviceUsers` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `LookupDeviceUsers` must\nmatch the call that provided the page token.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "androidId": {
-                      "description": "Android Id returned by\n[Settings.Secure#ANDROID_ID](https:\/\/developer.android.com\/reference\/android\/provider\/Settings.Secure.html#ANDROID_ID).",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "rawResourceId": {
-                      "description": "Raw Resource Id used by Google Endpoint Verification.\n\nIf the user is enrolled into Google Endpoint Verification, this id will be\nsaved as the 'device_resource_id' field in the following platform dependent\nfiles.\n\nMac: ~\/.secureConnect\/context_aware_config.json\nWindows: C:\\Users\\%USERPROFILE%\\.secureConnect\\context_aware_config.json\nLinux: ~\/.secureConnect\/context_aware_config.json",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "userId": {
-                      "description": "The user whose DeviceUser's resource name will be fetched. Must be set to\n'me' to fetch the DeviceUser's resource name for the calling user.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                  ],
-                  "response": {
-                    "$ref": "LookupSelfDeviceUsersResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-identity.devices.lookup"
-                  ],
-                  "description": "Looks up resource names of the DeviceUsers associated with the\ncaller's credentials, as well as the properties provided in the request.\n\nThis method must be called with end-user credentials with the scope:\nhttps:\/\/www.googleapis.com\/auth\/cloud-identity.devices.lookup\n\nIf multiple properties are provided, only DeviceUsers having all of these\nproperties are considered as matches - i.e. the query behaves like an AND.\n\nDifferent platforms require different amounts of information from the\ncaller to ensure that the DeviceUser is uniquely identified.\n\n- iOS: No properties need to be passed, the caller's credentials are\nsufficient to identify the corresponding DeviceUser.\n- Android: Specifying the 'android_id' field is required.\n- Desktop: Specifying the 'raw_resource_id' field is required."
                 }
               }
             }

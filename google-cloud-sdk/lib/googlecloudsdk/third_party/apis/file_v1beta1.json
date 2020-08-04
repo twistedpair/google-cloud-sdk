@@ -236,6 +236,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name of the instance, in the format projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
+          "readOnly": true,
           "type": "string"
         },
         "description": {
@@ -253,6 +254,7 @@
             "The instance is experiencing an issue and might be unusable. You can get further details from the `statusMessage` field of the `Instance` resource.",
             "The instance is restoring a snapshot or backup to an existing file share and may be unusable during this time."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "State not set.",
@@ -275,10 +277,12 @@
         },
         "statusMessage": {
           "description": "Output only. Additional information about the instance state, if available.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. The time when the instance was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -456,6 +460,7 @@
         },
         "ipAddresses": {
           "description": "Output only. IPv4 addresses in the format {octet 1}.{octet 2}.{octet 3}.{octet 4} or IPv6 addresses in the format {block 1}:{block 2}:{block 3}:{block 4}:{block 5}:{block 6}:{block 7}:{block 8}.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -562,11 +567,13 @@
         },
         "createTime": {
           "description": "Output only. Timestamp when the resource was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Timestamp when the resource was last modified.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -588,6 +595,7 @@
             "Instance is being deleted.",
             "Instance encountered an error and is in indeterministic state."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -624,10 +632,12 @@
         },
         "tenantProjectId": {
           "description": "Output only. ID of the associated GCP tenant project. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "string"
         },
         "producerMetadata": {
           "description": "Output only. Custom string attributes used primarily to expose producer-specific information in monitoring dashboards. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -635,6 +645,7 @@
         },
         "provisionedResources": {
           "description": "Output only. The list of data plane resources provisioned for this instance, e.g. compute VMs. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource"
@@ -642,6 +653,7 @@
         },
         "sloMetadata": {
           "description": "Output only. SLO metadata for instance classification in the Standardized dataplane SLO platform. See go\/cloud-ssa-standard-slo for feature description.",
+          "readOnly": true,
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata"
         },
         "maintenanceSchedules": {

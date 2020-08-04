@@ -190,8 +190,8 @@ def AddStartTimeArgs(parser):
       required=True,
       type=arg_parsers.Datetime.Parse,
       help=('Start time of the time window (inclusive) for the asset history. '
-            'Must be later than 2018-10-02T00:00:00Z. '
-            'See $ gcloud topic datetimes for information on time formats.'))
+            'Must be after the current time minus 35 days. See $ gcloud topic '
+            'datetimes for information on time formats.'))
 
 
 def AddEndTimeArgs(parser):

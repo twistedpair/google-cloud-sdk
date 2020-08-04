@@ -186,7 +186,8 @@ class ClientContext(_messages.Message):
 
 
 class ClientState(_messages.Message):
-  r"""Resource representing ClientState and supports updates from API users
+  r"""Represents the state associated with an API client calling the Devices
+  API.  Resource representing ClientState and supports updates from API users
 
   Enums:
     ComplianceStateValueValuesEnum: The compliance state of the resource as
@@ -627,6 +628,8 @@ class CloudidentityDevicesDeviceUsersLookupRequest(_messages.Message):
       call. Provide this to retrieve the subsequent page.  When paginating,
       all other parameters provided to `LookupDeviceUsers` must match the call
       that provided the page token.
+    parent: Must be set to "devices/-/deviceUsers" to search across all
+      DeviceUser belonging to the user.
     rawResourceId: Raw Resource Id used by Google Endpoint Verification.  If
       the user is enrolled into Google Endpoint Verification, this id will be
       saved as the 'device_resource_id' field in the following platform
@@ -642,8 +645,9 @@ class CloudidentityDevicesDeviceUsersLookupRequest(_messages.Message):
   androidId = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
-  rawResourceId = _messages.StringField(4)
-  userId = _messages.StringField(5)
+  parent = _messages.StringField(4, required=True)
+  rawResourceId = _messages.StringField(5)
+  userId = _messages.StringField(6)
 
 
 class CloudidentityDevicesDeviceUsersPatchRequest(_messages.Message):
@@ -1392,8 +1396,9 @@ class CustomAttributeValue(_messages.Message):
 
 
 class Device(_messages.Message):
-  r"""Represents a Device known to Google Cloud, independent of the device
-  ownership, type, and whether it is assigned or in use by a user.
+  r"""A Device within the Cloud Identity Devices API.  Represents a Device
+  known to Google Cloud, independent of the device ownership, type, and
+  whether it is assigned or in use by a user.
 
   Enums:
     CompromisedStateValueValuesEnum: Output only. Represents whether the
@@ -1566,7 +1571,8 @@ class Device(_messages.Message):
 
 
 class DeviceUser(_messages.Message):
-  r"""A DeviceUser is a resource representing a user's use of a Device
+  r"""Represents a user's use of a Device in the Cloud Identity Devices API.
+  A DeviceUser is a resource representing a user's use of a Device
 
   Enums:
     CompromisedStateValueValuesEnum: Compromised State of the DeviceUser

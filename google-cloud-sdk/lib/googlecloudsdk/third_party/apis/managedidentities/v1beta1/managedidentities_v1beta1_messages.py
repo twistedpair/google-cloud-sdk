@@ -1536,8 +1536,8 @@ class Trust(_messages.Message):
       trust with the current domain.
     trustDirection: The trust direction, which decides if the current domain
       is trusted, trusting, or both.
-    trustHandshakeSecret: Input only, and will not be stored. The trust secret
-      used for the handshake with the target domain.
+    trustHandshakeSecret: Input only. The trust secret used for the handshake
+      with the target domain. It will not be stored.
     trustType: The type of trust represented by the trust resource.
     updateTime: Output only. The last update time.
   """

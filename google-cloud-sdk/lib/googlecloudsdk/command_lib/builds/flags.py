@@ -40,6 +40,22 @@ class BuildsCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
+def AddRegionFlag(parser, hidden=False):
+  """Adds a flag to select a region of the Cloud Build Service.
+
+  Args:
+    parser: The argparse parser to add the arg to.
+    hidden: If true, retain help but do not display it.
+  """
+  parser.add_argument(
+      '--region',
+      hidden=hidden,
+      help='The region of the Cloud Build Service to use.\n'
+      'Must be set to us-central-1.\n'
+      'If unset, the global service is used. The global service is isolated '
+      'from all regional services.')
+
+
 def AddBuildArg(parser, intro=None):
   """Adds a 'build' arg to the given parser.
 
@@ -226,7 +242,7 @@ def AddConfigFlagsAlpha(parser):
       'environment variables to the builder use the optional "env" key/value '
       'argument where value is a list of key values using '
       '[escaping](https://cloud.google.com/sdk/gcloud/reference/topic/escaping) '
-      'if neccessary.'
+      'if necessary.'
   )
 
 

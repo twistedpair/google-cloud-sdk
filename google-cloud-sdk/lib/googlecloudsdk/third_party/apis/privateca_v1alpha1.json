@@ -288,6 +288,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name for this CertificateAuthority in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+          "readOnly": true,
           "type": "string"
         },
         "type": {
@@ -346,6 +347,7 @@
             "Certificates cannot be issued from this CA. CRLs will not be generated.",
             "Certificates cannot be issued from this CA. CRLs will not be generated."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -364,10 +366,12 @@
         },
         "pemCert": {
           "description": "Output only. This CertificateAuthority's CA cert.",
+          "readOnly": true,
           "type": "string"
         },
         "caCertificateDescription": {
           "description": "Output only. A structured description of this CertificateAuthority's CA cert.",
+          "readOnly": true,
           "$ref": "CertificateDescription"
         },
         "gcsBucket": {
@@ -376,20 +380,24 @@
         },
         "accessUrls": {
           "description": "Output only. URLs for accessing content published by this CA, such as the CA certificate and CRLs.",
+          "readOnly": true,
           "$ref": "AccessUrls"
         },
         "createTime": {
           "description": "Output only. The time at which this CertificateAuthority was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The time at which this CertificateAuthority was updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deletionTime": {
           "description": "Output only. The time at which this CertificateAuthority will be deleted, if scheduled for deletion.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -1003,15 +1011,18 @@
       "properties": {
         "name": {
           "description": "Output only. The resource path for this CertificateRevocationList in the format `projects\/*\/locations\/*\/certificateAuthorities\/*\/ certificateRevocationLists\/*`.",
+          "readOnly": true,
           "type": "string"
         },
         "sequenceNumber": {
           "description": "Output only. The CRL sequence number that appears in pem_crl.",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         },
         "revokedCertificates": {
           "description": "Output only. The revoked serial numbers that appear in pem_crl.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "RevokedCertificate"
@@ -1019,10 +1030,12 @@
         },
         "pemCrl": {
           "description": "Output only. The PEM-encoded X.509 CRL.",
+          "readOnly": true,
           "type": "string"
         },
         "accessUrl": {
           "description": "Output only. The location where 'pem_crl' can be accessed.",
+          "readOnly": true,
           "type": "string"
         },
         "state": {
@@ -1032,6 +1045,7 @@
             "The CertificateRevocationList is up to date.",
             "The CertificateRevocationList is no longer current."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -1046,11 +1060,13 @@
         },
         "createTime": {
           "description": "Output only. The time at which this CertificateRevocationList was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The time at which this CertificateRevocationList was updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -1147,6 +1163,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource path for this Certificate in the format `projects\/*\/locations\/*\/certificateAuthorities\/*\/certificates\/*`.",
+          "readOnly": true,
           "type": "string"
         },
         "pemCsr": {
@@ -1164,18 +1181,22 @@
         },
         "revocationDetails": {
           "description": "Output only. Details regarding the revocation of this Certificate. This Certificate is considered revoked if and only if this field is present.",
+          "readOnly": true,
           "$ref": "RevocationDetails"
         },
         "pemCertificate": {
           "description": "Output only. The pem-encoded, signed X.509 certificate.",
+          "readOnly": true,
           "type": "string"
         },
         "certificateDescription": {
           "description": "Output only. A structured description of the issued X.509 certificate.",
+          "readOnly": true,
           "$ref": "CertificateDescription"
         },
         "pemCertificateChain": {
           "description": "Output only. The chain that may be used to verify the X.509 certificate. Expected to be in issuer-to-root order according to RFC 5246.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -1183,11 +1204,13 @@
         },
         "createTime": {
           "description": "Output only. The time at which this Certificate was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The time at which this Certificate was updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -1281,6 +1304,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource path for this ReusableConfig in the format `projects\/*\/locations\/*\/reusableConfigs\/*`.",
+          "readOnly": true,
           "type": "string"
         },
         "values": {
@@ -1293,11 +1317,13 @@
         },
         "createTime": {
           "description": "Output only. The time at which this ReusableConfig was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The time at which this ReusableConfig was updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -1317,6 +1343,7 @@
       "properties": {
         "pemCsr": {
           "description": "Output only. The PEM-encoded signed certificate signing request (CSR).",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1449,6 +1476,7 @@
       "properties": {
         "pemCrl": {
           "description": "Output only. The PEM-encoded signed certificate revocation list (CRL).",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1634,32 +1662,39 @@
       "properties": {
         "createTime": {
           "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
           "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
           "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "statusMessage": {
           "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
           "type": "string"
         },
         "requestedCancellation": {
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }

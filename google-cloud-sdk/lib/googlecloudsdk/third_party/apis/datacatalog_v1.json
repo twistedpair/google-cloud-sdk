@@ -241,6 +241,7 @@
             "BigQuery.",
             "Cloud Pub\/Sub."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Default unknown system.",
@@ -278,6 +279,7 @@
         },
         "dataCatalogTimestamps": {
           "description": "Output only. Timestamps about this EntryGroup. Default value is empty timestamps.",
+          "readOnly": true,
           "$ref": "GoogleCloudDatacatalogV1SystemTimestamps"
         }
       }
@@ -299,6 +301,7 @@
         },
         "expireTime": {
           "description": "Output only. The expiration time of the resource within the given system. Currently only apllicable to BigQuery resources.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -378,6 +381,7 @@
             "BigQuery.",
             "Cloud Pub\/Sub."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Default unknown system.",
@@ -438,6 +442,7 @@
         },
         "sampleGcsFileSpecs": {
           "description": "Output only. Sample files contained in this fileset, not all files contained in this fileset are represented here.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDatacatalogV1GcsFileSpec"
@@ -456,10 +461,12 @@
         },
         "gcsTimestamps": {
           "description": "Output only. Timestamps about the Cloud Storage file.",
+          "readOnly": true,
           "$ref": "GoogleCloudDatacatalogV1SystemTimestamps"
         },
         "sizeBytes": {
           "description": "Output only. The size of the file, in bytes.",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         }
@@ -478,6 +485,7 @@
             "BigQuery native table.",
             "BigQuery materialized view."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Default unknown type.",
@@ -509,6 +517,7 @@
       "properties": {
         "viewQuery": {
           "description": "Output only. The query that defines the table view.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -520,6 +529,7 @@
       "properties": {
         "groupedEntry": {
           "description": "Output only. If the table is a dated shard, i.e., with name pattern `[prefix]YYYYMMDD`, `grouped_entry` is the Data Catalog resource name of the date sharded grouped entry, for example, `projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}`. Otherwise, `grouped_entry` is empty.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -531,14 +541,17 @@
       "properties": {
         "dataset": {
           "description": "Output only. The Data Catalog resource name of the dataset entry the current table belongs to, for example, `projects\/{project_id}\/locations\/{location}\/entrygroups\/{entry_group_id}\/entries\/{entry_id}`.",
+          "readOnly": true,
           "type": "string"
         },
         "tablePrefix": {
           "description": "Output only. The table name prefix of the shards. The name of any given shard is `[table_prefix]YYYYMMDD`, for example, for shard `MyTable20180101`, the `table_prefix` is `MyTable`.",
+          "readOnly": true,
           "type": "string"
         },
         "shardCount": {
           "description": "Output only. Total number of shards.",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         }
@@ -635,6 +648,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name of the tag template field in URL format. Example: * projects\/{project_id}\/locations\/{location}\/tagTemplates\/{tag_template}\/fields\/{field} Note that this TagTemplateField may not actually be stored in the location in this name.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -750,6 +764,7 @@
         },
         "templateDisplayName": {
           "description": "Output only. The display name of the tag template.",
+          "readOnly": true,
           "type": "string"
         },
         "column": {
@@ -772,6 +787,7 @@
       "properties": {
         "displayName": {
           "description": "Output only. The display name of this field.",
+          "readOnly": true,
           "type": "string"
         },
         "doubleValue": {
@@ -798,6 +814,7 @@
         },
         "order": {
           "description": "Output only. The order of this field with respect to other fields in this tag. It can be set in Tag. For example, a higher value can indicate a more important field. The value can be negative. Multiple fields can have the same order, and field orders within a tag do not have to be sequential.",
+          "readOnly": true,
           "type": "integer",
           "format": "int32"
         }

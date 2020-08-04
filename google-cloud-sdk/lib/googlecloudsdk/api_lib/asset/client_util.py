@@ -145,39 +145,65 @@ def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
     yield asset
 
 
-def _RenderResponseforAnalyzeIamPolicy(response):
-  """Renders the response of the AnalyzeIamPolicy request."""
-  analysis = response.mainAnalysis
+def _RenderAnalysisforAnalyzeIamPolicy(analysis):
+  """Renders the analysis query and results of the AnalyzeIamPolicy request."""
 
-  if analysis.fullyExplored:
+  for analysis_result in analysis.analysisResults:
+    entry = {}
+
+    policy = {
+        'attachedResource': analysis_result.attachedResourceFullName,
+        'binding': analysis_result.iamBinding,
+    }
+    entry['policy'] = policy
+
+    entry['ACLs'] = []
+    for acl in analysis_result.accessControlLists:
+      acls = {}
+      acls['identities'] = analysis_result.identityList.identities
+      acls['accesses'] = acl.accesses
+      acls['resources'] = acl.resources
+      entry['ACLs'].append(acls)
+
+    yield entry
+
+
+def _RenderResponseforAnalyzeIamPolicy(response,
+                                       analyze_service_account_impersonation):
+  """Renders the response of the AnalyzeIamPolicy request."""
+
+  if response.fullyExplored:
     msg = 'Your analysis request is fully explored. '
   else:
     msg = ('Your analysis request is NOT fully explored. You can use the '
            '--show-response option to see the unexplored part. ')
 
-  if not analysis.analysisResults:
+  has_results = False
+  if response.mainAnalysis.analysisResults:
+    has_results = True
+  if (not has_results) and analyze_service_account_impersonation:
+    for sa_impersonation_analysis in response.serviceAccountImpersonationAnalysis:
+      if sa_impersonation_analysis.analysisResults:
+        has_results = True
+        break
+
+  if not has_results:
     msg += 'No matching ACL is found.'
   else:
     msg += ('The ACLs matching your requests are listed per IAM policy binding'
             ', so there could be duplications.')
-    for analysis_result in analysis.analysisResults:
-      entry = {}
 
-      policy = {
-          'attachedResource': analysis_result.attachedResourceFullName,
-          'binding': analysis_result.iamBinding,
+  for entry in _RenderAnalysisforAnalyzeIamPolicy(response.mainAnalysis):
+    yield entry
+
+  if analyze_service_account_impersonation:
+    for analysis in response.serviceAccountImpersonationAnalysis:
+      title = {
+          'Service Account Impersonation Analysis Query': analysis.analysisQuery
       }
-      entry['policy'] = policy
-
-      entry['ACLs'] = []
-      for acl in analysis_result.accessControlLists:
-        acls = {}
-        acls['identities'] = analysis_result.identityList.identities
-        acls['accesses'] = acl.accesses
-        acls['resources'] = acl.resources
-        entry['ACLs'].append(acls)
-
-      yield entry
+      yield title
+      for entry in _RenderAnalysisforAnalyzeIamPolicy(analysis):
+        yield entry
 
   log.status.Print(msg)
 
@@ -249,6 +275,10 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
     params.extend([('options.executionTimeout',
                     str(args.execution_timeout) + 's')])
 
+  if api_version == V1P4BETA1_API_VERSION and args.analyze_service_account_impersonation:
+    params.extend([('options.analyzeServiceAccountImpersonation',
+                    args.analyze_service_account_impersonation)])
+
   encoded_params = six.moves.urllib.parse.urlencode(params)
   response, raw_content = http_client.request(
       uri=url, headers=_HEADERS, method='POST', body=encoded_params)
@@ -263,7 +293,8 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
   try:
     response = encoding.JsonToMessage(response_message_class, content)
     if api_version == V1P4BETA1_API_VERSION and (not args.show_response):
-      return _RenderResponseforAnalyzeIamPolicy(response)
+      return _RenderResponseforAnalyzeIamPolicy(
+          response, args.analyze_service_account_impersonation)
     else:
       return response
   except ValueError as e:
@@ -561,6 +592,9 @@ class IamPolicyAnalysisExportClient(object):
       options.outputResourceEdges = args.output_resource_edges
     if args.output_group_edges:
       options.outputGroupEdges = args.output_group_edges
+
+    if args.analyze_service_account_impersonation:
+      options.analyzeServiceAccountImpersonation = args.analyze_service_account_impersonation
 
     export_iam_policy_analysis_request = self.message_module.ExportIamPolicyAnalysisRequest(
         analysisQuery=analysis_query,

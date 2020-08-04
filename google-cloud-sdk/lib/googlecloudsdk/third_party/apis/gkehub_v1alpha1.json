@@ -229,6 +229,7 @@
       "properties": {
         "name": {
           "description": "Output only. The unique name of this feature resource in the format: `projects\/[project_id]\/locations\/global\/features\/[feature_id]`.",
+          "readOnly": true,
           "type": "string"
         },
         "labels": {
@@ -275,20 +276,24 @@
         },
         "featureState": {
           "description": "Output only. State of the resource itself.",
+          "readOnly": true,
           "$ref": "FeatureState"
         },
         "createTime": {
           "description": "Output only. Timestamp for when the Feature was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Timestamp for when the Feature was last updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deleteTime": {
           "description": "Output only. Timestamp for when the Feature was deleted.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }

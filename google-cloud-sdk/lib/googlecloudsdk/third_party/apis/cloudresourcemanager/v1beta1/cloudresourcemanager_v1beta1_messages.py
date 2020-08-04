@@ -28,23 +28,19 @@ class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices",           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE"             },             {
-  "log_type": "ADMIN_READ"             }           ]         },         {
-  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
-  {               "log_type": "DATA_READ"             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:aliya@example.com"               ]             }           ]         }
-  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
-  and aliya@example.com from DATA_WRITE logging.
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -58,12 +54,11 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE"         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  jose@example.com from DATA_READ logging.
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -96,9 +91,9 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding.  If the
+    condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
-      request.  If the condition evaluates to `false`, then this binding does
+      request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
@@ -106,35 +101,35 @@ class Binding(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -179,13 +174,13 @@ class CloudresourcemanagerOrganizationsListRequest(_messages.Message):
 
   Fields:
     filter: An optional query string used to filter the Organizations to
-      return in the response. Filter rules are case-insensitive.
-      Organizations may be filtered by `owner.directoryCustomerId` or by
-      `domain`, where the domain is a G Suite domain, for example:  * Filter
+      return in the response. Filter rules are case-insensitive. Organizations
+      may be filtered by `owner.directoryCustomerId` or by `domain`, where the
+      domain is a G Suite domain, for example: * Filter
       `owner.directorycustomerid:123456789` returns Organization resources
       with `owner.directory_customer_id` equal to `123456789`. * Filter
       `domain:google.com` returns Organization resources corresponding to the
-      domain `google.com`.  This field is optional.
+      domain `google.com`. This field is optional.
     pageSize: The maximum number of Organizations to return in the response.
       This field is optional.
     pageToken: A pagination token returned from a previous call to
@@ -259,7 +254,7 @@ class CloudresourcemanagerProjectsDeleteRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsDeleteRequest object.
 
   Fields:
-    projectId: The Project ID (for example, `foo-bar-123`).  Required.
+    projectId: The Project ID (for example, `foo-bar-123`). Required.
   """
 
   projectId = _messages.StringField(1, required=True)
@@ -271,7 +266,7 @@ class CloudresourcemanagerProjectsGetAncestryRequest(_messages.Message):
   Fields:
     getAncestryRequest: A GetAncestryRequest resource to be passed as the
       request body.
-    projectId: The Project ID (for example, `my-project-123`).  Required.
+    projectId: The Project ID (for example, `my-project-123`). Required.
   """
 
   getAncestryRequest = _messages.MessageField('GetAncestryRequest', 1)
@@ -297,7 +292,7 @@ class CloudresourcemanagerProjectsGetRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsGetRequest object.
 
   Fields:
-    projectId: The Project ID (for example, `my-project-123`).  Required.
+    projectId: The Project ID (for example, `my-project-123`). Required.
   """
 
   projectId = _messages.StringField(1, required=True)
@@ -307,31 +302,29 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsListRequest object.
 
   Fields:
-    filter: An expression for filtering the results of the request.  Filter
-      rules are case insensitive. The fields eligible for filtering are:  +
-      `name` + `id` + `labels.<key>` (where *key* is the name of a label) +
-      `parent.type` + `parent.id`  Some examples of using labels as filters:
-      | Filter           | Description
-      | |------------------|--------------------------------------------------
-      ---| | name:how*        | The project's name starts with "how".
-      | | name:Howl        | The project's name is `Howl` or `howl`.
-      | | name:HOWL        | Equivalent to above.
-      | | NAME:howl        | Equivalent to above.
-      | | labels.color:*   | The project has the label `color`.
-      | | labels.color:red | The project's label `color` has the value `red`.
-      | | labels.color:red&nbsp;labels.size:big |The project's label `color`
-      has   the value `red` and its label `size` has the value `big`.
-      |  If no filter is specified, the call will return projects for which
-      the user has the `resourcemanager.projects.get` permission.  NOTE: To
-      perform a by-parent query (eg., what projects are directly in a Folder),
-      the caller must have the `resourcemanager.projects.list` permission on
-      the parent and the filter must contain both a `parent.type` and a
-      `parent.id` restriction (example: "parent.type:folder parent.id:123").
-      In this case an alternate search index is used which provides more
-      consistent results.  Optional.
+    filter: An expression for filtering the results of the request. Filter
+      rules are case insensitive. The fields eligible for filtering are: +
+      `name` + `id` + `labels.` (where *key* is the name of a label) +
+      `parent.type` + `parent.id` Some examples of using labels as filters: |
+      Filter | Description | |------------------|-----------------------------
+      ------------------------| | name:how* | The project's name starts with
+      "how". | | name:Howl | The project's name is `Howl` or `howl`. | |
+      name:HOWL | Equivalent to above. | | NAME:howl | Equivalent to above. |
+      | labels.color:* | The project has the label `color`. | |
+      labels.color:red | The project's label `color` has the value `red`. | |
+      labels.color:red labels.size:big |The project's label `color` has the
+      value `red` and its label `size` has the value `big`. | If no filter is
+      specified, the call will return projects for which the user has the
+      `resourcemanager.projects.get` permission. NOTE: To perform a by-parent
+      query (eg., what projects are directly in a Folder), the caller must
+      have the `resourcemanager.projects.list` permission on the parent and
+      the filter must contain both a `parent.type` and a `parent.id`
+      restriction (example: "parent.type:folder parent.id:123"). In this case
+      an alternate search index is used which provides more consistent
+      results. Optional.
     pageSize: The maximum number of Projects to return in the response. The
       server can return fewer Projects than requested. If unspecified, server
-      picks an appropriate default.  Optional.
+      picks an appropriate default. Optional.
     pageToken: A pagination token returned from a previous call to
       ListProjects that indicates from where listing should continue.
       Optional.
@@ -376,7 +369,7 @@ class CloudresourcemanagerProjectsUndeleteRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsUndeleteRequest object.
 
   Fields:
-    projectId: The project ID (for example, `foo-bar-123`).  Required.
+    projectId: The project ID (for example, `foo-bar-123`). Required.
     undeleteProjectRequest: A UndeleteProjectRequest resource to be passed as
       the request body.
   """
@@ -388,9 +381,9 @@ class CloudresourcemanagerProjectsUndeleteRequest(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -398,20 +391,20 @@ class Empty(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -500,10 +493,10 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -530,19 +523,19 @@ class ListOrganizationsResponse(_messages.Message):
 
 
 class ListProjectsResponse(_messages.Message):
-  r"""A page of the response received from the ListProjects method.  A
+  r"""A page of the response received from the ListProjects method. A
   paginated response where more pages are available has `next_page_token` set.
   This token can be used in a subsequent request to retrieve the next request
   page.
 
   Fields:
-    nextPageToken: Pagination token.  If the result set is too large to fit in
+    nextPageToken: Pagination token. If the result set is too large to fit in
       a single response, this token is returned. It encodes the position of
       the current result cursor. Feeding this value into a new list request
-      with the `page_token` parameter gives the next page of the results.
-      When `next_page_token` is not filled in, there is no next page and the
-      list returned is the last page in the result set.  Pagination tokens
-      have a limited lifetime.
+      with the `page_token` parameter gives the next page of the results. When
+      `next_page_token` is not filled in, there is no next page and the list
+      returned is the last page in the result set. Pagination tokens have a
+      limited lifetime.
     projects: The list of Projects that matched the list filter. This list can
       be paginated.
   """
@@ -582,7 +575,7 @@ class Organization(_messages.Message):
     r"""The organization's current lifecycle state. Assigned by the server.
 
     Values:
-      LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.  This is only useful for
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified state. This is only useful for
         distinguishing unset values.
       ACTIVE: The normal and active state.
       DELETE_REQUESTED: The organization has been marked for deletion by the
@@ -615,37 +608,33 @@ class OrganizationOwner(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  For some types of
+  be an IAM predefined role or a user-created custom role. For some types of
   Google Cloud resources, a `binding` can also specify a `condition`, which is
   a logical expression that allows access to a resource only if the expression
   evaluates to `true`. A condition can add constraints based on attributes of
   the request, the resource, or both. To learn which resources support
   conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies).  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members": [
-  "user:eve@example.com"           ],           "condition": {
-  "title": "expirable access",             "description": "Does not grant
-  access after Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -660,24 +649,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.  To learn which resources support
+      version or leave the field unset. To learn which resources support
       conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -690,60 +679,57 @@ class Policy(_messages.Message):
 
 
 class Project(_messages.Message):
-  r"""A Project is a high-level Google Cloud Platform entity.  It is a
+  r"""A Project is a high-level Google Cloud Platform entity. It is a
   container for ACLs, APIs, App Engine Apps, VMs, and other Google Cloud
   Platform resources.
 
   Enums:
-    LifecycleStateValueValuesEnum: The Project lifecycle state.  Read-only.
+    LifecycleStateValueValuesEnum: The Project lifecycle state. Read-only.
 
   Messages:
-    LabelsValue: The labels associated with this Project.  Label keys must be
+    LabelsValue: The labels associated with this Project. Label keys must be
       between 1 and 63 characters long and must conform to the following
-      regular expression: a-z{0,62}.  Label values must be between 0 and 63
+      regular expression: a-z{0,62}. Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      [a-z0-9_-]{0,63}. A label value can be empty.  No more than 256 labels
-      can be associated with a given resource.  Clients should store labels in
+      [a-z0-9_-]{0,63}. A label value can be empty. No more than 256 labels
+      can be associated with a given resource. Clients should store labels in
       a representation such as JSON that does not depend on specific
-      characters being disallowed.  Example: <code>"environment" :
-      "dev"</code> Read-write.
+      characters being disallowed. Example: "environment" : "dev" Read-write.
 
   Fields:
-    createTime: Creation time.  Read-only.
-    labels: The labels associated with this Project.  Label keys must be
+    createTime: Creation time. Read-only.
+    labels: The labels associated with this Project. Label keys must be
       between 1 and 63 characters long and must conform to the following
-      regular expression: a-z{0,62}.  Label values must be between 0 and 63
+      regular expression: a-z{0,62}. Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      [a-z0-9_-]{0,63}. A label value can be empty.  No more than 256 labels
-      can be associated with a given resource.  Clients should store labels in
+      [a-z0-9_-]{0,63}. A label value can be empty. No more than 256 labels
+      can be associated with a given resource. Clients should store labels in
       a representation such as JSON that does not depend on specific
-      characters being disallowed.  Example: <code>"environment" :
-      "dev"</code> Read-write.
-    lifecycleState: The Project lifecycle state.  Read-only.
+      characters being disallowed. Example: "environment" : "dev" Read-write.
+    lifecycleState: The Project lifecycle state. Read-only.
     name: The optional user-assigned display name of the Project. When present
       it must be between 4 to 30 characters. Allowed characters are: lowercase
       and uppercase letters, numbers, hyphen, single-quote, double-quote,
-      space, and exclamation point.  Example: <code>My Project</code> Read-
-      write.
-    parent: An optional reference to a parent Resource.  Supported parent
-      types include "organization" and "folder". Once set, the parent cannot
-      be cleared. The `parent` can be set on creation or using the
+      space, and exclamation point. Example: My Project Read-write.
+    parent: An optional reference to a parent Resource. Supported parent types
+      include "organization" and "folder". Once set, the parent cannot be
+      cleared. The `parent` can be set on creation or using the
       `UpdateProject` method; the end user must have the
-      `resourcemanager.projects.create` permission on the parent.  Read-write.
+      `resourcemanager.projects.create` permission on the parent. Read-write.
     projectId: The unique, user-assigned ID of the Project. It must be 6 to 30
       lowercase letters, digits, or hyphens. It must start with a letter.
-      Trailing hyphens are prohibited.  Example: <code>tokyo-rain-123</code>
-      Read-only after creation.
-    projectNumber: The number uniquely identifying the project.  Example:
-      <code>415104041262</code> Read-only.
+      Trailing hyphens are prohibited. Example: tokyo-rain-123 Read-only after
+      creation.
+    projectNumber: The number uniquely identifying the project. Example:
+      415104041262 Read-only.
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
-    r"""The Project lifecycle state.  Read-only.
+    r"""The Project lifecycle state. Read-only.
 
     Values:
-      LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.  This is only
-        used/useful for distinguishing unset values.
+      LIFECYCLE_STATE_UNSPECIFIED: Unspecified state. This is only used/useful
+        for distinguishing unset values.
       ACTIVE: The normal and active state.
       DELETE_REQUESTED: The project has been marked for deletion by the user
         (by invoking DeleteProject) or by the system (Google Cloud Platform).
@@ -758,14 +744,14 @@ class Project(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels associated with this Project.  Label keys must be between 1
+    r"""The labels associated with this Project. Label keys must be between 1
     and 63 characters long and must conform to the following regular
-    expression: a-z{0,62}.  Label values must be between 0 and 63 characters
+    expression: a-z{0,62}. Label values must be between 0 and 63 characters
     long and must conform to the regular expression [a-z0-9_-]{0,63}. A label
-    value can be empty.  No more than 256 labels can be associated with a
-    given resource.  Clients should store labels in a representation such as
-    JSON that does not depend on specific characters being disallowed.
-    Example: <code>"environment" : "dev"</code> Read-write.
+    value can be empty. No more than 256 labels can be associated with a given
+    resource. Clients should store labels in a representation such as JSON
+    that does not depend on specific characters being disallowed. Example:
+    "environment" : "dev" Read-write.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -841,7 +827,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used:  `paths: "bindings, etag"`
+      provided, the following default mask is used: `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -936,8 +922,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UndeleteProjectRequest(_messages.Message):
-  r"""The request sent to the UndeleteProject
-method."""
+  r"""The request sent to the UndeleteProject method."""
 
 
 encoding.AddCustomJsonFieldMapping(

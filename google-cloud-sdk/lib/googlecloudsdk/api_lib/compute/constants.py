@@ -34,6 +34,11 @@ DISK_TYPE_PD_BALANCED = 'pd-balanced'
 DISK_TYPE_PD_SSD = 'pd-ssd'
 DISK_TYPE_PD_EXTREME = 'pd-extreme'
 
+# Provisioned IOPS for pd-extreme disks
+MIN_PROVISIONED_IOPS = 10000
+MAX_PROVISIONED_IOPS = 120000
+DEFAULT_PROVISIONED_IOPS = 100000
+
 # Default size for each disk type
 DEFAULT_DISK_SIZE_GB_MAP = {
     DISK_TYPE_PD_STANDARD: 500,

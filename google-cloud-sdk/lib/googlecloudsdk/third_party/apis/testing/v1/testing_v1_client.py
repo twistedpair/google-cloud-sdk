@@ -92,7 +92,7 @@ class TestingV1(base_api.BaseApiClient):
 
     def Cancel(self, request, global_params=None):
       r"""Cancels unfinished test executions in a test matrix.
-This call returns immediately and cancellation proceeds asychronously.
+This call returns immediately and cancellation proceeds asynchronously.
 If the matrix is already final, this operation will have no effect.
 
 May return any of the following canonical error codes:

@@ -40764,7 +40764,8 @@ class SecurityPolicyRuleMatcherConfig(_messages.Message):
   r"""A SecurityPolicyRuleMatcherConfig object.
 
   Fields:
-    srcIpRanges: CIDR IP address range.
+    srcIpRanges: CIDR IP address range. Maximum number of src_ip_ranges
+      allowed is 10.
   """
 
   srcIpRanges = _messages.StringField(1, repeated=True)

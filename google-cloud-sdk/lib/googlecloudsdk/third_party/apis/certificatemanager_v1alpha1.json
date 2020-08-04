@@ -244,11 +244,13 @@
         },
         "createTime": {
           "description": "Output only. The creation timestamp of a Certificate.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The last update timestamp of a Certificate.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -265,6 +267,7 @@
         },
         "subjectAlternativeNames": {
           "description": "Output only. The list of Subject Alternative Names defined in the certificate.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -272,11 +275,13 @@
         },
         "certificatePem": {
           "description": "Output only. The certificate chain in PEM-encoded form.",
+          "readOnly": true,
           "type": "string",
           "format": "byte"
         },
         "expireTime": {
           "description": "Output only. The expiry timestamp of a Certificate.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -339,6 +344,7 @@
         },
         "createTime": {
           "description": "Output only. The creation timestamp of a Certificate Map.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -351,6 +357,7 @@
         },
         "gclbTargets": {
           "description": "Output only. A list of GCLB targets which use this Certificate Map.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GclbTarget"
@@ -432,11 +439,13 @@
         },
         "createTime": {
           "description": "Output only. The creation timestamp of a Certificate Map Entry.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The update timestamp of a Certificate Map Entry.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -481,6 +490,7 @@
             "The configuration is serving.",
             "Update is in progress. Some frontends may serve this configuration."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The status is undefined.",

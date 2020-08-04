@@ -142,15 +142,15 @@ def MakeDiskSnapshotSchedulePolicy(policy_ref, args, messages):
       snapshotSchedulePolicy=snapshot_policy)
 
 
-def MakeGroupPlacementPolicy(policy_ref, args, messages):
+def MakeGroupPlacementPolicy(policy_ref, args, messages, track):
   """Creates a Group Placement Resource Policy message from args."""
   availability_domain_count = None
   if args.IsSpecified('availability_domain_count'):
     availability_domain_count = args.availability_domain_count
   collocation = None
   if args.IsSpecified('collocation'):
-    collocation = flags.GetCollocationFlagMapper(messages).GetEnumForChoice(
-        args.collocation)
+    collocation = flags.GetCollocationFlagMapper(
+        messages, track).GetEnumForChoice(args.collocation)
   placement_policy = messages.ResourcePolicyGroupPlacementPolicy(
       vmCount=args.vm_count,
       availabilityDomainCount=availability_domain_count,

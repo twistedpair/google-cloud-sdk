@@ -353,6 +353,14 @@ CLOUD_SQL_MACHINE_TYPE = base.Argument(
     Cloud SQL machine type used by the Airflow database.
     """)
 
+WEB_SERVER_MACHINE_TYPE = base.Argument(
+    '--web-server-machine-type',
+    type=str,
+    help="""\
+    machine type used by the Airflow web server. The list of available machine
+    types is available here: https://cloud.google.com/composer/pricing.
+    """)
+
 
 def _IsValidIpv4CidrBlock(ipv4_cidr_block):
   """Validates that IPV4 CIDR block arg has valid format.

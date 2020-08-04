@@ -520,6 +520,8 @@ class ClusterUpdate(_messages.Message):
       Binary Authorization feature.
     desiredClusterAutoscaling: Cluster-level autoscaling configuration.
     desiredDatabaseEncryption: Configuration of etcd encryption.
+    desiredDefaultSnatStatus: The desired status of whether to disable default
+      sNAT for this cluster.
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image. NOTE: Set the
       "desired_node_pool" field as well.
@@ -577,6 +579,7 @@ class ClusterUpdate(_messages.Message):
       version - "1.X.Y": picks the highest valid gke.N patch in the 1.X.Y
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
       picks the Kubernetes master version
+    desiredPrivateClusterConfig: The desired private cluster configuration.
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
@@ -590,23 +593,25 @@ class ClusterUpdate(_messages.Message):
   desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 2)
   desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 3)
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 4)
-  desiredImage = _messages.StringField(5)
-  desiredImageProject = _messages.StringField(6)
-  desiredImageType = _messages.StringField(7)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 8)
-  desiredLocations = _messages.StringField(9, repeated=True)
-  desiredLoggingService = _messages.StringField(10)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 11)
-  desiredMasterVersion = _messages.StringField(12)
-  desiredMonitoringService = _messages.StringField(13)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 14)
-  desiredNodePoolId = _messages.StringField(15)
-  desiredNodeVersion = _messages.StringField(16)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 17)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 18)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 19)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 20)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 21)
+  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 5)
+  desiredImage = _messages.StringField(6)
+  desiredImageProject = _messages.StringField(7)
+  desiredImageType = _messages.StringField(8)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 9)
+  desiredLocations = _messages.StringField(10, repeated=True)
+  desiredLoggingService = _messages.StringField(11)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 12)
+  desiredMasterVersion = _messages.StringField(13)
+  desiredMonitoringService = _messages.StringField(14)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 15)
+  desiredNodePoolId = _messages.StringField(16)
+  desiredNodeVersion = _messages.StringField(17)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 18)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 19)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 20)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 21)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 22)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 23)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1243,6 +1248,17 @@ class DatabaseEncryption(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
+class DefaultSnatStatus(_messages.Message):
+  r"""DefaultSnatStatus contains the desired state of whether default sNAT
+  should be disabled on the cluster.
+
+  Fields:
+    disabled: Disables cluster default sNAT rules.
+  """
+
+  disabled = _messages.BooleanField(1)
+
+
 class DnsCacheConfig(_messages.Message):
   r"""Configuration for NodeLocal DNSCache
 
@@ -1686,6 +1702,11 @@ class NetworkConfig(_messages.Message):
   r"""NetworkConfig reports the relative names of network & subnetwork.
 
   Fields:
+    defaultSnatStatus: Whether the cluster disables default in-node sNAT
+      rules. In-node sNAT rules will be disabled when default_snat_status is
+      disabled. When disabled is set to false, default IP masquerade rules
+      will be applied to the nodes to prevent sNAT on cluster internal
+      traffic.
     enableIntraNodeVisibility: Whether Intra-node visibility is enabled for
       this cluster. This makes same node pod to pod traffic visible for VPC
       network.
@@ -1699,9 +1720,10 @@ class NetworkConfig(_messages.Message):
       central1/subnetworks/my-subnet
   """
 
-  enableIntraNodeVisibility = _messages.BooleanField(1)
-  network = _messages.StringField(2)
-  subnetwork = _messages.StringField(3)
+  defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 1)
+  enableIntraNodeVisibility = _messages.BooleanField(2)
+  network = _messages.StringField(3)
+  subnetwork = _messages.StringField(4)
 
 
 class NetworkPolicy(_messages.Message):
@@ -1802,9 +1824,8 @@ class NodeConfig(_messages.Message):
       https://cloud.google.com/compute/docs/disks/local-ssd for more
       information.
     machineType: The name of a Google Compute Engine [machine
-      type](https://cloud.google.com/compute/docs/machine-types) (e.g.
-      `n1-standard-1`).  If unspecified, the default machine type is
-      `n1-standard-1`.
+      type](https://cloud.google.com/compute/docs/machine-types)  If
+      unspecified, the default machine type is `e2-medium`.
     metadata: The metadata key/value pairs assigned to instances in the
       cluster.  Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less
       than 128 bytes in length. These are reflected as part of a URL in the
@@ -2304,7 +2325,13 @@ class PrivateClusterConfig(_messages.Message):
 
 
 class PrivateClusterMasterGlobalAccessConfig(_messages.Message):
-  r"""Configuration for controlling master global access settings."""
+  r"""Configuration for controlling master global access settings.
+
+  Fields:
+    enabled: Whenever master is accessible globally or not.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class RecurringTimeWindow(_messages.Message):

@@ -57,6 +57,23 @@ class FailedBuildException(core_exceptions.Error):
               id=build.id, status=build.status))
 
 
+class RegionMismatchError(core_exceptions.Error):
+  """User-specified build region does not match the worker pool region."""
+
+  def __init__(self, build_region, wp_region):
+    """Alert that build_region does not match wp_region.
+
+    Args:
+      build_region: str, The region specified in the build config.
+      wp_region: str, The region where the worker pool is.
+    """
+    msg = ('Builds that run in a worker pool can only run in that worker '
+           'pool\'s region. You selected %s, but your worker pool is in %s. To '
+           'fix this, simply omit the --region flag.') % (build_region,
+                                                          wp_region)
+    super(RegionMismatchError, self).__init__(msg)
+
+
 def _GetBuildTimeout():
   """Get the build timeout."""
   build_timeout = properties.VALUES.builds.timeout.Get()
@@ -433,10 +450,42 @@ def CreateBuildConfigAlpha(tag, no_cache, messages, substitutions, arg_config,
   return build_config
 
 
-def Build(messages, async_, build_config, show_logs=False):
+def DetermineBuildRegion(build_config, desired_region=None):
+  """Determine what region of the GCB service this build should be sent to.
+
+  Args:
+    build_config: apitools.base.protorpclite.messages.Message, The Build message
+      to analyze.
+    desired_region: str, The region requested by the user, if any.
+
+  Raises:
+    RegionMismatchError: If the config conflicts with the desired region.
+
+  Returns:
+    str, The region that the build should be sent to, or None if it should be
+    sent to the global region.
+  """
+  # If the build is configured to run in a regional worker pool, use the worker
+  # pool's resource ID to determine which regional GCB service to send it to.
+  wp_options = build_config.options
+  if not wp_options:
+    return desired_region
+  wp_resource = wp_options.workerPool
+  if not wp_resource:
+    return desired_region
+  if not cloudbuild_util.IsRegionalWorkerPool(wp_resource):
+    return desired_region
+  wp_region = cloudbuild_util.RegionalWorkerPoolRegion(wp_resource)
+  # If the user told us to hit a different region, then they made a mistake.
+  if desired_region and desired_region != wp_region:
+    raise RegionMismatchError(desired_region, wp_region)
+  return wp_region
+
+
+def Build(messages, async_, build_config, show_logs=False, build_region=None):
   """Starts the build."""
   log.debug('submitting build: ' + repr(build_config))
-  client = cloudbuild_util.GetClientInstance()
+  client = cloudbuild_util.GetClientInstance(region=build_region)
   op = client.projects_builds.Create(
       messages.CloudbuildProjectsBuildsCreateRequest(
           build=build_config, projectId=properties.VALUES.core.project.Get()))

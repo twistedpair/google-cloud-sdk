@@ -236,6 +236,7 @@
       "properties": {
         "name": {
           "description": "Output only. The unique name of this domain resource in the format: `projects\/[project_number]\/locations\/global\/memberships\/[membership_id]`. `membership_id` can only be set at creation time using the `membership_id` field in the creation request. `membership_id` must be a valid RFC 1123 compliant DNS label. In particular, it must be: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character I.e. `membership_id` must match the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most 63 characters.",
+          "readOnly": true,
           "type": "string"
         },
         "labels": {
@@ -247,6 +248,7 @@
         },
         "description": {
           "description": "Output only. Description of this membership, limited to 63 characters. It will match the regex: `a-zA-Z0-9*` This field is present for legacy purposes.",
+          "readOnly": true,
           "type": "string"
         },
         "endpoint": {
@@ -255,20 +257,24 @@
         },
         "state": {
           "description": "Output only. State of the Membership resource.",
+          "readOnly": true,
           "$ref": "MembershipState"
         },
         "createTime": {
           "description": "Output only. Timestamp for when the Membership was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Timestamp for when the Membership was last updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "deleteTime": {
           "description": "Output only. Timestamp for when the Membership was deleted.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -282,11 +288,13 @@
         },
         "lastConnectionTime": {
           "description": "Output only. For clusters using Connect, the timestamp of the most recent connection established with Google Cloud. This time is updated every several minutes, not continuously. For clusters that do not use GKE Connect, or that have never connected successfully, this field will be unset.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "uniqueId": {
           "description": "Output only. Google-generated UUID for this resource. This is unique across all Membership resources. If a Membership resource is deleted and another resource with the same name is created, it gets a different unique_id.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -302,6 +310,7 @@
         },
         "kubernetesMetadata": {
           "description": "Output only. For Memberships that point to Kubernetes Endpoints, this field provides useful metadata.",
+          "readOnly": true,
           "$ref": "KubernetesMetadata"
         },
         "kubernetesResource": {
@@ -371,6 +380,7 @@
         },
         "membershipResources": {
           "description": "Output only. The additional Kubernetes resources that need to be applied to the cluster after the membership creation and every update. This field is only populated in the Membership returned after the long-running operation of Create\/UpdateMembership finished, but not in standalone Get\/ListMembership requests. To get the resource manifest after the initial registration, the caller could make an UpdateMembership call with an empty field mask.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "ResourceManifest"
@@ -378,6 +388,7 @@
         },
         "connectResources": {
           "description": "Output only. The Kubernetes resources for installing GKE Connect agent. This field is only populated in the Membership returned after the long-running operation of Create\/UpdateMembership finished, but not in standalone Get\/ListMembership requests. To get the resource manifest after the initial registration, the caller could make an UpdateMembership call with an empty field mask.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "ResourceManifest"
@@ -446,14 +457,17 @@
         },
         "identityNamespace": {
           "description": "Output only. The identity namespace in which the above issuer will be recognized. This field is now deprecated, and will be removed eventually. Callers should now use workload_identity_pool instead of identity_namespace, once we start setting it.",
+          "readOnly": true,
           "type": "string"
         },
         "identityProvider": {
           "description": "Output only. An identity provider that reflects this issuer in the identity namespace.",
+          "readOnly": true,
           "type": "string"
         },
         "workloadIdentityPool": {
           "description": "Output only. The name of the workload identity pool in which the above issuer will be recognized. There is a single Workload Identity Pool per Hub that is shared between all Memberships that belong to this Hub. For a Hub hosted in {PROJECT_ID}, the workload pool format is {PROJECT_ID}.hub.id.goog, although this is subject to change in newer versions of this API.",
+          "readOnly": true,
           "type": "string"
         }
       }

@@ -18,6 +18,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.compute import completers as compute_completers
+from googlecloudsdk.command_lib.compute import flags as compute_flags
+
+INSTANCES_ARG_FOR_OS_UPGRADE = compute_flags.ResourceArgument(
+    resource_name='instance',
+    name='instance_name',
+    completer=compute_completers.InstancesCompleter,
+    zonal_collection='compute.instances',
+    zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
+    plural=False)
+
 
 def AddPatchDeploymentsCreateFlags(parser, api_version):
   """Adds flags for os-config create command to parser."""

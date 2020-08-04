@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store
 from google.auth import credentials
 
@@ -29,16 +30,31 @@ class MissingStoredCredentialsError(Exception):
 class StoredCredentials(credentials.Credentials):
   """Implements the Credentials interface required by gapic."""
 
-  def __init__(self):
+  def __init__(self,
+               enable_resource_quota=True,
+               force_resource_quota=False,
+               allow_account_impersonation=True,
+               use_google_auth=False):
     super(StoredCredentials, self).__init__()
     self.stored_credentials = store.LoadIfEnabled(
-        allow_account_impersonation=True, use_google_auth=False)
+        allow_account_impersonation=allow_account_impersonation,
+        use_google_auth=use_google_auth)
     if self.stored_credentials is None:
       raise MissingStoredCredentialsError()
-    self.token = self.stored_credentials.access_token
+    if creds.IsOauth2ClientCredentials(self.stored_credentials):
+      self.token = self.stored_credentials.access_token
+    else:
+      self.token = self.stored_credentials.token
+    if enable_resource_quota or force_resource_quota:
+      self.quota_project_id = creds.GetQuotaProject(self.stored_credentials,
+                                                    force_resource_quota)
+    else:
+      self.quota_project_id = None
 
-  def __str__(self):
-    return self.stored_credentials.to_json()
+  def apply(self, headers, token=None):
+    super(StoredCredentials, self).apply(headers, token=token)
+    if self.quota_project_id is not None:
+      headers["x-goog-user-project"] = self.quota_project_id
 
   def refresh(self, request):
     pass

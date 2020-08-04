@@ -240,11 +240,13 @@
         },
         "createTime": {
           "description": "Output only. The timestamp when the migration job resource was created. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The timestamp when the migration job resource was last updated. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -327,6 +329,7 @@
             "Only RDS flow - waiting for source writes to stop",
             "Only RDS flow - the sources writes stopped, waiting for dump to begin"
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The phase of the migration job is unknown.",
@@ -390,11 +393,13 @@
         },
         "duration": {
           "description": "Output only. The duration of the migration job (in seconds). A duration in seconds with up to nine fractional digits, terminated by 's'. Example: \"3.5s\".",
+          "readOnly": true,
           "type": "string",
           "format": "google-duration"
         },
         "error": {
           "description": "Output only. The error details in case of state FAILED.",
+          "readOnly": true,
           "$ref": "Status"
         },
         "sourceDatabase": {
@@ -407,6 +412,7 @@
         },
         "endTime": {
           "description": "Output only. If the migration job is completed, the time when it was completed.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -642,11 +648,13 @@
         },
         "createTime": {
           "description": "Output only. The timestamp when the resource was created. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The timestamp when the resource was last updated. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example: \"2014-10-02T15:01:23.045123456Z\".",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -709,6 +717,7 @@
         },
         "error": {
           "description": "Output only. The error details in case of state FAILED.",
+          "readOnly": true,
           "$ref": "Status"
         },
         "provider": {
@@ -764,6 +773,7 @@
         },
         "hasPassword": {
           "description": "Output only. Indicates If this connection profile password is stored.",
+          "readOnly": true,
           "type": "boolean"
         }
       }
@@ -780,6 +790,7 @@
             "Only 'ca_certificate' specified.",
             "Both server ('ca_certificate'), and client ('client_key', 'client_certificate') specified."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -838,6 +849,7 @@
         },
         "hasPassword": {
           "description": "Output only. Indicates If this connection profile password is stored.",
+          "readOnly": true,
           "type": "boolean"
         }
       }
@@ -849,6 +861,7 @@
       "properties": {
         "cloudSqlId": {
           "description": "Output only. The Cloud SQL instance ID that this connection profile is associated with.",
+          "readOnly": true,
           "type": "string"
         },
         "settings": {
@@ -857,10 +870,12 @@
         },
         "privateIp": {
           "description": "Output only. The Cloud SQL database instance's private IP.",
+          "readOnly": true,
           "type": "string"
         },
         "publicIp": {
           "description": "Output only. The Cloud SQL database instance's public IP.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -986,6 +1001,7 @@
         },
         "hasRootPassword": {
           "description": "Output only. Indicates If this connection profile root password is stored.",
+          "readOnly": true,
           "type": "boolean"
         }
       }
@@ -1095,32 +1111,39 @@
       "properties": {
         "createTime": {
           "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
           "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
           "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "statusMessage": {
           "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
           "type": "string"
         },
         "requestedCancellation": {
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }

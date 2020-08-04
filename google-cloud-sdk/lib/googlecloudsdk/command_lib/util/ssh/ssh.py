@@ -24,6 +24,7 @@ import getpass
 import os
 import re
 import string
+import tempfile
 import enum
 
 from googlecloudsdk.api_lib.oslogin import client as oslogin_client
@@ -1177,6 +1178,7 @@ class SSHCommand(object):
     self.tty = tty
     self.iap_tunnel_args = iap_tunnel_args
     self.remainder = remainder
+    self._remote_command_file = None
 
   def Build(self, env=None):
     """Construct the actual command according to the given environment.
@@ -1225,8 +1227,16 @@ class SSHCommand(object):
       if env.suite is Suite.OPENSSH:
         args.append('--')
         args.extend(self.remote_command)
+      elif tty:
+        # Unlike plink.exe, putty.exe doesn't support passing a remote command
+        # with spaces on the command line; however the -m flag lets one pass in
+        # a local file from which to read the remote command.
+        with tempfile.NamedTemporaryFile(
+            mode='w+t', delete=False) as self._remote_command_file:
+          self._remote_command_file.write(' '.join(self.remote_command))
+        args.extend(['-m', self._remote_command_file.name])
       else:
-        args.append(' '.join(self.remote_command))
+        args.extend(self.remote_command)
     return args
 
   def Run(self, env=None, force_connect=False,
@@ -1265,6 +1275,19 @@ class SSHCommand(object):
 
     status = execution_utils.Exec(args, no_exit=True, in_str=in_str,
                                   **extra_popen_kwargs)
+
+    # This should only happen if we're using putty.exe with a remote command. In
+    # that case the file created earlier via NamedTemporaryFile has to be
+    # deleted manually due to https://bugs.python.org/issue14243 on Windows.
+    if self._remote_command_file:
+      try:
+        os.remove(self._remote_command_file.name)
+      except OSError:
+        # Not worth crashing over.
+        log.debug('Failed to delete remote command file [{}]'.format(
+            self._remote_command_file.name))
+        pass
+
     if status == env.ssh_exit_code:
       raise CommandError(args[0], return_code=status)
     return status

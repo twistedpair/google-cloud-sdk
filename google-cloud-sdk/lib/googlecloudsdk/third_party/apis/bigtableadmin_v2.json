@@ -1440,6 +1440,34 @@
           "$ref": "OperationProgress"
         }
       }
+    },
+    "FailureTrace": {
+      "id": "FailureTrace",
+      "description": "Added to the error payload.",
+      "type": "object",
+      "properties": {
+        "frames": {
+          "type": "array",
+          "items": {
+            "$ref": "Frame"
+          }
+        }
+      }
+    },
+    "Frame": {
+      "id": "Frame",
+      "type": "object",
+      "properties": {
+        "zoneId": {
+          "type": "string"
+        },
+        "targetName": {
+          "type": "string"
+        },
+        "workflowGuid": {
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {

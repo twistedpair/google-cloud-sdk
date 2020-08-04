@@ -33,6 +33,7 @@ from googlecloudsdk.api_lib.events import trigger
 from googlecloudsdk.api_lib.run import secret
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
+from googlecloudsdk.command_lib.events import anthosevents_operations
 from googlecloudsdk.command_lib.events import exceptions
 from googlecloudsdk.command_lib.events import stages
 from googlecloudsdk.command_lib.events import util
@@ -68,48 +69,41 @@ def Connect(conn_context):
   Yields:
     A EventflowOperations instance.
   """
-
-  # The One Platform client is required for making requests against
-  # endpoints that do not supported Kubernetes-style resource naming
-  # conventions. The One Platform client must be initialized outside of a
-  # connection context so that it does not pick up the api_endpoint_overrides
-  # values from the connection context.
-  op_client = apis.GetClientInstance(
-      conn_context.api_name,
-      conn_context.api_version)
-
   with conn_context as conn_info:
-    # pylint: disable=protected-access
-    client = apis_internal._GetClientInstance(
-        conn_info.api_name,
-        conn_info.api_version,
-        # Only check response if not connecting to GKE
-        check_response_func=apis.CheckResponseForApiEnablement()
-        if conn_context.supports_one_platform else None,
-        http_client=conn_context.HttpClient())
-    # This client is used for working with core resources (e.g. Secrets) in
-    # Cloud Run for Anthos.
-    core_client = None
-    if not conn_context.supports_one_platform:
-      core_client = apis_internal._GetClientInstance(
-          conn_context.api_name,
-          _CORE_CLIENT_VERSION,
-          http_client=conn_context.HttpClient())
-    # This client is only used to get CRDs because the api group they are
-    # under uses different versioning in k8s
-    crd_client = apis_internal._GetClientInstance(
-        conn_context.api_name,
-        _CRD_CLIENT_VERSION,
-        http_client=conn_context.HttpClient())
-    # pylint: enable=protected-access
-    yield EventflowOperations(
-        client,
-        conn_info.api_version,
-        conn_info.region,
-        core_client,
-        crd_client,
-        op_client)
+    if conn_info.api_name == 'anthosevents':
+      yield anthosevents_operations.Connect(conn_info)
+    else:
+      yield ConnectEventManaged(conn_info)
 
+
+def ConnectEventManaged(conn_context):
+  """Provides an EventflowOperations instance to use, for managed events."""
+
+  # pylint: disable=protected-access
+  client = apis_internal._GetClientInstance(
+      conn_context.api_name,
+      conn_context.api_version,
+      # Only check response if not connecting to GKE
+      check_response_func=apis.CheckResponseForApiEnablement()
+      if conn_context.supports_one_platform else None,
+      http_client=conn_context.HttpClient())
+  # This client is used for working with core resources (e.g. Secrets) in
+  # Cloud Run for Anthos.
+  core_client = None
+  if not conn_context.supports_one_platform:
+    core_client = apis_internal._GetClientInstance(
+        conn_context.api_name,
+        _CORE_CLIENT_VERSION,
+        http_client=conn_context.HttpClient())
+  # This client is only used to get CRDs because the api group they are
+  # under uses different versioning in k8s
+  crd_client = apis_internal._GetClientInstance(
+      conn_context.api_name,
+      _CRD_CLIENT_VERSION,
+      http_client=conn_context.HttpClient())
+  # pylint: enable=protected-access
+  return EventflowOperations(client, conn_context.api_version,
+                             conn_context.region, core_client, crd_client)
 
 # TODO(b/149793348): Remove this grace period
 _POLLING_GRACE_PERIOD = datetime.timedelta(seconds=15)
@@ -213,8 +207,7 @@ class SourceConditionPoller(TimeLockedUnfailingConditionPoller):
 class EventflowOperations(object):
   """Client used by Eventflow to communicate with the actual API."""
 
-  def __init__(self, client, api_version, region, core_client, crd_client,
-               op_client):
+  def __init__(self, client, api_version, region, core_client, crd_client):
     """Inits EventflowOperations with given API clients.
 
     Args:
@@ -225,15 +218,15 @@ class EventflowOperations(object):
       core_client: The API client for queries against core resources if
         operating against Cloud Run for Anthos, else None.
       crd_client: The API client for querying for CRDs
-      op_client: The API client for interacting with One Platform APIs. Or
-        None if interacting with Cloud Run for Anthos.
     """
     self._client = client
     self._api_version = api_version
     self._core_client = core_client
     self._crd_client = crd_client
-    self._op_client = op_client
     self._region = region
+
+  def IsCluster(self):
+    return False
 
   @property
   def client(self):
@@ -414,8 +407,8 @@ class EventflowOperations(object):
 
   def PollSource(self, source_obj, event_type, tracker):
     """Wait for source to be Ready == True."""
-    source_ref = util.GetSourceRef(
-        source_obj.name, source_obj.namespace, event_type.crd)
+    source_ref = util.GetSourceRef(source_obj.name, source_obj.namespace,
+                                   event_type.crd, False)
     source_getter = functools.partial(
         self.GetSource, source_ref, event_type.crd)
     poller = SourceConditionPoller(source_getter, tracker,

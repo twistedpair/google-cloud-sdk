@@ -599,6 +599,12 @@ class DicomStore(_messages.Message):
       id}`.
     notificationConfig: Notification destination for new DICOM instances.
       Supplied by the client.
+    streamConfigs: A list of streaming configs used to configure the
+      destination of streaming exports for every DICOM instance insertion in
+      this DICOM store. After a new config is added to `stream_configs`, DICOM
+      instance insertions are streamed to the new destination. When a config
+      is removed from `stream_configs`, the server stops streaming to that
+      destination. Each config must contain a unique destination.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -635,6 +641,7 @@ class DicomStore(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 1)
   name = _messages.StringField(2)
   notificationConfig = _messages.MessageField('NotificationConfig', 3)
+  streamConfigs = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomStreamConfig', 4, repeated=True)
 
 
 class Empty(_messages.Message):
@@ -1380,6 +1387,37 @@ class GoogleCloudHealthcareV1beta1DicomGcsSource(_messages.Message):
   """
 
   uri = _messages.StringField(1)
+
+
+class GoogleCloudHealthcareV1beta1DicomStreamConfig(_messages.Message):
+  r"""StreamConfig specifies configuration for a streaming DICOM export.
+
+  Fields:
+    bigqueryDestination: Results are appended to this table. The server
+      creates a new table in the given BigQuery dataset if the specified table
+      does not exist. To enable the Cloud Healthcare API to write to your
+      BigQuery table, you must give the Cloud Healthcare API service account
+      the bigquery.dataEditor role. The service account is:
+      `service-{PROJECT_NUMBER}@gcp-sa-healthcare.iam.gserviceaccount.com`.
+      The PROJECT_NUMBER identifies the project that the DICOM store resides
+      in. To get the project number, go to the Cloud Console Dashboard. It is
+      recommended to not have a custom schema in the destination table which
+      could conflict with the schema created by the Cloud Healthcare API.
+      Instance deletions are not applied to the destination table.  The
+      destination's table schema will be automatically updated in case a new
+      instance's data is incompatible with the current schema. The schema
+      should not be updated manually as this can cause incompatibilies that
+      cannot be resolved automatically. One resolution in this case is to
+      delete the incompatible table and let the server recreate one, though
+      the newly created table only contains data after the table recreation.
+      BigQuery imposes a 1 MB limit on streaming insert row size, therefore
+      any instance that generates more than 1 MB of BigQuery data will not be
+      streamed.  If an instance cannot be streamed to BigQuery, errors will be
+      logged to Cloud Logging (see [Viewing logs](/healthcare/docs/how-
+      [Viewing logs](/healthcare/docs/how-tos/logging)).
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomBigQueryDestination', 1)
 
 
 class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):

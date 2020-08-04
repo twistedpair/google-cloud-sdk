@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20200722",
+ "revision": "20200727",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2128,7 +2128,7 @@
      "type": "boolean",
      "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults can be overridden in negative_caching_policy"
     },
-    "negativeCachingPolicys": {
+    "negativeCachingPolicy": {
      "type": "array",
      "description": "Sets a cache TTL for the specified HTTP status code. negative_caching must be enabled to configure negative_caching_policy. Omitting the policy and leaving negative_caching enabled will use Cloud CDN's default cache TTLs. Note that when specifying an explicit negative_caching_policy, you should take care to specify a cache TTL for all response codes that you wish to cache. Cloud CDN will not apply any default negative caching when a policy exists.",
      "items": {
@@ -2655,7 +2655,7 @@
      "type": "boolean",
      "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults can be overridden in negative_caching_policy"
     },
-    "negativeCachingPolicys": {
+    "negativeCachingPolicy": {
      "type": "array",
      "description": "Sets a cache TTL for the specified HTTP status code. negative_caching must be enabled to configure negative_caching_policy. Omitting the policy and leaving negative_caching enabled will use Cloud CDN's default cache TTLs. Note that when specifying an explicit negative_caching_policy, you should take care to specify a cache TTL for all response codes that you wish to cache. Cloud CDN will not apply any default negative caching when a policy exists.",
      "items": {
@@ -22702,7 +22702,7 @@
     },
     "srcIpRanges": {
      "type": "array",
-     "description": "CIDR IP address range.",
+     "description": "CIDR IP address range. Maximum number of src_ip_ranges allowed is 10.",
      "items": {
       "type": "string"
      }
@@ -24195,22 +24195,13 @@
      "enum": [
       "DISABLE_GOOGLE_ACCESS",
       "ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE",
-      "ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE",
-      "ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS"
+      "ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE"
      ],
      "enumDescriptions": [
       "",
       "",
-      "",
       ""
      ]
-    },
-    "privateIpv6GoogleAccessServiceAccounts": {
-     "type": "array",
-     "description": "Deprecated in favor of enable PrivateIpv6GoogleAccess on instance directly. The service accounts can be used to selectively turn on Private IPv6 Google Access only on the VMs primary service account matching the value. This value only takes effect when PrivateIpv6GoogleAccess is ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS or ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS.",
-     "items": {
-      "type": "string"
-     }
     },
     "purpose": {
      "type": "string",

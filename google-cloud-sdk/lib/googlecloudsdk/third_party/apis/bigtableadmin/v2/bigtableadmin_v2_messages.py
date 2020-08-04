@@ -1445,6 +1445,30 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FailureTrace(_messages.Message):
+  r"""Added to the error payload.
+
+  Fields:
+    frames: A Frame attribute.
+  """
+
+  frames = _messages.MessageField('Frame', 1, repeated=True)
+
+
+class Frame(_messages.Message):
+  r"""A Frame object.
+
+  Fields:
+    targetName: A string attribute.
+    workflowGuid: A string attribute.
+    zoneId: A string attribute.
+  """
+
+  targetName = _messages.StringField(1)
+  workflowGuid = _messages.StringField(2)
+  zoneId = _messages.StringField(3)
+
+
 class GcRule(_messages.Message):
   r"""Rule for determining which cells to delete during garbage collection.
 

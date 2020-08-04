@@ -96,6 +96,32 @@ def GetProject():
   return project
 
 
+def GetDeviceIpBlocks(context=None):
+  """Gets the device IP block catalog from the TestEnvironmentDiscoveryService.
+
+  Args:
+    context: {str:object}, The current context, which is a set of key-value
+      pairs that can be used for common initialization among commands.
+
+  Returns:
+    The device IP block catalog
+
+  Raises:
+    calliope_exceptions.HttpException: If it could not connect to the service.
+  """
+  if context:
+    client = context['testing_client']
+    messages = context['testing_messages']
+  else:
+    client = apis.GetClientInstance('testing', 'v1')
+    messages = apis.GetMessagesModule('testing', 'v1')
+
+  env_type = (
+      messages.TestingTestEnvironmentCatalogGetRequest
+      .EnvironmentTypeValueValuesEnum.DEVICE_IP_BLOCKS)
+  return _GetCatalog(client, messages, env_type).deviceIpBlockCatalog
+
+
 def GetAndroidCatalog(context=None):
   """Gets the Android catalog from the TestEnvironmentDiscoveryService.
 

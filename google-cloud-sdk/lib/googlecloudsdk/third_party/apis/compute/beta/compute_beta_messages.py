@@ -2781,7 +2781,7 @@ class BackendBucketCdnPolicy(_messages.Message):
       (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
       Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults
       can be overridden in negative_caching_policy
-    negativeCachingPolicys: Sets a cache TTL for the specified HTTP status
+    negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
       negative_caching enabled will use Cloud CDN's default cache TTLs. Note
@@ -2820,7 +2820,7 @@ class BackendBucketCdnPolicy(_messages.Message):
   defaultTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   maxTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   negativeCaching = _messages.BooleanField(5)
-  negativeCachingPolicys = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 6, repeated=True)
+  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 6, repeated=True)
   signedUrlCacheMaxAgeSec = _messages.IntegerField(7)
   signedUrlKeyNames = _messages.StringField(8, repeated=True)
 
@@ -3514,7 +3514,7 @@ class BackendServiceCdnPolicy(_messages.Message):
       (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
       Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults
       can be overridden in negative_caching_policy
-    negativeCachingPolicys: Sets a cache TTL for the specified HTTP status
+    negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
       negative_caching enabled will use Cloud CDN's default cache TTLs. Note
@@ -3554,7 +3554,7 @@ class BackendServiceCdnPolicy(_messages.Message):
   defaultTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   maxTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   negativeCaching = _messages.BooleanField(6)
-  negativeCachingPolicys = _messages.MessageField('BackendServiceCdnPolicyNegativeCachingPolicy', 7, repeated=True)
+  negativeCachingPolicy = _messages.MessageField('BackendServiceCdnPolicyNegativeCachingPolicy', 7, repeated=True)
   signedUrlCacheMaxAgeSec = _messages.IntegerField(8)
   signedUrlKeyNames = _messages.StringField(9, repeated=True)
 
@@ -44140,7 +44140,8 @@ class SecurityPolicyRuleMatcherConfig(_messages.Message):
       when versioned_expr is set to FIREWALL.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
       This field may only be specified when versioned_expr is set to FIREWALL.
-    srcIpRanges: CIDR IP address range.
+    srcIpRanges: CIDR IP address range. Maximum number of src_ip_ranges
+      allowed is 10.
   """
 
   destIpRanges = _messages.StringField(1, repeated=True)
@@ -45949,13 +45950,6 @@ class Subnetwork(_messages.Message):
       in this subnet. This is an expanded field of enablePrivateV6Access. If
       both fields are set, privateIpv6GoogleAccess will take priority.  This
       field can be both set at resource creation time and updated using patch.
-    privateIpv6GoogleAccessServiceAccounts: Deprecated in favor of enable
-      PrivateIpv6GoogleAccess on instance directly. The service accounts can
-      be used to selectively turn on Private IPv6 Google Access only on the
-      VMs primary service account matching the value. This value only takes
-      effect when PrivateIpv6GoogleAccess is
-      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS or
-      ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS.
     purpose: The purpose of the resource. This field can be either
       PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with
       purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork
@@ -45994,13 +45988,10 @@ class Subnetwork(_messages.Message):
       DISABLE_GOOGLE_ACCESS: <no description>
       ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: <no description>
       ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE: <no description>
-      ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS: <no
-        description>
     """
     DISABLE_GOOGLE_ACCESS = 0
     ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE = 1
     ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE = 2
-    ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE_FOR_SERVICE_ACCOUNTS = 3
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE_RFC_1918
@@ -46064,13 +46055,12 @@ class Subnetwork(_messages.Message):
   network = _messages.StringField(13)
   privateIpGoogleAccess = _messages.BooleanField(14)
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 15)
-  privateIpv6GoogleAccessServiceAccounts = _messages.StringField(16, repeated=True)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 17)
-  region = _messages.StringField(18)
-  role = _messages.EnumField('RoleValueValuesEnum', 19)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 20, repeated=True)
-  selfLink = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 16)
+  region = _messages.StringField(17)
+  role = _messages.EnumField('RoleValueValuesEnum', 18)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 19, repeated=True)
+  selfLink = _messages.StringField(20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
 
 
 class SubnetworkAggregatedList(_messages.Message):

@@ -287,6 +287,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name of this Cluster. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/clusters\/my-cluster`",
+          "readOnly": true,
           "type": "string"
         },
         "nodeType": {
@@ -300,6 +301,7 @@
         },
         "nodes": {
           "description": "Output only. Nodes in the cluster.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "Node"
@@ -318,16 +320,19 @@
         },
         "createTime": {
           "description": "Output only. Creation time of the resource.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Update time of the resource.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "status": {
           "description": "Output only. Deprecated. Use state instead. Status of the resource.",
+          "readOnly": true,
           "type": "string"
         },
         "state": {
@@ -339,6 +344,7 @@
             "The cluster is being updated.",
             "The cluster is being deleted."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The default value. This value should never be used.",
@@ -368,19 +374,23 @@
       "properties": {
         "nodeId": {
           "description": "Output only. User-provided id of the node.",
+          "readOnly": true,
           "type": "string"
         },
         "type": {
           "description": "Output only. Type of the node.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. Creation time of the node.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Update time of the node.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -417,6 +427,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name of this ClusterGroupBackup. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroupBackups\/my-backup`",
+          "readOnly": true,
           "type": "string"
         },
         "labels": {
@@ -428,11 +439,13 @@
         },
         "createTime": {
           "description": "Output only. Creation time of the resource.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Update time of the resource.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -473,6 +486,7 @@
       "properties": {
         "name": {
           "description": "Output only. The resource name of this ClusterGroup. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+          "readOnly": true,
           "type": "string"
         },
         "labels": {
@@ -492,16 +506,19 @@
         },
         "createTime": {
           "description": "Output only. Creation time of the resource.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Update time of the resource.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "status": {
           "description": "Output only. Deprecated. Use state instead. Status of the resource.",
+          "readOnly": true,
           "type": "string"
         },
         "state": {
@@ -528,10 +545,12 @@
         },
         "vcenter": {
           "description": "Output only. vCenter information.",
+          "readOnly": true,
           "$ref": "Vcenter"
         },
         "nsx": {
           "description": "Output only. Nsx information.",
+          "readOnly": true,
           "$ref": "Nsx"
         }
       }
@@ -1164,32 +1183,39 @@
       "properties": {
         "createTime": {
           "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
           "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
           "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "details": {
           "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
           "type": "string"
         },
         "requestedCancellation": {
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }

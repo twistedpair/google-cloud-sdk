@@ -227,8 +227,6 @@ Cannot specify --tpu-ipv4-cidr with --enable-tpu-service-networking."""
 
 MAX_NODES_PER_POOL = 1000
 
-MAX_CONCURRENT_NODE_COUNT = 20
-
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
 MAX_AUTHORIZED_NETWORKS_CIDRS_PUBLIC = 50
 
@@ -682,7 +680,6 @@ class UpdateClusterOptions(object):
                master_authorized_networks=None,
                enable_pod_security_policy=None,
                enable_binauthz=None,
-               concurrent_node_count=None,
                enable_vertical_pod_autoscaling=None,
                enable_intra_node_visibility=None,
                security_profile=None,
@@ -749,7 +746,6 @@ class UpdateClusterOptions(object):
     self.master_authorized_networks = master_authorized_networks
     self.enable_pod_security_policy = enable_pod_security_policy
     self.enable_binauthz = enable_binauthz
-    self.concurrent_node_count = concurrent_node_count
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
@@ -856,7 +852,8 @@ class CreateNodePoolOptions(object):
                shielded_integrity_monitoring=None,
                system_config_from_file=None,
                reservation_affinity=None,
-               reservation=None):
+               reservation=None,
+               node_group=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -897,6 +894,7 @@ class CreateNodePoolOptions(object):
     self.system_config_from_file = system_config_from_file
     self.reservation_affinity = reservation_affinity
     self.reservation = reservation
+    self.node_group = node_group
 
 
 class UpdateNodePoolOptions(object):
@@ -2047,7 +2045,6 @@ class APIAdapter(object):
             self.messages.CloudRunConfig(
                 disabled=options.disable_addons.get(CLOUDRUN)))
 
-
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
@@ -2391,6 +2388,9 @@ class APIAdapter(object):
 
     if options.min_cpu_platform is not None:
       node_config.minCpuPlatform = options.min_cpu_platform
+
+    if options.node_group is not None:
+      node_config.nodeGroup = options.node_group
 
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
@@ -3551,8 +3551,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.gcePersistentDiskCsiDriverConfig = (
             self.messages.GcePersistentDiskCsiDriverConfig(
                 enabled=not options.disable_addons.get(GCEPDCSIDRIVER)))
-    if options.update_nodes and options.concurrent_node_count:
-      update.concurrentNodeCount = options.concurrent_node_count
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -3567,8 +3565,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
     if options.enable_autoprovisioning is not None:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
-    if options.node_group is not None:
-      pool.config.nodeGroup = options.node_group
     req = self.messages.CreateNodePoolRequest(
         nodePool=pool,
         parent=ProjectLocationCluster(node_pool_ref.projectId,

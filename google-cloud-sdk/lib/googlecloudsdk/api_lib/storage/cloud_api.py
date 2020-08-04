@@ -19,13 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import enum
-import threading
 
 
-class ProviderPrefix(enum.Enum):
-  """Prefix strings for cloud storage provider URLs."""
-  GCS = 'gs'
-  S3 = 's3'
+class DownloadStrategy(enum.Enum):
+  """Enum class for specifying download strategy."""
+  ONE_SHOT = 'oneshot'
+  RESUMABLE = 'resumable'
 
 
 class FieldsScope(enum.Enum):
@@ -35,44 +34,20 @@ class FieldsScope(enum.Enum):
   SHORT = 3
 
 
+class ProviderPrefix(enum.Enum):
+  """Prefix strings for cloud storage provider URLs."""
+  GCS = 'gs'
+  S3 = 's3'
+
+
 NUM_ITEMS_PER_LIST_PAGE = 1000
-
-# Module variable for holding one API instance per thread per provider.
-_cloud_api_thread_local_storage = threading.local()
-
-
-def GetApi(provider):
-  """Returns thread local API instance for cloud provider.
-
-  Uses thread local storage to make sure only one instance of an API exists
-  per thread per provider.
-
-  Args:
-    provider (ProviderPrefix): Cloud provider prefix (i.e. "gs").
-
-  Returns:
-    API for cloud provider or None if unrecognized provider.
-
-  Raises:
-    ValueError: Invalid API provider.
-  """
-  if getattr(_cloud_api_thread_local_storage, provider, None) is None:
-    if provider == ProviderPrefix.GCS:
-      # TODO(b/159164504): Update with implemented GCS API.
-      _cloud_api_thread_local_storage.gs = CloudApi()
-    elif provider == ProviderPrefix.S3:
-      # TODO(b/159164385): Update with implemented S3 API.
-      _cloud_api_thread_local_storage.s3 = CloudApi()
-    else:
-      raise ValueError('Provider API value must be "gs" or "s3".')
-  return getattr(_cloud_api_thread_local_storage, provider)
 
 
 class RequestConfig(object):
   """Arguments object for parameters shared between cloud providers.
 
   Attributes:
-      predefined_acl_string (string): ACL to be set on the object.
+      predefined_acl_string (str): ACL to be set on the object.
   """
 
   def __init__(self, predefined_acl_string=None):
@@ -92,7 +67,7 @@ class CloudApi(object):
     """Gets Bucket metadata.
 
     Args:
-      bucket_name (string): Name of the bucket.
+      bucket_name (str): Name of the bucket.
       fields_scope (FieldsScope): Determines the fields and projection
           parameters of API call.
 
@@ -114,7 +89,7 @@ class CloudApi(object):
           parameters of API call.
 
     Yields:
-      Iterator over Bucket objects.
+      Iterator over resource_reference.BucketResource objects
 
     Raises:
       NotImplementedError: This function was not implemented by a class using
@@ -132,9 +107,9 @@ class CloudApi(object):
     """Lists objects (with metadata) and prefixes in a bucket.
 
     Args:
-      bucket_name (string): Bucket containing the objects.
-      prefix (string): Prefix for directory-like behavior.
-      delimiter (string): Delimiter for directory-like behavior.
+      bucket_name (str): Bucket containing the objects.
+      prefix (str): Prefix for directory-like behavior.
+      delimiter (str): Delimiter for directory-like behavior.
       all_versions (boolean): If true, list all object versions.
       fields_scope (FieldsScope): Determines the fields and projection
           parameters of API call.
@@ -161,19 +136,19 @@ class CloudApi(object):
     encrypted objects with the correct key.
 
     Args:
-      bucket_name (string): Bucket containing the object.
-      object_name (string): Object name.
+      bucket_name (str): Bucket containing the object.
+      object_name (str): Object name.
       generation (long): Generation of the object to retrieve.
       fields_scope (FieldsScope): Determines the fields and projection
           parameters of API call.
+
+    Returns:
+      Apitools messages object.
 
     Raises:
       NotImplementedError: This function was not implemented by a class using
           this interface.
       ValueError: Invalid fields_scope.
-
-    Returns:
-      Apitools messages object.
     """
     raise NotImplementedError('GetObjectMetadata must be overridden.')
 
@@ -187,9 +162,10 @@ class CloudApi(object):
     """Updates object metadata with patch semantics.
 
     Args:
-      bucket_name (string): Bucket containing the object.
-      object_name (string): Object name.
-      metadata (object): Object defining metadata to be updated.
+      bucket_name (str): Bucket containing the object.
+      object_name (str): Object name.
+      metadata (apitools.messages.Object): Object defining metadata to be
+          updated.
       fields_scope (FieldsScope): Determines the fields and projection
           parameters of API call.
       generation (long): Generation (or version) of the object to update.
@@ -197,7 +173,7 @@ class CloudApi(object):
           arguments. Subclasses for specific cloud providers are available.
 
     Returns:
-      Apitools messages object containing updated metadata.
+      Apitools messages Object containing updated metadata.
 
     Raises:
       NotImplementedError: This function was not implemented by a class using
@@ -206,42 +182,112 @@ class CloudApi(object):
     """
     raise NotImplementedError('PatchObjectMetadata must be overridden.')
 
+  def CopyObject(self,
+                 source_object_metadata,
+                 destination_object_metadata,
+                 source_object_generation=None,
+                 progress_callback=None,
+                 request_config=None):
+    """Copies an object within the cloud of one provider.
+
+    Args:
+      source_object_metadata (apitools.messages.Object): Object metadata for
+          source object. Must include bucket name, object name, and etag.
+      destination_object_metadata (apitools.messages.Object): Object metadata
+          for new object. Must include bucket and object name.
+      source_object_generation (long): Generation of the source object to copy.
+      progress_callback (function): Optional callback function for progress
+          notifications. Receives calls with arguments (bytes_transferred,
+          total_size).
+      request_config (RequestConfig): Object containing general API function
+          arguments. Subclasses for specific cloud providers are available.
+
+    Returns:
+      Apitools messages object for newly created destination object.
+
+    Raises:
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+    """
+    raise NotImplementedError('CopyObject must be overridden')
+
+  def DownloadObject(self,
+                     bucket_name,
+                     object_name,
+                     download_stream,
+                     compressed_encoding=False,
+                     decryption_wrapper=None,
+                     digesters=None,
+                     download_strategy=DownloadStrategy.ONE_SHOT,
+                     generation=None,
+                     object_size=None,
+                     progress_callback=None,
+                     serialization_data=None,
+                     start_byte=0,
+                     end_byte=None):
+    """Gets object data.
+
+    Args:
+      bucket_name (str): Bucket containing the object.
+      object_name (str): Object name.
+      download_stream (stream): Stream to send the object data to.
+      compressed_encoding (bool): If true, object is stored with a compressed
+          encoding.
+      decryption_wrapper (CryptoKeyWrapper):
+          utils.encryption_helper.CryptoKeyWrapper that can optionally be added
+          to decrypt an encrypted object.
+      digesters (dict): Dict of {string : digester}, where string is the name of
+          a hash algorithm, and digester is a validation digester object that
+          update(bytes) and digest() using that algorithm. Implementation can
+          set the digester value to None to indicate supports bytes were not
+          successfully digested on-the-fly.
+      download_strategy (DownloadStrategy): Cloud API download strategy to use
+          for download.
+      generation (long): Generation of the object to retrieve.
+      object_size (int): Total size of the object being downloaded.
+      progress_callback (function): Optional callback function for progress
+          notifications. Receives calls with arguments
+          (bytes_transferred, total_size).
+      serialization_data (str): Implementation-specific JSON string of a dict
+          containing serialization information for the download.
+      start_byte (int): Starting point for download (for resumable downloads and
+          range requests). Can be set to negative to request a range of bytes
+          (python equivalent of [:-3]).
+      end_byte (int): Ending byte number, inclusive, for download (for range
+          requests). If None, download the rest of the object.
+
+    Returns:
+      Content-encoding string if it was detected that the server sent an encoded
+      object during transfer. Otherwise, None.
+
+    Raises:
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+    """
+    raise NotImplementedError('UploadObject must be overridden.')
+
   def UploadObject(self,
                    upload_stream,
                    object_metadata,
-                   canned_acl=None,
-                   crypto_key_wrapper=None,
-                   size=None,
-                   preconditions=None,
                    progress_callback=None,
-                   provider=None,
-                   fields_scope=None,
-                   gzip_encoded=False):
+                   request_config=None):
     """Uploads object data and metadata.
 
     Args:
-      upload_stream: Seekable stream of object data.
-      object_metadata: Object metadata for new object.  Must include bucket and
-        object name.
-      canned_acl: Optional canned ACL to apply to object. Overrides ACL set in
-        object_metadata.
-      crypto_key_wrapper: Optional utils.encryption_helper.CryptoKeyWrapper for
-        encrypting the uploaded object.
-      size: Optional object size.
-      preconditions: Preconditions for the request.
-      progress_callback: Optional callback function for progress notifications.
-        Receives calls with arguments (bytes_transferred, total_size).
-      provider: Cloud storage provider to connect to.  If not present,
-        class-wide default is used.
-      fields_scope: Determines the fields and projection parameters of API call.
-      gzip_encoded: Whether to use gzip transport encoding for the upload.
-
-    Raises:
-      InvalidArgumentException for errors during input validation.
-      CloudProviderException for errors interacting with cloud storage
-      providers.
+      upload_stream (stream): Seekable stream of object data.
+      object_metadata (apitools.messages.Object): Object containing the correct
+          metadata to upload. Exact class depends on API being used.
+      progress_callback (function): Callback function for progress
+          notifications. Receives calls with arguments (bytes_transferred,
+          total_size).
+      request_config (RequestConfig): Object containing general API function
+          arguments. Subclasses for specific cloud providers are available.
 
     Returns:
-      Object object for newly created destination object.
+      Apitools messages object for newly created destination object.
+
+    Raises:
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
     """
     raise NotImplementedError('UploadObject must be overridden.')

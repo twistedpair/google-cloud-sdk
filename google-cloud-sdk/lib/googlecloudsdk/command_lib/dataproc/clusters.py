@@ -561,7 +561,13 @@ def _AddDiskArgsDeprecated(parser):
 
 def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
-  pass
+  parser.add_argument(
+      '--dataproc-metastore',
+      hidden=True,
+      help="""\
+        Specify the project relative name of a Dataproc Metastore service to be
+        used as an external metastore.
+        """)
 
 
 def GetClusterConfig(args,
@@ -761,6 +767,11 @@ def GetClusterConfig(args,
   if args.autoscaling_policy:
     cluster_config.autoscalingConfig = dataproc.messages.AutoscalingConfig(
         policyUri=args.CONCEPTS.autoscaling_policy.Parse().RelativeName())
+
+  if beta:
+    if args.dataproc_metastore:
+      cluster_config.metastoreConfig = dataproc.messages.MetastoreConfig(
+          dataprocMetastoreService=args.dataproc_metastore)
 
   if include_ttl_config:
     lifecycle_config = dataproc.messages.LifecycleConfig()

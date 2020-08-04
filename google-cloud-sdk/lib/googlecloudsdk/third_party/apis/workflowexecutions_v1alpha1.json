@@ -135,15 +135,18 @@
       "properties": {
         "name": {
           "description": "Output only. Resource name of the Cloud Workflow Execution. It must have the format of \"projects\/*\/locations\/*\/workflows\/*\/executions\/*\". For example: \"projects\/project1\/locations\/us-central1\/workflows\/workflow1\/executions\/execution1\".",
+          "readOnly": true,
           "type": "string"
         },
         "startTime": {
           "description": "Output only. Marks the beginning of execution.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. Marks the end of execution, successful or not.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -156,6 +159,7 @@
             "The Workflow Execution failed with an error.",
             "The Workflow Execution has been stopped intentionally."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Invalid state.",
@@ -178,14 +182,17 @@
         },
         "result": {
           "description": "Output only. Output of the Cloud Workflow represented as a JSON string. The value is only present if the execution's state is FINISHED.",
+          "readOnly": true,
           "type": "string"
         },
         "error": {
           "description": "Output only. The error which caused the execution to fail. The value is only present if the execution's state is FAILED.",
+          "readOnly": true,
           "type": "string"
         },
         "workflowVersionId": {
           "description": "Output only. The version of the workflow used.",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         }

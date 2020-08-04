@@ -186,7 +186,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Read only. Full path to the `AuthorizedDomain` resource in the API. Example: `apps\/myapp\/authorizedDomains\/example.com`.",
+          "description": "Deprecated Read only. Full path to the `AuthorizedDomain` resource in the API. Example: `projects\/myproject\/authorizedDomains\/example.com`.",
           "type": "string"
         },
         "id": {
@@ -1943,7 +1943,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Name of the parent Application resource. Example: `apps\/myapp`.",
+                      "description": "Name of the parent Project resource. Example: `projects\/myproject`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2864,6 +2864,46 @@
               }
             }
           }
+        },
+        "authorizeddomains": {
+          "methods": {
+            "list": {
+              "id": "run.projects.authorizeddomains.list",
+              "path": "v1/{+parent}/authorizeddomains",
+              "flatPath": "v1/projects/{projectsId}/authorizeddomains",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Name of the parent Project resource. Example: `projects\/myproject`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Maximum results to return per page.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Continuation token for fetching the next page of results.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListAuthorizedDomainsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "List authorized domains."
+            }
+          }
         }
       }
     },
@@ -2878,7 +2918,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Name of the parent Application resource. Example: `apps\/myapp`.",
+                  "description": "Name of the parent Project resource. Example: `projects\/myproject`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+$",

@@ -614,7 +614,7 @@ class ToolsInfo(object):
     if len(data) != 1:
       return 'NOT AVAILABLE'
     else:
-      return data[0]
+      return encoding.Decode(data[0])
 
   def __str__(self):
     return textwrap.dedent("""\

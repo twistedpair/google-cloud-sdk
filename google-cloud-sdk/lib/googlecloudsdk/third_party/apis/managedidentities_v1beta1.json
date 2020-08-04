@@ -263,6 +263,7 @@
       "properties": {
         "name": {
           "description": "Output only. The unique name of the domain using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`.",
+          "readOnly": true,
           "type": "string"
         },
         "labels": {
@@ -296,15 +297,18 @@
         },
         "fqdn": {
           "description": "Output only. The fully-qualified domain name of the exposed domain used by clients to connect to the service. Similar to what would be chosen for an Active Directory set up on an internal network.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. The time the instance was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The last update time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -320,6 +324,7 @@
             "The domain is undergoing maintenance.",
             "The domain is not serving requests."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -344,10 +349,12 @@
         },
         "statusMessage": {
           "description": "Output only. Additional information about the current status of this domain, if available.",
+          "readOnly": true,
           "type": "string"
         },
         "trusts": {
           "description": "Output only. The current trusts associated with the domain.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "Trust"
@@ -417,16 +424,18 @@
           }
         },
         "trustHandshakeSecret": {
-          "description": "Input only, and will not be stored. The trust secret used for the handshake with the target domain.",
+          "description": "Input only. The trust secret used for the handshake with the target domain. It will not be stored.",
           "type": "string"
         },
         "createTime": {
           "description": "Output only. The time the instance was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The last update time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -440,6 +449,7 @@
             "The domain trust is connected.",
             "The domain trust is disconnected."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -460,10 +470,12 @@
         },
         "stateDescription": {
           "description": "Output only. Additional information about the current state of the trust, if available.",
+          "readOnly": true,
           "type": "string"
         },
         "lastTrustHeartbeatTime": {
           "description": "Output only. The last heartbeat time when the trust was known to be connected.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -715,28 +727,34 @@
       "properties": {
         "createTime": {
           "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
           "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
           "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "requestedCancellation": {
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -748,28 +766,34 @@
       "properties": {
         "createTime": {
           "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
           "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
           "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "requestedCancellation": {
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -781,28 +805,34 @@
       "properties": {
         "createTime": {
           "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
           "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
           "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "requestedCancellation": {
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -817,11 +847,13 @@
         },
         "createTime": {
           "description": "Output only. Timestamp when the resource was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Timestamp when the resource was last modified.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -843,6 +875,7 @@
             "Instance is being deleted.",
             "Instance encountered an error and is in indeterministic state."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -879,10 +912,12 @@
         },
         "tenantProjectId": {
           "description": "Output only. ID of the associated GCP tenant project. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "string"
         },
         "producerMetadata": {
           "description": "Output only. Custom string attributes used primarily to expose producer-specific information in monitoring dashboards. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -890,6 +925,7 @@
         },
         "provisionedResources": {
           "description": "Output only. The list of data plane resources provisioned for this instance, e.g. compute VMs. See go\/get-instance-metadata.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1ProvisionedResource"
@@ -897,6 +933,7 @@
         },
         "sloMetadata": {
           "description": "Output only. SLO metadata for instance classification in the Standardized dataplane SLO platform. See go\/cloud-ssa-standard-slo for feature description.",
+          "readOnly": true,
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata"
         },
         "maintenanceSchedules": {

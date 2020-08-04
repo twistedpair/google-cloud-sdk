@@ -24,7 +24,6 @@ import fnmatch
 import re
 
 from googlecloudsdk.api_lib.storage import gcs_api
-from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
 import six
 
@@ -64,8 +63,8 @@ class CloudWildcardIterator(WildcardIterator):
   def __iter__(self):
     url = storage_url.storage_url_from_string(self._url_str)
     if url.is_provider():
-      for bucket in self._client.ListBuckets():
-        yield resource_reference.BucketReference(url, bucket)
+      for bucket_resource in self._client.ListBuckets():
+        yield bucket_resource
     else:
       for bucket_resource_ref in self._expand_bucket_wildcards(url):
         if url.is_bucket():
@@ -89,15 +88,12 @@ class CloudWildcardIterator(WildcardIterator):
     if _contains_wildcard(url.bucket_name):
       regex = fnmatch.translate(url.bucket_name)
       bucket_pattern = re.compile(regex)
-      for bucketobj in self._client.ListBuckets():
-        if bucket_pattern.match(bucketobj.name):
-          bucket_url = storage_url.CloudUrl(url.scheme, bucketobj.name)
-          yield resource_reference.BucketReference(bucket_url, bucketobj)
+      for bucket_resource in self._client.ListBuckets():
+        if bucket_pattern.match(bucket_resource.metadata_obj.name):
+          yield bucket_resource
     else:
       # TODO(b/161224037) get_bucket has not been implemented yet.
-      bucketobj = self._client.get_bucket()
-      bucket_url = storage_url.CloudUrl(url.scheme, bucketobj.name)
-      yield resource_reference.BucketReference(bucket_url, bucketobj)
+      yield self._client.get_bucket()
 
 
 def _contains_wildcard(url_string):

@@ -479,11 +479,11 @@ class FieldFilter(_messages.Message):
         `value`.
       IN: The given `field` is equal to at least one value in the given array.
         Requires:  * That `value` is a non-empty `ArrayValue` with at most 10
-        values. * No other `IN`, `ARRAY_CONTAINS_ANY`, or `NOT_IN`.
+        values. * No other `IN` or `ARRAY_CONTAINS_ANY`.
       ARRAY_CONTAINS_ANY: The given `field` is an array that contains any of
         the values in the given array.  Requires:  * That `value` is a non-
-        empty `ArrayValue` with at most 10 values. * No other `IN`,
-        `ARRAY_CONTAINS_ANY`, or `NOT_IN`.
+        empty `ArrayValue` with at most 10 values. * No other `IN` or
+        `ARRAY_CONTAINS_ANY`.
     """
     OPERATOR_UNSPECIFIED = 0
     LESS_THAN = 1

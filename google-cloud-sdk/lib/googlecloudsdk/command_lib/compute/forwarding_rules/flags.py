@@ -469,16 +469,28 @@ def AddAllowGlobalAccess(parser):
       """)
 
 
-def AddIPProtocols(parser):
-  """Adds IP protocols flag, with values available in the given version."""
+def AddIPProtocols(parser, support_all_protocol):
+  """Adds IP protocols flag, with values available in the given version.
+
+  Args:
+    parser: The parser that parses args from user input.
+    support_all_protocol: Whether to include "ALL" in the protocols list.
+  """
 
   protocols = ['AH', 'ESP', 'ICMP', 'SCTP', 'TCP', 'UDP']
+  if support_all_protocol:
+    protocols.append('ALL')
+    help_str = """\
+      IP protocol that the rule will serve. The default is `TCP`.
 
-  parser.add_argument(
-      '--ip-protocol',
-      choices=protocols,
-      type=lambda x: x.upper(),
-      help="""\
+      Note that if the load-balancing scheme is `INTERNAL`, the protocol must
+      be one of: `TCP`, `UDP`, `ALL`.
+
+      For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
+      options other than `ALL` are valid.
+      """
+  else:
+    help_str = """\
       IP protocol that the rule will serve. The default is `TCP`.
 
       Note that if the load-balancing scheme is `INTERNAL`, the protocol must
@@ -486,7 +498,13 @@ def AddIPProtocols(parser):
 
       For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
       options are valid.
-      """)
+      """
+
+  parser.add_argument(
+      '--ip-protocol',
+      choices=protocols,
+      type=lambda x: x.upper(),
+      help=help_str)
 
 
 def AddIpVersionGroup(parser):

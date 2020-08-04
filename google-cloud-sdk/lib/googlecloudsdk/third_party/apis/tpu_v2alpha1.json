@@ -281,6 +281,7 @@
       "properties": {
         "name": {
           "description": "Output only. Immutable. The name of the TPU.",
+          "readOnly": true,
           "type": "string"
         },
         "description": {
@@ -313,6 +314,7 @@
             "TPU node has been hidden.",
             "TPU node is currently unhiding."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "TPU node state is not known\/set.",
@@ -351,6 +353,7 @@
         },
         "healthDescription": {
           "description": "Output only. If this field is populated, it contains a description of why the TPU Node is unhealthy.",
+          "readOnly": true,
           "type": "string"
         },
         "runtimeVersion": {
@@ -371,6 +374,7 @@
         },
         "createTime": {
           "description": "Output only. The time when the node was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -382,6 +386,7 @@
         },
         "networkEndpoints": {
           "description": "Output only. The network endpoints where TPU workers can be accessed and sent work. It is recommended that runtime clients of the node reach out to the 0th entry in this map first.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "NetworkEndpoint"
@@ -459,6 +464,7 @@
         },
         "id": {
           "description": "Output only. The unique identifier for the TPU Node.",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         },
@@ -474,6 +480,7 @@
             "TPU API V1 version.",
             "TPU API V2Alpha1 version."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "API version is unknown.",
@@ -490,6 +497,7 @@
         },
         "symptoms": {
           "description": "Output only. The Symptoms that have occurred to the TPU Node.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "Symptom"
@@ -582,6 +590,7 @@
       "properties": {
         "externalIp": {
           "description": "Output only. An external IP address associated with the TPU worker.",
+          "readOnly": true,
           "type": "string"
         }
       }

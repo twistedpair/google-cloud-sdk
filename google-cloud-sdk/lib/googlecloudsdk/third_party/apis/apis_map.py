@@ -133,6 +133,14 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.anthosevents.v1alpha1',
+                client_classpath='anthosevents_v1alpha1_client.AnthoseventsV1alpha1',
+                messages_modulepath='anthosevents_v1alpha1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.anthosevents.v1beta1',
@@ -1121,6 +1129,14 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.iam.v1beta',
+                client_classpath='iam_v1beta_client.IamV1beta',
+                messages_modulepath='iam_v1beta_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v2alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.iam.v2alpha1',
@@ -1332,6 +1348,16 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.notebooks.v1beta1',
                 client_classpath='notebooks_v1beta1_client.NotebooksV1beta1',
                 messages_modulepath='notebooks_v1beta1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'ondemandscanning': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.ondemandscanning.v1beta1',
+                client_classpath='ondemandscanning_v1beta1_client.OndemandscanningV1beta1',
+                messages_modulepath='ondemandscanning_v1beta1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

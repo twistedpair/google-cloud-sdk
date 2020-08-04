@@ -626,7 +626,7 @@
     },
     "UniformSharding": {
       "id": "UniformSharding",
-      "description": "Uniformly shards test cases given a total number of shards.\n\nFor Instrumentation test, it will be translated to \u201C-e numShard\u201D \u201C-e\nshardIndex\u201D AndroidJUnitRunner arguments. With uniform sharding enabled,\nspecifying these sharding arguments via environment_variables is invalid.",
+      "description": "Uniformly shards test cases given a total number of shards.\n\nFor Instrumentation test, it will be translated to \"-e numShard\" \"-e\nshardIndex\" AndroidJUnitRunner arguments. With uniform sharding enabled,\nspecifying these sharding arguments via environment_variables is invalid.",
       "type": "object",
       "properties": {
         "numShards": {
@@ -656,7 +656,7 @@
       "type": "object",
       "properties": {
         "testTargets": {
-          "description": "Group of packages, classes, and\/or test methods to be run for each shard.\nThe targets need to be specified in AndroidJUnitRunner argument format. For\nexample, \u201Cpackage com.my.packages\u201D \u201Cclass com.my.package.MyClass\u201D.\n\nThe number of shard_test_targets must be greater than 0.",
+          "description": "Group of packages, classes, and\/or test methods to be run for each shard.\nThe targets need to be specified in AndroidJUnitRunner argument format. For\nexample, \"package com.my.packages\" \"class com.my.package.MyClass\".\n\nThe number of shard_test_targets must be greater than 0.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2037,7 +2037,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Cancels unfinished test executions in a test matrix.\nThis call returns immediately and cancellation proceeds asychronously.\nIf the matrix is already final, this operation will have no effect.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist"
+              "description": "Cancels unfinished test executions in a test matrix.\nThis call returns immediately and cancellation proceeds asynchronously.\nIf the matrix is already final, this operation will have no effect.\n\nMay return any of the following canonical error codes:\n\n- PERMISSION_DENIED - if the user is not authorized to read project\n- INVALID_ARGUMENT - if the request is malformed\n- NOT_FOUND - if the Test Matrix does not exist"
             }
           }
         }

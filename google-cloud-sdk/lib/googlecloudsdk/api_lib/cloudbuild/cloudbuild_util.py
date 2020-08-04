@@ -18,22 +18,36 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import contextlib
 import re
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import files
 
 import six
+from six.moves.urllib import parse as urlparse
 
 _API_NAME = 'cloudbuild'
 _GA_API_VERSION = 'v1'
 _BETA_API_VERSION = 'v1beta1'
 _ALPHA_API_VERSION = 'v1alpha2'
+
+# Ideally, gcloud should be able to detect what regions there are automatically
+# instead of having them hardcoded. We considered two ways to do this:
+#   1) Use the API discovery service. This would mean all of our gcloud commands
+#      would depend on the API Discovery service, which is unacceptable.
+#   2) Just put the user-provided region string in the URL and see if it 404s.
+#      This would work, but would have the unfortunate side-effect of sending
+#      requests from confused users to random URLs.
+# With only these two alternatives, it is preferable to hardcode the endpoints
+# in gcloud, even though this forces users to update gcloud to use new regions.
+SERVICE_REGIONS = ['us-central1']
 
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.GA: _GA_API_VERSION,
@@ -41,50 +55,180 @@ RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.ALPHA: _ALPHA_API_VERSION,
 }
 
-WORKERPOOL_NAME_MATCHER = r'projects/.*/workerPools/.*'
-WORKERPOOL_NAME_SELECTOR = r'projects/.*/workerPools/(.*)'
+GLOBAL_WORKERPOOL_NAME_MATCHER = r'projects/.*/workerPools/.*'
+GLOBAL_WORKERPOOL_NAME_SELECTOR = r'projects/.*/workerPools/(.*)'
+REGIONAL_WORKERPOOL_NAME_MATCHER = r'projects/.*/locations/.*/workerPools/.*'
+REGIONAL_WORKERPOOL_NAME_SELECTOR = r'projects/.*/locations/.*/workerPools/(.*)'
+REGIONAL_WORKERPOOL_REGION_SELECTOR = r'projects/.*/locations/(.*)/workerPools/.*'
+
+
+# This feature was only added in Python 3.7, so I made my own.
+@contextlib.contextmanager
+def _NullContext():
+  yield None
+
+
+class NoSuchRegionError(exceptions.Error):
+  """User-specified region is not one of the Cloud Build Service regions."""
+
+  def __init__(self, region):
+    msg = 'Cloud Build has no region "%s". Try one of [%s].' % (
+        region, ', '.join(SERVICE_REGIONS))
+    super(NoSuchRegionError, self).__init__(msg)
+
+
+def DeriveRegionalEndpoint(endpoint, region):
+  """Turn https://xyz.googleapis.com/ into https://{region}-xyz.googleapis.com/.
+
+  Args:
+    endpoint: str, The global endpoint URL to reginalize.
+    region: str, The region to use in the URL.
+
+  Returns:
+    str, The regional endpoint URL.
+  """
+  scheme, netloc, path, params, query, fragment = urlparse.urlparse(endpoint)
+  netloc = '{}-{}'.format(region, netloc)
+  return urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
+
+
+@contextlib.contextmanager
+def OverrideEndpointOnce(api_name, override):
+  """Temporarily set an API's endpoint override if it has not been set yet.
+
+  Args:
+    api_name: str, Name of the API to modify.
+    override: str, New value for the endpoint.
+
+  Yields:
+    None.
+  """
+  endpoint_property = getattr(properties.VALUES.api_endpoint_overrides,
+                              api_name)
+  old_endpoint = endpoint_property.Get()
+
+  if old_endpoint:
+    override = old_endpoint
+
+  try:
+    endpoint_property.Set(override)
+    yield
+  finally:
+    endpoint_property.Set(old_endpoint)
+
+
+@contextlib.contextmanager
+def RegionalCloudBuildContext(release_track=base.ReleaseTrack.GA, region=None):
+  """Use the selected Cloud Build regional endpoint, unless it is overridden.
+
+  Args:
+    release_track: The desired value of the enum
+      googlecloudsdk.calliope.base.ReleaseTrack.
+    region: str, The region of the service to use, or None for the global
+      service.
+
+  Raises:
+    NoSuchRegionError: if the specified region is not a Cloud Build region.
+
+  Yields:
+    None.
+  """
+  if region:
+    if region not in SERVICE_REGIONS:
+      raise NoSuchRegionError(region)
+    dummy_client_class = apis.GetClientClass(
+        _API_NAME, RELEASE_TRACK_TO_API_VERSION[release_track])
+    global_endpoint = dummy_client_class.BASE_URL
+    regional_endpoint = DeriveRegionalEndpoint(global_endpoint, region)
+    override_ctx = OverrideEndpointOnce(_API_NAME, regional_endpoint)
+  else:
+    override_ctx = _NullContext()
+  with override_ctx:
+    yield
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
+  """Returns the messages module for Cloud Build.
+
+  Args:
+    release_track: The desired value of the enum
+      googlecloudsdk.calliope.base.ReleaseTrack.
+
+  Returns:
+    Module containing the definitions of messages for Cloud Build.
+  """
   return apis.GetMessagesModule(_API_NAME,
                                 RELEASE_TRACK_TO_API_VERSION[release_track])
 
 
-def GetClientClass(release_track=base.ReleaseTrack.GA):
-  return apis.GetClientClass(_API_NAME,
-                             RELEASE_TRACK_TO_API_VERSION[release_track])
+def GetClientClass(release_track=base.ReleaseTrack.GA, region=None):
+  """Returns the client class for Cloud Build.
+
+  Args:
+    release_track: The desired value of the enum
+      googlecloudsdk.calliope.base.ReleaseTrack.
+    region: str, The region of the service to use, or None for the global
+      service.
+
+  Raises:
+    NoSuchRegionError: if the specified region is not a Cloud Build region.
+
+  Returns:
+    base_api.BaseApiClient, Client class for Cloud Build.
+  """
+  with RegionalCloudBuildContext(release_track, region):
+    return apis.GetClientClass(_API_NAME,
+                               RELEASE_TRACK_TO_API_VERSION[release_track])
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.GA, use_http=True):
-  return apis.GetClientInstance(
-      _API_NAME,
-      RELEASE_TRACK_TO_API_VERSION[release_track],
-      no_http=(not use_http))
+def GetClientInstance(release_track=base.ReleaseTrack.GA,
+                      region=None,
+                      use_http=True):
+  """Returns an instance of the Cloud Build client.
+
+  Args:
+    release_track: The desired value of the enum
+      googlecloudsdk.calliope.base.ReleaseTrack.
+    region: str, The region of the service to use, or None for the global
+      service.
+    use_http: bool, True to create an http object for this client.
+
+  Raises:
+    NoSuchRegionError: if the specified region is not a Cloud Build region.
+
+  Returns:
+    base_api.BaseApiClient, An instance of the Cloud Build client.
+  """
+  with RegionalCloudBuildContext(release_track, region):
+    return apis.GetClientInstance(
+        _API_NAME,
+        RELEASE_TRACK_TO_API_VERSION[release_track],
+        no_http=(not use_http))
 
 
 def EncodeSubstitutions(substitutions, messages):
   if not substitutions:
     return None
-  substition_properties = []
+  substitution_properties = []
   # TODO(b/35470611): Use map encoder function instead when implemented
   for key, value in sorted(six.iteritems(substitutions)):  # Sort for tests
-    substition_properties.append(
+    substitution_properties.append(
         messages.Build.SubstitutionsValue.AdditionalProperty(
             key=key, value=value))
   return messages.Build.SubstitutionsValue(
-      additionalProperties=substition_properties)
+      additionalProperties=substitution_properties)
 
 
 def EncodeTriggerSubstitutions(substitutions, messages):
   if not substitutions:
     return None
-  substition_properties = []
+  substitution_properties = []
   for key, value in sorted(six.iteritems(substitutions)):  # Sort for tests
-    substition_properties.append(
+    substitution_properties.append(
         messages.BuildTrigger.SubstitutionsValue.AdditionalProperty(
             key=key, value=value))
   return messages.BuildTrigger.SubstitutionsValue(
-      additionalProperties=substition_properties)
+      additionalProperties=substitution_properties)
 
 
 class ParserError(exceptions.Error):
@@ -178,7 +322,7 @@ def MessageToFieldPaths(msg):
   https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto
 
   Args:
-    msg: An user defined message object that extends the messages.Message class.
+    msg: A user defined message object that extends the messages.Message class.
     https://github.com/google/apitools/blob/master/apitools/base/protorpclite/messages.py
 
   Returns:
@@ -418,13 +562,25 @@ def LoadMessagesFromPath(path,
                                   skip_camel_case, path)
 
 
-def WorkerPoolShortName(resource_name):
-  """Turn a worker pool's full resource name into its short name (the ID).
-
-  For example, this turns "projects/abc/workerPools/def" into "def".
+def IsRegionalWorkerPool(resource_name):
+  """Determine if the provided full resource name is a regional worker pool.
 
   Args:
-    resource_name: A Worker pool's full resource name.
+    resource_name: str, The string to test.
+
+  Returns:
+    bool, True if the string is a regional worker pool's full resource name.
+  """
+  return bool(re.match(REGIONAL_WORKERPOOL_NAME_MATCHER, resource_name))
+
+
+def GlobalWorkerPoolShortName(resource_name):
+  """Get the name part of a global worker pool's full resource name.
+
+  For example, "projects/abc/workerPools/def" returns "def".
+
+  Args:
+    resource_name: A global worker pool's full resource name.
 
   Raises:
     ValueError: If the full resource name was not well-formatted.
@@ -432,8 +588,50 @@ def WorkerPoolShortName(resource_name):
   Returns:
     The worker pool's short name.
   """
-  match = re.search(WORKERPOOL_NAME_SELECTOR, resource_name)
+  match = re.search(GLOBAL_WORKERPOOL_NAME_SELECTOR, resource_name)
   if match:
     return match.group(1)
   raise ValueError('The worker pool resource name must match "%s"' %
-                   (WORKERPOOL_NAME_MATCHER,))
+                   (GLOBAL_WORKERPOOL_NAME_MATCHER,))
+
+
+def RegionalWorkerPoolShortName(resource_name):
+  """Get the name part of a regional worker pool's full resource name.
+
+  For example, "projects/abc/locations/def/workerPools/ghi" returns "ghi".
+
+  Args:
+    resource_name: A regional worker pool's full resource name.
+
+  Raises:
+    ValueError: If the full resource name was not well-formatted.
+
+  Returns:
+    The worker pool's short name.
+  """
+  match = re.search(REGIONAL_WORKERPOOL_NAME_SELECTOR, resource_name)
+  if match:
+    return match.group(1)
+  raise ValueError('The worker pool resource name must match "%s"' %
+                   (REGIONAL_WORKERPOOL_NAME_MATCHER,))
+
+
+def RegionalWorkerPoolRegion(resource_name):
+  """Get the region part of a regional worker pool's full resource name.
+
+  For example, "projects/abc/locations/def/workerPools/ghi" returns "def".
+
+  Args:
+    resource_name: str, A regional worker pool's full resource name.
+
+  Raises:
+    ValueError: If the full resource name was not well-formatted.
+
+  Returns:
+    str, The worker pool's region string.
+  """
+  match = re.search(REGIONAL_WORKERPOOL_REGION_SELECTOR, resource_name)
+  if match:
+    return match.group(1)
+  raise ValueError('The worker pool resource name must match "%s"' %
+                   (REGIONAL_WORKERPOOL_NAME_MATCHER,))

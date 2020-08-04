@@ -60,7 +60,6 @@ def WriteAllYaml(collection_name, output_dir):
       collection_info.api_version)
   collection_dict['singular_name'] = _MakeSingular(
       collection_info.name.split('.')[-1])
-  collection_dict['use_rel_name'] = 'false'  # figure this out
   collection_dict['flags'] = ' '.join([
       '--' + param + '=my-' + param
       for param in collection_info.params

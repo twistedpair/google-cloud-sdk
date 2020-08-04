@@ -1045,7 +1045,7 @@
           ]
         },
         "databaseVersion": {
-          "description": "The database engine type and version. The <b>databaseVersion<\/b>\nfield cannot be changed after instance creation.\n<br>MySQL instances: <b>MYSQL_5_7<\/b> (default), or <b>MYSQL_5_6<\/b>.\n<br>PostgreSQL instances: <b>POSTGRES_9_6<\/b> (default), or\n<b>POSTGRES_10<\/b>, or <b>POSTGRES_11 Beta<\/b>, or <b>POSTGRES_12<\/b>.\n<br>SQL Server instances: <b>SQLSERVER_2017_STANDARD<\/b> (default),\n<b>SQLSERVER_2017_ENTERPRISE<\/b>, <b>SQLSERVER_2017_EXPRESS<\/b>, or\n<b>SQLSERVER_2017_WEB<\/b>.",
+          "description": "The database engine type and version. The <b>databaseVersion<\/b>\nfield cannot be changed after instance creation.\n<br>MySQL instances: <b>MYSQL_5_7<\/b> (default), or <b>MYSQL_5_6<\/b>.\n<br>PostgreSQL instances: <b>POSTGRES_9_6<\/b>, <b>POSTGRES_10<\/b>,\n<b>POSTGRES_11<\/b> or <b>POSTGRES_12<\/b> (default).\n<br>SQL Server instances: <b>SQLSERVER_2017_STANDARD<\/b> (default),\n<b>SQLSERVER_2017_ENTERPRISE<\/b>, <b>SQLSERVER_2017_EXPRESS<\/b>, or\n<b>SQLSERVER_2017_WEB<\/b>.",
           "enumDescriptions": [
             "This is an unknown database version.",
             "The database version is MySQL 5.1.",
@@ -2051,7 +2051,8 @@
             "Extensions installed are either not supported or having unsupported\nversions",
             "The value of parameter rds.logical_replication is not set to 1.",
             "The master logging setup doesn't allow EM sync.",
-            "The master database parameter setup doesn't allow EM sync."
+            "The master database parameter setup doesn't allow EM sync.",
+            "The gtid_mode is not supported, applicable for MySQL."
           ],
           "type": "string",
           "enum": [
@@ -2072,7 +2073,8 @@
             "UNSUPPORTED_EXTENSIONS",
             "INVALID_RDS_LOGICAL_REPLICATION",
             "INVALID_LOGGING_SETUP",
-            "INVALID_DB_PARAM"
+            "INVALID_DB_PARAM",
+            "UNSUPPORTED_GTID_MODE"
           ]
         },
         "detail": {
@@ -2254,15 +2256,15 @@
           "type": "string"
         },
         "type": {
-          "description": "The user type. It determines the method to authenticate the user during\nlogin.\n  <br><b>NATIVE<\/b>: database native user. (default)\n  <br><b>CLOUD_IAM_USER<\/b>: Cloud IAM user.",
+          "description": "The user type. It determines the method to authenticate the user during\nlogin. The default is the database's built-in user type.",
           "enumDescriptions": [
-            "",
-            "",
-            ""
+            "The database's built-in user type.",
+            "Cloud IAM user.",
+            "Cloud IAM service account."
           ],
           "type": "string",
           "enum": [
-            "NATIVE",
+            "BUILT_IN",
             "CLOUD_IAM_USER",
             "CLOUD_IAM_SERVICE_ACCOUNT"
           ]

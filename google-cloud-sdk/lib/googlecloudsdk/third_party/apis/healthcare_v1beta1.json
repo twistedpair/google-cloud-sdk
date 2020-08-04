@@ -1184,6 +1184,13 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "streamConfigs": {
+          "description": "A list of streaming configs used to configure the destination of streaming\nexports for every DICOM instance insertion in this DICOM store.\nAfter a new config is added to `stream_configs`, DICOM instance\ninsertions are streamed to the new destination.\nWhen a config is removed from `stream_configs`, the server stops streaming\nto that destination.\nEach config must contain a unique destination.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudHealthcareV1beta1DicomStreamConfig"
+          }
         }
       }
     },
@@ -1195,6 +1202,32 @@
         "pubsubTopic": {
           "description": "The [Cloud Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that\nnotifications of changes are published on. Supplied by the client.\nPubsubMessage.Data contains the resource name.\nPubsubMessage.MessageId is the ID of this message. It is guaranteed to be\nunique within the topic.\nPubsubMessage.PublishTime is the time at which the message was published.\nNotifications are only sent if the topic is\nnon-empty. [Topic\nnames](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped\nto a project. Cloud Healthcare API service account must have publisher\npermissions on the given Cloud Pub\/Sub topic. Not having adequate\npermissions causes the calls that send notifications to fail.\n\nIf a notification can't be published to Cloud Pub\/Sub, errors are logged to\nCloud Logging (see [Viewing\nlogs](\/healthcare\/docs\/how-tos\/logging)). If the number of\nerrors exceeds a certain rate, some aren't submitted.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1beta1DicomStreamConfig": {
+      "id": "GoogleCloudHealthcareV1beta1DicomStreamConfig",
+      "description": "StreamConfig specifies configuration for a streaming DICOM export.",
+      "type": "object",
+      "properties": {
+        "bigqueryDestination": {
+          "description": "Results are appended to this table. The server creates a new table in\nthe given BigQuery dataset if the specified table does not exist.\nTo enable the Cloud Healthcare API to write to your BigQuery table,\nyou must give the Cloud Healthcare API service account the\nbigquery.dataEditor role. The service account is:\n`service-{PROJECT_NUMBER}@gcp-sa-healthcare.iam.gserviceaccount.com`.\nThe PROJECT_NUMBER identifies the project that the DICOM store resides\nin. To get the project number, go to the Cloud Console Dashboard.\nIt is recommended to not have a custom schema in the destination\ntable which could conflict with the schema created by the Cloud\nHealthcare API. Instance deletions are not applied to the\ndestination table.\n\nThe destination's table schema will be automatically updated in case\na new instance's data is incompatible with the current schema. The\nschema should not be updated manually as this can cause incompatibilies\nthat cannot be resolved automatically. One resolution in this case is\nto delete the incompatible table and let the server recreate one,\nthough the newly created table only contains data after the table\nrecreation.\n\nBigQuery imposes a 1 MB limit on streaming insert row size, therefore\nany instance that generates more than 1 MB of BigQuery data will not be\nstreamed.\n\nIf an instance cannot be streamed to BigQuery, errors will be\nlogged to Cloud Logging (see [Viewing logs](\/healthcare\/docs\/how-\n[Viewing logs](\/healthcare\/docs\/how-tos\/logging)).",
+          "$ref": "GoogleCloudHealthcareV1beta1DicomBigQueryDestination"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1beta1DicomBigQueryDestination": {
+      "id": "GoogleCloudHealthcareV1beta1DicomBigQueryDestination",
+      "description": "The BigQuery table where the server writes output.",
+      "type": "object",
+      "properties": {
+        "tableUri": {
+          "description": "BigQuery URI to a table, up to 2000 characters long, in the format\n`bq:\/\/projectId.bqDatasetId.tableId`",
+          "type": "string"
+        },
+        "force": {
+          "description": "This flag is being replaced by write_disposition which provides additional\noptions. force=false is equivalent to WRITE_EMPTY and force=true is\nequivalent to WRITE_TRUNCATE.",
+          "type": "boolean"
         }
       }
     },
@@ -1265,21 +1298,6 @@
         "mimeType": {
           "description": "MIME types supported by DICOM spec.\nEach file is written in the following format:\n`...\/{study_id}\/{series_id}\/{instance_id}[\/{frame_number}].{extension}`\nThe frame_number component exists only for multi-frame instances.\n\nSupported MIME types are consistent with supported formats in DICOMweb:\nhttps:\/\/cloud.google.com\/healthcare\/docs\/dicom#retrieve_transaction.\nSpecifically, the following are supported:\n\n  - application\/dicom; transfer-syntax=1.2.840.10008.1.2.1\n    (uncompressed DICOM)\n  - application\/dicom; transfer-syntax=1.2.840.10008.1.2.4.50\n    (DICOM with embedded JPEG Baseline)\n  - application\/dicom; transfer-syntax=1.2.840.10008.1.2.4.90\n    (DICOM with embedded JPEG 2000 Lossless Only)\n  - application\/dicom; transfer-syntax=1.2.840.10008.1.2.4.91\n    (DICOM with embedded JPEG 2000)h\n  - application\/dicom; transfer-syntax=*\n    (DICOM with no transcoding)\n  - application\/octet-stream; transfer-syntax=1.2.840.10008.1.2.1\n    (raw uncompressed PixelData)\n  - application\/octet-stream; transfer-syntax=*\n    (raw PixelData in whatever format it was uploaded in)\n  - image\/jpeg; transfer-syntax=1.2.840.10008.1.2.4.50\n    (Consumer JPEG)\n  - image\/png\n\nThe following extensions are used for output files:\n\n - application\/dicom -> .dcm\n - image\/jpeg -> .jpg\n - image\/png -> .png\n - application\/octet-stream -> no extension\n\nIf unspecified, the instances are exported in the original\nDICOM format they were uploaded in.",
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1beta1DicomBigQueryDestination": {
-      "id": "GoogleCloudHealthcareV1beta1DicomBigQueryDestination",
-      "description": "The BigQuery table where the server writes output.",
-      "type": "object",
-      "properties": {
-        "tableUri": {
-          "description": "BigQuery URI to a table, up to 2000 characters long, in the format\n`bq:\/\/projectId.bqDatasetId.tableId`",
-          "type": "string"
-        },
-        "force": {
-          "description": "This flag is being replaced by write_disposition which provides additional\noptions. force=false is equivalent to WRITE_EMPTY and force=true is\nequivalent to WRITE_TRUNCATE.",
-          "type": "boolean"
         }
       }
     },

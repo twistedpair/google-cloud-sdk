@@ -293,6 +293,7 @@
             "Invalid state.",
             "The workflow has been deployed successfully and is serving."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Invalid state.",
@@ -305,20 +306,24 @@
         },
         "revisionId": {
           "description": "Output only. The revision of the workflow. A new revision of a workflow is created as a result of updating the following fields of a workflow: - `source_code` - `service_account` The format is \"000001-a4d\", where the first 6 characters define the zero-padded revision ordinal number. They are followed by a hyphen and 3 hexadecimal random characters.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. The timestamp of when the workflow was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The last update timestamp of the workflow.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "revisionCreateTime": {
           "description": "Output only. The timestamp that the latest revision of the workflow was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },

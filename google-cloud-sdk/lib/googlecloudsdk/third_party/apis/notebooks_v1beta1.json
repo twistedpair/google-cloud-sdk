@@ -288,6 +288,7 @@
       "properties": {
         "name": {
           "description": "Output only. The name of this notebook instance. Format: `projects\/{project_id}\/locations\/{location}\/instances\/{instance_id}`",
+          "readOnly": true,
           "type": "string"
         },
         "vmImage": {
@@ -304,6 +305,7 @@
         },
         "proxyUri": {
           "description": "Output only. The proxy endpoint that is used to access the Jupyter notebook.",
+          "readOnly": true,
           "type": "string"
         },
         "instanceOwners": {
@@ -337,6 +339,7 @@
             "The instance is deleted.",
             "The instance is upgrading."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "State is not specified.",
@@ -474,11 +477,13 @@
         },
         "createTime": {
           "description": "Output only. Instance creation time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Instance update time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -768,6 +773,7 @@
       "properties": {
         "name": {
           "description": "Output only. Name of this environment. Format: `projects\/{project_id}\/locations\/{location}\/environments\/{environment_id}`",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
@@ -792,6 +798,7 @@
         },
         "createTime": {
           "description": "Output only. The time at which this environment was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }

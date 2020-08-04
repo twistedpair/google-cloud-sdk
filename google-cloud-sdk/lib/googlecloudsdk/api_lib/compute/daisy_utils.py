@@ -47,6 +47,7 @@ import six
 _IMAGE_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_import:{}'
 _IMAGE_EXPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_export:{}'
 _OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:{}'
+_OS_UPGRADE_BUILDER = 'gcr.io/compute-image-tools/gce_windows_upgrade:{}'
 
 _DEFAULT_BUILDER_VERSION = 'release'
 
@@ -68,6 +69,11 @@ EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = frozenset({
     ROLE_STORAGE_OBJECT_ADMIN,
 })
 
+OS_UPGRADE_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT = frozenset({
+    ROLE_COMPUTE_STORAGE_ADMIN,
+    ROLE_STORAGE_OBJECT_ADMIN,
+})
+
 IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
     ROLE_COMPUTE_ADMIN,
     ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR,
@@ -75,6 +81,12 @@ IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
 })
 
 EXPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
+    ROLE_COMPUTE_ADMIN,
+    ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR,
+    ROLE_IAM_SERVICE_ACCOUNT_USER,
+})
+
+OS_UPGRADE_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
     ROLE_COMPUTE_ADMIN,
     ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR,
     ROLE_IAM_SERVICE_ACCOUNT_USER,
@@ -836,6 +848,56 @@ def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
                         backoff=backoff, log_location=args.log_location)
 
 
+def RunOsUpgradeBuild(args, output_filter, instance_uri):
+  """Run a OS Upgrade on Google Cloud Builder.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+    output_filter: A list of strings indicating what lines from the log should
+      be output. Only lines that start with one of the strings in output_filter
+      will be displayed.
+    instance_uri: instance to be upgraded.
+
+  Returns:
+    A build object that either streams the output or is displayed as a
+    link to the build.
+
+  Raises:
+    FailedBuildException: If the build is completed and not 'SUCCESS'.
+  """
+  project_id = projects_util.ParseProject(
+      properties.VALUES.core.project.GetOrFail())
+
+  _CheckIamPermissions(project_id,
+                       OS_UPGRADE_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
+                       OS_UPGRADE_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+
+  # Make OS Upgrade time-out before gcloud by shaving off 2% from the timeout
+  # time, up to a max of 5m (300s).
+  two_percent = int(args.timeout * 0.02)
+  os_upgrade_timeout = args.timeout - min(two_percent, 300)
+
+  os_upgrade_args = []
+  AppendArg(os_upgrade_args, 'instance', instance_uri)
+  AppendArg(os_upgrade_args, 'source-os', args.source_os)
+  AppendArg(os_upgrade_args, 'target-os', args.target_os)
+  AppendArg(os_upgrade_args, 'timeout', os_upgrade_timeout, '-{0}={1}s')
+  AppendArg(os_upgrade_args, 'client-id', 'gcloud')
+
+  if not args.create_machine_backup:
+    AppendArg(os_upgrade_args, 'create-machine-backup', 'false')
+  AppendBoolArg(os_upgrade_args, 'auto-rollback', args.auto_rollback)
+  AppendBoolArg(os_upgrade_args, 'use-staging-install-media',
+                args.use_staging_install_media)
+
+  build_tags = ['gce-os-upgrade']
+
+  return _RunCloudBuild(args, _OS_UPGRADE_BUILDER.format(args.docker_image_tag),
+                        os_upgrade_args, build_tags, output_filter,
+                        args.log_location)
+
+
 def _AppendNodeAffinityLabelArgs(
     ovf_importer_args, args, compute_client_messages):
   node_affinities = sole_tenancy_util.GetSchedulingNodeAffinityListFromArgs(
@@ -860,6 +922,11 @@ def AppendArg(args, name, arg, format_pattern='-{0}={1}'):
 
 def AppendBoolArg(args, name, arg=True):
   AppendArg(args, name, arg, '-{0}')
+
+
+def AppendBoolArgDefaultTrue(args, name, arg):
+  if not arg:
+    args.append('-{0}={1}'.format(name, arg))
 
 
 def MakeGcsUri(uri):

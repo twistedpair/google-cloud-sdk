@@ -574,7 +574,7 @@ class SSH(object):
         times.Now() + datetime.timedelta(seconds=300))
     ssh_poller = ssh.SSHPoller(
         remote=remote,
-        identity_file=identity_file, options=options, max_wait_ms=120*1000)
+        identity_file=identity_file, options=options, max_wait_ms=300*1000)
     try:
       ssh_poller.Poll(ssh_helper.env, force_connect=True)
     except retry.WaitException:

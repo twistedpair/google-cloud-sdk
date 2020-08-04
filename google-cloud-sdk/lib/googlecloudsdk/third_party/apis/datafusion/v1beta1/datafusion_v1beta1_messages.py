@@ -509,17 +509,19 @@ class Instance(_messages.Message):
       private Data Fusion instance is to be created.
     options: Map of additional options used to configure the behavior of Data
       Fusion instance.
+    p4ServiceAccount: Output only. P4 service account for the customer
+      project.
     privateInstance: Specifies whether the Data Fusion instance should be
       private. If set to true, all Data Fusion nodes will have private IP
       addresses and will not be able to access the public internet.
-    serviceAccount: Output only. Service account output for use in peering-see
-      [Set up VPC Network Peering](/data-fusion/docs/how-to/create-private-
-      ip#set_up_network_peering).
+    serviceAccount: Output only. Deprecated. Use tenant_project_id instead to
+      extract the tenant project ID.
     serviceEndpoint: Output only. Endpoint on which the Data Fusion UI is
       accessible.
     state: Output only. The current state of this Data Fusion instance.
     stateMessage: Output only. Additional information about the current state
       of this Data Fusion instance if available.
+    tenantProjectId: Output only. The name of the tenant project.
     type: Required. Instance type.
     updateTime: Output only. The time the instance was last updated.
     version: Current version of Data Fusion.
@@ -638,15 +640,17 @@ class Instance(_messages.Message):
   name = _messages.StringField(11)
   networkConfig = _messages.MessageField('NetworkConfig', 12)
   options = _messages.MessageField('OptionsValue', 13)
-  privateInstance = _messages.BooleanField(14)
-  serviceAccount = _messages.StringField(15)
-  serviceEndpoint = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  stateMessage = _messages.StringField(18)
-  type = _messages.EnumField('TypeValueValuesEnum', 19)
-  updateTime = _messages.StringField(20)
-  version = _messages.StringField(21)
-  zone = _messages.StringField(22)
+  p4ServiceAccount = _messages.StringField(14)
+  privateInstance = _messages.BooleanField(15)
+  serviceAccount = _messages.StringField(16)
+  serviceEndpoint = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  stateMessage = _messages.StringField(19)
+  tenantProjectId = _messages.StringField(20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  updateTime = _messages.StringField(22)
+  version = _messages.StringField(23)
+  zone = _messages.StringField(24)
 
 
 class ListAvailableVersionsResponse(_messages.Message):
@@ -1181,14 +1185,17 @@ class Version(_messages.Message):
   r"""The Data Fusion version.
 
   Fields:
+    availableFeatures: Represents a list of available feature names for a
+      given version.
     defaultVersion: Whether this is currently the default version for Cloud
       Data Fusion
     versionNumber: The version number of the Data Fusion instance, such as
       '6.0.1.0'.
   """
 
-  defaultVersion = _messages.BooleanField(1)
-  versionNumber = _messages.StringField(2)
+  availableFeatures = _messages.StringField(1, repeated=True)
+  defaultVersion = _messages.BooleanField(2)
+  versionNumber = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

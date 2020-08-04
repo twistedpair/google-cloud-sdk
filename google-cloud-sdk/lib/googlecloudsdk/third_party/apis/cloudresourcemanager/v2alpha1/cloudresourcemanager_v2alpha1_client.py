@@ -52,29 +52,7 @@ class CloudresourcemanagerV2alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Folder in the resource hierarchy.
-Returns an Operation which can be used to track the progress of the
-folder creation workflow.
-Upon success the Operation.response field will be populated with the
-created Folder.
-Upon failure, a FolderOperationError categorizing the failure cause will
-be returned - if the failure occurs synchronously then the
-FolderOperationError will be returned via the Status.details field
-and if it occurs asynchronously then the FolderOperation will be returned
-via the the Operation.error field.
-In addition, the Operation.metadata field will be populated with a
-FolderOperation message as an aid to stateless clients.
-
-In order to succeed, the addition of this new Folder must not violate
-the Folder naming, height or fanout constraints.
-+ The Folder's display_name must be distinct from all other Folder's that
-share its parent.
-+ The addition of the Folder must not cause the Folder hierarchy to exceed
-a height of 4.
-+ The addition of the Folder must not cause the total number of Folders
-under its parent to exceed 100.
-The caller must have `resourcemanager.folders.create` permission on the
-identified parent.
+      r"""Creates a Folder in the resource hierarchy. Returns an Operation which can be used to track the progress of the folder creation workflow. Upon success the Operation.response field will be populated with the created Folder. Upon failure, a FolderOperationError categorizing the failure cause will be returned - if the failure occurs synchronously then the FolderOperationError will be returned via the Status.details field and if it occurs asynchronously then the FolderOperation will be returned via the the Operation.error field. In addition, the Operation.metadata field will be populated with a FolderOperation message as an aid to stateless clients. In order to succeed, the addition of this new Folder must not violate the Folder naming, height or fanout constraints. + The Folder's display_name must be distinct from all other Folder's that share its parent. + The addition of the Folder must not cause the Folder hierarchy to exceed a height of 4. + The addition of the Folder must not cause the total number of Folders under its parent to exceed 100. The caller must have `resourcemanager.folders.create` permission on the identified parent.
 
       Args:
         request: (CloudresourcemanagerFoldersCreateRequest) input message
@@ -100,13 +78,7 @@ identified parent.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Requests deletion of a Folder. The Folder is moved into the.
-[DELETE_REQUESTED] state immediately, and is deleted approximately 30 days
-later. This method may only be called on an empty Folder in the [ACTIVE]
-state, where a Folder is empty if it doesn't contain any Folders or
-Projects in the [ACTIVE] state.
-The caller must have `resourcemanager.folders.delete` permission on the
-identified folder.
+      r"""Requests deletion of a Folder. The Folder is moved into the [DELETE_REQUESTED] state immediately, and is deleted approximately 30 days later. This method may only be called on an empty Folder in the [ACTIVE] state, where a Folder is empty if it doesn't contain any Folders or Projects in the [ACTIVE] state. The caller must have `resourcemanager.folders.delete` permission on the identified folder.
 
       Args:
         request: (CloudresourcemanagerFoldersDeleteRequest) input message
@@ -132,11 +104,7 @@ identified folder.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a Folder identified by the supplied resource name.
-Valid Folder resource names have the format `folders/{folder_id}`
-(for example, `folders/1234`).
-The caller must have `resourcemanager.folders.get` permission on the
-identified folder.
+      r"""Retrieves a Folder identified by the supplied resource name. Valid Folder resource names have the format `folders/{folder_id}` (for example, `folders/1234`). The caller must have `resourcemanager.folders.get` permission on the identified folder.
 
       Args:
         request: (CloudresourcemanagerFoldersGetRequest) input message
@@ -162,11 +130,7 @@ identified folder.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a Folder. The returned policy may be.
-empty if no such policy or resource exists. The `resource` field should
-be the Folder's resource name, e.g. "folders/1234".
-The caller must have `resourcemanager.folders.getIamPolicy` permission
-on the identified folder.
+      r"""Gets the access control policy for a Folder. The returned policy may be empty if no such policy or resource exists. The `resource` field should be the Folder's resource name, e.g. "folders/1234". The caller must have `resourcemanager.folders.getIamPolicy` permission on the identified folder.
 
       Args:
         request: (CloudresourcemanagerFoldersGetIamPolicyRequest) input message
@@ -192,13 +156,7 @@ on the identified folder.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the Folders that are direct descendants of supplied parent resource.
-List provides a strongly consistent view of the Folders underneath
-the specified parent resource.
-List returns Folders sorted based upon the (ascending) lexical ordering
-of their display_name.
-The caller must have `resourcemanager.folders.list` permission on the
-identified parent.
+      r"""Lists the Folders that are direct descendants of supplied parent resource. List provides a strongly consistent view of the Folders underneath the specified parent resource. List returns Folders sorted based upon the (ascending) lexical ordering of their display_name. The caller must have `resourcemanager.folders.list` permission on the identified parent.
 
       Args:
         request: (CloudresourcemanagerFoldersListRequest) input message
@@ -224,22 +182,7 @@ identified parent.
     )
 
     def Move(self, request, global_params=None):
-      r"""Moves a Folder under a new resource parent.
-Returns an Operation which can be used to track the progress of the
-folder move workflow.
-Upon success the Operation.response field will be populated with the
-moved Folder.
-Upon failure, a FolderOperationError categorizing the failure cause will
-be returned - if the failure occurs synchronously then the
-FolderOperationError will be returned via the Status.details field
-and if it occurs asynchronously then the FolderOperation will be returned
-via the the Operation.error field.
-In addition, the Operation.metadata field will be populated with a
-FolderOperation message as an aid to stateless clients.
-Folder moves will be rejected if they violate either the naming, height
-or fanout constraints described in the [CreateFolder] documentation.
-The caller must have `resourcemanager.folders.move` permission on the
-folder's current and proposed new parent.
+      r"""Moves a Folder under a new resource parent. Returns an Operation which can be used to track the progress of the folder move workflow. Upon success the Operation.response field will be populated with the moved Folder. Upon failure, a FolderOperationError categorizing the failure cause will be returned - if the failure occurs synchronously then the FolderOperationError will be returned via the Status.details field and if it occurs asynchronously then the FolderOperation will be returned via the the Operation.error field. In addition, the Operation.metadata field will be populated with a FolderOperation message as an aid to stateless clients. Folder moves will be rejected if they violate either the naming, height or fanout constraints described in the [CreateFolder] documentation. The caller must have `resourcemanager.folders.move` permission on the folder's current and proposed new parent.
 
       Args:
         request: (CloudresourcemanagerFoldersMoveRequest) input message
@@ -265,11 +208,7 @@ folder's current and proposed new parent.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a Folder, replacing any existing policy.
-The `resource` field should be the Folder's resource name, e.g.
-"folders/1234".
-The caller must have `resourcemanager.folders.setIamPolicy` permission
-on the identified folder.
+      r"""Sets the access control policy on a Folder, replacing any existing policy. The `resource` field should be the Folder's resource name, e.g. "folders/1234". The caller must have `resourcemanager.folders.setIamPolicy` permission on the identified folder.
 
       Args:
         request: (CloudresourcemanagerFoldersSetIamPolicyRequest) input message
@@ -295,11 +234,7 @@ on the identified folder.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified Folder.
-The `resource` field should be the Folder's resource name,
-e.g. "folders/1234".
-
-There are no permissions required for making this API call.
+      r"""Returns permissions that a caller has on the specified Folder. The `resource` field should be the Folder's resource name, e.g. "folders/1234". There are no permissions required for making this API call.
 
       Args:
         request: (CloudresourcemanagerFoldersTestIamPermissionsRequest) input message
@@ -325,14 +260,7 @@ There are no permissions required for making this API call.
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Cancels the deletion request for a Folder. This method may only be.
-called on a Folder in the [DELETE_REQUESTED] state.
-In order to succeed, the Folder's parent must be in the [ACTIVE] state.
-In addition, reintroducing the folder into the tree must not violate
-folder naming, height and fanout constraints described in the
-[CreateFolder] documentation.
-The caller must have `resourcemanager.folders.undelete` permission on the
-identified folder.
+      r"""Cancels the deletion request for a Folder. This method may only be called on a Folder in the [DELETE_REQUESTED] state. In order to succeed, the Folder's parent must be in the [ACTIVE] state. In addition, reintroducing the folder into the tree must not violate folder naming, height and fanout constraints described in the [CreateFolder] documentation. The caller must have `resourcemanager.folders.undelete` permission on the identified folder.
 
       Args:
         request: (CloudresourcemanagerFoldersUndeleteRequest) input message
@@ -358,16 +286,7 @@ identified folder.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a Folder, changing its display_name.
-Changes to the folder display_name will be rejected if they violate either
-the display_name formatting rules or naming constraints described in
-the [CreateFolder] documentation.
-+ The Folder's display name must start and end with a letter or digit,
-may contain letters, digits, spaces, hyphens and underscores and can be
-no longer than 30 characters. This is captured by the regular expression:
-[\p{L}\p{N}]({\p{L}\p{N}_- ]{0,28}[\p{L}\p{N}])?.
-The caller must have `resourcemanager.folders.update` permission on the
-identified folder.
+      r"""Updates a Folder, changing its display_name. Changes to the folder display_name will be rejected if they violate either the display_name formatting rules or naming constraints described in the [CreateFolder] documentation. + The Folder's display name must start and end with a letter or digit, may contain letters, digits, spaces, hyphens and underscores and can be no longer than 30 characters. This is captured by the regular expression: [\p{L}\p{N}]({\p{L}\p{N}_- ]{0,28}[\p{L}\p{N}])?. The caller must have `resourcemanager.folders.update` permission on the identified folder.
 
       Args:
         request: (CloudresourcemanagerFoldersUpdateRequest) input message

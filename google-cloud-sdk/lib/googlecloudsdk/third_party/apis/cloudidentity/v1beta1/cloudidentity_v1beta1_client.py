@@ -39,75 +39,12 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.devices___deviceUsers = self.DevicesDeviceUsersService(self)
-    self.devices__ = self.DevicesService(self)
     self.devices_deviceUsers_clientStates = self.DevicesDeviceUsersClientStatesService(self)
     self.devices_deviceUsers_endpointApps = self.DevicesDeviceUsersEndpointAppsService(self)
     self.devices_deviceUsers = self.DevicesDeviceUsersService(self)
     self.devices = self.DevicesService(self)
     self.groups_memberships = self.GroupsMembershipsService(self)
     self.groups = self.GroupsService(self)
-
-  class DevicesDeviceUsersService(base_api.BaseApiService):
-    """Service class for the devices___deviceUsers resource."""
-
-    _NAME = 'devices___deviceUsers'
-
-    def __init__(self, client):
-      super(CloudidentityV1beta1.DevicesDeviceUsersService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Lookup(self, request, global_params=None):
-      r"""Looks up resource names of the DeviceUsers associated with the.
-caller's credentials, as well as the properties provided in the request.
-
-This method must be called with end-user credentials with the scope:
-https://www.googleapis.com/auth/cloud-identity.devices.lookup
-
-If multiple properties are provided, only DeviceUsers having all of these
-properties are considered as matches - i.e. the query behaves like an AND.
-
-Different platforms require different amounts of information from the
-caller to ensure that the DeviceUser is uniquely identified.
-
-- iOS: No properties need to be passed, the caller's credentials are
-sufficient to identify the corresponding DeviceUser.
-- Android: Specifying the 'android_id' field is required.
-- Desktop: Specifying the 'raw_resource_id' field is required.
-
-      Args:
-        request: (CloudidentityDevicesDeviceUsersLookupRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (LookupSelfDeviceUsersResponse) The response message.
-      """
-      config = self.GetMethodConfig('Lookup')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Lookup.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='cloudidentity.devices.-.deviceUsers.lookup',
-        ordered_params=[],
-        path_params=[],
-        query_params=['androidId', 'pageSize', 'pageToken', 'rawResourceId', 'userId'],
-        relative_path='v1beta1/devices/-/deviceUsers:lookup',
-        request_field='',
-        request_type_name='CloudidentityDevicesDeviceUsersLookupRequest',
-        response_type_name='LookupSelfDeviceUsersResponse',
-        supports_download=False,
-    )
-
-  class DevicesService(base_api.BaseApiService):
-    """Service class for the devices__ resource."""
-
-    _NAME = 'devices__'
-
-    def __init__(self, client):
-      super(CloudidentityV1beta1.DevicesService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class DevicesDeviceUsersClientStatesService(base_api.BaseApiService):
     """Service class for the devices_deviceUsers_clientStates resource."""
@@ -437,6 +374,48 @@ device data.
         request_field='',
         request_type_name='CloudidentityDevicesDeviceUsersListRequest',
         response_type_name='ListDeviceUsersResponse',
+        supports_download=False,
+    )
+
+    def Lookup(self, request, global_params=None):
+      r"""Looks up resource names of the DeviceUsers associated with the.
+caller's credentials, as well as the properties provided in the request.
+
+This method must be called with end-user credentials with the scope:
+https://www.googleapis.com/auth/cloud-identity.devices.lookup
+
+If multiple properties are provided, only DeviceUsers having all of these
+properties are considered as matches - i.e. the query behaves like an AND.
+
+Different platforms require different amounts of information from the
+caller to ensure that the DeviceUser is uniquely identified.
+
+- iOS: No properties need to be passed, the caller's credentials are
+sufficient to identify the corresponding DeviceUser.
+- Android: Specifying the 'android_id' field is required.
+- Desktop: Specifying the 'raw_resource_id' field is required.
+
+      Args:
+        request: (CloudidentityDevicesDeviceUsersLookupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LookupSelfDeviceUsersResponse) The response message.
+      """
+      config = self.GetMethodConfig('Lookup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lookup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/devices/{devicesId}/deviceUsers:lookup',
+        http_method='GET',
+        method_id='cloudidentity.devices.deviceUsers.lookup',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['androidId', 'pageSize', 'pageToken', 'rawResourceId', 'userId'],
+        relative_path='v1beta1/{+parent}:lookup',
+        request_field='',
+        request_type_name='CloudidentityDevicesDeviceUsersLookupRequest',
+        response_type_name='LookupSelfDeviceUsersResponse',
         supports_download=False,
     )
 

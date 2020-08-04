@@ -96,6 +96,7 @@ def ConstructPatch(env_ref=None,
                    update_image_version=None,
                    update_web_server_access_control=None,
                    cloud_sql_machine_type=None,
+                   web_server_machine_type=None,
                    release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch.
 
@@ -130,6 +131,8 @@ def ConstructPatch(env_ref=None,
         control to set
     cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
         Airflow database.
+    web_server_machine_type: str or None, machine type used by the Airflow web
+        server
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -178,6 +181,9 @@ def ConstructPatch(env_ref=None,
   if cloud_sql_machine_type:
     return _ConstructCloudSqlMachineTypePatch(
         cloud_sql_machine_type, release_track=release_track)
+  if web_server_machine_type:
+    return _ConstructWebServerMachineTypePatch(
+        web_server_machine_type, release_track=release_track)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
 
@@ -409,4 +415,24 @@ def _ConstructCloudSqlMachineTypePatch(cloud_sql_machine_type, release_track):
       databaseConfig=messages.DatabaseConfig(
           machineType=cloud_sql_machine_type))
   return 'config.database_config.machine_type', messages.Environment(
+      config=config)
+
+
+def _ConstructWebServerMachineTypePatch(web_server_machine_type, release_track):
+  """Constructs an environment patch for Airflow web server machine type.
+
+  Args:
+    web_server_machine_type: str or None, machine type used by the Airflow web
+      server.
+    release_track: base.ReleaseTrack, the release track of command. It dictates
+      which Composer client library is used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  config = messages.EnvironmentConfig(
+      webServerConfig=messages.WebServerConfig(
+          machineType=web_server_machine_type))
+  return 'config.web_server_config.machine_type', messages.Environment(
       config=config)

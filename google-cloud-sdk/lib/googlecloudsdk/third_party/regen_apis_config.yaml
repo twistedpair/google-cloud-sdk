@@ -60,6 +60,8 @@ apis:
     v1:
       discovery_doc: anthosevents_v1.json
       default: true
+    v1alpha1:
+      discovery_doc: anthosevents_v1alpha1.json
     v1beta1:
       discovery_doc: anthosevents_v1beta1.json
   apikeys:
@@ -542,6 +544,8 @@ apis:
       discovery_doc: osconfig_v1.json
       default: true
   iam:
+    v1beta:
+      discovery_doc: iam_v1beta.json
     v1:
       discovery_doc: iam_v1.json
       default: true
@@ -933,3 +937,10 @@ apis:
   sddc:
     v1alpha1:
       discovery_doc: sddc_v1alpha1.json
+  ondemandscanning:
+    v1beta1:
+      discovery_doc: ondemandscanning_v1beta1.json
+      default: true
+      resources:
+        projects.locations.scans:
+          path: projects/{projectsId}/locations/{locationsId}/scans/{scansId}

@@ -315,6 +315,7 @@
         },
         "displayName": {
           "description": "Output only. The display name of a Connectivity Test.",
+          "readOnly": true,
           "type": "string"
         },
         "labels": {
@@ -326,16 +327,19 @@
         },
         "createTime": {
           "description": "Output only. The time the test was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The time the test's configuration was updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "reachabilityDetails": {
           "description": "Output only. The reachability details of this test from the latest run. The details are updated when creating a new test, updating an existing test, or triggering a one-time rerun of an existing test.",
+          "readOnly": true,
           "$ref": "ReachabilityDetails"
         }
       }
@@ -346,7 +350,7 @@
       "type": "object",
       "properties": {
         "ipAddress": {
-          "description": "The IP address of the endpoint, which can be an external or internal IP. An IPv6 address is only allowed when the test's destination is a [global load balancer VIP](\/load-balancing\/docs\/load-balancing-overview).",
+          "description": "The IP address of the endpoint, which can be an external or internal IP. An IPv6 address is only allowed when the test's destination is a [global load balancer VIP](https:\/\/cloud.google.com\/load-balancing\/docs\/load-balancing-overview).",
           "type": "string"
         },
         "port": {
@@ -356,6 +360,14 @@
         },
         "instance": {
           "description": "A Compute Engine instance URI.",
+          "type": "string"
+        },
+        "gkeMasterCluster": {
+          "description": "A cluster URI for [Kubernetes Engine master](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/cluster-architecture).",
+          "type": "string"
+        },
+        "cloudSqlInstance": {
+          "description": "A [Cloud SQL](https:\/\/cloud.google.com\/sql) instance URI.",
           "type": "string"
         },
         "network": {
@@ -1008,7 +1020,8 @@
             "Forwarded to a Cloud VPN gateway.",
             "Forwarded to an Cloud Interconnect connection.",
             "Forwarded to a Google Kubernetes Engine Container cluster master.",
-            "Forwarded to the next hop of a custom route imported from a peering VPC."
+            "Forwarded to the next hop of a custom route imported from a peering VPC.",
+            "Forwarded to a Cloud SQL Instance."
           ],
           "type": "string",
           "enumDescriptions": [
@@ -1017,7 +1030,8 @@
             "Forwarded to a Cloud VPN gateway.",
             "Forwarded to an Cloud Interconnect connection.",
             "Forwarded to a Google Kubernetes Engine Container cluster master.",
-            "Forwarded to the next hop of a custom route imported from a peering VPC."
+            "Forwarded to the next hop of a custom route imported from a peering VPC.",
+            "Forwarded to a Cloud SQL Instance."
           ],
           "enum": [
             "TARGET_UNSPECIFIED",
@@ -1025,7 +1039,8 @@
             "VPN_GATEWAY",
             "INTERCONNECT",
             "GKE_MASTER",
-            "IMPORTED_CUSTOM_ROUTE_NEXT_HOP"
+            "IMPORTED_CUSTOM_ROUTE_NEXT_HOP",
+            "CLOUD_SQL_INSTANCE"
           ]
         },
         "resourceUri": {
@@ -1105,14 +1120,15 @@
             "Packet is sent to a wrong (unintended) network. Example: user traces a packet from VM1:Network1 to VM2:Network2, however, the route configured in Network1 sends the packet destined for VM2's IP addresss to Network3.",
             "Packet with internal destination address sent to Internet gateway.",
             "Instance with only an internal IP tries to access Google API and Services, and private Google access is not enabled.",
-            "Instance with only internal IP tries to access external hosts, but Cloud NAT is not enabled in the subnet, unless special configurations on a VM allows this connection. See [Special Configurations for VM instances](\/vpc\/docs\/special-configurations) for details.",
+            "Instance with only internal IP tries to access external hosts, but Cloud NAT is not enabled in the subnet, unless special configurations on a VM allows this connection. See [Special Configurations for VM instances](https:\/\/cloud.google.com\/vpc\/docs\/special-configurations) for details.",
             "Destination internal address cannot be resolved to a known target.",
             "Forwarding rule's protocol and ports do not match the packet header.",
             "Forwarding rule does not have backends configured.",
-            "Firewalls block the health check probes to the backends and cause the backends to be unavailable for traffic from the load balancer. See [Health check firewall rules](\/load-balancing\/docs\/ health-checks#firewall_rules) for more details.",
+            "Firewalls block the health check probes to the backends and cause the backends to be unavailable for traffic from the load balancer. See [Health check firewall rules](https:\/\/cloud.google.com\/load-balancing\/docs\/ health-checks#firewall_rules) for more details.",
             "Packet is sent from or to a Compute Engine instance that is not in a running state.",
-            "The type of traffic is blocked and the user cannot configure a firewall rule to enable it. See [Always blocked traffic](\/vpc\/docs\/firewalls# blockedtraffic) for more details.",
-            "Access to GKE master's endpoint is not authorized. See [Access to the cluster endpoints](\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details."
+            "The type of traffic is blocked and the user cannot configure a firewall rule to enable it. See [Always blocked traffic](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#blockedtraffic) for more details.",
+            "Access to GKE master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details.",
+            "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details."
           ],
           "type": "string",
           "enumDescriptions": [
@@ -1125,14 +1141,15 @@
             "Packet is sent to a wrong (unintended) network. Example: user traces a packet from VM1:Network1 to VM2:Network2, however, the route configured in Network1 sends the packet destined for VM2's IP addresss to Network3.",
             "Packet with internal destination address sent to Internet gateway.",
             "Instance with only an internal IP tries to access Google API and Services, and private Google access is not enabled.",
-            "Instance with only internal IP tries to access external hosts, but Cloud NAT is not enabled in the subnet, unless special configurations on a VM allows this connection. See [Special Configurations for VM instances](\/vpc\/docs\/special-configurations) for details.",
+            "Instance with only internal IP tries to access external hosts, but Cloud NAT is not enabled in the subnet, unless special configurations on a VM allows this connection. See [Special Configurations for VM instances](https:\/\/cloud.google.com\/vpc\/docs\/special-configurations) for details.",
             "Destination internal address cannot be resolved to a known target.",
             "Forwarding rule's protocol and ports do not match the packet header.",
             "Forwarding rule does not have backends configured.",
-            "Firewalls block the health check probes to the backends and cause the backends to be unavailable for traffic from the load balancer. See [Health check firewall rules](\/load-balancing\/docs\/ health-checks#firewall_rules) for more details.",
+            "Firewalls block the health check probes to the backends and cause the backends to be unavailable for traffic from the load balancer. See [Health check firewall rules](https:\/\/cloud.google.com\/load-balancing\/docs\/ health-checks#firewall_rules) for more details.",
             "Packet is sent from or to a Compute Engine instance that is not in a running state.",
-            "The type of traffic is blocked and the user cannot configure a firewall rule to enable it. See [Always blocked traffic](\/vpc\/docs\/firewalls# blockedtraffic) for more details.",
-            "Access to GKE master's endpoint is not authorized. See [Access to the cluster endpoints](\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details."
+            "The type of traffic is blocked and the user cannot configure a firewall rule to enable it. See [Always blocked traffic](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#blockedtraffic) for more details.",
+            "Access to GKE master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details.",
+            "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1151,7 +1168,8 @@
             "FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK",
             "INSTANCE_NOT_RUNNING",
             "TRAFFIC_TYPE_BLOCKED",
-            "GKE_MASTER_UNAUTHORIZED_ACCESS"
+            "GKE_MASTER_UNAUTHORIZED_ACCESS",
+            "CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS"
           ]
         },
         "resourceUri": {

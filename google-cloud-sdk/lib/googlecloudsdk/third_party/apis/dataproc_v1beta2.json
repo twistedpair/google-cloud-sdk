@@ -208,6 +208,7 @@
         },
         "name": {
           "description": "Output only. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.autoscalingPolicies, the resource name of the policy has the following format: projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id} For projects.locations.autoscalingPolicies, the resource name of the policy has the following format: projects\/{project_id}\/locations\/{location}\/autoscalingPolicies\/{policy_id}",
+          "readOnly": true,
           "type": "string"
         },
         "basicAlgorithm": {
@@ -300,6 +301,7 @@
       "properties": {
         "policies": {
           "description": "Output only. Autoscaling policies list.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "AutoscalingPolicy"
@@ -307,6 +309,7 @@
         },
         "nextPageToken": {
           "description": "Output only. This token is included in the response if there are more results to fetch.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -337,10 +340,12 @@
         },
         "status": {
           "description": "Output only. Cluster status.",
+          "readOnly": true,
           "$ref": "ClusterStatus"
         },
         "statusHistory": {
           "description": "Output only. The previous cluster status.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "ClusterStatus"
@@ -348,10 +353,12 @@
         },
         "clusterUuid": {
           "description": "Output only. A cluster UUID (Unique Universal Identifier). Dataproc generates this value when it creates the cluster.",
+          "readOnly": true,
           "type": "string"
         },
         "metrics": {
           "description": "Output only. Contains cluster daemon metrics such as HDFS and YARN stats.Beta Feature: This report is available for testing purposes only. It may be changed before final release.",
+          "readOnly": true,
           "$ref": "ClusterMetrics"
         }
       }
@@ -530,6 +537,7 @@
         },
         "instanceNames": {
           "description": "Output only. The list of instance names. Dataproc derives the names from cluster_name, num_instances, and the instance group.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -549,6 +557,7 @@
         },
         "isPreemptible": {
           "description": "Output only. Specifies that this instance group contains preemptible instances.",
+          "readOnly": true,
           "type": "boolean"
         },
         "preemptibility": {
@@ -572,6 +581,7 @@
         },
         "managedGroupConfig": {
           "description": "Output only. The config for Compute Engine Instance Group Manager that manages this group. This is only used for preemptible instance groups.",
+          "readOnly": true,
           "$ref": "ManagedGroupConfig"
         },
         "accelerators": {
@@ -615,10 +625,12 @@
       "properties": {
         "instanceTemplateName": {
           "description": "Output only. The name of the Instance Template used for the Managed Instance Group.",
+          "readOnly": true,
           "type": "string"
         },
         "instanceGroupManagerName": {
           "description": "Output only. The name of the Instance Group Manager for this group.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -734,6 +746,7 @@
         },
         "idleStartTime": {
           "description": "Output only. The time when cluster became idle (most recent job finished) and became eligible for deletion due to idleness (see JSON representation of Timestamp (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -784,6 +797,7 @@
       "properties": {
         "httpPorts": {
           "description": "Output only. The map of port descriptions to URLs. Will only be populated if enable_http_port_access is true.",
+          "readOnly": true,
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -929,6 +943,7 @@
             "The cluster is currently stopped. It is not ready for use.",
             "The cluster is being started. It is not ready for use."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The cluster state is unknown.",
@@ -955,10 +970,12 @@
         },
         "detail": {
           "description": "Output only. Optional details of cluster's state.",
+          "readOnly": true,
           "type": "string"
         },
         "stateStartTime": {
           "description": "Output only. Time when this state was entered (see JSON representation of Timestamp (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json)).",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -969,6 +986,7 @@
             "The cluster is known to be in an unhealthy state (for example, critical daemons are not running or HDFS capacity is exhausted).Applies to RUNNING state.",
             "The agent-reported status is out of date (may occur if Dataproc loses communication with Agent).Applies to RUNNING state."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The cluster substate is unknown.",
@@ -1043,6 +1061,7 @@
       "properties": {
         "clusters": {
           "description": "Output only. The clusters in the project.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "Cluster"
@@ -1050,6 +1069,7 @@
         },
         "nextPageToken": {
           "description": "Output only. This token is included in the response if there are more results to fetch. To fetch additional results, provide this value as the page_token in a subsequent ListClustersRequest.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1123,10 +1143,12 @@
         },
         "status": {
           "description": "Output only. The job status. Additional application-specific status information may be contained in the type_job and yarn_applications fields.",
+          "readOnly": true,
           "$ref": "JobStatus"
         },
         "statusHistory": {
           "description": "Output only. The previous job status.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "JobStatus"
@@ -1134,6 +1156,7 @@
         },
         "yarnApplications": {
           "description": "Output only. The collection of YARN applications spun up by this job.Beta Feature: This report is available for testing purposes only. It may be changed before final release.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "YarnApplication"
@@ -1141,14 +1164,17 @@
         },
         "submittedBy": {
           "description": "Output only. The email address of the user submitting the job. For jobs submitted on the cluster, the address is username@hostname.",
+          "readOnly": true,
           "type": "string"
         },
         "driverOutputResourceUri": {
           "description": "Output only. A URI pointing to the location of the stdout of the job's driver program.",
+          "readOnly": true,
           "type": "string"
         },
         "driverControlFilesUri": {
           "description": "Output only. If present, the location of miscellaneous control files which may be used as part of job setup and handling. If not present, control files may be placed in the same location as driver_output_uri.",
+          "readOnly": true,
           "type": "string"
         },
         "labels": {
@@ -1164,10 +1190,12 @@
         },
         "jobUuid": {
           "description": "Output only. A UUID that uniquely identifies a job within the project over time. This is in contrast to a user-settable reference.job_id that may be reused over time.",
+          "readOnly": true,
           "type": "string"
         },
         "done": {
           "description": "Output only. Indicates whether the job is completed. If the value is false, the job is still in progress. If true, the job is completed, and status.state field will indicate if it was successful, failed, or cancelled.",
+          "readOnly": true,
           "type": "boolean"
         }
       }
@@ -1198,6 +1226,7 @@
         },
         "clusterUuid": {
           "description": "Output only. A cluster UUID generated by the Dataproc service when the job is submitted.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1644,6 +1673,7 @@
             "The job has completed, but encountered an error.",
             "Job attempt has failed. The detail field contains failure details for this attempt.Applies to restartable jobs only."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The job state is unknown.",
@@ -1672,10 +1702,12 @@
         },
         "details": {
           "description": "Output only. Optional Job state details, such as an error description if the state is ERROR.",
+          "readOnly": true,
           "type": "string"
         },
         "stateStartTime": {
           "description": "Output only. The time when this state was entered.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -1687,6 +1719,7 @@
             "The Job has been received and is awaiting execution (it may be waiting for a condition to be met). See the \"details\" field for the reason for the delay.Applies to RUNNING state.",
             "The agent-reported status is out of date, which may be caused by a loss of communication between the agent and Dataproc. If the agent does not send a timely update, the job will fail.Applies to RUNNING state."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The job substate is unknown.",
@@ -1710,6 +1743,7 @@
       "properties": {
         "name": {
           "description": "Output only. The application name.",
+          "readOnly": true,
           "type": "string"
         },
         "state": {
@@ -1725,6 +1759,7 @@
             "Status is FAILED.",
             "Status is KILLED."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Status is unspecified.",
@@ -1751,11 +1786,13 @@
         },
         "progress": {
           "description": "Output only. The numerical progress of the application, from 1 to 100.",
+          "readOnly": true,
           "type": "number",
           "format": "float"
         },
         "trackingUrl": {
           "description": "Output only. The HTTP URL of the ApplicationMaster, HistoryServer, or TimelineServer that provides application-specific information. The URL uses the internal hostname, and requires a proxy server for resolution and, possibly, access.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1779,6 +1816,7 @@
       "properties": {
         "jobs": {
           "description": "Output only. Jobs list.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "Job"
@@ -1808,6 +1846,7 @@
         },
         "name": {
           "description": "Output only. The resource name of the workflow template, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+          "readOnly": true,
           "type": "string"
         },
         "version": {
@@ -1817,11 +1856,13 @@
         },
         "createTime": {
           "description": "Output only. The time template was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The time template was last updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -2076,6 +2117,7 @@
       "properties": {
         "templates": {
           "description": "Output only. WorkflowTemplates list.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "WorkflowTemplate"
@@ -2083,6 +2125,7 @@
         },
         "nextPageToken": {
           "description": "Output only. This token is included in the response if there are more results to fetch. To fetch additional results, provide this value as the page_token in a subsequent ListWorkflowTemplatesRequest.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -2315,6 +2358,7 @@
       "properties": {
         "outputUri": {
           "description": "Output only. The Cloud Storage URI of the diagnostic output. The output report is a plain text file with a summary of collected diagnostics.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -2326,18 +2370,22 @@
       "properties": {
         "jobId": {
           "description": "Output only. The job id.",
+          "readOnly": true,
           "type": "string"
         },
         "status": {
           "description": "Output only. Most recent job status.",
+          "readOnly": true,
           "$ref": "JobStatus"
         },
         "operationType": {
           "description": "Output only. Operation type.",
+          "readOnly": true,
           "type": "string"
         },
         "startTime": {
           "description": "Output only. Job submission time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -2350,23 +2398,28 @@
       "properties": {
         "template": {
           "description": "Output only. The resource name of the workflow template as described in https:\/\/cloud.google.com\/apis\/design\/resource_names. For projects.regions.workflowTemplates, the resource name of the template has the following format: projects\/{project_id}\/regions\/{region}\/workflowTemplates\/{template_id} For projects.locations.workflowTemplates, the resource name of the template has the following format: projects\/{project_id}\/locations\/{location}\/workflowTemplates\/{template_id}",
+          "readOnly": true,
           "type": "string"
         },
         "version": {
           "description": "Output only. The version of template at the time of workflow instantiation.",
+          "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "createCluster": {
           "description": "Output only. The create cluster operation metadata.",
+          "readOnly": true,
           "$ref": "ClusterOperation"
         },
         "graph": {
           "description": "Output only. The workflow graph.",
+          "readOnly": true,
           "$ref": "WorkflowGraph"
         },
         "deleteCluster": {
           "description": "Output only. The delete cluster operation metadata.",
+          "readOnly": true,
           "$ref": "ClusterOperation"
         },
         "state": {
@@ -2377,6 +2430,7 @@
             "The operation is running.",
             "The operation is done; either cancelled or completed."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Unused.",
@@ -2393,6 +2447,7 @@
         },
         "clusterName": {
           "description": "Output only. The name of the target cluster.",
+          "readOnly": true,
           "type": "string"
         },
         "parameters": {
@@ -2404,30 +2459,36 @@
         },
         "startTime": {
           "description": "Output only. Workflow start time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. Workflow end time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "clusterUuid": {
           "description": "Output only. The UUID of target cluster.",
+          "readOnly": true,
           "type": "string"
         },
         "dagTimeout": {
           "description": "Output only. The timeout duration for the DAG of jobs. Minimum timeout duration is 10 minutes and maximum is 24 hours, expressed as a google.protobuf.Duration. For example, \"1800\" = 1800 seconds\/30 minutes duration.",
+          "readOnly": true,
           "type": "string",
           "format": "google-duration"
         },
         "dagStartTime": {
           "description": "Output only. DAG start time, which is only set for workflows with dag_timeout when the DAG begins.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "dagEndTime": {
           "description": "Output only. DAG end time, which is only set for workflows with dag_timeout when the DAG ends.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -2440,14 +2501,17 @@
       "properties": {
         "operationId": {
           "description": "Output only. The id of the cluster operation.",
+          "readOnly": true,
           "type": "string"
         },
         "error": {
           "description": "Output only. Error, if operation failed.",
+          "readOnly": true,
           "type": "string"
         },
         "done": {
           "description": "Output only. Indicates the operation is done.",
+          "readOnly": true,
           "type": "boolean"
         }
       }
@@ -2459,6 +2523,7 @@
       "properties": {
         "nodes": {
           "description": "Output only. The workflow nodes.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "WorkflowNode"
@@ -2473,10 +2538,12 @@
       "properties": {
         "stepId": {
           "description": "Output only. The name of the node.",
+          "readOnly": true,
           "type": "string"
         },
         "prerequisiteStepIds": {
           "description": "Output only. Node's prerequisite nodes.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -2484,6 +2551,7 @@
         },
         "jobId": {
           "description": "Output only. The job id; populated after the node enters RUNNING state.",
+          "readOnly": true,
           "type": "string"
         },
         "state": {
@@ -2496,6 +2564,7 @@
             "The node completed successfully.",
             "The node failed. A node can be marked FAILED because its ancestor or peer failed."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "State is unspecified.",
@@ -2516,6 +2585,7 @@
         },
         "error": {
           "description": "Output only. The error detail.",
+          "readOnly": true,
           "type": "string"
         }
       }

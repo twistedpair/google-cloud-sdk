@@ -235,15 +235,18 @@
       "properties": {
         "name": {
           "description": "Output only. Resource name of the Gateway. Format: projects\/{project}\/locations\/{location}\/gateways\/{gateway}",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. Created time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Updated time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -272,6 +275,7 @@
             "Gateway is being deleted.",
             "Gateway is being updated."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Gateway does not have a state yet.",
@@ -292,6 +296,7 @@
         },
         "defaultHostname": {
           "description": "Output only. The default API Gateway host name of the form `gateway-{hash}.{region_code}.a.run.app`.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -328,15 +333,18 @@
       "properties": {
         "name": {
           "description": "Output only. Resource name of the API. Format: projects\/{project}\/locations\/global\/apis\/{api}",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. Created time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Updated time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -369,6 +377,7 @@
             "API is being deleted.",
             "API is being updated."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "API does not have a state yet.",
@@ -436,15 +445,18 @@
         },
         "name": {
           "description": "Output only. Resource name of the API Config. Format: projects\/{project}\/locations\/global\/apis\/{api}\/configs\/{api_config}",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. Created time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. Updated time.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -465,6 +477,7 @@
         },
         "serviceConfigId": {
           "description": "Output only. The ID of the associated Service Config ( https:\/\/cloud.google.com\/service-infrastructure\/docs\/glossary#config).",
+          "readOnly": true,
           "type": "string"
         },
         "state": {
@@ -478,6 +491,7 @@
             "API Config is being updated.",
             "API Config settings are being activated in downstream systems. API Configs in this state cannot be used by Gateways.."
           ],
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "API Config does not have a state yet.",
@@ -832,36 +846,44 @@
       "properties": {
         "createTime": {
           "description": "Output only. The time the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
           "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "verb": {
           "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "statusMessage": {
           "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
           "type": "string"
         },
         "requestedCancellation": {
           "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
           "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         },
         "diagnostics": {
           "description": "Output only. Diagnostics generated during processing of configuration source files.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "ApigatewayOperationMetadataDiagnostic"

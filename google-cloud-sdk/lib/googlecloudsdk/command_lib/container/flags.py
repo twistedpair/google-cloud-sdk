@@ -2241,19 +2241,6 @@ def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
           'when --istio-config is given')
 
 
-def AddConcurrentNodeCountFlag(parser):
-  help_text = """\
-The number of nodes to upgrade concurrently. Valid values are [1, {max}].
-It is a recommended best practice to set this value to no higher than 3% of
-your cluster size.'
-""".format(max=api_adapter.MAX_CONCURRENT_NODE_COUNT)
-
-  parser.add_argument(
-      '--concurrent-node-count',
-      type=arg_parsers.BoundedInt(1, api_adapter.MAX_CONCURRENT_NODE_COUNT),
-      help=help_text)
-
-
 # TODO(b/110368338): Drop this warning when changing the default value of the
 # flag.
 def WarnForUnspecifiedIpAllocationPolicy(args):
@@ -2293,7 +2280,7 @@ def AddMachineTypeFlag(parser):
   """
 
   help_text = """\
-The type of machine to use for nodes. Defaults to n1-standard-1.
+The type of machine to use for nodes. Defaults to e2-medium.
 The list of predefined machine types is available using the following command:
 
   $ gcloud compute machine-types list

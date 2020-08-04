@@ -308,9 +308,9 @@ class DatabaseInstance(_messages.Message):
     DatabaseVersionValueValuesEnum: The database engine type and version. The
       <b>databaseVersion</b> field cannot be changed after instance creation.
       <br>MySQL instances: <b>MYSQL_5_7</b> (default), or <b>MYSQL_5_6</b>.
-      <br>PostgreSQL instances: <b>POSTGRES_9_6</b> (default), or
-      <b>POSTGRES_10</b>, or <b>POSTGRES_11 Beta</b>, or <b>POSTGRES_12</b>.
-      <br>SQL Server instances: <b>SQLSERVER_2017_STANDARD</b> (default),
+      <br>PostgreSQL instances: <b>POSTGRES_9_6</b>, <b>POSTGRES_10</b>,
+      <b>POSTGRES_11</b> or <b>POSTGRES_12</b> (default). <br>SQL Server
+      instances: <b>SQLSERVER_2017_STANDARD</b> (default),
       <b>SQLSERVER_2017_ENTERPRISE</b>, <b>SQLSERVER_2017_EXPRESS</b>, or
       <b>SQLSERVER_2017_WEB</b>.
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
@@ -349,9 +349,9 @@ class DatabaseInstance(_messages.Message):
     databaseVersion: The database engine type and version. The
       <b>databaseVersion</b> field cannot be changed after instance creation.
       <br>MySQL instances: <b>MYSQL_5_7</b> (default), or <b>MYSQL_5_6</b>.
-      <br>PostgreSQL instances: <b>POSTGRES_9_6</b> (default), or
-      <b>POSTGRES_10</b>, or <b>POSTGRES_11 Beta</b>, or <b>POSTGRES_12</b>.
-      <br>SQL Server instances: <b>SQLSERVER_2017_STANDARD</b> (default),
+      <br>PostgreSQL instances: <b>POSTGRES_9_6</b>, <b>POSTGRES_10</b>,
+      <b>POSTGRES_11</b> or <b>POSTGRES_12</b> (default). <br>SQL Server
+      instances: <b>SQLSERVER_2017_STANDARD</b> (default),
       <b>SQLSERVER_2017_ENTERPRISE</b>, <b>SQLSERVER_2017_EXPRESS</b>, or
       <b>SQLSERVER_2017_WEB</b>.
     diskEncryptionConfiguration: Disk encryption configuration specific to an
@@ -435,8 +435,8 @@ class DatabaseInstance(_messages.Message):
     r"""The database engine type and version. The <b>databaseVersion</b> field
     cannot be changed after instance creation. <br>MySQL instances:
     <b>MYSQL_5_7</b> (default), or <b>MYSQL_5_6</b>. <br>PostgreSQL instances:
-    <b>POSTGRES_9_6</b> (default), or <b>POSTGRES_10</b>, or <b>POSTGRES_11
-    Beta</b>, or <b>POSTGRES_12</b>. <br>SQL Server instances:
+    <b>POSTGRES_9_6</b>, <b>POSTGRES_10</b>, <b>POSTGRES_11</b> or
+    <b>POSTGRES_12</b> (default). <br>SQL Server instances:
     <b>SQLSERVER_2017_STANDARD</b> (default),
     <b>SQLSERVER_2017_ENTERPRISE</b>, <b>SQLSERVER_2017_EXPRESS</b>, or
     <b>SQLSERVER_2017_WEB</b>.
@@ -2042,6 +2042,8 @@ class SqlExternalSyncSettingError(_messages.Message):
       INVALID_LOGGING_SETUP: The master logging setup doesn't allow EM sync.
       INVALID_DB_PARAM: The master database parameter setup doesn't allow EM
         sync.
+      UNSUPPORTED_GTID_MODE: The gtid_mode is not supported, applicable for
+        MySQL.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2061,6 +2063,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     INVALID_RDS_LOGICAL_REPLICATION = 15
     INVALID_LOGGING_SETUP = 16
     INVALID_DB_PARAM = 17
+    UNSUPPORTED_GTID_MODE = 18
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -2864,8 +2867,8 @@ class User(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: The user type. It determines the method to
-      authenticate the user during login.   <br><b>NATIVE</b>: database native
-      user. (default)   <br><b>CLOUD_IAM_USER</b>: Cloud IAM user.
+      authenticate the user during login. The default is the database's built-
+      in user type.
 
   Fields:
     etag: This field is deprecated and will be removed from a future version
@@ -2886,21 +2889,19 @@ class User(_messages.Message):
       <b>update</b> since it is already specified on the URL.
     sqlserverUserDetails: A SqlServerUserDetails attribute.
     type: The user type. It determines the method to authenticate the user
-      during login.   <br><b>NATIVE</b>: database native user. (default)
-      <br><b>CLOUD_IAM_USER</b>: Cloud IAM user.
+      during login. The default is the database's built-in user type.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The user type. It determines the method to authenticate the user
-    during login.   <br><b>NATIVE</b>: database native user. (default)
-    <br><b>CLOUD_IAM_USER</b>: Cloud IAM user.
+    during login. The default is the database's built-in user type.
 
     Values:
-      NATIVE: <no description>
-      CLOUD_IAM_USER: <no description>
-      CLOUD_IAM_SERVICE_ACCOUNT: <no description>
+      BUILT_IN: The database's built-in user type.
+      CLOUD_IAM_USER: Cloud IAM user.
+      CLOUD_IAM_SERVICE_ACCOUNT: Cloud IAM service account.
     """
-    NATIVE = 0
+    BUILT_IN = 0
     CLOUD_IAM_USER = 1
     CLOUD_IAM_SERVICE_ACCOUNT = 2
 

@@ -311,22 +311,24 @@ def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
     # do not support 'preferredAuthentication' field.
     return None, None, None
   if not auth_method or force_update:
-    prompt_message = ('Please select your preferred authentication option for '
-                      'cluster [{}]'.format(cluster))
-    override_warning = ('. Note: This will overwrite current preferred auth '
-                        'method [{}] in config file.')
-    if auth_method and force_update:
-      prompt_message = prompt_message + override_warning.format(auth_method)
-    # do the prompting
     providers = cluster_config.GetAuthProviders()
     if not providers:
       raise AnthosAuthException(
           'No Authentication Providers found in [{}]'.format(config_file))
+    if len(providers) == 1:
+      auth_method = providers.pop()
+    else:  # do the prompting
+      prompt_message = ('Please select your preferred authentication option '
+                        'for cluster [{}]'.format(cluster))
+      override_warning = ('. Note: This will overwrite current preferred auth '
+                          'method [{}] in config file.')
+      if auth_method and force_update:
+        prompt_message = prompt_message + override_warning.format(auth_method)
+      index = console_io.PromptChoice(providers,
+                                      message=prompt_message,
+                                      cancel_option=True)
+      auth_method = providers[index]
 
-    index = console_io.PromptChoice(providers,
-                                    message=prompt_message,
-                                    cancel_option=True)
-    auth_method = providers[index]
     log.status.Print(
         'Setting Preferred Authentication option to [{}]'.format(auth_method))
     cluster_config.SetPreferredAuth(auth_method)
@@ -338,7 +340,7 @@ def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
   return auth_method, ldap_user, ldap_pass
 
 
-def LoginResponseHandler(response):
+def LoginResponseHandler(response, list_clusters_only=False):
   """Handle Login Responses."""
   if response.stdout:
     log.status.Print(response.stdout)
@@ -349,5 +351,6 @@ def LoginResponseHandler(response):
   if response.failed:
     log.error(messages.LOGIN_CONFIG_FAILED_MESSAGE.format(response.stderr))
     return None
-  log.status.Print(messages.LOGIN_CONFIG_SUCCESS_MESSAGE)
+  if not list_clusters_only:
+    log.status.Print(messages.LOGIN_CONFIG_SUCCESS_MESSAGE)
   return response.stdout

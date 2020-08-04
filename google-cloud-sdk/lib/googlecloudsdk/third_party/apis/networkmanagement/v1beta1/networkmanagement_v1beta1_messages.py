@@ -346,8 +346,9 @@ class DropInfo(_messages.Message):
       NO_EXTERNAL_ADDRESS: Instance with only internal IP tries to access
         external hosts, but Cloud NAT is not enabled in the subnet, unless
         special configurations on a VM allows this connection. See [Special
-        Configurations for VM instances](/vpc/docs/special-configurations) for
-        details.
+        Configurations for VM
+        instances](https://cloud.google.com/vpc/docs/special-configurations)
+        for details.
       UNKNOWN_INTERNAL_ADDRESS: Destination internal address cannot be
         resolved to a known target.
       FORWARDING_RULE_MISMATCH: Forwarding rule's protocol and ports do not
@@ -357,16 +358,21 @@ class DropInfo(_messages.Message):
       FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK: Firewalls block
         the health check probes to the backends and cause the backends to be
         unavailable for traffic from the load balancer. See [Health check
-        firewall rules](/load-balancing/docs/ health-checks#firewall_rules)
-        for more details.
+        firewall rules](https://cloud.google.com/load-balancing/docs/ health-
+        checks#firewall_rules) for more details.
       INSTANCE_NOT_RUNNING: Packet is sent from or to a Compute Engine
         instance that is not in a running state.
       TRAFFIC_TYPE_BLOCKED: The type of traffic is blocked and the user cannot
         configure a firewall rule to enable it. See [Always blocked
-        traffic](/vpc/docs/firewalls# blockedtraffic) for more details.
+        traffic](https://cloud.google.com/vpc/docs/firewalls#blockedtraffic)
+        for more details.
       GKE_MASTER_UNAUTHORIZED_ACCESS: Access to GKE master's endpoint is not
-        authorized. See [Access to the cluster endpoints](/kubernetes-
-        engine/docs/how-to/ private-clusters#access_to_the_cluster_endpoints)
+        authorized. See [Access to the cluster
+        endpoints](https://cloud.google.com/kubernetes-engine/docs/how-to/
+        private-clusters#access_to_the_cluster_endpoints) for more details.
+      CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS: Access to the Cloud SQL instance
+        endpoint is not authorized. See [Authorizing with authorized
+        networks](https://cloud.google.com/sql/docs/mysql/authorize-networks)
         for more details.
     """
     CAUSE_UNSPECIFIED = 0
@@ -386,6 +392,7 @@ class DropInfo(_messages.Message):
     INSTANCE_NOT_RUNNING = 14
     TRAFFIC_TYPE_BLOCKED = 15
     GKE_MASTER_UNAUTHORIZED_ACCESS = 16
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 17
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -410,11 +417,16 @@ class Endpoint(_messages.Message):
       can be inferred from the source.
 
   Fields:
+    cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
+      URI.
+    gkeMasterCluster: A cluster URI for [Kubernetes Engine
+      master](https://cloud.google.com/kubernetes-
+      engine/docs/concepts/cluster-architecture).
     instance: A Compute Engine instance URI.
     ipAddress: The IP address of the endpoint, which can be an external or
       internal IP. An IPv6 address is only allowed when the test's destination
-      is a [global load balancer VIP](/load-balancing/docs/load-balancing-
-      overview).
+      is a [global load balancer VIP](https://cloud.google.com/load-
+      balancing/docs/load-balancing-overview).
     network: A Compute Engine network URI.
     networkType: Type of the network where the endpoint is located. Applicable
       only to source endpoint, as destination network type can be inferred
@@ -448,12 +460,14 @@ class Endpoint(_messages.Message):
     GCP_NETWORK = 1
     NON_GCP_NETWORK = 2
 
-  instance = _messages.StringField(1)
-  ipAddress = _messages.StringField(2)
-  network = _messages.StringField(3)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(6)
+  cloudSqlInstance = _messages.StringField(1)
+  gkeMasterCluster = _messages.StringField(2)
+  instance = _messages.StringField(3)
+  ipAddress = _messages.StringField(4)
+  network = _messages.StringField(5)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(8)
 
 
 class EndpointInfo(_messages.Message):
@@ -565,6 +579,7 @@ class ForwardInfo(_messages.Message):
         master.
       IMPORTED_CUSTOM_ROUTE_NEXT_HOP: Forwarded to the next hop of a custom
         route imported from a peering VPC.
+      CLOUD_SQL_INSTANCE: Forwarded to a Cloud SQL Instance.
     """
     TARGET_UNSPECIFIED = 0
     PEERING_VPC = 1
@@ -572,6 +587,7 @@ class ForwardInfo(_messages.Message):
     INTERCONNECT = 3
     GKE_MASTER = 4
     IMPORTED_CUSTOM_ROUTE_NEXT_HOP = 5
+    CLOUD_SQL_INSTANCE = 6
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)

@@ -36,6 +36,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
+from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
@@ -199,11 +200,18 @@ def _CloseLocalConnectionCallback(local_conn):
       pass
 
 
-def _GetAccessTokenCallback(creds):
-  if not creds:
+def _GetAccessTokenCallback(credentials):
+  """Callback function to refresh credentials and return access token."""
+  if not credentials:
     return None
-  store.Refresh(creds)
-  return creds.access_token
+  log.debug('credentials type for _GetAccessTokenCallback is [%s].',
+            six.text_type(credentials))
+  store.Refresh(credentials)
+
+  if creds.IsGoogleAuthCredentials(credentials):
+    return credentials.token
+  else:
+    return credentials.access_token
 
 
 def _SendLocalDataCallback(local_conn, data):
@@ -449,7 +457,8 @@ class _BaseIapTunnelHelper(object):
     try:
       websocket_conn = self._InitiateWebSocketConnection(
           conn,
-          functools.partial(_GetAccessTokenCallback, store.LoadIfEnabled()))
+          functools.partial(_GetAccessTokenCallback,
+                            store.LoadIfEnabled(use_google_auth=True)))
       while not self._shutdown:
         data = conn.recv(utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE)
         if not data:
@@ -514,7 +523,9 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
   def _TestConnection(self):
     log.status.Print('Testing if tunnel connection works.')
     websocket_conn = self._InitiateWebSocketConnection(
-        None, functools.partial(_GetAccessTokenCallback, store.LoadIfEnabled()))
+        None,
+        functools.partial(_GetAccessTokenCallback,
+                          store.LoadIfEnabled(use_google_auth=True)))
     websocket_conn.Close()
 
   def _AcceptNewConnection(self):

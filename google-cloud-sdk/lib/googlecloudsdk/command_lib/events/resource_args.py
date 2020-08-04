@@ -32,9 +32,10 @@ def TriggerAttributeConfig():
       help_text='Name of the trigger.')
 
 
-def GetTriggerResourceSpec(api_version=EVENTS_ALPHA_API_VERSION):
+def GetTriggerResourceSpec(api_version=EVENTS_ALPHA_API_VERSION,
+                           resource_collection='run.namespaces.triggers'):
   return concepts.ResourceSpec(
-      'run.namespaces.triggers',
+      resource_collection,
       namespacesId=run_resource_args.NamespaceAttributeConfig(),
       triggersId=TriggerAttributeConfig(),
       resource_name='Trigger',

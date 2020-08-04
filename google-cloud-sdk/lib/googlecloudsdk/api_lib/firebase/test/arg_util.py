@@ -140,13 +140,16 @@ def AddAndroidTestArgs(parser):
       metavar='DIR_TO_PULL',
       help='A list of paths that will be copied from the device\'s storage to '
       'the designated results bucket after the test is complete. These must be '
-      'absolute paths under `/sdcard` or `/data/local/tmp` (for example, '
+      'absolute paths under `/sdcard`, `/storage`, or `/data/local/tmp` (for '
+      'example, '
       '`--directories-to-pull /sdcard/tempDir1,/data/local/tmp/tempDir2`). '
       'Path names are restricted to the characters ```a-zA-Z0-9_-./+```. '
       'The paths `/sdcard` and `/data` will be made available and treated as '
       'implicit path substitutions. E.g. if `/sdcard` on a particular device '
       'does not map to external storage, the system will replace it with the '
-      'external storage path prefix for that device.')
+      'external storage path prefix for that device. Note that access to some '
+      'directories on API levels 29 and later may also be limited by scoped '
+      'storage rules.')
   parser.add_argument(
       '--environment-variables',
       type=arg_parsers.ArgDict(),
@@ -201,12 +204,12 @@ def AddAndroidTestArgs(parser):
       A list of device-path=file-path pairs that indicate the device paths to
       push files to the device before starting tests, and the paths of files to
       push.\n
-      Device paths must be under absolute, whitelisted paths
+      Device paths must be under absolute, approved paths
       (${EXTERNAL_STORAGE}, or ${ANDROID_DATA}/local/tmp). Source file paths may
       be in the local filesystem or in Google Cloud Storage (gs://...).\n
       Examples:\n
       ```
-      --other-files /sdcard/dir1/file1.txt=local/file.txt,/sdcard/dir2/file2.jpg=gs://bucket/file.jpg
+      --other-files /sdcard/dir1/file1.txt=local/file.txt,/storage/dir2/file2.jpg=gs://bucket/file.jpg
       ```\n
       This flag only copies files to the device. To install files, like OBB or
       APK files, see --obb-files and --additional-apks.
