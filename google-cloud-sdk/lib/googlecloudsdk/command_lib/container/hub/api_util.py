@@ -348,6 +348,53 @@ def ParentRef(project, location):
   return 'projects/{}/locations/{}'.format(project, location)
 
 
+def UpdateMembership(name,
+                     membership,
+                     update_mask,
+                     release_track,
+                     external_id=None,
+                     issuer_url=None):
+  """UpdateMembership updates membership resource in the GKE Hub API.
+
+  Args:
+    name: The full resource name of the membership to update, e.g.
+    projects/foo/locations/global/memberships/name.
+    membership: Membership resource that needs to be updated.
+    update_mask: Field names of membership resource to be updated.
+    release_track: The release_track used in the gcloud command.
+    external_id: the unique id associated with the cluster,
+      or None if it is not available.
+    issuer_url: The discovery URL for the cluster's service account token
+      issuer.
+
+  Returns:
+    The updated Membership resource.
+
+  Raises:
+    - apitools.base.py.HttpError: if the request returns an HTTP error
+    - exceptions raised by waiter.WaitFor()
+  """
+  client = gkehub_api_util.GetApiClientForTrack(release_track)
+  messages = client.MESSAGES_MODULE
+  request = messages.GkehubProjectsLocationsMembershipsPatchRequest(
+      membership=membership,
+      name=name,
+      updateMask=update_mask
+  )
+
+  if issuer_url:
+    request.membership.authority = messages.Authority(issuer=issuer_url)
+  if external_id:
+    request.membership.externalId = external_id
+  op = client.projects_locations_memberships.Patch(request)
+  op_resource = resources.REGISTRY.ParseRelativeName(
+      op.name, collection='gkehub.projects.locations.operations')
+  return waiter.WaitFor(
+      waiter.CloudOperationPoller(client.projects_locations_memberships,
+                                  client.projects_locations_operations),
+      op_resource, 'Waiting for membership to be updated')
+
+
 def CreateMembership(project,
                      membership_id,
                      description,
@@ -608,101 +655,6 @@ def GenerateConnectAgentManifest(membership_ref,
   if version:
     request.version = version
   return client.projects_locations_memberships.GenerateConnectManifest(request)
-
-
-# TODO(b/145953996): Remove this method once
-# gcloud.container.memberships.* has been ported
-def GKEClusterSelfLink(kube_client):
-  """Returns the selfLink of a cluster, if it is a GKE cluster.
-
-  There is no straightforward way to obtain this information from the cluster
-  API server directly. This method uses metadata on the Kubernetes nodes to
-  determine the instance ID and project ID of a GCE VM, whose metadata is used
-  to find the location of the cluster and its name.
-
-  Args:
-    kube_client: A Kubernetes client for the cluster to be registered.
-
-  Returns:
-    the full OnePlatform resource path of a GKE cluster, e.g.,
-    //container.googleapis.com/project/p/location/l/cluster/c. If the cluster is
-    not a GKE cluster, returns None.
-
-  Raises:
-    exceptions.Error: if there is an error fetching metadata from the cluster
-      nodes
-    calliope_exceptions.MinimumArgumentException: if a kubeconfig file
-      cannot be deduced from the command line flags or environment
-    <others?>
-  """
-
-  # Get the instance ID and provider ID of some VM. Since all of the VMs should
-  # have the same cluster name, arbitrarily choose the first one that is
-  # returned from kubectl.
-
-  # The instance ID field is unique to GKE clusters: Kubernetes-on-GCE clusters
-  # do not have this field.
-  vm_instance_id, err = kube_client.GetResourceField(
-      None, 'nodes',
-      '.items[0].metadata.annotations.container\\.googleapis\\.com/instance_id')
-  # If we cannot determine this is a GKE cluster, no resource link will be
-  # attached.
-  if err or (not vm_instance_id):
-    return None
-
-  # The provider ID field exists on both GKE-on-GCP and Kubernetes-on-GCP
-  # clusters. Therefore, even though it contains all of the necessary
-  # information, it's presence does not guarantee that this is a GKE cluster.
-  vm_provider_id, err = kube_client.GetResourceField(
-      None, 'nodes', '.items[0].spec.providerID')
-  if err or not vm_provider_id:
-    raise exceptions.Error(
-        'Error retrieving VM provider ID for cluster node: {}'.format(
-            err or 'field does not exist on object'))
-
-  # Parse the providerID to determine the project ID and VM zone.
-  matches = re.match(r'^gce://([^/]+?)/([^/]+?)/.+', vm_provider_id)
-  if not matches or matches.lastindex != 2:
-    raise exceptions.Error(
-        'Error parsing project ID and VM zone from provider ID: unexpected format "{}" for provider ID'
-        .format(vm_provider_id))
-  project_id = matches.group(1)
-  vm_zone = matches.group(2)
-
-  # Call the compute API to get the VM instance with this instance ID.
-  compute_client = _ComputeClient()
-  request = compute_client.MESSAGES_MODULE.ComputeInstancesGetRequest(
-      instance=vm_instance_id, project=project_id, zone=vm_zone)
-  instance = compute_client.instances.Get(request)
-  if not instance:
-    raise exceptions.Error('Empty GCE instance returned from compute API.')
-  if not instance.metadata:
-    raise exceptions.Error(
-        'GCE instance with empty metadata returned from compute API.')
-
-  # Read the cluster name and location from the VM instance's metadata.
-
-  # Convert the metadata message to a Python dict.
-  metadata = {}
-  for item in instance.metadata.items:
-    metadata[item.key] = item.value
-
-  cluster_name = metadata.get('cluster-name')
-  cluster_location = metadata.get('cluster-location')
-
-  if not cluster_name:
-    raise exceptions.Error('Could not determine cluster name from instance.')
-  if not cluster_location:
-    raise exceptions.Error(
-        'Could not determine cluster location from instance.')
-
-  # Trim http prefix.
-  container_endpoint = core_apis.GetEffectiveApiEndpoint(
-      'container', 'v1').replace('https://', '', 1).replace('http://', '', 1)
-  if container_endpoint.endswith('/'):
-    container_endpoint = container_endpoint[:-1]
-  return '//{}/projects/{}/locations/{}/clusters/{}'.format(
-      container_endpoint, project_id, cluster_location, cluster_name)
 
 
 def GetEffectiveResourceEndpoint(project_id, cluster_location, cluster_name):

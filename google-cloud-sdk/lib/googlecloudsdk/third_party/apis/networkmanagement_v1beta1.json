@@ -363,7 +363,7 @@
           "type": "string"
         },
         "gkeMasterCluster": {
-          "description": "A cluster URI for [Kubernetes Engine master](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/cluster-architecture).",
+          "description": "A cluster URI for [Google Kubernetes Engine master](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/concepts\/cluster-architecture).",
           "type": "string"
         },
         "cloudSqlInstance": {
@@ -518,6 +518,8 @@
             "Initial state: packet originating from a Compute Engine instance. An InstanceInfo will be populated with starting instance info.",
             "Initial state: packet originating from Internet. The endpoint info will be populated.",
             "Initial state: packet originating from a VPC or on-premises network with internal source IP. If the source is a VPC network visible to the user, a NetworkInfo will be populated with details of the network.",
+            "Initial state: packet originating from a Google Kubernetes Engine cluster master. A GKEMasterInfo will be populated with starting instance info.",
+            "Initial state: packet originating from a Cloud SQL instance. A CloudSQLInstanceInfo will be populated with starting instance info.",
             "Config checking state: verify ingress firewall rule.",
             "Config checking state: verify egress firewall rule.",
             "Config checking state: verify route.",
@@ -542,6 +544,8 @@
             "Initial state: packet originating from a Compute Engine instance. An InstanceInfo will be populated with starting instance info.",
             "Initial state: packet originating from Internet. The endpoint info will be populated.",
             "Initial state: packet originating from a VPC or on-premises network with internal source IP. If the source is a VPC network visible to the user, a NetworkInfo will be populated with details of the network.",
+            "Initial state: packet originating from a Google Kubernetes Engine cluster master. A GKEMasterInfo will be populated with starting instance info.",
+            "Initial state: packet originating from a Cloud SQL instance. A CloudSQLInstanceInfo will be populated with starting instance info.",
             "Config checking state: verify ingress firewall rule.",
             "Config checking state: verify egress firewall rule.",
             "Config checking state: verify route.",
@@ -565,6 +569,8 @@
             "START_FROM_INSTANCE",
             "START_FROM_INTERNET",
             "START_FROM_PRIVATE_NETWORK",
+            "START_FROM_GKE_MASTER",
+            "START_FROM_CLOUD_SQL_INSTANCE",
             "APPLY_INGRESS_FIREWALL_RULE",
             "APPLY_EGRESS_FIREWALL_RULE",
             "APPLY_ROUTE",
@@ -643,6 +649,14 @@
         "network": {
           "description": "Display info of a GCP network.",
           "$ref": "NetworkInfo"
+        },
+        "gkeMaster": {
+          "description": "Display info of a Google Kubernetes Engine cluster master.",
+          "$ref": "GKEMasterInfo"
+        },
+        "cloudSqlInstance": {
+          "description": "Display info of a Cloud SQL instance.",
+          "$ref": "CloudSQLInstanceInfo"
         }
       }
     },
@@ -985,20 +999,26 @@
             "Target not specified.",
             "Target is a Compute Engine instance.",
             "Target is the Internet.",
-            "Target is a Google API."
+            "Target is a Google API.",
+            "Target is a Google Kubernetes Engine cluster master.",
+            "Target is a Cloud SQL instance."
           ],
           "type": "string",
           "enumDescriptions": [
             "Target not specified.",
             "Target is a Compute Engine instance.",
             "Target is the Internet.",
-            "Target is a Google API."
+            "Target is a Google API.",
+            "Target is a Google Kubernetes Engine cluster master.",
+            "Target is a Cloud SQL instance."
           ],
           "enum": [
             "TARGET_UNSPECIFIED",
             "INSTANCE",
             "INTERNET",
-            "GOOGLE_API"
+            "GOOGLE_API",
+            "GKE_MASTER",
+            "CLOUD_SQL_INSTANCE"
           ]
         },
         "resourceUri": {
@@ -1127,8 +1147,10 @@
             "Firewalls block the health check probes to the backends and cause the backends to be unavailable for traffic from the load balancer. See [Health check firewall rules](https:\/\/cloud.google.com\/load-balancing\/docs\/ health-checks#firewall_rules) for more details.",
             "Packet is sent from or to a Compute Engine instance that is not in a running state.",
             "The type of traffic is blocked and the user cannot configure a firewall rule to enable it. See [Always blocked traffic](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#blockedtraffic) for more details.",
-            "Access to GKE master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details.",
-            "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details."
+            "Access to Google Kubernetes Engine cluster master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details.",
+            "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details.",
+            "Packet was dropped inside Google Kubernetes Engine Service.",
+            "Packet was dropped inside Cloud SQL Service."
           ],
           "type": "string",
           "enumDescriptions": [
@@ -1148,8 +1170,10 @@
             "Firewalls block the health check probes to the backends and cause the backends to be unavailable for traffic from the load balancer. See [Health check firewall rules](https:\/\/cloud.google.com\/load-balancing\/docs\/ health-checks#firewall_rules) for more details.",
             "Packet is sent from or to a Compute Engine instance that is not in a running state.",
             "The type of traffic is blocked and the user cannot configure a firewall rule to enable it. See [Always blocked traffic](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#blockedtraffic) for more details.",
-            "Access to GKE master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details.",
-            "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details."
+            "Access to Google Kubernetes Engine cluster master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details.",
+            "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details.",
+            "Packet was dropped inside Google Kubernetes Engine Service.",
+            "Packet was dropped inside Cloud SQL Service."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1169,7 +1193,9 @@
             "INSTANCE_NOT_RUNNING",
             "TRAFFIC_TYPE_BLOCKED",
             "GKE_MASTER_UNAUTHORIZED_ACCESS",
-            "CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS"
+            "CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS",
+            "DROPPED_INSIDE_GKE_SERVICE",
+            "DROPPED_INSIDE_CLOUD_SQL_SERVICE"
           ]
         },
         "resourceUri": {
@@ -1310,6 +1336,60 @@
         },
         "matchedIpRange": {
           "description": "The IP range that matches the test.",
+          "type": "string"
+        }
+      }
+    },
+    "GKEMasterInfo": {
+      "id": "GKEMasterInfo",
+      "description": "For display only. Metadata associated with a Google Kubernetes Engine cluster master.",
+      "type": "object",
+      "properties": {
+        "clusterUri": {
+          "description": "URI of a Google Kubernetes Engine cluster.",
+          "type": "string"
+        },
+        "clusterNetworkUri": {
+          "description": "URI of a Google Kubernetes Engine cluster network.",
+          "type": "string"
+        },
+        "internalIp": {
+          "description": "Internal IP address of a Google Kubernetes Engine cluster master.",
+          "type": "string"
+        },
+        "externalIp": {
+          "description": "External IP address of a Google Kubernetes Engine cluster master.",
+          "type": "string"
+        }
+      }
+    },
+    "CloudSQLInstanceInfo": {
+      "id": "CloudSQLInstanceInfo",
+      "description": "For display only. Metadata associated with a Cloud SQL instance.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Name of a Cloud SQL instance.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "URI of a Cloud SQL instance.",
+          "type": "string"
+        },
+        "networkUri": {
+          "description": "URI of a Cloud SQL instance network or empty string if instance does not have one.",
+          "type": "string"
+        },
+        "internalIp": {
+          "description": "Internal IP address of Cloud SQL instance.",
+          "type": "string"
+        },
+        "externalIp": {
+          "description": "External IP address of Cloud SQL instance.",
+          "type": "string"
+        },
+        "region": {
+          "description": "Region in which the Cloud SQL instance is running.",
           "type": "string"
         }
       }

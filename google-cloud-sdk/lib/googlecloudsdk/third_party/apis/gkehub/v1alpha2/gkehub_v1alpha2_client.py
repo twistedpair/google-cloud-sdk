@@ -39,10 +39,59 @@ class GkehubV1alpha2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_global_memberships = self.ProjectsLocationsGlobalMembershipsService(self)
+    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_memberships = self.ProjectsLocationsMembershipsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsGlobalMembershipsService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_memberships resource."""
+
+    _NAME = 'projects_locations_global_memberships'
+
+    def __init__(self, client):
+      super(GkehubV1alpha2.ProjectsLocationsGlobalMembershipsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def InitializeHub(self, request, global_params=None):
+      r"""Initializes the project to start creating Hub Memberships and Features. Using this API is optional and customers can instead directly create the Membership or Feature. Using this API is required only if IAM permissions need to be added for the default Hub Service Account or Hub Workload Identity Pool before registering the first Membership. Calling this API will create the default Hub Service Account and Hub Workload Identity Pool.
+
+      Args:
+        request: (GkehubProjectsLocationsGlobalMembershipsInitializeHubRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InitializeHubResponse) The response message.
+      """
+      config = self.GetMethodConfig('InitializeHub')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    InitializeHub.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/global/memberships:initializeHub',
+        http_method='POST',
+        method_id='gkehub.projects.locations.global.memberships.initializeHub',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=[],
+        relative_path='v1alpha2/{+project}:initializeHub',
+        request_field='initializeHubRequest',
+        request_type_name='GkehubProjectsLocationsGlobalMembershipsInitializeHubRequest',
+        response_type_name='InitializeHubResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the projects_locations_global resource."""
+
+    _NAME = 'projects_locations_global'
+
+    def __init__(self, client):
+      super(GkehubV1alpha2.ProjectsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsMembershipsService(base_api.BaseApiService):
     """Service class for the projects_locations_memberships resource."""

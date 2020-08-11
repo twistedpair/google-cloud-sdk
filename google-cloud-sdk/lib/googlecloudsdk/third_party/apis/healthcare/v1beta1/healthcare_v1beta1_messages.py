@@ -874,7 +874,7 @@ class ExportDicomDataResponse(_messages.Message):
 
 
 class ExportResourcesRequest(_messages.Message):
-  r"""Request to export resources.
+  r""" Request to export resources.
 
   Fields:
     bigqueryDestination: The BigQuery output destination.  The BigQuery
@@ -1421,11 +1421,11 @@ class GoogleCloudHealthcareV1beta1DicomStreamConfig(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):
-  r"""The configuration for exporting to BigQuery.
+  r""" The configuration for exporting to BigQuery.
 
   Fields:
-    datasetUri: BigQuery URI to a dataset, up to 2000 characters long, in the
-      format `bq://projectId.bqDatasetId`
+    datasetUri: BigQuery URI to an existing  dataset, up to 2000 characters
+      long, in the format `bq://projectId.bqDatasetId`.
     force: This flag is being replaced by write_disposition which provides
       additional options. force=false is equivalent to WRITE_EMPTY and
       force=true is equivalent to WRITE_TRUNCATE.
@@ -1438,7 +1438,7 @@ class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1FhirRestExportResourcesErrorDetails(_messages.Message):
-  r"""Response when errors occur while exporting resources. This structure is
+  r""" Response when errors occur while exporting resources. This structure is
   included in the error details to describe the detailed outcome. It is only
   included when the operation finishes with errors.
 
@@ -1459,7 +1459,7 @@ class GoogleCloudHealthcareV1beta1FhirRestExportResourcesErrorDetails(_messages.
 
 
 class GoogleCloudHealthcareV1beta1FhirRestExportResourcesResponse(_messages.Message):
-  r"""Response when all resources export successfully. This structure is
+  r""" Response when all resources export successfully. This structure is
   included in the response to describe the detailed outcome after the
   operation finishes successfully.
 
@@ -1476,7 +1476,7 @@ class GoogleCloudHealthcareV1beta1FhirRestExportResourcesResponse(_messages.Mess
 
 
 class GoogleCloudHealthcareV1beta1FhirRestGcsDestination(_messages.Message):
-  r"""The configuration for exporting to Cloud Storage.
+  r""" The configuration for exporting to Cloud Storage.
 
   Fields:
     uriPrefix: URI for a Cloud Storage directory where result files should be
@@ -1490,7 +1490,7 @@ class GoogleCloudHealthcareV1beta1FhirRestGcsDestination(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1FhirRestGcsSource(_messages.Message):
-  r"""Specifies the configuration for importing data from Cloud Storage.
+  r""" Specifies the configuration for importing data from Cloud Storage.
 
   Fields:
     uri: Points to a Cloud Storage URI containing file(s) to import.  The URI
@@ -1511,9 +1511,9 @@ class GoogleCloudHealthcareV1beta1FhirRestGcsSource(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1FhirRestImportResourcesErrorDetails(_messages.Message):
-  r"""Error response of importing resources. This structure is included in the
-  error details to describe the detailed error after the operation finishes
-  with some failure.
+  r""" Error response of importing resources. This structure is included in
+  the error details to describe the detailed error after the operation
+  finishes with some failure.
 
   Fields:
     errorCount: The number of resources that had errors.
@@ -1532,8 +1532,8 @@ class GoogleCloudHealthcareV1beta1FhirRestImportResourcesErrorDetails(_messages.
 
 
 class GoogleCloudHealthcareV1beta1FhirRestImportResourcesResponse(_messages.Message):
-  r"""Final response of importing resources. This structure is included in the
-  response to describe the detailed outcome after the operation finishes
+  r""" Final response of importing resources. This structure is included in
+  the response to describe the detailed outcome after the operation finishes
   successfully.
 
   Fields:
@@ -3742,7 +3742,7 @@ class ImportMessagesResponse(_messages.Message):
 
 
 class ImportResourcesRequest(_messages.Message):
-  r"""Request to import resources.
+  r""" Request to import resources.
 
   Enums:
     ContentStructureValueValuesEnum: The content structure in the source
@@ -4893,7 +4893,8 @@ class StreamConfig(_messages.Message):
       meta.versionId pair. Alternatively, the server created view mentioned
       above also filters out duplicates.  If a resource mutation cannot be
       streamed to BigQuery, errors will be logged to Cloud Logging (see
-      [Viewing logs](/healthcare/docs/how- tos/logging)).
+      [Viewing error logs in Cloud Logging](/healthcare/docs/how-
+      tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

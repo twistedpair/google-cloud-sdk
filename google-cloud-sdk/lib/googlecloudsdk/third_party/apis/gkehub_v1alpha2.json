@@ -393,6 +393,10 @@
           "items": {
             "$ref": "ResourceManifest"
           }
+        },
+        "resourceOptions": {
+          "description": "Optional. The options for generat Kubernetes resources other than the default value supplied by the Hub API. Empty or unset fields will use the default value.",
+          "$ref": "ResourceOptions"
         }
       }
     },
@@ -407,6 +411,21 @@
         },
         "clusterScoped": {
           "description": "Specifies whether the resource provided in the manifest is cluster_scoped. If set to false, the assumption is that it is namespace scoped. This field is used for default REST mapper when applying the resource to a cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ResourceOptions": {
+      "id": "ResourceOptions",
+      "description": "ResourceOptions represents the supported options for generating the Kubernetes resources.",
+      "type": "object",
+      "properties": {
+        "connectVersion": {
+          "description": "Optional. The connect version to generate for connect_resources. If unset, default to the latest GKE Connect version. If set to a specific Connect version, the Connect resources of the version will be generated. If the version does not exist or is already out of support window, an INVALID_ARGUMENT error will be returned.",
+          "type": "string"
+        },
+        "v1beta1Crd": {
+          "description": "Optional. Use apiextensions\/v1beta1 instead of apiextensions\/v1 for CustomResourceDefinition resource. This option should be set for clusters with Kubernetes apiserver version <1.16.",
           "type": "boolean"
         }
       }
@@ -512,6 +531,28 @@
         },
         "apiVersion": {
           "description": "APIVersion of the resource (e.g. v1).",
+          "type": "string"
+        }
+      }
+    },
+    "InitializeHubRequest": {
+      "id": "InitializeHubRequest",
+      "description": "Request message for the InitializeHub method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "InitializeHubResponse": {
+      "id": "InitializeHubResponse",
+      "description": "Response message for the InitializeHub method.",
+      "type": "object",
+      "properties": {
+        "serviceIdentity": {
+          "description": "Name of the default service identity. This is of the format `service-@gcp-sa-gkehub.iam.gserviceaccount.com`. This service account has `roles\/gkehub.serviceAgent` role in this project.",
+          "type": "string"
+        },
+        "workloadIdentityPool": {
+          "description": "The Workload Identity Pool used for all clusters registered with Hub. This is used to enable Workload Identity for workloads running in these clusters. This is of the format `.hub.id.goog`",
           "type": "string"
         }
       }
@@ -1591,6 +1632,42 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "global": {
+              "resources": {
+                "memberships": {
+                  "methods": {
+                    "initializeHub": {
+                      "id": "gkehub.projects.locations.global.memberships.initializeHub",
+                      "path": "v1alpha2/{+project}:initializeHub",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/global/memberships:initializeHub",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "project": {
+                          "description": "Required. The project in whose context this initialize is requested. The value is in the format: `projects\/[project_number]\/locations\/global\/memberships`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/memberships$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "project"
+                      ],
+                      "request": {
+                        "$ref": "InitializeHubRequest"
+                      },
+                      "response": {
+                        "$ref": "InitializeHubResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Initializes the project to start creating Hub Memberships and Features. Using this API is optional and customers can instead directly create the Membership or Feature. Using this API is required only if IAM permissions need to be added for the default Hub Service Account or Hub Workload Identity Pool before registering the first Membership. Calling this API will create the default Hub Service Account and Hub Workload Identity Pool."
+                    }
+                  }
                 }
               }
             }

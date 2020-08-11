@@ -75,6 +75,7 @@ class CloudApi(object):
       Apitools messages bucket object.
 
     Raises:
+      CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
           this interface.
       ValueError: Invalid fields_scope.
@@ -146,6 +147,7 @@ class CloudApi(object):
       Apitools messages object.
 
     Raises:
+      CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
           this interface.
       ValueError: Invalid fields_scope.
@@ -176,6 +178,7 @@ class CloudApi(object):
       Apitools messages Object containing updated metadata.
 
     Raises:
+      CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
           this interface.
       ValueError: Invalid fields_scope.
@@ -206,6 +209,7 @@ class CloudApi(object):
       Apitools messages object for newly created destination object.
 
     Raises:
+      CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
           this interface.
     """
@@ -261,6 +265,7 @@ class CloudApi(object):
       object during transfer. Otherwise, None.
 
     Raises:
+      CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
           this interface.
     """
@@ -287,6 +292,7 @@ class CloudApi(object):
       Apitools messages object for newly created destination object.
 
     Raises:
+      CloudApiError: API returned an error.
       NotImplementedError: This function was not implemented by a class using
           this interface.
     """

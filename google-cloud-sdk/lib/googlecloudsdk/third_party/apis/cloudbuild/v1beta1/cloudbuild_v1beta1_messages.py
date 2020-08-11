@@ -312,7 +312,8 @@ class BuildOptions(_messages.Message):
       valid as it is indicative of a build request with an incorrect
       configuration.
     workerPool: Option to specify a `WorkerPool` for the build. Format:
-      projects/{project}/workerPools/{workerPool}  This field is experimental.
+      projects/{project}/locations/{location}/workerPools/{workerPool}  This
+      field is experimental.
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
@@ -1412,6 +1413,9 @@ class WorkerPool(_messages.Message):
     state: Output only. `WorkerPool` state.
     updateTime: Output only. Time at which the request to update the
       `WorkerPool` was received.
+    vpcscEnabled: Immutable. If true, the worker pool is created with a VPC-SC
+      compatible configuration. Users should set to true if the worker pool
+      project is part of a secured VPC-SC perimeter.
     workerConfig: Worker configuration for the `WorkerPool`.
   """
 
@@ -1438,7 +1442,8 @@ class WorkerPool(_messages.Message):
   networkConfig = _messages.MessageField('NetworkConfig', 4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
-  workerConfig = _messages.MessageField('WorkerConfig', 7)
+  vpcscEnabled = _messages.BooleanField(7)
+  workerConfig = _messages.MessageField('WorkerConfig', 8)
 
 
 encoding.AddCustomJsonFieldMapping(

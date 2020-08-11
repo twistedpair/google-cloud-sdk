@@ -251,6 +251,59 @@ class Empty(_messages.Message):
 
 
 
+class ExecResource(_messages.Message):
+  r"""A resource that contains custom validation and enforcement steps.
+
+  Fields:
+    enforce: What to run to bring this resource into the desired state.
+      Optional if policy is in validate only mode.
+    validate: What to run to validate this resource is in the desired state. A
+      successful exit code indicates resource is in the desired state.
+  """
+
+  enforce = _messages.MessageField('ExecResourceExec', 1)
+  validate = _messages.MessageField('ExecResourceExec', 2)
+
+
+class ExecResourceExec(_messages.Message):
+  r"""A file or script to execute.
+
+  Enums:
+    InterpreterValueValuesEnum: The script interpreter to use.
+
+  Fields:
+    allowedSuccessCodes: Exit codes that indicate success.
+    args: Arguments to use.
+    file: A remote or local file.
+    interpreter: The script interpreter to use.
+    script: An inline script.
+  """
+
+  class InterpreterValueValuesEnum(_messages.Enum):
+    r"""The script interpreter to use.
+
+    Values:
+      INTERPRETER_UNSPECIFIED: Defaults to NONE.
+      NONE: If no interpreter is specified the source will be executed
+        directly, which will likely only succeed for executables and scripts
+        with shebang lines. [Wikipedia
+        shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)).
+      SHELL: Indicates that the script will be run with /bin/sh on Linux and
+        cmd.exe on windows.
+      POWERSHELL: Indicates that the script will be run with powershell.
+    """
+    INTERPRETER_UNSPECIFIED = 0
+    NONE = 1
+    SHELL = 2
+    POWERSHELL = 3
+
+  allowedSuccessCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  args = _messages.StringField(2, repeated=True)
+  file = _messages.MessageField('File', 3)
+  interpreter = _messages.EnumField('InterpreterValueValuesEnum', 4)
+  script = _messages.StringField(5)
+
+
 class ExecStep(_messages.Message):
   r"""A step that runs an executable for a PatchJob.
 
@@ -336,6 +389,142 @@ class ExecutePatchJobRequest(_messages.Message):
   instanceFilter = _messages.MessageField('PatchInstanceFilter', 5)
   patchConfig = _messages.MessageField('PatchConfig', 6)
   rollout = _messages.MessageField('PatchRollout', 7)
+
+
+class ExtractArchiveResource(_messages.Message):
+  r"""A resource that extracts an archive
+
+  Enums:
+    TypeValueValuesEnum: The type of the archive to extract.
+
+  Fields:
+    creates: Local file path that signals this resource is in the desired
+      state. The absence of this file will indicate whether the archive needs
+      to be extracted.
+    destination: Directory to extract archive to.
+    overwrite: Whether to overwrite existing files during extraction. If this
+      is set to true, any existing files in the destination location will be
+      overwritten by the extraction.
+    source: The source archive to extract.
+    type: The type of the archive to extract.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the archive to extract.
+
+    Values:
+      ARCHIVE_TYPE_UNSPECIFIED: Unspecified is invalid.
+      TAR: Indicates that the archive is a tar archive with no encryption.
+      TAR_GZIP: Indicates that the archive is a tar archive with gzip
+        encryption.
+      TAR_BZIP: Indicates that the archive is a tar archive with bzip
+        encryption.
+      TAR_LZMA: Indicates that the archive is a tar archive with lzma
+        encryption.
+      TAR_XZ: Indicates that the archive is a tar archive with xz encryption.
+      ZIP: Indicates that the archive is a zip archive.
+    """
+    ARCHIVE_TYPE_UNSPECIFIED = 0
+    TAR = 1
+    TAR_GZIP = 2
+    TAR_BZIP = 3
+    TAR_LZMA = 4
+    TAR_XZ = 5
+    ZIP = 6
+
+  creates = _messages.StringField(1)
+  destination = _messages.StringField(2)
+  overwrite = _messages.BooleanField(3)
+  source = _messages.MessageField('File', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class File(_messages.Message):
+  r"""A remote or local file.
+
+  Fields:
+    allowInsecure: Defaults to false. When false, files will be subject to
+      validations based on the file type:  Remote: A checksum must be
+      specified. GCS:    An object generation number must be specified.
+    gcs: A GCS object.
+    localPath: A local path to use.
+    remote: A generic remote file.
+  """
+
+  allowInsecure = _messages.BooleanField(1)
+  gcs = _messages.MessageField('FileGcs', 2)
+  localPath = _messages.StringField(3)
+  remote = _messages.MessageField('FileRemote', 4)
+
+
+class FileGcs(_messages.Message):
+  r"""Specifies a file available as a GCS Object.
+
+  Fields:
+    bucket: Bucket of the GCS object.
+    generation: Generation number of the GCS object.
+    object: Name of the GCS object.
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
+class FileRemote(_messages.Message):
+  r"""Specifies a file available via some URI.
+
+  Fields:
+    sha256Checksum: SHA256 checksum of the remote file.
+    uri: URI from which to fetch the object. It should contain both the
+      protocol and path following the format {protocol}://{location}.
+  """
+
+  sha256Checksum = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class FileResource(_messages.Message):
+  r"""A resource that manages the state of a file.
+
+  Enums:
+    StateValueValuesEnum: Desired state of the file.
+
+  Fields:
+    content: A a file with this content.
+    file: A remote or local source.
+    path: The absolute path of the file.
+    permissions: Consists of three octal digits which represent, in order, the
+      permissions of the owner, group, and other users for the file (similarly
+      to the numeric mode used in the linux chmod utility). Each digit
+      represents a three bit number with the 4 bit corresponding to the read
+      permissions, the 2 bit corresponds to the write bit, and the one bit
+      corresponds to the execute permission. Default behavior is 755.  Below
+      are some examples of permissions and their associated values: read,
+      write, and execute: 7 read and execute: 5 read and write: 6 read only: 4
+    state: Desired state of the file.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Desired state of the file.
+
+    Values:
+      DESIRED_STATE_UNSPECIFIED: Unspecified is invalid.
+      PRESENT: Ensure file at path is present.
+      ABSENT: Ensure file at path is absent.
+      CONTENTS_MATCH: Ensure the contents of the file at path matches. If the
+        file does not exist it will be created.
+    """
+    DESIRED_STATE_UNSPECIFIED = 0
+    PRESENT = 1
+    ABSENT = 2
+    CONTENTS_MATCH = 3
+
+  content = _messages.StringField(1)
+  file = _messages.MessageField('File', 2)
+  path = _messages.StringField(3)
+  permissions = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class FixedOrPercent(_messages.Message):
@@ -859,6 +1048,138 @@ class PackageRepository(_messages.Message):
   zypper = _messages.MessageField('ZypperRepository', 4)
 
 
+class PackageResource(_messages.Message):
+  r"""A resource that manages a system package.
+
+  Enums:
+    DesiredStateValueValuesEnum: The desired_state the agent should maintain
+      for this package. The default is to ensure the package is installed.
+
+  Fields:
+    apt: A package managed by Apt.
+    deb: A deb package file.
+    desiredState: The desired_state the agent should maintain for this
+      package. The default is to ensure the package is installed.
+    googet: A package managed by GooGet.
+    msi: An MSI package.
+    rpm: An rpm package file.
+    yum: A package managed by YUM.
+    zypper: A package managed by Zypper.
+  """
+
+  class DesiredStateValueValuesEnum(_messages.Enum):
+    r"""The desired_state the agent should maintain for this package. The
+    default is to ensure the package is installed.
+
+    Values:
+      DESIRED_STATE_UNSPECIFIED: Unspecified is invalid.
+      INSTALLED: Ensure that the package is installed.
+      REMOVED: The agent will ensure that the package is not installed and
+        uninstall it if detected.
+    """
+    DESIRED_STATE_UNSPECIFIED = 0
+    INSTALLED = 1
+    REMOVED = 2
+
+  apt = _messages.MessageField('PackageResourceAPT', 1)
+  deb = _messages.MessageField('PackageResourceDeb', 2)
+  desiredState = _messages.EnumField('DesiredStateValueValuesEnum', 3)
+  googet = _messages.MessageField('PackageResourceGooGet', 4)
+  msi = _messages.MessageField('PackageResourceMSI', 5)
+  rpm = _messages.MessageField('PackageResourceRPM', 6)
+  yum = _messages.MessageField('PackageResourceYUM', 7)
+  zypper = _messages.MessageField('PackageResourceZypper', 8)
+
+
+class PackageResourceAPT(_messages.Message):
+  r"""A package managed by APT. install: `apt-get update && apt-get -y install
+  [name]` remove: `apt-get -y remove [name]`
+
+  Fields:
+    name: Package name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class PackageResourceDeb(_messages.Message):
+  r"""A deb package file. dpkg packages only support INSTALLED state.
+
+  Fields:
+    pullDeps: Whether dependencies should also be installed. install when
+      false: `dpkg -i package` install when true: `apt-get update && apt-get
+      -y install package.deb`
+    source: A deb package.
+  """
+
+  pullDeps = _messages.BooleanField(1)
+  source = _messages.MessageField('File', 2)
+
+
+class PackageResourceGooGet(_messages.Message):
+  r"""A package managed by GooGet. install: `googet -noconfirm install
+  package` remove: `googet -noconfirm remove package`
+
+  Fields:
+    name: Package name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class PackageResourceMSI(_messages.Message):
+  r"""An MSI package. MSI packages only support INSTALLED state. Install
+  msiexec /i /qn /norestart
+
+  Fields:
+    allowedSuccessCodes: Return codes that indicate that the software
+      installed or updated successfully. Behaviour defaults to [0]
+    flags: Flags to use during package install. Appended to the defalts of "/i
+      /qn /norestart"
+    source: The MSI package.
+  """
+
+  allowedSuccessCodes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  flags = _messages.StringField(2, repeated=True)
+  source = _messages.MessageField('File', 3)
+
+
+class PackageResourceRPM(_messages.Message):
+  r"""An RPM package file. RPM packages only support INSTALLED state.
+
+  Fields:
+    pullDeps: Whether dependencies should also be installed. install when
+      false: `rpm --upgrade --replacepkgs package.rpm` install when true: `yum
+      -y install package.rpm` or `zypper -y install package.rpm`
+    source: An rpm package.
+  """
+
+  pullDeps = _messages.BooleanField(1)
+  source = _messages.MessageField('File', 2)
+
+
+class PackageResourceYUM(_messages.Message):
+  r"""A package managed by YUM. install: `yum -y install package` remove: `yum
+  -y remove package`
+
+  Fields:
+    name: Package name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class PackageResourceZypper(_messages.Message):
+  r"""A package managed by Zypper. install: `zypper -y install package`
+  remove: `zypper -y rm package`
+
+  Fields:
+    name: Package name.
+  """
+
+  name = _messages.StringField(1)
+
+
 class PatchConfig(_messages.Message):
   r"""Patch configuration specifications. Contains details on how to apply the
   patch(es) to a VM instance.
@@ -1321,6 +1642,118 @@ class RecurringSchedule(_messages.Message):
   timeOfDay = _messages.MessageField('TimeOfDay', 7)
   timeZone = _messages.MessageField('TimeZone', 8)
   weekly = _messages.MessageField('WeeklySchedule', 9)
+
+
+class RepositoryResource(_messages.Message):
+  r"""A resource that manages a package repository.
+
+  Fields:
+    apt: An Apt Repository.
+    goo: A Goo Repository.
+    yum: A Yum Repository.
+    zypper: A Zypper Repository.
+  """
+
+  apt = _messages.MessageField('RepositoryResourceAptRepository', 1)
+  goo = _messages.MessageField('RepositoryResourceGooRepository', 2)
+  yum = _messages.MessageField('RepositoryResourceYumRepository', 3)
+  zypper = _messages.MessageField('RepositoryResourceZypperRepository', 4)
+
+
+class RepositoryResourceAptRepository(_messages.Message):
+  r"""Represents a single apt package repository. These will be added to a
+  repo file that will be managed at
+  /etc/apt/sources.list.d/google_osconfig.list.
+
+  Enums:
+    ArchiveTypeValueValuesEnum: Type of archive files in this repository. The
+      default behavior is DEB.
+
+  Fields:
+    archiveType: Type of archive files in this repository. The default
+      behavior is DEB.
+    components: List of components for this repository. Must contain at least
+      one item.
+    distribution: Distribution of this repository.
+    gpgKey: URI of the key file for this repository. The agent will maintain a
+      keyring at /etc/apt/trusted.gpg.d/osconfig_agent_managed.gpg.
+    uri: URI for this repository.
+  """
+
+  class ArchiveTypeValueValuesEnum(_messages.Enum):
+    r"""Type of archive files in this repository. The default behavior is DEB.
+
+    Values:
+      ARCHIVE_TYPE_UNSPECIFIED: Unspecified is invalid.
+      DEB: Deb indicates that the archive contains binary files.
+      DEB_SRC: Deb-src indicates that the archive contains source files.
+    """
+    ARCHIVE_TYPE_UNSPECIFIED = 0
+    DEB = 1
+    DEB_SRC = 2
+
+  archiveType = _messages.EnumField('ArchiveTypeValueValuesEnum', 1)
+  components = _messages.StringField(2, repeated=True)
+  distribution = _messages.StringField(3)
+  gpgKey = _messages.StringField(4)
+  uri = _messages.StringField(5)
+
+
+class RepositoryResourceGooRepository(_messages.Message):
+  r"""Represents a Goo package repository. These will be added to a repo file
+  that will be managed at C:/ProgramData/GooGet/repos/google_osconfig.repo.
+
+  Fields:
+    name: The name of the repository.
+    url: The url of the repository.
+  """
+
+  name = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
+class RepositoryResourceYumRepository(_messages.Message):
+  r"""Represents a single yum package repository. These will be added to a
+  repo file that will be managed at /etc/yum.repos.d/google_osconfig.repo.
+
+  Fields:
+    baseUrl: The location of the repository directory.
+    displayName: The display name of the repository.
+    gpgKeys: URIs of GPG keys.
+    id: A one word, unique name for this repository. This will be the `repo
+      id` in the yum config file and also the `display_name` if `display_name`
+      is omitted. This id is also used as the unique identifier when checking
+      for resource conflicts.
+  """
+
+  baseUrl = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  gpgKeys = _messages.StringField(3, repeated=True)
+  id = _messages.StringField(4)
+
+
+class RepositoryResourceZypperRepository(_messages.Message):
+  r"""Represents a single zypper package repository. These will be added to a
+  repo file that will be managed at /etc/zypp/repos.d/google_osconfig.repo.
+
+  Fields:
+    baseUrl: The location of the repository directory.
+    displayName: The display name of the repository.
+    gpgKeys: URIs of GPG keys.
+    id: A one word, unique name for this repository. This will be the `repo
+      id` in the zypper config file and also the `display_name` if
+      `display_name` is omitted. This id is also used as the unique identifier
+      when checking for GuestPolicy conflicts.
+  """
+
+  baseUrl = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  gpgKeys = _messages.StringField(3, repeated=True)
+  id = _messages.StringField(4)
+
+
+class ServiceResource(_messages.Message):
+  r"""A resource that manages a system service."""
 
 
 class SoftwareRecipe(_messages.Message):

@@ -3082,6 +3082,10 @@ class BackendBucketCdnPolicy(_messages.Message):
     CacheModeValueValuesEnum:
 
   Fields:
+    bypassCacheOnRequestHeaders: Bypass the cache when the specified request
+      headers are matched - e.g. Pragma or Authorization headers. Up to 5
+      headers can be specified. The cache is bypassed for all
+      cdnPolicy.cacheMode settings.
     cacheMode: A CacheModeValueValuesEnum attribute.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
       from the TTL for Cloud CDN's edge caches. Leaving this empty will use
@@ -3124,6 +3128,15 @@ class BackendBucketCdnPolicy(_messages.Message):
       policy exists.
     requestCoalescing: If true then Cloud CDN will combine multiple concurrent
       cache fill requests into a small number of requests to the origin.
+    serveWhileStale: Serve existing content from the cache (if available) when
+      revalidating content with the origin, or when an error is encountered
+      when refreshing the cache. This setting defines the default "max-stale"
+      duration for any cached responses that do not specify a max-stale
+      directive. Stale responses that exceed the TTL configured here will not
+      be served. The default limit (max-stale) is 86400s (1 day), which will
+      allow stale content to be served up to this limit beyond the max-age (or
+      s-max-age) of a cached response. The maximum allowed value is 604800(1
+      week). Set this to zero (0) to disable serve-while-stale.
     signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
       signed URL request will be considered fresh. After this time period, the
       response will be revalidated before being served. Defaults to 1hr
@@ -3150,15 +3163,30 @@ class BackendBucketCdnPolicy(_messages.Message):
     INVALID_CACHE_MODE = 2
     USE_ORIGIN_HEADERS = 3
 
-  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 1)
-  clientTtl = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  defaultTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maxTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  negativeCaching = _messages.BooleanField(5)
-  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 6, repeated=True)
-  requestCoalescing = _messages.BooleanField(7)
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(8)
-  signedUrlKeyNames = _messages.StringField(9, repeated=True)
+  bypassCacheOnRequestHeaders = _messages.MessageField('BackendBucketCdnPolicyBypassCacheOnRequestHeader', 1, repeated=True)
+  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 2)
+  clientTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  defaultTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maxTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  negativeCaching = _messages.BooleanField(6)
+  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 7, repeated=True)
+  requestCoalescing = _messages.BooleanField(8)
+  serveWhileStale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(10)
+  signedUrlKeyNames = _messages.StringField(11, repeated=True)
+
+
+class BackendBucketCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
+  r"""Bypass the cache when the specified request headers are present, e.g.
+  Pragma or Authorization headers. Values are case insensitive. The presence
+  of such a header overrides the cache_mode setting.
+
+  Fields:
+    headerName: The header field name to match on when bypassing cache. Values
+      are case-insensitive.
+  """
+
+  headerName = _messages.StringField(1)
 
 
 class BackendBucketCdnPolicyNegativeCachingPolicy(_messages.Message):
@@ -3830,6 +3858,10 @@ class BackendServiceCdnPolicy(_messages.Message):
     CacheModeValueValuesEnum:
 
   Fields:
+    bypassCacheOnRequestHeaders: Bypass the cache when the specified request
+      headers are matched - e.g. Pragma or Authorization headers. Up to 5
+      headers can be specified. The cache is bypassed for all
+      cdnPolicy.cacheMode settings.
     cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
     cacheMode: A CacheModeValueValuesEnum attribute.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
@@ -3873,6 +3905,15 @@ class BackendServiceCdnPolicy(_messages.Message):
       policy exists.
     requestCoalescing: If true then Cloud CDN will combine multiple concurrent
       cache fill requests into a small number of requests to the origin.
+    serveWhileStale: Serve existing content from the cache (if available) when
+      revalidating content with the origin, or when an error is encountered
+      when refreshing the cache. This setting defines the default "max-stale"
+      duration for any cached responses that do not specify a max-stale
+      directive. Stale responses that exceed the TTL configured here will not
+      be served. The default limit (max-stale) is 86400s (1 day), which will
+      allow stale content to be served up to this limit beyond the max-age (or
+      s-max-age) of a cached response. The maximum allowed value is 604800(1
+      week). Set this to zero (0) to disable serve-while-stale.
     signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
       signed URL request will be considered fresh. After this time period, the
       response will be revalidated before being served. Defaults to 1hr
@@ -3899,16 +3940,31 @@ class BackendServiceCdnPolicy(_messages.Message):
     INVALID_CACHE_MODE = 2
     USE_ORIGIN_HEADERS = 3
 
-  cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
-  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 2)
-  clientTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  defaultTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  negativeCaching = _messages.BooleanField(6)
-  negativeCachingPolicy = _messages.MessageField('BackendServiceCdnPolicyNegativeCachingPolicy', 7, repeated=True)
-  requestCoalescing = _messages.BooleanField(8)
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(9)
-  signedUrlKeyNames = _messages.StringField(10, repeated=True)
+  bypassCacheOnRequestHeaders = _messages.MessageField('BackendServiceCdnPolicyBypassCacheOnRequestHeader', 1, repeated=True)
+  cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 2)
+  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 3)
+  clientTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  defaultTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxTtl = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  negativeCaching = _messages.BooleanField(7)
+  negativeCachingPolicy = _messages.MessageField('BackendServiceCdnPolicyNegativeCachingPolicy', 8, repeated=True)
+  requestCoalescing = _messages.BooleanField(9)
+  serveWhileStale = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(11)
+  signedUrlKeyNames = _messages.StringField(12, repeated=True)
+
+
+class BackendServiceCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
+  r"""Bypass the cache when the specified request headers are present, e.g.
+  Pragma or Authorization headers. Values are case insensitive. The presence
+  of such a header overrides the cache_mode setting.
+
+  Fields:
+    headerName: The header field name to match on when bypassing cache. Values
+      are case-insensitive.
+  """
+
+  headerName = _messages.StringField(1)
 
 
 class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
@@ -25316,7 +25372,7 @@ class CorsPolicy(_messages.Message):
 
 
 class CustomerEncryptionKey(_messages.Message):
-  r"""Represents a customer-supplied encryption key
+  r"""A CustomerEncryptionKey object.
 
   Fields:
     kmsKeyName: The name of the encryption key that is stored in Google Cloud
@@ -25514,6 +25570,8 @@ class Disk(_messages.Message):
       Only applicable for regional resources.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations.
+    satisfiesPhysicalZoneSeparation: [Output Only] Specifies whether this disk
+      satisfies zone separation.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource's
@@ -25691,25 +25749,26 @@ class Disk(_messages.Message):
   region = _messages.StringField(20)
   replicaZones = _messages.StringField(21, repeated=True)
   resourcePolicies = _messages.StringField(22, repeated=True)
-  selfLink = _messages.StringField(23)
-  selfLinkWithId = _messages.StringField(24)
-  sizeGb = _messages.IntegerField(25)
-  sourceDisk = _messages.StringField(26)
-  sourceDiskId = _messages.StringField(27)
-  sourceImage = _messages.StringField(28)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
-  sourceImageId = _messages.StringField(30)
-  sourceInPlaceSnapshot = _messages.StringField(31)
-  sourceInPlaceSnapshotId = _messages.StringField(32)
-  sourceSnapshot = _messages.StringField(33)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 34)
-  sourceSnapshotId = _messages.StringField(35)
-  sourceStorageObject = _messages.StringField(36)
-  status = _messages.EnumField('StatusValueValuesEnum', 37)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 38)
-  type = _messages.StringField(39)
-  users = _messages.StringField(40, repeated=True)
-  zone = _messages.StringField(41)
+  satisfiesPhysicalZoneSeparation = _messages.BooleanField(23)
+  selfLink = _messages.StringField(24)
+  selfLinkWithId = _messages.StringField(25)
+  sizeGb = _messages.IntegerField(26)
+  sourceDisk = _messages.StringField(27)
+  sourceDiskId = _messages.StringField(28)
+  sourceImage = _messages.StringField(29)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
+  sourceImageId = _messages.StringField(31)
+  sourceInPlaceSnapshot = _messages.StringField(32)
+  sourceInPlaceSnapshotId = _messages.StringField(33)
+  sourceSnapshot = _messages.StringField(34)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 35)
+  sourceSnapshotId = _messages.StringField(36)
+  sourceStorageObject = _messages.StringField(37)
+  status = _messages.EnumField('StatusValueValuesEnum', 38)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 39)
+  type = _messages.StringField(40)
+  users = _messages.StringField(41, repeated=True)
+  zone = _messages.StringField(42)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -28120,6 +28179,9 @@ class ForwardingRule(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    serviceDirectoryRegistrations: Service Directory resources to register
+      this forwarding rule with. Currently, only supports a single Service
+      Directory resource.
     serviceLabel: An optional prefix to the service name for this Forwarding
       Rule. If specified, the prefix is the first label of the fully qualified
       service name.  The label must be 1-63 characters long, and comply with
@@ -28280,10 +28342,11 @@ class ForwardingRule(_messages.Message):
   region = _messages.StringField(22)
   selfLink = _messages.StringField(23)
   selfLinkWithId = _messages.StringField(24)
-  serviceLabel = _messages.StringField(25)
-  serviceName = _messages.StringField(26)
-  subnetwork = _messages.StringField(27)
-  target = _messages.StringField(28)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 25, repeated=True)
+  serviceLabel = _messages.StringField(26)
+  serviceName = _messages.StringField(27)
+  subnetwork = _messages.StringField(28)
+  target = _messages.StringField(29)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -28575,6 +28638,21 @@ class ForwardingRuleReference(_messages.Message):
   """
 
   forwardingRule = _messages.StringField(1)
+
+
+class ForwardingRuleServiceDirectoryRegistration(_messages.Message):
+  r"""Describes the auto-registration of the Forwarding Rule to Service
+  Directory. The region and project of the Service Directory resource
+  generated from this registration will be the same as this Forwarding Rule.
+
+  Fields:
+    namespace: Service Directory namespace to register the forwarding rule
+      under.
+    service: Service Directory service to register the forwarding rule under.
+  """
+
+  namespace = _messages.StringField(1)
+  service = _messages.StringField(2)
 
 
 class ForwardingRulesScopedList(_messages.Message):
@@ -31739,6 +31817,8 @@ class Instance(_messages.Message):
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies applied to this instance.
+    satisfiesPhysicalZoneSeparation: [Output Only] Specifies whether this
+      instance satisfies zone separation.
     scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
@@ -31885,22 +31965,23 @@ class Instance(_messages.Message):
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 29)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 30)
   resourcePolicies = _messages.StringField(31, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 32)
-  selfLink = _messages.StringField(33)
-  selfLinkWithId = _messages.StringField(34)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 35, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 36)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 37)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 38)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 39)
-  sourceMachineImage = _messages.StringField(40)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 41)
-  startRestricted = _messages.BooleanField(42)
-  status = _messages.EnumField('StatusValueValuesEnum', 43)
-  statusMessage = _messages.StringField(44)
-  tags = _messages.MessageField('Tags', 45)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 46)
-  zone = _messages.StringField(47)
+  satisfiesPhysicalZoneSeparation = _messages.BooleanField(32)
+  scheduling = _messages.MessageField('Scheduling', 33)
+  selfLink = _messages.StringField(34)
+  selfLinkWithId = _messages.StringField(35)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 36, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 37)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 38)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 39)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 40)
+  sourceMachineImage = _messages.StringField(41)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 42)
+  startRestricted = _messages.BooleanField(43)
+  status = _messages.EnumField('StatusValueValuesEnum', 44)
+  statusMessage = _messages.StringField(45)
+  tags = _messages.MessageField('Tags', 46)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 47)
+  zone = _messages.StringField(48)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -40028,7 +40109,9 @@ class NodeGroup(_messages.Message):
 
   Enums:
     MaintenancePolicyValueValuesEnum: Specifies how to handle instances when a
-      node in the group undergoes maintenance.
+      node in the group undergoes maintenance. Set to one of: DEFAULT,
+      RESTART_IN_PLACE, or MIGRATE_WITHIN_NODE_GROUP. The default value is
+      DEFAULT. For more information, see  Maintenance policies.
     StatusValueValuesEnum:
 
   Fields:
@@ -40047,7 +40130,9 @@ class NodeGroup(_messages.Message):
       public API. The location hint here on the NodeGroup overrides any
       location_hint present in the NodeTemplate.
     maintenancePolicy: Specifies how to handle instances when a node in the
-      group undergoes maintenance.
+      group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE,
+      or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
+      information, see  Maintenance policies.
     maintenanceWindow: A NodeGroupMaintenanceWindow attribute.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
@@ -40068,7 +40153,9 @@ class NodeGroup(_messages.Message):
 
   class MaintenancePolicyValueValuesEnum(_messages.Enum):
     r"""Specifies how to handle instances when a node in the group undergoes
-    maintenance.
+    maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE, or
+    MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
+    information, see  Maintenance policies.
 
     Values:
       DEFAULT: <no description>
@@ -40272,16 +40359,19 @@ class NodeGroupAutoscalingPolicy(_messages.Message):
   r"""A NodeGroupAutoscalingPolicy object.
 
   Enums:
-    ModeValueValuesEnum: The autoscaling mode.
+    ModeValueValuesEnum: The autoscaling mode. Set to one of: ON, OFF, or
+      ONLY_SCALE_OUT. For more information, see  Autoscaler modes.
 
   Fields:
     maxNodes: The maximum number of nodes that the group should have.
     minNodes: The minimum number of nodes that the group should have.
-    mode: The autoscaling mode.
+    mode: The autoscaling mode. Set to one of: ON, OFF, or ONLY_SCALE_OUT. For
+      more information, see  Autoscaler modes.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    r"""The autoscaling mode.
+    r"""The autoscaling mode. Set to one of: ON, OFF, or ONLY_SCALE_OUT. For
+    more information, see  Autoscaler modes.
 
     Values:
       MODE_UNSPECIFIED: <no description>
@@ -40456,6 +40546,8 @@ class NodeGroupNode(_messages.Message):
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
+    satisfiesPhysicalZoneSeparation: [Output Only] Specifies whether this node
+      satisfies zone separation.
     serverBinding: Binding properties for the physical server.
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
@@ -40495,9 +40587,10 @@ class NodeGroupNode(_messages.Message):
   instances = _messages.StringField(4, repeated=True)
   name = _messages.StringField(5)
   nodeType = _messages.StringField(6)
-  serverBinding = _messages.MessageField('ServerBinding', 7)
-  serverId = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  satisfiesPhysicalZoneSeparation = _messages.BooleanField(7)
+  serverBinding = _messages.MessageField('ServerBinding', 8)
+  serverId = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -44214,7 +44307,9 @@ class PublicAdvertisedPrefixPublicDelegatedPrefix(_messages.Message):
   r"""Represents a CIDR range which can be used to assign addresses.
 
   Fields:
+    ipRange: The IP address range of the public delegated prefix
     name: The name of the public delegated prefix
+    project: The project number of the public delegated prefix
     region: The region of the public delegated prefix if it is regional. If
       absent, the prefix is global.
     status: The status of the public delegated prefix. Possible values are:
@@ -44223,9 +44318,11 @@ class PublicAdvertisedPrefixPublicDelegatedPrefix(_messages.Message):
       is active.
   """
 
-  name = _messages.StringField(1)
-  region = _messages.StringField(2)
-  status = _messages.StringField(3)
+  ipRange = _messages.StringField(1)
+  name = _messages.StringField(2)
+  project = _messages.StringField(3)
+  region = _messages.StringField(4)
+  status = _messages.StringField(5)
 
 
 class PublicDelegatedPrefix(_messages.Message):
@@ -45065,6 +45162,8 @@ class Region(_messages.Message):
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
     status: [Output Only] Status of the region, either UP or DOWN.
+    supportsPhysicalZoneSeparation: [Output Only] Specifies whether this
+      region supports physical zone separation.
     zones: [Output Only] A list of zones available in this region, in the form
       of resource URLs.
   """
@@ -45089,7 +45188,8 @@ class Region(_messages.Message):
   selfLink = _messages.StringField(8)
   selfLinkWithId = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
-  zones = _messages.StringField(11, repeated=True)
+  supportsPhysicalZoneSeparation = _messages.BooleanField(11)
+  zones = _messages.StringField(12, repeated=True)
 
 
 class RegionAutoscalerList(_messages.Message):
@@ -45687,7 +45787,7 @@ class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
 
 
 class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
-  r"""InstanceGroupManagers.applyUpdatesToInstances
+  r"""RegionInstanceGroupManagers.applyUpdatesToInstances
 
   Enums:
     MaximalActionValueValuesEnum: The maximal action that should be performed
@@ -50339,6 +50439,7 @@ class SecuritySettings(_messages.Message):
       should authenticate with this service's backends. clientTlsPolicy only
       applies to a global BackendService with the loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. If left blank, communications are not encrypted.
+      Note: This field currently has no impact.
     clientTlsSettings: [Deprecated] TLS Settings for the backend service.
     subjectAltNames: Optional. A list of Subject Alternative Names (SANs) that
       the client verifies during a mutual TLS handshake with an
@@ -50352,7 +50453,7 @@ class SecuritySettings(_messages.Message):
       which provisions server identities. Only applies to a global
       BackendService with loadBalancingScheme set to INTERNAL_SELF_MANAGED.
       Only applies when BackendService has an attached clientTlsPolicy with
-      clientCertificate (mTLS mode).
+      clientCertificate (mTLS mode). Note: This field currently has no impact.
   """
 
   authentication = _messages.StringField(1)
@@ -50880,6 +50981,8 @@ class Snapshot(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    satisfiesPhysicalZoneSeparation: [Output Only] Specifies whether this
+      snapshot satisfies zone separation.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource's
       resource id.
@@ -50982,16 +51085,17 @@ class Snapshot(_messages.Message):
   licenseCodes = _messages.IntegerField(12, repeated=True)
   licenses = _messages.StringField(13, repeated=True)
   name = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  selfLinkWithId = _messages.StringField(16)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
-  sourceDisk = _messages.StringField(18)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
-  sourceDiskId = _messages.StringField(20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  storageBytes = _messages.IntegerField(22)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 23)
-  storageLocations = _messages.StringField(24, repeated=True)
+  satisfiesPhysicalZoneSeparation = _messages.BooleanField(15)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
+  sourceDisk = _messages.StringField(19)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
+  sourceDiskId = _messages.StringField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  storageBytes = _messages.IntegerField(23)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 24)
+  storageLocations = _messages.StringField(25, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -54084,7 +54188,7 @@ class TargetHttpsProxy(_messages.Message):
       AuthorizationPolicy resource for additional details. authorizationPolicy
       only applies to a global TargetHttpsProxy attached to
       globalForwardingRules with the loadBalancingScheme set to
-      INTERNAL_SELF_MANAGED.
+      INTERNAL_SELF_MANAGED. Note: This field currently has no impact.
     certificateMap: URL of a certificate map that identifies a certificate map
       associated with the given target proxy. This field can only be set for
       global target proxies. If set, sslCertificates will be ignored.
@@ -54125,7 +54229,8 @@ class TargetHttpsProxy(_messages.Message):
       should authenticate inbound traffic. serverTlsPolicy only applies to a
       global TargetHttpsProxy attached to globalForwardingRules with the
       loadBalancingScheme set to INTERNAL_SELF_MANAGED. If left blank,
-      communications are not encrypted.
+      communications are not encrypted. Note: This field currently has no
+      impact.
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. At least
       one SSL certificate must be specified. Currently, you may specify up to
@@ -59116,6 +59221,8 @@ class Zone(_messages.Message):
       zone.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] Status of the zone, either UP or DOWN.
+    supportsPhysicalZoneSeparation: [Output Only] Specifies whether this zone
+      supports physical zone separation.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -59138,6 +59245,7 @@ class Zone(_messages.Message):
   region = _messages.StringField(8)
   selfLink = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
+  supportsPhysicalZoneSeparation = _messages.BooleanField(11)
 
 
 class ZoneList(_messages.Message):

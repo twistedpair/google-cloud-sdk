@@ -28,16 +28,19 @@ partitions:
   help_text: |
     Number of partitions in the topic.
 
-scale:
-  api_field: topic.partitionConfig.scale
-  arg_name: scale
+per-partition-publish-mib:
+  api_field: topic.partitionConfig.capacity.publishMibPerSec
+  arg_name: per-partition-publish-mib
   required: false
   help_text: |
-    Topic partition scale value. Every partition in the topic is allocated
-    throughput equivalent to `scale` times the standard partition throughput
-    (4 MiB/s of publishing throughput and 8 MiB/s of subscribing throughput).
-    This is also reflected in the cost of this topic; a topic with `scale` of
-    2 and count of 10 is charged for 20 partitions.
+    Topic partition publish throughput capacity in MiB/s. Must be between 4 and 16.
+
+per-partition-subscribe-mib:
+  api_field: topic.partitionConfig.capacity.subscribeMibPerSec
+  arg_name: per-partition-subscribe-mib
+  required: false
+  help_text: |
+    Topic partition subscribe throughput capacity in MiB/s. Must be between 4 and 32.
 
 per-partition-bytes:
   api_field: topic.retentionConfig.perPartitionBytes

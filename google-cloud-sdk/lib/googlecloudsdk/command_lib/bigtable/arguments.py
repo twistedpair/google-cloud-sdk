@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.api_lib.bigtable import util
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -113,6 +116,21 @@ class ArgAdder(object):
         required=True)
     return self
 
+  def AddDeprecatedCluster(self):
+    """Add deprecated cluster argument."""
+    self.parser.add_argument(
+        '--cluster',
+        completer=ClusterCompleter,
+        help='ID of the cluster',
+        required=False,
+        action=actions.DeprecationAction(
+            '--cluster',
+            warn='The {flag_name} argument is deprecated; use --cluster-config instead.',
+            removed=False,
+            action='store'),
+    )
+    return self
+
   def AddClusterNodes(self, in_instance=False, required=None, default=None):
     is_required = required if required is not None else not in_instance
     self.parser.add_argument(
@@ -121,6 +139,21 @@ class ArgAdder(object):
         default=default,
         required=is_required,
         type=int)
+    return self
+
+  def AddDeprecatedClusterNodes(self):
+    """Add deprecated cluster nodes argument."""
+    self.parser.add_argument(
+        '--cluster-num-nodes',
+        help='Number of nodes to serve.',
+        required=False,
+        type=int,
+        action=actions.DeprecationAction(
+            '--cluster-num-nodes',
+            warn='The {flag_name} argument is deprecated; use --cluster-config instead.',
+            removed=False,
+            action='store'),
+    )
     return self
 
   def AddClusterStorage(self):
@@ -138,6 +171,21 @@ class ArgAdder(object):
         help='ID of the zone where the cluster is located. Supported zones '
         'are listed at https://cloud.google.com/bigtable/docs/locations.',
         required=True)
+    return self
+
+  def AddDeprecatedClusterZone(self):
+    """Add deprecated cluster zone argument."""
+    self.parser.add_argument(
+        '--cluster-zone',
+        help='ID of the zone where the cluster is located. Supported zones '
+        'are listed at https://cloud.google.com/bigtable/docs/locations.',
+        required=False,
+        action=actions.DeprecationAction(
+            '--cluster-zone',
+            warn='The {flag_name} argument is deprecated; use --cluster-config instead.',
+            removed=False,
+            action='store'),
+    )
     return self
 
   def AddInstance(self, positional=True, required=True, multiple=False,
@@ -221,7 +269,7 @@ class ArgAdder(object):
         required=required)
     return self
 
-  def AddInstanceType(self, default=None, help_text=None):
+  def AddInstanceType(self):
     """Add default instance type choices to parser."""
     choices = {
         'PRODUCTION':
@@ -236,10 +284,73 @@ class ArgAdder(object):
 
     self.parser.add_argument(
         '--instance-type',
-        default=default,
+        default='PRODUCTION',
         type=lambda x: x.upper(),
         choices=choices,
-        help=help_text)
+        help='The type of instance to create.')
+
+    return self
+
+  def AddDeprecatedInstanceType(self):
+    """Add deprecated instance type argument."""
+    choices = {
+        'PRODUCTION':
+            'Production instances provide high availability, and are suitable '
+            'for applications in production. For backward compatibility, '
+            'default have 3 nodes if --cluster-num-nodes is not specified.',
+        'DEVELOPMENT': 'Development instances are low-cost instances meant '
+                       'for development and testing only. They do not '
+                       'provide high availability and no service level '
+                       'agreement applies.'
+    }
+    self.parser.add_argument(
+        '--instance-type',
+        default='PRODUCTION',
+        type=lambda x: x.upper(),
+        choices=choices,
+        help='The type of instance to create.',
+        required=False,
+        action=actions.DeprecationAction(
+            '--instance-type',
+            warn='The {flag_name} argument is deprecated. DEVELOPMENT instances are no longer offered. All instances are of type PRODUCTION.',
+            removed=False,
+            action='store'),
+    )
+    return self
+
+  def AddClusterConfig(self):
+    """Add the cluster-config argument as repeated kv dicts."""
+    self.parser.add_argument(
+        '--cluster-config',
+        action='append',
+        type=arg_parsers.ArgDict(
+            spec={
+                'id': str,
+                'zone': str,
+                'nodes': int,
+                'kms-key': str,
+            },
+            required_keys=['id', 'zone'],
+            max_length=4),
+        # TODO(b/153734534) Add kms-key=KMS_KEY to metavar and help doc below.
+        metavar='id=ID,zone=ZONE,nodes=NODES',
+        help=textwrap.dedent("""\
+        *Repeatable*. Specify cluster config as a key-value dictionary.
+
+        This is the recommended argument for specifying cluster configurations.
+
+        Keys can be:
+
+          *id*: Required. The ID of the cluster.
+
+          *zone*: Required. ID of the zone where the cluster is located. Supported zones are listed at https://cloud.google.com/bigtable/docs/locations.
+
+          *nodes*: The number of nodes of the cluster. Default=1.
+
+        If this argument is specified, the deprecated arguments for configuring a single cluster will be ignored, including *--cluster*, *--cluster-zone*, *--cluster-num-nodes*.
+
+        See *EXAMPLES* section.
+        """))
 
     return self
 

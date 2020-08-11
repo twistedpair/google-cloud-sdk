@@ -454,6 +454,24 @@ class GoogleCloudMlV1EncryptionConfig(_messages.Message):
   kmsKeyName = _messages.StringField(1)
 
 
+class GoogleCloudMlV1EndpointMap(_messages.Message):
+  r""" EndpointMap is used to provide paths for predict/explain/healthcheck to
+  customers. It's an output only field in the version proto which can be only
+  set on the server side. Public endpoints follow the format specified on the
+  user facing doc, and private endpoints are customized for each privately
+  deploymed model/version.
+
+  Fields:
+    explain: Optional. Http(s) path to send explain requests.
+    health: Http(s) path to send health check requests.
+    predict: Http(s) path to send prediction requests.
+  """
+
+  explain = _messages.StringField(1)
+  health = _messages.StringField(2)
+  predict = _messages.StringField(3)
+
+
 class GoogleCloudMlV1EnvVar(_messages.Message):
   r"""EnvVar represents an environment variable present in a Container.
 
@@ -2747,6 +2765,9 @@ class GoogleCloudMlV1Version(_messages.Message):
       can't exceed 1000.
     description: Optional. The description specified for the version when it
       was created.
+    endpoints: Optional. Output only. If set by server, the http(s) endpoints
+      returned to user after the public/private deployment is successful.
+      https://cloud.google.com/apis/design/design_patterns#output_fields.
     errorMessage: Output only. The details of a failure or a cancellation.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a model from overwriting each other. It
@@ -2947,26 +2968,27 @@ class GoogleCloudMlV1Version(_messages.Message):
   createTime = _messages.StringField(4)
   deploymentUri = _messages.StringField(5)
   description = _messages.StringField(6)
-  errorMessage = _messages.StringField(7)
-  etag = _messages.BytesField(8)
-  explanationConfig = _messages.MessageField('GoogleCloudMlV1ExplanationConfig', 9)
-  framework = _messages.EnumField('FrameworkValueValuesEnum', 10)
-  imageUri = _messages.StringField(11)
-  isDefault = _messages.BooleanField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  lastUseTime = _messages.StringField(14)
-  machineType = _messages.StringField(15)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 16)
-  modelClass = _messages.StringField(17)
-  name = _messages.StringField(18)
-  packageUris = _messages.StringField(19, repeated=True)
-  predictionClass = _messages.StringField(20)
-  pythonVersion = _messages.StringField(21)
-  requestLoggingConfig = _messages.MessageField('GoogleCloudMlV1RequestLoggingConfig', 22)
-  routes = _messages.MessageField('GoogleCloudMlV1RouteMap', 23)
-  runtimeVersion = _messages.StringField(24)
-  serviceAccount = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
+  endpoints = _messages.MessageField('GoogleCloudMlV1EndpointMap', 7)
+  errorMessage = _messages.StringField(8)
+  etag = _messages.BytesField(9)
+  explanationConfig = _messages.MessageField('GoogleCloudMlV1ExplanationConfig', 10)
+  framework = _messages.EnumField('FrameworkValueValuesEnum', 11)
+  imageUri = _messages.StringField(12)
+  isDefault = _messages.BooleanField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  lastUseTime = _messages.StringField(15)
+  machineType = _messages.StringField(16)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 17)
+  modelClass = _messages.StringField(18)
+  name = _messages.StringField(19)
+  packageUris = _messages.StringField(20, repeated=True)
+  predictionClass = _messages.StringField(21)
+  pythonVersion = _messages.StringField(22)
+  requestLoggingConfig = _messages.MessageField('GoogleCloudMlV1RequestLoggingConfig', 23)
+  routes = _messages.MessageField('GoogleCloudMlV1RouteMap', 24)
+  runtimeVersion = _messages.StringField(25)
+  serviceAccount = _messages.StringField(26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
 
 
 class GoogleCloudMlV1XraiAttribution(_messages.Message):

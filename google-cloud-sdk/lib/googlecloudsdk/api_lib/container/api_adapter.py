@@ -258,12 +258,12 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     NETWORK_POLICY,
     CLOUDRUN,
     NODELOCALDNS,
+    CONFIGCONNECTOR,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
     APPLICATIONMANAGER,
     GCEPDCSIDRIVER,
-    CONFIGCONNECTOR,
 ]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [CLOUDBUILD]
 
@@ -1505,6 +1505,10 @@ class APIAdapter(object):
         policy.tpuIpv4CidrBlock = options.tpu_ipv4_cidr
       cluster.clusterIpv4Cidr = None
       cluster.ipAllocationPolicy = policy
+    elif options.enable_ip_alias is not None:
+      cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy(
+          useRoutes=True)
+
     return cluster
 
   def ParseAllowRouteOverlapOptions(self, options, cluster):
@@ -3005,13 +3009,6 @@ class V1Beta1Adapter(V1Adapter):
     else:
       cluster.clusterTelemetry = None
 
-    if not options.enable_ip_alias and options.enable_ip_alias is not None:
-      if cluster.ipAllocationPolicy is None:
-        cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy(
-            useRoutes=True)
-      else:
-        cluster.ipAllocationPolicy.useRoutes = True
-
     if options.datapath_provider is not None:
       if cluster.networkConfig is None:
         cluster.networkConfig = self.messages.NetworkConfig()
@@ -3426,13 +3423,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         cluster.networkConfig = self.messages.NetworkConfig()
       cluster.networkConfig.datapathProvider = \
             self.messages.NetworkConfig.DatapathProviderValueValuesEnum.ADVANCED_DATAPATH
-
-    if not options.enable_ip_alias and options.enable_ip_alias is not None:
-      if cluster.ipAllocationPolicy is None:
-        cluster.ipAllocationPolicy = self.messages.IPAllocationPolicy(
-            useRoutes=True)
-      else:
-        cluster.ipAllocationPolicy.useRoutes = True
 
     if options.private_ipv6_google_access_type is not None:
       if cluster.networkConfig is None:

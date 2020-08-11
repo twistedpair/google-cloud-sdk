@@ -581,7 +581,7 @@
           "type": "string"
         },
         "status": {
-          "description": "Status of the operation (output only). A status of \"done\" means that the\nrequest to update the authoritative servers has been sent, but the\nservers might not be updated yet.",
+          "description": "Status of the operation (output only). A status of \"done\" means that the\nrequest to update the authoritative servers has been sent but the\nservers might not be updated yet.",
           "enumDescriptions": [
             "",
             ""

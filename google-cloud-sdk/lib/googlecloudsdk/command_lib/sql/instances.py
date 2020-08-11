@@ -342,6 +342,13 @@ class _BaseInstances(object):
       settings.userLabels = labels_util.ParseCreateArgs(
           args, sql_messages.Settings.UserLabelsValue)
 
+    # ALPHA args.
+    if _IsAlpha(release_track):
+      if args.active_directory_domain is not None:
+        settings.activeDirectoryConfig = (
+            reducers.ActiveDirectoryConfig(sql_messages,
+                                           args.active_directory_domain))
+
     return settings
 
   @classmethod
@@ -406,6 +413,13 @@ class _BaseInstances(object):
                                         instance.settings.userLabels)
       if labels_update.needs_update:
         settings.userLabels = labels_update.labels
+
+    # ALPHA args.
+    if _IsAlpha(release_track):
+      if args.active_directory_domain is not None:
+        settings.activeDirectoryConfig = (
+            reducers.ActiveDirectoryConfig(sql_messages,
+                                           args.active_directory_domain))
 
     return settings
 

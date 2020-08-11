@@ -743,6 +743,86 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class IpAddress(_messages.Message):
+  r"""An IpAddress resource in a ClusterGroup.
+
+  Messages:
+    LabelsValue: Labels are a way to attach lightweight metadata to resources
+      for filtering and querying resource data. No more than 64 user labels
+      can be associated with each resource. Label keys and values can be no
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+
+  Fields:
+    createTime: Output only. The create time of the resource.
+    externalIp: Output only. The external IP of an workload VM.
+    internalIp: The internal IP of an workload VM.
+    labels: Labels are a way to attach lightweight metadata to resources for
+      filtering and querying resource data. No more than 64 user labels can be
+      associated with each resource. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+    name: Output only. The resource name of this IpAddress. Resource names are
+      schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/clusterGroups/my-
+      group/ipAddresses/my-ip`
+    updateTime: Output only. The update time of the resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are a way to attach lightweight metadata to resources for
+    filtering and querying resource data. No more than 64 user labels can be
+    associated with each resource. Label keys and values can be no longer than
+    63 characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes, where label keys must start with a letter and
+    international characters are allowed. The empty string is a valid value.
+    Labels are set on creation and updated like any other field. Specifically,
+    to add a new label, you would need to provide all of the existing labels
+    along with the new label. If you only provide a map with the new label,
+    all of the old labels will be removed (probably not what is desired).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  externalIp = _messages.StringField(2)
+  internalIp = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
 class ListClusterGroupBackupsResponse(_messages.Message):
   r"""A ListClusterGroupBackupsResponse object.
 
@@ -786,6 +866,19 @@ class ListClustersResponse(_messages.Message):
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListIpAddressesResponse(_messages.Message):
+  r"""The response of listing IpAddresses in a given ClusterGroup.
+
+  Fields:
+    ipAddresses: A list of IpAddresses.
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  ipAddresses = _messages.MessageField('IpAddress', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1195,6 +1288,19 @@ class RemoveNodesRequest(_messages.Message):
   nodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class ResetCloudAdminCredentialsRequest(_messages.Message):
+  r"""Request for resetting vCenter or NSX CloudAdmin accounts.
+
+  Fields:
+    resetNsxCloudadmin: Required. If true, reset the NSX cloudadmin account.
+    resetVcenterCloudadmin: Required. If true, reset the vCenter cloudadmin
+      account.
+  """
+
+  resetNsxCloudadmin = _messages.BooleanField(1)
+  resetVcenterCloudadmin = _messages.BooleanField(2)
+
+
 class Rule(_messages.Message):
   r"""A rule to be applied in a Policy.
 
@@ -1501,6 +1607,70 @@ class SddcProjectsLocationsClusterGroupsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class SddcProjectsLocationsClusterGroupsIpAddressesCreateRequest(_messages.Message):
+  r"""A SddcProjectsLocationsClusterGroupsIpAddressesCreateRequest object.
+
+  Fields:
+    ipAddress: A IpAddress resource to be passed as the request body.
+    ipAddressId: Required. The user-provided ID of the IpAddress to be
+      created. This id must be unique among IpAddresses within the parent and
+      will become the final token in the name URI.
+    parent: Required. The ClusterGroup in which the IpAddress will be created.
+      For example: `projects/my-project/locations/us-
+      central1/clusterGroups/my-group`
+  """
+
+  ipAddress = _messages.MessageField('IpAddress', 1)
+  ipAddressId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SddcProjectsLocationsClusterGroupsIpAddressesDeleteRequest(_messages.Message):
+  r"""A SddcProjectsLocationsClusterGroupsIpAddressesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the ClusterGroupBackup to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SddcProjectsLocationsClusterGroupsIpAddressesGetRequest(_messages.Message):
+  r"""A SddcProjectsLocationsClusterGroupsIpAddressesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the IpAddress to retrieve. Resource
+      names are schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/clusterGroups/my-
+      group/ipAddresses/my-ip`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SddcProjectsLocationsClusterGroupsIpAddressesListRequest(_messages.Message):
+  r"""A SddcProjectsLocationsClusterGroupsIpAddressesListRequest object.
+
+  Fields:
+    filter: List filter.
+    pageSize: The maximum number of IpAddresses to return. The service may
+      return fewer than this value.
+    pageToken: A page token, received from a previous `ListIpAddressesRequest`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListIpAddressesRequest` must match the
+      call that provided the page token.
+    parent: Required. The parent ClusterGroup of which the IpAddresses belong
+      to. For example: `projects/my-project/locations/us-
+      central1/clusterGroups/my-group`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class SddcProjectsLocationsClusterGroupsListRequest(_messages.Message):
   r"""A SddcProjectsLocationsClusterGroupsListRequest object.
 
@@ -1540,6 +1710,22 @@ class SddcProjectsLocationsClusterGroupsPatchRequest(_messages.Message):
   clusterGroup = _messages.MessageField('ClusterGroup', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class SddcProjectsLocationsClusterGroupsResetCloudAdminCredentialsRequest(_messages.Message):
+  r"""A SddcProjectsLocationsClusterGroupsResetCloudAdminCredentialsRequest
+  object.
+
+  Fields:
+    clusterGroup: Required. The resource name of the cluster group to reset
+      the cloudadmin password on. For example, `projects/my-
+      project/locations/us-central1/clusterGroups/my-group`
+    resetCloudAdminCredentialsRequest: A ResetCloudAdminCredentialsRequest
+      resource to be passed as the request body.
+  """
+
+  clusterGroup = _messages.StringField(1, required=True)
+  resetCloudAdminCredentialsRequest = _messages.MessageField('ResetCloudAdminCredentialsRequest', 2)
 
 
 class SddcProjectsLocationsClusterGroupsSetIamPolicyRequest(_messages.Message):

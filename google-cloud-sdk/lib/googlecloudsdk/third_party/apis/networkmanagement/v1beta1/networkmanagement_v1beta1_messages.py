@@ -193,6 +193,27 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudSQLInstanceInfo(_messages.Message):
+  r"""For display only. Metadata associated with a Cloud SQL instance.
+
+  Fields:
+    displayName: Name of a Cloud SQL instance.
+    externalIp: External IP address of Cloud SQL instance.
+    internalIp: Internal IP address of Cloud SQL instance.
+    networkUri: URI of a Cloud SQL instance network or empty string if
+      instance does not have one.
+    region: Region in which the Cloud SQL instance is running.
+    uri: URI of a Cloud SQL instance.
+  """
+
+  displayName = _messages.StringField(1)
+  externalIp = _messages.StringField(2)
+  internalIp = _messages.StringField(3)
+  networkUri = _messages.StringField(4)
+  region = _messages.StringField(5)
+  uri = _messages.StringField(6)
+
+
 class ConnectivityTest(_messages.Message):
   r"""A Connectivity Test for a network reachability analysis.
 
@@ -299,11 +320,15 @@ class DeliverInfo(_messages.Message):
       INSTANCE: Target is a Compute Engine instance.
       INTERNET: Target is the Internet.
       GOOGLE_API: Target is a Google API.
+      GKE_MASTER: Target is a Google Kubernetes Engine cluster master.
+      CLOUD_SQL_INSTANCE: Target is a Cloud SQL instance.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
     INTERNET = 2
     GOOGLE_API = 3
+    GKE_MASTER = 4
+    CLOUD_SQL_INSTANCE = 5
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -366,14 +391,19 @@ class DropInfo(_messages.Message):
         configure a firewall rule to enable it. See [Always blocked
         traffic](https://cloud.google.com/vpc/docs/firewalls#blockedtraffic)
         for more details.
-      GKE_MASTER_UNAUTHORIZED_ACCESS: Access to GKE master's endpoint is not
-        authorized. See [Access to the cluster
-        endpoints](https://cloud.google.com/kubernetes-engine/docs/how-to/
-        private-clusters#access_to_the_cluster_endpoints) for more details.
+      GKE_MASTER_UNAUTHORIZED_ACCESS: Access to Google Kubernetes Engine
+        cluster master's endpoint is not authorized. See [Access to the
+        cluster endpoints](https://cloud.google.com/kubernetes-
+        engine/docs/how-to/ private-clusters#access_to_the_cluster_endpoints)
+        for more details.
       CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS: Access to the Cloud SQL instance
         endpoint is not authorized. See [Authorizing with authorized
         networks](https://cloud.google.com/sql/docs/mysql/authorize-networks)
         for more details.
+      DROPPED_INSIDE_GKE_SERVICE: Packet was dropped inside Google Kubernetes
+        Engine Service.
+      DROPPED_INSIDE_CLOUD_SQL_SERVICE: Packet was dropped inside Cloud SQL
+        Service.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -393,6 +423,8 @@ class DropInfo(_messages.Message):
     TRAFFIC_TYPE_BLOCKED = 15
     GKE_MASTER_UNAUTHORIZED_ACCESS = 16
     CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 17
+    DROPPED_INSIDE_GKE_SERVICE = 18
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 19
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -419,7 +451,7 @@ class Endpoint(_messages.Message):
   Fields:
     cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
       URI.
-    gkeMasterCluster: A cluster URI for [Kubernetes Engine
+    gkeMasterCluster: A cluster URI for [Google Kubernetes Engine
       master](https://cloud.google.com/kubernetes-
       engine/docs/concepts/cluster-architecture).
     instance: A Compute Engine instance URI.
@@ -616,6 +648,25 @@ class ForwardingRuleInfo(_messages.Message):
   target = _messages.StringField(5)
   uri = _messages.StringField(6)
   vip = _messages.StringField(7)
+
+
+class GKEMasterInfo(_messages.Message):
+  r"""For display only. Metadata associated with a Google Kubernetes Engine
+  cluster master.
+
+  Fields:
+    clusterNetworkUri: URI of a Google Kubernetes Engine cluster network.
+    clusterUri: URI of a Google Kubernetes Engine cluster.
+    externalIp: External IP address of a Google Kubernetes Engine cluster
+      master.
+    internalIp: Internal IP address of a Google Kubernetes Engine cluster
+      master.
+  """
+
+  clusterNetworkUri = _messages.StringField(1)
+  clusterUri = _messages.StringField(2)
+  externalIp = _messages.StringField(3)
+  internalIp = _messages.StringField(4)
 
 
 class InstanceInfo(_messages.Message):
@@ -1600,6 +1651,7 @@ class Step(_messages.Message):
   Fields:
     abort: Display info of the final state "abort" and reason.
     causesDrop: This is a step that leads to the final state Drop.
+    cloudSqlInstance: Display info of a Cloud SQL instance.
     deliver: Display info of the final state "deliver" and reason.
     description: A description of the step. Usually this is a summary of the
       state.
@@ -1610,6 +1662,7 @@ class Step(_messages.Message):
     firewall: Display info of a Compute Engine firewall rule.
     forward: Display info of the final state "forward" and reason.
     forwardingRule: Display info of a Compute Engine forwarding rule.
+    gkeMaster: Display info of a Google Kubernetes Engine cluster master.
     instance: Display info of a Compute Engine instance.
     loadBalancer: Display info of the load balancers.
     network: Display info of a GCP network.
@@ -1635,6 +1688,12 @@ class Step(_messages.Message):
         or on-premises network with internal source IP. If the source is a VPC
         network visible to the user, a NetworkInfo will be populated with
         details of the network.
+      START_FROM_GKE_MASTER: Initial state: packet originating from a Google
+        Kubernetes Engine cluster master. A GKEMasterInfo will be populated
+        with starting instance info.
+      START_FROM_CLOUD_SQL_INSTANCE: Initial state: packet originating from a
+        Cloud SQL instance. A CloudSQLInstanceInfo will be populated with
+        starting instance info.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.
       APPLY_EGRESS_FIREWALL_RULE: Config checking state: verify egress
@@ -1667,41 +1726,45 @@ class Step(_messages.Message):
     START_FROM_INSTANCE = 1
     START_FROM_INTERNET = 2
     START_FROM_PRIVATE_NETWORK = 3
-    APPLY_INGRESS_FIREWALL_RULE = 4
-    APPLY_EGRESS_FIREWALL_RULE = 5
-    APPLY_ROUTE = 6
-    APPLY_FORWARDING_RULE = 7
-    SPOOFING_APPROVED = 8
-    ARRIVE_AT_INSTANCE = 9
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 10
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 11
-    ARRIVE_AT_VPN_GATEWAY = 12
-    ARRIVE_AT_VPN_TUNNEL = 13
-    NAT = 14
-    PROXY_CONNECTION = 15
-    DELIVER = 16
-    DROP = 17
-    FORWARD = 18
-    ABORT = 19
-    VIEWER_PERMISSION_MISSING = 20
+    START_FROM_GKE_MASTER = 4
+    START_FROM_CLOUD_SQL_INSTANCE = 5
+    APPLY_INGRESS_FIREWALL_RULE = 6
+    APPLY_EGRESS_FIREWALL_RULE = 7
+    APPLY_ROUTE = 8
+    APPLY_FORWARDING_RULE = 9
+    SPOOFING_APPROVED = 10
+    ARRIVE_AT_INSTANCE = 11
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 12
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 13
+    ARRIVE_AT_VPN_GATEWAY = 14
+    ARRIVE_AT_VPN_TUNNEL = 15
+    NAT = 16
+    PROXY_CONNECTION = 17
+    DELIVER = 18
+    DROP = 19
+    FORWARD = 20
+    ABORT = 21
+    VIEWER_PERMISSION_MISSING = 22
 
   abort = _messages.MessageField('AbortInfo', 1)
   causesDrop = _messages.BooleanField(2)
-  deliver = _messages.MessageField('DeliverInfo', 3)
-  description = _messages.StringField(4)
-  drop = _messages.MessageField('DropInfo', 5)
-  endpoint = _messages.MessageField('EndpointInfo', 6)
-  firewall = _messages.MessageField('FirewallInfo', 7)
-  forward = _messages.MessageField('ForwardInfo', 8)
-  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 9)
-  instance = _messages.MessageField('InstanceInfo', 10)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 11)
-  network = _messages.MessageField('NetworkInfo', 12)
-  projectId = _messages.StringField(13)
-  route = _messages.MessageField('RouteInfo', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 16)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 17)
+  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 3)
+  deliver = _messages.MessageField('DeliverInfo', 4)
+  description = _messages.StringField(5)
+  drop = _messages.MessageField('DropInfo', 6)
+  endpoint = _messages.MessageField('EndpointInfo', 7)
+  firewall = _messages.MessageField('FirewallInfo', 8)
+  forward = _messages.MessageField('ForwardInfo', 9)
+  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 10)
+  gkeMaster = _messages.MessageField('GKEMasterInfo', 11)
+  instance = _messages.MessageField('InstanceInfo', 12)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 13)
+  network = _messages.MessageField('NetworkInfo', 14)
+  projectId = _messages.StringField(15)
+  route = _messages.MessageField('RouteInfo', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 18)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 19)
 
 
 class TestIamPermissionsRequest(_messages.Message):

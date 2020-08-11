@@ -455,6 +455,10 @@
             "CSV",
             "BAK"
           ]
+        },
+        "offload": {
+          "description": "Option for export offload.",
+          "type": "boolean"
         }
       }
     },

@@ -814,3 +814,16 @@ USERS_FORMAT_BETA = """
 
 
 USERS_FORMAT_ALPHA = USERS_FORMAT_BETA
+
+
+def AddActiveDirectoryDomain(parser):
+  """Adds the '--active-directory-domain' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  help_text = (
+      'Managed Service for Microsoft Active Directory domain this instance is '
+      'joined to. Only available for SQL Server instances.'
+  )
+  parser.add_argument('--active-directory-domain', help=help_text)

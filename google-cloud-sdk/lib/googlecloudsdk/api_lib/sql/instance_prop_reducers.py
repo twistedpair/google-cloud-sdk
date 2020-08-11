@@ -28,6 +28,20 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
+def ActiveDirectoryConfig(sql_messages, domain=None):
+  """Generates the Active Directory configuration for the instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    domain: string, the Active Directory domain value.
+
+  Returns:
+    sql_messages.SqlActiveDirectoryConfig object.
+  """
+  config = sql_messages.SqlActiveDirectoryConfig(domain=domain)
+  return config
+
+
 def BackupConfiguration(sql_messages,
                         instance=None,
                         backup_enabled=None,

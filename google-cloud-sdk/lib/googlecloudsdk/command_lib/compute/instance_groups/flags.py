@@ -752,15 +752,14 @@ def AddMigUpdateStatefulFlags(parser):
   stateful_disks_help = textwrap.dedent(STATEFUL_DISKS_HELP_BASE + """
       Use this argument multiple times to update more disks.
 
-      If stateful disk with given `device-name` exists in current instance
-      config, its properties will be replaced by the newly provided ones. In
-      other case new stateful disk definition will be added to the instance
-      config.
+      If a stateful disk with the given device name already exists in the
+      current instance config, its properties will be replaced by the newly
+      provided ones. Otherwise, a new stateful disk definition will be added to
+      the instance config.
 
       *device-name*::: (Requied) Device name of the disk to mark stateful.
       """ + STATEFUL_DISK_AUTO_DELETE_ARG_HELP)
   stateful_disk_flag_name = '--stateful-disk'
-  stateful_disk_flag_name_old = '--update-stateful-disk'
   parser.add_argument(
       stateful_disk_flag_name,
       type=arg_parsers.ArgDict(
@@ -774,26 +773,6 @@ def AddMigUpdateStatefulFlags(parser):
       help=stateful_disks_help,
   )
 
-  # DEPRECATED: --update-stateful-disk
-  parser.add_argument(
-      stateful_disk_flag_name_old,
-      type=arg_parsers.ArgDict(
-          spec={
-              'device-name':
-                  str,
-              'auto-delete':
-                  AutoDeleteFlag.ValidatorWithFlagName(
-                      stateful_disk_flag_name_old)
-          }),
-      action=actions.DeprecationAction(
-          stateful_disk_flag_name_old,
-          warn='The {flag_name} option is deprecated; '
-          'use --stateful-disk instead.',
-          removed=False,
-          action='append'),
-      dest='stateful_disk',
-      help=stateful_disks_help,
-  )
   parser.add_argument(
       '--remove-stateful-disks',
       metavar='DEVICE_NAME',

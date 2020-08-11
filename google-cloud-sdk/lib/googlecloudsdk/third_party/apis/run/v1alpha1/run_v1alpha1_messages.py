@@ -1064,7 +1064,7 @@ class ExecAction(_messages.Message):
       treated as live/healthy and non-zero is unhealthy. +optional
   """
 
-  command = _messages.StringField(1)
+  command = _messages.StringField(1, repeated=True)
 
 
 class Expr(_messages.Message):

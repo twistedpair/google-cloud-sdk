@@ -57,7 +57,7 @@ def _ExecuteTasksSequential(task_iterator):
     task_iterator: An iterator for task objects.
   """
   for task in task_iterator:
-    task.Execute()
+    task.execute()
 
 
 def ExecuteTasks(task_iterator, is_parallel=False):

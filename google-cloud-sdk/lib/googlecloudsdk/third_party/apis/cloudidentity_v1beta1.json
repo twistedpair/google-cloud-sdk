@@ -431,7 +431,7 @@
     },
     "ListDevicesResponse": {
       "id": "ListDevicesResponse",
-      "description": "Response message that is returned in LRO result of ListDevices Operation.",
+      "description": "Response message that is returned from the ListDevices method.",
       "type": "object",
       "properties": {
         "devices": {
@@ -596,7 +596,7 @@
     },
     "ListDeviceUsersResponse": {
       "id": "ListDeviceUsersResponse",
-      "description": "Response message that is returned in LRO result of ListDeviceUsers Operation.",
+      "description": "Response message that is returned from the ListDeviceUsers method.",
       "type": "object",
       "properties": {
         "deviceUsers": {
@@ -986,7 +986,7 @@
           "format": "google-datetime"
         },
         "labels": {
-          "description": "Required. The labels that apply to the `Group`.\n\nMust not contain more than one entry. Must contain the entry\n`'cloudidentity.googleapis.com\/groups.discussion_forum': ''` if the `Group`\nis a Google Group or `'system\/groups\/external': ''` if the `Group` is an\nexternal-identity-mapped group.",
+          "description": "Required. One or more label entries that apply to the Group. Currently supported\nlabels contain a key with an empty value.\n\nGoogle Groups are the default type of group and have a label with a key of\n'cloudidentity.googleapis.com\/groups.discussion_forum' and an empty value.\n\nExisting Google Groups can have an additional label with a key of\n'cloudidentity.googleapis.com\/groups.security' and an empty value added to\nthem. **This is an immutable change and the security label cannot be\nremove once added.**\n\nIdentity mapped groups for Cloud Search have a label with a key of\n'system\/groups\/external' and an empty value.\n\nExamples: {\"cloudidentity.googleapis.com\/groups.discussion_forum\": \"\"} or\n{\"system\/groups\/external\": \"\"}.",
           "type": "object",
           "additionalProperties": {
             "type": "string"

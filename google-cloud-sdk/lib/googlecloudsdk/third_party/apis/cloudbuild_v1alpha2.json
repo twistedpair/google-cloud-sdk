@@ -203,6 +203,10 @@
           "description": "Network configuration for the `WorkerPool`.",
           "$ref": "NetworkConfig"
         },
+        "vpcscEnabled": {
+          "description": "Immutable. If true, the worker pool is created with a VPC-SC compatible configuration.\nUsers should set to true if the worker pool project is part of a secured\nVPC-SC perimeter.",
+          "type": "boolean"
+        },
         "region": {
           "description": "Required. Immutable. The region where the `WorkerPool` runs. Only \"us-central1\" is currently\nsupported.\n\nNote that `region` cannot be changed once the `WorkerPool` is created.",
           "type": "string"
@@ -311,6 +315,7 @@
           "description": "Output only. Status of the build.",
           "enumDescriptions": [
             "Status of the build is unknown.",
+            "Build has been created and is pending execution and queuing. It has not\nbeen queued.",
             "Build or step is queued; work has not yet begun.",
             "Build or step is being executed.",
             "Build or step finished successfully.",
@@ -323,6 +328,7 @@
           "type": "string",
           "enum": [
             "STATUS_UNKNOWN",
+            "PENDING",
             "QUEUED",
             "WORKING",
             "SUCCESS",
@@ -435,6 +441,14 @@
           "additionalProperties": {
             "$ref": "TimeSpan"
           }
+        },
+        "approval": {
+          "description": "Output only. Describes this build's approval configuration, status, and result.",
+          "$ref": "BuildApproval"
+        },
+        "serviceAccount": {
+          "description": "IAM service account whose credentials will be used at build runtime.\nMust be of the format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nACCOUNT can be email address or uniqueId of the service account.\n",
+          "type": "string"
         }
       }
     },
@@ -588,6 +602,7 @@
           "description": "Output only. Status of the build step. At this time, build step status is\nonly updated on build completion; step status is not updated in real-time\nas the build progresses.",
           "enumDescriptions": [
             "Status of the build is unknown.",
+            "Build has been created and is pending execution and queuing. It has not\nbeen queued.",
             "Build or step is queued; work has not yet begun.",
             "Build or step is being executed.",
             "Build or step finished successfully.",
@@ -600,6 +615,7 @@
           "type": "string",
           "enum": [
             "STATUS_UNKNOWN",
+            "PENDING",
             "QUEUED",
             "WORKING",
             "SUCCESS",
@@ -891,7 +907,7 @@
           ]
         },
         "workerPool": {
-          "description": "Option to specify a `WorkerPool` for the build.\nFormat: projects\/{project}\/workerPools\/{workerPool}\n\nThis field is experimental.",
+          "description": "Option to specify a `WorkerPool` for the build.\nFormat: projects\/{project}\/locations\/{location}\/workerPools\/{workerPool}\n\nThis field is experimental.",
           "type": "string"
         },
         "logging": {
@@ -934,6 +950,21 @@
           "items": {
             "$ref": "Volume"
           }
+        },
+        "cluster": {
+          "description": "Details about how this build should be executed on a GKE cluster.",
+          "$ref": "ClusterOptions"
+        }
+      }
+    },
+    "ClusterOptions": {
+      "id": "ClusterOptions",
+      "description": "Details of the GKE Cluster for builds that should execute on-cluster.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Identifier of the GKE Cluster this build should execute on.\n\nExample: projects\/{project_id}\/locations\/{location}\/cluster\/{cluster_name}\n\nThe cluster's project ID must be the same project ID that is running the\nbuild. The cluster must exist and have the CloudBuild add-on enabled.",
+          "type": "string"
         }
       }
     },
@@ -953,6 +984,88 @@
             "type": "string",
             "format": "byte"
           }
+        }
+      }
+    },
+    "BuildApproval": {
+      "id": "BuildApproval",
+      "description": "BuildApproval describes a build's approval configuration, state, and\nresult.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The state of this build's approval.",
+          "enumDescriptions": [
+            "Default enum type. This should not be used.",
+            "Build approval is pending.",
+            "Build approval has been approved.",
+            "Build approval has been rejected.",
+            "Build was cancelled while it was still pending approval."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "APPROVED",
+            "REJECTED",
+            "CANCELLED"
+          ]
+        },
+        "config": {
+          "description": "Output only. Configuration for manual approval of this build.",
+          "$ref": "ApprovalConfig"
+        },
+        "result": {
+          "description": "Output only. Result of manual approval for this Build.",
+          "$ref": "ApprovalResult"
+        }
+      }
+    },
+    "ApprovalConfig": {
+      "id": "ApprovalConfig",
+      "description": "ApprovalConfig describes configuration for manual approval of a build.",
+      "type": "object",
+      "properties": {
+        "approvalRequired": {
+          "description": "Whether or not approval is needed. If this is set on a build, it will\nbecome pending when created, and will need to be explicitly approved\nto start.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ApprovalResult": {
+      "id": "ApprovalResult",
+      "description": "ApprovalResult describes the decision and associated metadata of a manual\napproval of a build.",
+      "type": "object",
+      "properties": {
+        "approverAccount": {
+          "description": "Output only. Email of the user that called the ApproveBuild API to\napprove or reject a build at the time that the API was called (the user's\nactual email that is tied to their GAIA ID may have changed).",
+          "type": "string"
+        },
+        "approvalTime": {
+          "description": "Output only. The time when the approval decision was made.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "decision": {
+          "description": "Required. The decision of this manual approval.",
+          "enumDescriptions": [
+            "Default enum type. This should not be used.",
+            "Build is approved.",
+            "Build is rejected."
+          ],
+          "type": "string",
+          "enum": [
+            "DECISION_UNSPECIFIED",
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        "comment": {
+          "description": "Optional. An optional comment for this manual approval result.",
+          "type": "string"
+        },
+        "url": {
+          "description": "Optional. An optional URL tied to this manual approval result. This field is\nessentially the same as comment, except that it will be rendered\nby the UI differently. An example use case is a link to an external\njob that approved this Build.",
+          "type": "string"
         }
       }
     },

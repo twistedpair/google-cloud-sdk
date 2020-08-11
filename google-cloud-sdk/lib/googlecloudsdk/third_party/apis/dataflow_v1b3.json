@@ -1775,6 +1775,200 @@
         }
       }
     },
+    "JobExecutionDetails": {
+      "id": "JobExecutionDetails",
+      "description": "Information about the execution of a job.",
+      "type": "object",
+      "properties": {
+        "stages": {
+          "description": "The stages of the job execution.",
+          "type": "array",
+          "items": {
+            "$ref": "StageSummary"
+          }
+        }
+      }
+    },
+    "StageSummary": {
+      "id": "StageSummary",
+      "description": "Information about a particular execution stage of a job.",
+      "type": "object",
+      "properties": {
+        "stageId": {
+          "description": "ID of this stage",
+          "type": "string"
+        },
+        "state": {
+          "description": "State of this stage.",
+          "enumDescriptions": [
+            "The component state is unknown or unspecified.",
+            "The component is not yet running.",
+            "The component is currently running.",
+            "The component succeeded.",
+            "The component failed.",
+            "Execution of the component was cancelled."
+          ],
+          "type": "string",
+          "enum": [
+            "EXECUTION_STATE_UNKNOWN",
+            "EXECUTION_STATE_NOT_STARTED",
+            "EXECUTION_STATE_RUNNING",
+            "EXECUTION_STATE_SUCCEEDED",
+            "EXECUTION_STATE_FAILED",
+            "EXECUTION_STATE_CANCELLED"
+          ]
+        },
+        "startTime": {
+          "description": "Start time of this stage.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "End time of this stage.\n\nIf the work item is completed, this is the actual end time of the stage.\nOtherwise, it is the predicted end time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "progress": {
+          "description": "Progress for this stage.\nOnly applicable to Batch jobs.",
+          "$ref": "ProgressTimeseries"
+        },
+        "metrics": {
+          "description": "Metrics for this stage.",
+          "type": "array",
+          "items": {
+            "$ref": "MetricUpdate"
+          }
+        }
+      }
+    },
+    "ProgressTimeseries": {
+      "id": "ProgressTimeseries",
+      "description": "Information about the progress of some component of job execution.",
+      "type": "object",
+      "properties": {
+        "currentProgress": {
+          "description": "The current progress of the component, in the range [0,1].",
+          "type": "number",
+          "format": "double"
+        },
+        "dataPoints": {
+          "description": "History of progress for the component.\n\nPoints are sorted by time.",
+          "type": "array",
+          "items": {
+            "$ref": "Point"
+          }
+        }
+      }
+    },
+    "Point": {
+      "id": "Point",
+      "description": "A point in the timeseries.",
+      "type": "object",
+      "properties": {
+        "time": {
+          "description": "The timestamp of the point.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "value": {
+          "description": "The value of the point.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "StageExecutionDetails": {
+      "id": "StageExecutionDetails",
+      "description": "Information about the workers and work items within a stage.",
+      "type": "object",
+      "properties": {
+        "workers": {
+          "description": "Workers that have done work on the stage.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkerDetails"
+          }
+        },
+        "nextPageToken": {
+          "description": "If present, this response does not contain all requested tasks.  To obtain\nthe next page of results, repeat the request with page_token set to this\nvalue.",
+          "type": "string"
+        }
+      }
+    },
+    "WorkerDetails": {
+      "id": "WorkerDetails",
+      "description": "Information about a worker",
+      "type": "object",
+      "properties": {
+        "workerName": {
+          "description": "Name of this worker",
+          "type": "string"
+        },
+        "workItems": {
+          "description": "Work items processed by this worker, sorted by time.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkItemDetails"
+          }
+        }
+      }
+    },
+    "WorkItemDetails": {
+      "id": "WorkItemDetails",
+      "description": "Information about an individual work item execution.",
+      "type": "object",
+      "properties": {
+        "taskId": {
+          "description": "Name of this work item.",
+          "type": "string"
+        },
+        "attemptId": {
+          "description": "Attempt ID of this work item",
+          "type": "string"
+        },
+        "startTime": {
+          "description": "Start time of this work item attempt.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "End time of this work item attempt.\n\nIf the work item is completed, this is the actual end time of the work\nitem.  Otherwise, it is the predicted end time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "State of this work item.",
+          "enumDescriptions": [
+            "The component state is unknown or unspecified.",
+            "The component is not yet running.",
+            "The component is currently running.",
+            "The component succeeded.",
+            "The component failed.",
+            "Execution of the component was cancelled."
+          ],
+          "type": "string",
+          "enum": [
+            "EXECUTION_STATE_UNKNOWN",
+            "EXECUTION_STATE_NOT_STARTED",
+            "EXECUTION_STATE_RUNNING",
+            "EXECUTION_STATE_SUCCEEDED",
+            "EXECUTION_STATE_FAILED",
+            "EXECUTION_STATE_CANCELLED"
+          ]
+        },
+        "progress": {
+          "description": "Progress of this work item.",
+          "$ref": "ProgressTimeseries"
+        },
+        "metrics": {
+          "description": "Metrics for this work item.",
+          "type": "array",
+          "items": {
+            "$ref": "MetricUpdate"
+          }
+        }
+      }
+    },
     "ValidateResponse": {
       "id": "ValidateResponse",
       "description": "Response to the validation request.",
@@ -5236,7 +5430,7 @@
                   "type": "string"
                 },
                 "jobId": {
-                  "description": "The job to get messages for.",
+                  "description": "The job to get metrics for.",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -6310,7 +6504,7 @@
                       "type": "string"
                     },
                     "jobId": {
-                      "description": "The job to get messages for.",
+                      "description": "The job to get metrics for.",
                       "location": "path",
                       "required": true,
                       "type": "string"
@@ -6337,6 +6531,47 @@
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "Request the job status.\n\nTo request the status of a job, we recommend using\n`projects.locations.jobs.getMetrics` with a [regional endpoint]\n(https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). Using\n`projects.jobs.getMetrics` is not recommended, as you can only request the\nstatus of jobs that are running in `us-central1`."
+                },
+                "getExecutionDetails": {
+                  "id": "dataflow.projects.locations.jobs.getExecutionDetails",
+                  "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/executionDetails",
+                  "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/executionDetails",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "projectId": {
+                      "description": "A project id.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The [regional endpoint]\n(https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints) that\ncontains the job specified by job_id.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "jobId": {
+                      "description": "The job to get execution details for.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "location",
+                    "jobId"
+                  ],
+                  "response": {
+                    "$ref": "JobExecutionDetails"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/compute",
+                    "https://www.googleapis.com/auth/compute.readonly",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Request detailed information about the execution status of the job.\n\nEXPERIMENTAL.  This API is subject to change or removal without notice."
                 }
               }
               ,
@@ -6556,6 +6791,81 @@
                         "https://www.googleapis.com/auth/userinfo.email"
                       ],
                       "description": "Request the job status.\n\nTo request the status of a job, we recommend using\n`projects.locations.jobs.messages.list` with a [regional endpoint]\n(https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints). Using\n`projects.jobs.messages.list` is not recommended, as you can only request\nthe status of jobs that are running in `us-central1`."
+                    }
+                  }
+                },
+                "stages": {
+                  "methods": {
+                    "getExecutionDetails": {
+                      "id": "dataflow.projects.locations.jobs.stages.getExecutionDetails",
+                      "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/stages/{stageId}/executionDetails",
+                      "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/stages/{stageId}/executionDetails",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "projectId": {
+                          "description": "A project id.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "location": {
+                          "description": "The [regional endpoint]\n(https:\/\/cloud.google.com\/dataflow\/docs\/concepts\/regional-endpoints) that\ncontains the job specified by job_id.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "jobId": {
+                          "description": "The job to get execution details for.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "stageId": {
+                          "description": "The stage for which to fetch information.",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "If specified, determines the maximum number of work items to\nreturn.  If unspecified, the service may choose an appropriate\ndefault, or may return an arbitrarily large number of results.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "If supplied, this should be the value of next_page_token returned\nby an earlier call. This will cause the next page of results to\nbe returned.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "startTime": {
+                          "description": "Lower time bound of work items to include, by start time.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        },
+                        "endTime": {
+                          "description": "Upper time bound of work items to include, by start time.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        }
+                      },
+                      "parameterOrder": [
+                        "projectId",
+                        "location",
+                        "jobId",
+                        "stageId"
+                      ],
+                      "response": {
+                        "$ref": "StageExecutionDetails"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/compute",
+                        "https://www.googleapis.com/auth/compute.readonly",
+                        "https://www.googleapis.com/auth/userinfo.email"
+                      ],
+                      "description": "Request detailed information about the execution status of a stage of the\njob.\n\nEXPERIMENTAL.  This API is subject to change or removal without notice."
                     }
                   }
                 },

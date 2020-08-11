@@ -1987,7 +1987,8 @@ may "fail open" without warning.
     )
 
     def Export(self, request, global_params=None):
-      r"""Export resources from the FHIR store to the specified destination.
+      r""".
+Export resources from the FHIR store to the specified destination.
 
 This method returns an Operation that can
 be used to track the status of the export by calling
@@ -2084,7 +2085,8 @@ set.
     )
 
     def Import(self, request, global_params=None):
-      r"""Import resources to the FHIR store by loading data from the specified.
+      r""".
+Import resources to the FHIR store by loading data from the specified
 sources. This method is optimized to load large quantities of data using
 import semantics that ignore some FHIR store configuration options and are
 not suitable for all use cases. It is primarily intended to load data into

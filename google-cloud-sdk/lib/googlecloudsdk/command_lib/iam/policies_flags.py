@@ -40,3 +40,12 @@ def GetPolicyIDFlag():
   return base.Argument(
       'policy_id',
       help='The id of the policy.')
+
+
+def GetEtagFlag():
+  return base.Argument('--etag', help='The etag of the existing policy.')
+
+
+def GetPolicyFileFlag():
+  return base.Argument(
+      '--policy-file', required=True, help='The contents of the policy.')

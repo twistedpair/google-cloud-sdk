@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://www.googleapis.com/toolresults/v1beta3/'
+BASE_URL = 'https://toolresults.googleapis.com/toolresults/v1beta3/'
 DOCS_URL = 'https://firebase.google.com/docs/test-lab/'
 
 

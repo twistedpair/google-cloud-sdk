@@ -49,6 +49,7 @@ class DataflowV1b3(base_api.BaseApiClient):
     self.projects_locations_jobs_debug = self.ProjectsLocationsJobsDebugService(self)
     self.projects_locations_jobs_messages = self.ProjectsLocationsJobsMessagesService(self)
     self.projects_locations_jobs_snapshots = self.ProjectsLocationsJobsSnapshotsService(self)
+    self.projects_locations_jobs_stages = self.ProjectsLocationsJobsStagesService(self)
     self.projects_locations_jobs_workItems = self.ProjectsLocationsJobsWorkItemsService(self)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations_snapshots = self.ProjectsLocationsSnapshotsService(self)
@@ -817,6 +818,45 @@ the status of jobs that are running in `us-central1`.
         supports_download=False,
     )
 
+  class ProjectsLocationsJobsStagesService(base_api.BaseApiService):
+    """Service class for the projects_locations_jobs_stages resource."""
+
+    _NAME = 'projects_locations_jobs_stages'
+
+    def __init__(self, client):
+      super(DataflowV1b3.ProjectsLocationsJobsStagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetExecutionDetails(self, request, global_params=None):
+      r"""Request detailed information about the execution status of a stage of the.
+job.
+
+EXPERIMENTAL.  This API is subject to change or removal without notice.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsStagesGetExecutionDetailsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StageExecutionDetails) The response message.
+      """
+      config = self.GetMethodConfig('GetExecutionDetails')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetExecutionDetails.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='dataflow.projects.locations.jobs.stages.getExecutionDetails',
+        ordered_params=['projectId', 'location', 'jobId', 'stageId'],
+        path_params=['jobId', 'location', 'projectId', 'stageId'],
+        query_params=['endTime', 'pageSize', 'pageToken', 'startTime'],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/stages/{stageId}/executionDetails',
+        request_field='',
+        request_type_name='DataflowProjectsLocationsJobsStagesGetExecutionDetailsRequest',
+        response_type_name='StageExecutionDetails',
+        supports_download=False,
+    )
+
   class ProjectsLocationsJobsWorkItemsService(base_api.BaseApiService):
     """Service class for the projects_locations_jobs_workItems resource."""
 
@@ -950,6 +990,34 @@ jobs that are running in `us-central1`.
         request_field='',
         request_type_name='DataflowProjectsLocationsJobsGetRequest',
         response_type_name='Job',
+        supports_download=False,
+    )
+
+    def GetExecutionDetails(self, request, global_params=None):
+      r"""Request detailed information about the execution status of the job.
+
+EXPERIMENTAL.  This API is subject to change or removal without notice.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsGetExecutionDetailsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (JobExecutionDetails) The response message.
+      """
+      config = self.GetMethodConfig('GetExecutionDetails')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetExecutionDetails.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='dataflow.projects.locations.jobs.getExecutionDetails',
+        ordered_params=['projectId', 'location', 'jobId'],
+        path_params=['jobId', 'location', 'projectId'],
+        query_params=[],
+        relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/executionDetails',
+        request_field='',
+        request_type_name='DataflowProjectsLocationsJobsGetExecutionDetailsRequest',
+        response_type_name='JobExecutionDetails',
         supports_download=False,
     )
 

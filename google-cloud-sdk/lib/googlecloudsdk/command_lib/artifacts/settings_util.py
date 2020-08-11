@@ -18,10 +18,20 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import base64
+import json
+
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.api_lib.auth import service_account
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.artifacts import util as ar_util
+from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.credentials import creds
+from googlecloudsdk.core.credentials import store
+from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import files
 
 _PROJECT_NOT_FOUND_ERROR = """\
 Failed to find attribute [project]. \
@@ -81,6 +91,56 @@ def _GetLocationAndRepoPath(args, repo_format):
   return location, repo_path
 
 
+def _LoadJsonFile(filename):
+  """Checks and validates if given filename is a proper JSON file.
+
+  Args:
+    filename: str, path to JSON file.
+
+  Returns:
+    bytes, the content of the file.
+  """
+  content = console_io.ReadFromFileOrStdin(filename, binary=True)
+  try:
+    json.loads(encoding.Decode(content))
+    return content
+  except ValueError as e:
+    if filename.endswith(".json"):
+      raise service_account.BadCredentialFileException(
+          "Could not read JSON file {0}: {1}".format(filename, e))
+  raise service_account.BadCredentialFileException(
+      "Unsupported credential file: {0}".format(filename))
+
+
+def _GetServiceAccountCreds(args):
+  """Gets service account credentials from given file path or default if any.
+
+  Args:
+    args: Command arguments.
+
+  Returns:
+    str, service account credentials.
+  """
+  if args.json_key:
+    file_content = _LoadJsonFile(args.json_key)
+    return base64.b64encode(file_content).decode("utf-8")
+
+  account = properties.VALUES.core.account.Get()
+  if not account:
+    raise store.NoActiveAccountException()
+  cred = store.Load(account, prevent_refresh=True)
+  if not cred:
+    raise store.NoCredentialsForAccountException(account)
+
+  account_type = creds.CredentialType.FromCredentials(cred)
+  if account_type == creds.CredentialType.SERVICE_ACCOUNT:
+    paths = config.Paths()
+    json_content = files.ReadFileContents(
+        paths.LegacyCredentialsAdcPath(account))
+    return base64.b64encode(json_content.encode("utf-8")).decode("utf-8")
+  return ""
+
+
 def GetNpmSettingsSnippet(args):
   """Forms an npm settings snippet to add to the .npmrc file.
 
@@ -102,26 +162,37 @@ def GetNpmSettingsSnippet(args):
   if args.scope:
     if not args.scope.startswith("@") or len(args.scope) <= 1:
       raise ar_exceptions.InvalidInputValueError(
-          "Scope name must start with '@' and be longer than 1 character.")
+          "Scope name must start with \"@\" and be longer than 1 character.")
     configured_registry = args.scope + ":" + configured_registry
-
-  npm_setting_template = """\
-Please insert following snippet into your .npmrc
-
-======================================================
-{configured_registry}=https://{registry_path}
-//{registry_path}:_password=""
-//{registry_path}:username=oauth2accesstoken
-//{registry_path}:email=not.valid@email.com
-//{registry_path}:always-auth=true
-======================================================
-"""
 
   data = {
       "configured_registry": configured_registry,
       "registry_path": registry_path,
-      "repo_path": repo_path,
+      "repo_path": repo_path
   }
+
+  sa_creds = _GetServiceAccountCreds(args)
+  if sa_creds:
+    npm_setting_template = """\
+# Insert following snippet into your .npmrc
+
+{configured_registry}=https://{registry_path}
+//{registry_path}:_password="{password}"
+//{registry_path}:username=_json_key_base64
+//{registry_path}:email=not.valid@email.com
+//{registry_path}:always-auth=true
+"""
+    data["password"] = base64.b64encode(
+        sa_creds.encode("utf-8")).decode("utf-8")
+  else:
+    npm_setting_template = """\
+# Insert following snippet into your .npmrc
+
+{configured_registry}=https://{registry_path}
+//{registry_path}:_authToken=""
+//{registry_path}:always-auth=true
+"""
+
   return npm_setting_template.format(**data)
 
 
@@ -138,26 +209,46 @@ def GetMavenSnippet(args):
   messages = ar_requests.GetMessages()
   location, repo_path = _GetLocationAndRepoPath(
       args, messages.Repository.FormatValueValuesEnum.MAVEN)
+  data = {
+      "scheme":
+          "artifactregistry",
+      "build_ext":
+          """\n
+<build>
+<extensions>
+  <extension>
+    <groupId>com.google.cloud.artifactregistry</groupId>
+    <artifactId>artifactregistry-maven-wagon</artifactId>
+    <version>2.1.0</version>
+  </extension>
+</extensions>
+</build>""",
+      "location":
+          location,
+      "server_id":
+          "artifact-registry",
+      "repo_path":
+          repo_path,
+  }
   mvn_template = """\
-Please insert following snippet into your pom.xml
+<!-- Insert following snippet into your pom.xml -->
 
-======================================================
 <project>
   <distributionManagement>
     <snapshotRepository>
       <id>{server_id}</id>
-      <url>artifactregistry://{location}-maven.pkg.dev/{repo_path}</url>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
     </snapshotRepository>
     <repository>
       <id>{server_id}</id>
-      <url>artifactregistry://{location}-maven.pkg.dev/{repo_path}</url>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
     </repository>
   </distributionManagement>
 
   <repositories>
     <repository>
       <id>{server_id}</id>
-      <url>artifactregistry://{location}-maven.pkg.dev/{repo_path}</url>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -165,27 +256,46 @@ Please insert following snippet into your pom.xml
         <enabled>true</enabled>
       </snapshots>
     </repository>
-  </repositories>
-
-  <build>
-    <extensions>
-      <extension>
-        <groupId>com.google.cloud.artifactregistry</groupId>
-        <artifactId>artifactregistry-maven-wagon</artifactId>
-        <version>{extension_version}</version>
-      </extension>
-    </extensions>
-  </build>
+  </repositories>{build_ext}
 </project>
-======================================================
 """
 
-  data = {
-      "location": location,
-      "server_id": "artifact-registry",
-      "extension_version": "2.1.0",
-      "repo_path": repo_path,
-  }
+  sa_creds = _GetServiceAccountCreds(args)
+  if sa_creds:
+    mvn_template += """
+<!-- Insert following snippet into your settings.xml -->
+
+<settings>
+  <servers>
+    <server>
+      <id>{server_id}</id>
+      <configuration>
+        <httpConfiguration>
+          <get>
+            <usePreemptive>true</usePreemptive>
+          </get>
+          <put>
+            <params>
+              <property>
+                <name>http.protocol.expect-continue</name>
+                <value>false</value>
+              </property>
+            </params>
+          </put>
+        </httpConfiguration>
+      </configuration>
+      <username>{username}</username>
+      <password>{password}</password>
+    </server>
+  </servers>
+</settings>
+"""
+
+    data["scheme"] = "https"
+    data["build_ext"] = ""
+    data["username"] = "_json_key_base64"
+    data["password"] = sa_creds
+
   return mvn_template.format(**data)
 
 
@@ -202,12 +312,55 @@ def GetGradleSnippet(args):
   messages = ar_requests.GetMessages()
   location, repo_path = _GetLocationAndRepoPath(
       args, messages.Repository.FormatValueValuesEnum.MAVEN)
+  data = {"location": location, "repo_path": repo_path}
 
-  gradle_template = """\
-Please insert following snippet into your build.gradle
-see docs.gradle.org/current/userguide/publishing_maven.html
+  sa_creds = _GetServiceAccountCreds(args)
+  if sa_creds:
+    gradle_template = """\
+// Move the secret to ~/.gradle.properties
+def artifactRegistryMavenSecret = "{password}"
 
-======================================================
+// Insert following snippet into your build.gradle
+// see docs.gradle.org/current/userguide/publishing_maven.html
+
+plugins {{
+  id "maven-publish"
+}}
+
+publishing {{
+  repositories {{
+    maven {{
+      url "https://{location}-maven.pkg.dev/{repo_path}"
+      credentials {{
+        username = "{username}"
+        password = "$artifactRegistryMavenSecret"
+      }}
+    }}
+  }}
+}}
+
+repositories {{
+  maven {{
+    url "https://{location}-maven.pkg.dev/{repo_path}"
+    credentials {{
+      username = "{username}"
+      password = "$artifactRegistryMavenSecret"
+    }}
+    authentication {{
+      basic(BasicAuthentication)
+    }}
+  }}
+}}
+"""
+
+    data["username"] = "_json_key_base64"
+    data["password"] = sa_creds
+
+  else:
+    gradle_template = """\
+// Insert following snippet into your build.gradle
+// see docs.gradle.org/current/userguide/publishing_maven.html
+
 plugins {{
   id "maven-publish"
   id "com.google.cloud.artifactregistry.gradle-plugin" version "{extension_version}"
@@ -226,12 +379,7 @@ repositories {{
     url "artifactregistry://{location}-maven.pkg.dev/{repo_path}"
   }}
 }}
-======================================================
 """
 
-  data = {
-      "location": location,
-      "repo_path": repo_path,
-      "extension_version": "2.1.0",
-  }
+    data["extension_version"] = "2.1.0"
   return gradle_template.format(**data)

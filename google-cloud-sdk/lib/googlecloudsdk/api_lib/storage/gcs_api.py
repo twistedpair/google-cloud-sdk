@@ -25,12 +25,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
 
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage import resource_reference
+from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import http
 
@@ -146,6 +150,7 @@ class GcsApi(cloud_api.CloudApi):
 
     return (global_params, projection)
 
+  @cloud_errors.catch_http_error_raise_gcs_api_error()
   def GetBucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
     global_params, projection = self._GetGlobalParamsAndProjection(
@@ -170,11 +175,13 @@ class GcsApi(cloud_api.CloudApi):
         request,
         batch_size=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
         global_params=global_params)
-    for bucket in bucket_iter:
-      yield resource_reference.BucketResource.from_metadata_obj(
-          provider=cloud_api.ProviderPrefix.GCS.value,
-          metadata_obj=bucket
-      )
+    try:
+      for bucket in bucket_iter:
+        yield resource_reference.BucketResource.from_gcs_metadata_object(
+            provider=cloud_api.ProviderPrefix.GCS.value,
+            metadata_object=bucket)
+    except apitools_exceptions.HttpError as error:
+      core_exceptions.reraise(cloud_errors.GcsApiError(error))
 
   def ListObjects(self,
                   bucket_name,
@@ -185,18 +192,47 @@ class GcsApi(cloud_api.CloudApi):
     """See super class."""
     global_params, projection = self._GetGlobalParamsAndProjection(
         fields_scope, self.messages.StorageObjectsListRequest)
-    request = self.messages.StorageObjectsListRequest(
-        bucket=bucket_name, prefix=prefix, projection=projection)
 
-    # TODO(b/160238394) Decrypt metadata fields if necessary.
-    object_iter = list_pager.YieldFromList(
-        self.client.objects,
-        request,
-        batch_size=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
-        global_params=global_params)
-    for obj in object_iter:
-      yield obj
+    object_list = None
+    while True:
+      apitools_request = self.messages.StorageObjectsListRequest(
+          bucket=bucket_name,
+          prefix=prefix,
+          delimiter=delimiter,
+          versions=all_versions,
+          projection=projection,
+          pageToken=object_list.nextPageToken if object_list else None,
+          maxResults=cloud_api.NUM_ITEMS_PER_LIST_PAGE)
 
+      try:
+        object_list = self.client.objects.List(
+            apitools_request, global_params=global_params)
+      except apitools_exceptions.HttpError as error:
+        core_exceptions.reraise(cloud_errors.GcsApiError(error))
+
+      # Yield objects.
+      # TODO(b/160238394) Decrypt metadata fields if necessary.
+      for obj in object_list.items:
+        yield resource_reference.ObjectResource.from_gcs_metadata_object(
+            provider=cloud_api.ProviderPrefix.GCS.value,
+            metadata_object=obj
+        )
+
+      # Yield prefixes.
+      for prefix_string in object_list.prefixes:
+        yield resource_reference.PrefixResource(
+            storage_url=storage_url.CloudUrl(
+                scheme=cloud_api.ProviderPrefix.GCS.value,
+                bucket_name=bucket_name,
+                object_name=prefix_string
+            ),
+            prefix=prefix_string
+        )
+
+      if not object_list.nextPageToken:
+        break
+
+  @cloud_errors.catch_http_error_raise_gcs_api_error()
   def GetObjectMetadata(self,
                         bucket_name,
                         object_name,
@@ -216,6 +252,7 @@ class GcsApi(cloud_api.CloudApi):
         global_params=global_params
     )
 
+  @cloud_errors.catch_http_error_raise_gcs_api_error()
   def PatchObjectMetadata(self,
                           bucket_name,
                           object_name,
@@ -249,6 +286,7 @@ class GcsApi(cloud_api.CloudApi):
     return self.client.objects.Patch(request, global_params=global_params)
 
   # pylint: disable=unused-argument
+  @cloud_errors.catch_http_error_raise_gcs_api_error()
   def CopyObject(self,
                  source_object_metadata,
                  destination_object_metadata,
@@ -333,6 +371,7 @@ class GcsApi(cloud_api.CloudApi):
     return apitools_download.encoding
 
   # pylint: disable=unused-argument
+  @cloud_errors.catch_http_error_raise_gcs_api_error()
   def DownloadObject(self,
                      bucket_name,
                      object_name,
@@ -450,6 +489,7 @@ class GcsApi(cloud_api.CloudApi):
       # TODO(b/160998556): Implement resumable upload.
       pass
 
+  @cloud_errors.catch_http_error_raise_gcs_api_error()
   def UploadObject(self,
                    upload_stream,
                    object_metadata,

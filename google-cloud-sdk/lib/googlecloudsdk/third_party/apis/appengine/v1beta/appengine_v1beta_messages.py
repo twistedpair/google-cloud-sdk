@@ -2131,14 +2131,17 @@ class Resources(_messages.Message):
   Fields:
     cpu: Number of CPU cores needed.
     diskGb: Disk size (GB) needed.
+    kmsKeyReference: The name of the encryption key that is stored in Google
+      Cloud KMS. Only should be used by Cloud Composer to encrypt the vm disk
     memoryGb: Memory (GB) needed.
     volumes: User specified volumes.
   """
 
   cpu = _messages.FloatField(1)
   diskGb = _messages.FloatField(2)
-  memoryGb = _messages.FloatField(3)
-  volumes = _messages.MessageField('Volume', 4, repeated=True)
+  kmsKeyReference = _messages.StringField(3)
+  memoryGb = _messages.FloatField(4)
+  volumes = _messages.MessageField('Volume', 5, repeated=True)
 
 
 class ScriptHandler(_messages.Message):

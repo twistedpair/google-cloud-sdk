@@ -9074,6 +9074,20 @@ class ComputeInstancesGetRequest(_messages.Message):
   zone = _messages.StringField(3, required=True)
 
 
+class ComputeInstancesGetScreenshotRequest(_messages.Message):
+  r"""A ComputeInstancesGetScreenshotRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   r"""A ComputeInstancesGetSerialPortOutputRequest object.
 
@@ -19978,7 +19992,7 @@ class CorsPolicy(_messages.Message):
 
 
 class CustomerEncryptionKey(_messages.Message):
-  r"""Represents a customer-supplied encryption key
+  r"""A CustomerEncryptionKey object.
 
   Fields:
     kmsKeyName: The name of the encryption key that is stored in Google Cloud
@@ -32526,7 +32540,9 @@ class NodeGroup(_messages.Message):
 
   Enums:
     MaintenancePolicyValueValuesEnum: Specifies how to handle instances when a
-      node in the group undergoes maintenance.
+      node in the group undergoes maintenance. Set to one of: DEFAULT,
+      RESTART_IN_PLACE, or MIGRATE_WITHIN_NODE_GROUP. The default value is
+      DEFAULT. For more information, see  Maintenance policies.
     StatusValueValuesEnum:
 
   Fields:
@@ -32541,7 +32557,9 @@ class NodeGroup(_messages.Message):
     kind: [Output Only] The type of the resource. Always compute#nodeGroup for
       node group.
     maintenancePolicy: Specifies how to handle instances when a node in the
-      group undergoes maintenance.
+      group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE,
+      or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
+      information, see  Maintenance policies.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -32559,7 +32577,9 @@ class NodeGroup(_messages.Message):
 
   class MaintenancePolicyValueValuesEnum(_messages.Enum):
     r"""Specifies how to handle instances when a node in the group undergoes
-    maintenance.
+    maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE, or
+    MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
+    information, see  Maintenance policies.
 
     Values:
       DEFAULT: <no description>
@@ -32756,16 +32776,19 @@ class NodeGroupAutoscalingPolicy(_messages.Message):
   r"""A NodeGroupAutoscalingPolicy object.
 
   Enums:
-    ModeValueValuesEnum: The autoscaling mode.
+    ModeValueValuesEnum: The autoscaling mode. Set to one of: ON, OFF, or
+      ONLY_SCALE_OUT. For more information, see  Autoscaler modes.
 
   Fields:
     maxNodes: The maximum number of nodes that the group should have.
     minNodes: The minimum number of nodes that the group should have.
-    mode: The autoscaling mode.
+    mode: The autoscaling mode. Set to one of: ON, OFF, or ONLY_SCALE_OUT. For
+      more information, see  Autoscaler modes.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    r"""The autoscaling mode.
+    r"""The autoscaling mode. Set to one of: ON, OFF, or ONLY_SCALE_OUT. For
+    more information, see  Autoscaler modes.
 
     Values:
       MODE_UNSPECIFIED: <no description>
@@ -37060,7 +37083,7 @@ class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
 
 
 class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
-  r"""InstanceGroupManagers.applyUpdatesToInstances
+  r"""RegionInstanceGroupManagers.applyUpdatesToInstances
 
   Enums:
     MinimalActionValueValuesEnum: The minimal action that you want to perform
@@ -40490,6 +40513,19 @@ class SchedulingNodeAffinity(_messages.Message):
   key = _messages.StringField(1)
   operator = _messages.EnumField('OperatorValueValuesEnum', 2)
   values = _messages.StringField(3, repeated=True)
+
+
+class Screenshot(_messages.Message):
+  r"""An instance's screenshot.
+
+  Fields:
+    contents: [Output Only] The Base64-encoded screenshot data.
+    kind: [Output Only] Type of the resource. Always compute#screenshot for
+      the screenshots.
+  """
+
+  contents = _messages.StringField(1)
+  kind = _messages.StringField(2, default='compute#screenshot')
 
 
 class SecurityPoliciesListPreconfiguredExpressionSetsResponse(_messages.Message):

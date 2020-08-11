@@ -947,6 +947,10 @@
           "items": {
             "$ref": "Volume"
           }
+        },
+        "kmsKeyReference": {
+          "description": "The name of the encryption key that is stored in Google Cloud KMS. Only should be used by Cloud Composer to encrypt the vm disk",
+          "type": "string"
         }
       }
     },

@@ -178,10 +178,11 @@ def AddAssetNamesArgs(parser):
       metavar='ASSET_NAMES',
       required=True,
       type=arg_parsers.ArgList(),
-      help=
-      ('A list of full names of the assets to get the history for. See '
-       'https://cloud.google.com/apis/design/resource_names#full_resource_name '
-       'for name format.'))
+      help=(
+          'A list of full names of the assets to get the history for. For more '
+          'information, see: '
+          'https://cloud.google.com/apis/design/resource_names#full_resource_name '
+      ))
 
 
 def AddStartTimeArgs(parser):
@@ -213,8 +214,8 @@ def AddOperationArgs(parser):
 
 def AddListContentTypeArgs(parser):
   help_text = (
-      'Asset content type. If not specified, no content but the asset name and'
-      ' type will be returned in the feed. To read more see '
+      'Asset content type. If not specified, no content but the asset name and '
+      'type will be returned in the feed. For more information, see '
       'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
   )
   parser.add_argument(
@@ -238,9 +239,10 @@ def AddFeedAssetTypesArgs(parser):
       help=(
           'A comma-separated list of types of the assets types to receive '
           'updates. For example: '
-          '`compute.googleapis.com/Disk,compute.googleapis.com/Network` See '
+          '`compute.googleapis.com/Disk,compute.googleapis.com/Network` For '
+          'more information, see: '
           'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview'
-          ' for all supported asset types.'))
+      ))
 
 
 def AddFeedAssetNamesArgs(parser):
@@ -253,8 +255,8 @@ def AddFeedAssetNamesArgs(parser):
           'A comma-separated list of the full names of the assets to '
           'receive updates. For example: '
           '`//compute.googleapis.com/projects/my_project_123/zones/zone1/instances/instance1`.'
-          ' See https://cloud.google.com/apis/design/resource_names#full_resource_name'
-          ' for more information.'))
+          ' For more information, see: https://cloud.google.com/apis/design/resource_names#full_resource_name'
+      ))
 
 
 def AddFeedCriteriaArgs(parser):
@@ -272,8 +274,8 @@ def FeedContentTypeArgs(parser, help_text):
 
 def AddFeedContentTypeArgs(parser):
   help_text = (
-      'Asset content type. If not specified, no content but the asset name and'
-      ' type will be returned in the feed. To read more see '
+      'Asset content type. If not specified, no content but the asset name and '
+      'type will be returned in the feed. For more information, see '
       'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
   )
 
@@ -293,7 +295,8 @@ def AddFeedPubSubTopicArgs(parser, required):
 
 def AddChangeFeedContentTypeArgs(parser):
   help_text = (
-      'Asset content type to overwrite the existing one. To read more see: '
+      'Asset content type to overwrite the existing one. For more information, '
+      'see: '
       'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
   )
 
@@ -320,17 +323,21 @@ def FeedConditionExpressionArgs(parser, help_text):
 
 
 def AddFeedConditionExpressionArgs(parser):
-  # TODO(b/154120326): add link to public doc once it's ready.
   help_text = (
-      'Feed condition expression. If not specified, no condition will be'
-      ' applied to feed.')
+      'Feed condition expression. If not specified, no condition will be '
+      'applied to feed. For more information, see: '
+      'https://cloud.google.com/asset-inventory/docs/monitoring-asset-changes#feed_with_condition'
+  )
 
   FeedConditionExpressionArgs(parser, help_text)
 
 
 def AddChangeFeedConditionExpressionArgs(parser):
-  # TODO(b/154120326): add link to public doc once it's ready.
-  help_text = ('Condition expression to overwrite the existing one.')
+  help_text = (
+      'Condition expression to overwrite the existing one. For more '
+      'information, see: '
+      'https://cloud.google.com/asset-inventory/docs/monitoring-asset-changes#feed_with_condition'
+  )
 
   FeedConditionExpressionArgs(parser, help_text)
 

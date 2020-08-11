@@ -313,7 +313,7 @@
             "The RUNNING state indicates the cluster has been created and is fully\nusable.",
             "The RECONCILING state indicates that some work is actively being done on\nthe cluster, such as upgrading the master or node software. Details can\nbe found in the `statusMessage` field.",
             "The STOPPING state indicates the cluster is being deleted.",
-            "The ERROR state indicates the cluster may be unusable. Details\ncan be found in the `statusMessage` field.",
+            "The ERROR state indicates the cluster is unusable. It will be\nautomatically deleted. Details can be found in the `statusMessage` field.",
             "The DEGRADED state indicates the cluster requires user action to restore\nfull functionality. Details can be found in the `statusMessage` field."
           ],
           "type": "string",
@@ -1066,7 +1066,7 @@
       "type": "object",
       "properties": {
         "useIpAliases": {
-          "description": "Whether alias IPs will be used for pod IPs in the cluster.",
+          "description": "Whether alias IPs will be used for pod IPs in the cluster. This is used in conjunction with use_routes. It cannot be true if use_routes is true. If both use_ip_aliases and use_routes are false, then the server picks the default IP allocation mode",
           "type": "boolean"
         },
         "createSubnetwork": {
@@ -1112,6 +1112,10 @@
         "tpuIpv4CidrBlock": {
           "description": "The IP address range of the Cloud TPUs in this cluster. If unspecified, a\nrange will be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nIf unspecified, the range will use the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
           "type": "string"
+        },
+        "useRoutes": {
+          "description": "Whether routes will be used for pod IPs in the cluster. This is used in conjunction with use_ip_aliases. It cannot be true if use_ip_aliases is true. If both use_ip_aliases and use_routes are false, then the server picks the default IP allocation mode",
+          "type": "boolean"
         }
       }
     },

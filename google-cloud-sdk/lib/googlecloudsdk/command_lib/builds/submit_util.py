@@ -45,6 +45,8 @@ _ALLOWED_SOURCE_EXT = ['.zip', '.tgz', '.gz']
 
 _DEFAULT_BUILDPACK_BUILDER = 'gcr.io/buildpacks/builder'
 
+_CLUSTER_NAME_FMT = 'projects/{project}/locations/{location}/clusters/{cluster_name}'
+
 _SUPPORTED_REGISTRIES = ['gcr.io', 'pkg.dev']
 
 
@@ -269,6 +271,22 @@ def _SetBuildStepsAlpha(tag, no_cache, messages, substitutions, arg_config,
   return build_config
 
 
+def _SetClusterAlpha(build_config, messages, arg_cluster_name,
+                     arg_cluster_location):
+  """Set the cluster config for the build config."""
+  if arg_cluster_name is None:
+    return build_config
+
+  if build_config.options is None:
+    build_config.options = messages.BuildOptions()
+  build_config.options.cluster = messages.ClusterOptions(
+      name=_CLUSTER_NAME_FMT.format(
+          project=properties.VALUES.core.project.Get(),
+          location=arg_cluster_location,
+          cluster_name=arg_cluster_name))
+  return build_config
+
+
 def _SetSource(build_config, messages, is_specified_source, no_source, source,
                gcs_source_staging_dir, ignore_file):
   """Set the source for the build config."""
@@ -412,10 +430,23 @@ def _SetDiskSize(build_config, messages, arg_disk_size):
   return build_config
 
 
+def _SetWorkerPool(build_config, messages, arg_worker_pool):
+  """Set the worker pool to run the build in."""
+  if arg_worker_pool is not None:
+    # Only regional pools are supported here
+    worker_pool = resources.REGISTRY.Parse(
+        arg_worker_pool, collection='projects.locations.workerPools')
+    if not build_config.options:
+      build_config.options = messages.BuildOptions()
+    build_config.options.workerPool = six.text_type(worker_pool)
+
+  return build_config
+
+
 def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
                       is_specified_source, no_source, source,
                       gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
-                      arg_machine_type, arg_disk_size):
+                      arg_machine_type, arg_disk_size, arg_worker_pool):
   """Returns a build config."""
 
   timeout_str = _GetBuildTimeout()
@@ -427,6 +458,7 @@ def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
   build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
   build_config = _SetMachineType(build_config, messages, arg_machine_type)
   build_config = _SetDiskSize(build_config, messages, arg_disk_size)
+  build_config = _SetWorkerPool(build_config, messages, arg_worker_pool)
 
   return build_config
 
@@ -434,7 +466,9 @@ def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
 def CreateBuildConfigAlpha(tag, no_cache, messages, substitutions, arg_config,
                            is_specified_source, no_source, source,
                            gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
-                           arg_machine_type, arg_disk_size, buildpack):
+                           arg_machine_type, arg_disk_size, arg_worker_pool,
+                           buildpack, arg_cluster_name=None,
+                           arg_cluster_location=None):
   """Returns a build config."""
   timeout_str = _GetBuildTimeout()
 
@@ -446,6 +480,9 @@ def CreateBuildConfigAlpha(tag, no_cache, messages, substitutions, arg_config,
   build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
   build_config = _SetMachineType(build_config, messages, arg_machine_type)
   build_config = _SetDiskSize(build_config, messages, arg_disk_size)
+  build_config = _SetWorkerPool(build_config, messages, arg_worker_pool)
+  build_config = _SetClusterAlpha(build_config, messages, arg_cluster_name,
+                                  arg_cluster_location)
 
   return build_config
 

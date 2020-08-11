@@ -33,8 +33,7 @@ def _ParseNodeAffinityLabels(affinity_labels, messages):
 def CreateNodeTemplate(node_template_ref,
                        args,
                        messages,
-                       enable_disk=False,
-                       overcommit=False):
+                       enable_disk=False):
   """Creates a Node Template message from args."""
   node_affinity_labels = None
   if args.node_affinity_labels:
@@ -66,7 +65,7 @@ def CreateNodeTemplate(node_template_ref,
           diskType=args.disk.get('type'))
       node_template.disks = [local_disk]
 
-  if overcommit and args.IsSpecified('cpu_overcommit_type'):
+  if args.IsSpecified('cpu_overcommit_type'):
     overcommit_type = arg_utils.ChoiceToEnum(
         args.cpu_overcommit_type,
         messages.NodeTemplate.CpuOvercommitTypeValueValuesEnum)

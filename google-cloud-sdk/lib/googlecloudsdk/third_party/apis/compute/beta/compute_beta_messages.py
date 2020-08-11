@@ -2749,6 +2749,10 @@ class BackendBucketCdnPolicy(_messages.Message):
     CacheModeValueValuesEnum:
 
   Fields:
+    bypassCacheOnRequestHeaders: Bypass the cache when the specified request
+      headers are matched - e.g. Pragma or Authorization headers. Up to 5
+      headers can be specified. The cache is bypassed for all
+      cdnPolicy.cacheMode settings.
     cacheMode: A CacheModeValueValuesEnum attribute.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
       from the TTL for Cloud CDN's edge caches. Leaving this empty will use
@@ -2789,6 +2793,15 @@ class BackendBucketCdnPolicy(_messages.Message):
       take care to specify a cache TTL for all response codes that you wish to
       cache. Cloud CDN will not apply any default negative caching when a
       policy exists.
+    serveWhileStale: Serve existing content from the cache (if available) when
+      revalidating content with the origin, or when an error is encountered
+      when refreshing the cache. This setting defines the default "max-stale"
+      duration for any cached responses that do not specify a max-stale
+      directive. Stale responses that exceed the TTL configured here will not
+      be served. The default limit (max-stale) is 86400s (1 day), which will
+      allow stale content to be served up to this limit beyond the max-age (or
+      s-max-age) of a cached response. The maximum allowed value is 604800(1
+      week). Set this to zero (0) to disable serve-while-stale.
     signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
       signed URL request will be considered fresh. After this time period, the
       response will be revalidated before being served. Defaults to 1hr
@@ -2815,14 +2828,29 @@ class BackendBucketCdnPolicy(_messages.Message):
     INVALID_CACHE_MODE = 2
     USE_ORIGIN_HEADERS = 3
 
-  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 1)
-  clientTtl = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  defaultTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maxTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  negativeCaching = _messages.BooleanField(5)
-  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 6, repeated=True)
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(7)
-  signedUrlKeyNames = _messages.StringField(8, repeated=True)
+  bypassCacheOnRequestHeaders = _messages.MessageField('BackendBucketCdnPolicyBypassCacheOnRequestHeader', 1, repeated=True)
+  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 2)
+  clientTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  defaultTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maxTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  negativeCaching = _messages.BooleanField(6)
+  negativeCachingPolicy = _messages.MessageField('BackendBucketCdnPolicyNegativeCachingPolicy', 7, repeated=True)
+  serveWhileStale = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(9)
+  signedUrlKeyNames = _messages.StringField(10, repeated=True)
+
+
+class BackendBucketCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
+  r"""Bypass the cache when the specified request headers are present, e.g.
+  Pragma or Authorization headers. Values are case insensitive. The presence
+  of such a header overrides the cache_mode setting.
+
+  Fields:
+    headerName: The header field name to match on when bypassing cache. Values
+      are case-insensitive.
+  """
+
+  headerName = _messages.StringField(1)
 
 
 class BackendBucketCdnPolicyNegativeCachingPolicy(_messages.Message):
@@ -3481,6 +3509,10 @@ class BackendServiceCdnPolicy(_messages.Message):
     CacheModeValueValuesEnum:
 
   Fields:
+    bypassCacheOnRequestHeaders: Bypass the cache when the specified request
+      headers are matched - e.g. Pragma or Authorization headers. Up to 5
+      headers can be specified. The cache is bypassed for all
+      cdnPolicy.cacheMode settings.
     cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
     cacheMode: A CacheModeValueValuesEnum attribute.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
@@ -3522,6 +3554,15 @@ class BackendServiceCdnPolicy(_messages.Message):
       take care to specify a cache TTL for all response codes that you wish to
       cache. Cloud CDN will not apply any default negative caching when a
       policy exists.
+    serveWhileStale: Serve existing content from the cache (if available) when
+      revalidating content with the origin, or when an error is encountered
+      when refreshing the cache. This setting defines the default "max-stale"
+      duration for any cached responses that do not specify a max-stale
+      directive. Stale responses that exceed the TTL configured here will not
+      be served. The default limit (max-stale) is 86400s (1 day), which will
+      allow stale content to be served up to this limit beyond the max-age (or
+      s-max-age) of a cached response. The maximum allowed value is 604800(1
+      week). Set this to zero (0) to disable serve-while-stale.
     signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
       signed URL request will be considered fresh. After this time period, the
       response will be revalidated before being served. Defaults to 1hr
@@ -3548,15 +3589,30 @@ class BackendServiceCdnPolicy(_messages.Message):
     INVALID_CACHE_MODE = 2
     USE_ORIGIN_HEADERS = 3
 
-  cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
-  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 2)
-  clientTtl = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  defaultTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  negativeCaching = _messages.BooleanField(6)
-  negativeCachingPolicy = _messages.MessageField('BackendServiceCdnPolicyNegativeCachingPolicy', 7, repeated=True)
-  signedUrlCacheMaxAgeSec = _messages.IntegerField(8)
-  signedUrlKeyNames = _messages.StringField(9, repeated=True)
+  bypassCacheOnRequestHeaders = _messages.MessageField('BackendServiceCdnPolicyBypassCacheOnRequestHeader', 1, repeated=True)
+  cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 2)
+  cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 3)
+  clientTtl = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  defaultTtl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxTtl = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  negativeCaching = _messages.BooleanField(7)
+  negativeCachingPolicy = _messages.MessageField('BackendServiceCdnPolicyNegativeCachingPolicy', 8, repeated=True)
+  serveWhileStale = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(10)
+  signedUrlKeyNames = _messages.StringField(11, repeated=True)
+
+
+class BackendServiceCdnPolicyBypassCacheOnRequestHeader(_messages.Message):
+  r"""Bypass the cache when the specified request headers are present, e.g.
+  Pragma or Authorization headers. Values are case insensitive. The presence
+  of such a header overrides the cache_mode setting.
+
+  Fields:
+    headerName: The header field name to match on when bypassing cache. Values
+      are case-insensitive.
+  """
+
+  headerName = _messages.StringField(1)
 
 
 class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
@@ -22194,7 +22250,7 @@ class CorsPolicy(_messages.Message):
 
 
 class CustomerEncryptionKey(_messages.Message):
-  r"""Represents a customer-supplied encryption key
+  r"""A CustomerEncryptionKey object.
 
   Fields:
     kmsKeyName: The name of the encryption key that is stored in Google Cloud
@@ -24606,6 +24662,9 @@ class ForwardingRule(_messages.Message):
       must specify this field as part of the HTTP request URL. It is not
       settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
+    serviceDirectoryRegistrations: Service Directory resources to register
+      this forwarding rule with. Currently, only supports a single Service
+      Directory resource.
     serviceLabel: An optional prefix to the service name for this Forwarding
       Rule. If specified, the prefix is the first label of the fully qualified
       service name.  The label must be 1-63 characters long, and comply with
@@ -24761,10 +24820,11 @@ class ForwardingRule(_messages.Message):
   ports = _messages.StringField(21, repeated=True)
   region = _messages.StringField(22)
   selfLink = _messages.StringField(23)
-  serviceLabel = _messages.StringField(24)
-  serviceName = _messages.StringField(25)
-  subnetwork = _messages.StringField(26)
-  target = _messages.StringField(27)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 24, repeated=True)
+  serviceLabel = _messages.StringField(25)
+  serviceName = _messages.StringField(26)
+  subnetwork = _messages.StringField(27)
+  target = _messages.StringField(28)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -25050,6 +25110,21 @@ class ForwardingRuleReference(_messages.Message):
   """
 
   forwardingRule = _messages.StringField(1)
+
+
+class ForwardingRuleServiceDirectoryRegistration(_messages.Message):
+  r"""Describes the auto-registration of the Forwarding Rule to Service
+  Directory. The region and project of the Service Directory resource
+  generated from this registration will be the same as this Forwarding Rule.
+
+  Fields:
+    namespace: Service Directory namespace to register the forwarding rule
+      under.
+    service: Service Directory service to register the forwarding rule under.
+  """
+
+  namespace = _messages.StringField(1)
+  service = _messages.StringField(2)
 
 
 class ForwardingRulesScopedList(_messages.Message):
@@ -35428,7 +35503,9 @@ class NodeGroup(_messages.Message):
 
   Enums:
     MaintenancePolicyValueValuesEnum: Specifies how to handle instances when a
-      node in the group undergoes maintenance.
+      node in the group undergoes maintenance. Set to one of: DEFAULT,
+      RESTART_IN_PLACE, or MIGRATE_WITHIN_NODE_GROUP. The default value is
+      DEFAULT. For more information, see  Maintenance policies.
     StatusValueValuesEnum:
 
   Fields:
@@ -35443,7 +35520,9 @@ class NodeGroup(_messages.Message):
     kind: [Output Only] The type of the resource. Always compute#nodeGroup for
       node group.
     maintenancePolicy: Specifies how to handle instances when a node in the
-      group undergoes maintenance.
+      group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE,
+      or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
+      information, see  Maintenance policies.
     name: The name of the resource, provided by the client when initially
       creating the resource. The resource name must be 1-63 characters long,
       and comply with RFC1035. Specifically, the name must be 1-63 characters
@@ -35461,7 +35540,9 @@ class NodeGroup(_messages.Message):
 
   class MaintenancePolicyValueValuesEnum(_messages.Enum):
     r"""Specifies how to handle instances when a node in the group undergoes
-    maintenance.
+    maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE, or
+    MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
+    information, see  Maintenance policies.
 
     Values:
       DEFAULT: <no description>
@@ -35658,16 +35739,19 @@ class NodeGroupAutoscalingPolicy(_messages.Message):
   r"""A NodeGroupAutoscalingPolicy object.
 
   Enums:
-    ModeValueValuesEnum: The autoscaling mode.
+    ModeValueValuesEnum: The autoscaling mode. Set to one of: ON, OFF, or
+      ONLY_SCALE_OUT. For more information, see  Autoscaler modes.
 
   Fields:
     maxNodes: The maximum number of nodes that the group should have.
     minNodes: The minimum number of nodes that the group should have.
-    mode: The autoscaling mode.
+    mode: The autoscaling mode. Set to one of: ON, OFF, or ONLY_SCALE_OUT. For
+      more information, see  Autoscaler modes.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    r"""The autoscaling mode.
+    r"""The autoscaling mode. Set to one of: ON, OFF, or ONLY_SCALE_OUT. For
+    more information, see  Autoscaler modes.
 
     Values:
       MODE_UNSPECIFIED: <no description>
@@ -40044,7 +40128,7 @@ class RegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
 
 
 class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
-  r"""InstanceGroupManagers.applyUpdatesToInstances
+  r"""RegionInstanceGroupManagers.applyUpdatesToInstances
 
   Enums:
     MinimalActionValueValuesEnum: The minimal action that you want to perform
@@ -44179,6 +44263,7 @@ class SecuritySettings(_messages.Message):
       should authenticate with this service's backends. clientTlsPolicy only
       applies to a global BackendService with the loadBalancingScheme set to
       INTERNAL_SELF_MANAGED. If left blank, communications are not encrypted.
+      Note: This field currently has no impact.
     subjectAltNames: Optional. A list of Subject Alternative Names (SANs) that
       the client verifies during a mutual TLS handshake with an
       server/endpoint for this BackendService. When the server presents its
@@ -44191,7 +44276,7 @@ class SecuritySettings(_messages.Message):
       which provisions server identities. Only applies to a global
       BackendService with loadBalancingScheme set to INTERNAL_SELF_MANAGED.
       Only applies when BackendService has an attached clientTlsPolicy with
-      clientCertificate (mTLS mode).
+      clientCertificate (mTLS mode). Note: This field currently has no impact.
   """
 
   authentication = _messages.StringField(1)
@@ -47488,7 +47573,7 @@ class TargetHttpsProxy(_messages.Message):
       AuthorizationPolicy resource for additional details. authorizationPolicy
       only applies to a global TargetHttpsProxy attached to
       globalForwardingRules with the loadBalancingScheme set to
-      INTERNAL_SELF_MANAGED.
+      INTERNAL_SELF_MANAGED. Note: This field currently has no impact.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -47524,7 +47609,8 @@ class TargetHttpsProxy(_messages.Message):
       should authenticate inbound traffic. serverTlsPolicy only applies to a
       global TargetHttpsProxy attached to globalForwardingRules with the
       loadBalancingScheme set to INTERNAL_SELF_MANAGED. If left blank,
-      communications are not encrypted.
+      communications are not encrypted. Note: This field currently has no
+      impact.
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. At least
       one SSL certificate must be specified. Currently, you may specify up to
@@ -47887,6 +47973,9 @@ class TargetInstance(_messages.Message):
       cannot be a dash.
     natPolicy: NAT option controlling how IPs are NAT'ed to the instance.
       Currently only NO_NAT (default value) is supported.
+    network: The URL of the network this target instance uses to forward
+      traffic. If not specified, the traffic will be forwarded to the network
+      that the default network interface belongs to.
     selfLink: [Output Only] Server-defined URL for the resource.
     zone: [Output Only] URL of the zone where the target instance resides. You
       must specify this field as part of the HTTP request URL. It is not
@@ -47909,8 +47998,9 @@ class TargetInstance(_messages.Message):
   kind = _messages.StringField(5, default='compute#targetInstance')
   name = _messages.StringField(6)
   natPolicy = _messages.EnumField('NatPolicyValueValuesEnum', 7)
-  selfLink = _messages.StringField(8)
-  zone = _messages.StringField(9)
+  network = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  zone = _messages.StringField(10)
 
 
 class TargetInstanceAggregatedList(_messages.Message):

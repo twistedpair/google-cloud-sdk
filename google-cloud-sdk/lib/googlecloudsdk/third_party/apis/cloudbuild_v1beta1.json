@@ -235,6 +235,10 @@
         "networkConfig": {
           "description": "Network configuration for the `WorkerPool`.",
           "$ref": "NetworkConfig"
+        },
+        "vpcscEnabled": {
+          "description": "Immutable. If true, the worker pool is created with a VPC-SC compatible configuration.\nUsers should set to true if the worker pool project is part of a secured\nVPC-SC perimeter.",
+          "type": "boolean"
         }
       }
     },
@@ -887,7 +891,7 @@
           ]
         },
         "workerPool": {
-          "description": "Option to specify a `WorkerPool` for the build.\nFormat: projects\/{project}\/workerPools\/{workerPool}\n\nThis field is experimental.",
+          "description": "Option to specify a `WorkerPool` for the build.\nFormat: projects\/{project}\/locations\/{location}\/workerPools\/{workerPool}\n\nThis field is experimental.",
           "type": "string"
         },
         "logging": {

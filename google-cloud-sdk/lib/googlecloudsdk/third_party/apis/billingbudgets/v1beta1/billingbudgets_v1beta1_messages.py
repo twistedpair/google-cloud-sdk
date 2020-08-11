@@ -98,8 +98,8 @@ class GoogleCloudBillingBudgetsV1beta1AllUpdatesRule(_messages.Message):
       `projects/{project_id}/notificationChannels/{channel_id}`. A maximum of
       5 channels are allowed. See https://cloud.google.com/billing/docs/how-
       to/budgets-notification-recipients for more details.
-    pubsubTopic: Required. The name of the Cloud Pub/Sub topic where budget
-      related messages will be published, in the form
+    pubsubTopic: Optional. The name of the Pub/Sub topic where budget related
+      messages will be published, in the form
       `projects/{project_id}/topics/{topic_id}`. Updates are sent at regular
       intervals to the topic. The topic needs to be created before the budget
       is created; see https://cloud.google.com/billing/docs/how-
@@ -108,7 +108,7 @@ class GoogleCloudBillingBudgetsV1beta1AllUpdatesRule(_messages.Message):
       for a budget, otherwise, the API call will fail with PERMISSION_DENIED.
       See https://cloud.google.com/billing/docs/how-to/budgets-programmatic-
       notifications for more details on Pub/Sub roles and permissions.
-    schemaVersion: Required. The schema version of the notification sent to
+    schemaVersion: Optional. The schema version of the notification sent to
       `pubsub_topic`. Only "1.0" is accepted. It represents the JSON schema as
       defined in https://cloud.google.com/billing/docs/how-to/budgets-
       programmatic-notifications#notification_format

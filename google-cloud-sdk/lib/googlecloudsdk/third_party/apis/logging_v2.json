@@ -237,11 +237,6 @@
             "ACTIVE",
             "DELETE_REQUESTED"
           ]
-        },
-        "etag": {
-          "description": "etag is used for optimistic concurrency control as a way to help prevent simultaneous updates of a bucket from overwriting each other. It is strongly suggested that systems make use of the etag in the read-modify-write cycle to perform bucket updates in order to avoid race conditions: An etag is returned in the response to getBucket, and systems are expected to put that etag in the request to setIamPolicy to ensure that their change will be applied to the same version of the bucket.If no etag is provided in the call to UpdateBucket, then the existing bucket is overwritten blindly.",
-          "type": "string",
-          "format": "byte"
         }
       }
     },
@@ -667,10 +662,6 @@
         "sourceLocation": {
           "description": "Optional. Source code location information associated with the log entry, if any.",
           "$ref": "LogEntrySourceLocation"
-        },
-        "receivedLocation": {
-          "description": "Output only. The cloud region that this LogEntry was received in, such as \"us-east1\".",
-          "type": "string"
         }
       }
     },
@@ -1034,10 +1025,6 @@
         "filter": {
           "description": "Required. An advanced logs filter (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced_filters) which is used to match log entries. Example:\n\"resource.type=gae_app AND severity>=ERROR\"\nThe maximum length of the filter is 20000 characters.",
           "type": "string"
-        },
-        "disabled": {
-          "description": "Optional. If set to True, then this metric is disabled and it does not generate any points.",
-          "type": "boolean"
         },
         "metricDescriptor": {
           "description": "Optional. The metric descriptor associated with the logs-based metric. If unspecified, it uses a default metric descriptor with a DELTA metric kind, INT64 value type, with no labels and a unit of \"1\". Such a metric counts the number of log entries matching the filter expression.The name, type, and description fields in the metric_descriptor are output only, and is constructed using the name and description field in the LogMetric.To create a logs-based metric that records a distribution of log values, a DELTA metric kind with a DISTRIBUTION value type must be used along with a value_extractor expression in the LogMetric.Each label in the metric descriptor must have a matching label name as the key and an extractor expression as the value in the label_extractors map.The metric_kind and value_type fields in the metric_descriptor cannot be updated once initially configured. New labels can be added in the metric_descriptor, but existing labels cannot be modified except for their description.",
@@ -2856,18 +2843,6 @@
                   "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
-                },
-                "resourceNames": {
-                  "description": "Optional. NOT IMPLEMENTED YET. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
-                  "location": "query",
-                  "repeated": true,
-                  "type": "string"
-                },
-                "sourceResource": {
-                  "description": "Optional. NOT IMPLEMENTED YET. It should be in format of:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"",
-                  "location": "query",
-                  "repeated": true,
-                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -3914,18 +3889,6 @@
                   "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
-                },
-                "resourceNames": {
-                  "description": "Optional. NOT IMPLEMENTED YET. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
-                  "location": "query",
-                  "repeated": true,
-                  "type": "string"
-                },
-                "sourceResource": {
-                  "description": "Optional. NOT IMPLEMENTED YET. It should be in format of:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"",
-                  "location": "query",
-                  "repeated": true,
-                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -4824,18 +4787,6 @@
                 "pageToken": {
                   "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
                   "location": "query",
-                  "type": "string"
-                },
-                "resourceNames": {
-                  "description": "Optional. NOT IMPLEMENTED YET. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
-                  "location": "query",
-                  "repeated": true,
-                  "type": "string"
-                },
-                "sourceResource": {
-                  "description": "Optional. NOT IMPLEMENTED YET. It should be in format of:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"",
-                  "location": "query",
-                  "repeated": true,
                   "type": "string"
                 }
               },
@@ -6190,18 +6141,6 @@
                   "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
                   "location": "query",
                   "type": "string"
-                },
-                "resourceNames": {
-                  "description": "Optional. NOT IMPLEMENTED YET. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
-                  "location": "query",
-                  "repeated": true,
-                  "type": "string"
-                },
-                "sourceResource": {
-                  "description": "Optional. NOT IMPLEMENTED YET. It should be in format of:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"",
-                  "location": "query",
-                  "repeated": true,
-                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -6272,18 +6211,6 @@
             "pageToken": {
               "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
               "location": "query",
-              "type": "string"
-            },
-            "resourceNames": {
-              "description": "Optional. NOT IMPLEMENTED YET. The resource name that owns the logs:  projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  organization\/ORGANIZATION_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  billingAccounts\/BILLING_ACCOUNT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_ID  folders\/FOLDER_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/views\/VIEW_IDTo support legacy queries, it could also be:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"Note: It is not supported for query across multiple projects\/orgs\/folders\/billingAccounts",
-              "location": "query",
-              "repeated": true,
-              "type": "string"
-            },
-            "sourceResource": {
-              "description": "Optional. NOT IMPLEMENTED YET. It should be in format of:  \"projects\/PROJECT_ID\"  \"organizations\/ORGANIZATION_ID\"  \"billingAccounts\/BILLING_ACCOUNT_ID\"  \"folders\/FOLDER_ID\"",
-              "location": "query",
-              "repeated": true,
               "type": "string"
             }
           },

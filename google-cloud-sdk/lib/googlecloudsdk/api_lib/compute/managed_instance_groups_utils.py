@@ -94,7 +94,6 @@ def AddAutoscalerArgs(
     parser,
     autoscaling_file_enabled=False,
     stackdriver_metrics_flags=False,
-    scale_in=False,
     predictive=False):
   """Adds commandline arguments to parser."""
   parser.add_argument(
@@ -219,8 +218,7 @@ Mutually exclusive with `--update-stackdriver-metric`.
 
   GetModeFlag().AddToParser(parser)
 
-  if scale_in:
-    AddScaleInControlFlag(parser)
+  AddScaleInControlFlag(parser)
 
   if predictive:
     AddPredictiveAutoscaling(parser)
@@ -879,16 +877,13 @@ def BuildScaleIn(args, messages):
         timeWindowSec=args.scale_in_control.get('time-window'))
 
 
-def _BuildAutoscalerPolicy(args, messages, original, scale_in=False,
-                           predictive=False):
+def _BuildAutoscalerPolicy(args, messages, original, predictive=False):
   """Builds AutoscalingPolicy from args.
 
   Args:
     args: command line arguments.
     messages: module containing message classes.
     original: original autoscaler message.
-    scale_in: bool, whether to include the
-      'autoscalingPolicy.scaleInControl' field in the message.
     predictive: bool, whether to inclue the
       `autoscalingPolicy.cpuUtilization.predictiveMethod' field in the message.
   Returns:
@@ -905,8 +900,7 @@ def _BuildAutoscalerPolicy(args, messages, original, scale_in=False,
       'minNumReplicas': args.min_num_replicas,
   }
   policy_dict['mode'] = _BuildMode(args, messages, original)
-  if scale_in:
-    policy_dict['scaleInControl'] = BuildScaleIn(args, messages)
+  policy_dict['scaleInControl'] = BuildScaleIn(args, messages)
 
   return messages.AutoscalingPolicy(
       **dict((key, value) for key, value in six.iteritems(policy_dict)
@@ -943,7 +937,6 @@ def BuildAutoscaler(args,
                     igm_ref,
                     name,
                     original,
-                    scale_in=False,
                     predictive=False):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
@@ -951,7 +944,6 @@ def BuildAutoscaler(args,
           args,
           messages,
           original,
-          scale_in=scale_in,
           predictive=predictive),
       description=args.description,
       name=name,

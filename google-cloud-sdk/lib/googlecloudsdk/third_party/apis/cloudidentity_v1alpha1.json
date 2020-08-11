@@ -1022,7 +1022,7 @@
     },
     "ListDevicesResponse": {
       "id": "ListDevicesResponse",
-      "description": "Response message that is returned in LRO result of ListDevices Operation.",
+      "description": "Response message that is returned from the ListDevices method.",
       "type": "object",
       "properties": {
         "devices": {
@@ -1040,7 +1040,7 @@
     },
     "ListDeviceUsersResponse": {
       "id": "ListDeviceUsersResponse",
-      "description": "Response message that is returned in LRO result of ListDeviceUsers Operation.",
+      "description": "Response message that is returned from the ListDeviceUsers method.",
       "type": "object",
       "properties": {
         "deviceUsers": {

@@ -590,10 +590,10 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
 
 
 def GetDaisyTimeout(args):
-  # Make Daisy time out before gcloud by shaving off 2% from the timeout time,
+  # Make Daisy time out before gcloud by shaving off 3% from the timeout time,
   # up to a max of 5m (300s).
-  two_percent = int(args.timeout * 0.02)
-  daisy_timeout = args.timeout - min(two_percent, 300)
+  timeout_offset = int(args.timeout * 0.03)
+  daisy_timeout = args.timeout - min(timeout_offset, 300)
   return daisy_timeout
 
 
@@ -728,11 +728,6 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   _CheckIamPermissions(project_id, IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
                        IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
 
-  # Make OVF import time-out before gcloud by shaving off 2% from the timeout
-  # time, up to a max of 5m (300s).
-  two_percent = int(args.timeout * 0.02)
-  ovf_import_timeout = args.timeout - min(two_percent, 300)
-
   ovf_importer_args = []
   AppendArg(ovf_importer_args, 'instance-names', instance_name)
   AppendArg(ovf_importer_args, 'client-id', 'gcloud')
@@ -756,7 +751,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   if tags:
     AppendArg(ovf_importer_args, 'tags', ','.join(tags))
   AppendArg(ovf_importer_args, 'zone', zone)
-  AppendArg(ovf_importer_args, 'timeout', ovf_import_timeout, '-{0}={1}s')
+  AppendArg(ovf_importer_args, 'timeout', GetDaisyTimeout(args), '-{0}={1}s')
   AppendArg(ovf_importer_args, 'project', project)
   _AppendNodeAffinityLabelArgs(ovf_importer_args, args, compute_client.messages)
   if compute_release_track:
@@ -797,11 +792,6 @@ def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
   _CheckIamPermissions(project_id, IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
                        IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
 
-  # Make OVF import time-out before gcloud by shaving off 2% from the timeout
-  # time, up to a max of 5m (300s).
-  two_percent = int(args.timeout * 0.02)
-  ovf_import_timeout = args.timeout - min(two_percent, 300)
-
   machine_type = None
   if args.machine_type or args.custom_cpu or args.custom_memory:
     machine_type = instance_utils.InterpretMachineType(
@@ -834,7 +824,7 @@ def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
   if args.tags:
     AppendArg(ovf_importer_args, 'tags', ','.join(args.tags))
   AppendArg(ovf_importer_args, 'zone', properties.VALUES.compute.zone.Get())
-  AppendArg(ovf_importer_args, 'timeout', ovf_import_timeout, '-{0}={1}s')
+  AppendArg(ovf_importer_args, 'timeout', GetDaisyTimeout(args), '-{0}={1}s')
   AppendArg(ovf_importer_args, 'project', args.project)
   if compute_release_track:
     AppendArg(ovf_importer_args, 'release-track', compute_release_track)

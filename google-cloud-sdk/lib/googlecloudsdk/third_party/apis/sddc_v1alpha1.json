@@ -396,6 +396,64 @@
         }
       }
     },
+    "ListIpAddressesResponse": {
+      "id": "ListIpAddressesResponse",
+      "description": "The response of listing IpAddresses in a given ClusterGroup.",
+      "type": "object",
+      "properties": {
+        "ipAddresses": {
+          "description": "A list of IpAddresses.",
+          "type": "array",
+          "items": {
+            "$ref": "IpAddress"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be send as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "IpAddress": {
+      "id": "IpAddress",
+      "description": "An IpAddress resource in a ClusterGroup.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this IpAddress. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/ipAddresses\/my-ip`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. The create time of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The update time of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "internalIp": {
+          "description": "The internal IP of an workload VM.",
+          "type": "string"
+        },
+        "externalIp": {
+          "description": "Output only. The external IP of an workload VM.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
     "ListClusterGroupBackupsResponse": {
       "id": "ListClusterGroupBackupsResponse",
       "type": "object",
@@ -661,6 +719,21 @@
           "description": "Required. Number of desired bare metal nodes in this cluster.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "ResetCloudAdminCredentialsRequest": {
+      "id": "ResetCloudAdminCredentialsRequest",
+      "description": "Request for resetting vCenter or NSX CloudAdmin accounts.",
+      "type": "object",
+      "properties": {
+        "resetVcenterCloudadmin": {
+          "description": "Required. If true, reset the vCenter cloudadmin account.",
+          "type": "boolean"
+        },
+        "resetNsxCloudadmin": {
+          "description": "Required. If true, reset the NSX cloudadmin account.",
+          "type": "boolean"
         }
       }
     },
@@ -1721,6 +1794,34 @@
                   ],
                   "description": "Deletes a ClusterGroup."
                 },
+                "resetCloudAdminCredentials": {
+                  "id": "sddc.projects.locations.clusterGroups.resetCloudAdminCredentials",
+                  "path": "v1alpha1/{+clusterGroup}:resetCloudAdminCredentials",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}:resetCloudAdminCredentials",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "clusterGroup": {
+                      "description": "Required. The resource name of the cluster group to reset the cloudadmin password on. For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "clusterGroup"
+                  ],
+                  "request": {
+                    "$ref": "ResetCloudAdminCredentialsRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Reset the vCenter or NSX cloudadmin accounts."
+                },
                 "setIamPolicy": {
                   "id": "sddc.projects.locations.clusterGroups.setIamPolicy",
                   "path": "v1alpha1/{+resource}:setIamPolicy",
@@ -2031,6 +2132,134 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Remove bare metal nodes from a cluster."
+                    }
+                  }
+                },
+                "ipAddresses": {
+                  "methods": {
+                    "list": {
+                      "id": "sddc.projects.locations.clusterGroups.ipAddresses.list",
+                      "path": "v1alpha1/{+parent}/ipAddresses",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}/ipAddresses",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent ClusterGroup of which the IpAddresses belong to. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of IpAddresses to return. The service may return fewer than this value.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListIpAddressesRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListIpAddressesRequest` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "List filter.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListIpAddressesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists IpAddresses in a given ClusterGroup."
+                    },
+                    "get": {
+                      "id": "sddc.projects.locations.clusterGroups.ipAddresses.get",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}/ipAddresses/{ipAddressesId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the IpAddress to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group\/ipAddresses\/my-ip`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/ipAddresses\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "IpAddress"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the details of a single IpAddress."
+                    },
+                    "create": {
+                      "id": "sddc.projects.locations.clusterGroups.ipAddresses.create",
+                      "path": "v1alpha1/{+parent}/ipAddresses",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}/ipAddresses",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The ClusterGroup in which the IpAddress will be created. For example: `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "ipAddressId": {
+                          "description": "Required. The user-provided ID of the IpAddress to be created. This id must be unique among IpAddresses within the parent and will become the final token in the name URI.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "IpAddress"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new IpAddress in a given ClusterGroup. The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the cluster will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                    },
+                    "delete": {
+                      "id": "sddc.projects.locations.clusterGroups.ipAddresses.delete",
+                      "path": "v1alpha1/{+name}",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}/ipAddresses/{ipAddressesId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the ClusterGroupBackup to be deleted.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+\/ipAddresses\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes an IpAddress in a given ClusterGroup."
                     }
                   }
                 }

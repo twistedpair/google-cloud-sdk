@@ -840,7 +840,7 @@ class DataflowProjectsJobsGetMetricsRequest(_messages.Message):
   r"""A DataflowProjectsJobsGetMetricsRequest object.
 
   Fields:
-    jobId: The job to get messages for.
+    jobId: The job to get metrics for.
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains the job specified by job_id.
@@ -1161,11 +1161,27 @@ class DataflowProjectsLocationsJobsDebugSendCaptureRequest(_messages.Message):
   sendDebugCaptureRequest = _messages.MessageField('SendDebugCaptureRequest', 4)
 
 
+class DataflowProjectsLocationsJobsGetExecutionDetailsRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsJobsGetExecutionDetailsRequest object.
+
+  Fields:
+    jobId: The job to get execution details for.
+    location: The [regional endpoint]
+      (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
+      that contains the job specified by job_id.
+    projectId: A project id.
+  """
+
+  jobId = _messages.StringField(1, required=True)
+  location = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+
+
 class DataflowProjectsLocationsJobsGetMetricsRequest(_messages.Message):
   r"""A DataflowProjectsLocationsJobsGetMetricsRequest object.
 
   Fields:
-    jobId: The job to get messages for.
+    jobId: The job to get metrics for.
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains the job specified by job_id.
@@ -1359,6 +1375,36 @@ class DataflowProjectsLocationsJobsSnapshotsListRequest(_messages.Message):
   jobId = _messages.StringField(1, required=True)
   location = _messages.StringField(2, required=True)
   projectId = _messages.StringField(3, required=True)
+
+
+class DataflowProjectsLocationsJobsStagesGetExecutionDetailsRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsJobsStagesGetExecutionDetailsRequest object.
+
+  Fields:
+    endTime: Upper time bound of work items to include, by start time.
+    jobId: The job to get execution details for.
+    location: The [regional endpoint]
+      (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
+      that contains the job specified by job_id.
+    pageSize: If specified, determines the maximum number of work items to
+      return.  If unspecified, the service may choose an appropriate default,
+      or may return an arbitrarily large number of results.
+    pageToken: If supplied, this should be the value of next_page_token
+      returned by an earlier call. This will cause the next page of results to
+      be returned.
+    projectId: A project id.
+    stageId: The stage for which to fetch information.
+    startTime: Lower time bound of work items to include, by start time.
+  """
+
+  endTime = _messages.StringField(1)
+  jobId = _messages.StringField(2, required=True)
+  location = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  projectId = _messages.StringField(6, required=True)
+  stageId = _messages.StringField(7, required=True)
+  startTime = _messages.StringField(8)
 
 
 class DataflowProjectsLocationsJobsUpdateRequest(_messages.Message):
@@ -2808,6 +2854,16 @@ class Job(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 24)
 
 
+class JobExecutionDetails(_messages.Message):
+  r"""Information about the execution of a job.
+
+  Fields:
+    stages: The stages of the job execution.
+  """
+
+  stages = _messages.MessageField('StageSummary', 1, repeated=True)
+
+
 class JobExecutionInfo(_messages.Message):
   r"""Additional information about how a Cloud Dataflow job will be executed
   that isn't contained in the submitted job.
@@ -3938,6 +3994,18 @@ class PipelineDescription(_messages.Message):
   originalPipelineTransform = _messages.MessageField('TransformSummary', 3, repeated=True)
 
 
+class Point(_messages.Message):
+  r"""A point in the timeseries.
+
+  Fields:
+    time: The timestamp of the point.
+    value: The value of the point.
+  """
+
+  time = _messages.StringField(1)
+  value = _messages.FloatField(2)
+
+
 class Position(_messages.Message):
   r"""Position defines a position within a collection of data.  The value can
   be either the end position, a key (used with ordered collections), a byte
@@ -3960,6 +4028,20 @@ class Position(_messages.Message):
   key = _messages.StringField(4)
   recordIndex = _messages.IntegerField(5)
   shufflePosition = _messages.StringField(6)
+
+
+class ProgressTimeseries(_messages.Message):
+  r"""Information about the progress of some component of job execution.
+
+  Fields:
+    currentProgress: The current progress of the component, in the range
+      [0,1].
+    dataPoints: History of progress for the component.  Points are sorted by
+      time.
+  """
+
+  currentProgress = _messages.FloatField(1)
+  dataPoints = _messages.MessageField('Point', 2, repeated=True)
 
 
 class PubSubIODetails(_messages.Message):
@@ -5076,6 +5158,20 @@ class SplitInt64(_messages.Message):
   lowBits = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
 
 
+class StageExecutionDetails(_messages.Message):
+  r"""Information about the workers and work items within a stage.
+
+  Fields:
+    nextPageToken: If present, this response does not contain all requested
+      tasks.  To obtain the next page of results, repeat the request with
+      page_token set to this value.
+    workers: Workers that have done work on the stage.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workers = _messages.MessageField('WorkerDetails', 2, repeated=True)
+
+
 class StageSource(_messages.Message):
   r"""Description of an input or output of an execution stage.
 
@@ -5092,6 +5188,49 @@ class StageSource(_messages.Message):
   originalTransformOrCollection = _messages.StringField(2)
   sizeBytes = _messages.IntegerField(3)
   userName = _messages.StringField(4)
+
+
+class StageSummary(_messages.Message):
+  r"""Information about a particular execution stage of a job.
+
+  Enums:
+    StateValueValuesEnum: State of this stage.
+
+  Fields:
+    endTime: End time of this stage.  If the work item is completed, this is
+      the actual end time of the stage. Otherwise, it is the predicted end
+      time.
+    metrics: Metrics for this stage.
+    progress: Progress for this stage. Only applicable to Batch jobs.
+    stageId: ID of this stage
+    startTime: Start time of this stage.
+    state: State of this stage.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of this stage.
+
+    Values:
+      EXECUTION_STATE_UNKNOWN: The component state is unknown or unspecified.
+      EXECUTION_STATE_NOT_STARTED: The component is not yet running.
+      EXECUTION_STATE_RUNNING: The component is currently running.
+      EXECUTION_STATE_SUCCEEDED: The component succeeded.
+      EXECUTION_STATE_FAILED: The component failed.
+      EXECUTION_STATE_CANCELLED: Execution of the component was cancelled.
+    """
+    EXECUTION_STATE_UNKNOWN = 0
+    EXECUTION_STATE_NOT_STARTED = 1
+    EXECUTION_STATE_RUNNING = 2
+    EXECUTION_STATE_SUCCEEDED = 3
+    EXECUTION_STATE_FAILED = 4
+    EXECUTION_STATE_CANCELLED = 5
+
+  endTime = _messages.StringField(1)
+  metrics = _messages.MessageField('MetricUpdate', 2, repeated=True)
+  progress = _messages.MessageField('ProgressTimeseries', 3)
+  stageId = _messages.StringField(4)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -5861,6 +6000,51 @@ class WorkItem(_messages.Message):
   streamingSetupTask = _messages.MessageField('StreamingSetupTask', 15)
 
 
+class WorkItemDetails(_messages.Message):
+  r"""Information about an individual work item execution.
+
+  Enums:
+    StateValueValuesEnum: State of this work item.
+
+  Fields:
+    attemptId: Attempt ID of this work item
+    endTime: End time of this work item attempt.  If the work item is
+      completed, this is the actual end time of the work item.  Otherwise, it
+      is the predicted end time.
+    metrics: Metrics for this work item.
+    progress: Progress of this work item.
+    startTime: Start time of this work item attempt.
+    state: State of this work item.
+    taskId: Name of this work item.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of this work item.
+
+    Values:
+      EXECUTION_STATE_UNKNOWN: The component state is unknown or unspecified.
+      EXECUTION_STATE_NOT_STARTED: The component is not yet running.
+      EXECUTION_STATE_RUNNING: The component is currently running.
+      EXECUTION_STATE_SUCCEEDED: The component succeeded.
+      EXECUTION_STATE_FAILED: The component failed.
+      EXECUTION_STATE_CANCELLED: Execution of the component was cancelled.
+    """
+    EXECUTION_STATE_UNKNOWN = 0
+    EXECUTION_STATE_NOT_STARTED = 1
+    EXECUTION_STATE_RUNNING = 2
+    EXECUTION_STATE_SUCCEEDED = 3
+    EXECUTION_STATE_FAILED = 4
+    EXECUTION_STATE_CANCELLED = 5
+
+  attemptId = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  metrics = _messages.MessageField('MetricUpdate', 3, repeated=True)
+  progress = _messages.MessageField('ProgressTimeseries', 4)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  taskId = _messages.StringField(7)
+
+
 class WorkItemServiceState(_messages.Message):
   r"""The Dataflow service's idea of the current state of a WorkItem being
   processed by a worker.
@@ -6006,6 +6190,18 @@ class WorkItemStatus(_messages.Message):
   stopPosition = _messages.MessageField('Position', 12)
   totalThrottlerWaitTimeSeconds = _messages.FloatField(13)
   workItemId = _messages.StringField(14)
+
+
+class WorkerDetails(_messages.Message):
+  r"""Information about a worker
+
+  Fields:
+    workItems: Work items processed by this worker, sorted by time.
+    workerName: Name of this worker
+  """
+
+  workItems = _messages.MessageField('WorkItemDetails', 1, repeated=True)
+  workerName = _messages.StringField(2)
 
 
 class WorkerHealthReport(_messages.Message):

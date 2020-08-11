@@ -42,8 +42,8 @@ import six
 from six.moves.urllib import parse as urlparse
 
 
-_CLUSTER_EVENTS_API_NAME = global_methods.SERVERLESS_API_NAME
-_CLUSTER_EVENTS_API_VERSION = 'v1alpha1'
+_CLUSTER_EVENTS_API_NAME = 'anthosevents'
+_CLUSTER_EVENTS_API_VERSION = 'v1beta1'
 
 _MANAGED_EVENTS_API_NAME = 'events'
 _MANAGED_EVENTS_API_VERSION = 'v1beta1'

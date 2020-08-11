@@ -324,6 +324,35 @@ pools.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified instance.
+Returns a long running operation which contains the updated instance in the
+response on completion.
+
+      Args:
+        request: (RemotebuildexecutionProjectsInstancesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}',
+        http_method='PATCH',
+        method_id='remotebuildexecution.projects.instances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['loggingEnabled', 'name1', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='googleDevtoolsRemotebuildexecutionAdminV1alphaInstance',
+        request_type_name='RemotebuildexecutionProjectsInstancesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""
 

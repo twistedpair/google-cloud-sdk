@@ -39,5 +39,5 @@ class Task(six.with_metaclass(abc.ABC, object)):
   """Abstract class to represent one command operation."""
 
   @abc.abstractmethod
-  def Execute(self, callback=None):
+  def execute(self, callback=None):
     pass

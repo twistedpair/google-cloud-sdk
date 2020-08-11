@@ -312,7 +312,8 @@ class BuildOptions(_messages.Message):
       valid as it is indicative of a build request with an incorrect
       configuration.
     workerPool: Option to specify a `WorkerPool` for the build. Format:
-      projects/{project}/workerPools/{workerPool}  This field is experimental.
+      projects/{project}/locations/{location}/workerPools/{workerPool}  This
+      field is experimental.
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):

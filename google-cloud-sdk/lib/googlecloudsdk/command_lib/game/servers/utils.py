@@ -62,6 +62,8 @@ def GetApiVersionFromArgs(args):
     return 'v1alpha'
   if release_track == base.ReleaseTrack.BETA:
     return 'v1beta'
+  if release_track == base.ReleaseTrack.GA:
+    return 'v1'
   raise UnsupportedReleaseTrackError(release_track)
 
 

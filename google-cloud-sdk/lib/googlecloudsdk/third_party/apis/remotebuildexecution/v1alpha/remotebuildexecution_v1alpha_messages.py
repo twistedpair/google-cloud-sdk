@@ -1050,6 +1050,97 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteWorkerPoolRequest(_mes
   name = _messages.StringField(1)
 
 
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Message):
+  r"""FeaturePolicy defines features allowed to be used on RBE instances, as
+  well as instance-wide behavior changes that take effect without opt-in or
+  opt-out at usage time.
+
+  Enums:
+    LinuxIsolationValueValuesEnum: linux_isolation allows overriding the
+      docker runtime used for containers started on Linux.
+
+  Fields:
+    containerImageSources: Which container image sources are allowed.
+      Currently only RBE-supported registry (gcr.io) is allowed. One can allow
+      all repositories under a project or one specific repository only. E.g.
+      container_image_sources {   policy: RESTRICTED   allowed_values: [
+      "gcr.io/project-foo",     "gcr.io/project-bar/repo-baz",   ] }  will
+      allow any repositories under "gcr.io/project-foo" plus the repository
+      "gcr.io/project-bar/repo-baz".  Default (UNSPECIFIED) is equivalent to
+      any source is allowed.
+    dockerAddCapabilities: Whether dockerAddCapabilities can be used or what
+      capabilities are allowed.
+    dockerChrootPath: Whether dockerChrootPath can be used.
+    dockerNetwork: Whether dockerNetwork can be used or what network modes are
+      allowed. E.g. one may allow `off` value only via `allowed_values`.
+    dockerPrivileged: Whether dockerPrivileged can be used.
+    dockerRunAsRoot: Whether dockerRunAsRoot can be used.
+    dockerRuntime: Whether dockerRuntime is allowed to be set or what runtimes
+      are allowed. Note linux_isolation takes precedence, and if set,
+      docker_runtime values may be rejected if they are incompatible with the
+      selected isolation.
+    dockerSiblingContainers: Whether dockerSiblingContainers can be used.
+    linuxIsolation: linux_isolation allows overriding the docker runtime used
+      for containers started on Linux.
+  """
+
+  class LinuxIsolationValueValuesEnum(_messages.Enum):
+    r"""linux_isolation allows overriding the docker runtime used for
+    containers started on Linux.
+
+    Values:
+      LINUX_ISOLATION_UNSPECIFIED: Default value. Will be using Linux default
+        runtime.
+      GVISOR: Use gVisor runsc runtime.
+    """
+    LINUX_ISOLATION_UNSPECIFIED = 0
+    GVISOR = 1
+
+  containerImageSources = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 1)
+  dockerAddCapabilities = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 2)
+  dockerChrootPath = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 3)
+  dockerNetwork = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 4)
+  dockerPrivileged = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 5)
+  dockerRunAsRoot = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 6)
+  dockerRuntime = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 7)
+  dockerSiblingContainers = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 8)
+  linuxIsolation = _messages.EnumField('LinuxIsolationValueValuesEnum', 9)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature(_messages.Message):
+  r"""Defines whether a feature can be used or what values are accepted.
+
+  Enums:
+    PolicyValueValuesEnum: The policy of the feature.
+
+  Fields:
+    allowedValues: A list of acceptable values. Only effective when the policy
+      is `RESTRICTED`.
+    policy: The policy of the feature.
+  """
+
+  class PolicyValueValuesEnum(_messages.Enum):
+    r"""The policy of the feature.
+
+    Values:
+      POLICY_UNSPECIFIED: Default value, if not explicitly set. Equivalent to
+        FORBIDDEN, unless otherwise documented on a specific Feature.
+      ALLOWED: Feature is explicitly allowed.
+      FORBIDDEN: Feature is forbidden. Requests attempting to leverage it will
+        get an FailedPrecondition error, with a message like:   "Feature
+        forbidden by FeaturePolicy: Feature <X> on instance <Y>"
+      RESTRICTED: Only the values specified in the `allowed_values` are
+        allowed.
+    """
+    POLICY_UNSPECIFIED = 0
+    ALLOWED = 1
+    FORBIDDEN = 2
+    RESTRICTED = 3
+
+  allowedValues = _messages.StringField(1, repeated=True)
+  policy = _messages.EnumField('PolicyValueValuesEnum', 2)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetInstanceRequest(_messages.Message):
   r"""The request used for `GetInstance`.
 
@@ -1083,6 +1174,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
     StateValueValuesEnum: Output only. State of the instance.
 
   Fields:
+    featurePolicy: The policy to define whether or not RBE features can be
+      used or how they can be used.
     location: The location is a GCP region. Currently only `us-central1` is
       supported.
     loggingEnabled: Output only. Whether stack driver logging is enabled for
@@ -1112,10 +1205,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
     RUNNING = 2
     INACTIVE = 3
 
-  location = _messages.StringField(1)
-  loggingEnabled = _messages.BooleanField(2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  featurePolicy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy', 1)
+  location = _messages.StringField(2)
+  loggingEnabled = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messages.Message):
@@ -1893,6 +1987,37 @@ class RemotebuildexecutionProjectsInstancesListRequest(_messages.Message):
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class RemotebuildexecutionProjectsInstancesPatchRequest(_messages.Message):
+  r"""A RemotebuildexecutionProjectsInstancesPatchRequest object.
+
+  Fields:
+    googleDevtoolsRemotebuildexecutionAdminV1alphaInstance: A
+      GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance resource to be
+      passed as the request body.
+    loggingEnabled: Deprecated, use instance.logging_enabled instead. Whether
+      to enable Stackdriver logging for this instance.
+    name: Output only. Instance resource name formatted as:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`. Name should not be
+      populated when creating an instance since it is provided in the
+      `instance_id` field.
+    name1: Deprecated, use instance.Name instead. Name of the instance to
+      update. Format: `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
+    updateMask: The update mask applies to instance. For the `FieldMask`
+      definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask If an empty update_mask
+      is provided, only the non-default valued field in the worker pool field
+      will be updated. Note that in order to update a field to the default
+      value (zero, false, empty string) an explicit update_mask must be
+      provided.
+  """
+
+  googleDevtoolsRemotebuildexecutionAdminV1alphaInstance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 1)
+  loggingEnabled = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  name1 = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
 
 
 class RemotebuildexecutionProjectsInstancesWorkerpoolsDeleteRequest(_messages.Message):

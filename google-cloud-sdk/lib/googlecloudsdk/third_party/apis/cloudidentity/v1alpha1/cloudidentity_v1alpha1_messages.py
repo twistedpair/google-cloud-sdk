@@ -1053,8 +1053,7 @@ class ListClientStatesResponse(_messages.Message):
 
 
 class ListDeviceUsersResponse(_messages.Message):
-  r"""Response message that is returned in LRO result of ListDeviceUsers
-  Operation.
+  r"""Response message that is returned from the ListDeviceUsers method.
 
   Fields:
     deviceUsers: Devices meeting the list restrictions.
@@ -1067,8 +1066,7 @@ class ListDeviceUsersResponse(_messages.Message):
 
 
 class ListDevicesResponse(_messages.Message):
-  r"""Response message that is returned in LRO result of ListDevices
-  Operation.
+  r"""Response message that is returned from the ListDevices method.
 
   Fields:
     devices: Devices meeting the list restrictions.

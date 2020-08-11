@@ -22,7 +22,8 @@ from __future__ import unicode_literals
 import abc
 
 from googlecloudsdk.api_lib.storage import cloud_api
-from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.command_lib.storage import errors
+
 import six
 
 
@@ -30,12 +31,12 @@ VALID_CLOUD_SCHEMES = frozenset({
     provider.value for provider in cloud_api.ProviderPrefix})
 
 
-class InvalidUrlError(core_exceptions.Error):
-  """Error raised when the url string is not in the expected format."""
-
-
 class StorageUrl(six.with_metaclass(abc.ABCMeta)):
   """Abstract base class for file and Cloud Storage URLs."""
+
+  @abc.abstractproperty
+  def delimiter(self):
+    """Return the delimiter for the url."""
 
   def __eq__(self, other):
     return isinstance(other, StorageUrl) and self.url_string == other.url_string
@@ -58,6 +59,7 @@ class CloudUrl(StorageUrl):
 
   def __init__(self, scheme, bucket_name=None, object_name=None,
                generation=None):
+    super(CloudUrl, self).__init__()
     self.scheme = scheme if scheme else None
     self.bucket_name = bucket_name if bucket_name else None
     self.object_name = object_name if object_name else None
@@ -93,12 +95,12 @@ class CloudUrl(StorageUrl):
 
   def _validate_scheme(self):
     if self.scheme not in VALID_CLOUD_SCHEMES:
-      raise InvalidUrlError('Unrecognized scheme "%s"' % self.scheme)
+      raise errors.InvalidUrlError('Unrecognized scheme "%s"' % self.scheme)
 
   def _validate_object_name(self):
     if self.object_name == '.' or self.object_name == '..':
-      raise InvalidUrlError('%s is an invalid root-level object name' %
-                            self.object_name)
+      raise errors.InvalidUrlError('%s is an invalid root-level object name' %
+                                   self.object_name)
 
   @property
   def url_string(self):
@@ -114,6 +116,10 @@ class CloudUrl(StorageUrl):
     elif self.is_bucket():
       return '%s://%s' % (self.scheme, self.bucket_name)
     return '%s://%s/%s' % (self.scheme, self.bucket_name, self.object_name)
+
+  @property
+  def delimiter(self):
+    return self.CLOUD_URL_DELIM
 
   def is_bucket(self):
     return bool(self.bucket_name and not self.object_name)
@@ -156,3 +162,18 @@ def storage_url_from_string(url_str):
     # TODO(b/160593328) Add support for file scheme
     return None
   return CloudUrl.from_url_string(url_str)
+
+
+def rstrip_one_delimiter(string, delimiter=CloudUrl.CLOUD_URL_DELIM):
+  """Strip one delimiter char from the end.
+
+  Args:
+    string (str): String on which the action needs to be performed.
+    delimiter (str): A delimiter char.
+
+  Returns:
+    str: String with trailing delimiter removed.
+  """
+  if string.endswith(delimiter):
+    return string[:-len(delimiter)]
+  return string

@@ -701,7 +701,9 @@ class Feed(_messages.Message):
       must be a valid [CEL expression] (https://github.com/google/cel-spec) on
       a TemporalAsset with name `temporal_asset`. Example: a Feed with
       expression ("temporal_asset.deleted == true") will only publish Asset
-      deletions. Other fields of `Expr` are optional.
+      deletions. Other fields of `Expr` are optional.  See our [user
+      guide](https://cloud.google.com/asset-inventory/docs/monitoring-asset-
+      changes#feed_with_condition) for detailed instructions.
     contentType: Asset content type. If not specified, no content but the
       asset name and type will be returned.
     feedOutputConfig: Required. Feed output configuration defining where the
@@ -1347,7 +1349,10 @@ class GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices(_messages.Messag
 
   Fields:
     allowedServices: The list of APIs usable within the Service Perimeter.
-      Must be empty unless 'enable_restriction' is True.
+      Must be empty unless 'enable_restriction' is True. You can specify a
+      list of individual services, as well as include the 'RESTRICTED-
+      SERVICES' value, which automatically includes all of the services
+      protected by the perimeter.
     enableRestriction: Whether to restrict API calls within the Service
       Perimeter to the list of APIs specified in 'allowed_services'.
   """

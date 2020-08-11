@@ -14,6 +14,58 @@ from apitools.base.py import extra_types
 package = 'cloudbuild'
 
 
+class ApprovalConfig(_messages.Message):
+  r"""ApprovalConfig describes configuration for manual approval of a build.
+
+  Fields:
+    approvalRequired: Whether or not approval is needed. If this is set on a
+      build, it will become pending when created, and will need to be
+      explicitly approved to start.
+  """
+
+  approvalRequired = _messages.BooleanField(1)
+
+
+class ApprovalResult(_messages.Message):
+  r"""ApprovalResult describes the decision and associated metadata of a
+  manual approval of a build.
+
+  Enums:
+    DecisionValueValuesEnum: Required. The decision of this manual approval.
+
+  Fields:
+    approvalTime: Output only. The time when the approval decision was made.
+    approverAccount: Output only. Email of the user that called the
+      ApproveBuild API to approve or reject a build at the time that the API
+      was called (the user's actual email that is tied to their GAIA ID may
+      have changed).
+    comment: Optional. An optional comment for this manual approval result.
+    decision: Required. The decision of this manual approval.
+    url: Optional. An optional URL tied to this manual approval result. This
+      field is essentially the same as comment, except that it will be
+      rendered by the UI differently. An example use case is a link to an
+      external job that approved this Build.
+  """
+
+  class DecisionValueValuesEnum(_messages.Enum):
+    r"""Required. The decision of this manual approval.
+
+    Values:
+      DECISION_UNSPECIFIED: Default enum type. This should not be used.
+      APPROVED: Build is approved.
+      REJECTED: Build is rejected.
+    """
+    DECISION_UNSPECIFIED = 0
+    APPROVED = 1
+    REJECTED = 2
+
+  approvalTime = _messages.StringField(1)
+  approverAccount = _messages.StringField(2)
+  comment = _messages.StringField(3)
+  decision = _messages.EnumField('DecisionValueValuesEnum', 4)
+  url = _messages.StringField(5)
+
+
 class ArtifactObjects(_messages.Message):
   r"""Files in the workspace to upload to Cloud Storage upon successful
   completion of all build steps.
@@ -97,6 +149,8 @@ class Build(_messages.Message):
       included.
 
   Fields:
+    approval: Output only. Describes this build's approval configuration,
+      status, and result.
     artifacts: Artifacts produced by the build that should be uploaded upon
       successful completion of all build steps.
     buildTriggerId: Output only. The ID of the `BuildTrigger` that triggered
@@ -124,6 +178,10 @@ class Build(_messages.Message):
       status will be `EXPIRED`.  The TTL starts ticking from create_time.
     results: Output only. Results of the build.
     secrets: Secrets to decrypt using Cloud Key Management Service.
+    serviceAccount: IAM service account whose credentials will be used at
+      build runtime. Must be of the format
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. ACCOUNT can be email
+      address or uniqueId of the service account.
     source: The location of the source files to build.
     sourceProvenance: Output only. A permanent fixed identifier for source.
     startTime: Output only. Time at which execution of the build was started.
@@ -149,6 +207,8 @@ class Build(_messages.Message):
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
+      PENDING: Build has been created and is pending execution and queuing. It
+        has not been queued.
       QUEUED: Build or step is queued; work has not yet begun.
       WORKING: Build or step is being executed.
       SUCCESS: Build or step finished successfully.
@@ -159,14 +219,15 @@ class Build(_messages.Message):
       EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
     """
     STATUS_UNKNOWN = 0
-    QUEUED = 1
-    WORKING = 2
-    SUCCESS = 3
-    FAILURE = 4
-    INTERNAL_ERROR = 5
-    TIMEOUT = 6
-    CANCELLED = 7
-    EXPIRED = 8
+    PENDING = 1
+    QUEUED = 2
+    WORKING = 3
+    SUCCESS = 4
+    FAILURE = 5
+    INTERNAL_ERROR = 6
+    TIMEOUT = 7
+    CANCELLED = 8
+    EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
@@ -220,29 +281,65 @@ class Build(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  artifacts = _messages.MessageField('Artifacts', 1)
-  buildTriggerId = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  finishTime = _messages.StringField(4)
-  id = _messages.StringField(5)
-  images = _messages.StringField(6, repeated=True)
-  logUrl = _messages.StringField(7)
-  logsBucket = _messages.StringField(8)
-  options = _messages.MessageField('BuildOptions', 9)
-  projectId = _messages.StringField(10)
-  queueTtl = _messages.StringField(11)
-  results = _messages.MessageField('Results', 12)
-  secrets = _messages.MessageField('Secret', 13, repeated=True)
-  source = _messages.MessageField('Source', 14)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 15)
-  startTime = _messages.StringField(16)
-  status = _messages.EnumField('StatusValueValuesEnum', 17)
-  statusDetail = _messages.StringField(18)
-  steps = _messages.MessageField('BuildStep', 19, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 20)
-  tags = _messages.StringField(21, repeated=True)
-  timeout = _messages.StringField(22)
-  timing = _messages.MessageField('TimingValue', 23)
+  approval = _messages.MessageField('BuildApproval', 1)
+  artifacts = _messages.MessageField('Artifacts', 2)
+  buildTriggerId = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  finishTime = _messages.StringField(5)
+  id = _messages.StringField(6)
+  images = _messages.StringField(7, repeated=True)
+  logUrl = _messages.StringField(8)
+  logsBucket = _messages.StringField(9)
+  options = _messages.MessageField('BuildOptions', 10)
+  projectId = _messages.StringField(11)
+  queueTtl = _messages.StringField(12)
+  results = _messages.MessageField('Results', 13)
+  secrets = _messages.MessageField('Secret', 14, repeated=True)
+  serviceAccount = _messages.StringField(15)
+  source = _messages.MessageField('Source', 16)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 17)
+  startTime = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusDetail = _messages.StringField(20)
+  steps = _messages.MessageField('BuildStep', 21, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 22)
+  tags = _messages.StringField(23, repeated=True)
+  timeout = _messages.StringField(24)
+  timing = _messages.MessageField('TimingValue', 25)
+
+
+class BuildApproval(_messages.Message):
+  r"""BuildApproval describes a build's approval configuration, state, and
+  result.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of this build's approval.
+
+  Fields:
+    config: Output only. Configuration for manual approval of this build.
+    result: Output only. Result of manual approval for this Build.
+    state: Output only. The state of this build's approval.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of this build's approval.
+
+    Values:
+      STATE_UNSPECIFIED: Default enum type. This should not be used.
+      PENDING: Build approval is pending.
+      APPROVED: Build approval has been approved.
+      REJECTED: Build approval has been rejected.
+      CANCELLED: Build was cancelled while it was still pending approval.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    APPROVED = 2
+    REJECTED = 3
+    CANCELLED = 4
+
+  config = _messages.MessageField('ApprovalConfig', 1)
+  result = _messages.MessageField('ApprovalResult', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -273,6 +370,7 @@ class BuildOptions(_messages.Message):
       configuration file.
 
   Fields:
+    cluster: Details about how this build should be executed on a GKE cluster.
     diskSizeGb: Requested disk size for the VM that runs the build. Note that
       this is *NOT* "disk free"; some of the space will be used by the
       operating system and build utilities. Also note that this is the minimum
@@ -312,7 +410,8 @@ class BuildOptions(_messages.Message):
       valid as it is indicative of a build request with an incorrect
       configuration.
     workerPool: Option to specify a `WorkerPool` for the build. Format:
-      projects/{project}/workerPools/{workerPool}  This field is experimental.
+      projects/{project}/locations/{location}/workerPools/{workerPool}  This
+      field is experimental.
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
@@ -399,18 +498,19 @@ class BuildOptions(_messages.Message):
     MUST_MATCH = 0
     ALLOW_LOOSE = 1
 
-  diskSizeGb = _messages.IntegerField(1)
-  dynamicSubstitutions = _messages.BooleanField(2)
-  env = _messages.StringField(3, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 4)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 5)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 6)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 7)
-  secretEnv = _messages.StringField(8, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 9, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 10)
-  volumes = _messages.MessageField('Volume', 11, repeated=True)
-  workerPool = _messages.StringField(12)
+  cluster = _messages.MessageField('ClusterOptions', 1)
+  diskSizeGb = _messages.IntegerField(2)
+  dynamicSubstitutions = _messages.BooleanField(3)
+  env = _messages.StringField(4, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 5)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 6)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 7)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 8)
+  secretEnv = _messages.StringField(9, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 10, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 11)
+  volumes = _messages.MessageField('Volume', 12, repeated=True)
+  workerPool = _messages.StringField(13)
 
 
 class BuildStep(_messages.Message):
@@ -487,6 +587,8 @@ class BuildStep(_messages.Message):
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
+      PENDING: Build has been created and is pending execution and queuing. It
+        has not been queued.
       QUEUED: Build or step is queued; work has not yet begun.
       WORKING: Build or step is being executed.
       SUCCESS: Build or step finished successfully.
@@ -497,14 +599,15 @@ class BuildStep(_messages.Message):
       EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
     """
     STATUS_UNKNOWN = 0
-    QUEUED = 1
-    WORKING = 2
-    SUCCESS = 3
-    FAILURE = 4
-    INTERNAL_ERROR = 5
-    TIMEOUT = 6
-    CANCELLED = 7
-    EXPIRED = 8
+    PENDING = 1
+    QUEUED = 2
+    WORKING = 3
+    SUCCESS = 4
+    FAILURE = 5
+    INTERNAL_ERROR = 6
+    TIMEOUT = 7
+    CANCELLED = 8
+    EXPIRED = 9
 
   args = _messages.StringField(1, repeated=True)
   dir = _messages.StringField(2)
@@ -629,6 +732,20 @@ class CloudbuildProjectsWorkerPoolsPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   workerPool = _messages.MessageField('WorkerPool', 3)
+
+
+class ClusterOptions(_messages.Message):
+  r"""Details of the GKE Cluster for builds that should execute on-cluster.
+
+  Fields:
+    name: Identifier of the GKE Cluster this build should execute on.
+      Example:
+      projects/{project_id}/locations/{location}/cluster/{cluster_name}  The
+      cluster's project ID must be the same project ID that is running the
+      build. The cluster must exist and have the CloudBuild add-on enabled.
+  """
+
+  name = _messages.StringField(1)
 
 
 class Empty(_messages.Message):
@@ -1409,6 +1526,9 @@ class WorkerPool(_messages.Message):
     state: Output only. WorkerPool state.
     updateTime: Output only. Time at which the request to update the
       `WorkerPool` was received.
+    vpcscEnabled: Immutable. If true, the worker pool is created with a VPC-SC
+      compatible configuration. Users should set to true if the worker pool
+      project is part of a secured VPC-SC perimeter.
     workerConfig: Worker configuration for the `WorkerPool`.
   """
 
@@ -1436,7 +1556,8 @@ class WorkerPool(_messages.Message):
   region = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
   updateTime = _messages.StringField(7)
-  workerConfig = _messages.MessageField('WorkerConfig', 8)
+  vpcscEnabled = _messages.BooleanField(8)
+  workerConfig = _messages.MessageField('WorkerConfig', 9)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -518,6 +518,21 @@ class GkehubProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GkehubProjectsLocationsGlobalMembershipsInitializeHubRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsGlobalMembershipsInitializeHubRequest object.
+
+  Fields:
+    initializeHubRequest: A InitializeHubRequest resource to be passed as the
+      request body.
+    project: Required. The project in whose context this initialize is
+      requested. The value is in the format:
+      `projects/[project_number]/locations/global/memberships`.
+  """
+
+  initializeHubRequest = _messages.MessageField('InitializeHubRequest', 1)
+  project = _messages.StringField(2, required=True)
+
+
 class GkehubProjectsLocationsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsListRequest object.
 
@@ -816,6 +831,27 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class InitializeHubRequest(_messages.Message):
+  r"""Request message for the InitializeHub method."""
+
+
+class InitializeHubResponse(_messages.Message):
+  r"""Response message for the InitializeHub method.
+
+  Fields:
+    serviceIdentity: Name of the default service identity. This is of the
+      format `service-@gcp-sa-gkehub.iam.gserviceaccount.com`. This service
+      account has `roles/gkehub.serviceAgent` role in this project.
+    workloadIdentityPool: The Workload Identity Pool used for all clusters
+      registered with Hub. This is used to enable Workload Identity for
+      workloads running in these clusters. This is of the format
+      `.hub.id.goog`
+  """
+
+  serviceIdentity = _messages.StringField(1)
+  workloadIdentityPool = _messages.StringField(2)
+
+
 class KubernetesMetadata(_messages.Message):
   r"""KubernetesMetadata provides informational metadata for Memberships that
   are created from Kubernetes Endpoints (currently, these are equivalent to
@@ -884,12 +920,16 @@ class KubernetesResource(_messages.Message):
       but not in standalone Get/ListMembership requests. To get the resource
       manifest after the initial registration, the caller could make an
       UpdateMembership call with an empty field mask.
+    resourceOptions: Optional. The options for generat Kubernetes resources
+      other than the default value supplied by the Hub API. Empty or unset
+      fields will use the default value.
   """
 
   connectResources = _messages.MessageField('ResourceManifest', 1, repeated=True)
   connectVersion = _messages.StringField(2)
   membershipCrManifest = _messages.StringField(3)
   membershipResources = _messages.MessageField('ResourceManifest', 4, repeated=True)
+  resourceOptions = _messages.MessageField('ResourceOptions', 5)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1370,6 +1410,25 @@ class ResourceManifest(_messages.Message):
 
   clusterScoped = _messages.BooleanField(1)
   manifest = _messages.StringField(2)
+
+
+class ResourceOptions(_messages.Message):
+  r"""ResourceOptions represents the supported options for generating the
+  Kubernetes resources.
+
+  Fields:
+    connectVersion: Optional. The connect version to generate for
+      connect_resources. If unset, default to the latest GKE Connect version.
+      If set to a specific Connect version, the Connect resources of the
+      version will be generated. If the version does not exist or is already
+      out of support window, an INVALID_ARGUMENT error will be returned.
+    v1beta1Crd: Optional. Use apiextensions/v1beta1 instead of
+      apiextensions/v1 for CustomResourceDefinition resource. This option
+      should be set for clusters with Kubernetes apiserver version <1.16.
+  """
+
+  connectVersion = _messages.StringField(1)
+  v1beta1Crd = _messages.BooleanField(2)
 
 
 class Rule(_messages.Message):

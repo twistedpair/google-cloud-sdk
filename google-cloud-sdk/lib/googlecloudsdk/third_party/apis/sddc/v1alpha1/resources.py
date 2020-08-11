@@ -74,6 +74,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CLUSTERGROUPS_IPADDRESSES = (
+      'projects.locations.clusterGroups.ipAddresses',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/clusterGroups/'
+              '{clusterGroupsId}/ipAddresses/{ipAddressesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

@@ -170,6 +170,21 @@ https://cloud.google.com/cloud-build/docs/api/build-requests#substitutions
 """)
 
 
+def AddWorkerPoolFlag(parser, hidden=False):
+  """Adds a flag to send the build to a workerpool.
+
+  Args:
+    parser: The argparse parser to add the arg to.
+    hidden: If true, retain help but do not display it.
+  """
+  parser.add_argument(
+      '--worker-pool',
+      hidden=hidden,
+      help='Specify a worker pool for the build to run in. Format: '
+      'projects/{project}/locations/{region}/workerPools/{workerPool}. This '
+      'field is restricted to custom workers beta users.')
+
+
 def AddTimeoutFlag(parser):
   """Add a timeout flag."""
   parser.add_argument(
@@ -244,6 +259,19 @@ def AddConfigFlagsAlpha(parser):
       '[escaping](https://cloud.google.com/sdk/gcloud/reference/topic/escaping) '
       'if necessary.'
   )
+
+  build_cluster = parser.add_group(required=False, hidden=True)
+  build_cluster.add_argument(
+      '--cluster',
+      required=True,
+      hidden=True,
+      help='Name of the cluster on which to execute the build. '
+      'The cluster should have the Cloud Build add-on enabled.')
+  build_cluster.add_argument(
+      '--cluster-location',
+      required=True,
+      hidden=True,
+      help='Zone or region in which the cluster is located.')
 
 
 def GetMachineType(machine_type_flag):

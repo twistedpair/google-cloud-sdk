@@ -175,3 +175,11 @@ def GetDeleteTagsFlag():
       help='If specified, all tags associated with the image are deleted.',
       action='store_true',
       required=False)
+
+
+def GetJsonKeyFlag():
+  return base.Argument(
+      '--json-key',
+      help=('Path to service account JSON key. If not specified, '
+            'current active service account credentials or a placeholder for '
+            'gcloud credentials is used.'))

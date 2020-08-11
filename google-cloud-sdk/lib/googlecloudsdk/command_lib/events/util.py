@@ -29,7 +29,8 @@ from googlecloudsdk.core.util import retry
 
 SOURCE_COLLECTION_NAME = 'run.namespaces.{plural_kind}'
 ANTHOS_SOURCE_COLLECTION_NAME = 'anthosevents.namespaces.{plural_kind}'
-
+ANTHOS_TRIGGER_COLLECTION_NAME = 'anthosevents.namespaces.triggers'
+ANTHOS_NAMESPACE_COLLECTION_NAME = 'anthosevents.namespaces'
 
 # Max wait time before timing out
 _POLLING_TIMEOUT_MS = 180000

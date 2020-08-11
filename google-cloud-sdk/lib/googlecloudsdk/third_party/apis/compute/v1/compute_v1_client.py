@@ -4684,6 +4684,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetScreenshot(self, request, global_params=None):
+      r"""Returns the screenshot from the specified instance.
+
+      Args:
+        request: (ComputeInstancesGetScreenshotRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Screenshot) The response message.
+      """
+      config = self.GetMethodConfig('GetScreenshot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetScreenshot.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instances.getScreenshot',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/screenshot',
+        request_field='',
+        request_type_name='ComputeInstancesGetScreenshotRequest',
+        response_type_name='Screenshot',
+        supports_download=False,
+    )
+
     def GetSerialPortOutput(self, request, global_params=None):
       r"""Returns the last 1 MB of serial port output from the specified instance.
 

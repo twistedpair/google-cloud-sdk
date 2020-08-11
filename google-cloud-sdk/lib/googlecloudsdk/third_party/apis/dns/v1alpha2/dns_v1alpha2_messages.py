@@ -24,7 +24,7 @@ class Change(_messages.Message):
   Enums:
     StatusValueValuesEnum: Status of the operation (output only). A status of
       "done" means that the request to update the authoritative servers has
-      been sent, but the servers might not be updated yet.
+      been sent but the servers might not be updated yet.
 
   Fields:
     additions: Which ResourceRecordSets to add?
@@ -37,13 +37,13 @@ class Change(_messages.Message):
     startTime: The time that this operation was started by the server (output
       only). This is in RFC3339 text format.
     status: Status of the operation (output only). A status of "done" means
-      that the request to update the authoritative servers has been sent, but
+      that the request to update the authoritative servers has been sent but
       the servers might not be updated yet.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Status of the operation (output only). A status of "done" means that
-    the request to update the authoritative servers has been sent, but the
+    the request to update the authoritative servers has been sent but the
     servers might not be updated yet.
 
     Values:

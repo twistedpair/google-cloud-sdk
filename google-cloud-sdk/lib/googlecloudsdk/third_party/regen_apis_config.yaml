@@ -594,6 +594,10 @@ apis:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}
         projects.iap_web.services.versions:
           path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
+  krmapihosting:
+    v1alpha1:
+      discovery_doc: krmapihosting_v1alpha1.json
+      default: true
   labelmanager:
     v1alpha1:
       discovery_doc: labelmanager_v1alpha1.json
@@ -628,6 +632,10 @@ apis:
   memcache:
     v1beta2:
       discovery_doc: memcache_v1beta2.json
+      default: true
+  metastore:
+    v1alpha:
+      discovery_doc: metastore_v1alpha.json
       default: true
   ml:
     v1:
@@ -915,6 +923,8 @@ apis:
       discovery_doc: gameservices_v1alpha.json
     v1beta:
       discovery_doc: gameservices_v1beta.json
+    v1:
+      discovery_doc: gameservices_v1.json
       default: true
   translate:
     v3beta1:
@@ -944,3 +954,5 @@ apis:
       resources:
         projects.locations.scans:
           path: projects/{projectsId}/locations/{locationsId}/scans/{scansId}
+        projects.locations.scans.vulnerabilities:
+          path: projects/{projectsId}/locations/{locationsId}/scans/{scansId}/vulnerabilities

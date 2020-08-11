@@ -1759,6 +1759,10 @@
         },
         "routes": {
           "$ref": "GoogleCloudMlV1__RouteMap"
+        },
+        "endpoints": {
+          "description": "Optional. Output only.\nIf set by server, the http(s) endpoints returned to user after the\npublic\/private deployment is successful.\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#output_fields.",
+          "$ref": "GoogleCloudMlV1__EndpointMap"
         }
       }
     },
@@ -1917,6 +1921,25 @@
         },
         "health": {
           "description": "HTTP path to send health check requests.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudMlV1__EndpointMap": {
+      "id": "GoogleCloudMlV1__EndpointMap",
+      "description": "\nEndpointMap is used to provide paths for predict\/explain\/healthcheck\nto customers. It's an output only field in the version proto which can be\nonly set on the server side. Public endpoints follow the format specified\non the user facing doc, and private endpoints are customized for each\nprivately deploymed model\/version.",
+      "type": "object",
+      "properties": {
+        "predict": {
+          "description": "Http(s) path to send prediction requests.",
+          "type": "string"
+        },
+        "explain": {
+          "description": "Optional. Http(s) path to send explain requests.",
+          "type": "string"
+        },
+        "health": {
+          "description": "Http(s) path to send health check requests.",
           "type": "string"
         }
       }

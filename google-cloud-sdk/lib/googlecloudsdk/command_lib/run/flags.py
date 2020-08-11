@@ -96,11 +96,11 @@ class Product(enum.Enum):
   EVENTS = 'Events'
 
 
-def AddImageArg(parser):
+def AddImageArg(parser, required=True):
   """Add an image resource arg."""
   parser.add_argument(
       '--image',
-      required=True,
+      required=required,
       help='Name of the container image to deploy (e.g. '
       '`gcr.io/cloudrun/hello:latest`).')
 
@@ -973,6 +973,12 @@ def _GetTrafficChanges(args):
 def GetConfigurationChanges(args):
   """Returns a list of changes to Configuration, based on the flags set."""
   changes = []
+
+  # FlagIsExplicitlySet can't be used here because args.image is also set from
+  # code in deploy.py.
+  if hasattr(args, 'image') and args.image is not None:
+    changes.append(config_changes.ImageChange(args.image))
+
   changes.extend(_GetScalingChanges(args))
   if _HasEnvChanges(args):
     changes.append(_GetEnvChanges(args))

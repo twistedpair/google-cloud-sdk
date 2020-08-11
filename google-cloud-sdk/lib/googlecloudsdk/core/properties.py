@@ -18,11 +18,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
 import functools
 import os
 import re
 import sys
-import enum
 
 from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
@@ -1842,6 +1842,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.networkservices = self._Add('networkservices')
     self.networksecurity = self._Add('networksecurity')
     self.notebooks = self._Add('notebooks')
+    self.ondemandscanning = self._Add('ondemandscanning')
     self.orgpolicy = self._Add('orgpolicy')
     self.osconfig = self._Add('osconfig')
     self.oslogin = self._Add('oslogin')

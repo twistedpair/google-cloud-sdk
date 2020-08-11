@@ -392,8 +392,9 @@ class Cluster(_messages.Message):
         being done on the cluster, such as upgrading the master or node
         software. Details can be found in the `statusMessage` field.
       STOPPING: The STOPPING state indicates the cluster is being deleted.
-      ERROR: The ERROR state indicates the cluster may be unusable. Details
-        can be found in the `statusMessage` field.
+      ERROR: The ERROR state indicates the cluster is unusable. It will be
+        automatically deleted. Details can be found in the `statusMessage`
+        field.
       DEGRADED: The DEGRADED state indicates the cluster requires user action
         to restore full functionality. Details can be found in the
         `statusMessage` field.
@@ -1421,6 +1422,13 @@ class IPAllocationPolicy(_messages.Message):
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
+      This is used in conjunction with use_routes. It cannot be true if
+      use_routes is true. If both use_ip_aliases and use_routes are false,
+      then the server picks the default IP allocation mode
+    useRoutes: Whether routes will be used for pod IPs in the cluster. This is
+      used in conjunction with use_ip_aliases. It cannot be true if
+      use_ip_aliases is true. If both use_ip_aliases and use_routes are false,
+      then the server picks the default IP allocation mode
   """
 
   clusterIpv4Cidr = _messages.StringField(1)
@@ -1435,6 +1443,7 @@ class IPAllocationPolicy(_messages.Message):
   subnetworkName = _messages.StringField(10)
   tpuIpv4CidrBlock = _messages.StringField(11)
   useIpAliases = _messages.BooleanField(12)
+  useRoutes = _messages.BooleanField(13)
 
 
 class IntraNodeVisibilityConfig(_messages.Message):

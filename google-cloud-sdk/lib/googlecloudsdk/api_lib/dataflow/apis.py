@@ -20,13 +20,17 @@ from __future__ import unicode_literals
 
 import json
 import os
+import shutil
+import textwrap
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
+from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
@@ -283,7 +287,10 @@ class Templates(object):
   SDK_INFO = GetMessagesModule().SDKInfo
   SDK_LANGUAGE = GetMessagesModule().SDKInfo.LanguageValueValuesEnum
   CONTAINER_SPEC = GetMessagesModule().ContainerSpec
-
+  FLEX_TEMPLATE_JAVA11_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
+                                     'java11-template-launcher-base:latest')
+  FLEX_TEMPLATE_JAVA8_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
+                                    'java8-template-launcher-base:latest')
   # Mapping of apitools request message fields to their json parameters
   _CUSTOM_JSON_FIELD_MAPPINGS = {
       'dynamicTemplate_gcsPath': 'dynamicTemplate.gcsPath',
@@ -475,6 +482,40 @@ class Templates(object):
     return error
 
   @staticmethod
+  def _BuildDockerfile(flex_template_base_image, jar_paths, env,
+                       sdk_language):
+    """Validates ParameterMetadata objects in template metadata.
+
+    Args:
+      flex_template_base_image: SDK version or base image to use.
+      jar_paths: List of jar paths to pipelines and dependencies.
+      env: Dictionary of env variables to set in the container image.
+      sdk_language: SDK language of the flex template.
+
+    Returns:
+      Dockerfile contents as string.
+    """
+    dockerfile_template = """
+    FROM {base_image}
+
+    {env}
+
+    {copy}
+    """
+    if sdk_language == 'JAVA':
+      env['FLEX_TEMPLATE_JAVA_CLASSPATH'] = '/template/'
+    envs = ['ENV {}={}'.format(k, v) for k, v in env.items()]
+    env_list = '\n'.join(envs)
+    copy_commands = '\n'.join(
+        ['COPY {} /template/'.format(path) for path in jar_paths])
+    dockerfile_contents = textwrap.dedent(dockerfile_template).format(
+        base_image=Templates._GetFlexTemplateBaseImage(
+            flex_template_base_image),
+        env=env_list,
+        copy=copy_commands)
+    return dockerfile_contents
+
+  @staticmethod
   def _ValidateTemplateParameters(parameters):
     """Validates ParameterMetadata objects in template metadata.
 
@@ -497,6 +538,26 @@ class Templates(object):
         raise ValueError(
             'Invalid template metadata. Parameter helpText field is empty.'
             ' Parameter: {}'.format(parameter))
+
+  @staticmethod
+  def __ValidateFlexTemplateEnv(env, sdk_language):
+    """Builds and validates Flex template environment values.
+
+    Args:
+      env: Dictionary of env variables to set in the container image.
+      sdk_language: SDK language of the flex template.
+
+    Returns:
+      True on valid env values.
+
+    Raises:
+      ValueError: If is any of parameter value is invalid.
+    """
+    if sdk_language == 'JAVA' and 'FLEX_TEMPLATE_JAVA_MAIN_CLASS' not in env:
+      raise ValueError(('FLEX_TEMPLATE_JAVA_MAIN_CLASS environment variable '
+                        'should be provided for all JAVA jobs.'))
+
+    return True
 
   @staticmethod
   def _BuildTemplateMetadata(template_metadata_json):
@@ -528,6 +589,23 @@ class Templates(object):
       template_metadata_obj.parameters = template_metadata.parameters
 
     return template_metadata_obj
+
+  @staticmethod
+  def _GetFlexTemplateBaseImage(flex_template_base_image):
+    """Returns latest base image for given sdk version.
+
+    Args:
+        flex_template_base_image: SDK version or base image to use.
+
+    Returns:
+      If a custom base image value is given, returns the same value. Else,
+      returns the latest base image for the given sdk version.
+    """
+    if flex_template_base_image == 'JAVA11':
+      return Templates.FLEX_TEMPLATE_JAVA11_BASE_IMAGE
+    elif flex_template_base_image == 'JAVA8':
+      return Templates.FLEX_TEMPLATE_JAVA8_BASE_IMAGE
+    return flex_template_base_image
 
   @staticmethod
   def _BuildSDKInfo(sdk_language):
@@ -605,6 +683,54 @@ class Templates(object):
           '{}'.format(template_file_gcs_location, container_spec_pretty_json))
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error)
+
+  @staticmethod
+  def BuildAndStoreFlexTemplateImage(image_gcr_path, flex_template_base_image,
+                                     jar_paths, env, sdk_language):
+    """Builds the flex template docker container image and stores it in GCR.
+
+    Args:
+      image_gcr_path: GCR location to store the flex template container image.
+      flex_template_base_image: SDK version or base image to use.
+      jar_paths: List of jar paths to pipelines and dependencies.
+      env: Dictionary of env variables to set in the container image.
+      sdk_language: SDK language of the flex template.
+
+    Returns:
+      True if container is built and store successfully.
+
+    Raises:
+      ValueError: If the parameters values are invalid.
+    """
+    Templates.__ValidateFlexTemplateEnv(env, sdk_language)
+    with files.TemporaryDirectory() as temp_dir:
+      log.status.Print(
+          'Copying files to a temp directory {}'.format(temp_dir))
+      jar_files = []
+      for jar_path in jar_paths:
+        absl_path = os.path.abspath(jar_path)
+        shutil.copy2(absl_path, temp_dir)
+        jar_files.append(os.path.split(absl_path)[1])
+
+      log.status.Print(
+          'Generating dockerfile to build the flex template container image...')
+      dockerfile_contents = Templates._BuildDockerfile(
+          flex_template_base_image, jar_files, env, sdk_language)
+
+      dockerfile_path = os.path.join(temp_dir, 'Dockerfile')
+      files.WriteFileContents(dockerfile_path, dockerfile_contents)
+      log.status.Print(
+          'Generated Dockerfile. Contents: {}'.format(dockerfile_contents))
+
+      messages = cloudbuild_util.GetMessagesModule()
+      build_config = submit_util.CreateBuildConfig(
+          image_gcr_path, False, messages, None,
+          'cloudbuild.yaml', True, False, temp_dir, None, None, None,
+          None, None)
+      log.status.Print('Pushing flex template container image to GCR...')
+
+      submit_util.Build(messages, False, build_config)
+      return True
 
   @staticmethod
   def CreateJobFromFlexTemplate(template_args=None):

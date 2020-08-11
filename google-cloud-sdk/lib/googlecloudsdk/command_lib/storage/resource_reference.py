@@ -32,11 +32,11 @@ class Resource(object):
   Each reference represents a Bucket, Object, or Prefix.  For filesystem URLs,
   Objects represent files and Prefixes represent directories.
 
-  The metadata_obj member contains the underlying object as it was retrieved.
+  The metadata_object member contains the underlying object as it was retrieved.
   It is populated by the calling iterator, which may only request certain
   fields to reduce the number of server requests.
 
-  For filesystem and prefix URLs, metadata_obj is not populated.
+  For filesystem and prefix URLs, metadata_object is not populated.
 
   Attributes:
     storage_url (StorageUrl): A StorageUrl object representing the resource
@@ -59,38 +59,22 @@ class BucketResource(Resource):
 
   Attributes:
     storage_url (StorageUrl): A StorageUrl object representing the bucket
-    metadata_obj (apitools.messages.Bucket): Bucket instance.
+    metadata_object (apitools.messages.Bucket): Bucket instance.
     additional_metadata (dict): Key-value pairs representing additional
       metadata. This is needed for S3, where we want to preserve S3 metadata,
       which cannot be added to apitools.messages.Bucket
   """
 
-  def __init__(self, storage_url, metadata_obj, additional_metadata=None):
-    """Initialize the BucketResource object.
-
-    Args:
-      storage_url (StorageUrl): A StorageUrl object representing the bucket
-      metadata_obj (apitools.messages.Bucket): Bucket instance.
-      additional_metadata (dict): Optional. Key-value pairs representing
-        additional metadata. This is needed for S3, where we want to
-        preserve S3 metadata, which cannot be added to apitools.messages.
-    """
+  def __init__(self, storage_url, metadata_object, additional_metadata=None):
     super(BucketResource, self).__init__(storage_url)
-    self.metadata_obj = metadata_obj
+    self.metadata_object = metadata_object
     self.additional_metadata = additional_metadata
 
   @classmethod
-  def from_metadata_obj(cls, provider, metadata_obj):
-    """Helper method to generate the instance from metadata_obj.
-
-    Args:
-      provider (str): The cloud provider. e.g "gs" or "s3".
-      metadata_obj (apitools.messages.Bucket): Bucket instance.
-    Returns:
-      BucketResource object.
-    """
-    storage_url = CloudUrl(scheme=provider, bucket_name=metadata_obj.name)
-    return cls(storage_url, metadata_obj)
+  def from_gcs_metadata_object(cls, provider, metadata_object):
+    """Helper method to generate the instance from metadata_object."""
+    return cls(CloudUrl(scheme=provider, bucket_name=metadata_object.name),
+               metadata_object)
 
 
 class ObjectResource(Resource):
@@ -98,42 +82,26 @@ class ObjectResource(Resource):
 
   Attributes:
     storage_url (StorageUrl): A StorageUrl object representing the object
-    metadata_obj (apitools.messages.Object): Object instance.
+    metadata_object (apitools.messages.Object):
     additional_metadata (dict): key-value pairs od additional_metadata.
       This is needed for S3, where we want to preserve S3 metadata which
       cannot be added to apitools.messages.Bucket
   """
 
-  def __init__(self, storage_url, metadata_obj, additional_metadata=None):
-    """Initialize the ObjectResource object.
-
-    Args:
-      storage_url (StorageUrl): A StorageUrl object representing the object
-      metadata_obj (apitools.messages.Object): Object instance.
-      additional_metadata (dict): key-value pairs of additional_metadata.
-        This is needed for S3, where we want to preserve S3 metadata which
-        cannot be added to apitools.messages.Bucket
-    """
+  def __init__(self, storage_url, metadata_object, additional_metadata=None):
     super(ObjectResource, self).__init__(storage_url)
-    self.metadata_obj = metadata_obj
+    self.metadata_object = metadata_object
     self.additional_metadata = additional_metadata
 
   @classmethod
-  def from_metadata_obj(cls, provider, metadata_obj):
-    """Helper method to generate the instance from metadata_obj.
-
-    Args:
-      provider (str): Cloud provider e.g "gs" or "s3".
-      metadata_obj (apitools.messages.Object): Object instance.
-    Returns:
-      ObjectResource object.
-    """
+  def from_gcs_metadata_object(cls, provider, metadata_object):
+    """Helper method to generate the instance from metadata_object."""
     storage_url = CloudUrl(
         scheme=provider,
-        bucket_name=metadata_obj.bucket,
-        object_name=metadata_obj.name,
-        generation=metadata_obj.generation)
-    return cls(storage_url, metadata_obj)
+        bucket_name=metadata_object.bucket,
+        object_name=metadata_object.name,
+        generation=metadata_object.generation)
+    return cls(storage_url, metadata_object)
 
 
 class PrefixResource(Resource):

@@ -1017,6 +1017,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'gameservices': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gameservices.v1',
+                client_classpath='gameservices_v1_client.GameservicesV1',
+                messages_modulepath='gameservices_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.gameservices.v1alpha',
@@ -1030,7 +1038,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.gameservices.v1beta',
                 client_classpath='gameservices_v1beta_client.GameservicesV1beta',
                 messages_modulepath='gameservices_v1beta_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1192,6 +1200,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'krmapihosting': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.krmapihosting.v1alpha1',
+                client_classpath='krmapihosting_v1alpha1_client.KrmapihostingV1alpha1',
+                messages_modulepath='krmapihosting_v1alpha1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'labelmanager': {
         'v1alpha1':
             APIDef(
@@ -1272,6 +1290,16 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.memcache.v1beta2',
                 client_classpath='memcache_v1beta2_client.MemcacheV1beta2',
                 messages_modulepath='memcache_v1beta2_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'metastore': {
+        'v1alpha':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.metastore.v1alpha',
+                client_classpath='metastore_v1alpha_client.MetastoreV1alpha',
+                messages_modulepath='metastore_v1alpha_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

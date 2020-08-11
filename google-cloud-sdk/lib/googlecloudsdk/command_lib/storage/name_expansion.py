@@ -40,6 +40,6 @@ class NameExpansionIterator:
     """
     for url_str in self._url_strs:
       # TODO(b/160593328) Add support for file scheme
-      wildcard_expanded_urls = wildcard_iterator.CloudWildcardIterator(url_str)
+      wildcard_expanded_urls = wildcard_iterator.get_wildcard_iterator(url_str)
       for url in wildcard_expanded_urls:
         yield url

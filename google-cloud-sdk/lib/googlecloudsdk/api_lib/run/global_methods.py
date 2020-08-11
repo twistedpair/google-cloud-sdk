@@ -119,26 +119,19 @@ def ListClusters(location=None):
   ]
 
 
-def ListVerifiedDomains(client, region=_ALL_REGIONS):
+def ListVerifiedDomains(client):
   """Get all verified domains.
 
   Args:
     client: (base_api.BaseApiClient), instance of a client to use for the list
       request.
-    region: (str) optional name of location to search for clusters in. If not
-      passed, this defaults to the global value for all locations.
 
   Returns:
     List of client.MESSAGES_MODULE.AuthorizedDomain objects
   """
-  project = properties.VALUES.core.project.Get(required=True)
-  locations = resources.REGISTRY.Parse(
-      region,
-      params={'projectsId': project},
-      collection='run.projects.locations')
-  msgs = client.MESSAGES_MODULE
-  req = msgs.RunProjectsLocationsAuthorizeddomainsListRequest(
-      parent=locations.RelativeName())
-
-  response = client.projects_locations_authorizeddomains.List(req)
+  project_resource_relname = util.ProjectPath(
+      properties.VALUES.core.project.Get(required=True))
+  request = client.MESSAGES_MODULE.RunProjectsAuthorizeddomainsListRequest(
+      parent=project_resource_relname)
+  response = client.projects_authorizeddomains.List(request)
   return response.domains

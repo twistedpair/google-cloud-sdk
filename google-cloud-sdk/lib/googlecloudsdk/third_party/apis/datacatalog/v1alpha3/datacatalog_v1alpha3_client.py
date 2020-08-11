@@ -83,7 +83,8 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists crawler runs. This includes the currently running, pending and completed crawler runs.
+      r"""Lists crawler runs. This includes the currently running, pending and.
+completed crawler runs.
 
       Args:
         request: (DatacatalogProjectsCrawlersCrawlerRunsListRequest) input message
@@ -120,7 +121,8 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new crawler in a project. The request fails if the crawler (`parent`, crawlerId) exists.
+      r"""Creates a new crawler in a project. The request fails if the crawler.
+(`parent`, crawlerId) exists.
 
       Args:
         request: (DatacatalogProjectsCrawlersCreateRequest) input message
@@ -147,7 +149,8 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a crawler in a project. The request fails if the crawler does not exist.
+      r"""Deletes a crawler in a project. The request fails if the crawler does.
+not exist.
 
       Args:
         request: (DatacatalogProjectsCrawlersDeleteRequest) input message
@@ -255,7 +258,8 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      r"""Runs a crawler will create and execute an ad-hoc crawler run. The request fails if the crawler is already running.
+      r"""Runs a crawler will create and execute an ad-hoc crawler run.
+The request fails if the crawler is already running.
 
       Args:
         request: (DatacatalogProjectsCrawlersRunRequest) input message
@@ -545,7 +549,8 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a taxonomy. This operation will also delete all categories in this taxonomy.
+      r"""Deletes a taxonomy. This operation will also delete all.
+categories in this taxonomy.
 
       Args:
         request: (DatacatalogProjectsTaxonomiesDeleteRequest) input message
@@ -572,7 +577,10 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
     )
 
     def Export(self, request, global_params=None):
-      r"""Exports all taxonomies and their categories in a project. This method generates SerializedTaxonomy protos with nested categories that can be used as an input for future ImportTaxonomies calls.
+      r"""Exports all taxonomies and their categories in a project.
+
+This method generates SerializedTaxonomy protos with nested categories that
+can be used as an input for future ImportTaxonomies calls.
 
       Args:
         request: (DatacatalogProjectsTaxonomiesExportRequest) input message
@@ -653,7 +661,10 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports all taxonomies and their categories to a project as new taxonomies. This method provides a bulk taxonomy / category creation using nested proto structure.
+      r"""Imports all taxonomies and their categories to a project as new taxonomies.
+
+This method provides a bulk taxonomy / category creation using nested
+proto structure.
 
       Args:
         request: (DatacatalogProjectsTaxonomiesImportRequest) input message

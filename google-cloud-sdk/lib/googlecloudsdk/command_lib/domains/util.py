@@ -138,6 +138,21 @@ def ValidateEmail(email):
   return bool(re.match(pattern, email))
 
 
+def Prompt(prompt_string, message=None):
+  """Prompt for user input.
+
+  Args:
+    prompt_string: Message to print in the line with prompt.
+    message: Optional message to print before prompt.
+
+  Returns:
+    User provided value.
+  """
+  if message:
+    log.status.Print(message)
+  return console_io.PromptResponse(prompt_string)
+
+
 def PromptWithValidator(prompt_string,
                         validator,
                         error_message,

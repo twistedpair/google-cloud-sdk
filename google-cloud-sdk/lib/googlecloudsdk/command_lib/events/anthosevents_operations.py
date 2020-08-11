@@ -24,6 +24,7 @@ import functools
 import random
 
 from apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.api_lib.events import configmap
 from googlecloudsdk.api_lib.events import custom_resource_definition
 from googlecloudsdk.api_lib.events import iam_util
 from googlecloudsdk.api_lib.events import metric_names
@@ -41,6 +42,7 @@ from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 
 
 _EVENT_SOURCES_LABEL_SELECTOR = 'duck.knative.dev/source=true'
@@ -52,6 +54,11 @@ _SERVICE_ACCOUNT_KEY_COLLECTION = 'iam.projects.serviceAccounts.keys'
 _CORE_CLIENT_VERSION = 'v1'
 _ANTHOS_EVENTS_CLIENT_NAME = 'anthosevents'
 _ANTHOS_EVENTS_CLIENT_VERSION = 'v1beta1'
+
+_CLUSTER_INITIALIZED_ANNOTATION = 'events.cloud.google.com/initialized'
+_CONTROL_PLANE_NAMESPACE = 'cloud-run-events'
+_CONFIG_GCP_AUTH_NAME = 'config-gcp-auth'
+_CONFIGMAP_COLLECTION = 'anthosevents.api.v1.namespaces.configmaps'
 
 
 def Connect(conn_info):
@@ -534,3 +541,80 @@ class AnthosEventsOperations(object):
         response = self._core_client.api_v1_namespaces_secrets.ReplaceSecret(
             request)
     return secret.Secret(response, messages), key_ref
+
+  def IsClusterInitialized(self):
+    """Returns whether the cluster has been initialized for eventing."""
+    configmap_obj = self._GetConfigMap(
+        _ConfigMapRef(_CONTROL_PLANE_NAMESPACE, _CONFIG_GCP_AUTH_NAME))
+    if configmap_obj is None:
+      return False
+    return configmap_obj.annotations.get(
+        _CLUSTER_INITIALIZED_ANNOTATION) == 'true'
+
+  def MarkClusterInitialized(self):
+    """Marks the cluster as initialized for eventing.
+
+    This creates or updates a ConfigMap which involves adding an annotation
+    and setting some default configuration for eventing to use.
+    """
+    configmap_obj = self._GetConfigMap(
+        _ConfigMapRef(_CONTROL_PLANE_NAMESPACE, _CONFIG_GCP_AUTH_NAME))
+    if configmap_obj is None:
+      configmap_obj = configmap.ConfigMap.New(self._core_client,
+                                              _CONTROL_PLANE_NAMESPACE)
+      configmap_obj.name = _CONFIG_GCP_AUTH_NAME
+      self._PopulateDefaultAuthConfig(configmap_obj)
+      self._CreateConfigMap(configmap_obj)
+    else:
+      self._PopulateDefaultAuthConfig(configmap_obj)
+      self._ReplaceConfigMap(configmap_obj)
+
+  def _PopulateDefaultAuthConfig(self, configmap_obj):
+    """Populates the default eventing config and adds an annotation."""
+    auth_config = yaml.load(
+        configmap_obj.data.get('default-auth-config', '{}'))
+    auth_config['clusterDefaults'] = {
+        'secret': {
+            'name': 'google-cloud-key',
+            'key': 'key.json',
+        }
+    }
+    configmap_obj.data['default-auth-config'] = yaml.dump(auth_config)
+    configmap_obj.annotations[_CLUSTER_INITIALIZED_ANNOTATION] = 'true'
+
+  def _GetConfigMap(self, configmap_ref):
+    messages = self._core_client.MESSAGES_MODULE
+    request = messages.AnthoseventsApiV1NamespacesConfigmapsGetRequest(
+        name=configmap_ref.RelativeName(),
+    )
+    try:
+      response = self._core_client.api_v1_namespaces_configmaps.Get(request)
+    except api_exceptions.HttpNotFoundError:
+      return None
+    return configmap.ConfigMap(response, messages)
+
+  def _CreateConfigMap(self, configmap_obj):
+    messages = self._core_client.MESSAGES_MODULE
+    ref = _ConfigMapRef(configmap_obj.namespace, configmap_obj.name)
+    request = messages.AnthoseventsApiV1NamespacesConfigmapsCreateRequest(
+        configMap=configmap_obj.Message(),
+        parent=ref.Parent().RelativeName(),
+    )
+    self._core_client.api_v1_namespaces_configmaps.Create(request)
+
+  def _ReplaceConfigMap(self, configmap_obj):
+    messages = self._core_client.MESSAGES_MODULE
+    ref = _ConfigMapRef(configmap_obj.namespace, configmap_obj.name)
+    request = messages.AnthoseventsApiV1NamespacesConfigmapsReplaceConfigMapRequest(
+        configMap=configmap_obj.Message(),
+        name=ref.RelativeName(),
+    )
+    self._core_client.api_v1_namespaces_configmaps.ReplaceConfigMap(request)
+
+
+def _ConfigMapRef(namespace, name):
+  return resources.REGISTRY.Parse(
+      name,
+      params={'namespacesId': namespace},
+      collection=_CONFIGMAP_COLLECTION,
+      api_version=_CORE_CLIENT_VERSION)

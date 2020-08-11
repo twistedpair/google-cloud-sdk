@@ -440,7 +440,7 @@ def GetScheduling(args,
                   client,
                   skip_defaults,
                   support_node_affinity=False,
-                  support_min_node_cpu=False,
+                  support_min_node_cpu=True,
                   support_location_hint=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None

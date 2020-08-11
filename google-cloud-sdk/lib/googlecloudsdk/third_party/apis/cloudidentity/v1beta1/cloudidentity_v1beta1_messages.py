@@ -1844,11 +1844,17 @@ class Group(_messages.Message):
   account.
 
   Messages:
-    LabelsValue: Required. The labels that apply to the `Group`.  Must not
-      contain more than one entry. Must contain the entry
-      `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
-      `Group` is a Google Group or `'system/groups/external': ''` if the
-      `Group` is an external-identity-mapped group.
+    LabelsValue: Required. One or more label entries that apply to the Group.
+      Currently supported labels contain a key with an empty value.  Google
+      Groups are the default type of group and have a label with a key of
+      'cloudidentity.googleapis.com/groups.discussion_forum' and an empty
+      value.  Existing Google Groups can have an additional label with a key
+      of 'cloudidentity.googleapis.com/groups.security' and an empty value
+      added to them. **This is an immutable change and the security label
+      cannot be remove once added.**  Identity mapped groups for Cloud Search
+      have a label with a key of 'system/groups/external' and an empty value.
+      Examples: {"cloudidentity.googleapis.com/groups.discussion_forum": ""}
+      or {"system/groups/external": ""}.
 
   Fields:
     additionalGroupKeys: Additional entity key aliases for a Group.
@@ -1859,11 +1865,17 @@ class Group(_messages.Message):
     dynamicGroupMetadata: Optional. Dynamic group metadata like queries and
       status.
     groupKey: Required. Immutable. The `EntityKey` of the `Group`.
-    labels: Required. The labels that apply to the `Group`.  Must not contain
-      more than one entry. Must contain the entry
-      `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
-      `Group` is a Google Group or `'system/groups/external': ''` if the
-      `Group` is an external-identity-mapped group.
+    labels: Required. One or more label entries that apply to the Group.
+      Currently supported labels contain a key with an empty value.  Google
+      Groups are the default type of group and have a label with a key of
+      'cloudidentity.googleapis.com/groups.discussion_forum' and an empty
+      value.  Existing Google Groups can have an additional label with a key
+      of 'cloudidentity.googleapis.com/groups.security' and an empty value
+      added to them. **This is an immutable change and the security label
+      cannot be remove once added.**  Identity mapped groups for Cloud Search
+      have a label with a key of 'system/groups/external' and an empty value.
+      Examples: {"cloudidentity.googleapis.com/groups.discussion_forum": ""}
+      or {"system/groups/external": ""}.
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`.  Shall be of the form `groups/{group_id}`.
@@ -1876,11 +1888,17 @@ class Group(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Required. The labels that apply to the `Group`.  Must not contain more
-    than one entry. Must contain the entry
-    `'cloudidentity.googleapis.com/groups.discussion_forum': ''` if the
-    `Group` is a Google Group or `'system/groups/external': ''` if the `Group`
-    is an external-identity-mapped group.
+    r"""Required. One or more label entries that apply to the Group. Currently
+    supported labels contain a key with an empty value.  Google Groups are the
+    default type of group and have a label with a key of
+    'cloudidentity.googleapis.com/groups.discussion_forum' and an empty value.
+    Existing Google Groups can have an additional label with a key of
+    'cloudidentity.googleapis.com/groups.security' and an empty value added to
+    them. **This is an immutable change and the security label cannot be
+    remove once added.**  Identity mapped groups for Cloud Search have a label
+    with a key of 'system/groups/external' and an empty value.  Examples:
+    {"cloudidentity.googleapis.com/groups.discussion_forum": ""} or
+    {"system/groups/external": ""}.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1998,8 +2016,7 @@ class ListClientStatesResponse(_messages.Message):
 
 
 class ListDeviceUsersResponse(_messages.Message):
-  r"""Response message that is returned in LRO result of ListDeviceUsers
-  Operation.
+  r"""Response message that is returned from the ListDeviceUsers method.
 
   Fields:
     deviceUsers: Devices meeting the list restrictions.
@@ -2012,8 +2029,7 @@ class ListDeviceUsersResponse(_messages.Message):
 
 
 class ListDevicesResponse(_messages.Message):
-  r"""Response message that is returned in LRO result of ListDevices
-  Operation.
+  r"""Response message that is returned from the ListDevices method.
 
   Fields:
     devices: Devices meeting the list restrictions.

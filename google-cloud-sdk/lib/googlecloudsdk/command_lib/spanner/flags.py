@@ -124,12 +124,34 @@ def Ddl(required=False, help_text=''):
       help=help_text)
 
 
+def RemoveComments(ddl):
+  """Remove line comments starting with --."""
+  fragments = []
+  is_comment = False
+  # start index of content
+  start_index = 0
+  for i, c in enumerate(ddl):
+    if is_comment:
+      if c == '\n' or c == '\r':
+        start_index = i
+        is_comment = False
+      elif i == len(ddl) - 1:
+        start_index = i+1
+    elif ddl[i:i + 2] == '--':
+      is_comment = True
+      if i > start_index:
+        fragments.append(ddl[start_index:i])
+        start_index = i
+  fragments.append(ddl[start_index:])
+  return ''.join(fragments)
+
+
 def SplitDdlIntoStatements(ddl):
   """Break DDL statements on semicolon to support multiple in one argument."""
   statements = []
   for x in ddl:
     # Disallow empty strings to allow for trailing semi-colons.
-    statements.append(s for s in x.split(';') if s)
+    statements.append(s for s in RemoveComments(x).split(';') if s)
 
   return list(itertools.chain.from_iterable(statements))
 

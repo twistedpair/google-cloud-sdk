@@ -570,15 +570,6 @@ class LogBucket(_messages.Message):
     createTime: Output only. The creation timestamp of the bucket. This is not
       set for any of the default buckets.
     description: Describes this bucket.
-    etag: etag is used for optimistic concurrency control as a way to help
-      prevent simultaneous updates of a bucket from overwriting each other. It
-      is strongly suggested that systems make use of the etag in the read-
-      modify-write cycle to perform bucket updates in order to avoid race
-      conditions: An etag is returned in the response to getBucket, and
-      systems are expected to put that etag in the request to setIamPolicy to
-      ensure that their change will be applied to the same version of the
-      bucket.If no etag is provided in the call to UpdateBucket, then the
-      existing bucket is overwritten blindly.
     lifecycleState: Output only. The bucket lifecycle state.
     locked: Whether the bucket has been locked. The retention period on a
       locked bucket may not be changed. A locked bucket may not have any
@@ -610,12 +601,11 @@ class LogBucket(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  etag = _messages.BytesField(3)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 4)
-  locked = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  retentionDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(8)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
+  locked = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  retentionDays = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(7)
 
 
 class LogEntry(_messages.Message):
@@ -687,8 +677,6 @@ class LogEntry(_messages.Message):
       "type.googleapis.com/google.appengine.logging.v1.RequestLog"
     receiveTimestamp: Output only. The time the log entry was received by
       Logging.
-    receivedLocation: Output only. The cloud region that this LogEntry was
-      received in, such as "us-east1".
     resource: Required. The monitored resource that produced this log
       entry.Example: a log entry that reports a database error would be
       associated with the monitored resource designating the particular
@@ -841,15 +829,14 @@ class LogEntry(_messages.Message):
   operation = _messages.MessageField('LogEntryOperation', 7)
   protoPayload = _messages.MessageField('ProtoPayloadValue', 8)
   receiveTimestamp = _messages.StringField(9)
-  receivedLocation = _messages.StringField(10)
-  resource = _messages.MessageField('MonitoredResource', 11)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
-  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 13)
-  spanId = _messages.StringField(14)
-  textPayload = _messages.StringField(15)
-  timestamp = _messages.StringField(16)
-  trace = _messages.StringField(17)
-  traceSampled = _messages.BooleanField(18)
+  resource = _messages.MessageField('MonitoredResource', 10)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 11)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 12)
+  spanId = _messages.StringField(13)
+  textPayload = _messages.StringField(14)
+  timestamp = _messages.StringField(15)
+  trace = _messages.StringField(16)
+  traceSampled = _messages.BooleanField(17)
 
 
 class LogEntryOperation(_messages.Message):
@@ -1014,8 +1001,6 @@ class LogMetric(_messages.Message):
       may not be present for older metrics.
     description: Optional. A description of this metric, which is used in
       documentation. The maximum length of the description is 8000 characters.
-    disabled: Optional. If set to True, then this metric is disabled and it
-      does not generate any points.
     filter: Required. An advanced logs filter
       (https://cloud.google.com/logging/docs/view/advanced_filters) which is
       used to match log entries. Example: "resource.type=gae_app AND
@@ -1127,14 +1112,13 @@ class LogMetric(_messages.Message):
   bucketOptions = _messages.MessageField('BucketOptions', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  disabled = _messages.BooleanField(4)
-  filter = _messages.StringField(5)
-  labelExtractors = _messages.MessageField('LabelExtractorsValue', 6)
-  metricDescriptor = _messages.MessageField('MetricDescriptor', 7)
-  name = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  valueExtractor = _messages.StringField(10)
-  version = _messages.EnumField('VersionValueValuesEnum', 11)
+  filter = _messages.StringField(4)
+  labelExtractors = _messages.MessageField('LabelExtractorsValue', 5)
+  metricDescriptor = _messages.MessageField('MetricDescriptor', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  valueExtractor = _messages.StringField(9)
+  version = _messages.EnumField('VersionValueValuesEnum', 10)
 
 
 class LogSink(_messages.Message):
@@ -1617,26 +1601,11 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
-      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
-      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
-      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
-      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
-      supported for query across multiple
-      projects/orgs/folders/billingAccounts
-    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
-      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  resourceNames = _messages.StringField(4, repeated=True)
-  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
@@ -2246,26 +2215,11 @@ class LoggingFoldersLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
-      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
-      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
-      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
-      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
-      supported for query across multiple
-      projects/orgs/folders/billingAccounts
-    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
-      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  resourceNames = _messages.StringField(4, repeated=True)
-  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingFoldersSinksCreateRequest(_messages.Message):
@@ -2712,26 +2666,11 @@ class LoggingLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
-      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
-      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
-      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
-      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
-      supported for query across multiple
-      projects/orgs/folders/billingAccounts
-    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
-      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  resourceNames = _messages.StringField(4, repeated=True)
-  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
@@ -3129,26 +3068,11 @@ class LoggingOrganizationsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
-      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
-      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
-      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
-      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
-      supported for query across multiple
-      projects/orgs/folders/billingAccounts
-    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
-      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  resourceNames = _messages.StringField(4, repeated=True)
-  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingOrganizationsSinksCreateRequest(_messages.Message):
@@ -3692,26 +3616,11 @@ class LoggingProjectsLogsListRequest(_messages.Message):
     parent: Required. The resource name that owns the logs:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]"
-    resourceNames: Optional. NOT IMPLEMENTED YET. The resource name that owns
-      the logs:  projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/v
-      iews/VIEW_ID  organization/ORGANIZATION_ID/locations/LOCATION_ID/buckets
-      /BUCKET_ID/views/VIEW_ID  billingAccounts/BILLING_ACCOUNT_ID/locations/L
-      OCATION_ID/buckets/BUCKET_ID/views/VIEW_ID  folders/FOLDER_ID/locations/
-      LOCATION_ID/buckets/BUCKET_ID/views/VIEW_IDTo support legacy queries, it
-      could also be:  "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"Note: It is not
-      supported for query across multiple
-      projects/orgs/folders/billingAccounts
-    sourceResource: Optional. NOT IMPLEMENTED YET. It should be in format of:
-      "projects/PROJECT_ID"  "organizations/ORGANIZATION_ID"
-      "billingAccounts/BILLING_ACCOUNT_ID"  "folders/FOLDER_ID"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  resourceNames = _messages.StringField(4, repeated=True)
-  sourceResource = _messages.StringField(5, repeated=True)
 
 
 class LoggingProjectsMetricsCreateRequest(_messages.Message):

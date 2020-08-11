@@ -42,17 +42,20 @@ def PacketMirroringArgument(required=True, plural=False):
       regional_collection='compute.packetMirrorings')
 
 
-def AddCreateArgs(parser):
+def AddCreateArgs(parser, enable_filter_direction):
   """Adds flags for creating packet mirroring resources."""
-  _AddArgs(parser)
+  _AddArgs(parser, enable_filter_direction=enable_filter_direction)
 
 
-def AddUpdateArgs(parser):
+def AddUpdateArgs(parser, enable_filter_direction):
   """Adds flags for updating packet mirroring resources."""
-  _AddArgs(parser, is_for_update=True)
+  _AddArgs(
+      parser,
+      is_for_update=True,
+      enable_filter_direction=enable_filter_direction)
 
 
-def _AddArgs(parser, is_for_update=False):
+def _AddArgs(parser, is_for_update=False, enable_filter_direction=False):
   """Adds args for create/update subcommands."""
   # Network cannot be updated.
   if not is_for_update:
@@ -76,6 +79,8 @@ def _AddArgs(parser, is_for_update=False):
 
   _AddFilterCidrRangesArg(parser, is_for_update)
   _AddFilterProtocolsArg(parser, is_for_update)
+  if enable_filter_direction:
+    _AddFilterDirectionArg(parser)
 
 
 def _AddNetworkArg(parser):
@@ -352,3 +357,19 @@ def _AddFilterProtocolsArg(parser, is_for_update=False):
         If unspecified, the packet mirroring applies to all traffic.
         """,
     )
+
+
+def _AddFilterDirectionArg(parser):
+  """Adds args to specify filter direction."""
+  parser.add_argument(
+      '--filter-direction',
+      choices=['both', 'egress', 'ingress'],
+      metavar='DIRECTION',
+      help="""\
+        DIRECTION must be one of INGRESS, EGRESS, BOTH.
+        For INGRESS, only ingress traffic is mirrored.
+        For EGRESS, only egress traffic is mirrored.
+        For BOTH (or in case the filter-direction option is not specified),
+        both directions are mirrored. This is the default option.
+        """,
+  )

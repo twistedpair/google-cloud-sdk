@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20200727",
+ "revision": "20200731",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2331,6 +2331,13 @@
    "type": "object",
    "description": "Message containing Cloud CDN configuration for a backend bucket.",
    "properties": {
+    "bypassCacheOnRequestHeaders": {
+     "type": "array",
+     "description": "Bypass the cache when the specified request headers are matched - e.g. Pragma or Authorization headers. Up to 5 headers can be specified. The cache is bypassed for all cdnPolicy.cacheMode settings.",
+     "items": {
+      "$ref": "BackendBucketCdnPolicyBypassCacheOnRequestHeader"
+     }
+    },
     "cacheMode": {
      "type": "string",
      "enum": [
@@ -2376,6 +2383,11 @@
      "type": "boolean",
      "description": "If true then Cloud CDN will combine multiple concurrent cache fill requests into a small number of requests to the origin."
     },
+    "serveWhileStale": {
+     "type": "integer",
+     "description": "Serve existing content from the cache (if available) when revalidating content with the origin, or when an error is encountered when refreshing the cache. This setting defines the default \"max-stale\" duration for any cached responses that do not specify a max-stale directive. Stale responses that exceed the TTL configured here will not be served. The default limit (max-stale) is 86400s (1 day), which will allow stale content to be served up to this limit beyond the max-age (or s-max-age) of a cached response. The maximum allowed value is 604800(1 week). Set this to zero (0) to disable serve-while-stale.",
+     "format": "int32"
+    },
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
      "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a \"Cache-Control: public, max-age=[TTL]\" header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
@@ -2387,6 +2399,17 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "BackendBucketCdnPolicyBypassCacheOnRequestHeader": {
+   "id": "BackendBucketCdnPolicyBypassCacheOnRequestHeader",
+   "type": "object",
+   "description": "Bypass the cache when the specified request headers are present, e.g. Pragma or Authorization headers. Values are case insensitive. The presence of such a header overrides the cache_mode setting.",
+   "properties": {
+    "headerName": {
+     "type": "string",
+     "description": "The header field name to match on when bypassing cache. Values are case-insensitive."
     }
    }
   },
@@ -2877,6 +2900,13 @@
    "type": "object",
    "description": "Message containing Cloud CDN configuration for a backend service.",
    "properties": {
+    "bypassCacheOnRequestHeaders": {
+     "type": "array",
+     "description": "Bypass the cache when the specified request headers are matched - e.g. Pragma or Authorization headers. Up to 5 headers can be specified. The cache is bypassed for all cdnPolicy.cacheMode settings.",
+     "items": {
+      "$ref": "BackendServiceCdnPolicyBypassCacheOnRequestHeader"
+     }
+    },
     "cacheKeyPolicy": {
      "$ref": "CacheKeyPolicy",
      "description": "The CacheKeyPolicy for this CdnPolicy."
@@ -2926,6 +2956,11 @@
      "type": "boolean",
      "description": "If true then Cloud CDN will combine multiple concurrent cache fill requests into a small number of requests to the origin."
     },
+    "serveWhileStale": {
+     "type": "integer",
+     "description": "Serve existing content from the cache (if available) when revalidating content with the origin, or when an error is encountered when refreshing the cache. This setting defines the default \"max-stale\" duration for any cached responses that do not specify a max-stale directive. Stale responses that exceed the TTL configured here will not be served. The default limit (max-stale) is 86400s (1 day), which will allow stale content to be served up to this limit beyond the max-age (or s-max-age) of a cached response. The maximum allowed value is 604800(1 week). Set this to zero (0) to disable serve-while-stale.",
+     "format": "int32"
+    },
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
      "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a \"Cache-Control: public, max-age=[TTL]\" header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
@@ -2937,6 +2972,17 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "BackendServiceCdnPolicyBypassCacheOnRequestHeader": {
+   "id": "BackendServiceCdnPolicyBypassCacheOnRequestHeader",
+   "type": "object",
+   "description": "Bypass the cache when the specified request headers are present, e.g. Pragma or Authorization headers. Values are case insensitive. The presence of such a header overrides the cache_mode setting.",
+   "properties": {
+    "headerName": {
+     "type": "string",
+     "description": "The header field name to match on when bypassing cache. Values are case-insensitive."
     }
    }
   },
@@ -4443,7 +4489,6 @@
   "CustomerEncryptionKey": {
    "id": "CustomerEncryptionKey",
    "type": "object",
-   "description": "Represents a customer-supplied encryption key",
    "properties": {
     "kmsKeyName": {
      "type": "string",
@@ -4652,6 +4697,10 @@
      "items": {
       "type": "string"
      }
+    },
+    "satisfiesPhysicalZoneSeparation": {
+     "type": "boolean",
+     "description": "[Output Only] Specifies whether this disk satisfies zone separation."
     },
     "selfLink": {
      "type": "string",
@@ -6845,6 +6894,13 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource with the resource id."
     },
+    "serviceDirectoryRegistrations": {
+     "type": "array",
+     "description": "Service Directory resources to register this forwarding rule with. Currently, only supports a single Service Directory resource.",
+     "items": {
+      "$ref": "ForwardingRuleServiceDirectoryRegistration"
+     }
+    },
     "serviceLabel": {
      "type": "string",
      "description": "An optional prefix to the service name for this Forwarding Rule. If specified, the prefix is the first label of the fully qualified service name.\n\nThe label must be 1-63 characters long, and comply with RFC1035. Specifically, the label must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.\n\nThis field is only used for internal load balancing.",
@@ -7105,6 +7161,21 @@
    "properties": {
     "forwardingRule": {
      "type": "string"
+    }
+   }
+  },
+  "ForwardingRuleServiceDirectoryRegistration": {
+   "id": "ForwardingRuleServiceDirectoryRegistration",
+   "type": "object",
+   "description": "Describes the auto-registration of the Forwarding Rule to Service Directory. The region and project of the Service Directory resource generated from this registration will be the same as this Forwarding Rule.",
+   "properties": {
+    "namespace": {
+     "type": "string",
+     "description": "Service Directory namespace to register the forwarding rule under."
+    },
+    "service": {
+     "type": "string",
+     "description": "Service Directory service to register the forwarding rule under."
     }
    }
   },
@@ -9851,6 +9922,10 @@
      "items": {
       "type": "string"
      }
+    },
+    "satisfiesPhysicalZoneSeparation": {
+     "type": "boolean",
+     "description": "[Output Only] Specifies whether this instance satisfies zone separation."
     },
     "scheduling": {
      "$ref": "Scheduling",
@@ -16940,7 +17015,7 @@
     },
     "maintenancePolicy": {
      "type": "string",
-     "description": "Specifies how to handle instances when a node in the group undergoes maintenance.",
+     "description": "Specifies how to handle instances when a node in the group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE, or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more information, see  Maintenance policies.",
      "enum": [
       "DEFAULT",
       "MAINTENANCE_POLICY_UNSPECIFIED",
@@ -17136,7 +17211,7 @@
     },
     "mode": {
      "type": "string",
-     "description": "The autoscaling mode.",
+     "description": "The autoscaling mode. Set to one of: ON, OFF, or ONLY_SCALE_OUT. For more information, see  Autoscaler modes.",
      "enum": [
       "MODE_UNSPECIFIED",
       "OFF",
@@ -17327,6 +17402,10 @@
     "nodeType": {
      "type": "string",
      "description": "The type of this node."
+    },
+    "satisfiesPhysicalZoneSeparation": {
+     "type": "boolean",
+     "description": "[Output Only] Specifies whether this node satisfies zone separation."
     },
     "serverBinding": {
      "$ref": "ServerBinding",
@@ -20631,9 +20710,17 @@
    "type": "object",
    "description": "Represents a CIDR range which can be used to assign addresses.",
    "properties": {
+    "ipRange": {
+     "type": "string",
+     "description": "The IP address range of the public delegated prefix"
+    },
     "name": {
      "type": "string",
      "description": "The name of the public delegated prefix"
+    },
+    "project": {
+     "type": "string",
+     "description": "The project number of the public delegated prefix"
     },
     "region": {
      "type": "string",
@@ -21468,6 +21555,10 @@
       ""
      ]
     },
+    "supportsPhysicalZoneSeparation": {
+     "type": "boolean",
+     "description": "[Output Only] Specifies whether this region supports physical zone separation."
+    },
     "zones": {
      "type": "array",
      "description": "[Output Only] A list of zones available in this region, in the form of resource URLs.",
@@ -22040,7 +22131,7 @@
   "RegionInstanceGroupManagersApplyUpdatesRequest": {
    "id": "RegionInstanceGroupManagersApplyUpdatesRequest",
    "type": "object",
-   "description": "InstanceGroupManagers.applyUpdatesToInstances",
+   "description": "RegionInstanceGroupManagers.applyUpdatesToInstances",
    "properties": {
     "allInstances": {
      "type": "boolean",
@@ -26200,7 +26291,7 @@
     },
     "clientTlsPolicy": {
      "type": "string",
-     "description": "Optional. A URL referring to a networksecurity.ClientTlsPolicy resource that describes how clients should authenticate with this service's backends.\nclientTlsPolicy only applies to a global BackendService with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.\nIf left blank, communications are not encrypted."
+     "description": "Optional. A URL referring to a networksecurity.ClientTlsPolicy resource that describes how clients should authenticate with this service's backends.\nclientTlsPolicy only applies to a global BackendService with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.\nIf left blank, communications are not encrypted.\nNote: This field currently has no impact."
     },
     "clientTlsSettings": {
      "$ref": "ClientTlsSettings",
@@ -26208,7 +26299,7 @@
     },
     "subjectAltNames": {
      "type": "array",
-     "description": "Optional. A list of Subject Alternative Names (SANs) that the client verifies during a mutual TLS handshake with an server/endpoint for this BackendService. When the server presents its X.509 certificate to the client, the client inspects the certificate's subjectAltName field. If the field contains one of the specified values, the communication continues. Otherwise, it fails. This additional check enables the client to verify that the server is authorized to run the requested service.\nNote that the contents of the server certificate's subjectAltName field are configured by the Public Key Infrastructure which provisions server identities.\nOnly applies to a global BackendService with loadBalancingScheme set to INTERNAL_SELF_MANAGED. Only applies when BackendService has an attached clientTlsPolicy with clientCertificate (mTLS mode).",
+     "description": "Optional. A list of Subject Alternative Names (SANs) that the client verifies during a mutual TLS handshake with an server/endpoint for this BackendService. When the server presents its X.509 certificate to the client, the client inspects the certificate's subjectAltName field. If the field contains one of the specified values, the communication continues. Otherwise, it fails. This additional check enables the client to verify that the server is authorized to run the requested service.\nNote that the contents of the server certificate's subjectAltName field are configured by the Public Key Infrastructure which provisions server identities.\nOnly applies to a global BackendService with loadBalancingScheme set to INTERNAL_SELF_MANAGED. Only applies when BackendService has an attached clientTlsPolicy with clientCertificate (mTLS mode).\nNote: This field currently has no impact.",
      "items": {
       "type": "string"
      }
@@ -26751,6 +26842,10 @@
      "type": "string",
      "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "satisfiesPhysicalZoneSeparation": {
+     "type": "boolean",
+     "description": "[Output Only] Specifies whether this snapshot satisfies zone separation."
     },
     "selfLink": {
      "type": "string",
@@ -29272,7 +29367,7 @@
     },
     "authorizationPolicy": {
      "type": "string",
-     "description": "Optional. A URL referring to a networksecurity.AuthorizationPolicy resource that describes how the proxy should authorize inbound traffic. If left blank, access will not be restricted by an authorization policy.\nRefer to the AuthorizationPolicy resource for additional details.\nauthorizationPolicy only applies to a global TargetHttpsProxy attached to globalForwardingRules with the loadBalancingScheme set to INTERNAL_SELF_MANAGED."
+     "description": "Optional. A URL referring to a networksecurity.AuthorizationPolicy resource that describes how the proxy should authorize inbound traffic. If left blank, access will not be restricted by an authorization policy.\nRefer to the AuthorizationPolicy resource for additional details.\nauthorizationPolicy only applies to a global TargetHttpsProxy attached to globalForwardingRules with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.\nNote: This field currently has no impact."
     },
     "certificateMap": {
      "type": "string",
@@ -29333,7 +29428,7 @@
     },
     "serverTlsPolicy": {
      "type": "string",
-     "description": "Optional. A URL referring to a networksecurity.ServerTlsPolicy resource that describes how the proxy should authenticate inbound traffic.\nserverTlsPolicy only applies to a global TargetHttpsProxy attached to globalForwardingRules with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.\nIf left blank, communications are not encrypted."
+     "description": "Optional. A URL referring to a networksecurity.ServerTlsPolicy resource that describes how the proxy should authenticate inbound traffic.\nserverTlsPolicy only applies to a global TargetHttpsProxy attached to globalForwardingRules with the loadBalancingScheme set to INTERNAL_SELF_MANAGED.\nIf left blank, communications are not encrypted.\nNote: This field currently has no impact."
     },
     "sslCertificates": {
      "type": "array",
@@ -33650,6 +33745,10 @@
       "",
       ""
      ]
+    },
+    "supportsPhysicalZoneSeparation": {
+     "type": "boolean",
+     "description": "[Output Only] Specifies whether this zone supports physical zone separation."
     }
    }
   },

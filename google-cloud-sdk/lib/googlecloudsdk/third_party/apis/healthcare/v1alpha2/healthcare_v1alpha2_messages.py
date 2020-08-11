@@ -404,10 +404,10 @@ class Consent(_messages.Message):
     StateValueValuesEnum: Indicates the current state of this consent.
 
   Fields:
-    consentArtifact: Required. The resource name of the consent artifact that
-      contains proof of the end user's consent, of the form `projects/{project
-      _id}/locations/{location_id}/datasets/{dataset_id}/consentStores/{consen
-      t_store_id}/consentArtifacts/{consent_artifact_id}`.
+    consentArtifact: The resource name of the consent artifact that contains
+      proof of the end user's consent, of the form `projects/{project_id}/loca
+      tions/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_i
+      d}/consentArtifacts/{consent_artifact_id}`.
     name: Resource name of the Consent, of the form `projects/{project_id}/loc
       ations/{location_id}/datasets/{dataset_id}/consentStores/{consent_store_
       id}/consents/{consent_id}`.
@@ -1142,7 +1142,7 @@ class ExportMessagesResponse(_messages.Message):
 
 
 class ExportResourcesRequest(_messages.Message):
-  r"""Request to export resources.
+  r""" Request to export resources.
 
   Fields:
     bigqueryDestination: The BigQuery output destination.  The BigQuery
@@ -1590,11 +1590,11 @@ class GoogleCloudHealthcareV1alpha2DicomGcsSource(_messages.Message):
 
 
 class GoogleCloudHealthcareV1alpha2FhirBigQueryDestination(_messages.Message):
-  r"""The configuration for exporting to BigQuery.
+  r""" The configuration for exporting to BigQuery.
 
   Fields:
-    datasetUri: BigQuery URI to a dataset, up to 2000 characters long, in the
-      format `bq://projectId.bqDatasetId`
+    datasetUri: BigQuery URI to an existing  dataset, up to 2000 characters
+      long, in the format `bq://projectId.bqDatasetId`.
     schemaConfig: The configuration for the exported BigQuery schema.
   """
 
@@ -1603,7 +1603,7 @@ class GoogleCloudHealthcareV1alpha2FhirBigQueryDestination(_messages.Message):
 
 
 class GoogleCloudHealthcareV1alpha2FhirRestExportResourcesErrorDetails(_messages.Message):
-  r"""Response when errors occur while exporting resources. This structure is
+  r""" Response when errors occur while exporting resources. This structure is
   included in the error details to describe the detailed outcome. It is only
   included when the operation finishes with errors.
 
@@ -1624,7 +1624,7 @@ class GoogleCloudHealthcareV1alpha2FhirRestExportResourcesErrorDetails(_messages
 
 
 class GoogleCloudHealthcareV1alpha2FhirRestExportResourcesResponse(_messages.Message):
-  r"""Response when all resources export successfully. This structure is
+  r""" Response when all resources export successfully. This structure is
   included in the response to describe the detailed outcome. It is only
   included when the operation finishes successfully.
 
@@ -1641,7 +1641,7 @@ class GoogleCloudHealthcareV1alpha2FhirRestExportResourcesResponse(_messages.Mes
 
 
 class GoogleCloudHealthcareV1alpha2FhirRestGcsDestination(_messages.Message):
-  r"""The configuration for exporting to Cloud Storage.
+  r""" The configuration for exporting to Cloud Storage.
 
   Fields:
     uriPrefix: URI for a Cloud Storage directory where the server writes
@@ -1656,7 +1656,7 @@ class GoogleCloudHealthcareV1alpha2FhirRestGcsDestination(_messages.Message):
 
 
 class GoogleCloudHealthcareV1alpha2FhirRestGcsErrorDestination(_messages.Message):
-  r"""Specifies the Cloud Storage destination where errors are recorded.
+  r""" Specifies the Cloud Storage destination where errors are recorded.
 
   Fields:
     uriPrefix: URI for a Cloud Storage directory where the server writes error
@@ -1671,7 +1671,7 @@ class GoogleCloudHealthcareV1alpha2FhirRestGcsErrorDestination(_messages.Message
 
 
 class GoogleCloudHealthcareV1alpha2FhirRestGcsSource(_messages.Message):
-  r"""Specifies the configuration for importing data from Cloud Storage.
+  r""" Specifies the configuration for importing data from Cloud Storage.
 
   Fields:
     uri: Points to a Cloud Storage URI containing file(s) to import.  The URI
@@ -1692,9 +1692,9 @@ class GoogleCloudHealthcareV1alpha2FhirRestGcsSource(_messages.Message):
 
 
 class GoogleCloudHealthcareV1alpha2FhirRestImportResourcesErrorDetails(_messages.Message):
-  r"""Error response of importing resources. This structure is included in the
-  error details to describe the detailed error. It is only included when the
-  operation finishes with some failure.
+  r""" Error response of importing resources. This structure is included in
+  the error details to describe the detailed error. It is only included when
+  the operation finishes with some failure.
 
   Fields:
     errorCount: The number of resources that had errors.
@@ -1713,8 +1713,8 @@ class GoogleCloudHealthcareV1alpha2FhirRestImportResourcesErrorDetails(_messages
 
 
 class GoogleCloudHealthcareV1alpha2FhirRestImportResourcesResponse(_messages.Message):
-  r"""Final response of importing resources. This structure is included in the
-  response to describe the detailed outcome. It is only included when the
+  r""" Final response of importing resources. This structure is included in
+  the response to describe the detailed outcome. It is only included when the
   operation finishes successfully.
 
   Fields:
@@ -3584,7 +3584,7 @@ class ImportMessagesResponse(_messages.Message):
 
 
 class ImportResourcesRequest(_messages.Message):
-  r"""Request to import resources.
+  r""" Request to import resources.
 
   Enums:
     ContentStructureValueValuesEnum: The content structure in the source
@@ -4633,8 +4633,8 @@ class StreamConfig(_messages.Message):
       Service Agent** [service
       account](https://cloud.google.com/iam/docs/service-accounts).  If a
       resource mutation cannot be streamed to BigQuery, errors will be logged
-      to Cloud Logging  (see [Viewing logs](/healthcare/docs/how-
-      tos/logging)).
+      to Cloud Logging (see [Viewing error logs in Cloud
+      Logging](/healthcare/docs/how-tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

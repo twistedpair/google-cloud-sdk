@@ -169,6 +169,13 @@ the image family, and the image is used.
   parser.add_argument('--image-family', help=help_text, hidden=hidden)
 
 
+def AddImageFlagsCreate(parser):
+  AddImageTypeFlag(parser, 'cluster')
+  AddImageFlag(parser, hidden=True)
+  AddImageProjectFlag(parser, hidden=True)
+  AddImageFamilyFlag(parser, hidden=True)
+
+
 def AddNodeVersionFlag(parser, hidden=False):
   """Adds a --node-version flag to the given parser."""
   help_text = """\
@@ -1113,6 +1120,21 @@ def AddTagsFlag(parser, help_text):
       help=help_text)
 
 
+def AddTagsCreate(parser):
+  AddTagsFlag(
+      parser, """\
+Applies the given Compute Engine tags (comma separated) on all nodes in the new
+node-pool. Example:
+
+  $ {command} example-cluster --tags=tag1,tag2
+
+New nodes, including ones created by resize or recreate, will have these tags
+on the Compute Engine API instance object and can be used in firewall rules.
+See https://cloud.google.com/sdk/gcloud/reference/compute/firewall-rules/create
+for examples.
+""")
+
+
 def AddMasterAuthorizedNetworksFlags(parser, enable_group_for_update=None):
   """Adds Master Authorized Networks related flags to parser.
 
@@ -1620,6 +1642,13 @@ Example:
       help=help_text)
 
 
+def AddDiskSizeFlag(parser):
+  parser.add_argument(
+      '--disk-size',
+      type=arg_parsers.BinarySize(lower_bound='10GB'),
+      help='Size for node VM boot disks. Defaults to 100GB.')
+
+
 def AddDiskTypeFlag(parser):
   """Adds a --disk-type flag to the given parser.
 
@@ -1633,13 +1662,7 @@ Type of the node VM boot disk. Defaults to pd-standard.
       '--disk-type', help=help_text, choices=['pd-standard', 'pd-ssd'])
 
 
-def AddIPAliasFlags(parser):
-  """Adds flags related to IP aliases to the parser.
-
-  Args:
-    parser: A given parser.
-  """
-
+def AddIpAliasCoreFlag(parser):
   parser.add_argument(
       '--enable-ip-alias',
       action='store_true',
@@ -1650,6 +1673,14 @@ for Pod IPs. This will require at least two secondary ranges in the
 subnetwork, one for the pod IPs and another to reserve space for the
 services range.
 """)
+
+
+def AddIPAliasRelatedFlags(parser):
+  """Adds flags related to IP aliases to the parser.
+
+  Args:
+    parser: A given parser.
+  """
   parser.add_argument(
       '--services-ipv4-cidr',
       metavar='CIDR',
@@ -2702,6 +2733,10 @@ def AddMetadataFlags(parser):
       * ``startup-script''
       * ``user-data''
 
+      Google Kubernetes Engine sets the following keys by default:
+
+      * ``serial-port-logging-enable''
+
       See also Compute Engine's
       link:https://cloud.google.com/compute/docs/storing-retrieving-metadata[documentation]
       on storing and retrieving instance metadata.
@@ -3172,3 +3207,58 @@ Enable Confidential Nodes for this cluster. Enabling Confidential Nodes will cre
       default=None,
       hidden=True,
       action='store_true')
+
+
+def AddEnableCloudLogging(parser):
+  parser.add_argument(
+      '--enable-cloud-logging',
+      action=actions.DeprecationAction(
+          '--enable-cloud-logging',
+          warn='From 1.14, legacy Stackdriver GKE logging is deprecated. Thus, '
+          'flag `--enable-cloud-logging` is also deprecated. Please use '
+          '`--enable-stackdriver-kubernetes` instead, to migrate to new '
+          'Stackdriver Kubernetes Engine monitoring and logging. For more '
+          'details, please read: '
+          'https://cloud.google.com/monitoring/kubernetes-engine/migration.',
+          action='store_true'),
+      help='Automatically send logs from the cluster to the Google Cloud '
+      'Logging API. This flag is deprecated, use '
+      '`--enable-stackdriver-kubernetes` instead.')
+
+
+def AddEnableCloudMonitoring(parser):
+  parser.add_argument(
+      '--enable-cloud-monitoring',
+      action=actions.DeprecationAction(
+          '--enable-cloud-monitoring',
+          warn='From 1.14, legacy Stackdriver GKE monitoring is deprecated. '
+          'Thus, flag `--enable-cloud-monitoring` is also deprecated. Please '
+          'use `--enable-stackdriver-kubernetes` instead, to migrate to new '
+          'Stackdriver Kubernetes Engine monitoring and logging. For more '
+          'details, please read: '
+          'https://cloud.google.com/monitoring/kubernetes-engine/migration.',
+          action='store_true'),
+      help='Automatically send metrics from pods in the cluster to the Google '
+      'Cloud Monitoring API. VM metrics will be collected by Google Compute '
+      'Engine regardless of this setting. This flag is deprecated, use '
+      '`--enable-stackdriver-kubernetes` instead.')
+
+
+def AddMaxNodesPerPool(parser):
+  parser.add_argument(
+      '--max-nodes-per-pool',
+      type=arg_parsers.BoundedInt(100, api_adapter.MAX_NODES_PER_POOL),
+      help='The maximum number of nodes to allocate per default initial node '
+      'pool. Kubernetes Engine will automatically create enough nodes pools '
+      'such that each node pool contains less than '
+      '`--max-nodes-per-pool` nodes. Defaults to {nodes} nodes, but can be set '
+      'as low as 100 nodes per pool on initial create.'.format(
+          nodes=api_adapter.MAX_NODES_PER_POOL))
+
+
+def AddNumNodes(parser):
+  parser.add_argument(
+      '--num-nodes',
+      type=arg_parsers.BoundedInt(1),
+      help='The number of nodes to be created in each of the cluster\'s zones.',
+      default=3)

@@ -82,12 +82,12 @@ class AttestationOccurrence(_messages.Message):
       AttestationOccurrence, then the `serialized_payload` SHOULD be left
       empty. Each JWT SHOULD encode a claim specific to the `resource_uri` of
       this Occurrence, but this is not validated by Grafeas metadata API
-      implementations.  The JWT itself is opaque to Grafeas.
+      implementations. The JWT itself is opaque to Grafeas.
     serializedPayload: Required. The serialized payload that is verified by
       one or more `signatures`.
-    signatures: One or more signatures over `serialized_payload`.  Verifier
+    signatures: One or more signatures over `serialized_payload`. Verifier
       implementations should consider this attestation message verified if at
-      least one `signature` verifies `serialized_payload`.  See `Signature` in
+      least one `signature` verifies `serialized_payload`. See `Signature` in
       common.proto for more details on signature structure and verification.
   """
 
@@ -107,7 +107,7 @@ class BuildOccurrence(_messages.Message):
       compared to the provenance to confirm that it is unchanged. A
       base64-encoded string representation of the provenance bytes is used for
       the signature in order to interoperate with openssl which expects this
-      format for signature verification.  The serialized form is captured both
+      format for signature verification. The serialized form is captured both
       to avoid ambiguity in how the provenance is marshalled to json as well
       to prevent incompatibilities with future changes.
   """
@@ -337,9 +337,9 @@ class DiscoveryOccurrence(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -430,8 +430,7 @@ class Identity(_messages.Message):
 
 class ImageOccurrence(_messages.Message):
   r"""Details of the derived image portion of the DockerImage relationship.
-  This image would be produced from a Dockerfile with FROM <DockerImage.Basis
-  in attached Note>.
+  This image would be produced from a Dockerfile with FROM .
 
   Fields:
     baseResourceUrl: Output only. This contains the base image URL for the
@@ -667,7 +666,7 @@ class OndemandscanningProjectsLocationsScansScanContainerImageRequest(_messages.
 
   Fields:
     parent: Required. The parent of the resource for which scanning is
-      requested. Format:   projects/[project_name]/locations/[location]
+      requested. Format: projects/[project_name]/locations/[location]
     scanContainerImageRequest: A ScanContainerImageRequest resource to be
       passed as the request body.
   """
@@ -699,17 +698,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -718,29 +717,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -766,12 +765,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -924,15 +923,15 @@ class Signature(_messages.Message):
   respect to the trust anchors defined in policy (e.g. a Kritis policy).
   Typically this means that the verifier has been configured with a map from
   `public_key_id` to public key material (and any required parameters, e.g.
-  signing algorithm).  In particular, verification implementations MUST NOT
+  signing algorithm). In particular, verification implementations MUST NOT
   treat the signature `public_key_id` as anything more than a key lookup hint.
   The `public_key_id` DOES NOT validate or authenticate a public key; it only
   provides a mechanism for quickly selecting a public key ALREADY CONFIGURED
   on the verifier through a trusted channel. Verification implementations MUST
-  reject signatures in any of the following circumstances:   * The
-  `public_key_id` is not recognized by the verifier.   * The public key that
-  `public_key_id` refers to does not verify the     signature with respect to
-  the payload.  The `signature` contents SHOULD NOT be "attached" (where the
+  reject signatures in any of the following circumstances: * The
+  `public_key_id` is not recognized by the verifier. * The public key that
+  `public_key_id` refers to does not verify the signature with respect to the
+  payload. The `signature` contents SHOULD NOT be "attached" (where the
   payload is included with the serialized `signature` bytes). Verifiers MUST
   ignore any "attached" payload and only verify signatures with respect to
   explicitly provided payload (e.g. a `payload` field on the proto message
@@ -941,18 +940,17 @@ class Signature(_messages.Message):
 
   Fields:
     publicKeyId: The identifier for the public key that verifies this
-      signature.   * The `public_key_id` is required.   * The `public_key_id`
-      SHOULD be an RFC3986 conformant URI.   * When possible, the
-      `public_key_id` SHOULD be an immutable reference,     such as a
-      cryptographic digest.  Examples of valid `public_key_id`s:  OpenPGP V4
-      public key fingerprint:   *
+      signature. * The `public_key_id` is required. * The `public_key_id`
+      SHOULD be an RFC3986 conformant URI. * When possible, the
+      `public_key_id` SHOULD be an immutable reference, such as a
+      cryptographic digest. Examples of valid `public_key_id`s: OpenPGP V4
+      public key fingerprint: *
       "openpgp4fpr:74FAF3B861BDA0870C7B6DEF607E48D2A663AEEA" See
       https://www.iana.org/assignments/uri-schemes/prov/openpgp4fpr for more
-      details on this scheme.  RFC6920 digest-named SubjectPublicKeyInfo
-      (digest of the DER serialization):   *
-      "ni:///sha-256;cD9o9Cq6LG3jD0iKXqEi_vdjJGecm_iXkbqVoScViaU"   * "nih:///
-      sha-256;703f68f42aba2c6de30f488a5ea122fef76324679c9bf89791ba95a1271589a5
-      "
+      details on this scheme. RFC6920 digest-named SubjectPublicKeyInfo
+      (digest of the DER serialization): *
+      "ni:///sha-256;cD9o9Cq6LG3jD0iKXqEi_vdjJGecm_iXkbqVoScViaU" * "nih:///sh
+      a-256;703f68f42aba2c6de30f488a5ea122fef76324679c9bf89791ba95a1271589a5"
     signature: The content of the signature, an opaque bytestring. The payload
       that this signature verifies MUST be unambiguously provided with the
       Signature during verification. A wrapper message might provide the
@@ -970,11 +968,11 @@ class Source(_messages.Message):
 
   Messages:
     FileHashesValue: Hash(es) of the build source, which can be used to verify
-      that the original source integrity was maintained in the build.  The
-      keys to this map are file paths used as build source and the values
-      contain the hash values for those files.  If the build source came in a
-      single package such as a gzipped tarfile (.tar.gz), the FileHash will be
-      for the single path to that file.
+      that the original source integrity was maintained in the build. The keys
+      to this map are file paths used as build source and the values contain
+      the hash values for those files. If the build source came in a single
+      package such as a gzipped tarfile (.tar.gz), the FileHash will be for
+      the single path to that file.
 
   Fields:
     additionalContexts: If provided, some of the source code used for the
@@ -986,9 +984,9 @@ class Source(_messages.Message):
     context: If provided, the source code used for the build came from this
       location.
     fileHashes: Hash(es) of the build source, which can be used to verify that
-      the original source integrity was maintained in the build.  The keys to
+      the original source integrity was maintained in the build. The keys to
       this map are file paths used as build source and the values contain the
-      hash values for those files.  If the build source came in a single
+      hash values for those files. If the build source came in a single
       package such as a gzipped tarfile (.tar.gz), the FileHash will be for
       the single path to that file.
   """
@@ -996,9 +994,9 @@ class Source(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FileHashesValue(_messages.Message):
     r"""Hash(es) of the build source, which can be used to verify that the
-    original source integrity was maintained in the build.  The keys to this
+    original source integrity was maintained in the build. The keys to this
     map are file paths used as build source and the values contain the hash
-    values for those files.  If the build source came in a single package such
+    values for those files. If the build source came in a single package such
     as a gzipped tarfile (.tar.gz), the FileHash will be for the single path
     to that file.
 
@@ -1141,7 +1139,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1150,7 +1148,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1244,8 +1242,8 @@ class Version(_messages.Message):
 
   Fields:
     epoch: Used to correct mistakes in the version numbering scheme.
-    fullName: Human readable version string. This string is of the form
-      <epoch>:<name>-<revision> and is only set when kind is NORMAL.
+    fullName: Human readable version string. This string is of the form :- and
+      is only set when kind is NORMAL.
     kind: Required. Distinguishes between sentinel MIN/MAX versions and normal
       versions.
     name: Required only when version kind is NORMAL. The main part of the

@@ -4,6 +4,73 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
+## 305.0.0 (2020-08-11)
+
+### Artifact Registry
+
+* Added `--json-key flag` to `gcloud beta artifacts print-settings`.
+* Added bearer auth for npm support to `gcloud beta artifacts print-settings`.
+
+### Cloud Build
+
+* Added the flag `--worker-pool` to the command `gcloud builds submit`.
+
+### Cloud Dataflow
+
+* Added flex template docker container building support in build command `gcloud beta dataflow flex-template build`.
+
+### Cloud Pub/Sub
+
+* Replaced `--scale` in `gcloud beta pubsub lite-topics create` and `gcloud beta
+  pubsub lite-topics update` with `--per-partition-publish-mib` and
+  `--per-partition-subscribe-mib` flags.
+
+### Cloud Run
+
+*   Added `--image` flag to `gcloud run services update` command in beta and GA
+    to support updating container image.
+
+### Cloud Security Command Center
+
+* Promoted `gcloud scc assets` command group to beta and GA.
+
+### Compute Engine
+
+* Promoted `cpu-overcommit-type` flag of `gcloud beta compute sole-tenancy node-templates create` to GA.
+* Promoted `--stateful-disk` flag for `gcloud compute instance-groups managed create` to GA.
+* Promoted `--stateful-disk`, `--remove-stateful-disk` flags for `gcloud compute instance-groups managed update` to GA.
+* Promoted `--scale-in-control` flag of `gcloud compute instance-groups managed set-autoscaling` to GA.
+* Promoted `--scale-in-control` and `--clear-scale-in-control` flags of `gcloud compute instance-groups managed update-autoscaling` to GA.
+
+### Deployment Manager
+
+* Added `--custom-certificate-authority-roots` flag to `gcloud
+  deployment-manager type-providers <create|update>`.
+
+### Kubernetes Engine
+
+* Promoted the GKE add-on `ConfigConnector` of `gcloud container clusters
+  <create|update>` to GA. This add-on is disabled by default.
+  * Use `--addons=ConfigConnector` to enable the add-on during cluster
+    creation.
+  * Use `--update-addons=ConfigConnector=ENABLED|DISABLED` to
+    enable/disable the add-on for existing GKE clusters.
+* Updates default kubectl from 1.15 to 1.16.
+* Additional kubectl versions:
+  * kubectl.1.14 (1.14.10)
+  * kubectl.1.15 (1.15.12)
+  * kubectl.1.16 (1.16.13)
+  * kubectl.1.17 (1.17.9)
+  * kubectl.1.18 (1.18.6)
+* Promoted `--disable-default-snat` flag of `gcloud container clusters
+  <create|update>` to GA.
+* Modified GKE nodes to have serial port output logging enabled by default. To disable, use `--metadata serial-port-logging-enable=false`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on July 31, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
 ## 304.0.0 (2020-08-04)

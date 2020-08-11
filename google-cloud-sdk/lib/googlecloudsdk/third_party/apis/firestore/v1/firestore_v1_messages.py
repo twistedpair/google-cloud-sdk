@@ -2049,12 +2049,13 @@ class PartitionQueryRequest(_messages.Message):
       cursor B, cursor M, cursor Q, cursor U, cursor W
     partitionCount: The desired maximum number of partition points. The
       partitions may be returned across multiple pages of results. The number
-      must be strictly positive. The actual number of partitions returned may
-      be fewer.  For example, this may be set to one fewer than the number of
-      parallel queries to be run, or in running a data pipeline job, one fewer
-      than the number of workers or compute instances available.
-    structuredQuery: A structured query. Filters, order bys, limits, offsets,
-      and start/end cursors are not supported.
+      must be positive. The actual number of partitions returned may be fewer.
+      For example, this may be set to one fewer than the number of parallel
+      queries to be run, or in running a data pipeline job, one fewer than the
+      number of workers or compute instances available.
+    structuredQuery: A structured query. Query must specify collection with
+      all descendants and be ordered by name ascending. Other filters, order
+      bys, limits, offsets, and start/end cursors are not supported.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2078,7 +2079,8 @@ class PartitionQueryResponse(_messages.Message):
       For example, if a PartitionQuery request returns partition cursors A and
       B, running the following three queries will return the entire result set
       of the original query:   * query, end_at A  * query, start_at A, end_at
-      B  * query, start_at B
+      B  * query, start_at B  An empty result may indicate that the query has
+      too few results to be partitioned.
   """
 
   nextPageToken = _messages.StringField(1)

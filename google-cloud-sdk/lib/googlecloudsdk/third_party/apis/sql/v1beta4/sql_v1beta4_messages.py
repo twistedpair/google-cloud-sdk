@@ -712,6 +712,7 @@ class ExportContext(_messages.Message):
     fileType: The file type for the specified uri. <br><b>SQL</b>: The file
       contains SQL statements. <br><b>CSV</b>: The file contains CSV data.
     kind: This is always <b>sql#exportContext</b>.
+    offload: Option for export offload.
     sqlExportOptions: Options for exporting data as SQL statements.
     uri: The path to the file in Google Cloud Storage where the export will be
       stored. The URI is in the form <b>gs: //bucketName/fileName</b>. If the
@@ -779,8 +780,9 @@ class ExportContext(_messages.Message):
   databases = _messages.StringField(2, repeated=True)
   fileType = _messages.EnumField('FileTypeValueValuesEnum', 3)
   kind = _messages.StringField(4)
-  sqlExportOptions = _messages.MessageField('SqlExportOptionsValue', 5)
-  uri = _messages.StringField(6)
+  offload = _messages.BooleanField(5)
+  sqlExportOptions = _messages.MessageField('SqlExportOptionsValue', 6)
+  uri = _messages.StringField(7)
 
 
 class FailoverContext(_messages.Message):
