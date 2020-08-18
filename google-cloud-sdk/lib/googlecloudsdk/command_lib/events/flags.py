@@ -83,7 +83,7 @@ def AddBrokerArg(parser):
       help='Name of the Broker to create.')
 
 
-def AddServiceAccountFlag(parser):
+def AddControlPlaneServiceAccountFlag(parser):
   """Adds service account flag."""
   parser.add_argument(
       '--service-account',
@@ -91,7 +91,27 @@ def AddServiceAccountFlag(parser):
       help='Email address of an existing IAM service account which '
       'represents the identity of the internal events operator. If no '
       'service account is provided, a default service account ({}) will be '
-      'created.'.format(iam_util.DEFAULT_EVENTS_SERVICE_ACCOUNT))
+      'created.'.format(iam_util.EVENTS_CONTROL_PLANE_SERVICE_ACCOUNT))
+
+
+def AddBrokerServiceAccountFlag(parser):
+  """Adds broker service account flag."""
+  parser.add_argument(
+      '--broker-service-account',
+      type=core_iam_util.GetIamAccountFormatValidator(),
+      help='Email address of an existing events broker IAM service account. '
+      'If no service account is provided, a default service account ({}) will '
+      'be created.'.format(iam_util.EVENTS_BROKER_SERVICE_ACCOUNT))
+
+
+def AddSourcesServiceAccountFlag(parser):
+  """Adds sources service account flag."""
+  parser.add_argument(
+      '--sources-service-account',
+      type=core_iam_util.GetIamAccountFormatValidator(),
+      help='Email address of an existing events sources IAM service account. '
+      'If no service account is provided, a default service account ({}) will '
+      'be created.'.format(iam_util.EVENTS_SOURCES_SERVICE_ACCOUNT))
 
 
 def AddCustomEventTypeFlag(parser):
@@ -160,6 +180,19 @@ def AddSecretsFlag(parser):
       'reference. Parameter names must be one of the secret parameters shown '
       'when describing the event type.',
       metavar='PARAMETER=NAME:KEY')
+
+
+_COPY_DEFAULT_SECRET = 'copy-default-secret'
+
+
+def AddCopyDefaultSecret(parser):
+  """Adds copy default secret flag."""
+  parser.add_argument(
+      '--{}'.format(_COPY_DEFAULT_SECRET),
+      action='store_true',
+      required=True,
+      help='Copy default secret google-cloud-sources-key from cloud-run-events'
+      ' namespace.')
 
 
 def _ParseSecretParameters(args):

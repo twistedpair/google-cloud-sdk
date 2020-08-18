@@ -83,12 +83,7 @@ class FirestoreV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the field configuration and metadata for this database.
-
-Currently, FirestoreAdmin.ListFields only supports listing fields
-that have been explicitly overridden. To issue this query, call
-FirestoreAdmin.ListFields with the filter set to
-`indexConfig.usesAncestorConfig:false`.
+      r"""Lists the field configuration and metadata for this database. Currently, FirestoreAdmin.ListFields only supports listing fields that have been explicitly overridden. To issue this query, call FirestoreAdmin.ListFields with the filter set to `indexConfig.usesAncestorConfig:false`.
 
       Args:
         request: (FirestoreProjectsDatabasesCollectionGroupsFieldsListRequest) input message
@@ -115,19 +110,7 @@ FirestoreAdmin.ListFields with the filter set to
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a field configuration. Currently, field updates apply only to.
-single field index configuration. However, calls to
-FirestoreAdmin.UpdateField should provide a field mask to avoid
-changing any configuration that the caller isn't aware of. The field mask
-should be specified as: `{ paths: "index_config" }`.
-
-This call returns a google.longrunning.Operation which may be used to
-track the status of the field update. The metadata for
-the operation will be the type FieldOperationMetadata.
-
-To configure the default field settings for the database, use
-the special `Field` with resource name:
-`projects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*`.
+      r"""Updates a field configuration. Currently, field updates apply only to single field index configuration. However, calls to FirestoreAdmin.UpdateField should provide a field mask to avoid changing any configuration that the caller isn't aware of. The field mask should be specified as: `{ paths: "index_config" }`. This call returns a google.longrunning.Operation which may be used to track the status of the field update. The metadata for the operation will be the type FieldOperationMetadata. To configure the default field settings for the database, use the special `Field` with resource name: `projects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*`.
 
       Args:
         request: (FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest) input message
@@ -164,9 +147,7 @@ the special `Field` with resource name:
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a composite index. This returns a google.longrunning.Operation.
-which may be used to track the status of the creation. The metadata for
-the operation will be the type IndexOperationMetadata.
+      r"""Creates a composite index. This returns a google.longrunning.Operation which may be used to track the status of the creation. The metadata for the operation will be the type IndexOperationMetadata.
 
       Args:
         request: (FirestoreProjectsDatabasesCollectionGroupsIndexesCreateRequest) input message
@@ -294,14 +275,7 @@ the operation will be the type IndexOperationMetadata.
           }
 
     def ExportDocuments(self, request, global_params=None):
-      r"""Exports a copy of all or a subset of documents from Google Cloud Firestore.
-to another storage system, such as Google Cloud Storage. Recent updates to
-documents may not be reflected in the export. The export occurs in the
-background and its progress can be monitored and managed via the
-Operation resource that is created. The output of an export may only be
-used once the associated operation is done. If an export operation is
-cancelled before completion it may leave partial data behind in Google
-Cloud Storage.
+      r"""Exports a copy of all or a subset of documents from Google Cloud Firestore to another storage system, such as Google Cloud Storage. Recent updates to documents may not be reflected in the export. The export occurs in the background and its progress can be monitored and managed via the Operation resource that is created. The output of an export may only be used once the associated operation is done. If an export operation is cancelled before completion it may leave partial data behind in Google Cloud Storage.
 
       Args:
         request: (FirestoreProjectsDatabasesExportDocumentsRequest) input message
@@ -328,11 +302,7 @@ Cloud Storage.
     )
 
     def ImportDocuments(self, request, global_params=None):
-      r"""Imports documents into Google Cloud Firestore. Existing documents with the.
-same name are overwritten. The import occurs in the background and its
-progress can be monitored and managed via the Operation resource that is
-created. If an ImportDocuments operation is cancelled, it is possible
-that a subset of the data has already been imported to Cloud Firestore.
+      r"""Imports documents into Google Cloud Firestore. Existing documents with the same name are overwritten. The import occurs in the background and its progress can be monitored and managed via the Operation resource that is created. If an ImportDocuments operation is cancelled, it is possible that a subset of the data has already been imported to Cloud Firestore.
 
       Args:
         request: (FirestoreProjectsDatabasesImportDocumentsRequest) input message

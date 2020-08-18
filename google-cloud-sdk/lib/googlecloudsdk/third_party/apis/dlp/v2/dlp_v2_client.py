@@ -78,9 +78,7 @@ class DlpV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Returns a list of the sensitive information types that the DLP API.
-supports. See https://cloud.google.com/dlp/docs/infotypes-reference to
-learn more.
+      r"""Returns a list of the sensitive information types that the DLP API supports. See https://cloud.google.com/dlp/docs/infotypes-reference to learn more.
 
       Args:
         request: (DlpInfoTypesListRequest) input message
@@ -116,9 +114,7 @@ learn more.
           }
 
     def List(self, request, global_params=None):
-      r"""Returns a list of the sensitive information types that the DLP API.
-supports. See https://cloud.google.com/dlp/docs/infotypes-reference to
-learn more.
+      r"""Returns a list of the sensitive information types that the DLP API supports. See https://cloud.google.com/dlp/docs/infotypes-reference to learn more.
 
       Args:
         request: (DlpLocationsInfoTypesListRequest) input message
@@ -165,10 +161,7 @@ learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a DeidentifyTemplate for re-using frequently used configuration.
-for de-identifying content, images, and storage.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Creates a DeidentifyTemplate for re-using frequently used configuration for de-identifying content, images, and storage. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsDeidentifyTemplatesCreateRequest) input message
@@ -195,9 +188,7 @@ more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Deletes a DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsDeidentifyTemplatesDeleteRequest) input message
@@ -224,9 +215,7 @@ more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Gets a DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsDeidentifyTemplatesGetRequest) input message
@@ -253,9 +242,7 @@ more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists DeidentifyTemplates.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Lists DeidentifyTemplates. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsDeidentifyTemplatesListRequest) input message
@@ -282,9 +269,7 @@ more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Updates the DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsDeidentifyTemplatesPatchRequest) input message
@@ -321,9 +306,7 @@ more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an InspectTemplate for re-using frequently used configuration.
-for inspecting content, images, and storage.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Creates an InspectTemplate for re-using frequently used configuration for inspecting content, images, and storage. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsInspectTemplatesCreateRequest) input message
@@ -350,8 +333,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Deletes an InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsInspectTemplatesDeleteRequest) input message
@@ -378,8 +360,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Gets an InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsInspectTemplatesGetRequest) input message
@@ -406,8 +387,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists InspectTemplates.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Lists InspectTemplates. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsInspectTemplatesListRequest) input message
@@ -434,8 +414,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Updates the InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsInspectTemplatesPatchRequest) input message
@@ -472,10 +451,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a DeidentifyTemplate for re-using frequently used configuration.
-for de-identifying content, images, and storage.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Creates a DeidentifyTemplate for re-using frequently used configuration for de-identifying content, images, and storage. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest) input message
@@ -502,9 +478,7 @@ more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Deletes a DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsDeidentifyTemplatesDeleteRequest) input message
@@ -531,9 +505,7 @@ more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Gets a DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsDeidentifyTemplatesGetRequest) input message
@@ -560,9 +532,7 @@ more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists DeidentifyTemplates.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Lists DeidentifyTemplates. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsDeidentifyTemplatesListRequest) input message
@@ -589,9 +559,7 @@ more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Updates the DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsDeidentifyTemplatesPatchRequest) input message
@@ -628,9 +596,7 @@ more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an InspectTemplate for re-using frequently used configuration.
-for inspecting content, images, and storage.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Creates an InspectTemplate for re-using frequently used configuration for inspecting content, images, and storage. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsInspectTemplatesCreateRequest) input message
@@ -657,8 +623,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Deletes an InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsInspectTemplatesDeleteRequest) input message
@@ -685,8 +650,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Gets an InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsInspectTemplatesGetRequest) input message
@@ -713,8 +677,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists InspectTemplates.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Lists InspectTemplates. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsInspectTemplatesListRequest) input message
@@ -741,8 +704,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Updates the InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsInspectTemplatesPatchRequest) input message
@@ -779,9 +741,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a pre-built stored infoType to be used for inspection.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Creates a pre-built stored infoType to be used for inspection. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsStoredInfoTypesCreateRequest) input message
@@ -808,9 +768,7 @@ learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a stored infoType.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Deletes a stored infoType. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsStoredInfoTypesDeleteRequest) input message
@@ -837,9 +795,7 @@ learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a stored infoType.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Gets a stored infoType. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsStoredInfoTypesGetRequest) input message
@@ -866,9 +822,7 @@ learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists stored infoTypes.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Lists stored infoTypes. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsStoredInfoTypesListRequest) input message
@@ -895,10 +849,7 @@ learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the stored infoType by creating a new version. The existing version.
-will continue to be used until the new version is ready.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Updates the stored infoType by creating a new version. The existing version will continue to be used until the new version is ready. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsLocationsStoredInfoTypesPatchRequest) input message
@@ -945,9 +896,7 @@ learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a pre-built stored infoType to be used for inspection.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Creates a pre-built stored infoType to be used for inspection. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesCreateRequest) input message
@@ -974,9 +923,7 @@ learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a stored infoType.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Deletes a stored infoType. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesDeleteRequest) input message
@@ -1003,9 +950,7 @@ learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a stored infoType.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Gets a stored infoType. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesGetRequest) input message
@@ -1032,9 +977,7 @@ learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists stored infoTypes.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Lists stored infoTypes. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesListRequest) input message
@@ -1061,10 +1004,7 @@ learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the stored infoType by creating a new version. The existing version.
-will continue to be used until the new version is ready.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Updates the stored infoType by creating a new version. The existing version will continue to be used until the new version is ready. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesPatchRequest) input message
@@ -1111,14 +1051,7 @@ learn more.
           }
 
     def Deidentify(self, request, global_params=None):
-      r"""De-identifies potentially sensitive info from a ContentItem.
-This method has limits on input size and output size.
-See https://cloud.google.com/dlp/docs/deidentify-sensitive-data to
-learn more.
-
-When no InfoTypes or CustomInfoTypes are specified in this request, the
-system will automatically choose what detectors to run. By default this may
-be all types, but may change over time as detectors are updated.
+      r"""De-identifies potentially sensitive info from a ContentItem. This method has limits on input size and output size. See https://cloud.google.com/dlp/docs/deidentify-sensitive-data to learn more. When no InfoTypes or CustomInfoTypes are specified in this request, the system will automatically choose what detectors to run. By default this may be all types, but may change over time as detectors are updated.
 
       Args:
         request: (DlpProjectsContentDeidentifyRequest) input message
@@ -1145,15 +1078,7 @@ be all types, but may change over time as detectors are updated.
     )
 
     def Inspect(self, request, global_params=None):
-      r"""Finds potentially sensitive info in content.
-This method has limits on input size, processing time, and output size.
-
-When no InfoTypes or CustomInfoTypes are specified in this request, the
-system will automatically choose what detectors to run. By default this may
-be all types, but may change over time as detectors are updated.
-
-For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images
-and https://cloud.google.com/dlp/docs/inspecting-text,
+      r"""Finds potentially sensitive info in content. This method has limits on input size, processing time, and output size. When no InfoTypes or CustomInfoTypes are specified in this request, the system will automatically choose what detectors to run. By default this may be all types, but may change over time as detectors are updated. For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images and https://cloud.google.com/dlp/docs/inspecting-text,.
 
       Args:
         request: (DlpProjectsContentInspectRequest) input message
@@ -1180,10 +1105,7 @@ and https://cloud.google.com/dlp/docs/inspecting-text,
     )
 
     def Reidentify(self, request, global_params=None):
-      r"""Re-identifies content that has been de-identified.
-See
-https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example
-to learn more.
+      r"""Re-identifies content that has been de-identified. See https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example to learn more.
 
       Args:
         request: (DlpProjectsContentReidentifyRequest) input message
@@ -1220,10 +1142,7 @@ to learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a DeidentifyTemplate for re-using frequently used configuration.
-for de-identifying content, images, and storage.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Creates a DeidentifyTemplate for re-using frequently used configuration for de-identifying content, images, and storage. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsDeidentifyTemplatesCreateRequest) input message
@@ -1250,9 +1169,7 @@ more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Deletes a DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsDeidentifyTemplatesDeleteRequest) input message
@@ -1279,9 +1196,7 @@ more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Gets a DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsDeidentifyTemplatesGetRequest) input message
@@ -1308,9 +1223,7 @@ more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists DeidentifyTemplates.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Lists DeidentifyTemplates. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsDeidentifyTemplatesListRequest) input message
@@ -1337,9 +1250,7 @@ more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Updates the DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsDeidentifyTemplatesPatchRequest) input message
@@ -1376,11 +1287,7 @@ more.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running DlpJob. The server.
-makes a best effort to cancel the DlpJob, but success is not
-guaranteed.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+      r"""Starts asynchronous cancellation on a long-running DlpJob. The server makes a best effort to cancel the DlpJob, but success is not guaranteed. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 
       Args:
         request: (DlpProjectsDlpJobsCancelRequest) input message
@@ -1407,13 +1314,7 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new job to inspect storage or calculate risk metrics.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
-
-When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
-system will automatically choose what detectors to run. By default this may
-be all types, but may change over time as detectors are updated.
+      r"""Creates a new job to inspect storage or calculate risk metrics. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more. When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the system will automatically choose what detectors to run. By default this may be all types, but may change over time as detectors are updated.
 
       Args:
         request: (DlpProjectsDlpJobsCreateRequest) input message
@@ -1440,11 +1341,7 @@ be all types, but may change over time as detectors are updated.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running DlpJob. This method indicates that the client is.
-no longer interested in the DlpJob result. The job will be cancelled if
-possible.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+      r"""Deletes a long-running DlpJob. This method indicates that the client is no longer interested in the DlpJob result. The job will be cancelled if possible. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 
       Args:
         request: (DlpProjectsDlpJobsDeleteRequest) input message
@@ -1471,9 +1368,7 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running DlpJob.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+      r"""Gets the latest state of a long-running DlpJob. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 
       Args:
         request: (DlpProjectsDlpJobsGetRequest) input message
@@ -1500,9 +1395,7 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists DlpJobs that match the specified filter in the request.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+      r"""Lists DlpJobs that match the specified filter in the request. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 
       Args:
         request: (DlpProjectsDlpJobsListRequest) input message
@@ -1539,14 +1432,7 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
           }
 
     def Redact(self, request, global_params=None):
-      r"""Redacts potentially sensitive info from an image.
-This method has limits on input size, processing time, and output size.
-See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images to
-learn more.
-
-When no InfoTypes or CustomInfoTypes are specified in this request, the
-system will automatically choose what detectors to run. By default this may
-be all types, but may change over time as detectors are updated.
+      r"""Redacts potentially sensitive info from an image. This method has limits on input size, processing time, and output size. See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images to learn more. When no InfoTypes or CustomInfoTypes are specified in this request, the system will automatically choose what detectors to run. By default this may be all types, but may change over time as detectors are updated.
 
       Args:
         request: (DlpProjectsImageRedactRequest) input message
@@ -1583,9 +1469,7 @@ be all types, but may change over time as detectors are updated.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an InspectTemplate for re-using frequently used configuration.
-for inspecting content, images, and storage.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Creates an InspectTemplate for re-using frequently used configuration for inspecting content, images, and storage. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsInspectTemplatesCreateRequest) input message
@@ -1612,8 +1496,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Deletes an InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsInspectTemplatesDeleteRequest) input message
@@ -1640,8 +1523,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Gets an InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsInspectTemplatesGetRequest) input message
@@ -1668,8 +1550,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists InspectTemplates.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Lists InspectTemplates. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsInspectTemplatesListRequest) input message
@@ -1696,8 +1577,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Updates the InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsInspectTemplatesPatchRequest) input message
@@ -1734,8 +1614,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
           }
 
     def Activate(self, request, global_params=None):
-      r"""Activate a job trigger. Causes the immediate execute of a trigger.
-instead of waiting on the trigger event to occur.
+      r"""Activate a job trigger. Causes the immediate execute of a trigger instead of waiting on the trigger event to occur.
 
       Args:
         request: (DlpProjectsJobTriggersActivateRequest) input message
@@ -1762,9 +1641,7 @@ instead of waiting on the trigger event to occur.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a job trigger to run DLP actions such as scanning storage for.
-sensitive information on a set schedule.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Creates a job trigger to run DLP actions such as scanning storage for sensitive information on a set schedule. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsJobTriggersCreateRequest) input message
@@ -1791,8 +1668,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a job trigger.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Deletes a job trigger. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsJobTriggersDeleteRequest) input message
@@ -1819,8 +1695,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a job trigger.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Gets a job trigger. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsJobTriggersGetRequest) input message
@@ -1847,8 +1722,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists job triggers.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Lists job triggers. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsJobTriggersListRequest) input message
@@ -1875,8 +1749,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a job trigger.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Updates a job trigger. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsJobTriggersPatchRequest) input message
@@ -1913,14 +1786,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
           }
 
     def Deidentify(self, request, global_params=None):
-      r"""De-identifies potentially sensitive info from a ContentItem.
-This method has limits on input size and output size.
-See https://cloud.google.com/dlp/docs/deidentify-sensitive-data to
-learn more.
-
-When no InfoTypes or CustomInfoTypes are specified in this request, the
-system will automatically choose what detectors to run. By default this may
-be all types, but may change over time as detectors are updated.
+      r"""De-identifies potentially sensitive info from a ContentItem. This method has limits on input size and output size. See https://cloud.google.com/dlp/docs/deidentify-sensitive-data to learn more. When no InfoTypes or CustomInfoTypes are specified in this request, the system will automatically choose what detectors to run. By default this may be all types, but may change over time as detectors are updated.
 
       Args:
         request: (DlpProjectsLocationsContentDeidentifyRequest) input message
@@ -1947,15 +1813,7 @@ be all types, but may change over time as detectors are updated.
     )
 
     def Inspect(self, request, global_params=None):
-      r"""Finds potentially sensitive info in content.
-This method has limits on input size, processing time, and output size.
-
-When no InfoTypes or CustomInfoTypes are specified in this request, the
-system will automatically choose what detectors to run. By default this may
-be all types, but may change over time as detectors are updated.
-
-For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images
-and https://cloud.google.com/dlp/docs/inspecting-text,
+      r"""Finds potentially sensitive info in content. This method has limits on input size, processing time, and output size. When no InfoTypes or CustomInfoTypes are specified in this request, the system will automatically choose what detectors to run. By default this may be all types, but may change over time as detectors are updated. For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images and https://cloud.google.com/dlp/docs/inspecting-text,.
 
       Args:
         request: (DlpProjectsLocationsContentInspectRequest) input message
@@ -1982,10 +1840,7 @@ and https://cloud.google.com/dlp/docs/inspecting-text,
     )
 
     def Reidentify(self, request, global_params=None):
-      r"""Re-identifies content that has been de-identified.
-See
-https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example
-to learn more.
+      r"""Re-identifies content that has been de-identified. See https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example to learn more.
 
       Args:
         request: (DlpProjectsLocationsContentReidentifyRequest) input message
@@ -2022,10 +1877,7 @@ to learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a DeidentifyTemplate for re-using frequently used configuration.
-for de-identifying content, images, and storage.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Creates a DeidentifyTemplate for re-using frequently used configuration for de-identifying content, images, and storage. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsLocationsDeidentifyTemplatesCreateRequest) input message
@@ -2052,9 +1904,7 @@ more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Deletes a DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsLocationsDeidentifyTemplatesDeleteRequest) input message
@@ -2081,9 +1931,7 @@ more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Gets a DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsLocationsDeidentifyTemplatesGetRequest) input message
@@ -2110,9 +1958,7 @@ more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists DeidentifyTemplates.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Lists DeidentifyTemplates. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsLocationsDeidentifyTemplatesListRequest) input message
@@ -2139,9 +1985,7 @@ more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the DeidentifyTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates-deid to learn
-more.
+      r"""Updates the DeidentifyTemplate. See https://cloud.google.com/dlp/docs/creating-templates-deid to learn more.
 
       Args:
         request: (DlpProjectsLocationsDeidentifyTemplatesPatchRequest) input message
@@ -2178,11 +2022,7 @@ more.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running DlpJob. The server.
-makes a best effort to cancel the DlpJob, but success is not
-guaranteed.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+      r"""Starts asynchronous cancellation on a long-running DlpJob. The server makes a best effort to cancel the DlpJob, but success is not guaranteed. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 
       Args:
         request: (DlpProjectsLocationsDlpJobsCancelRequest) input message
@@ -2209,13 +2049,7 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new job to inspect storage or calculate risk metrics.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
-
-When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
-system will automatically choose what detectors to run. By default this may
-be all types, but may change over time as detectors are updated.
+      r"""Creates a new job to inspect storage or calculate risk metrics. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more. When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the system will automatically choose what detectors to run. By default this may be all types, but may change over time as detectors are updated.
 
       Args:
         request: (DlpProjectsLocationsDlpJobsCreateRequest) input message
@@ -2242,11 +2076,7 @@ be all types, but may change over time as detectors are updated.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running DlpJob. This method indicates that the client is.
-no longer interested in the DlpJob result. The job will be cancelled if
-possible.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+      r"""Deletes a long-running DlpJob. This method indicates that the client is no longer interested in the DlpJob result. The job will be cancelled if possible. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 
       Args:
         request: (DlpProjectsLocationsDlpJobsDeleteRequest) input message
@@ -2273,11 +2103,7 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
     )
 
     def Finish(self, request, global_params=None):
-      r"""Finish a running hybrid DlpJob. Triggers the finalization steps and running.
-of any enabled actions that have not yet run.
-Early access feature is in a pre-release state and might change or have
-limited support. For more information, see
-https://cloud.google.com/products#product-launch-stages.
+      r"""Finish a running hybrid DlpJob. Triggers the finalization steps and running of any enabled actions that have not yet run. Early access feature is in a pre-release state and might change or have limited support. For more information, see https://cloud.google.com/products#product-launch-stages.
 
       Args:
         request: (DlpProjectsLocationsDlpJobsFinishRequest) input message
@@ -2304,9 +2130,7 @@ https://cloud.google.com/products#product-launch-stages.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running DlpJob.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+      r"""Gets the latest state of a long-running DlpJob. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 
       Args:
         request: (DlpProjectsLocationsDlpJobsGetRequest) input message
@@ -2333,12 +2157,7 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
     )
 
     def HybridInspect(self, request, global_params=None):
-      r"""Inspect hybrid content and store findings to a job.
-To review the findings inspect the job. Inspection will occur
-asynchronously.
-Early access feature is in a pre-release state and might change or have
-limited support. For more information, see
-https://cloud.google.com/products#product-launch-stages.
+      r"""Inspect hybrid content and store findings to a job. To review the findings inspect the job. Inspection will occur asynchronously. Early access feature is in a pre-release state and might change or have limited support. For more information, see https://cloud.google.com/products#product-launch-stages.
 
       Args:
         request: (DlpProjectsLocationsDlpJobsHybridInspectRequest) input message
@@ -2365,9 +2184,7 @@ https://cloud.google.com/products#product-launch-stages.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists DlpJobs that match the specified filter in the request.
-See https://cloud.google.com/dlp/docs/inspecting-storage and
-https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
+      r"""Lists DlpJobs that match the specified filter in the request. See https://cloud.google.com/dlp/docs/inspecting-storage and https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 
       Args:
         request: (DlpProjectsLocationsDlpJobsListRequest) input message
@@ -2404,14 +2221,7 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
           }
 
     def Redact(self, request, global_params=None):
-      r"""Redacts potentially sensitive info from an image.
-This method has limits on input size, processing time, and output size.
-See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images to
-learn more.
-
-When no InfoTypes or CustomInfoTypes are specified in this request, the
-system will automatically choose what detectors to run. By default this may
-be all types, but may change over time as detectors are updated.
+      r"""Redacts potentially sensitive info from an image. This method has limits on input size, processing time, and output size. See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images to learn more. When no InfoTypes or CustomInfoTypes are specified in this request, the system will automatically choose what detectors to run. By default this may be all types, but may change over time as detectors are updated.
 
       Args:
         request: (DlpProjectsLocationsImageRedactRequest) input message
@@ -2448,9 +2258,7 @@ be all types, but may change over time as detectors are updated.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an InspectTemplate for re-using frequently used configuration.
-for inspecting content, images, and storage.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Creates an InspectTemplate for re-using frequently used configuration for inspecting content, images, and storage. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsLocationsInspectTemplatesCreateRequest) input message
@@ -2477,8 +2285,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Deletes an InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsLocationsInspectTemplatesDeleteRequest) input message
@@ -2505,8 +2312,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Gets an InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsLocationsInspectTemplatesGetRequest) input message
@@ -2533,8 +2339,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists InspectTemplates.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Lists InspectTemplates. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsLocationsInspectTemplatesListRequest) input message
@@ -2561,8 +2366,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the InspectTemplate.
-See https://cloud.google.com/dlp/docs/creating-templates to learn more.
+      r"""Updates the InspectTemplate. See https://cloud.google.com/dlp/docs/creating-templates to learn more.
 
       Args:
         request: (DlpProjectsLocationsInspectTemplatesPatchRequest) input message
@@ -2599,8 +2403,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
           }
 
     def Activate(self, request, global_params=None):
-      r"""Activate a job trigger. Causes the immediate execute of a trigger.
-instead of waiting on the trigger event to occur.
+      r"""Activate a job trigger. Causes the immediate execute of a trigger instead of waiting on the trigger event to occur.
 
       Args:
         request: (DlpProjectsLocationsJobTriggersActivateRequest) input message
@@ -2627,9 +2430,7 @@ instead of waiting on the trigger event to occur.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a job trigger to run DLP actions such as scanning storage for.
-sensitive information on a set schedule.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Creates a job trigger to run DLP actions such as scanning storage for sensitive information on a set schedule. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsLocationsJobTriggersCreateRequest) input message
@@ -2656,8 +2457,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a job trigger.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Deletes a job trigger. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsLocationsJobTriggersDeleteRequest) input message
@@ -2684,8 +2484,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a job trigger.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Gets a job trigger. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsLocationsJobTriggersGetRequest) input message
@@ -2712,12 +2511,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
     )
 
     def HybridInspect(self, request, global_params=None):
-      r"""Inspect hybrid content and store findings to a trigger. The inspection.
-will be processed asynchronously. To review the findings monitor the
-jobs within the trigger.
-Early access feature is in a pre-release state and might change or have
-limited support. For more information, see
-https://cloud.google.com/products#product-launch-stages.
+      r"""Inspect hybrid content and store findings to a trigger. The inspection will be processed asynchronously. To review the findings monitor the jobs within the trigger. Early access feature is in a pre-release state and might change or have limited support. For more information, see https://cloud.google.com/products#product-launch-stages.
 
       Args:
         request: (DlpProjectsLocationsJobTriggersHybridInspectRequest) input message
@@ -2744,8 +2538,7 @@ https://cloud.google.com/products#product-launch-stages.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists job triggers.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Lists job triggers. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsLocationsJobTriggersListRequest) input message
@@ -2772,8 +2565,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a job trigger.
-See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
+      r"""Updates a job trigger. See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
 
       Args:
         request: (DlpProjectsLocationsJobTriggersPatchRequest) input message
@@ -2810,9 +2602,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a pre-built stored infoType to be used for inspection.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Creates a pre-built stored infoType to be used for inspection. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsLocationsStoredInfoTypesCreateRequest) input message
@@ -2839,9 +2629,7 @@ learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a stored infoType.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Deletes a stored infoType. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsLocationsStoredInfoTypesDeleteRequest) input message
@@ -2868,9 +2656,7 @@ learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a stored infoType.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Gets a stored infoType. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsLocationsStoredInfoTypesGetRequest) input message
@@ -2897,9 +2683,7 @@ learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists stored infoTypes.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Lists stored infoTypes. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsLocationsStoredInfoTypesListRequest) input message
@@ -2926,10 +2710,7 @@ learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the stored infoType by creating a new version. The existing version.
-will continue to be used until the new version is ready.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Updates the stored infoType by creating a new version. The existing version will continue to be used until the new version is ready. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsLocationsStoredInfoTypesPatchRequest) input message
@@ -2976,9 +2757,7 @@ learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a pre-built stored infoType to be used for inspection.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Creates a pre-built stored infoType to be used for inspection. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesCreateRequest) input message
@@ -3005,9 +2784,7 @@ learn more.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a stored infoType.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Deletes a stored infoType. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesDeleteRequest) input message
@@ -3034,9 +2811,7 @@ learn more.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a stored infoType.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Gets a stored infoType. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesGetRequest) input message
@@ -3063,9 +2838,7 @@ learn more.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists stored infoTypes.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Lists stored infoTypes. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesListRequest) input message
@@ -3092,10 +2865,7 @@ learn more.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the stored infoType by creating a new version. The existing version.
-will continue to be used until the new version is ready.
-See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
-learn more.
+      r"""Updates the stored infoType by creating a new version. The existing version will continue to be used until the new version is ready. See https://cloud.google.com/dlp/docs/creating-stored-infotypes to learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesPatchRequest) input message

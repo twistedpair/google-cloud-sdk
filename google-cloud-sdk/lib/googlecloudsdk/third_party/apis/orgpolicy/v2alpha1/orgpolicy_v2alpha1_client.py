@@ -90,12 +90,7 @@ class OrgpolicyV2alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Policy.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-constraint does not exist.
-Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the
-policy already exists on the given Cloud resource.
+      r"""Creates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the policy already exists on the given Cloud resource.
 
       Args:
         request: (OrgpolicyPoliciesCreateRequest) input message
@@ -122,10 +117,7 @@ policy already exists on the given Cloud resource.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Policy.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-constraint or Org Policy does not exist.
+      r"""Deletes a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or Org Policy does not exist.
 
       Args:
         request: (OrgpolicyPoliciesDeleteRequest) input message
@@ -152,11 +144,7 @@ constraint or Org Policy does not exist.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a `Policy` on a resource.
-
-If no `Policy` is set on the resource, NOT_FOUND is returned. The
-`etag` value can be used with `UpdatePolicy()` to update a
-`Policy` during read-modify-write.
+      r"""Gets a `Policy` on a resource. If no `Policy` is set on the resource, NOT_FOUND is returned. The `etag` value can be used with `UpdatePolicy()` to update a `Policy` during read-modify-write.
 
       Args:
         request: (OrgpolicyPoliciesGetRequest) input message
@@ -183,12 +171,7 @@ If no `Policy` is set on the resource, NOT_FOUND is returned. The
     )
 
     def GetEffectivePolicy(self, request, global_params=None):
-      r"""Gets the effective `Policy` on a resource. This is the result of merging.
-`Policies` in the resource hierarchy and evaluating conditions. The
-returned `Policy` will not have an `etag` or `condition` set because it is
-a computed `Policy` across multiple resources.
-Subtrees of Resource Manager resource hierarchy with 'under:' prefix will
-not be expanded.
+      r"""Gets the effective `Policy` on a resource. This is the result of merging `Policies` in the resource hierarchy and evaluating conditions. The returned `Policy` will not have an `etag` or `condition` set because it is a computed `Policy` across multiple resources. Subtrees of Resource Manager resource hierarchy with 'under:' prefix will not be expanded.
 
       Args:
         request: (OrgpolicyPoliciesGetEffectivePolicyRequest) input message
@@ -242,15 +225,7 @@ not be expanded.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Policy.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-constraint or the policy do not exist.
-Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag
-supplied in the request does not match the persisted etag of the policy
-
-Note: the supplied policy will perform a full overwrite of all
-fields.
+      r"""Updates a Policy. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the constraint or the policy do not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the policy Note: the supplied policy will perform a full overwrite of all fields.
 
       Args:
         request: (OrgpolicyPoliciesPatchRequest) input message

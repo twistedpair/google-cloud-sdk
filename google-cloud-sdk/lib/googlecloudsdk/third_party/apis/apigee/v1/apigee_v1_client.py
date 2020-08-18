@@ -108,10 +108,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists hybrid services and its trusted issuers service account ids.
-This api is authenticated and unauthorized(allow all the users) and used by
-runtime authn-authz service to query control plane's issuer service account
-ids.
+      r"""Lists hybrid services and its trusted issuers service account ids. This api is authenticated and unauthorized(allow all the users) and used by runtime authn-authz service to query control plane's issuer service account ids.
 
       Args:
         request: (ApigeeHybridIssuersListRequest) input message
@@ -266,9 +263,7 @@ ids.
     )
 
     def Test(self, request, global_params=None):
-      r"""Test if Datastore configuration is correct. This includes checking.
-if credentials provided by customer have required permissions in target
-destination storage
+      r"""Test if Datastore configuration is correct. This includes checking if credentials provided by customer have required permissions in target destination storage.
 
       Args:
         request: (ApigeeOrganizationsAnalyticsDatastoresTestRequest) input message
@@ -423,14 +418,7 @@ destination storage
     )
 
     def UpdateApiProductAttribute(self, request, global_params=None):
-      r"""Updates the value of an API product attribute. Limitations are:.
-
-OAuth access tokens and Key Management Service (KMS) entities (apps,
-developers, and API products) are cached for 180 seconds (current default).
-Any custom attributes associated with entities also get cached for at least
-180 seconds after entity is accessed during runtime.
-In this case, the `ExpiresIn` element on the OAuthV2 policy won't be able
-to expire an access token in less than 180 seconds.
+      r"""Updates the value of an API product attribute. Limitations are: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with entities also get cached for at least 180 seconds after entity is accessed during runtime. In this case, the `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
 
       Args:
         request: (GoogleCloudApigeeV1Attribute) input message
@@ -467,17 +455,7 @@ to expire an access token in less than 180 seconds.
           }
 
     def Attributes(self, request, global_params=None):
-      r"""Updates or creates API product attributes. This API **replaces** the.
-current list of attributes with the attributes specified in the request
-body. In this way, you can update existing attributes, add new attributes,
-or delete existing attributes by omitting them from the request body.
-
-OAuth access tokens and Key Management Service (KMS) entities (apps,
-developers, and API products) are cached for 180 seconds (current default).
-Any custom attributes associated with entities also get cached for at least
-180 seconds after entity is accessed during runtime.
-In this case, the `ExpiresIn` element on the OAuthV2 policy won't be able
-to expire an access token in less than 180 seconds.
+      r"""Updates or creates API product attributes. This API **replaces** the current list of attributes with the attributes specified in the request body. In this way, you can update existing attributes, add new attributes, or delete existing attributes by omitting them from the request body. OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with entities also get cached for at least 180 seconds after entity is accessed during runtime. In this case, the `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
 
       Args:
         request: (ApigeeOrganizationsApiproductsAttributesRequest) input message
@@ -504,41 +482,7 @@ to expire an access token in less than 180 seconds.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates an API product in an organization.
-You create API products after
-you have proxied backend services using API proxies.
-An API product is a
-collection of API resources combined with quota settings and metadata that
-you can use to deliver customized and productized API bundles to your
-developer community. This metadata can include:
-
-- Scope
-- Environments
-- API proxies
-- Extensible profile
-
-API products enable you repackage APIs
-on-the-fly, without having to do any additional coding or configuration.
-Apigee recommends that you start with a simple API product including only
-required elements. You then provision credentials to apps to enable them to
-start testing your APIs.
-
-After you have authentication and authorization
-working against a simple API product, you can iterate to create finer
-grained API products, defining different sets of API resources for each API
-product.
-
-<aside class="warning"><strong>WARNING:</strong>
-
-- If you don't specify an API proxy in the request body, <em>any</em> app
-associated with the product can make calls to <em>any</em> API in your
-entire organization.
-- If you don't specify an environment in the request body, the product
-allows access to all environments.
-
-</aside>
-
-For more information, see {{what_api_product}}
+      r"""Creates an API product in an organization. You create API products after you have proxied backend services using API proxies. An API product is a collection of API resources combined with quota settings and metadata that you can use to deliver customized and productized API bundles to your developer community. This metadata can include: - Scope - Environments - API proxies - Extensible profile API products enable you repackage APIs on-the-fly, without having to do any additional coding or configuration. Apigee recommends that you start with a simple API product including only required elements. You then provision credentials to apps to enable them to start testing your APIs. After you have authentication and authorization working against a simple API product, you can iterate to create finer grained API products, defining different sets of API resources for each API product. *WARNING:* - If you don't specify an API proxy in the request body, *any* app associated with the product can make calls to *any* API in your entire organization. - If you don't specify an environment in the request body, the product allows access to all environments. For more information, see {{what_api_product}}.
 
       Args:
         request: (ApigeeOrganizationsApiproductsCreateRequest) input message
@@ -565,20 +509,7 @@ For more information, see {{what_api_product}}
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an API product from an organization.
-
-Deleting an API product
-causes app requests to the resource URIs defined in the API product to
-fail.
-
-Ensure that you create a new API product to serve existing apps, unless
-your intention is to disable access to the resources defined in the API
-product.
-
-The API product name required in the request URL is the internal name of
-the product, not the display name. While they may be the same, it depends
-on whether the API product was created via the UI or the API. View the list
-of API products to verify the internal name.
+      r"""Deletes an API product from an organization. Deleting an API product causes app requests to the resource URIs defined in the API product to fail. Ensure that you create a new API product to serve existing apps, unless your intention is to disable access to the resources defined in the API product. The API product name required in the request URL is the internal name of the product, not the display name. While they may be the same, it depends on whether the API product was created via the UI or the API. View the list of API products to verify the internal name.
 
       Args:
         request: (ApigeeOrganizationsApiproductsDeleteRequest) input message
@@ -605,12 +536,7 @@ of API products to verify the internal name.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets configuration details for an API product.
-
-The API product name required in the request URL is the internal name of
-the product, not the display name. While they may be the same, it depends
-on whether the API product was created via the UI or the API. View the list
-of API products to verify the internal name.
+      r"""Gets configuration details for an API product. The API product name required in the request URL is the internal name of the product, not the display name. While they may be the same, it depends on whether the API product was created via the UI or the API. View the list of API products to verify the internal name.
 
       Args:
         request: (ApigeeOrganizationsApiproductsGetRequest) input message
@@ -637,12 +563,7 @@ of API products to verify the internal name.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all API product names for an organization.
-Filter the list by passing an `attributename` and `attibutevalue`.
-
-The limit on the number of API products returned by the API is 1000. You
-can paginate the list of API products returned using the `startKey` and
-`count` query parameters.
+      r"""Lists all API product names for an organization. Filter the list by passing an `attributename` and `attibutevalue`. The limit on the number of API products returned by the API is 1000. You can paginate the list of API products returned using the `startKey` and `count` query parameters.
 
       Args:
         request: (ApigeeOrganizationsApiproductsListRequest) input message
@@ -669,14 +590,7 @@ can paginate the list of API products returned using the `startKey` and
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an existing API product. You must include all required values,.
-whether or not you are updating them, as well as any optional values that
-you are updating.
-
-The API product name required in the request URL is the
-internal name of the product, not the Display Name. While they may be the
-same, it depends on whether the API product was created via UI or API. View
-the list of API products to identify their internal names.
+      r"""Updates an existing API product. You must include all required values, whether or not you are updating them, as well as any optional values that you are updating. The API product name required in the request URL is the internal name of the product, not the Display Name. While they may be the same, it depends on whether the API product was created via UI or API. View the list of API products to identify their internal names.
 
       Args:
         request: (GoogleCloudApigeeV1ApiProduct) input message
@@ -851,9 +765,7 @@ the list of API products to identify their internal names.
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an API proxy revision and all policies, resources, endpoints,.
-and revisions associated with it. The API proxy revision must be undeployed
-before you can delete it.
+      r"""Deletes an API proxy revision and all policies, resources, endpoints, and revisions associated with it. The API proxy revision must be undeployed before you can delete it.
 
       Args:
         request: (ApigeeOrganizationsApisRevisionsDeleteRequest) input message
@@ -880,19 +792,7 @@ before you can delete it.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an API proxy revision.
-
-To download the API proxy configuration bundle for the specified revision
-as a zip file, do the following:
-
- * Set the `format` query parameter to `bundle`.
- * Set the `Accept` header to `application/zip`.
-
-If you are using curl, specify `-o filename.zip` to save the output to a
-file; otherwise, it displays to `stdout`. Then, develop the API proxy
-configuration locally and upload the updated API proxy configuration
-revision, as described in
-[updateApiProxyRevision](updateApiProxyRevision).
+      r"""Gets an API proxy revision. To download the API proxy configuration bundle for the specified revision as a zip file, do the following: * Set the `format` query parameter to `bundle`. * Set the `Accept` header to `application/zip`. If you are using curl, specify `-o filename.zip` to save the output to a file; otherwise, it displays to `stdout`. Then, develop the API proxy configuration locally and upload the updated API proxy configuration revision, as described in [updateApiProxyRevision](updateApiProxyRevision).
 
       Args:
         request: (ApigeeOrganizationsApisRevisionsGetRequest) input message
@@ -919,15 +819,7 @@ revision, as described in
     )
 
     def UpdateApiProxyRevision(self, request, global_params=None):
-      r"""Updates an existing API proxy revision by uploading the API proxy.
-configuration bundle as a zip file from your local machine.
-
-You can update only API proxy revisions
-that have never been deployed. After deployment, an API proxy revision
-becomes immutable, even if it is undeployed.
-
-Set the `Content-Type` header to either
-`multipart/form-data` or `application/octet-stream`.
+      r"""Updates an existing API proxy revision by uploading the API proxy configuration bundle as a zip file from your local machine. You can update only API proxy revisions that have never been deployed. After deployment, an API proxy revision becomes immutable, even if it is undeployed. Set the `Content-Type` header to either `multipart/form-data` or `application/octet-stream`.
 
       Args:
         request: (ApigeeOrganizationsApisRevisionsUpdateApiProxyRevisionRequest) input message
@@ -964,32 +856,7 @@ Set the `Content-Type` header to either
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an API proxy.
-The API proxy created will not be accessible at runtime until it is
-deployed to an environment.
-
-Create a new API proxy by setting the `name` query parameter to the
-name of the API proxy.
-
-Import an API proxy configuration bundle stored in zip format
-on your local machine to your organization by doing the following:
-
-* Set the `name` query parameter to the name of the API proxy.
-* Set the `action` query parameter to `import`.
-* Set the `Content-Type` header to `multipart/form-data`.
-* Pass as a file the name of API proxy
-  configuration bundle stored in zip format on your local machine using
-  the `file` form field.
-
-**Note**: To validate the API proxy configuration bundle only
-  without importing it, set the `action` query
-  parameter to `validate`.
-
-When importing an API proxy configuration bundle, if the API proxy
-does not exist, it will be created.
-If the API proxy exists, then a new revision is created. Invalid API
-proxy configurations are rejected, and a list of validation errors is
-returned to the client.
+      r"""Creates an API proxy. The API proxy created will not be accessible at runtime until it is deployed to an environment. Create a new API proxy by setting the `name` query parameter to the name of the API proxy. Import an API proxy configuration bundle stored in zip format on your local machine to your organization by doing the following: * Set the `name` query parameter to the name of the API proxy. * Set the `action` query parameter to `import`. * Set the `Content-Type` header to `multipart/form-data`. * Pass as a file the name of API proxy configuration bundle stored in zip format on your local machine using the `file` form field. **Note**: To validate the API proxy configuration bundle only without importing it, set the `action` query parameter to `validate`. When importing an API proxy configuration bundle, if the API proxy does not exist, it will be created. If the API proxy exists, then a new revision is created. Invalid API proxy configurations are rejected, and a list of validation errors is returned to the client.
 
       Args:
         request: (ApigeeOrganizationsApisCreateRequest) input message
@@ -1016,8 +883,7 @@ returned to the client.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an API proxy and all associated endpoints, policies, resources, and.
-revisions. The API proxy must be undeployed before you can delete it.
+      r"""Deletes an API proxy and all associated endpoints, policies, resources, and revisions. The API proxy must be undeployed before you can delete it.
 
       Args:
         request: (ApigeeOrganizationsApisDeleteRequest) input message
@@ -1071,9 +937,7 @@ revisions. The API proxy must be undeployed before you can delete it.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the names of all API proxies in an organization. The names returned.
-correspond to the names defined in the configuration files for each API
-proxy.
+      r"""Lists the names of all API proxies in an organization. The names returned correspond to the names defined in the configuration files for each API proxy.
 
       Args:
         request: (ApigeeOrganizationsApisListRequest) input message
@@ -1137,9 +1001,7 @@ proxy.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists IDs of apps within an organization that have the specified app status.
-(approved or revoked) or are of the specified app type
-(developer or company).
+      r"""Lists IDs of apps within an organization that have the specified app status (approved or revoked) or are of the specified app type (developer or company).
 
       Args:
         request: (ApigeeOrganizationsAppsListRequest) input message
@@ -1294,14 +1156,7 @@ proxy.
     )
 
     def UpdateDeveloperAppAttribute(self, request, global_params=None):
-      r"""Updates a developer app attribute.
-
-**Note**: OAuth access tokens and Key Management Service (KMS) entities
-(apps, developers, and API products) are cached for 180 seconds
-(current default). Any custom attributes associated with these entities
-are cached for at least 180 seconds after the entity is accessed at
-runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy
-won't be able to expire an access token in less than 180 seconds.
+      r"""Updates a developer app attribute. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with these entities are cached for at least 180 seconds after the entity is accessed at runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
 
       Args:
         request: (GoogleCloudApigeeV1Attribute) input message
@@ -1338,12 +1193,7 @@ won't be able to expire an access token in less than 180 seconds.
           }
 
     def Delete(self, request, global_params=None):
-      r"""Removes an API product from an app's consumer key. After the API product is.
-removed, the app cannot access the API resources defined in
-that API product.
-
-**Note**: The consumer key is not removed, only its association with the
-API product.
+      r"""Removes an API product from an app's consumer key. After the API product is removed, the app cannot access the API resources defined in that API product. **Note**: The consumer key is not removed, only its association with the API product.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsKeysApiproductsDeleteRequest) input message
@@ -1370,13 +1220,7 @@ API product.
     )
 
     def UpdateDeveloperAppKeyApiProduct(self, request, global_params=None):
-      r"""Approve or revoke an app's consumer key. After a consumer key is approved,.
-the app can use it to access APIs.
-
-A consumer key that is revoked or pending cannot be used to access an API.
-Any access tokens associated with a revoked consumer key will remain
-active. However, Apigee hybrid checks the status of the consumer key and
-if set to `revoked` will not allow access to the API.
+      r"""Approve or revoke an app's consumer key. After a consumer key is approved, the app can use it to access APIs. A consumer key that is revoked or pending cannot be used to access an API. Any access tokens associated with a revoked consumer key will remain active. However, Apigee hybrid checks the status of the consumer key and if set to `revoked` will not allow access to the API.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsKeysApiproductsUpdateDeveloperAppKeyApiProductRequest) input message
@@ -1413,23 +1257,7 @@ if set to `revoked` will not allow access to the API.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a custom consumer key and secret for a developer app. This is.
-particularly useful if you want to migrate existing consumer keys and
-secrets to Apigee hybrid from another system.
-
-Consumer keys and secrets can contain letters, numbers, underscores, and
-hyphens. No other special characters are allowed. To avoid service
-disruptions, a consumer key and secret should not exceed 2 KBs each.
-
-**Note**: When creating the consumer key and secret, an association to
-API products will not be made. Therefore, you should not specify the
-associated API products in your request. Instead, use the
-UpdateDeveloperAppKey API to
-make the association after the consumer key and secret are created.
-
-If a consumer key and secret already exist, you can keep them or
-delete them using the
-DeleteDeveloperAppKey API.
+      r"""Creates a custom consumer key and secret for a developer app. This is particularly useful if you want to migrate existing consumer keys and secrets to Apigee hybrid from another system. Consumer keys and secrets can contain letters, numbers, underscores, and hyphens. No other special characters are allowed. To avoid service disruptions, a consumer key and secret should not exceed 2 KBs each. **Note**: When creating the consumer key and secret, an association to API products will not be made. Therefore, you should not specify the associated API products in your request. Instead, use the UpdateDeveloperAppKey API to make the association after the consumer key and secret are created. If a consumer key and secret already exist, you can keep them or delete them using the DeleteDeveloperAppKey API.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsKeysCreateCreateRequest) input message
@@ -1466,23 +1294,7 @@ DeleteDeveloperAppKey API.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a custom consumer key and secret for a developer app. This is.
-particularly useful if you want to migrate existing consumer keys and
-secrets to Apigee hybrid from another system.
-
-Consumer keys and secrets can contain letters, numbers, underscores, and
-hyphens. No other special characters are allowed. To avoid service
-disruptions, a consumer key and secret should not exceed 2 KBs each.
-
-**Note**: When creating the consumer key and secret, an association to
-API products will not be made. Therefore, you should not specify the
-associated API products in your request. Instead, use the
-UpdateDeveloperAppKey API to
-make the association after the consumer key and secret are created.
-
-If a consumer key and secret already exist, you can keep them or
-delete them using the
-DeleteDeveloperAppKey API.
+      r"""Creates a custom consumer key and secret for a developer app. This is particularly useful if you want to migrate existing consumer keys and secrets to Apigee hybrid from another system. Consumer keys and secrets can contain letters, numbers, underscores, and hyphens. No other special characters are allowed. To avoid service disruptions, a consumer key and secret should not exceed 2 KBs each. **Note**: When creating the consumer key and secret, an association to API products will not be made. Therefore, you should not specify the associated API products in your request. Instead, use the UpdateDeveloperAppKey API to make the association after the consumer key and secret are created. If a consumer key and secret already exist, you can keep them or delete them using the DeleteDeveloperAppKey API.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsKeysCreateRequest) input message
@@ -1509,16 +1321,7 @@ DeleteDeveloperAppKey API.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an app's consumer key and removes all API products.
-associated with the app. After the consumer key is deleted,
-it cannot be used to access any APIs.
-
-**Note**: After you delete a consumer key, you may want to:
-1. Create a new consumer key and secret for the developer app using the
-CreateDeveloperAppKey API, and
-subsequently add an API product to the key using the
-UpdateDeveloperAppKey API.
-2. Delete the developer app, if it is no longer required.
+      r"""Deletes an app's consumer key and removes all API products associated with the app. After the consumer key is deleted, it cannot be used to access any APIs. **Note**: After you delete a consumer key, you may want to: 1. Create a new consumer key and secret for the developer app using the CreateDeveloperAppKey API, and subsequently add an API product to the key using the UpdateDeveloperAppKey API. 2. Delete the developer app, if it is no longer required.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsKeysDeleteRequest) input message
@@ -1545,8 +1348,7 @@ UpdateDeveloperAppKey API.
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns details for a consumer key for a developer app, including the key.
-and secret value, associated API products, and other information.
+      r"""Returns details for a consumer key for a developer app, including the key and secret value, associated API products, and other information.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsKeysGetRequest) input message
@@ -1573,16 +1375,7 @@ and secret value, associated API products, and other information.
     )
 
     def ReplaceDeveloperAppKey(self, request, global_params=None):
-      r"""Updates the scope of an app.
-
-This API replaces the
-existing scopes with those specified in the request.
-Include or exclude any existing scopes that you want to retain or
-delete, respectively. The specified scopes must already
-be defined for the API products associated with the app.
-
-This API sets the `scopes` element
-under the `apiProducts` element in the attributes of the app.
+      r"""Updates the scope of an app. This API replaces the existing scopes with those specified in the request. Include or exclude any existing scopes that you want to retain or delete, respectively. The specified scopes must already be defined for the API products associated with the app. This API sets the `scopes` element under the `apiProducts` element in the attributes of the app.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsKeysReplaceDeveloperAppKeyRequest) input message
@@ -1609,17 +1402,7 @@ under the `apiProducts` element in the attributes of the app.
     )
 
     def UpdateDeveloperAppKey(self, request, global_params=None):
-      r"""Adds an API product to a developer app key, enabling the app that holds.
-the key to access the API resources bundled in the API product.
-
-In addition, you can add
-attributes to a developer app key. This API replaces the
-existing attributes with those specified in the request.
-Include or exclude any existing attributes that you want to retain or
-delete, respectively.
-
-You can use the same key to access all API products
-associated with the app.
+      r"""Adds an API product to a developer app key, enabling the app that holds the key to access the API resources bundled in the API product. In addition, you can add attributes to a developer app key. This API replaces the existing attributes with those specified in the request. Include or exclude any existing attributes that you want to retain or delete, respectively. You can use the same key to access all API products associated with the app.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsKeysUpdateDeveloperAppKeyRequest) input message
@@ -1656,8 +1439,7 @@ associated with the app.
           }
 
     def Attributes(self, request, global_params=None):
-      r"""Updates attributes for a developer app. This API replaces the.
-current attributes with those specified in the request.
+      r"""Updates attributes for a developer app. This API replaces the current attributes with those specified in the request.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsAttributesRequest) input message
@@ -1684,15 +1466,7 @@ current attributes with those specified in the request.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates an app associated with a developer. This API associates the.
-developer app with the specified API
-product and auto-generates an API key for the app to use in calls to API
-proxies inside that API product.
-
-The `name` is the unique ID of the app
-that you can use in API calls. The `DisplayName` (set as an
-attribute) appears in the UI. If you don't set the
-`DisplayName` attribute, the `name` appears in the UI.
+      r"""Creates an app associated with a developer. This API associates the developer app with the specified API product and auto-generates an API key for the app to use in calls to API proxies inside that API product. The `name` is the unique ID of the app that you can use in API calls. The `DisplayName` (set as an attribute) appears in the UI. If you don't set the `DisplayName` attribute, the `name` appears in the UI.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsCreateRequest) input message
@@ -1719,13 +1493,7 @@ attribute) appears in the UI. If you don't set the
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a developer app.
-
-**Note**: The delete operation is asynchronous. The developer app is
-deleted immediately,
-but its associated resources, such as app
-keys or access tokens, may take anywhere from a few seconds to a
-few minutes to be deleted.
+      r"""Deletes a developer app. **Note**: The delete operation is asynchronous. The developer app is deleted immediately, but its associated resources, such as app keys or access tokens, may take anywhere from a few seconds to a few minutes to be deleted.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsDeleteRequest) input message
@@ -1752,44 +1520,7 @@ few minutes to be deleted.
     )
 
     def GenerateKeyPairOrUpdateDeveloperAppStatus(self, request, global_params=None):
-      r"""Manages access to a developer app by enabling you to:.
-
-* Approve or revoke a developer app
-* Generate a new consumer key and secret for a developer app
-
-To approve or revoke a developer app, set the `action` query parameter to
-`approved` or `revoked`, respectively, and the
-`Content-Type` header to `application/octet-stream`. If a developer app is
-revoked, none of its API keys are valid for API calls even though
-the keys are still `approved`. If successful, the API call returns the
-following HTTP status code: `204 No Content`
-
-To generate a new consumer key and secret for a developer
-app, pass the new key/secret details. Rather than
-replace an existing key, this API generates a new
-key. In this case, multiple key
-pairs may be associated with a single developer app. Each key pair has an
-independent status (`approved` or `revoked`) and expiration time.
-Any approved, non-expired key can be used in an API call.
-
-For example, if you're using API key rotation, you can generate new
-keys with expiration times that overlap keys that are going to expire.
-You might also generate a new consumer key/secret if the security of the
-original key/secret is compromised.
-
-The `keyExpiresIn` property defines the
-expiration time for the API key in milliseconds. If you don't set
-this property or set it to `-1`, the API key never expires.
-
-**Notes**:
-
-* When generating a new key/secret, this API replaces the
-existing attributes, notes, and callback URLs with those specified in the
-request. Include or exclude any existing information that you want to
-retain or delete, respectively.
-* To migrate existing consumer keys and secrets to hybrid from another
-system, see the
-CreateDeveloperAppKey API.
+      r"""Manages access to a developer app by enabling you to: * Approve or revoke a developer app * Generate a new consumer key and secret for a developer app To approve or revoke a developer app, set the `action` query parameter to `approved` or `revoked`, respectively, and the `Content-Type` header to `application/octet-stream`. If a developer app is revoked, none of its API keys are valid for API calls even though the keys are still `approved`. If successful, the API call returns the following HTTP status code: `204 No Content` To generate a new consumer key and secret for a developer app, pass the new key/secret details. Rather than replace an existing key, this API generates a new key. In this case, multiple key pairs may be associated with a single developer app. Each key pair has an independent status (`approved` or `revoked`) and expiration time. Any approved, non-expired key can be used in an API call. For example, if you're using API key rotation, you can generate new keys with expiration times that overlap keys that are going to expire. You might also generate a new consumer key/secret if the security of the original key/secret is compromised. The `keyExpiresIn` property defines the expiration time for the API key in milliseconds. If you don't set this property or set it to `-1`, the API key never expires. **Notes**: * When generating a new key/secret, this API replaces the existing attributes, notes, and callback URLs with those specified in the request. Include or exclude any existing information that you want to retain or delete, respectively. * To migrate existing consumer keys and secrets to hybrid from another system, see the CreateDeveloperAppKey API.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsGenerateKeyPairOrUpdateDeveloperAppStatusRequest) input message
@@ -1843,12 +1574,7 @@ CreateDeveloperAppKey API.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all apps created by a developer in an Apigee organization.
-Optionally, you can request an expanded view of the developer apps.
-
-A maximum of 100 developer apps are returned per API call. You can paginate
-the list of deveoper apps returned using the `startKey` and `count` query
-parameters.
+      r"""Lists all apps created by a developer in an Apigee organization. Optionally, you can request an expanded view of the developer apps. A maximum of 100 developer apps are returned per API call. You can paginate the list of deveoper apps returned using the `startKey` and `count` query parameters.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAppsListRequest) input message
@@ -1875,26 +1601,7 @@ parameters.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the details for a developer app. In addition, you can.
-add an API product to a developer app and automatically generate
-an API key for the app to use when calling APIs in the API product.
-
-If you want to use an existing API key for the API product,
-add the API product to the API key using the
-UpdateDeveloperAppKey
-API.
-
-Using this API, you cannot update the following:
-
-* App name as it is the primary key used to identify the app and cannot
-  be changed.
-* Scopes associated with the app. Instead, use the
-  ReplaceDeveloperAppKey API.
-
-This API replaces the
-existing attributes with those specified in the request.
-Include or exclude any existing attributes that you want to retain or
-delete, respectively.
+      r"""Updates the details for a developer app. In addition, you can add an API product to a developer app and automatically generate an API key for the app to use when calling APIs in the API product. If you want to use an existing API key for the API product, add the API product to the API key using the UpdateDeveloperAppKey API. Using this API, you cannot update the following: * App name as it is the primary key used to identify the app and cannot be changed. * Scopes associated with the app. Instead, use the ReplaceDeveloperAppKey API. This API replaces the existing attributes with those specified in the request. Include or exclude any existing attributes that you want to retain or delete, respectively.
 
       Args:
         request: (GoogleCloudApigeeV1DeveloperApp) input message
@@ -2012,14 +1719,7 @@ delete, respectively.
     )
 
     def UpdateDeveloperAttribute(self, request, global_params=None):
-      r"""Updates a developer attribute.
-
-**Note**: OAuth access tokens and Key Management Service (KMS) entities
-(apps, developers, and API products) are cached for 180 seconds
-(default). Any custom attributes associated with these entities
-are cached for at least 180 seconds after the entity is accessed at
-runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy
-won't be able to expire an access token in less than 180 seconds.
+      r"""Updates a developer attribute. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (default). Any custom attributes associated with these entities are cached for at least 180 seconds after the entity is accessed at runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
 
       Args:
         request: (GoogleCloudApigeeV1Attribute) input message
@@ -2056,22 +1756,7 @@ won't be able to expire an access token in less than 180 seconds.
           }
 
     def Attributes(self, request, global_params=None):
-      r"""Updates developer attributes.
-
-This API replaces the
-existing attributes with those specified in the request.
-Add new attributes, and include or exclude any existing
-attributes that you want to retain or
-remove, respectively.
-
-The custom attribute limit is 18.
-
-**Note**: OAuth access tokens and Key Management Service (KMS) entities
-(apps, developers, and API products) are cached for 180 seconds
-(default). Any custom attributes associated with these entities
-are cached for at least 180 seconds after the entity is accessed at
-runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy
-won't be able to expire an access token in less than 180 seconds.
+      r"""Updates developer attributes. This API replaces the existing attributes with those specified in the request. Add new attributes, and include or exclude any existing attributes that you want to retain or remove, respectively. The custom attribute limit is 18. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (default). Any custom attributes associated with these entities are cached for at least 180 seconds after the entity is accessed at runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
 
       Args:
         request: (ApigeeOrganizationsDevelopersAttributesRequest) input message
@@ -2098,11 +1783,7 @@ won't be able to expire an access token in less than 180 seconds.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a developer. Once created,.
-the developer can register an app and obtain an API key.
-
-At creation time, a developer is set as `active`. To change the developer
-status, use the SetDeveloperStatus API.
+      r"""Creates a developer. Once created, the developer can register an app and obtain an API key. At creation time, a developer is set as `active`. To change the developer status, use the SetDeveloperStatus API.
 
       Args:
         request: (ApigeeOrganizationsDevelopersCreateRequest) input message
@@ -2129,20 +1810,7 @@ status, use the SetDeveloperStatus API.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a developer. All apps and API keys associated.
-with the developer are also removed.
-
-**Warning**: This API will permanently delete the developer
-and related artifacts.
-
-To avoid permanently deleting developers and their artifacts,
-set the developer status to `inactive` using
-the SetDeveloperStatus API.
-
-**Note**: The delete operation is asynchronous. The developer app is
-deleted immediately,
-but its associated resources, such as apps and API keys, may take anywhere
-from a few seconds to a few minutes to be deleted.
+      r"""Deletes a developer. All apps and API keys associated with the developer are also removed. **Warning**: This API will permanently delete the developer and related artifacts. To avoid permanently deleting developers and their artifacts, set the developer status to `inactive` using the SetDeveloperStatus API. **Note**: The delete operation is asynchronous. The developer app is deleted immediately, but its associated resources, such as apps and API keys, may take anywhere from a few seconds to a few minutes to be deleted.
 
       Args:
         request: (ApigeeOrganizationsDevelopersDeleteRequest) input message
@@ -2169,10 +1837,7 @@ from a few seconds to a few minutes to be deleted.
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the developer details, including the.
-developer's name, email address, apps, and other information.
-
-**Note**: The response includes only the first 100 developer apps.
+      r"""Returns the developer details, including the developer's name, email address, apps, and other information. **Note**: The response includes only the first 100 developer apps.
 
       Args:
         request: (ApigeeOrganizationsDevelopersGetRequest) input message
@@ -2199,15 +1864,7 @@ developer's name, email address, apps, and other information.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all developers in an organization by email address.
-
-By default,
-the response does not include company developers. Set the `includeCompany`
-query parameter to `true` to include company developers.
-
-**Note**: A maximum of 1000 developers are returned in the response. You
-paginate the list of developers returned using the `startKey` and `count`
-query parameters.
+      r"""Lists all developers in an organization by email address. By default, the response does not include company developers. Set the `includeCompany` query parameter to `true` to include company developers. **Note**: A maximum of 1000 developers are returned in the response. You paginate the list of developers returned using the `startKey` and `count` query parameters.
 
       Args:
         request: (ApigeeOrganizationsDevelopersListRequest) input message
@@ -2234,16 +1891,7 @@ query parameters.
     )
 
     def SetDeveloperStatus(self, request, global_params=None):
-      r"""Sets the status of a developer. Valid values are `active` or `inactive`.
-
-A developer is `active` by default. If you set a developer's status to
-`inactive`, the API keys assigned to the developer apps are no longer valid
-even though the API keys are set to `approved`. Inactive developers
-can still sign in to the developer portal and create apps; however, any
-new API keys generated during app creation won't work.
-
-If successful, the API call returns the
-following HTTP status code: `204 No Content`
+      r"""Sets the status of a developer. Valid values are `active` or `inactive`. A developer is `active` by default. If you set a developer's status to `inactive`, the API keys assigned to the developer apps are no longer valid even though the API keys are set to `approved`. Inactive developers can still sign in to the developer portal and create apps; however, any new API keys generated during app creation won't work. If successful, the API call returns the following HTTP status code: `204 No Content`.
 
       Args:
         request: (ApigeeOrganizationsDevelopersSetDeveloperStatusRequest) input message
@@ -2270,20 +1918,7 @@ following HTTP status code: `204 No Content`
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a developer.
-
-This API replaces the existing developer details with those specified
-in the request. Include or exclude any existing details that
-you want to retain or delete, respectively.
-
-The custom attribute limit is 18.
-
-**Note**: OAuth access tokens and Key Management Service (KMS) entities
-(apps, developers, and API products) are cached for 180 seconds
-(current default). Any custom attributes associated with these entities
-are cached for at least 180 seconds after the entity is accessed at
-runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy
-won't be able to expire an access token in less than 180 seconds.
+      r"""Updates a developer. This API replaces the existing developer details with those specified in the request. Include or exclude any existing details that you want to retain or delete, respectively. The custom attribute limit is 18. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with these entities are cached for at least 180 seconds after the entity is accessed at runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
 
       Args:
         request: (ApigeeOrganizationsDevelopersUpdateRequest) input message
@@ -2583,10 +2218,7 @@ won't be able to expire an access token in less than 180 seconds.
           }
 
     def GetSchemav2(self, request, global_params=None):
-      r"""Get a list of metrics and dimensions which can be used for creating.
-analytics queries and reports.
-Each schema element contains the name of the field with its associated type
-and if it is either custom field or standard field.
+      r"""Get a list of metrics and dimensions which can be used for creating analytics queries and reports. Each schema element contains the name of the field with its associated type and if it is either custom field or standard field.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsAnalyticsAdminGetSchemav2Request) input message
@@ -2623,10 +2255,7 @@ and if it is either custom field or standard field.
           }
 
     def Create(self, request, global_params=None):
-      r"""Submit a data export job to be processed in the background.
-If the request is successful, the API returns a 201 status, a URI that can
-be used to retrieve the status of the export job, and the `state` value of
-"enqueued".
+      r"""Submit a data export job to be processed in the background. If the request is successful, the API returns a 201 status, a URI that can be used to retrieve the status of the export job, and the `state` value of "enqueued".
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsAnalyticsExportsCreateRequest) input message
@@ -2653,11 +2282,7 @@ be used to retrieve the status of the export job, and the `state` value of
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the details and status of an analytics export job.
-If the export job is still in progress, its `state` is set to "running".
-After the export job has completed successfully, its `state` is set to
-"completed".
-If the export job fails, its `state` is set to `failed`.
+      r"""Gets the details and status of an analytics export job. If the export job is still in progress, its `state` is set to "running". After the export job has completed successfully, its `state` is set to "completed". If the export job fails, its `state` is set to `failed`.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsAnalyticsExportsGetRequest) input message
@@ -2684,8 +2309,7 @@ If the export job fails, its `state` is set to `failed`.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the details and status of all analytics export jobs belonging to the.
-parent organization and environment.
+      r"""Lists the details and status of all analytics export jobs belonging to the parent organization and environment.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsAnalyticsExportsListRequest) input message
@@ -2833,9 +2457,7 @@ parent organization and environment.
     )
 
     def DeleteData(self, request, global_params=None):
-      r"""Deletes the data from a debug session. This does not cancel the debug.
-session or prevent further data from being collected if the session is
-still active in runtime pods.
+      r"""Deletes the data from a debug session. This does not cancel the debug session or prevent further data from being collected if the session is still active in runtime pods.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsDeleteDataRequest) input message
@@ -2889,8 +2511,7 @@ still active in runtime pods.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists debug sessions that are currently active in the given API Proxy.
-revision.
+      r"""Lists debug sessions that are currently active in the given API Proxy revision.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsApisRevisionsDebugsessionsListRequest) input message
@@ -2927,14 +2548,7 @@ revision.
           }
 
     def GenerateDeployChangeReport(self, request, global_params=None):
-      r"""Generates a report for a dry run analysis of a DeployApiProxy request.
-without committing the deployment.
-
-In addition to the standard validations performed when adding deployments,
-additional analysis will be done to detect possible traffic routing changes
-that would result from this deployment being created. Any potential routing
-conflicts or unsafe changes will be reported in the response. This routing
-analysis is not performed for a non-dry-run DeployApiProxy request.
+      r"""Generates a report for a dry run analysis of a DeployApiProxy request without committing the deployment. In addition to the standard validations performed when adding deployments, additional analysis will be done to detect possible traffic routing changes that would result from this deployment being created. Any potential routing conflicts or unsafe changes will be reported in the response. This routing analysis is not performed for a non-dry-run DeployApiProxy request.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChangeReportRequest) input message
@@ -2961,15 +2575,7 @@ analysis is not performed for a non-dry-run DeployApiProxy request.
     )
 
     def GenerateUndeployChangeReport(self, request, global_params=None):
-      r"""Generates a report for a dry run analysis of an UndeployApiProxy request.
-without committing the undeploy.
-
-In addition to the standard validations performed when removing
-deployments, additional analysis will be done to detect possible traffic
-routing changes that would result from this deployment being removed. Any
-potential routing conflicts or unsafe changes will be reported in the
-response. This routing analysis is not performed for a non-dry-run
-UndeployApiProxy request.
+      r"""Generates a report for a dry run analysis of an UndeployApiProxy request without committing the undeploy. In addition to the standard validations performed when removing deployments, additional analysis will be done to detect possible traffic routing changes that would result from this deployment being removed. Any potential routing conflicts or unsafe changes will be reported in the response. This routing analysis is not performed for a non-dry-run UndeployApiProxy request.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateUndeployChangeReportRequest) input message
@@ -3005,40 +2611,35 @@ UndeployApiProxy request.
       self._upload_configs = {
           }
 
-    def Deployments(self, request, global_params=None):
-      r"""Undeploys an API proxy revision from an environment.
-
-Because multiple revisions of the same API proxy can be deployed in
-the same environment if the base paths are different, you must specify the
-revision number of the API proxy.
+    def Deploy(self, request, global_params=None):
+      r"""Deploys a revision of an API proxy. If an API proxy revision is currently deployed, to ensure seamless deployment with zero downtime set the `override` parameter to `true`. In this case, hybrid attempts to deploy the new revision fully before undeploying the existing revision. You cannot invoke an API proxy until it has been deployed to an environment. After you deploy an API proxy revision, you cannot edit it. To edit the API proxy, you must create and deploy a new revision. .
 
       Args:
-        request: (ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsRequest) input message
+        request: (ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleProtobufEmpty) The response message.
+        (GoogleCloudApigeeV1Deployment) The response message.
       """
-      config = self.GetMethodConfig('Deployments')
+      config = self.GetMethodConfig('Deploy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Deployments.method_config = lambda: base_api.ApiMethodInfo(
+    Deploy.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/apis/{apisId}/revisions/{revisionsId}/deployments',
-        http_method='DELETE',
-        method_id='apigee.organizations.environments.apis.revisions.deployments',
+        http_method='POST',
+        method_id='apigee.organizations.environments.apis.revisions.deploy',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['sequencedRollout'],
+        query_params=['basepath', 'override', 'sequencedRollout'],
         relative_path='v1/{+name}/deployments',
         request_field='',
-        request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsRequest',
-        response_type_name='GoogleProtobufEmpty',
+        request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest',
+        response_type_name='GoogleCloudApigeeV1Deployment',
         supports_download=False,
     )
 
     def GetDeployments(self, request, global_params=None):
-      r"""Gets the deployment of an API proxy revision and actual state reported by.
-runtime pods.
+      r"""Gets the deployment of an API proxy revision and actual state reported by runtime pods.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsApisRevisionsGetDeploymentsRequest) input message
@@ -3061,6 +2662,33 @@ runtime pods.
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsGetDeploymentsRequest',
         response_type_name='GoogleCloudApigeeV1Deployment',
+        supports_download=False,
+    )
+
+    def Undeploy(self, request, global_params=None):
+      r"""Undeploys an API proxy revision from an environment. Because multiple revisions of the same API proxy can be deployed in the same environment if the base paths are different, you must specify the revision number of the API proxy.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsApisRevisionsUndeployRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Undeploy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undeploy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/apis/{apisId}/revisions/{revisionsId}/deployments',
+        http_method='DELETE',
+        method_id='apigee.organizations.environments.apis.revisions.undeploy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['sequencedRollout'],
+        relative_path='v1/{+name}/deployments',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsUndeployRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -3213,9 +2841,7 @@ runtime pods.
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the name of the shared flow attached to the specified flow hook. If.
-there's no shared flow attached to the flow hook, the API does not return
-an error; it simply does not return a name in the response.
+      r"""Returns the name of the shared flow attached to the specified flow hook. If there's no shared flow attached to the flow hook, the API does not return an error; it simply does not return a name in the response.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsFlowhooksGetRequest) input message
@@ -3252,18 +2878,7 @@ an error; it simply does not return a name in the response.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an alias from a key, certificate pair.
-The structure of the request is controlled by the `format` query parameter:
- * `keycertfile` - Separate PEM-encoded key and certificate files are
- uploaded. The request must have `Content-Type: multipart/form-data` and
- include fields `keyFile` and `certFile`. If uploading to a truststore,
- omit `keyFile`.
-* `pkcs12` - A PKCS12 file is uploaded. The request must have
-`Content-Type: multipart/form-data` with the file provided in the only
-field.
-* `selfsignedcert` - A new private key and certificate are generated. The
-request must have `Content-Type: application/json` and a body of
-CertificateGenerationSpec.
+      r"""Creates an alias from a key, certificate pair. The structure of the request is controlled by the `format` query parameter: * `keycertfile` - Separate PEM-encoded key and certificate files are uploaded. The request must have `Content-Type: multipart/form-data` and include fields `keyFile` and `certFile`. If uploading to a truststore, omit `keyFile`. * `pkcs12` - A PKCS12 file is uploaded. The request must have `Content-Type: multipart/form-data` with the file provided in the only field. * `selfsignedcert` - A new private key and certificate are generated. The request must have `Content-Type: application/json` and a body of CertificateGenerationSpec.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeystoresAliasesCreateRequest) input message
@@ -3290,8 +2905,7 @@ CertificateGenerationSpec.
     )
 
     def Csr(self, request, global_params=None):
-      r"""Generates a PKCS #10 Certificate Signing Request for the private key in.
-an alias.
+      r"""Generates a PKCS #10 Certificate Signing Request for the private key in an alias.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeystoresAliasesCsrRequest) input message
@@ -3436,11 +3050,7 @@ an alias.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a keystore or truststore:.
- * Keystore: Contains certificates and their associated keys.
- * Truststore: Contains trusted certificates used to validate a
- server's certificate. These certificates are typically self-signed
- certificates or certificates that are not signed by a trusted CA.
+      r"""Creates a keystore or truststore: * Keystore: Contains certificates and their associated keys. * Truststore: Contains trusted certificates used to validate a server's certificate. These certificates are typically self-signed certificates or certificates that are not signed by a trusted CA.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeystoresCreateRequest) input message
@@ -3595,12 +3205,7 @@ an alias.
           }
 
     def Get(self, request, global_params=None):
-      r"""This api is similar to GetStats.
-except that the response is less verbose.
-In the current scheme, a query parameter _optimized instructs
-Edge Analytics to change the response but since this behavior
-is not possible with protocol buffer and since this parameter is
-predominantly used by Edge UI, we are introducing a separate api.
+      r"""This api is similar to GetStats except that the response is less verbose. In the current scheme, a query parameter _optimized instructs Edge Analytics to change the response but since this behavior is not possible with protocol buffer and since this parameter is predominantly used by Edge UI, we are introducing a separate api.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest) input message
@@ -3637,10 +3242,7 @@ predominantly used by Edge UI, we are introducing a separate api.
           }
 
     def Create(self, request, global_params=None):
-      r"""Submit a query to be processed in the background.
-If the submission of the query succeeds, the API returns a 201 status and
-an ID that refer to the query. In addition to the HTTP status 201, the
-`state` of "enqueued" means that the request succeeded.
+      r"""Submit a query to be processed in the background. If the submission of the query succeeds, the API returns a 201 status and an ID that refer to the query. In addition to the HTTP status 201, the `state` of "enqueued" means that the request succeeded.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsQueriesCreateRequest) input message
@@ -3667,9 +3269,7 @@ an ID that refer to the query. In addition to the HTTP status 201, the
     )
 
     def Get(self, request, global_params=None):
-      r"""Get query status.
-If the query is still in progress, the `state` is set to "running"
-After the query has completed successfully, `state` is set to "completed"
+      r"""Get query status If the query is still in progress, the `state` is set to "running" After the query has completed successfully, `state` is set to "completed".
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsQueriesGetRequest) input message
@@ -3696,13 +3296,7 @@ After the query has completed successfully, `state` is set to "completed"
     )
 
     def GetResult(self, request, global_params=None):
-      r"""After the query is completed, use this API to retrieve the results.
-If the request succeeds, and there is a non-zero result set, the result is
-downloaded to the client as a zipped JSON file.
-The name of the downloaded file will be:
-  OfflineQueryResult-<query-id>.zip
-
-Example: `OfflineQueryResult-9cfc0d85-0f30-46d6-ae6f-318d0cb961bd.zip`
+      r"""After the query is completed, use this API to retrieve the results. If the request succeeds, and there is a non-zero result set, the result is downloaded to the client as a zipped JSON file. The name of the downloaded file will be: OfflineQueryResult-.zip Example: `OfflineQueryResult-9cfc0d85-0f30-46d6-ae6f-318d0cb961bd.zip`.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsQueriesGetResultRequest) input message
@@ -3793,8 +3387,7 @@ Example: `OfflineQueryResult-9cfc0d85-0f30-46d6-ae6f-318d0cb961bd.zip`
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Reference from an environment. Returns the deleted.
-Reference resource.
+      r"""Deletes a Reference from an environment. Returns the deleted Reference resource.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsReferencesDeleteRequest) input message
@@ -3848,9 +3441,7 @@ Reference resource.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an existing Reference. Note that this operation has PUT.
-semantics; it will replace the entirety of the existing Reference with
-the resource in the request body.
+      r"""Updates an existing Reference. Note that this operation has PUT semantics; it will replace the entirety of the existing Reference with the resource in the request body.
 
       Args:
         request: (GoogleCloudApigeeV1Reference) input message
@@ -3887,13 +3478,7 @@ the resource in the request body.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a resource file.
-
-Specify the `Content-Type` as `application/octet-stream` or
-`multipart/form-data`.
-
-For more information about resource files, see
-[Resource files](/api-platform/develop/resource-files).
+      r"""Creates a resource file. Specify the `Content-Type` as `application/octet-stream` or `multipart/form-data`. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesCreateRequest) input message
@@ -3920,10 +3505,7 @@ For more information about resource files, see
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a resource file.
-
-For more information about resource files, see
-[Resource files](/api-platform/develop/resource-files).
+      r"""Deletes a resource file. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesDeleteRequest) input message
@@ -3950,10 +3532,7 @@ For more information about resource files, see
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the contents of a resource file.
-
-For more information about resource files, see
-[Resource files](/api-platform/develop/resource-files).
+      r"""Gets the contents of a resource file. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesGetRequest) input message
@@ -3980,10 +3559,7 @@ For more information about resource files, see
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all resource files.
-
-For more information about resource files, see
-[Resource files](/api-platform/develop/resource-files).
+      r"""Lists all resource files. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesListRequest) input message
@@ -4010,10 +3586,7 @@ For more information about resource files, see
     )
 
     def ListEnvironmentResources(self, request, global_params=None):
-      r"""Lists all resource files.
-
-For more information about resource files, see
-[Resource files](/api-platform/develop/resource-files).
+      r"""Lists all resource files. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesListEnvironmentResourcesRequest) input message
@@ -4040,13 +3613,7 @@ For more information about resource files, see
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a resource file.
-
-Specify the `Content-Type` as `application/octet-stream` or
-`multipart/form-data`.
-
-For more information about resource files, see
-[Resource files](/api-platform/develop/resource-files).
+      r"""Updates a resource file. Specify the `Content-Type` as `application/octet-stream` or `multipart/form-data`. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesUpdateRequest) input message
@@ -4119,36 +3686,35 @@ For more information about resource files, see
       self._upload_configs = {
           }
 
-    def Deployments(self, request, global_params=None):
-      r"""Undeploys a shared flow revision from an environment.
+    def Deploy(self, request, global_params=None):
+      r"""Deploys a revision of a shared flow. If a shared flow revision is currently deployed, to ensure seamless deployment with zero downtime set the `override` parameter to `true`. In this case, hybrid attempts to deply the new revision fully before undeploying the existing revision. You cannot use a shared flows until it has been deployed to an environment.
 
       Args:
-        request: (ApigeeOrganizationsEnvironmentsSharedflowsRevisionsDeploymentsRequest) input message
+        request: (ApigeeOrganizationsEnvironmentsSharedflowsRevisionsDeployRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleProtobufEmpty) The response message.
+        (GoogleCloudApigeeV1Deployment) The response message.
       """
-      config = self.GetMethodConfig('Deployments')
+      config = self.GetMethodConfig('Deploy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Deployments.method_config = lambda: base_api.ApiMethodInfo(
+    Deploy.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/sharedflows/{sharedflowsId}/revisions/{revisionsId}/deployments',
-        http_method='DELETE',
-        method_id='apigee.organizations.environments.sharedflows.revisions.deployments',
+        http_method='POST',
+        method_id='apigee.organizations.environments.sharedflows.revisions.deploy',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['override'],
         relative_path='v1/{+name}/deployments',
         request_field='',
-        request_type_name='ApigeeOrganizationsEnvironmentsSharedflowsRevisionsDeploymentsRequest',
-        response_type_name='GoogleProtobufEmpty',
+        request_type_name='ApigeeOrganizationsEnvironmentsSharedflowsRevisionsDeployRequest',
+        response_type_name='GoogleCloudApigeeV1Deployment',
         supports_download=False,
     )
 
     def GetDeployments(self, request, global_params=None):
-      r"""Gets the deployment of a shared flow revision and actual state reported by.
-runtime pods.
+      r"""Gets the deployment of a shared flow revision and actual state reported by runtime pods.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsSharedflowsRevisionsGetDeploymentsRequest) input message
@@ -4174,6 +3740,33 @@ runtime pods.
         supports_download=False,
     )
 
+    def Undeploy(self, request, global_params=None):
+      r"""Undeploys a shared flow revision from an environment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSharedflowsRevisionsUndeployRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Undeploy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undeploy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/sharedflows/{sharedflowsId}/revisions/{revisionsId}/deployments',
+        http_method='DELETE',
+        method_id='apigee.organizations.environments.sharedflows.revisions.undeploy',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}/deployments',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSharedflowsRevisionsUndeployRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
   class OrganizationsEnvironmentsSharedflowsService(base_api.BaseApiService):
     """Service class for the organizations_environments_sharedflows resource."""
 
@@ -4195,13 +3788,7 @@ runtime pods.
           }
 
     def Get(self, request, global_params=None):
-      r"""Retrieve metrics grouped by dimensions.
-The types of metrics you can retrieve include traffic, message counts,
-API call latency, response size, and cache hits and counts.
-Dimensions let you view metrics in meaningful groups.
-The stats api does accept dimensions as path params. The dimensions are
-optional in which case the metrics are computed on the entire data
-for the given timerange.
+      r"""Retrieve metrics grouped by dimensions. The types of metrics you can retrieve include traffic, message counts, API call latency, response size, and cache hits and counts. Dimensions let you view metrics in meaningful groups. The stats api does accept dimensions as path params. The dimensions are optional in which case the metrics are computed on the entire data for the given timerange.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsStatsGetRequest) input message
@@ -4265,8 +3852,7 @@ for the given timerange.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a TargetServer from an environment. Returns the deleted.
-TargetServer resource.
+      r"""Deletes a TargetServer from an environment. Returns the deleted TargetServer resource.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsTargetserversDeleteRequest) input message
@@ -4320,9 +3906,7 @@ TargetServer resource.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an existing TargetServer. Note that this operation has PUT.
-semantics; it will replace the entirety of the existing TargetServer with
-the resource in the request body.
+      r"""Updates an existing TargetServer. Note that this operation has PUT semantics; it will replace the entirety of the existing TargetServer with the resource in the request body.
 
       Args:
         request: (GoogleCloudApigeeV1TargetServer) input message
@@ -4494,12 +4078,7 @@ the resource in the request body.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the IAM policy on an environment. For more information, see.
-[Manage users, roles, and permissions
-using the API](https://docs.apigee.com/hybrid/latest/manage-users-roles).
-
-You must have the `apigee.environments.getIamPolicy` permission to call
-this API.
+      r"""Gets the IAM policy on an environment. For more information, see [Manage users, roles, and permissions using the API](https://docs.apigee.com/hybrid/latest/manage-users-roles). You must have the `apigee.environments.getIamPolicy` permission to call this API.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsGetIamPolicyRequest) input message
@@ -4526,13 +4105,7 @@ this API.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the IAM policy on an environment, if the policy already.
-exists it will be replaced. For more information, see
-[Manage users, roles, and permissions
-using the API](https://docs.apigee.com/hybrid/latest/manage-users-roles).
-
-You must have the `apigee.environments.setIamPolicy` permission to
-call this API.
+      r"""Sets the IAM policy on an environment, if the policy already exists it will be replaced. For more information, see [Manage users, roles, and permissions using the API](https://docs.apigee.com/hybrid/latest/manage-users-roles). You must have the `apigee.environments.setIamPolicy` permission to call this API.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsSetIamPolicyRequest) input message
@@ -4559,9 +4132,7 @@ call this API.
     )
 
     def Subscribe(self, request, global_params=None):
-      r"""Creates a subscription for the environment's Pub/Sub topic.
-The server will assign a random name for this subscription.
-The "name" and "push_config" must *not* be specified.
+      r"""Creates a subscription for the environment's Pub/Sub topic. The server will assign a random name for this subscription. The "name" and "push_config" must *not* be specified.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsSubscribeRequest) input message
@@ -4588,10 +4159,7 @@ The "name" and "push_config" must *not* be specified.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Tests the permissions of a user on an environment,.
-and returns a subset of permissions that the user has on the environment.
-If the environment does not exist, an empty permission set is returned
-(a NOT_FOUND error is not returned).
+      r"""Tests the permissions of a user on an environment, and returns a subset of permissions that the user has on the environment. If the environment does not exist, an empty permission set is returned (a NOT_FOUND error is not returned).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsTestIamPermissionsRequest) input message
@@ -4645,12 +4213,7 @@ If the environment does not exist, an empty permission set is returned
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an existing environment.
-
-When updating properties, you must pass all existing properties to the API,
-even if they are not being changed. If you omit properties from the
-payload, the properties are removed. To get the current list of
-properties for the environment, use the [Get Environment API](get).
+      r"""Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get).
 
       Args:
         request: (GoogleCloudApigeeV1Environment) input message
@@ -4704,12 +4267,7 @@ properties for the environment, use the [Get Environment API](get).
     )
 
     def UpdateEnvironment(self, request, global_params=None):
-      r"""Updates an existing environment.
-
-When updating properties, you must pass all existing properties to the API,
-even if they are not being changed. If you omit properties from the
-payload, the properties are removed. To get the current list of
-properties for the environment, use the [Get Environment API](get).
+      r"""Updates an existing environment. When updating properties, you must pass all existing properties to the API, even if they are not being changed. If you omit properties from the payload, the properties are removed. To get the current list of properties for the environment, use the [Get Environment API](get).
 
       Args:
         request: (GoogleCloudApigeeV1Environment) input message
@@ -4746,9 +4304,7 @@ properties for the environment, use the [Get Environment API](get).
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new attachment of an environment to an instance.
-
-**Note:** Not supported for Apigee hybrid.
+      r"""Creates a new attachment of an environment to an instance. **Note:** Not supported for Apigee hybrid.
 
       Args:
         request: (ApigeeOrganizationsInstancesAttachmentsCreateRequest) input message
@@ -4775,9 +4331,7 @@ properties for the environment, use the [Get Environment API](get).
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an attachment.
-
-**Note:** Not supported for Apigee hybrid.
+      r"""Deletes an attachment. **Note:** Not supported for Apigee hybrid.
 
       Args:
         request: (ApigeeOrganizationsInstancesAttachmentsDeleteRequest) input message
@@ -4804,9 +4358,7 @@ properties for the environment, use the [Get Environment API](get).
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an attachment.
-
-**Note:** Not supported for Apigee hybrid.
+      r"""Gets an attachment. **Note:** Not supported for Apigee hybrid.
 
       Args:
         request: (ApigeeOrganizationsInstancesAttachmentsGetRequest) input message
@@ -4833,9 +4385,7 @@ properties for the environment, use the [Get Environment API](get).
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all attachments to an instance.
-
-**Note:** Not supported for Apigee hybrid.
+      r"""Lists all attachments to an instance. **Note:** Not supported for Apigee hybrid.
 
       Args:
         request: (ApigeeOrganizationsInstancesAttachmentsListRequest) input message
@@ -4872,10 +4422,7 @@ properties for the environment, use the [Get Environment API](get).
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an Apigee runtime instance. The instance is accessible from the.
-authorized network configured on the organization.
-
-**Note:** Not supported for Apigee hybrid.
+      r"""Creates an Apigee runtime instance. The instance is accessible from the authorized network configured on the organization. **Note:** Not supported for Apigee hybrid.
 
       Args:
         request: (ApigeeOrganizationsInstancesCreateRequest) input message
@@ -4902,10 +4449,7 @@ authorized network configured on the organization.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an Apigee runtime instance. The instance stops serving.
-requests and the runtime data is deleted.
-
-**Note:** Not supported for Apigee hybrid.
+      r"""Deletes an Apigee runtime instance. The instance stops serving requests and the runtime data is deleted. **Note:** Not supported for Apigee hybrid.
 
       Args:
         request: (ApigeeOrganizationsInstancesDeleteRequest) input message
@@ -4932,9 +4476,7 @@ requests and the runtime data is deleted.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the details for an Apigee runtime instance.
-
-**Note:** Not supported for Apigee hybrid.
+      r"""Gets the details for an Apigee runtime instance. **Note:** Not supported for Apigee hybrid.
 
       Args:
         request: (ApigeeOrganizationsInstancesGetRequest) input message
@@ -4961,9 +4503,7 @@ requests and the runtime data is deleted.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all Apigee runtime instances for the organization.
-
-**Note:** Not supported for Apigee hybrid.
+      r"""Lists all Apigee runtime instances for the organization. **Note:** Not supported for Apigee hybrid.
 
       Args:
         request: (ApigeeOrganizationsInstancesListRequest) input message
@@ -5091,9 +4631,7 @@ requests and the runtime data is deleted.
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (ApigeeOrganizationsOperationsGetRequest) input message
@@ -5120,16 +4658,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (ApigeeOrganizationsOperationsListRequest) input message
@@ -5166,13 +4695,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Custom Report for an Organization. A Custom Report.
-provides Apigee Customers to create custom dashboards in addition
-to the standard dashboards which are provided. The Custom Report in its
-simplest form contains specifications about metrics, dimensions and
-filters. It is important to note that the custom report by itself does not
-provide an executable entity. The Edge UI converts the custom report
-definition into an analytics query and displays the result in a chart.
+      r"""Creates a Custom Report for an Organization. A Custom Report provides Apigee Customers to create custom dashboards in addition to the standard dashboards which are provided. The Custom Report in its simplest form contains specifications about metrics, dimensions and filters. It is important to note that the custom report by itself does not provide an executable entity. The Edge UI converts the custom report definition into an analytics query and displays the result in a chart.
 
       Args:
         request: (ApigeeOrganizationsReportsCreateRequest) input message
@@ -5391,8 +4914,7 @@ definition into an analytics query and displays the result in a chart.
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a shared flow and all associated policies, resources, and.
-revisions. You must undeploy the shared flow before deleting it.
+      r"""Deletes a shared flow and all associated policies, resources, and revisions. You must undeploy the shared flow before deleting it.
 
       Args:
         request: (ApigeeOrganizationsSharedflowsRevisionsDeleteRequest) input message
@@ -5419,10 +4941,7 @@ revisions. You must undeploy the shared flow before deleting it.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a revision of a shared flow.
-
-If `format=bundle` is passed, it instead outputs a shared flow revision as
-a ZIP-formatted bundle of code and config files.
+      r"""Gets a revision of a shared flow. If `format=bundle` is passed, it instead outputs a shared flow revision as a ZIP-formatted bundle of code and config files.
 
       Args:
         request: (ApigeeOrganizationsSharedflowsRevisionsGetRequest) input message
@@ -5449,12 +4968,7 @@ a ZIP-formatted bundle of code and config files.
     )
 
     def UpdateSharedFlowRevision(self, request, global_params=None):
-      r"""Updates a shared flow revision. This operation is only allowed on revisions.
-which have never been deployed. After deployment a revision becomes
-immutable, even if it becomes undeployed.
-
-The payload is a ZIP-formatted shared flow.  Content type must be either
-multipart/form-data or application/octet-stream.
+      r"""Updates a shared flow revision. This operation is only allowed on revisions which have never been deployed. After deployment a revision becomes immutable, even if it becomes undeployed. The payload is a ZIP-formatted shared flow. Content type must be either multipart/form-data or application/octet-stream.
 
       Args:
         request: (ApigeeOrganizationsSharedflowsRevisionsUpdateSharedFlowRevisionRequest) input message
@@ -5491,14 +5005,7 @@ multipart/form-data or application/octet-stream.
           }
 
     def Create(self, request, global_params=None):
-      r"""Uploads a ZIP-formatted shared flow configuration bundle to an.
-organization. If the shared flow already exists, this creates a new
-revision of it. If the shared flow does not exist, this creates it.
-
-Once imported, the shared flow revision must be deployed before it can be
-accessed at runtime.
-
-The size limit of a shared flow bundle is 15 MB.
+      r"""Uploads a ZIP-formatted shared flow configuration bundle to an organization. If the shared flow already exists, this creates a new revision of it. If the shared flow does not exist, this creates it. Once imported, the shared flow revision must be deployed before it can be accessed at runtime. The size limit of a shared flow bundle is 15 MB.
 
       Args:
         request: (ApigeeOrganizationsSharedflowsCreateRequest) input message
@@ -5525,8 +5032,7 @@ The size limit of a shared flow bundle is 15 MB.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a shared flow and all it's revisions. The shared flow must be.
-undeployed before you can delete it.
+      r"""Deletes a shared flow and all it's revisions. The shared flow must be undeployed before you can delete it.
 
       Args:
         request: (ApigeeOrganizationsSharedflowsDeleteRequest) input message
@@ -5617,9 +5123,7 @@ undeployed before you can delete it.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an Apigee organization. See.
-[Create an
-organization](https://docs.apigee.com/hybrid/latest/precog-provision).
+      r"""Creates an Apigee organization. See [Create an organization](https://docs.apigee.com/hybrid/latest/precog-provision).
 
       Args:
         request: (ApigeeOrganizationsCreateRequest) input message
@@ -5645,9 +5149,7 @@ organization](https://docs.apigee.com/hybrid/latest/precog-provision).
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the profile for an Apigee organization.
-See
-[Organizations](https://docs.apigee.com/hybrid/latest/terminology#organizations).
+      r"""Gets the profile for an Apigee organization. See [Organizations](https://docs.apigee.com/hybrid/latest/terminology#organizations).
 
       Args:
         request: (ApigeeOrganizationsGetRequest) input message
@@ -5701,20 +5203,7 @@ See
     )
 
     def GetSyncAuthorization(self, request, global_params=None):
-      r"""Lists the service accounts with the permissions required to allow.
-the Synchronizer to download environment data from the control plane.
-
-An ETag is returned in the response to `getSyncAuthorization`.
-Pass that ETag when calling [setSyncAuthorization](setSyncAuthorization)
-to ensure that you are updating the correct version. If you don't pass the
-ETag in the call to `setSyncAuthorization`, then the existing authorization
-is overwritten indiscriminately.
-
-For more information, see
-[Enable Synchronizer
-access](https://docs.apigee.com/hybrid/latest/synchronizer-access#enable-synchronizer-access).
-
-**Note**: Available to Apigee hybrid only.
+      r"""Lists the service accounts with the permissions required to allow the Synchronizer to download environment data from the control plane. An ETag is returned in the response to `getSyncAuthorization`. Pass that ETag when calling [setSyncAuthorization](setSyncAuthorization) to ensure that you are updating the correct version. If you don't pass the ETag in the call to `setSyncAuthorization`, then the existing authorization is overwritten indiscriminately. For more information, see [Enable Synchronizer access](https://docs.apigee.com/hybrid/latest/synchronizer-access#enable-synchronizer-access). **Note**: Available to Apigee hybrid only.
 
       Args:
         request: (ApigeeOrganizationsGetSyncAuthorizationRequest) input message
@@ -5741,9 +5230,7 @@ access](https://docs.apigee.com/hybrid/latest/synchronizer-access#enable-synchro
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the Apigee organizations and associated GCP projects that you have.
-permission to access. See
-[Organizations](https://docs.apigee.com/hybrid/latest/terminology#organizations).
+      r"""Lists the Apigee organizations and associated GCP projects that you have permission to access. See [Organizations](https://docs.apigee.com/hybrid/latest/terminology#organizations).
 
       Args:
         request: (ApigeeOrganizationsListRequest) input message
@@ -5770,21 +5257,7 @@ permission to access. See
     )
 
     def SetSyncAuthorization(self, request, global_params=None):
-      r"""Sets the permissions required to allow the Synchronizer to download.
-environment data from the control plane. You must call this API to enable
-proper functioning of hybrid.
-
-Pass the ETag when calling `setSyncAuthorization` to ensure that
-you are updating the correct version. To get an ETag,
-call [getSyncAuthorization](getSyncAuthorization).
-If you don't pass the ETag in the call to `setSyncAuthorization`, then the
-existing authorization is overwritten indiscriminately.
-
-For more information, see
-[Enable Synchronizer
-access](https://docs.apigee.com/hybrid/latest/synchronizer-access#enable-synchronizer-access).
-
-**Note**: Available to Apigee hybrid only.
+      r"""Sets the permissions required to allow the Synchronizer to download environment data from the control plane. You must call this API to enable proper functioning of hybrid. Pass the ETag when calling `setSyncAuthorization` to ensure that you are updating the correct version. To get an ETag, call [getSyncAuthorization](getSyncAuthorization). If you don't pass the ETag in the call to `setSyncAuthorization`, then the existing authorization is overwritten indiscriminately. For more information, see [Enable Synchronizer access](https://docs.apigee.com/hybrid/latest/synchronizer-access#enable-synchronizer-access). **Note**: Available to Apigee hybrid only.
 
       Args:
         request: (ApigeeOrganizationsSetSyncAuthorizationRequest) input message
@@ -5811,8 +5284,7 @@ access](https://docs.apigee.com/hybrid/latest/synchronizer-access#enable-synchro
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the properties for an Apigee organization. No other fields in the.
-organization profile will be updated.
+      r"""Updates the properties for an Apigee organization. No other fields in the organization profile will be updated.
 
       Args:
         request: (GoogleCloudApigeeV1Organization) input message

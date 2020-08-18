@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Cloud Composer Flex API",
-  "description": "Manages workflows on Google Cloud Platform using Apache Airflow. Composer Flex additionally provides per-workflow security, auto-scaling, and native GCP tooling for workflows and tasks.\n",
+  "description": "Manages workflows on Google Cloud Platform using Apache Airflow. Composer Flex additionally provides per-workflow security, auto-scaling, and native GCP tooling for workflows and tasks. ",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -115,46 +115,46 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the context, in the form:\n\"projects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}\"",
+          "description": "The resource name of the context, in the form: \"projects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}\"",
           "type": "string"
         },
         "airflowVariables": {
-          "description": "Optional. Key value pairs to make available to a workflow. These are an\napplication-level concept and are different from environment variables,\nwhich are a process-level concept.",
+          "description": "Optional. Key value pairs to make available to a workflow. These are an application-level concept and are different from environment variables, which are a process-level concept.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "envVariables": {
-          "description": "Optional. Environment variables to provide to the processes executing\nthe workflow.\n\nEnvironment variable names must match the regular expression\n\"a-zA-Z_*\". They cannot specify Apache Airflow configuration\noverrides (they cannot match the regular expression\n`AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`)",
+          "description": "Optional. Environment variables to provide to the processes executing the workflow. Environment variable names must match the regular expression \"a-zA-Z_*\". They cannot specify Apache Airflow configuration overrides (they cannot match the regular expression `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`)",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "connections": {
-          "description": "Optional. A mapping from connection ID to Connections to make available to\nthe workflow. Each map entry's key should match the `id` field of the  \/\/\nvalue.",
+          "description": "Optional. A mapping from connection ID to Connections to make available to the workflow. Each map entry's key should match the `id` field of the \/\/ value.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Connection"
           }
         },
         "pools": {
-          "description": "Optional. A mapping from pool ID to Pools to make available to\nthe workflow. Each map entry's key should match the `id` field of the\nvalue.",
+          "description": "Optional. A mapping from pool ID to Pools to make available to the workflow. Each map entry's key should match the `id` field of the value.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Pool"
           }
         },
         "airflowConfigOverrides": {
-          "description": "Optional. A user defined mapping of key value pairs for Airflow\nConfigurations.",
+          "description": "Optional. A user defined mapping of key value pairs for Airflow Configurations.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "labels": {
-          "description": "Optional. User-defined labels for this context.\nThere can be no more than 64 labels entries. Entries of the labels\nmap are UTF8 strings that comply with the following restrictions:\n\n* Keys must conform to regexp: \\p{Ll}\\p{Lo}{0,62}\n* Values must conform to regexp:  [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n* Both keys and values are additionally constrained to be <= 128 bytes in\nsize.",
+          "description": "Optional. User-defined labels for this context. There can be no more than 64 labels entries. Entries of the labels map are UTF8 strings that comply with the following restrictions: * Keys must conform to regexp: \\p{Ll}\\p{Lo}{0,62} * Values must conform to regexp: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63} * Both keys and values are additionally constrained to be <= 128 bytes in size.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -174,7 +174,7 @@
     },
     "Connection": {
       "id": "Connection",
-      "description": "Represents an Airflow Connection. Usage of the fields within this message is\ndescribed in Airflow documentation:\nhttps:\/\/airflow.apache.org\/howto\/connection\/index.html#editing-a-connection-with-the-ui",
+      "description": "Represents an Airflow Connection. Usage of the fields within this message is described in Airflow documentation: https:\/\/airflow.apache.org\/howto\/connection\/index.html#editing-a-connection-with-the-ui",
       "type": "object",
       "properties": {
         "id": {
@@ -182,7 +182,7 @@
           "type": "string"
         },
         "type": {
-          "description": "The type of connection specified. This refers to the service for which this\nconnection is created.",
+          "description": "The type of connection specified. This refers to the service for which this connection is created.",
           "enumDescriptions": [
             "Unspecified connection type.",
             "Docker connection type.",
@@ -220,6 +220,42 @@
             "Cassandra connection type."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Unspecified connection type.",
+            "Docker connection type.",
+            "File connection type.",
+            "FTP connection type.",
+            "GCP connection type.",
+            "HDFS connection type.",
+            "HTTP connection type.",
+            "Hive CLI connection type.",
+            "Hive Metastore connection type.",
+            "Hive server connection type.",
+            "JDBC connection type.",
+            "Jenkins connection type.",
+            "MySQL connection type.",
+            "Postgres connection type.",
+            "Oracle connection type.",
+            "Vertica connection type.",
+            "Presto connection type.",
+            "Amazon S3 connection type.",
+            "Samba connection type.",
+            "SQLite connection type.",
+            "SSH connection type.",
+            "Cloudant connection type.",
+            "MsSQL connection type.",
+            "Mesos Framework connection type.",
+            "Jira connection type.",
+            "Redis connection type.",
+            "Wasb connection type.",
+            "Databricks connection type.",
+            "AWS connection type.",
+            "EMR connection type.",
+            "Snowflake connection type.",
+            "Segment connection type.",
+            "Azure Data Lake connection type.",
+            "Cassandra connection type."
+          ],
           "enum": [
             "TYPE_UNSPECIFIED",
             "DOCKER",
@@ -271,7 +307,7 @@
           "type": "string"
         },
         "password": {
-          "description": "Input only. Users can provide the password in plain-text. It will be used\nto set the password in Airflow, but will not be stored for retrieval on\nGoogle systems.",
+          "description": "Input only. Users can provide the password in plain-text. It will be used to set the password in Airflow, but will not be stored for retrieval on Google systems.",
           "type": "string"
         },
         "schema": {
@@ -302,15 +338,15 @@
     },
     "Operation": {
       "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -318,7 +354,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
           "type": "boolean"
         },
         "error": {
@@ -326,7 +362,7 @@
           "$ref": "Status"
         },
         "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -337,7 +373,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -346,11 +382,11 @@
           "format": "int32"
         },
         "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -386,11 +422,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the workflow run, in the form:\n\"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\/runs\/{runId}\"",
+          "description": "Output only. The resource name of the workflow run, in the form: \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\/runs\/{runId}\"",
           "type": "string"
         },
         "intervalStartTime": {
-          "description": "Output only. The start of the time interval corresponding to this workflow run. Only set\nfor SCHEDULED runs. This value is analagous to the Apache Airflow notion\nof `execution_date`; it refers to the left boundary of the scheduling\ninterval.",
+          "description": "Output only. The start of the time interval corresponding to this workflow run. Only set for SCHEDULED runs. This value is analagous to the Apache Airflow notion of `execution_date`; it refers to the left boundary of the scheduling interval.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -413,6 +449,12 @@
             "The WorkflowRun failed."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The state of the WorkflowRun is unknown.",
+            "The WorkflowRun is currently running.",
+            "The WorkflowRun succeeded.",
+            "The WorkflowRun failed."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "RUNNING",
@@ -421,7 +463,7 @@
           ]
         },
         "labels": {
-          "description": "Optional. User-defined labels for this workflow run.\nThe initial label entries for a workflow run are inherited from the\nworkflow from which it was instantiated.\nThere can be no more than 64 labels entries. Entries of the labels\nmap are UTF8 strings that comply with the following restrictions:\n\n* Keys must conform to regexp: \\p{Ll}\\p{Lo}{0,62}\n* Values must conform to regexp:  [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n* Both keys and values are additionally constrained to be <= 128 bytes in\nsize.",
+          "description": "Optional. User-defined labels for this workflow run. The initial label entries for a workflow run are inherited from the workflow from which it was instantiated. There can be no more than 64 labels entries. Entries of the labels map are UTF8 strings that comply with the following restrictions: * Keys must conform to regexp: \\p{Ll}\\p{Lo}{0,62} * Values must conform to regexp: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63} * Both keys and values are additionally constrained to be <= 128 bytes in size.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -453,7 +495,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the workflow, in the form:\n\"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\"",
+          "description": "The resource name of the workflow, in the form: \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\"",
           "type": "string"
         },
         "composerVersion": {
@@ -473,6 +515,12 @@
             "The workflow is in an error state and cannot execute."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "The state of the workflow is unknown.",
+            "The workflow is being created and cannot execute.",
+            "The workflow is available for execution.",
+            "The workflow is in an error state and cannot execute."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
@@ -481,11 +529,11 @@
           ]
         },
         "airflowDag": {
-          "description": "A representation of the workflow as Python source code defining an\nAirflow DAG.",
+          "description": "A representation of the workflow as Python source code defining an Airflow DAG.",
           "$ref": "AirflowDag"
         },
         "labels": {
-          "description": "Optional. User-defined labels for this workflow.\nWorkflow runs instantiated from this workflow will inherit these labels.\nThe labels map can contain no more than 64 entries. Entries of the labels\nmap are UTF8 strings that comply with the following restrictions:\n\n* Keys must conform to regexp: \\p{Ll}\\p{Lo}{0,62}\n* Values must conform to regexp:  [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63}\n* Both keys and values are additionally constrained to be <= 128 bytes in\nsize.",
+          "description": "Optional. User-defined labels for this workflow. Workflow runs instantiated from this workflow will inherit these labels. The labels map can contain no more than 64 entries. Entries of the labels map are UTF8 strings that comply with the following restrictions: * Keys must conform to regexp: \\p{Ll}\\p{Lo}{0,62} * Values must conform to regexp: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63} * Both keys and values are additionally constrained to be <= 128 bytes in size.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -502,11 +550,11 @@
           "format": "google-datetime"
         },
         "context": {
-          "description": "The context to use when executing this workflow. The context resides in\nthe same project and location as this workflow. The context must be\nspecified as the full resource name. The format is:\nprojects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}",
+          "description": "The context to use when executing this workflow. The context resides in the same project and location as this workflow. The context must be specified as the full resource name. The format is: projects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}",
           "type": "string"
         },
         "pythonVersion": {
-          "description": "The major version of Python used to run Apache Airflow processes.\nCan be set to '2' or '3'. If not specified, the default is '2'.",
+          "description": "The major version of Python used to run Apache Airflow processes. Can be set to '2' or '3'. If not specified, the default is '2'.",
           "type": "string"
         }
       }
@@ -517,7 +565,7 @@
       "type": "object",
       "properties": {
         "data": {
-          "description": "The contents of a Python module or ZIP archive that specifies an Airflow\nDAG.",
+          "description": "The contents of a Python module or ZIP archive that specifies an Airflow DAG.",
           "type": "string",
           "format": "byte"
         }
@@ -556,7 +604,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Parent resource of the context to create. The parent must be of the form\n\"projects\/{projectId}\/locations\/{locationId}\".",
+                      "description": "Parent resource of the context to create. The parent must be of the form \"projects\/{projectId}\/locations\/{locationId}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -584,7 +632,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the context to delete. Must be in the form\n\"projects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}.\"",
+                      "description": "The resource name of the context to delete. Must be in the form \"projects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}.\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/contexts\/[^\/]+$",
@@ -600,7 +648,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a context. A context cannot be deleted if any workflows are bound\nto it."
+                  "description": "Deletes a context. A context cannot be deleted if any workflows are bound to it."
                 },
                 "get": {
                   "id": "composerflex.projects.locations.contexts.get",
@@ -609,7 +657,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the context to retrieve. Must be in the form\n\"projects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}.\"",
+                      "description": "The resource name of the context to retrieve. Must be in the form \"projects\/{projectId}\/locations\/{locationId}\/contexts\/{contextId}.\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/contexts\/[^\/]+$",
@@ -634,7 +682,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "List contexts in the given parent resource. Parent must be in the form\n\"projects\/{projectId}\/locations\/{locationId}\".",
+                      "description": "List contexts in the given parent resource. Parent must be in the form \"projects\/{projectId}\/locations\/{locationId}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -657,7 +705,7 @@
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "Optional. Specifies the ordering of results following syntax at\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.\nOrder by will remain internal until its future implementation.",
+                      "description": "Optional. Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order. Order by will remain internal until its future implementation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -684,7 +732,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Parent resource of the workflow to create. The parent must be of the form\n\"projects\/{projectId}\/locations\/{locationId}\".",
+                      "description": "Parent resource of the workflow to create. The parent must be of the form \"projects\/{projectId}\/locations\/{locationId}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -712,7 +760,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the workflow to delete. Must be in the form\n\"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}.\"",
+                      "description": "The resource name of the workflow to delete. Must be in the form \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}.\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
@@ -728,7 +776,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a workflow, forcefully stopping any pending workflow runs and task\ninstances. Long-running operations executing in external systems will\ncontinue."
+                  "description": "Deletes a workflow, forcefully stopping any pending workflow runs and task instances. Long-running operations executing in external systems will continue."
                 },
                 "get": {
                   "id": "composerflex.projects.locations.workflows.get",
@@ -737,7 +785,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the workflow to retrieve. Must be in the form\n\"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}.\"",
+                      "description": "The resource name of the workflow to retrieve. Must be in the form \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}.\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
@@ -762,7 +810,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "List workflows in the given parent resource. Parent must be in the form\n\"projects\/{projectId}\/locations\/{locationId}\".",
+                      "description": "List workflows in the given parent resource. Parent must be in the form \"projects\/{projectId}\/locations\/{locationId}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -785,7 +833,7 @@
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "Optional. Specifies the ordering of results following syntax at\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.\nOrder by will remain internal until its future implementation.",
+                      "description": "Optional. Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order. Order by will remain internal until its future implementation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -813,7 +861,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "The resource name for the WorkflowRun in the form:\n\"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\/runs\/{runId}\".",
+                          "description": "The resource name for the WorkflowRun in the form: \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\/runs\/{runId}\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+\/runs\/[^\/]+$",
@@ -838,7 +886,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The parent selector for the WorkflowRun. Supports parent in the form:\n\"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\".",
+                          "description": "The parent selector for the WorkflowRun. Supports parent in the form: \"projects\/{projectId}\/locations\/{locationId}\/workflows\/{workflowId}\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workflows\/[^\/]+$",
@@ -861,7 +909,7 @@
                           "type": "string"
                         },
                         "orderBy": {
-                          "description": "Optional. Specifies the ordering of results following syntax at\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.\nOrder by will remain internal until its future implementation.",
+                          "description": "Optional. Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order. Order by will remain internal until its future implementation.",
                           "location": "query",
                           "type": "string"
                         }
@@ -875,7 +923,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists runs of a workflow in a project and location.\nIf the workflow is set to the wildcard \"-\", then workflow runs from all\nworkflows in the project and location will be listed."
+                      "description": "Lists runs of a workflow in a project and location. If the workflow is set to the wildcard \"-\", then workflow runs from all workflows in the project and location will be listed."
                     }
                   }
                 }

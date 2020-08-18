@@ -49,6 +49,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS_OPERATIONS = (
+      'projects.locations.workloadIdentityPools.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workloadIdentityPools/{workloadIdentityPoolsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS_PROVIDERS = (
       'projects.locations.workloadIdentityPools.providers',
       '{+name}',
@@ -57,6 +69,18 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'workloadIdentityPools/{workloadIdentityPoolsId}/providers/'
               '{providersId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_WORKLOADIDENTITYPOOLS_PROVIDERS_OPERATIONS = (
+      'projects.locations.workloadIdentityPools.providers.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workloadIdentityPools/{workloadIdentityPoolsId}/providers/'
+              '{providersId}/operations/{operationsId}',
       },
       ['name'],
       True

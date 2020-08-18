@@ -222,8 +222,7 @@ class WebsecurityscannerV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists ScanRuns under a given ScanConfig, in descending order of ScanRun.
-stop time.
+      r"""Lists ScanRuns under a given ScanConfig, in descending order of ScanRun stop time.
 
       Args:
         request: (WebsecurityscannerProjectsScanConfigsScanRunsListRequest) input message

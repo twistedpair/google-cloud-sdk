@@ -482,6 +482,10 @@
         "reservationAffinity": {
           "description": "Optional. Reservation Affinity for consuming Zonal reservation.",
           "$ref": "ReservationAffinity"
+        },
+        "nodeGroupAffinity": {
+          "description": "Optional. Node Group Affinity for sole-tenant clusters.",
+          "$ref": "NodeGroupAffinity"
         }
       }
     },
@@ -525,6 +529,17 @@
         }
       }
     },
+    "NodeGroupAffinity": {
+      "id": "NodeGroupAffinity",
+      "description": "Node Group Affinity for clusters using sole-tenant node groups.",
+      "type": "object",
+      "properties": {
+        "nodeGroupUri": {
+          "description": "Optional. The name of a single node group (https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/nodeGroups) a cluster will be created on.",
+          "type": "string"
+        }
+      }
+    },
     "InstanceGroupConfig": {
       "id": "InstanceGroupConfig",
       "description": "The config settings for Compute Engine resources in an instance group, such as a master or worker group.",
@@ -541,6 +556,14 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        },
+        "instanceReferences": {
+          "description": "Output only. List of references to Compute Engine instances.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "InstanceReference"
           }
         },
         "imageUri": {
@@ -593,6 +616,21 @@
         },
         "minCpuPlatform": {
           "description": "Specifies the minimum cpu platform for the Instance Group. See Dataproc -> Minimum CPU Platform (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/compute\/dataproc-min-cpu).",
+          "type": "string"
+        }
+      }
+    },
+    "InstanceReference": {
+      "id": "InstanceReference",
+      "description": "A reference to a Compute Engine instance.",
+      "type": "object",
+      "properties": {
+        "instanceName": {
+          "description": "The user-friendly name of the Compute Engine instance.",
+          "type": "string"
+        },
+        "instanceId": {
+          "description": "The unique identifier of the Compute Engine instance.",
           "type": "string"
         }
       }

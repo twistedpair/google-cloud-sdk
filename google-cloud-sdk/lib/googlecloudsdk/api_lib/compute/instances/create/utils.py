@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import ipaddress
+
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import csek_utils
@@ -28,7 +30,6 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
 from googlecloudsdk.core import log
-import ipaddress
 import six
 
 
@@ -973,7 +974,7 @@ def CreateAcceleratorConfigMessages(msgs, accelerator_type, accelerator_count):
 
 
 def CreateMachineTypeUri(args, compute_client, resource_parser, project,
-                         location, scope):
+                         location, scope, confidential_vm=False):
   """Create a machine type URI for given args and instance reference."""
 
   machine_type = args.machine_type
@@ -988,7 +989,8 @@ def CreateMachineTypeUri(args, compute_client, resource_parser, project,
       custom_cpu=custom_cpu,
       custom_memory=custom_memory,
       ext=ext,
-      vm_type=vm_type)
+      vm_type=vm_type,
+      confidential_vm=confidential_vm)
 
   # Check to see if the custom machine type ratio is supported
   instance_utils.CheckCustomCpuRamRatio(compute_client, project, location,

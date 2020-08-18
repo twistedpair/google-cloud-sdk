@@ -94,7 +94,8 @@ def InterpretMachineType(machine_type,
                          custom_cpu,
                          custom_memory,
                          ext=True,
-                         vm_type=False):
+                         vm_type=False,
+                         confidential_vm=False):
   """Interprets the machine type for the instance.
 
   Args:
@@ -103,6 +104,8 @@ def InterpretMachineType(machine_type,
     custom_memory: amount of RAM memory in bytes for custom machine type,
     ext: extended custom machine type should be used if true,
     vm_type:  VM instance generation
+    confidential_vm: If True, default machine type is different for confidential
+      VMs.
 
   Returns:
     A string representing the URL naming a machine-type.
@@ -114,9 +117,12 @@ def InterpretMachineType(machine_type,
       custom machine type flags are used to generate a new instance.
   """
   # Setting the machine type
-  machine_type_name = constants.DEFAULT_MACHINE_TYPE
   if machine_type:
     machine_type_name = machine_type
+  elif confidential_vm:
+    machine_type_name = constants.DEFAULT_MACHINE_TYPE_FOR_CONFIDENTIAL_VMS
+  else:
+    machine_type_name = constants.DEFAULT_MACHINE_TYPE
 
   # Setting the specs for the custom machine.
   if custom_cpu or custom_memory or ext:
@@ -533,7 +539,7 @@ def CheckSpecifiedMachineTypeArgs(args, skip_defaults):
 
 
 def CreateMachineTypeUri(args, compute_client, resource_parser, project,
-                         location, scope):
+                         location, scope, confidential_vm=False):
   """Create a machine type URI for given args and instance reference."""
 
   machine_type = args.machine_type
@@ -548,7 +554,8 @@ def CreateMachineTypeUri(args, compute_client, resource_parser, project,
       custom_cpu=custom_cpu,
       custom_memory=custom_memory,
       ext=ext,
-      vm_type=vm_type)
+      vm_type=vm_type,
+      confidential_vm=confidential_vm)
 
   # Check to see if the custom machine type ratio is supported
   CheckCustomCpuRamRatio(compute_client, project, location, machine_type_name)

@@ -54,8 +54,7 @@ class CloudassetV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a feed in a parent project/folder/organization to listen to its.
-asset updates.
+      r"""Creates a feed in a parent project/folder/organization to listen to its asset updates.
 
       Args:
         request: (CloudassetFeedsCreateRequest) input message
@@ -200,9 +199,7 @@ asset updates.
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (CloudassetOperationsGetRequest) input message
@@ -239,13 +236,7 @@ service.
           }
 
     def BatchGetAssetsHistory(self, request, global_params=None):
-      r"""Batch gets the update history of assets that overlap a time window.
-For IAM_POLICY content, this API outputs history when the asset and its
-attached IAM POLICY both exist. This can create gaps in the output history.
-Otherwise, this API outputs history with asset in both non-delete or
-deleted status.
-If a specified asset does not exist, this API returns an INVALID_ARGUMENT
-error.
+      r"""Batch gets the update history of assets that overlap a time window. For IAM_POLICY content, this API outputs history when the asset and its attached IAM POLICY both exist. This can create gaps in the output history. Otherwise, this API outputs history with asset in both non-delete or deleted status. If a specified asset does not exist, this API returns an INVALID_ARGUMENT error.
 
       Args:
         request: (CloudassetBatchGetAssetsHistoryRequest) input message
@@ -272,16 +263,7 @@ error.
     )
 
     def ExportAssets(self, request, global_params=None):
-      r"""Exports assets with time and resource types to a given Cloud Storage.
-location/BigQuery table. For Cloud Storage location destinations, the
-output format is newline-delimited JSON. Each line represents a
-google.cloud.asset.v1.Asset in the JSON format; for BigQuery table
-destinations, the output table stores the fields in asset proto as columns.
-This API implements the google.longrunning.Operation API
-, which allows you to keep track of the export. We recommend intervals of
-at least 2 seconds with exponential retry to poll the export operation
-result. For regular-size resource parent, the export operation usually
-finishes within 5 minutes.
+      r"""Exports assets with time and resource types to a given Cloud Storage location/BigQuery table. For Cloud Storage location destinations, the output format is newline-delimited JSON. Each line represents a google.cloud.asset.v1.Asset in the JSON format; for BigQuery table destinations, the output table stores the fields in asset proto as columns. This API implements the google.longrunning.Operation API , which allows you to keep track of the export. We recommend intervals of at least 2 seconds with exponential retry to poll the export operation result. For regular-size resource parent, the export operation usually finishes within 5 minutes.
 
       Args:
         request: (CloudassetExportAssetsRequest) input message
@@ -308,10 +290,7 @@ finishes within 5 minutes.
     )
 
     def SearchAllIamPolicies(self, request, global_params=None):
-      r"""Searches all IAM policies within the specified scope, such as a project,.
-folder, or organization. The caller must be granted the
-`cloudasset.assets.searchAllIamPolicies` permission on the desired scope,
-otherwise the request will be rejected.
+      r"""Searches all IAM policies within the specified scope, such as a project, folder, or organization. The caller must be granted the `cloudasset.assets.searchAllIamPolicies` permission on the desired scope, otherwise the request will be rejected.
 
       Args:
         request: (CloudassetSearchAllIamPoliciesRequest) input message
@@ -338,10 +317,7 @@ otherwise the request will be rejected.
     )
 
     def SearchAllResources(self, request, global_params=None):
-      r"""Searches all Cloud resources within the specified scope, such as a project,.
-folder, or organization. The caller must be granted the
-`cloudasset.assets.searchAllResources` permission on the desired scope,
-otherwise the request will be rejected.
+      r"""Searches all Cloud resources within the specified scope, such as a project, folder, or organization. The caller must be granted the `cloudasset.assets.searchAllResources` permission on the desired scope, otherwise the request will be rejected.
 
       Args:
         request: (CloudassetSearchAllResourcesRequest) input message

@@ -82,8 +82,7 @@ def CreatePerInstanceConfigMessage(holder,
                                    instance_ref,
                                    stateful_disks,
                                    stateful_metadata,
-                                   disk_getter=None,
-                                   set_preserved_state=True):
+                                   disk_getter=None):
   """Create per-instance config message from the given stateful disks and metadata."""
   if not disk_getter:
     disk_getter = instance_disk_getter.InstanceDiskGetter(
@@ -101,12 +100,11 @@ def CreatePerInstanceConfigMessage(holder,
             messages, key=metadata_key, value=metadata_value))
   per_instance_config = messages.PerInstanceConfig(
       name=path_simplifier.Name(six.text_type(instance_ref)))
-  if set_preserved_state:
-    per_instance_config.preservedState = messages.PreservedState(
-        disks=messages.PreservedState.DisksValue(
-            additionalProperties=preserved_state_disks),
-        metadata=messages.PreservedState.MetadataValue(
-            additionalProperties=preserved_state_metadata))
+  per_instance_config.preservedState = messages.PreservedState(
+      disks=messages.PreservedState.DisksValue(
+          additionalProperties=preserved_state_disks),
+      metadata=messages.PreservedState.MetadataValue(
+          additionalProperties=preserved_state_metadata))
   return per_instance_config
 
 

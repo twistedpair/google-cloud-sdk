@@ -1149,12 +1149,14 @@ class ServerlessOperations(object):
   def CreateDomainMapping(self,
                           domain_mapping_ref,
                           service_name,
+                          config_changes,
                           force_override=False):
     """Create a domain mapping.
 
     Args:
       domain_mapping_ref: Resource, domainmapping resource.
       service_name: str, the service to which to map domain.
+      config_changes: list of ConfigChanger to modify the domainmapping with
       force_override: bool, override an existing mapping of this domain.
 
     Returns:
@@ -1167,6 +1169,9 @@ class ServerlessOperations(object):
     new_mapping.name = domain_mapping_ref.domainmappingsId
     new_mapping.route_name = service_name
     new_mapping.force_override = force_override
+
+    for config_change in config_changes:
+      new_mapping = config_change.Adjust(new_mapping)
 
     request = messages.RunNamespacesDomainmappingsCreateRequest(
         domainMapping=new_mapping.Message(),

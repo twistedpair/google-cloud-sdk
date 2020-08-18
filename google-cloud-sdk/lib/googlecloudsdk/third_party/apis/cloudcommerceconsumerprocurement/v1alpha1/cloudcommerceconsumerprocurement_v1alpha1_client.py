@@ -60,16 +60,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsCancelRequest) input message
@@ -96,10 +87,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsDeleteRequest) input message
@@ -126,9 +114,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsGetRequest) input message
@@ -155,16 +141,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsAccountsOperationsListRequest) input message
@@ -228,8 +205,7 @@ is the parent resource, without the operations collection id.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing Account. An account can only be deleted when.
-all outstanding orders against that account is also deleted.
+      r"""Deletes an existing Account. An account can only be deleted when all outstanding orders against that account is also deleted.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsAccountsDeleteRequest) input message
@@ -283,8 +259,7 @@ all outstanding orders against that account is also deleted.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Account resources that the user has access to, within the scope.
-of the parent resource.
+      r"""Lists Account resources that the user has access to, within the scope of the parent resource.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsAccountsListRequest) input message
@@ -321,16 +296,7 @@ of the parent resource.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsCancelRequest) input message
@@ -357,10 +323,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsDeleteRequest) input message
@@ -387,9 +350,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsGetRequest) input message
@@ -416,16 +377,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsListRequest) input message
@@ -462,8 +414,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Cancels an existing Order. Every product procured in the Order will be.
-cancelled.
+      r"""Cancels an existing Order. Every product procured in the Order will be cancelled.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersCancelRequest) input message
@@ -517,8 +468,7 @@ cancelled.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Order resources that the user have access to, within the.
-scope of the parent resource.
+      r"""Lists Order resources that the user have access to, within the scope of the parent resource.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest) input message
@@ -572,12 +522,7 @@ scope of the parent resource.
     )
 
     def Place(self, request, global_params=None):
-      r"""Creates a new Order.
-
-The returned long-running operation will be in-progress until the backend
-can complete the creation of the resource. Once completed, the order will
-be in OrderState.ORDER_STATE_ACTIVE. In case of failure, the
-order resource will be removed.
+      r"""Creates a new Order. The returned long-running operation will be in-progress until the backend can complete the creation of the resource. Once completed, the order will be in OrderState.ORDER_STATE_ACTIVE. In case of failure, the order resource will be removed.
 
       Args:
         request: (CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest) input message
@@ -651,8 +596,7 @@ order resource will be removed.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Entitlement resources that the user has access to, within the.
-scope of the parent resource.
+      r"""Lists Entitlement resources that the user has access to, within the scope of the parent resource.
 
       Args:
         request: (CloudcommerceconsumerprocurementProjectsEntitlementsListRequest) input message
@@ -689,16 +633,7 @@ scope of the parent resource.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsCancelRequest) input message
@@ -725,10 +660,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsDeleteRequest) input message
@@ -755,9 +687,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsGetRequest) input message
@@ -784,16 +714,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsListRequest) input message
@@ -884,8 +805,7 @@ is the parent resource, without the operations collection id.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists FreeTrial resources that the user has access to, within the.
-scope of the parent resource.
+      r"""Lists FreeTrial resources that the user has access to, within the scope of the parent resource.
 
       Args:
         request: (CloudcommerceconsumerprocurementProjectsFreeTrialsListRequest) input message

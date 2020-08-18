@@ -123,42 +123,42 @@
           }
         },
         "nextPageToken": {
-          "description": "If there might be more results than those appearing in this response, then\n`next_page_token` is included. To get the next set of results, call this\nmethod again using the value of `next_page_token` as `page_token`.",
+          "description": "If there might be more results than those appearing in this response, then `next_page_token` is included. To get the next set of results, call this method again using the value of `next_page_token` as `page_token`.",
           "type": "string"
         }
       }
     },
     "GoogleCloudRecommenderV1alpha1Recommendation": {
       "id": "GoogleCloudRecommenderV1alpha1Recommendation",
-      "description": "A recommendation along with a suggested action. E.g., a rightsizing\nrecommendation for an underutilized VM, next product suggestion for billing\naccount.",
+      "description": "A recommendation along with a suggested action. E.g., a rightsizing recommendation for an underutilized VM, next product suggestion for billing account.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of recommendation.\n\n* A project recommendation is represented as\n  projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/recommendations\/[RECOMMENDATION_ID]\n\nExample: A recommendation for a GCP resource such as compute instance,\nstorage bucket is represented as a project recommendation.\n  projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/recommendations\/[RECOMMENDATION_ID]",
+          "description": "Name of recommendation. * A project recommendation is represented as projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/recommendations\/[RECOMMENDATION_ID] Example: A recommendation for a GCP resource such as compute instance, storage bucket is represented as a project recommendation. projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\/recommendations\/[RECOMMENDATION_ID]",
           "type": "string"
         },
         "description": {
-          "description": "Required. Free-form human readable summary in English. The maximum length\nis 500 characters.",
+          "description": "Required. Free-form human readable summary in English. The maximum length is 500 characters.",
           "type": "string"
         },
         "lastRefreshTime": {
-          "description": "Output only. Last time this recommendation was refreshed by the system that\ncreated it in the first place.",
+          "description": "Output only. Last time this recommendation was refreshed by the system that created it in the first place.",
           "type": "string",
           "format": "google-datetime"
         },
         "primaryImpact": {
-          "description": "Required. The primary impact that this recommendation can have while trying\nto optimize for one category.",
+          "description": "Required. The primary impact that this recommendation can have while trying to optimize for one category.",
           "$ref": "GoogleCloudRecommenderV1alpha1Impact"
         },
         "additionalImpact": {
-          "description": "Optional set of additional impact that this recommendation may have when\ntrying to optimize for the primary category. These may be positive\nor negative.",
+          "description": "Optional set of additional impact that this recommendation may have when trying to optimize for the primary category. These may be positive or negative.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudRecommenderV1alpha1Impact"
           }
         },
         "content": {
-          "description": "Output only. Content of the recommendation describing why a recommendation\nwas generated and what the changes are.",
+          "description": "Output only. Content of the recommendation describing why a recommendation was generated and what the changes are.",
           "$ref": "GoogleCloudRecommenderV1alpha1RecommendationContent"
         },
         "stateInfo": {
@@ -166,7 +166,7 @@
           "$ref": "GoogleCloudRecommenderV1alpha1RecommendationStateInfo"
         },
         "etag": {
-          "description": "Output only. Fingerprint of the Recommendation. Provides optimistics\nlocking when updating states.",
+          "description": "Output only. Fingerprint of the Recommendation. Provides optimistics locking when updating states.",
           "type": "string"
         }
       }
@@ -185,6 +185,12 @@
             "Indicates a potential increase or decrease in performance."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default unspecified category. Don't use directly.",
+            "Indicates a potential increase or decrease in cost.",
+            "Indicates a potential increase or decrease in security.",
+            "Indicates a potential increase or decrease in performance."
+          ],
           "enum": [
             "CATEGORY_UNSPECIFIED",
             "COST",
@@ -204,7 +210,7 @@
       "type": "object",
       "properties": {
         "cost": {
-          "description": "An approximate projection on amount saved or amount incurred. Negative cost\nunits indicate cost savings and positive cost units indicate increase.\nSee google.type.Money documentation for positive\/negative units.",
+          "description": "An approximate projection on amount saved or amount incurred. Negative cost units indicate cost savings and positive cost units indicate increase. See google.type.Money documentation for positive\/negative units.",
           "$ref": "GoogleTypeMoney"
         },
         "duration": {
@@ -224,12 +230,12 @@
           "type": "string"
         },
         "units": {
-          "description": "The whole units of the amount.\nFor example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
+          "description": "The whole units of the amount. For example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
           "type": "string",
           "format": "int64"
         },
         "nanos": {
-          "description": "Number of nano (10^-9) units of the amount.\nThe value must be between -999,999,999 and +999,999,999 inclusive.\nIf `units` is positive, `nanos` must be positive or zero.\nIf `units` is zero, `nanos` can be positive, zero, or negative.\nIf `units` is negative, `nanos` must be negative or zero.\nFor example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
+          "description": "Number of nano (10^-9) units of the amount. The value must be between -999,999,999 and +999,999,999 inclusive. If `units` is positive, `nanos` must be positive or zero. If `units` is zero, `nanos` can be positive, zero, or negative. If `units` is negative, `nanos` must be negative or zero. For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
           "type": "integer",
           "format": "int32"
         }
@@ -237,11 +243,11 @@
     },
     "GoogleCloudRecommenderV1alpha1RecommendationContent": {
       "id": "GoogleCloudRecommenderV1alpha1RecommendationContent",
-      "description": "Contains reasoning around why a recommendation is generated, what resources\nare changing and how they are changing.",
+      "description": "Contains reasoning around why a recommendation is generated, what resources are changing and how they are changing.",
       "type": "object",
       "properties": {
         "justification": {
-          "description": "Required. A struct of custom fields per recommender to explain the\nrationale behind generating this recommendation.\nExample: \"numGrantedPermissions\": \"1000\"",
+          "description": "Required. A struct of custom fields per recommender to explain the rationale behind generating this recommendation. Example: \"numGrantedPermissions\": \"1000\"",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -249,7 +255,7 @@
           }
         },
         "operationGroups": {
-          "description": "Operations to one or more Google Cloud resources grouped in such a way\nthat, all operations within one group are expected to be performed\natomically and in an order.",
+          "description": "Operations to one or more Google Cloud resources grouped in such a way that, all operations within one group are expected to be performed atomically and in an order.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudRecommenderV1alpha1OperationGroup"
@@ -263,7 +269,7 @@
       "type": "object",
       "properties": {
         "operations": {
-          "description": "List of operations across one or more resources that belong to this group.\nLoosely based on RFC6902 and should be performed in the order they appear.",
+          "description": "List of operations across one or more resources that belong to this group. Loosely based on RFC6902 and should be performed in the order they appear.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudRecommenderV1alpha1Operation"
@@ -273,31 +279,31 @@
     },
     "GoogleCloudRecommenderV1alpha1Operation": {
       "id": "GoogleCloudRecommenderV1alpha1Operation",
-      "description": "Contains an operation for a resource inspired by the JSON-PATCH format with\nsupport for:\n* Custom filters for describing partial array patch.\n* Extended path values for describing nested arrays.\n* Custom fields for describing the resource for which the operation is being\n  described.\n* Allows extension to custom operations not natively supported by RFC6902.\nSee https:\/\/tools.ietf.org\/html\/rfc6902 for details on the original RFC.",
+      "description": "Contains an operation for a resource inspired by the JSON-PATCH format with support for: * Custom filters for describing partial array patch. * Extended path values for describing nested arrays. * Custom fields for describing the resource for which the operation is being described. * Allows extension to custom operations not natively supported by RFC6902. See https:\/\/tools.ietf.org\/html\/rfc6902 for details on the original RFC.",
       "type": "object",
       "properties": {
         "action": {
-          "description": "Required. Type of this operation. Supports 'add', 'remove', 'replace',\n'move', 'copy', 'test' and custom operations. This field is also\ncase-insensitive.",
+          "description": "Required. Type of this operation. Supports 'add', 'remove', 'replace', 'move', 'copy', 'test' and custom operations. This field is also case-insensitive.",
           "type": "string"
         },
         "resourceType": {
-          "description": "Required. Type of GCP resource being modified\/tested.\nExample: cloudresourcemanager.googleapis.com\/Project,\ncompute.googleapis.com\/Instance",
+          "description": "Required. Type of GCP resource being modified\/tested. Example: cloudresourcemanager.googleapis.com\/Project, compute.googleapis.com\/Instance",
           "type": "string"
         },
         "resource": {
-          "description": "Required. Contains the fully qualified resource name.\nex: \/\/cloudresourcemanager.googleapis.com\/projects\/foo.",
+          "description": "Required. Contains the fully qualified resource name. ex: \/\/cloudresourcemanager.googleapis.com\/projects\/foo.",
           "type": "string"
         },
         "path": {
-          "description": "Required. Path to the target field being operated on. If the operation is\nat the resource level, then path should be \"\/\".",
+          "description": "Required. Path to the target field being operated on. If the operation is at the resource level, then path should be \"\/\".",
           "type": "string"
         },
         "sourceResource": {
-          "description": "Use for COPY operation across different resources (of the same type).\nExample: A resource clone can be done via action = 'copy', path = \"\/\",\nfrom = \"\/\", source_resource = <source> and resource_name = <target>.",
+          "description": "Use for COPY operation across different resources (of the same type). Example: A resource clone can be done via action = 'copy', path = \"\/\", from = \"\/\", source_resource = and resource_name = .",
           "type": "string"
         },
         "sourcePath": {
-          "description": "Required if action is 'copy' or 'move' to indicate the source field or\nresource, ignored if provided for other operation types.",
+          "description": "Required if action is 'copy' or 'move' to indicate the source field or resource, ignored if provided for other operation types.",
           "type": "string"
         },
         "value": {
@@ -305,7 +311,7 @@
           "type": "any"
         },
         "pathFilter": {
-          "description": "Set of filters to apply if `path` refers to array elements or nested array\nelements in order to narrow down to a single unique element that is being\ntested\/modified.\nExample: {\n  \"\/versions\/*\/name\" : \"it-123\"\n  \"\/versions\/*\/targetSize\/percent\": \"20\"\n}",
+          "description": "Set of filters to apply if `path` refers to array elements or nested array elements in order to narrow down to a single unique element that is being tested\/modified. Example: { \"\/versions\/*\/name\" : \"it-123\" \"\/versions\/*\/targetSize\/percent\": \"20\" }",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -322,13 +328,21 @@
           "description": "Output only. The state of the recommendation, Eg ACTIVE, SUCCEEDED, FAILED.",
           "enumDescriptions": [
             "Default state. Don't use directly.",
-            "Recommendation is active and can be applied. Recommendations content can\nbe updated by Google.\n\nACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in claimed state. Recommendations content is\nimmutable and cannot be updated by Google.\n\nCLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in succeeded state. Recommendations content is\nimmutable and cannot be updated by Google.\n\nSUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in failed state. Recommendations content is immutable\nand cannot be updated by Google.\n\nFAILED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in dismissed state.\n\nDISMISSED recommendations can be marked as ACTIVE."
+            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in dismissed state. DISMISSED recommendations can be marked as ACTIVE."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default state. Don't use directly.",
+            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in dismissed state. DISMISSED recommendations can be marked as ACTIVE."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
@@ -353,7 +367,7 @@
       "type": "object",
       "properties": {
         "stateMetadata": {
-          "description": "State properties user wish to include with this state.  Full replace of\nthe current state_metadata.",
+          "description": "State properties user wish to include with this state. Full replace of the current state_metadata.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -371,7 +385,7 @@
       "type": "object",
       "properties": {
         "stateMetadata": {
-          "description": "State properties user wish to include with this state.  Full replace of\nthe current state_metadata.",
+          "description": "State properties user wish to include with this state. Full replace of the current state_metadata.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -389,7 +403,7 @@
       "type": "object",
       "properties": {
         "stateMetadata": {
-          "description": "State properties user wish to include with this state.  Full replace of\nthe current state_metadata.",
+          "description": "State properties user wish to include with this state. Full replace of the current state_metadata.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -425,22 +439,22 @@
           }
         },
         "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more\nresults in the list.",
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
         }
       }
     },
     "GoogleCloudRecommenderV1alpha1Rule": {
       "id": "GoogleCloudRecommenderV1alpha1Rule",
-      "description": "Rule is used to set states for Recommendations matching the conditions.\nRule can be applied to current and future recommendations.",
+      "description": "Rule is used to set states for Recommendations matching the conditions. Rule can be applied to current and future recommendations.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Unique name of the rule, generated by the server.\nEg, projects\/*\/rules\/*",
+          "description": "Output only. Unique name of the rule, generated by the server. Eg, projects\/*\/rules\/*",
           "type": "string"
         },
         "condition": {
-          "description": "Condition of the rule, conditions matches all fields specified in the\nconditions.",
+          "description": "Condition of the rule, conditions matches all fields specified in the conditions.",
           "$ref": "GoogleCloudRecommenderV1alpha1Condition"
         },
         "updateTime": {
@@ -452,13 +466,21 @@
           "description": "State to set for recommendations matching the conditions.",
           "enumDescriptions": [
             "Default state. Don't use directly.",
-            "Recommendation is active and can be applied. Recommendations content can\nbe updated by Google.\n\nACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in claimed state. Recommendations content is\nimmutable and cannot be updated by Google.\n\nCLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in succeeded state. Recommendations content is\nimmutable and cannot be updated by Google.\n\nSUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in failed state. Recommendations content is immutable\nand cannot be updated by Google.\n\nFAILED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in dismissed state.\n\nDISMISSED recommendations can be marked as ACTIVE."
+            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in dismissed state. DISMISSED recommendations can be marked as ACTIVE."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default state. Don't use directly.",
+            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in dismissed state. DISMISSED recommendations can be marked as ACTIVE."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
@@ -472,7 +494,7 @@
     },
     "GoogleCloudRecommenderV1alpha1Condition": {
       "id": "GoogleCloudRecommenderV1alpha1Condition",
-      "description": "Condition of the rule. Condition will match all fields specified within the\nCondition.",
+      "description": "Condition of the rule. Condition will match all fields specified within the Condition.",
       "type": "object",
       "properties": {
         "recommenderId": {
@@ -487,7 +509,7 @@
           }
         },
         "fields": {
-          "description": "Fields and value of recommendation to match, this will be part of the\nrecommendation.",
+          "description": "Fields and value of recommendation to match, this will be part of the recommendation.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -497,7 +519,7 @@
     },
     "GoogleProtobufEmpty": {
       "id": "GoogleProtobufEmpty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
       }
@@ -511,13 +533,21 @@
           "description": "State to set for the recommendation. Only DISMISSED state is allowed.",
           "enumDescriptions": [
             "Default state. Don't use directly.",
-            "Recommendation is active and can be applied. Recommendations content can\nbe updated by Google.\n\nACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in claimed state. Recommendations content is\nimmutable and cannot be updated by Google.\n\nCLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in succeeded state. Recommendations content is\nimmutable and cannot be updated by Google.\n\nSUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in failed state. Recommendations content is immutable\nand cannot be updated by Google.\n\nFAILED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in dismissed state.\n\nDISMISSED recommendations can be marked as ACTIVE."
+            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in dismissed state. DISMISSED recommendations can be marked as ACTIVE."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Default state. Don't use directly.",
+            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
+            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
+            "Recommendation is in dismissed state. DISMISSED recommendations can be marked as ACTIVE."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
@@ -531,15 +561,15 @@
     },
     "GoogleLongrunningOperation": {
       "id": "GoogleLongrunningOperation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -547,7 +577,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
           "type": "boolean"
         },
         "error": {
@@ -555,7 +585,7 @@
           "$ref": "GoogleRpcStatus"
         },
         "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -566,7 +596,7 @@
     },
     "GoogleRpcStatus": {
       "id": "GoogleRpcStatus",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -575,11 +605,11 @@
           "format": "int32"
         },
         "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -608,25 +638,25 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request.\nAcceptable formats:\n\n1.\n\"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\",",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: 1. \"projects\/[PROJECT_NUMBER]\/locations\/[LOCATION]\/recommenders\/[RECOMMENDER_ID]\",",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request.\nNon-positive values are ignored. The presence of `next_page_token` in the\nresponse indicates that more results might be available.\nIf not specified, the default page_size is 50.",
+                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of `next_page_token` in the response indicates that more results might be available. If not specified, the default page_size is 50.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "Optional. If present, retrieves the next batch of results from the\npreceding call to this method. `page_token` must be the value of\n`next_page_token` from the previous response. The values of other method\nparameters should be identical to those in the previous call.",
+                          "description": "Optional. If present, retrieves the next batch of results from the preceding call to this method. `page_token` must be the value of `next_page_token` from the previous response. The values of other method parameters should be identical to those in the previous call.",
                           "location": "query",
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filter expression to restrict the recommendations returned. Supported\nfilter fields: state_info.state\nEg: `stateInfo.state:\"DISMISSED\" or stateInfo.state:\"FAILED\"",
+                          "description": "Filter expression to restrict the recommendations returned. Supported filter fields: state_info.state Eg: `stateInfo.state:\"DISMISSED\" or stateInfo.state:\"FAILED\"",
                           "location": "query",
                           "type": "string"
                         }
@@ -640,7 +670,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists recommendations for a Cloud project and requires the\nrecommendation.*.list IAM permission."
+                      "description": "Lists recommendations for a Cloud project and requires the recommendation.*.list IAM permission."
                     },
                     "get": {
                       "id": "recommender.projects.locations.recommenders.recommendations.get",
@@ -665,7 +695,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets the requested recommendation and requires the recommendation.*.get\nIAM permission."
+                      "description": "Gets the requested recommendation and requires the recommendation.*.get IAM permission."
                     },
                     "markClaimed": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markClaimed",
@@ -693,7 +723,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Claimed. Users can use this method to\nindicate to the Recommender API that they are starting to apply the\nrecommendation themselves. This stops the recommendation content from being\nupdated.\n\nMarkClaimed can be applied to recommendations in CLAIMED, or ACTIVE state.\n\nrecommendation.*.update IAM permission is required to make this change."
+                      "description": "Mark the Recommendation State as Claimed. Users can use this method to indicate to the Recommender API that they are starting to apply the recommendation themselves. This stops the recommendation content from being updated. MarkClaimed can be applied to recommendations in CLAIMED, or ACTIVE state. recommendation.*.update IAM permission is required to make this change."
                     },
                     "markSucceeded": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markSucceeded",
@@ -721,7 +751,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Succeeded. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation was successful. This stops the recommendation\ncontent from being updated.\n\nMarkSucceeded can be applied to recommendations in ACTIVE, CLAIMED,\nSUCCEEDED, or FAILED state.\n\nrecommendation.*.update IAM permission is required to make this change."
+                      "description": "Mark the Recommendation State as Succeeded. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation was successful. This stops the recommendation content from being updated. MarkSucceeded can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. recommendation.*.update IAM permission is required to make this change."
                     },
                     "markFailed": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markFailed",
@@ -749,7 +779,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Failed. Users can use this method to\nindicate to the Recommender API that they have applied the recommendation\nthemselves, and the operation failed. This stops the recommendation content\nfrom being updated.\n\nMarkFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED,\nor FAILED state.\n\nrecommendation.*.update IAM permission is required to make this change."
+                      "description": "Mark the Recommendation State as Failed. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation failed. This stops the recommendation content from being updated. MarkFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. recommendation.*.update IAM permission is required to make this change."
                     },
                     "markActive": {
                       "id": "recommender.projects.locations.recommenders.recommendations.markActive",
@@ -777,7 +807,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Mark the Recommendation State as Active. Users can use this method to\nindicate to the Recommender API that a DISMISSED recommendation has to\nbe marked back as ACTIVE.\n\nMarkActive can be applied to recommendations in DISMISSED state.\n\nrecommendation.*.update IAM permission is required to make this change."
+                      "description": "Mark the Recommendation State as Active. Users can use this method to indicate to the Recommender API that a DISMISSED recommendation has to be marked back as ACTIVE. MarkActive can be applied to recommendations in DISMISSED state. recommendation.*.update IAM permission is required to make this change."
                     },
                     "createRule": {
                       "id": "recommender.projects.locations.recommenders.recommendations.createRule",
@@ -786,7 +816,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Name of Recommendation to create from, the recommendation will be used as\nthe template for creating a Rule. The API will use predefined methods to\ngenerate Rules \"similar\" to the given Recommendation.",
+                          "description": "Name of Recommendation to create from, the recommendation will be used as the template for creating a Rule. The API will use predefined methods to generate Rules \"similar\" to the given Recommendation.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/recommenders\/[^\/]+\/recommendations\/[^\/]+$",
@@ -805,7 +835,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Create a Rule from the recommendation.\nCheck recommender.*.list and recommender.rule.create IAM permissions."
+                      "description": "Create a Rule from the recommendation. Check recommender.*.list and recommender.rule.create IAM permissions."
                     }
                   }
                 }
@@ -849,7 +879,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "List Rules.\nCheck recommender.rule.list IAM permission."
+              "description": "List Rules. Check recommender.rule.list IAM permission."
             },
             "get": {
               "id": "recommender.projects.rules.get",
@@ -874,7 +904,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get a Rule.\nCheck recommender.rule.list IAM permission."
+              "description": "Get a Rule. Check recommender.rule.list IAM permission."
             },
             "delete": {
               "id": "recommender.projects.rules.delete",
@@ -899,7 +929,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deleting a Rule. Deleting a rule does not affect recommendations.\nCheck recommender.rule.delete IAM permission."
+              "description": "Deleting a Rule. Deleting a rule does not affect recommendations. Check recommender.rule.delete IAM permission."
             },
             "apply": {
               "id": "recommender.projects.rules.apply",
@@ -924,7 +954,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Apply a rule. This will set the specified state on all matching\nrecommendations. This is a long running operation.\nChecks recommender.rule.list and recommender.*.update IAM permissions."
+              "description": "Apply a rule. This will set the specified state on all matching recommendations. This is a long running operation. Checks recommender.rule.list and recommender.*.update IAM permissions."
             }
           }
         }

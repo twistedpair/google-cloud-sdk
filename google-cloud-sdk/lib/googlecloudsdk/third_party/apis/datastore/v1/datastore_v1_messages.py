@@ -78,12 +78,12 @@ class CommitRequest(_messages.Message):
 
   Fields:
     mode: The type of commit to perform. Defaults to `TRANSACTIONAL`.
-    mutations: The mutations to perform.  When mode is `TRANSACTIONAL`,
+    mutations: The mutations to perform. When mode is `TRANSACTIONAL`,
       mutations affecting a single entity are applied in order. The following
       sequences of mutations affecting a single entity are not permitted in a
-      single `Commit` request:  - `insert` followed by `insert` - `update`
+      single `Commit` request: - `insert` followed by `insert` - `update`
       followed by `insert` - `upsert` followed by `insert` - `delete` followed
-      by `update`  When mode is `NON_TRANSACTIONAL`, no two mutations may
+      by `update` When mode is `NON_TRANSACTIONAL`, no two mutations may
       affect a single entity.
     transaction: The identifier of the transaction associated with the commit.
       A transaction identifier is returned by a call to
@@ -247,8 +247,8 @@ class DatastoreProjectsIndexesListRequest(_messages.Message):
 
   Fields:
     filter: A string attribute.
-    pageSize: The maximum number of items to return.  If zero, then all
-      results will be returned.
+    pageSize: The maximum number of items to return. If zero, then all results
+      will be returned.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     projectId: Project ID against which to make the request.
@@ -364,17 +364,17 @@ class DatastoreProjectsRunQueryRequest(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
 
 class Entity(_messages.Message):
-  r"""A Datastore data object.  An entity is limited to 1 megabyte when
-  stored. That _roughly_ corresponds to a limit of 1 megabyte for the
-  serialized form of this message.
+  r"""A Datastore data object. An entity is limited to 1 megabyte when stored.
+  That _roughly_ corresponds to a limit of 1 megabyte for the serialized form
+  of this message.
 
   Messages:
     PropertiesValue: The entity's properties. The map's keys are property
@@ -383,7 +383,7 @@ class Entity(_messages.Message):
       not contain more than 500 characters. The name cannot be `""`.
 
   Fields:
-    key: The entity's key.  An entity must have a key, unless otherwise
+    key: The entity's key. An entity must have a key, unless otherwise
       documented (for example, an entity in `Value.entity_value` may have no
       key). An entity's kind is its key path's last element's kind, or null if
       it has no key.
@@ -432,8 +432,8 @@ class EntityResult(_messages.Message):
       only when the `EntityResult` is part of a `QueryResultBatch` message.
     entity: The resulting entity.
     version: The version of the entity, a strictly positive number that
-      monotonically increases with changes to the entity.  This field is set
-      for `FULL` entity results.  For missing entities in `LookupResponse`,
+      monotonically increases with changes to the entity. This field is set
+      for `FULL` entity results. For missing entities in `LookupResponse`,
       this is the version of the snapshot that was used to look up the entity,
       and it is always set except for eventually consistent reads.
   """
@@ -553,18 +553,18 @@ class GoogleDatastoreAdminV1CommonMetadata(_messages.Message):
 class GoogleDatastoreAdminV1EntityFilter(_messages.Message):
   r"""Identifies a subset of entities in a project. This is specified as
   combinations of kinds and namespaces (either or both of which may be all, as
-  described in the following examples). Example usage:  Entire project:
-  kinds=[], namespace_ids=[]  Kinds Foo and Bar in all namespaces:
-  kinds=['Foo', 'Bar'], namespace_ids=[]  Kinds Foo and Bar only in the
-  default namespace:   kinds=['Foo', 'Bar'], namespace_ids=['']  Kinds Foo and
-  Bar in both the default and Baz namespaces:   kinds=['Foo', 'Bar'],
-  namespace_ids=['', 'Baz']  The entire Baz namespace:   kinds=[],
+  described in the following examples). Example usage: Entire project:
+  kinds=[], namespace_ids=[] Kinds Foo and Bar in all namespaces:
+  kinds=['Foo', 'Bar'], namespace_ids=[] Kinds Foo and Bar only in the default
+  namespace: kinds=['Foo', 'Bar'], namespace_ids=[''] Kinds Foo and Bar in
+  both the default and Baz namespaces: kinds=['Foo', 'Bar'],
+  namespace_ids=['', 'Baz'] The entire Baz namespace: kinds=[],
   namespace_ids=['Baz']
 
   Fields:
     kinds: If empty, then this represents all kinds.
     namespaceIds: An empty list represents all namespaces. This is the
-      preferred usage for projects that don't use namespaces.  An empty string
+      preferred usage for projects that don't use namespaces. An empty string
       element represents the default namespace. This should be used if the
       project has data in non-default namespaces, but doesn't want to include
       them. Each namespace in this list must be unique.
@@ -607,7 +607,7 @@ class GoogleDatastoreAdminV1ExportEntitiesRequest(_messages.Message):
       export.
     labels: Client-assigned labels.
     outputUrlPrefix: Required. Location for the export metadata and data
-      files.  The full resource URL of the external storage location.
+      files. The full resource URL of the external storage location.
       Currently, only Google Cloud Storage is supported. So output_url_prefix
       should be of the form: `gs://BUCKET_NAME[/NAMESPACE_PATH]`, where
       `BUCKET_NAME` is the name of the Cloud Storage bucket and
@@ -615,10 +615,10 @@ class GoogleDatastoreAdminV1ExportEntitiesRequest(_messages.Message):
       not a Cloud Datastore namespace). For more information about Cloud
       Storage namespace paths, see [Object name
       considerations](https://cloud.google.com/storage/docs/naming#object-
-      considerations).  The resulting files will be nested deeper than the
+      considerations). The resulting files will be nested deeper than the
       specified URL prefix. The final output URL will be provided in the
       google.datastore.admin.v1.ExportEntitiesResponse.output_url field. That
-      value should be used for subsequent ImportEntities operations.  By
+      value should be used for subsequent ImportEntities operations. By
       nesting the data files deeper, the same Cloud Storage bucket can be used
       in multiple ExportEntities operations without conflict.
   """
@@ -708,7 +708,7 @@ class GoogleDatastoreAdminV1ImportEntitiesRequest(_messages.Message):
       file written by the ExportEntities operation. For more information about
       Cloud Storage namespace paths, see [Object name
       considerations](https://cloud.google.com/storage/docs/naming#object-
-      considerations).  For more information, see
+      considerations). For more information, see
       google.datastore.admin.v1.ExportEntitiesResponse.output_url.
     labels: Client-assigned labels.
   """
@@ -746,12 +746,12 @@ class GoogleDatastoreAdminV1Index(_messages.Message):
   r"""Datastore composite index definition.
 
   Enums:
-    AncestorValueValuesEnum: Required. The index's ancestor mode.  Must not be
+    AncestorValueValuesEnum: Required. The index's ancestor mode. Must not be
       ANCESTOR_MODE_UNSPECIFIED.
     StateValueValuesEnum: Output only. The state of the index.
 
   Fields:
-    ancestor: Required. The index's ancestor mode.  Must not be
+    ancestor: Required. The index's ancestor mode. Must not be
       ANCESTOR_MODE_UNSPECIFIED.
     indexId: Output only. The resource ID of the index.
     kind: Required. The entity kind to which this index applies.
@@ -762,7 +762,7 @@ class GoogleDatastoreAdminV1Index(_messages.Message):
   """
 
   class AncestorValueValuesEnum(_messages.Enum):
-    r"""Required. The index's ancestor mode.  Must not be
+    r"""Required. The index's ancestor mode. Must not be
     ANCESTOR_MODE_UNSPECIFIED.
 
     Values:
@@ -826,17 +826,17 @@ class GoogleDatastoreAdminV1IndexedProperty(_messages.Message):
   r"""A property of an index.
 
   Enums:
-    DirectionValueValuesEnum: Required. The indexed property's direction.
-      Must not be DIRECTION_UNSPECIFIED.
+    DirectionValueValuesEnum: Required. The indexed property's direction. Must
+      not be DIRECTION_UNSPECIFIED.
 
   Fields:
-    direction: Required. The indexed property's direction.  Must not be
+    direction: Required. The indexed property's direction. Must not be
       DIRECTION_UNSPECIFIED.
     name: Required. The property name to index.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
-    r"""Required. The indexed property's direction.  Must not be
+    r"""Required. The indexed property's direction. Must not be
     DIRECTION_UNSPECIFIED.
 
     Values:
@@ -974,18 +974,18 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
 class GoogleDatastoreAdminV1beta1EntityFilter(_messages.Message):
   r"""Identifies a subset of entities in a project. This is specified as
   combinations of kinds and namespaces (either or both of which may be all, as
-  described in the following examples). Example usage:  Entire project:
-  kinds=[], namespace_ids=[]  Kinds Foo and Bar in all namespaces:
-  kinds=['Foo', 'Bar'], namespace_ids=[]  Kinds Foo and Bar only in the
-  default namespace:   kinds=['Foo', 'Bar'], namespace_ids=['']  Kinds Foo and
-  Bar in both the default and Baz namespaces:   kinds=['Foo', 'Bar'],
-  namespace_ids=['', 'Baz']  The entire Baz namespace:   kinds=[],
+  described in the following examples). Example usage: Entire project:
+  kinds=[], namespace_ids=[] Kinds Foo and Bar in all namespaces:
+  kinds=['Foo', 'Bar'], namespace_ids=[] Kinds Foo and Bar only in the default
+  namespace: kinds=['Foo', 'Bar'], namespace_ids=[''] Kinds Foo and Bar in
+  both the default and Baz namespaces: kinds=['Foo', 'Bar'],
+  namespace_ids=['', 'Baz'] The entire Baz namespace: kinds=[],
   namespace_ids=['Baz']
 
   Fields:
     kinds: If empty, then this represents all kinds.
     namespaceIds: An empty list represents all namespaces. This is the
-      preferred usage for projects that don't use namespaces.  An empty string
+      preferred usage for projects that don't use namespaces. An empty string
       element represents the default namespace. This should be used if the
       project has data in non-default namespaces, but doesn't want to include
       them. Each namespace in this list must be unique.
@@ -1083,17 +1083,17 @@ class GoogleLongrunningOperation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1102,29 +1102,29 @@ class GoogleLongrunningOperation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1150,12 +1150,12 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1193,7 +1193,7 @@ class GqlQuery(_messages.Message):
   Messages:
     NamedBindingsValue: For each non-reserved named binding site in the query
       string, there must be a named parameter with that name, but not
-      necessarily the inverse.  Key must match regex `A-Za-z_$*`, must not
+      necessarily the inverse. Key must match regex `A-Za-z_$*`, must not
       match regex `__.*__`, and must not be `""`.
 
   Fields:
@@ -1203,7 +1203,7 @@ class GqlQuery(_messages.Message):
       = @value` is.
     namedBindings: For each non-reserved named binding site in the query
       string, there must be a named parameter with that name, but not
-      necessarily the inverse.  Key must match regex `A-Za-z_$*`, must not
+      necessarily the inverse. Key must match regex `A-Za-z_$*`, must not
       match regex `__.*__`, and must not be `""`.
     positionalBindings: Numbered binding site @1 references the first numbered
       parameter, effectively using 1-based indexing, rather than the usual 0.
@@ -1275,13 +1275,13 @@ class Key(_messages.Message):
       element identifies a _child_ of the root entity, the third element
       identifies a child of the second entity, and so forth. The entities
       identified by all prefixes of the path are called the element's
-      _ancestors_.  An entity path is always fully complete: *all* of the
+      _ancestors_. An entity path is always fully complete: *all* of the
       entity's ancestors are required to be in the path along with the entity
       identifier itself. The only exception is that in some documented cases,
       the identifier in the last path element (for the entity) itself may be
       omitted. For example, the last path element of the key of
-      `Mutation.insert` may have no identifier.  A path can never be empty,
-      and a path can have at most 100 elements.
+      `Mutation.insert` may have no identifier. A path can never be empty, and
+      a path can have at most 100 elements.
   """
 
   partitionId = _messages.MessageField('PartitionId', 1)
@@ -1301,9 +1301,8 @@ class KindExpression(_messages.Message):
 class LatLng(_messages.Message):
   r"""An object representing a latitude/longitude pair. This is expressed as a
   pair of doubles representing degrees latitude and degrees longitude. Unless
-  specified otherwise, this must conform to the <a
-  href="http://www.unoosa.org/pdf/icg/2012/template/WGS_84.pdf">WGS84
-  standard</a>. Values must be within normalized ranges.
+  specified otherwise, this must conform to the WGS84 standard. Values must be
+  within normalized ranges.
 
   Fields:
     latitude: The latitude in degrees. It must be in the range [-90.0, +90.0].
@@ -1394,11 +1393,11 @@ class MutationResult(_messages.Message):
 
 class PartitionId(_messages.Message):
   r"""A partition ID identifies a grouping of entities. The grouping is always
-  by project and namespace, however the namespace ID may be empty.  A
-  partition ID contains several dimensions: project ID and namespace ID.
-  Partition dimensions:  - May be `""`. - Must be valid UTF-8 bytes. - Must
-  have values that match regex `[A-Za-z\d\.\-_]{1,100}` If the value of any
-  dimension matches regex `__.*__`, the partition is reserved/read-only. A
+  by project and namespace, however the namespace ID may be empty. A partition
+  ID contains several dimensions: project ID and namespace ID. Partition
+  dimensions: - May be `""`. - Must be valid UTF-8 bytes. - Must have values
+  that match regex `[A-Za-z\d\.\-_]{1,100}` If the value of any dimension
+  matches regex `__.*__`, the partition is reserved/read-only. A
   reserved/read-only partition ID is forbidden in certain documented contexts.
   Foreign partition IDs (in which the project ID does not match the context
   project ID ) are discouraged. Reads and writes of foreign partition IDs may
@@ -1415,7 +1414,7 @@ class PartitionId(_messages.Message):
 
 
 class PathElement(_messages.Message):
-  r"""A (kind, ID/name) pair used to construct a key path.  If either name or
+  r"""A (kind, ID/name) pair used to construct a key path. If either name or
   ID is set, the element is complete. If neither is set, the element is
   incomplete.
 
@@ -1583,7 +1582,7 @@ class QueryResultBatch(_messages.Message):
     snapshotVersion: The version number of the snapshot this batch was
       returned from. This applies to the range of results from the query's
       `start_cursor` (or the beginning of the query if no cursor was given) to
-      this batch's `end_cursor` (not the query's `end_cursor`).  In a single
+      this batch's `end_cursor` (not the query's `end_cursor`). In a single
       transaction, subsequent query result batches for the same query can have
       a greater snapshot version number. Each batch's snapshot version is
       valid for all preceding batches. The value will be zero for eventually
@@ -1709,8 +1708,7 @@ class RollbackRequest(_messages.Message):
 
 
 class RollbackResponse(_messages.Message):
-  r"""The response for Datastore.Rollback.
-(an empty message)."""
+  r"""The response for Datastore.Rollback. (an empty message)."""
 
 
 class RunQueryRequest(_messages.Message):
@@ -1810,7 +1808,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1819,7 +1817,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1858,7 +1856,7 @@ class Status(_messages.Message):
 
 
 class TransactionOptions(_messages.Message):
-  r"""Options for beginning a new transaction.  Transactions can be created
+  r"""Options for beginning a new transaction. Transactions can be created
   explicitly with calls to Datastore.BeginTransaction or implicitly by setting
   ReadOptions.new_transaction in read requests.
 
@@ -1887,7 +1885,7 @@ class Value(_messages.Message):
       requests, must be base64-encoded.
     booleanValue: A boolean value.
     doubleValue: A double value.
-    entityValue: An entity value.  - May have no key. - May have a key with an
+    entityValue: An entity value. - May have no key. - May have a key with an
       incomplete key path. - May have a reserved/read-only key.
     excludeFromIndexes: If the value should be excluded from all indexes
       including those defined explicitly.

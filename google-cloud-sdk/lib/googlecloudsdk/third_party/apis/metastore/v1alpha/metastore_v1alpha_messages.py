@@ -128,19 +128,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class DataCatalogConfig(_messages.Message):
-  r"""Specifies how metastore metadata should be integrated with the Data
-  Catalog service.
-
-  Fields:
-    disabled: Defines whether the metastore metadata should be synced to Data
-      Catalog. The default value is to enable syncing metastore metadata to
-      Data Catalog.
-  """
-
-  disabled = _messages.BooleanField(1)
-
-
 class DatabaseDump(_messages.Message):
   r"""A specification of the location of and metadata about a database dump
   from a relational database management system.
@@ -447,6 +434,44 @@ class LocationMetadata(_messages.Message):
   supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 1, repeated=True)
 
 
+class MaintenanceWindow(_messages.Message):
+  r"""Maintenance window. This specifies when Dataproc Metastore may perform
+  system maintenance operation to the service.
+
+  Enums:
+    DayOfWeekValueValuesEnum: The day of week, when the window starts.
+
+  Fields:
+    dayOfWeek: The day of week, when the window starts.
+    hourOfDay: The hour of day (0-23) when the window starts.
+  """
+
+  class DayOfWeekValueValuesEnum(_messages.Enum):
+    r"""The day of week, when the window starts.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
+  hourOfDay = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class MetadataImport(_messages.Message):
   r"""A metastore resource that imports metadata.
 
@@ -490,17 +515,6 @@ class MetadataImport(_messages.Message):
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
-
-
-class MetadataIntegration(_messages.Message):
-  r"""Specifies how metastore metadata should be integrated with external
-  services.
-
-  Fields:
-    dataCatalogConfig: The integration config for the Data Catalog service.
-  """
-
-  dataCatalogConfig = _messages.MessageField('DataCatalogConfig', 1)
 
 
 class MetastoreProjectsLocationsGetRequest(_messages.Message):
@@ -1077,8 +1091,9 @@ class Service(_messages.Message):
     hiveMetastoreConfig: Configuration information specific to running Hive
       metastore software as the metastore service.
     labels: User-defined labels for the metastore service.
-    metadataIntegration: The setting that defines how metastore metadata
-      should be integrated with external services and systems.
+    maintenanceWindow: The one hour maintenance window of the metastore
+      service. This specifies when the service can be restarted for
+      maintenance purposes in UTC time.
     name: Immutable. The relative resource name of the metastore service, of
       the form:"projects/{project_id}/locations/{location_id}/services/{servic
       e_id}".
@@ -1163,7 +1178,7 @@ class Service(_messages.Message):
   endpointUri = _messages.StringField(3)
   hiveMetastoreConfig = _messages.MessageField('HiveMetastoreConfig', 4)
   labels = _messages.MessageField('LabelsValue', 5)
-  metadataIntegration = _messages.MessageField('MetadataIntegration', 6)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
   name = _messages.StringField(7)
   network = _messages.StringField(8)
   port = _messages.IntegerField(9, variant=_messages.Variant.INT32)

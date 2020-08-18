@@ -243,9 +243,8 @@ def AddOutputFileFlag(parser, help_action):
 def AddAadFileFlag(parser):
   parser.add_argument(
       '--additional-authenticated-data-file',
-      help=
-      'File path to the optional file containing the additional authenticated '
-      'data.')
+      help='File path to the optional file containing the additional '
+      'authenticated data.')
 
 
 def AddProtectionLevelFlag(parser):
@@ -266,8 +265,7 @@ def AddRequiredProtectionLevelFlag(parser):
 
 def AddAttestationFileFlag(parser):
   parser.add_argument(
-      '--attestation-file',
-      help='Path to the output attestation file.')
+      '--attestation-file', help='Path to the output attestation file.')
 
 
 def AddDefaultAlgorithmFlag(parser):
@@ -381,6 +379,14 @@ def AddRequiredImportJobArgument(parser, help_action):
       completer=ImportJobCompleter,
       help='Name of the import job {0}.'.format(help_action),
       required=True)
+
+
+def AddCertificateChainFlag(parser):
+  parser.add_argument(
+      '--certificate-chain-type',
+      default='all',
+      choices=['all', 'cavium', 'google-card', 'google-partition'],
+      help='Certificate chain to retrieve.')
 
 
 # Parsing.

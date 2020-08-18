@@ -25,6 +25,7 @@ import copy
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import service
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import name_generator
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -154,6 +155,23 @@ class DeleteTemplateAnnotationChange(ConfigChanger):
     if self._key in annotations:
       del annotations[self._key]
     return resource
+
+
+class SetLaunchStageAnnotationChange(ConfigChanger):
+  """Sets a VPC connector annotation on the service."""
+
+  def __init__(self, launch_stage):
+    super(SetLaunchStageAnnotationChange, self).__init__()
+    self._launch_stage = launch_stage
+
+  def Adjust(self, resource):
+    if self._launch_stage == base.ReleaseTrack.GA:
+      return resource
+    else:
+      annotations = k8s_object.AnnotationsFromMetadata(
+          resource.MessagesModule(), resource.metadata)
+      annotations[revision.LAUNCH_STAGE_ANNOTATION] = (self._launch_stage.id)
+      return resource
 
 
 class VpcConnectorChange(ConfigChanger):

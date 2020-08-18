@@ -73,23 +73,18 @@ class AndroidInstrumentationTest(_messages.Message):
   r"""A test of an Android application that can control an Android component
   independently of its normal lifecycle. Android instrumentation tests run an
   application APK and test APK inside the same process on a virtual or
-  physical AndroidDevice.  They also specify a test runner class, such as
+  physical AndroidDevice. They also specify a test runner class, such as
   com.google.GoogleTestRunner, which can vary on the specific instrumentation
-  framework chosen.  See
-  <http://developer.android.com/tools/testing/testing_android.html> for more
-  information on types of Android tests.
+  framework chosen. See for more information on types of Android tests.
 
   Enums:
     OrchestratorOptionValueValuesEnum: The option of whether running each test
       within its own invocation of instrumentation with Android Test
       Orchestrator or not. ** Orchestrator is only compatible with
       AndroidJUnitRunner version 1.0 or higher! ** Orchestrator offers the
-      following benefits:  - No shared state  - Crashes are isolated  - Logs
-      are scoped per test  See
-      <https://developer.android.com/training/testing/junit-runner.html#using-
-      android-test-orchestrator> for more information about Android Test
-      Orchestrator.  If not set, the test will be run without the
-      orchestrator.
+      following benefits: - No shared state - Crashes are isolated - Logs are
+      scoped per test See for more information about Android Test
+      Orchestrator. If not set, the test will be run without the orchestrator.
 
   Fields:
     appApk: The APK for the application under test.
@@ -99,12 +94,10 @@ class AndroidInstrumentationTest(_messages.Message):
     orchestratorOption: The option of whether running each test within its own
       invocation of instrumentation with Android Test Orchestrator or not. **
       Orchestrator is only compatible with AndroidJUnitRunner version 1.0 or
-      higher! ** Orchestrator offers the following benefits:  - No shared
-      state  - Crashes are isolated  - Logs are scoped per test  See
-      <https://developer.android.com/training/testing/junit-runner.html#using-
-      android-test-orchestrator> for more information about Android Test
-      Orchestrator.  If not set, the test will be run without the
-      orchestrator.
+      higher! ** Orchestrator offers the following benefits: - No shared state
+      - Crashes are isolated - Logs are scoped per test See for more
+      information about Android Test Orchestrator. If not set, the test will
+      be run without the orchestrator.
     shardingOption: The option to run tests in multiple shards in parallel.
     testApk: Required. The APK containing the test code to be executed.
     testPackageId: The java package for the test to be executed. The default
@@ -112,8 +105,8 @@ class AndroidInstrumentationTest(_messages.Message):
     testRunnerClass: The InstrumentationTestRunner class. The default value is
       determined by examining the application's manifest.
     testTargets: Each target must be fully qualified with the package name or
-      class name, in one of these formats:  - "package package_name"  - "class
-      package_name.class_name"  - "class package_name.class_name#method_name"
+      class name, in one of these formats: - "package package_name" - "class
+      package_name.class_name" - "class package_name.class_name#method_name"
       If empty, all targets in the module will be run.
   """
 
@@ -121,11 +114,10 @@ class AndroidInstrumentationTest(_messages.Message):
     r"""The option of whether running each test within its own invocation of
     instrumentation with Android Test Orchestrator or not. ** Orchestrator is
     only compatible with AndroidJUnitRunner version 1.0 or higher! **
-    Orchestrator offers the following benefits:  - No shared state  - Crashes
-    are isolated  - Logs are scoped per test  See
-    <https://developer.android.com/training/testing/junit-runner.html#using-
-    android-test-orchestrator> for more information about Android Test
-    Orchestrator.  If not set, the test will be run without the orchestrator.
+    Orchestrator offers the following benefits: - No shared state - Crashes
+    are isolated - Logs are scoped per test See for more information about
+    Android Test Orchestrator. If not set, the test will be run without the
+    orchestrator.
 
     Values:
       ORCHESTRATOR_OPTION_UNSPECIFIED: Default value: the server will choose
@@ -155,8 +147,8 @@ class AndroidInstrumentationTest(_messages.Message):
 class AndroidMatrix(_messages.Message):
   r"""A set of Android device configuration permutations is defined by the the
   cross-product of the given axes. Internally, the given AndroidMatrix will be
-  expanded into a set of AndroidDevices.  Only supported permutations will be
-  instantiated.  Invalid permutations (e.g., incompatible models/versions) are
+  expanded into a set of AndroidDevices. Only supported permutations will be
+  instantiated. Invalid permutations (e.g., incompatible models/versions) are
   ignored.
 
   Fields:
@@ -208,7 +200,7 @@ class AndroidModel(_messages.Message):
     supportedAbis: The list of supported ABIs for this device. This
       corresponds to either android.os.Build.SUPPORTED_ABIS (for API level 21
       and above) or android.os.Build.CPU_ABI/CPU_ABI2. The most preferred ABI
-      is the first element in the list.  Elements are optionally prefixed by
+      is the first element in the list. Elements are optionally prefixed by
       "version_id:" (where version_id is the id of an AndroidVersion),
       denoting an ABI that is supported only on a particular version.
     supportedVersionIds: The set of Android versions this device supports.
@@ -236,7 +228,7 @@ class AndroidModel(_messages.Message):
     r"""Whether this device is virtual or physical.
 
     Values:
-      DEVICE_FORM_UNSPECIFIED: Do not use.  For proto versioning only.
+      DEVICE_FORM_UNSPECIFIED: Do not use. For proto versioning only.
       VIRTUAL: Android virtual device using Compute Engine native
         virtualization. Firebase Test Lab only.
       PHYSICAL: Actual hardware.
@@ -315,9 +307,9 @@ class AndroidRuntimeConfiguration(_messages.Message):
 
 
 class AndroidTestLoop(_messages.Message):
-  r"""A test of an Android Application with a Test Loop. The intent \<intent-
-  name\> will be implicitly added, since Games is the only user of this api,
-  for the time being.
+  r"""A test of an Android Application with a Test Loop. The intent \ will be
+  implicitly added, since Games is the only user of this api, for the time
+  being.
 
   Fields:
     appApk: The APK for the application under test.
@@ -418,8 +410,8 @@ class ApkManifest(_messages.Message):
 
 class AppBundle(_messages.Message):
   r"""An Android App Bundle file format, containing a BundleConfig.pb file, a
-  base module directory, zero or more dynamic feature module directories.
-  <p>See https://developer.android.com/guide/app-bundle/build for guidance on
+  base module directory, zero or more dynamic feature module directories. See
+  https://developer.android.com/guide/app-bundle/build for guidance on
   building App Bundles.
 
   Fields:
@@ -447,32 +439,32 @@ class CancelTestMatrixResponse(_messages.Message):
     already final, then the cancelation request will have no effect.
 
     Values:
-      TEST_STATE_UNSPECIFIED: Do not use.  For proto versioning only.
+      TEST_STATE_UNSPECIFIED: Do not use. For proto versioning only.
       VALIDATING: The execution or matrix is being validated.
       PENDING: The execution or matrix is waiting for resources to become
         available.
-      RUNNING: The execution is currently being processed.  Can only be set on
+      RUNNING: The execution is currently being processed. Can only be set on
         an execution.
-      FINISHED: The execution or matrix has terminated normally.  On a matrix
+      FINISHED: The execution or matrix has terminated normally. On a matrix
         this means that the matrix level processing completed normally, but
         individual executions may be in an ERROR state.
       ERROR: The execution or matrix has stopped because it encountered an
         infrastructure failure.
       UNSUPPORTED_ENVIRONMENT: The execution was not run because it
-        corresponds to a unsupported environment.  Can only be set on an
+        corresponds to a unsupported environment. Can only be set on an
         execution.
       INCOMPATIBLE_ENVIRONMENT: The execution was not run because the provided
-        inputs are incompatible with the requested environment.  Example:
-        requested AndroidVersion is lower than APK's minSdkVersion  Can only
-        be set on an execution.
+        inputs are incompatible with the requested environment. Example:
+        requested AndroidVersion is lower than APK's minSdkVersion Can only be
+        set on an execution.
       INCOMPATIBLE_ARCHITECTURE: The execution was not run because the
         provided inputs are incompatible with the requested architecture.
         Example: requested device does not support running the native code in
-        the supplied APK  Can only be set on an execution.
-      CANCELLED: The user cancelled the execution.  Can only be set on an
+        the supplied APK Can only be set on an execution.
+      CANCELLED: The user cancelled the execution. Can only be set on an
         execution.
       INVALID: The execution or matrix was not run because the provided inputs
-        are not valid.  Examples: input file is not of the expected type, is
+        are not valid. Examples: input file is not of the expected type, is
         malformed/corrupt, or was flagged as malware
     """
     TEST_STATE_UNSPECIFIED = 0
@@ -519,11 +511,11 @@ class Date(_messages.Message):
   r"""Represents a whole or partial calendar date, e.g. a birthday. The time
   of day and time zone are either specified elsewhere or are not significant.
   The date is relative to the Proleptic Gregorian Calendar. This can
-  represent:  * A full date, with non-zero year, month and day values * A
-  month and day value, with a zero year, e.g. an anniversary * A year on its
-  own, with zero month and day values * A year and month value, with a zero
-  day, e.g. a credit card expiration date  Related types are
-  google.type.TimeOfDay and `google.protobuf.Timestamp`.
+  represent: * A full date, with non-zero year, month and day values * A month
+  and day value, with a zero year, e.g. an anniversary * A year on its own,
+  with zero month and day values * A year and month value, with a zero day,
+  e.g. a credit card expiration date Related types are google.type.TimeOfDay
+  and `google.protobuf.Timestamp`.
 
   Fields:
     day: Day of month. Must be from 1 to 31 and valid for the year and month,
@@ -569,7 +561,7 @@ class DeviceIpBlock(_messages.Message):
     r"""Whether this block is used by physical or virtual devices
 
     Values:
-      DEVICE_FORM_UNSPECIFIED: Do not use.  For proto versioning only.
+      DEVICE_FORM_UNSPECIFIED: Do not use. For proto versioning only.
       VIRTUAL: Android virtual device using Compute Engine native
         virtualization. Firebase Test Lab only.
       PHYSICAL: Actual hardware.
@@ -696,14 +688,14 @@ class GoogleCloudStorage(_messages.Message):
 
 
 class IntentFilter(_messages.Message):
-  r"""The <intent-filter> section of an <activity> tag.
+  r"""The section of an tag.
   https://developer.android.com/guide/topics/manifest/intent-filter-
   element.html
 
   Fields:
-    actionNames: The android:name value of the <action> tag.
-    categoryNames: The android:name value of the <category> tag.
-    mimeType: The android:mimeType value of the <data> tag.
+    actionNames: The android:name value of the tag.
+    categoryNames: The android:name value of the tag.
+    mimeType: The android:mimeType value of the tag.
   """
 
   actionNames = _messages.StringField(1, repeated=True)
@@ -840,13 +832,16 @@ class IosTestSetup(_messages.Message):
   r"""A description of how to set up an iOS device prior to running the test.
 
   Fields:
+    additionalIpas: iOS apps to install in addition to those being directly
+      tested.
     networkProfile: The network traffic profile used for running the test.
       Available network profiles can be queried by using the
       NETWORK_CONFIGURATION environment type when calling
       TestEnvironmentDiscoveryService.GetTestEnvironmentCatalog.
   """
 
-  networkProfile = _messages.StringField(1)
+  additionalIpas = _messages.MessageField('FileReference', 1, repeated=True)
+  networkProfile = _messages.StringField(2)
 
 
 class IosVersion(_messages.Message):
@@ -927,13 +922,13 @@ class Locale(_messages.Message):
 
 class ManualSharding(_messages.Message):
   r"""Shards test cases into the specified groups of packages, classes, and/or
-  methods.  With manual sharding enabled, specifying test targets via
+  methods. With manual sharding enabled, specifying test targets via
   environment_variables or in InstrumentationTest is invalid.
 
   Fields:
     testTargetsForShard: Required. Group of packages, classes, and/or test
       methods to be run for each shard. When any physical devices are
-      selected,  the number of test_targets_for_shard must be >= 1 and <= 50.
+      selected, the number of test_targets_for_shard must be >= 1 and <= 50.
       When no physical devices are selected, the number must be >= 1 and <=
       250.
   """
@@ -973,8 +968,7 @@ class ObbFile(_messages.Message):
     obb: Required. Opaque Binary Blob (OBB) file(s) to install on the device.
     obbFileName: Required. OBB file name which must conform to the format as
       specified by Android e.g. [main|patch].0300110.com.example.android.obb
-      which will be installed into   \<shared-storage\>/Android/obb/\<package-
-      name\>/ on the device.
+      which will be installed into \/Android/obb/\/ on the device.
   """
 
   obb = _messages.MessageField('FileReference', 1)
@@ -1015,17 +1009,15 @@ class RegularFile(_messages.Message):
     devicePath: Required. Where to put the content on the device. Must be an
       absolute, allowlisted path. If the file exists, it will be replaced. The
       following device-side directories and any of their subdirectories are
-      allowlisted: <p>${EXTERNAL_STORAGE}, /sdcard, or /storage</p>
-      <p>${ANDROID_DATA}/local/tmp, or /data/local/tmp</p> <p>Specifying a
-      path outside of these directory trees is invalid.  <p> The paths /sdcard
-      and /data will be made available and treated as implicit path
-      substitutions. E.g. if /sdcard on a particular device does not map to
-      external storage, the system will replace it with the external storage
-      path prefix for that device and copy the file there.  <p> It is strongly
-      advised to use the <a href=
-      "http://developer.android.com/reference/android/os/Environment.html">
-      Environment API</a> in app and test code to access files on the device
-      in a portable way.
+      allowlisted: ${EXTERNAL_STORAGE}, /sdcard, or /storage
+      ${ANDROID_DATA}/local/tmp, or /data/local/tmp Specifying a path outside
+      of these directory trees is invalid. The paths /sdcard and /data will be
+      made available and treated as implicit path substitutions. E.g. if
+      /sdcard on a particular device does not map to external storage, the
+      system will replace it with the external storage path prefix for that
+      device and copy the file there. It is strongly advised to use the
+      Environment API in app and test code to access files on the device in a
+      portable way.
   """
 
   content = _messages.MessageField('FileReference', 1)
@@ -1041,7 +1033,7 @@ class ResultStorage(_messages.Message):
     toolResultsExecution: Output only. The tool results execution that results
       are written to.
     toolResultsHistory: The tool results history that contains the tool
-      results execution that results are written to.  If not provided, the
+      results execution that results are written to. If not provided, the
       service will choose an appropriate value.
   """
 
@@ -1066,8 +1058,8 @@ class RoboDirective(_messages.Message):
       directive will be treated as a CLICK on the element matching the
       resource_name.
     resourceName: Required. The android resource name of the target UI
-      element. For example,    in Java: R.string.foo    in xml: @string/foo
-      Only the "foo" part is needed. Reference doc:
+      element. For example, in Java: R.string.foo in xml: @string/foo Only the
+      "foo" part is needed. Reference doc:
       https://developer.android.com/guide/topics/resources/accessing-
       resources.html
   """
@@ -1232,7 +1224,7 @@ class TestDetails(_messages.Message):
       will contain human-readable details about the error.
     progressMessages: Output only. Human-readable, detailed descriptions of
       the test's progress. For example: "Provisioning a device", "Starting
-      Test".  During the course of execution new data may be appended to the
+      Test". During the course of execution new data may be appended to the
       end of progress_messages.
   """
 
@@ -1288,32 +1280,32 @@ class TestExecution(_messages.Message):
     (e.g., FINISHED).
 
     Values:
-      TEST_STATE_UNSPECIFIED: Do not use.  For proto versioning only.
+      TEST_STATE_UNSPECIFIED: Do not use. For proto versioning only.
       VALIDATING: The execution or matrix is being validated.
       PENDING: The execution or matrix is waiting for resources to become
         available.
-      RUNNING: The execution is currently being processed.  Can only be set on
+      RUNNING: The execution is currently being processed. Can only be set on
         an execution.
-      FINISHED: The execution or matrix has terminated normally.  On a matrix
+      FINISHED: The execution or matrix has terminated normally. On a matrix
         this means that the matrix level processing completed normally, but
         individual executions may be in an ERROR state.
       ERROR: The execution or matrix has stopped because it encountered an
         infrastructure failure.
       UNSUPPORTED_ENVIRONMENT: The execution was not run because it
-        corresponds to a unsupported environment.  Can only be set on an
+        corresponds to a unsupported environment. Can only be set on an
         execution.
       INCOMPATIBLE_ENVIRONMENT: The execution was not run because the provided
-        inputs are incompatible with the requested environment.  Example:
-        requested AndroidVersion is lower than APK's minSdkVersion  Can only
-        be set on an execution.
+        inputs are incompatible with the requested environment. Example:
+        requested AndroidVersion is lower than APK's minSdkVersion Can only be
+        set on an execution.
       INCOMPATIBLE_ARCHITECTURE: The execution was not run because the
         provided inputs are incompatible with the requested architecture.
         Example: requested device does not support running the native code in
-        the supplied APK  Can only be set on an execution.
-      CANCELLED: The user cancelled the execution.  Can only be set on an
+        the supplied APK Can only be set on an execution.
+      CANCELLED: The user cancelled the execution. Can only be set on an
         execution.
       INVALID: The execution or matrix was not run because the provided inputs
-        are not valid.  Examples: input file is not of the expected type, is
+        are not valid. Examples: input file is not of the expected type, is
         malformed/corrupt, or was flagged as malware
     """
     TEST_STATE_UNSPECIFIED = 0
@@ -1358,7 +1350,7 @@ class TestMatrix(_messages.Message):
     environmentMatrix: Required. The devices the tests are being executed on.
     flakyTestAttempts: The number of times a TestExecution should be re-
       attempted if one or more of its test cases fail for any reason. The
-      maximum number of reruns allowed is 10.  Default is 0, which implies no
+      maximum number of reruns allowed is 10. Default is 0, which implies no
       reruns.
     invalidMatrixDetails: Output only. Describes why the matrix is considered
       invalid. Only useful for matrices in the INVALID state.
@@ -1516,32 +1508,32 @@ class TestMatrix(_messages.Message):
     r"""Output only. Indicates the current progress of the test matrix.
 
     Values:
-      TEST_STATE_UNSPECIFIED: Do not use.  For proto versioning only.
+      TEST_STATE_UNSPECIFIED: Do not use. For proto versioning only.
       VALIDATING: The execution or matrix is being validated.
       PENDING: The execution or matrix is waiting for resources to become
         available.
-      RUNNING: The execution is currently being processed.  Can only be set on
+      RUNNING: The execution is currently being processed. Can only be set on
         an execution.
-      FINISHED: The execution or matrix has terminated normally.  On a matrix
+      FINISHED: The execution or matrix has terminated normally. On a matrix
         this means that the matrix level processing completed normally, but
         individual executions may be in an ERROR state.
       ERROR: The execution or matrix has stopped because it encountered an
         infrastructure failure.
       UNSUPPORTED_ENVIRONMENT: The execution was not run because it
-        corresponds to a unsupported environment.  Can only be set on an
+        corresponds to a unsupported environment. Can only be set on an
         execution.
       INCOMPATIBLE_ENVIRONMENT: The execution was not run because the provided
-        inputs are incompatible with the requested environment.  Example:
-        requested AndroidVersion is lower than APK's minSdkVersion  Can only
-        be set on an execution.
+        inputs are incompatible with the requested environment. Example:
+        requested AndroidVersion is lower than APK's minSdkVersion Can only be
+        set on an execution.
       INCOMPATIBLE_ARCHITECTURE: The execution was not run because the
         provided inputs are incompatible with the requested architecture.
         Example: requested device does not support running the native code in
-        the supplied APK  Can only be set on an execution.
-      CANCELLED: The user cancelled the execution.  Can only be set on an
+        the supplied APK Can only be set on an execution.
+      CANCELLED: The user cancelled the execution. Can only be set on an
         execution.
       INVALID: The execution or matrix was not run because the provided inputs
-        are not valid.  Examples: input file is not of the expected type, is
+        are not valid. Examples: input file is not of the expected type, is
         malformed/corrupt, or was flagged as malware
     """
     TEST_STATE_UNSPECIFIED = 0
@@ -1582,7 +1574,7 @@ class TestSetup(_messages.Message):
     directoriesToPull: List of directories on the device to upload to GCS at
       the end of the test; they must be absolute paths under /sdcard, /storage
       or /data/local/tmp. Path names are restricted to characters a-z A-Z 0-9
-      _ - . + and /  Note: The paths /sdcard and /data will be made available
+      _ - . + and / Note: The paths /sdcard and /data will be made available
       and treated as implicit path substitutions. E.g. if /sdcard on a
       particular device does not map to external storage, the system will
       replace it with the external storage path prefix for that device.
@@ -1649,7 +1641,7 @@ class TestTargetsForShard(_messages.Message):
     testTargets: Group of packages, classes, and/or test methods to be run for
       each shard. The targets need to be specified in AndroidJUnitRunner
       argument format. For example, "package com.my.packages" "class
-      com.my.package.MyClass".  The number of shard_test_targets must be
+      com.my.package.MyClass". The number of shard_test_targets must be
       greater than 0.
   """
 
@@ -1675,7 +1667,7 @@ class TestingProjectsTestMatricesCreateRequest(_messages.Message):
     projectId: The GCE project under which this job will run.
     requestId: A string id used to detect duplicated requests. Ids are
       automatically scoped to a project, so users should ensure the ID is
-      unique per-project. A UUID is recommended.  Optional, but strongly
+      unique per-project. A UUID is recommended. Optional, but strongly
       recommended.
     testMatrix: A TestMatrix resource to be passed as the request body.
   """
@@ -1714,12 +1706,14 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
     r"""Required. The type of environment that should be listed.
 
     Values:
-      ENVIRONMENT_TYPE_UNSPECIFIED: <no description>
-      ANDROID: <no description>
-      IOS: <no description>
-      NETWORK_CONFIGURATION: <no description>
-      PROVIDED_SOFTWARE: <no description>
-      DEVICE_IP_BLOCKS: <no description>
+      ENVIRONMENT_TYPE_UNSPECIFIED: Do not use. For proto versioning only.
+      ANDROID: A device running a version of the Android OS.
+      IOS: A device running a version of iOS.
+      NETWORK_CONFIGURATION: A network configuration to use when running a
+        test.
+      PROVIDED_SOFTWARE: The software environment provided by
+        TestExecutionService.
+      DEVICE_IP_BLOCKS: The IP blocks used by devices in the test environment.
     """
     ENVIRONMENT_TYPE_UNSPECIFIED = 0
     ANDROID = 1
@@ -1733,7 +1727,7 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
 
 
 class ToolResultsExecution(_messages.Message):
-  r"""Represents a tool results execution resource.  This has the results of a
+  r"""Represents a tool results execution resource. This has the results of a
   TestMatrix.
 
   Fields:
@@ -1761,7 +1755,7 @@ class ToolResultsHistory(_messages.Message):
 
 
 class ToolResultsStep(_messages.Message):
-  r"""Represents a tool results step resource.  This has the results of a
+  r"""Represents a tool results step resource. This has the results of a
   TestExecution.
 
   Fields:
@@ -1796,7 +1790,7 @@ class TrafficRule(_messages.Message):
 
 
 class UniformSharding(_messages.Message):
-  r"""Uniformly shards test cases given a total number of shards.  For
+  r"""Uniformly shards test cases given a total number of shards. For
   Instrumentation test, it will be translated to "-e numShard" "-e shardIndex"
   AndroidJUnitRunner arguments. With uniform sharding enabled, specifying
   these sharding arguments via environment_variables is invalid.

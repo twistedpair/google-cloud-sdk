@@ -32,9 +32,13 @@ def AddDisplayNameArg(parser):
       """)
 
 
-def ProcessApiRefToEndpointsService(api_ref):
-  return '{}.apigateway.{}.cloud.goog'.format(api_ref.Name(),
-                                              api_ref.projectsId)
+def AddManagedServiceFlag(parser):
+  """Adds the managed service flag."""
+  parser.add_argument(
+      '--managed-service',
+      help="""\
+      The name of a pre-existing Google Managed Service.
+      """)
 
 
 def AddBackendAuthServiceAccountFlag(parser):

@@ -163,12 +163,12 @@
           "format": "google-duration"
         },
         "scaleUpFactor": {
-          "description": "Required. Fraction of average YARN pending memory in the last cooldown period for which to add workers. A scale-up factor of 1.0 will result in scaling up so that there is no pending memory remaining after the update (more aggressive scaling). A scale-up factor closer to 0 will result in a smaller magnitude of scaling up (less aggressive scaling). See How autoscaling works for more information.Bounds: 0.0, 1.0.",
+          "description": "Required. Fraction of average YARN pending memory in the last cooldown period for which to add workers. A scale-up factor of 1.0 will result in scaling up so that there is no pending memory remaining after the update (more aggressive scaling). A scale-up factor closer to 0 will result in a smaller magnitude of scaling up (less aggressive scaling). See How autoscaling works (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/autoscaling#how_autoscaling_works) for more information.Bounds: 0.0, 1.0.",
           "type": "number",
           "format": "double"
         },
         "scaleDownFactor": {
-          "description": "Required. Fraction of average YARN pending memory in the last cooldown period for which to remove workers. A scale-down factor of 1 will result in scaling down so that there is no available memory remaining after the update (more aggressive scaling). A scale-down factor of 0 disables removing workers, which can be beneficial for autoscaling a single job. See How autoscaling works for more information.Bounds: 0.0, 1.0.",
+          "description": "Required. Fraction of average YARN pending memory in the last cooldown period for which to remove workers. A scale-down factor of 1 will result in scaling down so that there is no available memory remaining after the update (more aggressive scaling). A scale-down factor of 0 disables removing workers, which can be beneficial for autoscaling a single job. See How autoscaling works (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/configuring-clusters\/autoscaling#how_autoscaling_works) for more information.Bounds: 0.0, 1.0.",
           "type": "number",
           "format": "double"
         },
@@ -534,6 +534,14 @@
             "type": "string"
           }
         },
+        "instanceReferences": {
+          "description": "Output only. List of references to Compute Engine instances.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "InstanceReference"
+          }
+        },
         "imageUri": {
           "description": "Optional. The Compute Engine image resource used for cluster instances.The URI can represent an image or image family.Image examples: https:\/\/www.googleapis.com\/compute\/beta\/projects\/[project_id]\/global\/images\/[image-id] projects\/[project_id]\/global\/images\/[image-id] image-idImage family examples. Dataproc will use the most recent image from the family: https:\/\/www.googleapis.com\/compute\/beta\/projects\/[project_id]\/global\/images\/family\/[custom-image-family-name] projects\/[project_id]\/global\/images\/family\/[custom-image-family-name]If the URI is unspecified, it will be inferred from SoftwareConfig.image_version or the system default.",
           "type": "string"
@@ -584,6 +592,21 @@
         },
         "minCpuPlatform": {
           "description": "Optional. Specifies the minimum cpu platform for the Instance Group. See Dataproc -> Minimum CPU Platform (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/compute\/dataproc-min-cpu).",
+          "type": "string"
+        }
+      }
+    },
+    "InstanceReference": {
+      "id": "InstanceReference",
+      "description": "A reference to a Compute Engine instance.",
+      "type": "object",
+      "properties": {
+        "instanceName": {
+          "description": "The user-friendly name of the Compute Engine instance.",
+          "type": "string"
+        },
+        "instanceId": {
+          "description": "The unique identifier of the Compute Engine instance.",
           "type": "string"
         }
       }

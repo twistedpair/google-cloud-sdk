@@ -94,12 +94,14 @@ def MungeBasicAuthFlags(args):
   Raises:
     util.Error, if flags conflict.
   """
-  if args.IsSpecified('enable_basic_auth'):
+  if hasattr(args, 'enable_basic_auth') and \
+      args.IsSpecified('enable_basic_auth'):
     if not args.enable_basic_auth:
       args.username = ''
     else:
       args.username = 'admin'
-  if not args.username and args.IsSpecified('password'):
+  if (hasattr(args, 'username') and hasattr(args, 'password')) and \
+      (not args.username and args.IsSpecified('password')):
     raise util.Error(constants.USERNAME_PASSWORD_ERROR_MSG)
 
 
@@ -1226,7 +1228,7 @@ def AddClusterDNSFlags(parser, hidden=True):
       choices=_DNS_PROVIDER,
       help=('DNS provider to use for this Cluster.'),
       hidden=hidden,
-      )
+  )
   group.add_argument(
       '--cluster-dns-scope',
       choices=_DNS_SCOPE,
@@ -1234,7 +1236,7 @@ def AddClusterDNSFlags(parser, hidden=True):
             DNS Scope for the CloudDNS zone created - valid only with
              `--cluster-dns=clouddns`"""),
       hidden=hidden,
-      )
+  )
   group.add_argument(
       '--cluster-dns-domain',
       help=("""
@@ -1245,7 +1247,7 @@ def AddClusterDNSFlags(parser, hidden=True):
             The value must be a valid DNS Subdomain as defined in RFC 1123.
             """),
       hidden=hidden,
-      )
+  )
 
 
 def AddPrivateClusterFlags(parser, with_deprecated=False):
@@ -1860,8 +1862,8 @@ def AddWorkloadMetadataFlag(parser, use_mode=True):
   }
   if not use_mode:
     choices.update({
-        'SECURE': '[DPRECATED] Prevents pods not in hostNetwork from accessing '
-                  'certain VM metadata, specifically kube-env, which '
+        'SECURE': '[DEPRECATED] Prevents pods not in hostNetwork from '
+                  'accessing certain VM metadata, specifically kube-env, which '
                   'contains Kubelet credentials, and the instance identity '
                   'token. This is a temporary security solution available '
                   'while the bootstrapping process for cluster nodes is '
@@ -3209,6 +3211,34 @@ Enable Confidential Nodes for this cluster. Enabling Confidential Nodes will cre
       action='store_true')
 
 
+def AddKubernetesObjectsExportConfig(parser, for_create=False):
+  """Adds kubernetes-objects-changes-target and kubernetes-objects-snapshots-target flags to parser."""
+  help_text = """\
+Set kubernetes objects changes target [Currently only CLOUD_LOGGING value is supported].
+  """
+  validation_description = 'Only value CLOUD_LOGGING is accepted'
+  regexp = r'^CLOUD_LOGGING$|^NONE$'
+  if for_create:
+    regexp = r'^CLOUD_LOGGING$'
+  type_ = arg_parsers.RegexpValidator(regexp, validation_description)
+  group = parser.add_group()
+  group.add_argument(
+      '--kubernetes-objects-changes-target',
+      default=None,
+      hidden=True,
+      type=type_,
+      help=help_text)
+  help_text = """\
+Set kubernetes objects snapshots target [Currently only CLOUD_LOGGING value is supported].
+  """
+  group.add_argument(
+      '--kubernetes-objects-snapshots-target',
+      default=None,
+      hidden=True,
+      type=type_,
+      help=help_text)
+
+
 def AddEnableCloudLogging(parser):
   parser.add_argument(
       '--enable-cloud-logging',
@@ -3256,9 +3286,9 @@ def AddMaxNodesPerPool(parser):
           nodes=api_adapter.MAX_NODES_PER_POOL))
 
 
-def AddNumNodes(parser):
+def AddNumNodes(parser, default):
   parser.add_argument(
       '--num-nodes',
       type=arg_parsers.BoundedInt(1),
       help='The number of nodes to be created in each of the cluster\'s zones.',
-      default=3)
+      default=default)

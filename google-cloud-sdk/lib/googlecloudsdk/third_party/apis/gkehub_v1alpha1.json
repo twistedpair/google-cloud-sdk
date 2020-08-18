@@ -270,6 +270,10 @@
           "description": "Feature for Anthos Config Management.",
           "$ref": "ConfigManagementFeatureSpec"
         },
+        "appdevexperienceFeatureSpec": {
+          "description": "Feature for App Dev Experience.",
+          "$ref": "AppDevExperienceFeatureSpec"
+        },
         "cloudauditloggingFeatureSpec": {
           "description": "Feature for Anthos Cloud Audit Logging.",
           "$ref": "CloudAuditLoggingFeatureSpec"
@@ -452,6 +456,14 @@
         "configSync": {
           "description": "Config Sync configuration for the cluster.",
           "$ref": "ConfigSync"
+        },
+        "policyController": {
+          "description": "Policy Controller configuration for the cluster.",
+          "$ref": "PolicyController"
+        },
+        "version": {
+          "description": "Version of ACM installed.",
+          "type": "string"
         }
       }
     },
@@ -496,6 +508,44 @@
           "description": "Type of secret configured for access to the Git repo.",
           "type": "string"
         }
+      }
+    },
+    "PolicyController": {
+      "id": "PolicyController",
+      "description": "Configuration for Policy Controller",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enables the installation of Policy Controller. If false, the rest of PolicyController fields take no effect.",
+          "type": "boolean"
+        },
+        "templateLibraryInstalled": {
+          "description": "Installs the default template library along with Policy Controller.",
+          "type": "boolean"
+        },
+        "auditIntervalSeconds": {
+          "description": "Sets the interval for Policy Controller Audit Scans (in seconds). When set to 0, this disables audit functionality altogether.",
+          "type": "string",
+          "format": "int64"
+        },
+        "exemptableNamespaces": {
+          "description": "The set of namespaces that are excluded from Policy Controller checks. Namespaces do not need to currently exist on the cluster.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "referentialRulesEnabled": {
+          "description": "Enables the ability to use Constraint Templates that reference to objects other than the object currently being evaluated.",
+          "type": "boolean"
+        }
+      }
+    },
+    "AppDevExperienceFeatureSpec": {
+      "id": "AppDevExperienceFeatureSpec",
+      "description": "Spec for App Dev Experience Feature.",
+      "type": "object",
+      "properties": {
       }
     },
     "CloudAuditLoggingFeatureSpec": {
@@ -620,6 +670,9 @@
           "description": "State for the Config Management Feature.",
           "$ref": "ConfigManagementFeatureState"
         },
+        "appdevexperienceFeatureState": {
+          "$ref": "AppDevExperienceFeatureState"
+        },
         "cloudauditloggingFeatureState": {
           "description": "The state of the Anthos Cloud Audit Logging feature.",
           "$ref": "CloudAuditLoggingFeatureState"
@@ -633,9 +686,99 @@
     },
     "ServiceMeshFeatureState": {
       "id": "ServiceMeshFeatureState",
-      "description": "ServiceMeshFeatureState contains the status fields specific to the service mesh feature. Only those fields that reflect the state of the feature are eligible to be in a feature's state message. These fields are expected to be updated only by the automation and that's usually the controllers operating on this feature. This is currently just a placeholder and more fields will be added when we have more state information to report for this feature.",
+      "description": "ServiceMeshFeatureState describes the state of the Service Mesh hub feature as analyzed by the Service Mesh Hub Controller.",
       "type": "object",
       "properties": {
+        "analysisMessages": {
+          "description": "Output only. Results of running Service Mesh analyzers against member clusters, or the entire mesh.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "ServiceMeshAnalysisMessage"
+          }
+        }
+      }
+    },
+    "ServiceMeshAnalysisMessage": {
+      "id": "ServiceMeshAnalysisMessage",
+      "description": "ServiceMeshAnalysisMessage is a single message produced by an analyzer, and it used to communicate to the end user about the state of their Service Mesh configuration.",
+      "type": "object",
+      "properties": {
+        "messageBase": {
+          "description": "Details common to all types of Istio and ServiceMesh analysis messages.",
+          "$ref": "ServiceMeshAnalysisMessageBase"
+        },
+        "description": {
+          "description": "A human readable description of what the error means. It is suitable for non-internationalize display purposes.",
+          "type": "string"
+        },
+        "resourcePaths": {
+          "description": "A list of strings specifying the resource identifiers that were the cause of message generation. A \"path\" here may be: * MEMBERSHIP_ID if the cause is a specific member cluster * MEMBERSHIP_ID\/(NAMESPACE\\\/)?RESOURCETYPE\/NAME if the cause is a resource in a cluster",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "description": "A UI can combine these args with a template (based on message_base.type) to produce an internationalized message.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    },
+    "ServiceMeshAnalysisMessageBase": {
+      "id": "ServiceMeshAnalysisMessageBase",
+      "description": "AnalysisMessageBase describes some common information that is needed for all messages.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Represents the specific type of a message.",
+          "$ref": "Type"
+        },
+        "level": {
+          "description": "Represents how severe a message is.",
+          "enumDescriptions": [
+            "Illegal. Same istio.analysis.v1alpha1.AnalysisMessageBase.Level.UNKNOWN.",
+            "ERROR represents a misconfiguration that must be fixed.",
+            "WARNING represents a misconfiguration that should be fixed.",
+            "INFO represents an informational finding."
+          ],
+          "type": "string",
+          "enumDescriptions": [
+            "Illegal. Same istio.analysis.v1alpha1.AnalysisMessageBase.Level.UNKNOWN.",
+            "ERROR represents a misconfiguration that must be fixed.",
+            "WARNING represents a misconfiguration that should be fixed.",
+            "INFO represents an informational finding."
+          ],
+          "enum": [
+            "LEVEL_UNSPECIFIED",
+            "ERROR",
+            "WARNING",
+            "INFO"
+          ]
+        },
+        "documentationUrl": {
+          "description": "A url pointing to the Service Mesh or Istio documentation for this specific error type.",
+          "type": "string"
+        }
+      }
+    },
+    "Type": {
+      "id": "Type",
+      "description": "A unique identifier for the type of message. Name is intended to be human-readable, code is intended to be machine readable. There should be a one-to-one mapping between name and code. (i.e. do not re-use names or codes between message types.) See istio.analysis.v1alpha1.AnalysisMessageBase.Type",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A human-readable name for the message type. e.g. \"InternalError\", \"PodMissingProxy\". This should be the same for all messages of the same type.",
+          "type": "string"
+        },
+        "code": {
+          "description": "A 7 character code matching `^IST[0-9]{4}$` or `^ASM[0-9]{4}$`, intended to uniquely identify the message type. (e.g. \"IST0001\" is mapped to the \"InternalError\" message type.)",
+          "type": "string"
+        }
       }
     },
     "AuthorizerFeatureState": {
@@ -703,6 +846,10 @@
         "configSyncState": {
           "description": "Current sync status",
           "$ref": "ConfigSyncState"
+        },
+        "policyControllerState": {
+          "description": "PolicyController status",
+          "$ref": "PolicyControllerState"
         }
       }
     },
@@ -1025,6 +1172,101 @@
           "description": "Kubernetes Kind",
           "type": "string"
         }
+      }
+    },
+    "PolicyControllerState": {
+      "id": "PolicyControllerState",
+      "description": "State for PolicyControllerState.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version of Gatekeeper Policy Controller deployed.",
+          "$ref": "PolicyControllerVersion"
+        },
+        "deploymentState": {
+          "description": "The state about the policy controller installation.",
+          "$ref": "GatekeeperDeploymentState"
+        },
+        "gatekeeperState": {
+          "description": "The state of Gatekeeper policies and constraints.",
+          "$ref": "GatekeeperState"
+        }
+      }
+    },
+    "PolicyControllerVersion": {
+      "id": "PolicyControllerVersion",
+      "description": "The build version of Gatekeeper Policy Controller is using.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The gatekeeper image tag that is composed of ACM version, git tag, build number.",
+          "type": "string"
+        }
+      }
+    },
+    "GatekeeperDeploymentState": {
+      "id": "GatekeeperDeploymentState",
+      "description": "State of Policy Controller installation.",
+      "type": "object",
+      "properties": {
+        "gatekeeperControllerManagerState": {
+          "description": "Status of gatekeeper-controller-manager pod.",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "gatekeeperAudit": {
+          "description": "Status of gatekeeper-audit deployment.",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        }
+      }
+    },
+    "GatekeeperState": {
+      "id": "GatekeeperState",
+      "description": "States for Constraint Templates and Policy Constraints.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "AppDevExperienceFeatureState": {
+      "id": "AppDevExperienceFeatureState",
+      "description": "State for App Dev Exp Feature.",
+      "type": "object",
+      "properties": {
       }
     },
     "CloudAuditLoggingFeatureState": {

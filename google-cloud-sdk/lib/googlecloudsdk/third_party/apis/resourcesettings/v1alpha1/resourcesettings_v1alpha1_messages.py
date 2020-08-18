@@ -51,14 +51,14 @@ class GoogleCloudResourcesettingsV1alpha1Setting(_messages.Message):
   Fields:
     dataType: The data type for this setting.
     defaultValue: The value received by LookupEffectiveSettingValue if no
-      setting value is explicitly set.  Note: not all settings have a default
+      setting value is explicitly set. Note: not all settings have a default
       value.
     description: A detailed description of what this setting does.
     displayName: The human readable name for this setting.
     name: The resource name of the setting. Must be in one of the following
-      forms:  * `projects/{project_number}/settings/{setting_name}` *
+      forms: * `projects/{project_number}/settings/{setting_name}` *
       `folders/{folder_id}/settings/{setting_name}` *
-      `organizations/{organization_id}/settings/{setting_name}`  For example,
+      `organizations/{organization_id}/settings/{setting_name}` For example,
       "/projects/123/settings/gcp-enableMyFeature"
     readOnly: A flag indicating that values of this setting cannot be modified
       (see documentation of the specific setting for updates and reasons);
@@ -99,10 +99,10 @@ class GoogleCloudResourcesettingsV1alpha1SettingValue(_messages.Message):
     etag: A fingerprint used for optimistic concurrency. See
       UpdateSettingValue for more details.
     name: The resource name of the setting value. Must be in one of the
-      following forms:  *
+      following forms: *
       `projects/{project_number}/settings/{setting_name}/value` *
       `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      `organizations/{organization_id}/settings/{setting_name}/value` For
       example, "/projects/123/settings/gcp-enableMyFeature/value"
     readOnly: Output only. A flag indicating that this setting value cannot be
       modified; however, it may be deleted using DeleteSettingValue if
@@ -152,9 +152,9 @@ class GoogleCloudResourcesettingsV1alpha1ValueStringSet(_messages.Message):
 class GoogleProtobufEmpty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -193,9 +193,8 @@ class ResourcesettingsFoldersSettingsListRequest(_messages.Message):
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
     parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms:  * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+      following forms: * `projects/{project_number}` * `projects/{project_id}`
+      * `folders/{folder_id}` * `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -221,9 +220,8 @@ class ResourcesettingsFoldersSettingsSearchRequest(_messages.Message):
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
     parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms:  * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+      following forms: * `projects/{project_number}` * `projects/{project_id}`
+      * `folders/{folder_id}` * `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -239,10 +237,10 @@ class ResourcesettingsFoldersSettingsUpdateValueRequest(_messages.Message):
       GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
       the request body.
     name: The resource name of the setting value. Must be in one of the
-      following forms:  *
+      following forms: *
       `projects/{project_number}/settings/{setting_name}/value` *
       `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      `organizations/{organization_id}/settings/{setting_name}/value` For
       example, "/projects/123/settings/gcp-enableMyFeature/value"
   """
 
@@ -258,10 +256,10 @@ class ResourcesettingsFoldersSettingsValueCreateRequest(_messages.Message):
       GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
       the request body.
     name: The resource name of the setting value. Must be in one of the
-      following forms:  *
+      following forms: *
       `projects/{project_number}/settings/{setting_name}/value` *
       `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      `organizations/{organization_id}/settings/{setting_name}/value` For
       example, "/projects/123/settings/gcp-enableMyFeature/value"
   """
 
@@ -303,9 +301,8 @@ class ResourcesettingsOrganizationsSettingsListRequest(_messages.Message):
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
     parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms:  * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+      following forms: * `projects/{project_number}` * `projects/{project_id}`
+      * `folders/{folder_id}` * `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -332,9 +329,8 @@ class ResourcesettingsOrganizationsSettingsSearchRequest(_messages.Message):
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
     parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms:  * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+      following forms: * `projects/{project_number}` * `projects/{project_id}`
+      * `folders/{folder_id}` * `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -350,10 +346,10 @@ class ResourcesettingsOrganizationsSettingsUpdateValueRequest(_messages.Message)
       GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
       the request body.
     name: The resource name of the setting value. Must be in one of the
-      following forms:  *
+      following forms: *
       `projects/{project_number}/settings/{setting_name}/value` *
       `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      `organizations/{organization_id}/settings/{setting_name}/value` For
       example, "/projects/123/settings/gcp-enableMyFeature/value"
   """
 
@@ -369,10 +365,10 @@ class ResourcesettingsOrganizationsSettingsValueCreateRequest(_messages.Message)
       GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
       the request body.
     name: The resource name of the setting value. Must be in one of the
-      following forms:  *
+      following forms: *
       `projects/{project_number}/settings/{setting_name}/value` *
       `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      `organizations/{organization_id}/settings/{setting_name}/value` For
       example, "/projects/123/settings/gcp-enableMyFeature/value"
   """
 
@@ -414,9 +410,8 @@ class ResourcesettingsProjectsSettingsListRequest(_messages.Message):
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
     parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms:  * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+      following forms: * `projects/{project_number}` * `projects/{project_id}`
+      * `folders/{folder_id}` * `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -442,9 +437,8 @@ class ResourcesettingsProjectsSettingsSearchRequest(_messages.Message):
     pageSize: Unused. The size of the page to be returned.
     pageToken: Unused. A page token used to retrieve the next page.
     parent: The Cloud resource that parents the setting. Must be in one of the
-      following forms:  * `projects/{project_number}` *
-      `projects/{project_id}` * `folders/{folder_id}` *
-      `organizations/{organization_id}`
+      following forms: * `projects/{project_number}` * `projects/{project_id}`
+      * `folders/{folder_id}` * `organizations/{organization_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -460,10 +454,10 @@ class ResourcesettingsProjectsSettingsUpdateValueRequest(_messages.Message):
       GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
       the request body.
     name: The resource name of the setting value. Must be in one of the
-      following forms:  *
+      following forms: *
       `projects/{project_number}/settings/{setting_name}/value` *
       `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      `organizations/{organization_id}/settings/{setting_name}/value` For
       example, "/projects/123/settings/gcp-enableMyFeature/value"
   """
 
@@ -479,10 +473,10 @@ class ResourcesettingsProjectsSettingsValueCreateRequest(_messages.Message):
       GoogleCloudResourcesettingsV1alpha1SettingValue resource to be passed as
       the request body.
     name: The resource name of the setting value. Must be in one of the
-      following forms:  *
+      following forms: *
       `projects/{project_number}/settings/{setting_name}/value` *
       `folders/{folder_id}/settings/{setting_name}/value` *
-      `organizations/{organization_id}/settings/{setting_name}/value`  For
+      `organizations/{organization_id}/settings/{setting_name}/value` For
       example, "/projects/123/settings/gcp-enableMyFeature/value"
   """
 

@@ -228,8 +228,7 @@ class ServicedirectoryV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a service. This also deletes all endpoints associated with.
-the service.
+      r"""Deletes a service. This also deletes all endpoints associated with the service.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesDeleteRequest) input message
@@ -364,9 +363,7 @@ the service.
     )
 
     def Resolve(self, request, global_params=None):
-      r"""Returns a service and its.
-associated endpoints.
-Resolving a service is not considered an active developer method.
+      r"""Returns a service and its associated endpoints. Resolving a service is not considered an active developer method.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesServicesResolveRequest) input message
@@ -484,8 +481,7 @@ Resolving a service is not considered an active developer method.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a namespace. This also deletes all services and endpoints in.
-the namespace.
+      r"""Deletes a namespace. This also deletes all services and endpoints in the namespace.
 
       Args:
         request: (ServicedirectoryProjectsLocationsNamespacesDeleteRequest) input message

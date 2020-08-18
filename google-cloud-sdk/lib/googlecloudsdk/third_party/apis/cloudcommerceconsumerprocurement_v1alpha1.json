@@ -130,15 +130,15 @@
     },
     "GoogleLongrunningOperation": {
       "id": "GoogleLongrunningOperation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -146,7 +146,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
           "type": "boolean"
         },
         "error": {
@@ -154,7 +154,7 @@
           "$ref": "GoogleRpcStatus"
         },
         "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -165,7 +165,7 @@
     },
     "GoogleRpcStatus": {
       "id": "GoogleRpcStatus",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -174,11 +174,11 @@
           "format": "int32"
         },
         "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -192,7 +192,7 @@
     },
     "GoogleProtobufEmpty": {
       "id": "GoogleProtobufEmpty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
       }
@@ -206,26 +206,29 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Account": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Account",
-      "description": "Represents an account that was established by the customer with a service\nprovider.\n\nWhen consuming services on external service provider's systems, the service\nprovider generally needs to create a linked-account on their system to track\ncustomers. The account resource represents this relationship.\n\nProducts\/Services that are hosted by external service providers generally\nrequire an account to be present before they can be purchased and used.\n\nThe metadata that indicates whether an Account is required for a purchase,\nor what parameters are needed for creating an Account is configured by\nservice providers.",
+      "description": "Represents an account that was established by the customer with a service provider. When consuming services on external service provider's systems, the service provider generally needs to create a linked-account on their system to track customers. The account resource represents this relationship. Products\/Services that are hosted by external service providers generally require an account to be present before they can be purchased and used. The metadata that indicates whether an Account is required for a purchase, or what parameters are needed for creating an Account is configured by service providers.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the account.\nAccount names have the form\n`billingAccounts\/{billing_account_id}\/accounts\/{account_id}`.",
+          "description": "Output only. The resource name of the account. Account names have the form `billingAccounts\/{billing_account_id}\/accounts\/{account_id}`.",
+          "readOnly": true,
           "type": "string"
         },
         "provider": {
-          "description": "Required. The identifier of the service provider that this account was created\nagainst.\nProvider has the format of `providers\/{provider_id}`.",
+          "description": "Required. The identifier of the service provider that this account was created against. Provider has the format of `providers\/{provider_id}`.",
           "type": "string"
         },
         "properties": {
-          "description": "Output only. Set of properties that the service provider supplied during\naccount creation.",
+          "description": "Output only. Set of properties that the service provider supplied during account creation.",
+          "readOnly": true,
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "approvals": {
-          "description": "Output only. The approvals for this account. These approvals are used to\ntrack actions that are permitted or have been completed by a customer\nwithin the context of the provider. This might include a sign up flow or a\nprovisioning step, for example, that the provider can admit to having\nhappened.",
+          "description": "Output only. The approvals for this account. These approvals are used to track actions that are permitted or have been completed by a customer within the context of the provider. This might include a sign up flow or a provisioning step, for example, that the provider can admit to having happened.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1AccountApproval"
@@ -233,11 +236,13 @@
         },
         "createTime": {
           "description": "Output only. The creation timestamp.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The last update timestamp.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -256,11 +261,17 @@
           "description": "The state of the approval.",
           "enumDescriptions": [
             "Sentinel value; do not use.",
-            "The approval is pending response from the provider.\n\nThe approval state can transition to\nAccount.Approval.State.APPROVED or\nAccount.Approval.State.REJECTED.",
+            "The approval is pending response from the provider. The approval state can transition to Account.Approval.State.APPROVED or Account.Approval.State.REJECTED.",
             "The approval has been granted by the provider.",
-            "The approval has been rejected by the provider.\n\nA provider may choose to approve a previously rejected approval, so\nis it possible to transition to Account.Approval.State.APPROVED."
+            "The approval has been rejected by the provider. A provider may choose to approve a previously rejected approval, so is it possible to transition to Account.Approval.State.APPROVED."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Sentinel value; do not use.",
+            "The approval is pending response from the provider. The approval state can transition to Account.Approval.State.APPROVED or Account.Approval.State.REJECTED.",
+            "The approval has been granted by the provider.",
+            "The approval has been rejected by the provider. A provider may choose to approve a previously rejected approval, so is it possible to transition to Account.Approval.State.APPROVED."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "PENDING",
@@ -299,19 +310,19 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest",
-      "description": "Request message for ConsumerProcurementService.PlaceOrder.\nNext Id: 9",
+      "description": "Request message for ConsumerProcurementService.PlaceOrder. Next Id: 9",
       "type": "object",
       "properties": {
         "displayName": {
-          "description": "Required. The user-specified name of the order being placed.\nMust be unique within a billing account.",
+          "description": "Required. The user-specified name of the order being placed. Must be unique within a billing account.",
           "type": "string"
         },
         "account": {
-          "description": "The resource name of the account that this order is based on.\nIf this field is not specified and the creation of any products in the\norder requires an account, system will look for existing account and auto\ncreate one if there is no existing one.",
+          "description": "The resource name of the account that this order is based on. If this field is not specified and the creation of any products in the order requires an account, system will look for existing account and auto create one if there is no existing one.",
           "type": "string"
         },
         "provider": {
-          "description": "Required. Provider of the items being purchased.\nProvider has the format of `providers\/{provider_id}`.",
+          "description": "Required. Provider of the items being purchased. Provider has the format of `providers\/{provider_id}`.",
           "type": "string"
         },
         "placeProductsOrderRequest": {
@@ -323,7 +334,7 @@
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest"
         },
         "requestId": {
-          "description": "Optional. A unique identifier for this request.\nThe server will ignore subsequent requests that provide a duplicate request\nID for at least 120 minutes after the first request.\n\nThe request ID must be a valid\n[UUID](https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier#Format).",
+          "description": "Optional. A unique identifier for this request. The server will ignore subsequent requests that provide a duplicate request ID for at least 120 minutes after the first request. The request ID must be a valid [UUID](https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier#Format).",
           "type": "string"
         }
       }
@@ -344,7 +355,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo",
-      "description": "Line item information.\nNext Id: 13",
+      "description": "Line item information. Next Id: 13",
       "type": "object",
       "properties": {
         "productExternalName": {
@@ -360,19 +371,23 @@
           "type": "string"
         },
         "quoteExternalName": {
-          "description": "Output only. External name of the quote this product is associated with.\nPresent if the product is part of a Quote.",
+          "description": "Output only. External name of the quote this product is associated with. Present if the product is part of a Quote.",
+          "readOnly": true,
           "type": "string"
         },
         "entitlementInfo": {
           "description": "Output only. Entitlement info associated with this line item.",
+          "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementInfo"
         },
         "addOnDetails": {
           "description": "Output only. Add on information of a line item, if applicable.",
+          "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1AddOnDetails"
         },
         "customPricing": {
-          "description": "Output only. The custom pricing information for this line item, if\napplicable.",
+          "description": "Output only. The custom pricing information for this line item, if applicable.",
+          "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing"
         },
         "parameters": {
@@ -384,10 +399,12 @@
         },
         "subscription": {
           "description": "Output only. Information about the subscription created, if applicable.",
+          "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Subscription"
         },
         "systemProperties": {
           "description": "Output only. System provided key value pairs.",
+          "readOnly": true,
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -420,13 +437,14 @@
       "properties": {
         "isAddOn": {
           "description": "Output only. Indicates whether this item is an add-on.",
+          "readOnly": true,
           "type": "boolean"
         }
       }
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing",
-      "description": "Information about active custom pricing on an entitlement.",
+      "description": "Information about custom pricing on a resource.",
       "type": "object",
       "properties": {
         "endTime": {
@@ -438,7 +456,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Parameter": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Parameter",
-      "description": "LINT.IfChange\nUser provided Parameters.",
+      "description": "LINT.IfChange User provided Parameters.",
       "type": "object",
       "properties": {
         "name": {
@@ -482,7 +500,7 @@
           "format": "google-datetime"
         },
         "autoRenewalEnabled": {
-          "description": "Whether auto renewal is enabled by user choice on current subscription.\nThis field indicates order\/subscription status after pending plan change is\ncancelled or rejected.",
+          "description": "Whether auto renewal is enabled by user choice on current subscription. This field indicates order\/subscription status after pending plan change is cancelled or rejected.",
           "type": "boolean"
         }
       }
@@ -500,23 +518,24 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Order": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Order",
-      "description": "Order represents a purchase made by a customer on the Cloud Commerce\nPlatform. Creation of an order programs both the Google backend systems\nas well as external service provider's systems (if needed) to allow use of\npurchased products and to ensure the appropriate billing events occur.\n\nAn Order can be made against one Product with multiple add-ons (optional) or\none Quote which could potentially references multiple products.\n\nCustomers typically choose a price plan for each Product purchased when\ncreating an order and can change their plan later, if the product allows.\nCustomers can also cancel their purchases through the Order resource once\nthey no longer need it.\n\nThe metadata that is needed during an Order's creation is hosted on the\nCloud Commerce Inventory system, as part of a Product's definition.\nNext Id: 13",
+      "description": "Order represents a purchase made by a customer on the Cloud Commerce Platform. Creation of an order programs both the Google backend systems as well as external service provider's systems (if needed) to allow use of purchased products and to ensure the appropriate billing events occur. An Order can be made against one Product with multiple add-ons (optional) or one Quote which could potentially references multiple products. Customers typically choose a price plan for each Product purchased when creating an order and can change their plan later, if the product allows. Customers can also cancel their purchases through the Order resource once they no longer need it. The metadata that is needed during an Order's creation is hosted on the Cloud Commerce Inventory system, as part of a Product's definition. Next Id: 13",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the order.\nOrder names have the form\n`billingAccounts\/<billing-account-id>\/orders\/{order_id}`.",
+          "description": "Output only. The resource name of the order. Order names have the form `billingAccounts\/\/orders\/{order_id}`.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The user-specified name of the order.\nMust be unique within a billing account.",
+          "description": "Required. The user-specified name of the order. Must be unique within a billing account.",
           "type": "string"
         },
         "provider": {
-          "description": "Provider of the products being purchased.\nProvider has the format of `providers\/{provider_id}`.",
+          "description": "Provider of the products being purchased. Provider has the format of `providers\/{provider_id}`.",
           "type": "string"
         },
         "account": {
-          "description": "The resource name of the account that this order is based on.\nRequired if the creation of any products in the order requires an account\nto be present.",
+          "description": "The resource name of the account that this order is based on. Required if the creation of any products in the order requires an account to be present.",
           "type": "string"
         },
         "orderState": {
@@ -525,9 +544,16 @@
             "Sentinel value. Do not use.",
             "The order is active.",
             "The order is cancelled.",
-            "The order is being cancelled either by the user or by the system. The\norder stays in this state, if any product in the order allows use of the\nunderlying resource until the end of the current billing cycle. Once the\nbilling cycle completes, the resource will transition to\nOrderState.ORDER_STATE_CANCELLED state."
+            "The order is being cancelled either by the user or by the system. The order stays in this state, if any product in the order allows use of the underlying resource until the end of the current billing cycle. Once the billing cycle completes, the resource will transition to OrderState.ORDER_STATE_CANCELLED state."
           ],
+          "readOnly": true,
           "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "The order is active.",
+            "The order is cancelled.",
+            "The order is being cancelled either by the user or by the system. The order stays in this state, if any product in the order allows use of the underlying resource until the end of the current billing cycle. Once the billing cycle completes, the resource will transition to OrderState.ORDER_STATE_CANCELLED state."
+          ],
           "enum": [
             "ORDER_STATE_UNSPECIFIED",
             "ORDER_STATE_ACTIVE",
@@ -536,11 +562,13 @@
           ]
         },
         "stateReason": {
-          "description": "Output only. An explanation for the order's state. Mainly used in the case\nof `OrderState.ORDER_STATE_CANCELLED` states to explain why\nthe order is cancelled.",
+          "description": "Output only. An explanation for the order's state. Mainly used in the case of `OrderState.ORDER_STATE_CANCELLED` states to explain why the order is cancelled.",
+          "readOnly": true,
           "type": "string"
         },
         "lineItems": {
           "description": "Output only. The items being purchased.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItem"
@@ -548,6 +576,7 @@
         },
         "cancelledLineItems": {
           "description": "Output only. Line items that were cancelled.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItem"
@@ -555,11 +584,13 @@
         },
         "createTime": {
           "description": "Output only. The creation timestamp.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The last update timestamp.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -576,18 +607,22 @@
       "properties": {
         "lineItemId": {
           "description": "Output only. Line item ID.",
+          "readOnly": true,
           "type": "string"
         },
         "lineItemInfo": {
-          "description": "Output only. Current state and information of this item. It tells what,\ne.g. which plan, is currently effective.",
+          "description": "Output only. Current state and information of this item. It tells what, e.g. which plan, is currently effective.",
+          "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
         },
         "pendingChange": {
-          "description": "Output only. A change made on the item which is pending and not yet\neffective. Absence of this field indicates the line item is not undergoing\na change.",
+          "description": "Output only. A change made on the item which is pending and not yet effective. Absence of this field indicates the line item is not undergoing a change.",
+          "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange"
         },
         "changeHistory": {
-          "description": "Output only. Changes made on the item that are not pending anymore, e.g.\nit was effective at some point, or the change was reverted by the customer,\nor the change was rejected by partner. No more operations are allowed on\nthese changes.",
+          "description": "Output only. Changes made on the item that are not pending anymore, e.g. it was effective at some point, or the change was reverted by the customer, or the change was rejected by partner. No more operations are allowed on these changes.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange"
@@ -601,7 +636,8 @@
       "type": "object",
       "properties": {
         "changeId": {
-          "description": "Output only. Change ID.\nAll changes made within one order update operation have the same change_id.",
+          "description": "Output only. Change ID. All changes made within one order update operation have the same change_id.",
+          "readOnly": true,
           "type": "string"
         },
         "changeType": {
@@ -614,6 +650,13 @@
             "The change is to revert a cancellation."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "The change is to create a new line item.",
+            "The change is to update an existing line item.",
+            "The change is to cancel an existing line item.",
+            "The change is to revert a cancellation."
+          ],
           "enum": [
             "LINE_ITEM_CHANGE_TYPE_UNSPECIFIED",
             "LINE_ITEM_CHANGE_TYPE_CREATE",
@@ -624,6 +667,7 @@
         },
         "oldLineItemInfo": {
           "description": "Output only. Line item info before the change.",
+          "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
         },
         "newLineItemInfo": {
@@ -634,13 +678,22 @@
           "description": "Output only. State of the change.",
           "enumDescriptions": [
             "Sentinel value. Do not use.",
-            "Change is in this state when a change is initiated and waiting for\npartner approval.",
-            "Change is in this state, if the change was approved by partner or\nauto-approved but is pending to be effective.",
-            "Change is in this state, if the change was activated and completed\nsuccessfully.",
+            "Change is in this state when a change is initiated and waiting for partner approval.",
+            "Change is in this state, if the change was approved by partner or auto-approved but is pending to be effective.",
+            "Change is in this state, if the change was activated and completed successfully.",
             "Change is in this state, if the change was rejected by partner.",
             "Change is in this state, if it was abandoned by user."
           ],
+          "readOnly": true,
           "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "Change is in this state when a change is initiated and waiting for partner approval.",
+            "Change is in this state, if the change was approved by partner or auto-approved but is pending to be effective.",
+            "Change is in this state, if the change was activated and completed successfully.",
+            "Change is in this state, if the change was rejected by partner.",
+            "Change is in this state, if it was abandoned by user."
+          ],
           "enum": [
             "LINE_ITEM_CHANGE_STATE_UNSPECIFIED",
             "LINE_ITEM_CHANGE_STATE_PENDING_APPROVAL",
@@ -651,21 +704,25 @@
           ]
         },
         "stateReason": {
-          "description": "Output only. Provider supplied message explanation for the LineItemChange's\nstate. Mainly used to communicate progress and ETA for provisioning in the\ncase of `PENDING_APPROVAL`, and to explain why the change request was\ndenied or canceled in the case of `REJECTED` and `CANCELED` states.",
+          "description": "Output only. Provider supplied message explanation for the LineItemChange's state. Mainly used to communicate progress and ETA for provisioning in the case of `PENDING_APPROVAL`, and to explain why the change request was denied or canceled in the case of `REJECTED` and `CANCELED` states.",
+          "readOnly": true,
           "type": "string"
         },
         "changeEffectiveTime": {
-          "description": "Output only. A time at which the change became or will become (in case of\npending change) effective.",
+          "description": "Output only. A time at which the change became or will become (in case of pending change) effective.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "createTime": {
           "description": "Output only. The time when change was initiated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The time when change was updated, e.g. approved\/rejected by\npartners or cancelled by the user.",
+          "description": "Output only. The time when change was updated, e.g. approved\/rejected by partners or cancelled by the user.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -691,7 +748,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest",
-      "description": "Request message for ConsumerProcurementService.ModifyOrder.\nNext Id: 6",
+      "description": "Request message for ConsumerProcurementService.ModifyOrder. Next Id: 6",
       "type": "object",
       "properties": {
         "modifyProductsOrderRequest": {
@@ -703,11 +760,11 @@
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyQuoteOrderRequest"
         },
         "displayName": {
-          "description": "Optional. Updated display name of the order, leave as empty if you do not want to\nupdate current display name.",
+          "description": "Optional. Updated display name of the order, leave as empty if you do not want to update current display name.",
           "type": "string"
         },
         "etag": {
-          "description": "The weak etag, which can be optionally populated, of the order that this\nmodify request is based on. Validation checking will only happen if the\ninvoker supplies this field.",
+          "description": "The weak etag, which can be optionally populated, of the order that this modify request is based on. Validation checking will only happen if the invoker supplies this field.",
           "type": "string"
         }
       }
@@ -731,7 +788,7 @@
       "type": "object",
       "properties": {
         "lineItemId": {
-          "description": "ID of the existing line item to make change to.\nRequired when change type is\n[LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or\n[LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CANCEL].",
+          "description": "ID of the existing line item to make change to. Required when change type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CANCEL].",
           "type": "string"
         },
         "changeType": {
@@ -744,6 +801,13 @@
             "The change is to revert a cancellation."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "The change is to create a new line item.",
+            "The change is to update an existing line item.",
+            "The change is to cancel an existing line item.",
+            "The change is to revert a cancellation."
+          ],
           "enum": [
             "LINE_ITEM_CHANGE_TYPE_UNSPECIFIED",
             "LINE_ITEM_CHANGE_TYPE_CREATE",
@@ -753,7 +817,7 @@
           ]
         },
         "newLineItemInfo": {
-          "description": "The line item to update to.\nRequired when change_type is\n[LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or\n[LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].",
+          "description": "The line item to update to. Required when change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
         }
       }
@@ -764,7 +828,7 @@
       "type": "object",
       "properties": {
         "newQuoteExternalName": {
-          "description": "External name of the new quote to update to.\nRequired when change_type is [QuoteChangeType.QUOTE_CHANGE_TYPE_UPDATE].",
+          "description": "External name of the new quote to update to. Required when change_type is [QuoteChangeType.QUOTE_CHANGE_TYPE_UPDATE].",
           "type": "string"
         },
         "changeType": {
@@ -776,6 +840,12 @@
             "The change is to revert a cancellation for an order for quote."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "The change is to update an existing order for quote.",
+            "The change is to cancel an existing order for quote.",
+            "The change is to revert a cancellation for an order for quote."
+          ],
           "enum": [
             "QUOTE_CHANGE_TYPE_UNSPECIFIED",
             "QUOTE_CHANGE_TYPE_UPDATE",
@@ -791,34 +861,39 @@
       "type": "object",
       "properties": {
         "etag": {
-          "description": "The weak etag, which can be optionally populated, of the order that this\ncancel request is based on. Validation checking will only happen if the\ninvoker supplies this field.",
+          "description": "The weak etag, which can be optionally populated, of the order that this cancel request is based on. Validation checking will only happen if the invoker supplies this field.",
           "type": "string"
         }
       }
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement",
-      "description": "Entitlement represents the ability to use a product or services associated\nwith a purchase within a Project. When the customer creates an Order, the\nsystem will create Entitlement resources under projects associated with the\nsame billing account as the order, for all products\/services procured in the\norder. Users can enable\/disable Entitlements to allow\/disallow using the\nproduct\/service in a project.\n\nNext Id: 15",
+      "description": "Entitlement represents the ability to use a product or services associated with a purchase within a Project. When the customer creates an Order, the system will create Entitlement resources under projects associated with the same billing account as the order, for all products\/services procured in the order. Users can enable\/disable Entitlements to allow\/disallow using the product\/service in a project. Next Id: 17",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource Name of the Entitlement.\nEntitlement names have the form\n`projects\/{project_id}\/entitlements\/{entitlement_id}`.",
+          "description": "Output only. The resource Name of the Entitlement. Entitlement names have the form `projects\/{project_id}\/entitlements\/{entitlement_id}`.",
+          "readOnly": true,
           "type": "string"
         },
         "order": {
           "description": "Output only. Order associated with this Entitlement.",
+          "readOnly": true,
           "type": "string"
         },
         "provider": {
-          "description": "Output only. Provider associated with this Entitlement. In the format of\n`providers\/{provider_id}`.",
+          "description": "Output only. Provider associated with this Entitlement. In the format of `providers\/{provider_id}`.",
+          "readOnly": true,
           "type": "string"
         },
         "productExternalName": {
           "description": "Output only. External name of the product this entitlement is created against.",
+          "readOnly": true,
           "type": "string"
         },
         "flavorExternalName": {
-          "description": "Output only. External name of the flavor this entitlement is created against. This field\nis populated when entitlement has currently associated flavor, it is empty\nwhen entitlement is UNAVAILABLE (if order is pending activation or order is\nalready cancelled).",
+          "description": "Output only. External name of the flavor this entitlement is created against. This field is populated when entitlement has currently associated flavor, it is empty when entitlement is UNAVAILABLE (if order is pending activation or order is already cancelled).",
+          "readOnly": true,
           "type": "string"
         },
         "state": {
@@ -826,10 +901,17 @@
           "enumDescriptions": [
             "Sentinel value. Do not use.",
             "Indicates that the entitlement is unavailable and cannot be enabled.",
-            "Indicates that the entitlement is enabled. The procured item is now\nusable.",
-            "Indicates that the entitlement is disabled. The procured item is not\nusable."
+            "Indicates that the entitlement is enabled. The procured item is now usable.",
+            "Indicates that the entitlement is disabled. The procured item is not usable."
           ],
+          "readOnly": true,
           "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "Indicates that the entitlement is unavailable and cannot be enabled.",
+            "Indicates that the entitlement is enabled. The procured item is now usable.",
+            "Indicates that the entitlement is disabled. The procured item is not usable."
+          ],
           "enum": [
             "ENTITLEMENT_STATE_UNSPECIFIED",
             "ENTITLEMENT_STATE_UNAVAILABLE",
@@ -838,11 +920,13 @@
           ]
         },
         "stateReason": {
-          "description": "Output only. An explanation for the entitlement's state. Mainly used in the case\nof `EntitlementState.ENTITLEMENT_STATE_UNAVAILABLE` states to explain\nwhy the entitlement is unavailable.",
+          "description": "Output only. An explanation for the entitlement's state. Mainly used in the case of `EntitlementState.ENTITLEMENT_STATE_UNAVAILABLE` states to explain why the entitlement is unavailable.",
+          "readOnly": true,
           "type": "string"
         },
         "services": {
           "description": "Output only. Services associated with the entitlement.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementService"
@@ -850,20 +934,24 @@
         },
         "createTime": {
           "description": "Output only. The create timestamp.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
           "description": "Output only. The last update timestamp.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "pendingChange": {
           "description": "Output only. A change which is pending and not yet effective.",
+          "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange"
         },
         "changeHistory": {
-          "description": "Output only. Changes that are not pending anymore, e.g. it was effective at some point,\nor the change was reverted by the customer, or the change was rejected by\npartner. No more operations are allowed on these changes.",
+          "description": "Output only. Changes that are not pending anymore, e.g. it was effective at some point, or the change was reverted by the customer, or the change was rejected by partner. No more operations are allowed on these changes.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange"
@@ -888,6 +976,11 @@
             "Indicates service is disabled within project."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "Indicates service is enabled within project.",
+            "Indicates service is disabled within project."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ENABLED",
@@ -898,28 +991,39 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange",
-      "description": "Entitlement change information.",
+      "description": "Entitlement change information. Next Id: 7",
       "type": "object",
       "properties": {
         "oldFlavorExternalName": {
           "description": "Output only. Flavor external name before the change.",
+          "readOnly": true,
           "type": "string"
         },
         "newFlavorExternalName": {
           "description": "Output only. Flavor external name after the change.",
+          "readOnly": true,
           "type": "string"
         },
         "changeState": {
           "description": "Output only. State of the change.",
           "enumDescriptions": [
             "Sentinel value. Do not use.",
-            "Change is in this state when a change is initiated and waiting for partner\napproval.",
-            "Change is in this state, if the change was approved by partner or\nauto-approved but is pending to be effective.",
-            "Change is in this state, if the change was activated and completed\nsuccessfully.",
+            "Change is in this state when a change is initiated and waiting for partner approval.",
+            "Change is in this state, if the change was approved by partner or auto-approved but is pending to be effective.",
+            "Change is in this state, if the change was activated and completed successfully.",
             "Change is in this state, if the change was rejected by partner.",
             "Change is in this state, if it was abandoned by user."
           ],
+          "readOnly": true,
           "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "Change is in this state when a change is initiated and waiting for partner approval.",
+            "Change is in this state, if the change was approved by partner or auto-approved but is pending to be effective.",
+            "Change is in this state, if the change was activated and completed successfully.",
+            "Change is in this state, if the change was rejected by partner.",
+            "Change is in this state, if it was abandoned by user."
+          ],
           "enum": [
             "CHANGE_STATE_UNSPECIFIED",
             "CHANGE_STATE_PENDING_APPROVAL",
@@ -930,7 +1034,8 @@
           ]
         },
         "changeEffectiveTime": {
-          "description": "Output only. A time at which the change became or will become (in case of pending\nchange) effective.",
+          "description": "Output only. A time at which the change became or will become (in case of pending change) effective.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -938,7 +1043,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1ListEntitlementsResponse": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ListEntitlementsResponse",
-      "description": "Response message for\nConsumerProcurementService.ListEntitlements.",
+      "description": "Response message for ConsumerProcurementService.ListEntitlements.",
       "type": "object",
       "properties": {
         "entitlements": {
@@ -956,15 +1061,16 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial",
-      "description": "FreeTrial represents the free trial created for a specific provider,\nproduct id and billing id with argentum. Free Trial resource are created\nfor products by placing orders for 3p or just enabling free trials for 1p\nproduct.\n\nNext Id: 5",
+      "description": "FreeTrial represents the free trial created for a specific provider, product id and billing id with argentum. Free Trial resource are created for products by placing orders for 3p or just enabling free trials for 1p product. Next Id: 5",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the free trial item. This field is of the form:\n`projects\/{project_id}\/freeTrials\/{freetrial_id}`. Present if free trial is\ncreated under the project's associated billing account for 3p, or free\ntrial is enabled for 1p product.",
+          "description": "Output only. The resource name of the free trial item. This field is of the form: `projects\/{project_id}\/freeTrials\/{freetrial_id}`. Present if free trial is created under the project's associated billing account for 3p, or free trial is enabled for 1p product.",
+          "readOnly": true,
           "type": "string"
         },
         "provider": {
-          "description": "Provider of the products for which free trial exist.\nProvider has the format of `providers\/{provider_id}`.",
+          "description": "Provider of the products for which free trial exist. Provider has the format of `providers\/{provider_id}`.",
           "type": "string"
         },
         "productExternalName": {
@@ -973,6 +1079,7 @@
         },
         "credit": {
           "description": "Output only. Credit tracking the real time credit status.",
+          "readOnly": true,
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrialCredit"
         }
       }
@@ -996,12 +1103,12 @@
           "format": "google-datetime"
         },
         "startTime": {
-          "description": "When the credit becomes effective. If empty then there's no lower bound\nof credit's effective timespan (i.e. the credit becomes effective at the\ntime of its creation). For credit creation, this cannot be in the past.",
+          "description": "When the credit becomes effective. If empty then there's no lower bound of credit's effective timespan (i.e. the credit becomes effective at the time of its creation). For credit creation, this cannot be in the past.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "When the credit expires. If empty then there's no upper bound of credit's\neffective timespan (i.e. the credit never expires).",
+          "description": "When the credit expires. If empty then there's no upper bound of credit's effective timespan (i.e. the credit never expires).",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1017,12 +1124,12 @@
           "type": "string"
         },
         "units": {
-          "description": "The whole units of the amount.\nFor example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
+          "description": "The whole units of the amount. For example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar.",
           "type": "string",
           "format": "int64"
         },
         "nanos": {
-          "description": "Number of nano (10^-9) units of the amount.\nThe value must be between -999,999,999 and +999,999,999 inclusive.\nIf `units` is positive, `nanos` must be positive or zero.\nIf `units` is zero, `nanos` can be positive, zero, or negative.\nIf `units` is negative, `nanos` must be negative or zero.\nFor example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
+          "description": "Number of nano (10^-9) units of the amount. The value must be between -999,999,999 and +999,999,999 inclusive. If `units` is positive, `nanos` must be positive or zero. If `units` is zero, `nanos` can be positive, zero, or negative. If `units` is negative, `nanos` must be negative or zero. For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.",
           "type": "integer",
           "format": "int32"
         }
@@ -1030,7 +1137,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1ListFreeTrialsResponse": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ListFreeTrialsResponse",
-      "description": "Response message for\nConsumerProcurementService.ListFreeTrials.",
+      "description": "Response message for ConsumerProcurementService.ListFreeTrials.",
       "type": "object",
       "properties": {
         "freeTrials": {
@@ -1059,7 +1166,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource of this account.\nThis field is of the form \"<type>\/<id>\". Currently supported type:\n'billingAccounts\/<billing-account-id>'",
+                  "description": "Required. The parent resource of this account. This field is of the form \"\/\". Currently supported type: 'billingAccounts\/'",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -1087,7 +1194,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for accounts.\nThis field is of the form `billingAccounts\/<billing-account-id>`.",
+                  "description": "Required. The parent resource to query for accounts. This field is of the form `billingAccounts\/`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -1114,7 +1221,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists Account resources that the user has access to, within the scope\nof the parent resource."
+              "description": "Lists Account resources that the user has access to, within the scope of the parent resource."
             },
             "get": {
               "id": "cloudcommerceconsumerprocurement.billingAccounts.accounts.get",
@@ -1164,7 +1271,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes an existing Account. An account can only be deleted when\nall outstanding orders against that account is also deleted."
+              "description": "Deletes an existing Account. An account can only be deleted when all outstanding orders against that account is also deleted."
             }
           }
           ,
@@ -1210,7 +1317,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
                 },
                 "get": {
                   "id": "cloudcommerceconsumerprocurement.billingAccounts.accounts.operations.get",
@@ -1235,7 +1342,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
                 },
                 "delete": {
                   "id": "cloudcommerceconsumerprocurement.billingAccounts.accounts.operations.delete",
@@ -1260,7 +1367,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
                 },
                 "cancel": {
                   "id": "cloudcommerceconsumerprocurement.billingAccounts.accounts.operations.cancel",
@@ -1288,7 +1395,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                 }
               }
             }
@@ -1303,7 +1410,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name of the parent resource.\nThis field is of the form `billingAccounts\/<billing-account-id>`.",
+                  "description": "Required. The resource name of the parent resource. This field is of the form `billingAccounts\/`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -1322,7 +1429,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a new Order.\n\nThe returned long-running operation will be in-progress until the backend\ncan complete the creation of the resource. Once completed, the order will\nbe in OrderState.ORDER_STATE_ACTIVE. In case of failure, the\norder resource will be removed."
+              "description": "Creates a new Order. The returned long-running operation will be in-progress until the backend can complete the creation of the resource. Once completed, the order will be in OrderState.ORDER_STATE_ACTIVE. In case of failure, the order resource will be removed."
             },
             "get": {
               "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.get",
@@ -1356,7 +1463,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for orders.\nThis field is of the form `billingAccounts\/<billing-account-id>`.",
+                  "description": "Required. The parent resource to query for orders. This field is of the form `billingAccounts\/`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -1374,7 +1481,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The filter that can be used to limit the list request.\n\nThe filter is a query string that can match a selected set of attributes\nwith string values. For example `display_name=abc`.\nSupported query attributes are\n\n* `display_name`\n\nIf the query contains some special characters other than letters,\nunderscore, or digits, the phrase must be quoted with double quotes. For\nexample, `display_name=\"foo:bar\"`, where the display name needs to be\nquoted because it contains special character colon.\n\nQueries can be combined with `OR`, and `NOT` to form more complex queries.\nThey can also be grouped to force a desired evaluation order.\nFor example, `display_name=abc OR display_name=def`.",
+                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `display_name=abc`. Supported query attributes are * `display_name` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `display_name=\"foo:bar\"`, where the display name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `display_name=abc OR display_name=def`.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1388,7 +1495,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists Order resources that the user have access to, within the\nscope of the parent resource."
+              "description": "Lists Order resources that the user have access to, within the scope of the parent resource."
             },
             "modify": {
               "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.modify",
@@ -1444,7 +1551,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Cancels an existing Order. Every product procured in the Order will be\ncancelled."
+              "description": "Cancels an existing Order. Every product procured in the Order will be cancelled."
             }
           }
           ,
@@ -1490,7 +1597,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
                 },
                 "get": {
                   "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.operations.get",
@@ -1515,7 +1622,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
                 },
                 "delete": {
                   "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.operations.delete",
@@ -1540,7 +1647,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
                 },
                 "cancel": {
                   "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.operations.cancel",
@@ -1568,7 +1675,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                 }
               }
             }
@@ -1587,7 +1694,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the entitlement to retrieve.\nThis field is one of the following forms:\n`projects\/<project-number>\/entitlements\/<entitlement-id>`\n`projects\/<project-id>\/entitlements\/<entitlement-id>`.",
+                  "description": "Required. The name of the entitlement to retrieve. This field is one of the following forms: `projects\/\/entitlements\/` `projects\/\/entitlements\/`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/entitlements\/[^\/]+$",
@@ -1612,7 +1719,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for Entitlements.\nCurrently the only parents supported are \"projects\/<project-number>\" and\n\"projects\/<project-id>\".",
+                  "description": "Required. The parent resource to query for Entitlements. Currently the only parents supported are \"projects\/\" and \"projects\/\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1639,7 +1746,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists Entitlement resources that the user has access to, within the\nscope of the parent resource."
+              "description": "Lists Entitlement resources that the user has access to, within the scope of the parent resource."
             }
           }
         },
@@ -1652,7 +1759,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for FreeTrials.\nCurrently the only parent supported is \"projects\/<project-id>\".",
+                  "description": "Required. The parent resource to query for FreeTrials. Currently the only parent supported is \"projects\/\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1680,7 +1787,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the freeTrial to retrieve.\nThis field is of the form\n`projects\/<project-id>\/freeTrials\/<freetrial-id>`.",
+                  "description": "Required. The name of the freeTrial to retrieve. This field is of the form `projects\/\/freeTrials\/`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+$",
@@ -1705,7 +1812,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for FreeTrials.\nCurrently the only parent supported is \"projects\/<project-id>\".",
+                  "description": "Required. The parent resource to query for FreeTrials. Currently the only parent supported is \"projects\/\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1723,7 +1830,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The filter that can be used to limit the list request.\n\nThe filter is a query string that can match a selected set of attributes\nwith string values. For example `product_external_name=1234-5678-ABCD-EFG`.\nSupported query attributes are\n\n* `product_external_name`\n* `provider`\n\nIf the query contains some special characters other than letters,\nunderscore, or digits, the phrase must be quoted with double quotes. For\nexample, `product_external_name=\"foo:bar\"`, where the product name needs to\nbe quoted because it contains special character colon.\n\nQueries can be combined with `AND`, `OR`, and `NOT` to form more complex\nqueries. They can also be grouped to force a desired evaluation order.\nFor example, `provider=providers\/E-1234 OR provider=providers\/5678 AND NOT\n(product_external_name=foo-product)`. Connective `AND` can be omitted\nbetween two predicates.\nFor example `provider=providers\/E-1234 product_external_name=foo`\nis equivalent to `provider=providers\/E-1234 AND product_external_name=foo`.",
+                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `product_external_name=1234-5678-ABCD-EFG`. Supported query attributes are * `product_external_name` * `provider` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `product_external_name=\"foo:bar\"`, where the product name needs to be quoted because it contains special character colon. Queries can be combined with `AND`, `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `provider=providers\/E-1234 OR provider=providers\/5678 AND NOT (product_external_name=foo-product)`. Connective `AND` can be omitted between two predicates. For example `provider=providers\/E-1234 product_external_name=foo` is equivalent to `provider=providers\/E-1234 AND product_external_name=foo`.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1737,7 +1844,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists FreeTrial resources that the user has access to, within the\nscope of the parent resource."
+              "description": "Lists FreeTrial resources that the user has access to, within the scope of the parent resource."
             }
           }
           ,
@@ -1783,7 +1890,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
                 },
                 "get": {
                   "id": "cloudcommerceconsumerprocurement.projects.freeTrials.operations.get",
@@ -1808,7 +1915,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
                 },
                 "delete": {
                   "id": "cloudcommerceconsumerprocurement.projects.freeTrials.operations.delete",
@@ -1833,7 +1940,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a long-running operation. This method indicates that the client is\nno longer interested in the operation result. It does not cancel the\noperation. If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`."
+                  "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
                 },
                 "cancel": {
                   "id": "cloudcommerceconsumerprocurement.projects.freeTrials.operations.cancel",
@@ -1861,7 +1968,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
+                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                 }
               }
             }

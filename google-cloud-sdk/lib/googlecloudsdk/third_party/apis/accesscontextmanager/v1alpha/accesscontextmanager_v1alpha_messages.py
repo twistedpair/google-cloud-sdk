@@ -27,7 +27,7 @@ class AccessLevel(_messages.Message):
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
-      maximum length  // of the `short_name` component is 50 characters.
+      maximum length // of the `short_name` component is 50 characters.
     title: Human readable title. Must be unique within the Policy.
   """
 
@@ -70,7 +70,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Mess
   Fields:
     accessLevel: A AccessLevel resource to be passed as the request body.
     parent: Required. Resource name for the access policy which owns this
-      Access Level.  Format: `accessPolicies/{policy_id}`
+      Access Level. Format: `accessPolicies/{policy_id}`
   """
 
   accessLevel = _messages.MessageField('AccessLevel', 1)
@@ -81,7 +81,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest(_messages.Mess
   r"""A AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest object.
 
   Fields:
-    name: Required. Resource name for the Access Level.  Format:
+    name: Required. Resource name for the Access Level. Format:
       `accessPolicies/{policy_id}/accessLevels/{access_level_id}`
   """
 
@@ -106,7 +106,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest(_messages.Message
       `CustomLevels` based on how they were created. If set to CEL, all Access
       Levels are returned as `CustomLevels`. In the CEL case, `BasicLevels`
       are translated to equivalent `CustomLevels`.
-    name: Required. Resource name for the Access Level.  Format:
+    name: Required. Resource name for the Access Level. Format:
       `accessPolicies/{policy_id}/accessLevels/{access_level_id}`
   """
 
@@ -119,9 +119,11 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest(_messages.Message
     equivalent `CustomLevels`.
 
     Values:
-      LEVEL_FORMAT_UNSPECIFIED: <no description>
-      AS_DEFINED: <no description>
-      CEL: <no description>
+      LEVEL_FORMAT_UNSPECIFIED: The format was not specified.
+      AS_DEFINED: Uses the format the resource was defined in. BasicLevels are
+        returned as BasicLevels, CustomLevels are returned as CustomLevels.
+      CEL: Use Cloud Common Expression Language when returning the resource.
+        Both BasicLevels and CustomLevels are returned as CustomLevels.
     """
     LEVEL_FORMAT_UNSPECIFIED = 0
     AS_DEFINED = 1
@@ -148,7 +150,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsListRequest(_messages.Messag
     pageToken: Next page token for the next batch of Access Level instances.
       Defaults to the first page of results.
     parent: Required. Resource name for the access policy to list Access
-      Levels from.  Format: `accessPolicies/{policy_id}`
+      Levels from. Format: `accessPolicies/{policy_id}`
   """
 
   class AccessLevelFormatValueValuesEnum(_messages.Enum):
@@ -157,9 +159,11 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsListRequest(_messages.Messag
     returning `AccessLevels` in the format they were defined.
 
     Values:
-      LEVEL_FORMAT_UNSPECIFIED: <no description>
-      AS_DEFINED: <no description>
-      CEL: <no description>
+      LEVEL_FORMAT_UNSPECIFIED: The format was not specified.
+      AS_DEFINED: Uses the format the resource was defined in. BasicLevels are
+        returned as BasicLevels, CustomLevels are returned as CustomLevels.
+      CEL: Use Cloud Common Expression Language when returning the resource.
+        Both BasicLevels and CustomLevels are returned as CustomLevels.
     """
     LEVEL_FORMAT_UNSPECIFIED = 0
     AS_DEFINED = 1
@@ -179,7 +183,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
-      maximum length  // of the `short_name` component is 50 characters.
+      maximum length // of the `short_name` component is 50 characters.
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
   """
@@ -195,7 +199,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest(_messages.
 
   Fields:
     parent: Required. Resource name for the access policy which owns these
-      Access Levels.  Format: `accessPolicies/{policy_id}`
+      Access Levels. Format: `accessPolicies/{policy_id}`
     replaceAccessLevelsRequest: A ReplaceAccessLevelsRequest resource to be
       passed as the request body.
   """
@@ -208,7 +212,7 @@ class AccesscontextmanagerAccessPoliciesDeleteRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesDeleteRequest object.
 
   Fields:
-    name: Required. Resource name for the access policy to delete.  Format
+    name: Required. Resource name for the access policy to delete. Format
       `accessPolicies/{policy_id}`
   """
 
@@ -219,7 +223,7 @@ class AccesscontextmanagerAccessPoliciesGetRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesGetRequest object.
 
   Fields:
-    name: Required. Resource name for the access policy to get.  Format
+    name: Required. Resource name for the access policy to get. Format
       `accessPolicies/{policy_id}`
   """
 
@@ -235,7 +239,7 @@ class AccesscontextmanagerAccessPoliciesListRequest(_messages.Message):
     pageToken: Next page token for the next batch of AccessPolicy instances.
       Defaults to the first page of results.
     parent: Required. Resource name for the container to list AccessPolicy
-      instances from.  Format: `organizations/{org_id}`
+      instances from. Format: `organizations/{org_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -267,7 +271,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest(_messages
     commitServicePerimetersRequest: A CommitServicePerimetersRequest resource
       to be passed as the request body.
     parent: Required. Resource name for the parent Access Policy which owns
-      all Service Perimeters in scope for the commit operation.  Format:
+      all Service Perimeters in scope for the commit operation. Format:
       `accessPolicies/{policy_id}`
   """
 
@@ -281,7 +285,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest(_messages
 
   Fields:
     parent: Required. Resource name for the access policy which owns this
-      Service Perimeter.  Format: `accessPolicies/{policy_id}`
+      Service Perimeter. Format: `accessPolicies/{policy_id}`
     servicePerimeter: A ServicePerimeter resource to be passed as the request
       body.
   """
@@ -295,7 +299,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersDeleteRequest(_messages
   object.
 
   Fields:
-    name: Required. Resource name for the Service Perimeter.  Format:
+    name: Required. Resource name for the Service Perimeter. Format:
       `accessPolicies/{policy_id}/servicePerimeters/{service_perimeter_id}`
   """
 
@@ -306,7 +310,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest(_messages.Me
   r"""A AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest object.
 
   Fields:
-    name: Required. Resource name for the Service Perimeter.  Format:
+    name: Required. Resource name for the Service Perimeter. Format:
       `accessPolicies/{policy_id}/servicePerimeters/{service_perimeters_id}`
   """
 
@@ -322,7 +326,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersListRequest(_messages.M
     pageToken: Next page token for the next batch of Service Perimeter
       instances. Defaults to the first page of results.
     parent: Required. Resource name for the access policy to list Service
-      Perimeters from.  Format: `accessPolicies/{policy_id}`
+      Perimeters from. Format: `accessPolicies/{policy_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -335,7 +339,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest(_messages.
   object.
 
   Fields:
-    name: Required. Resource name for the ServicePerimeter.  The `short_name`
+    name: Required. Resource name for the ServicePerimeter. The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
     servicePerimeter: A ServicePerimeter resource to be passed as the request
@@ -355,7 +359,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest(_mess
 
   Fields:
     parent: Required. Resource name for the access policy which owns these
-      Service Perimeters.  Format: `accessPolicies/{policy_id}`
+      Service Perimeters. Format: `accessPolicies/{policy_id}`
     replaceServicePerimetersRequest: A ReplaceServicePerimetersRequest
       resource to be passed as the request body.
   """
@@ -445,12 +449,76 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
       "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
     updateMask: Required. Only the fields specified in this mask are updated.
       Because name and group_key cannot be changed, update_mask is required
-      and must always be:  update_mask { paths: "access_levels" }
+      and must always be: update_mask { paths: "access_levels" }
   """
 
   gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class ApiAction(_messages.Message):
+  r"""An allowed action of a service specified in ApiOperation.
+
+  Enums:
+    ActionTypeValueValuesEnum: The type of the action to allow for an API
+      service. It can either be METHOD (method of a service), PERMISSION
+      (Cloud IAM Permission), or ACTION_TYPE_UNSPECIFIED. If action_type is
+      not set or set to ACTION_TYPE_UNSPECIFIED, and action is "*", then ALL
+      actions are allowed.
+
+  Fields:
+    action: The API method name or Cloud IAM permission name to allow. If
+      METHOD is chosen for action_type, then a valid method name for the
+      corresponding service_name in ApiOperation must be provided (e.g. method
+      name "TableDataService.List" for the service "bigquery.googelapis.com").
+      If PERMISSION is chosen for action_type, then a valid Cloud IAM
+      permission for the corresponding service_name in ApiOperation must be
+      provided (e.g. "bigquery.jobs.update" for the service
+      "bigquery.googleapis.com"). If action_type is not set or set to
+      ACTION_TYPE_UNSPECIFIED, and action is "*", then ALL actions are
+      allowed.
+    actionType: The type of the action to allow for an API service. It can
+      either be METHOD (method of a service), PERMISSION (Cloud IAM
+      Permission), or ACTION_TYPE_UNSPECIFIED. If action_type is not set or
+      set to ACTION_TYPE_UNSPECIFIED, and action is "*", then ALL actions are
+      allowed.
+  """
+
+  class ActionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the action to allow for an API service. It can either be
+    METHOD (method of a service), PERMISSION (Cloud IAM Permission), or
+    ACTION_TYPE_UNSPECIFIED. If action_type is not set or set to
+    ACTION_TYPE_UNSPECIFIED, and action is "*", then ALL actions are allowed.
+
+    Values:
+      ACTION_TYPE_UNSPECIFIED: No type for the action is specified.
+      METHOD: Action is a method.
+      PERMISSION: Action is an IAM Permission.
+    """
+    ACTION_TYPE_UNSPECIFIED = 0
+    METHOD = 1
+    PERMISSION = 2
+
+  action = _messages.StringField(1)
+  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 2)
+
+
+class ApiOperation(_messages.Message):
+  r"""Identification for an API Operation.
+
+  Fields:
+    actions: API actions to allow for the service specified by service_name
+      field. A single ApiAction entry with wildcard "*" for ApiAction.action
+      field will allow all actions for service specified in service_name.
+    serviceName: The API service that this [ApiOperation] relates to. An empty
+      list of services is not allowed. Set this field to "*" to authorize
+      access to all services. The actions field will be ignored if this field
+      is set to "*".
+  """
+
+  actions = _messages.MessageField('ApiAction', 1, repeated=True)
+  serviceName = _messages.StringField(2)
 
 
 class BasicLevel(_messages.Message):
@@ -609,10 +677,15 @@ class DevicePolicy(_messages.Message):
     r"""AllowedDeviceManagementLevelsValueListEntryValuesEnum enum type.
 
     Values:
-      MANAGEMENT_UNSPECIFIED: <no description>
-      NONE: <no description>
-      BASIC: <no description>
-      COMPLETE: <no description>
+      MANAGEMENT_UNSPECIFIED: The device's management level is not specified
+        or not known.
+      NONE: The device is not managed.
+      BASIC: Basic management is enabled, which is generally limited to
+        monitoring and wiping the corporate account.
+      COMPLETE: Complete device management. This includes more thorough
+        monitoring and the ability to directly manage the device (such as
+        remote wiping). This can be enabled through the Android Enterprise
+        Platform.
     """
     MANAGEMENT_UNSPECIFIED = 0
     NONE = 1
@@ -623,10 +696,12 @@ class DevicePolicy(_messages.Message):
     r"""AllowedEncryptionStatusesValueListEntryValuesEnum enum type.
 
     Values:
-      ENCRYPTION_UNSPECIFIED: <no description>
-      ENCRYPTION_UNSUPPORTED: <no description>
-      UNENCRYPTED: <no description>
-      ENCRYPTED: <no description>
+      ENCRYPTION_UNSPECIFIED: The encryption status of the device is not
+        specified or not known.
+      ENCRYPTION_UNSUPPORTED: The device does not support encryption.
+      UNENCRYPTED: The device supports encryption, but is currently
+        unencrypted.
+      ENCRYPTED: The device is encrypted.
     """
     ENCRYPTION_UNSPECIFIED = 0
     ENCRYPTION_UNSUPPORTED = 1
@@ -641,23 +716,121 @@ class DevicePolicy(_messages.Message):
   requireScreenlock = _messages.BooleanField(6)
 
 
+class EgressFrom(_messages.Message):
+  r"""Defines the conditions under which this egress policy matches a request,
+  based on information about the source of the request. Currently, only
+  "ANY_IDENTITY" is supported (meaning that the Egress rule applies to all
+  resources in the associated perimeter).
+
+  Enums:
+    AllowedIdentityValueValuesEnum: Specifies the identities that are allowed
+      through the [EgressPolicy]. Can be either ANY_IDENTITY (everything is
+      allowed), ANY_USER (all human users), ANY_SERVICE_ACCOUNT (all service
+      accounts), or ALLOWED_IDENTITY_UNSPECIFIED (use the identities field
+      instead). ANY_USER, ANY_SERVICE_ACCOUNT, and
+      ALLOWED_IDENTITY_UNSPECIFIED are currently not supported for
+      [EgressFrom].
+
+  Fields:
+    allowedIdentity: Specifies the identities that are allowed through the
+      [EgressPolicy]. Can be either ANY_IDENTITY (everything is allowed),
+      ANY_USER (all human users), ANY_SERVICE_ACCOUNT (all service accounts),
+      or ALLOWED_IDENTITY_UNSPECIFIED (use the identities field instead).
+      ANY_USER, ANY_SERVICE_ACCOUNT, and ALLOWED_IDENTITY_UNSPECIFIED are
+      currently not supported for [EgressFrom].
+  """
+
+  class AllowedIdentityValueValuesEnum(_messages.Enum):
+    r"""Specifies the identities that are allowed through the [EgressPolicy].
+    Can be either ANY_IDENTITY (everything is allowed), ANY_USER (all human
+    users), ANY_SERVICE_ACCOUNT (all service accounts), or
+    ALLOWED_IDENTITY_UNSPECIFIED (use the identities field instead). ANY_USER,
+    ANY_SERVICE_ACCOUNT, and ALLOWED_IDENTITY_UNSPECIFIED are currently not
+    supported for [EgressFrom].
+
+    Values:
+      ALLOWED_IDENTITY_UNSPECIFIED: No blanket identity group specified, look
+        at the list of allowed identities instead.
+      ANY_IDENTITY: [IngressFrom] rule will authorize access from all
+        identities outside the perimeter. [EgressFrom] rule will authorizes
+        all identities to access through the egress policy.
+      ANY_USER: The [IngressFrom] rule will authorize access from all human
+        users outside the perimeter. [EgressFrom] rule authorizes all human
+        users through the egress policy. This is not supported for
+        [EgressFrom] for now.
+      ANY_SERVICE_ACCOUNT: The [IngressFrom] rule will authorize access from
+        all service accounts outside the perimeter. [EgressFrom] rule
+        authorizes all service accounts through the egress policy. This is not
+        supported for [EgressFrom] for now.
+    """
+    ALLOWED_IDENTITY_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER = 2
+    ANY_SERVICE_ACCOUNT = 3
+
+  allowedIdentity = _messages.EnumField('AllowedIdentityValueValuesEnum', 1)
+
+
+class EgressPolicy(_messages.Message):
+  r"""Policy for egress from perimeter. Egress policies match requests based
+  on `from` and `to` stanzas. For an egress policy to match, both `from` and
+  `to stanzas must be matched. If an egress policy matches a request, the
+  request is allowed to span the perimeter boundary. For example, an egress
+  policy can be used to allow VMs on networks within the perimeter to access a
+  defined set of projects outside the perimeter in certain contexts (e.g. to
+  read data from a Cloud Storage bucket or query against a BigQuery dataset).
+  Egress policies are concerned with the *resources* that a request relates as
+  well as the API services and API actions being used. They do not related to
+  the direction of data movement. Please consult the VPC Service Controls
+  documentation for detailed discussion of example use cases for egress
+  policies.
+
+  Fields:
+    egressFrom: Defines the `from` stanza for the egress policy.
+    egressTo: Defines the `to` stanza for the egress policy.
+  """
+
+  egressFrom = _messages.MessageField('EgressFrom', 1)
+  egressTo = _messages.MessageField('EgressTo', 2)
+
+
+class EgressTo(_messages.Message):
+  r"""Defines the conditions under which this egress policy matches a request,
+  based on information about the API and resources that the request affects.
+  To match a `to` stanza, the request must match BOTH "resources" and
+  "operations".
+
+  Fields:
+    operations: A list of api operations that this egress rule applies to. A
+      request matches if it contains an operation/service in this list.
+    resources: A list of resources, currently only projects in the form
+      `projects/`, that match this to stanza. A request matches if it contains
+      a resource in this list. If '*' is specified for resources, then this
+      [EgressTo] rule will authorize access to all resources outside the
+      perimeter.
+  """
+
+  operations = _messages.MessageField('ApiOperation', 1, repeated=True)
+  resources = _messages.StringField(2, repeated=True)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -704,6 +877,121 @@ class GcpUserAccessBinding(_messages.Message):
   accessLevels = _messages.StringField(1, repeated=True)
   groupKey = _messages.StringField(2)
   name = _messages.StringField(3)
+
+
+class IngressFrom(_messages.Message):
+  r"""Rule specifying information about the source of a request in an ingress
+  policy.
+
+  Enums:
+    AllowedIdentityValueValuesEnum: Specifies the identities that are allowed
+      access from outside the perimeter. Can be either ANY_IDENTITY
+      (everything is allowed), ANY_USER (all human users), ANY_SERVICE_ACCOUNT
+      (all service accounts), or ALLOWED_IDENTITY_UNSPECIFIED (use the
+      identities field instead).
+
+  Fields:
+    allowedIdentity: Specifies the identities that are allowed access from
+      outside the perimeter. Can be either ANY_IDENTITY (everything is
+      allowed), ANY_USER (all human users), ANY_SERVICE_ACCOUNT (all service
+      accounts), or ALLOWED_IDENTITY_UNSPECIFIED (use the identities field
+      instead).
+    identities: A list of identities that are allowed access through this
+      ingress policy. Should be in the format of email address. The email
+      address should represent individual users or service accounts only.
+    sources: Sources that this ingress policy authorizes access from.
+  """
+
+  class AllowedIdentityValueValuesEnum(_messages.Enum):
+    r"""Specifies the identities that are allowed access from outside the
+    perimeter. Can be either ANY_IDENTITY (everything is allowed), ANY_USER
+    (all human users), ANY_SERVICE_ACCOUNT (all service accounts), or
+    ALLOWED_IDENTITY_UNSPECIFIED (use the identities field instead).
+
+    Values:
+      ALLOWED_IDENTITY_UNSPECIFIED: No blanket identity group specified, look
+        at the list of allowed identities instead.
+      ANY_IDENTITY: [IngressFrom] rule will authorize access from all
+        identities outside the perimeter. [EgressFrom] rule will authorizes
+        all identities to access through the egress policy.
+      ANY_USER: The [IngressFrom] rule will authorize access from all human
+        users outside the perimeter. [EgressFrom] rule authorizes all human
+        users through the egress policy. This is not supported for
+        [EgressFrom] for now.
+      ANY_SERVICE_ACCOUNT: The [IngressFrom] rule will authorize access from
+        all service accounts outside the perimeter. [EgressFrom] rule
+        authorizes all service accounts through the egress policy. This is not
+        supported for [EgressFrom] for now.
+    """
+    ALLOWED_IDENTITY_UNSPECIFIED = 0
+    ANY_IDENTITY = 1
+    ANY_USER = 2
+    ANY_SERVICE_ACCOUNT = 3
+
+  allowedIdentity = _messages.EnumField('AllowedIdentityValueValuesEnum', 1)
+  identities = _messages.StringField(2, repeated=True)
+  sources = _messages.MessageField('IngressSource', 3, repeated=True)
+
+
+class IngressPolicy(_messages.Message):
+  r"""Policy for ingress into perimeter. Ingress policies match requests based
+  on `from` and `to` stanzas. For an ingress policy to match, both the `from`
+  and `to` stanzas must be matched. If an ingress policy matches a request,
+  the request is allowed through the perimeter boundary from outside the
+  perimeter. For example, access from the internet can be allowed either based
+  on an access level or, for traffic hosted on Google Cloud, the project of
+  the source network. For access from private networks, using the project of
+  the hosting network is required. Individual ingress policies can be limited
+  by restricting which services and/or actions they match using the `to`
+  field.
+
+  Fields:
+    ingressFrom: `from` defines the conditions on the source of a request
+      causing this ingress policy to apply.
+    ingressTo: `to` defines the conditions on the API operation and request
+      destination that cause this ingress policy to apply.
+  """
+
+  ingressFrom = _messages.MessageField('IngressFrom', 1)
+  ingressTo = _messages.MessageField('IngressTo', 2)
+
+
+class IngressSource(_messages.Message):
+  r"""The source that [Ingress Policy] authorizes access from.
+
+  Fields:
+    accessLevel: An `AccessLevel` resource name that allow resources within
+      the `ServicePerimeter` to be accessed from the internet. `AccessLevels`
+      listed must be in the same policy as this `ServicePerimeter`.
+      Referencing a nonexistent `AccessLevel` is a syntax error. If no
+      `AccessLevel` names are listed, resources within the perimeter can only
+      be accessed via Google Cloud calls with request origins within the
+      perimeter. Example: `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`.
+      If '*' is specified for an access_level, then all IngressSources will be
+      allowed. This is due to an `AccessLevel` can be made permissive enough
+      to allow a resource.
+    resource: A Google Cloud resource that is allowed to ingress the
+      perimeter. Requests from these resources will be allowed to access
+      perimeter data. Currently only projects are allowed. Format:
+      `projects/{project_number}` The project may be in any Google Cloud
+      organization, not just the organization that the perimeter is defined
+      in. '*' is not allowed, the case of allowing all Google Cloud resources
+      only is not supported.
+  """
+
+  accessLevel = _messages.StringField(1)
+  resource = _messages.StringField(2)
+
+
+class IngressTo(_messages.Message):
+  r"""Rule specifying information about the destination of a request in an
+  ingress policy.
+
+  Fields:
+    operations: A list of api operations that this ingress rule applies to.
+  """
+
+  operations = _messages.MessageField('ApiOperation', 1, repeated=True)
 
 
 class ListAccessLevelsResponse(_messages.Message):
@@ -763,17 +1051,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -782,29 +1070,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -830,12 +1118,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -994,7 +1282,7 @@ class ServicePerimeter(_messages.Message):
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
-    name: Required. Resource name for the ServicePerimeter.  The `short_name`
+    name: Required. Resource name for the ServicePerimeter. The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
     perimeterType: Perimeter type indicator. A single project is allowed to be
@@ -1011,7 +1299,7 @@ class ServicePerimeter(_messages.Message):
       perimeter content and boundaries.
     title: Human readable title. Must be unique within the Policy.
     useExplicitDryRunSpec: Use explicit dry run spec flag. Ordinarily, a dry-
-      run spec implicitly exists  for all Service Perimeters, and that spec is
+      run spec implicitly exists for all Service Perimeters, and that spec is
       identical to the status for those Service Perimeters. When this flag is
       set, it inhibits the generation of the implicit spec, thereby allowing
       the user to explicitly provide a configuration ("spec") to use in a dry-
@@ -1060,6 +1348,14 @@ class ServicePerimeterConfig(_messages.Message):
       origins within the perimeter. Example:
       `"accessPolicies/MY_POLICY/accessLevels/MY_LEVEL"`. For Service
       Perimeter Bridge, must be empty.
+    egressPolicies: List of egress policies to apply to the perimeter. A
+      perimeter may have multiple egress policies, each of which is evaluated
+      separately. Access is granted if any egress policy grants it. Must be
+      empty for a perimeter bridge.
+    ingressPolicies: List of ingress policies to apply to the perimeter. A
+      perimeter may have multiple ingress policies, each of which is evaluated
+      separately. Access is granted if any ingress policy grants it. Must be
+      empty for a perimeter bridge.
     resources: A list of Google Cloud resources that are inside of the service
       perimeter. Currently only projects are allowed. Format:
       `projects/{project_number}`
@@ -1071,9 +1367,11 @@ class ServicePerimeterConfig(_messages.Message):
   """
 
   accessLevels = _messages.StringField(1, repeated=True)
-  resources = _messages.StringField(2, repeated=True)
-  restrictedServices = _messages.StringField(3, repeated=True)
-  vpcAccessibleServices = _messages.MessageField('VpcAccessibleServices', 4)
+  egressPolicies = _messages.MessageField('EgressPolicy', 2, repeated=True)
+  ingressPolicies = _messages.MessageField('IngressPolicy', 3, repeated=True)
+  resources = _messages.StringField(4, repeated=True)
+  restrictedServices = _messages.StringField(5, repeated=True)
+  vpcAccessibleServices = _messages.MessageField('VpcAccessibleServices', 6)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1143,7 +1441,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1152,7 +1450,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

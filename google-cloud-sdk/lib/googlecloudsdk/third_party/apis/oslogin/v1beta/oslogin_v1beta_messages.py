@@ -16,9 +16,9 @@ package = 'oslogin'
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -27,10 +27,12 @@ class ImportSshPublicKeyResponse(_messages.Message):
   r"""A response message for importing an SSH public key.
 
   Fields:
+    details: Detailed information about import results.
     loginProfile: The login profile information for the user.
   """
 
-  loginProfile = _messages.MessageField('LoginProfile', 1)
+  details = _messages.StringField(1)
+  loginProfile = _messages.MessageField('LoginProfile', 2)
 
 
 class LoginProfile(_messages.Message):
@@ -213,9 +215,7 @@ class SshPublicKey(_messages.Message):
   Fields:
     expirationTimeUsec: An expiration time in microseconds since epoch.
     fingerprint: Output only. The SHA-256 fingerprint of the SSH public key.
-    key: Public key text in SSH format, defined by <a
-      href="https://www.ietf.org/rfc/rfc4253.txt" target="_blank">RFC4253</a>
-      section 6.6.
+    key: Public key text in SSH format, defined by RFC4253 section 6.6.
     name: Output only. The canonical resource name.
   """
 

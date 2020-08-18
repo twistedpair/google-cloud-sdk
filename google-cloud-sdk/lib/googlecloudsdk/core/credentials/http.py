@@ -76,7 +76,26 @@ def Http(timeout='unset',
   http_client = RequestWrapper().WrapCredentials(
       http_client, enable_resource_quota, force_resource_quota,
       allow_account_impersonation, use_google_auth)
+
+  if hasattr(http_client, '_googlecloudsdk_credentials'):
+    creds = http_client._googlecloudsdk_credentials  # pylint: disable=protected-access
+    if core_creds.IsGoogleAuthCredentials(creds):
+      apitools_creds = _GoogleAuthApitoolsCredentials(creds)
+    else:
+      apitools_creds = creds
+    # apitools needs this attribute to do credential refreshes during batch API
+    # requests.
+    setattr(http_client.request, 'credentials', apitools_creds)
   return http_client
+
+
+class _GoogleAuthApitoolsCredentials():
+
+  def __init__(self, credentials):
+    self.credentials = credentials
+
+  def refresh(self, http_client):  # pylint: disable=invalid-name
+    self.credentials.refresh(http.GoogleAuthRequest(http_client))
 
 
 class RequestWrapper(transport.CredentialWrappingMixin, http.RequestWrapper):

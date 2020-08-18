@@ -12,20 +12,44 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Iterator wrapper that allows checking the plurality of remaining items."""
+"""Iterator wrapper that allows checking if an iterator is empty or plural."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+import sys
+
+from googlecloudsdk.core import exceptions
+
+
+BufferedException = collections.namedtuple(
+    'BufferedException',
+    ['exception', 'stack_trace']
+)
+
 
 class PluralityCheckableIterator:
-  """Buffers items from an iterator to allow checking if more than one remains.
+  """Iterator that can check if no items or more than one item can be yielded.
 
-  Yields one item at a time from the buffer.
+  This iterator accepts two types of values from an iterator it wraps:
+    1. A yielded item.
+    2. A raised exception, which will be buffered and re-raised when it
+       is reached in this iterator.
+
+  Both types count when determining the number of items left.
   """
 
   def __init__(self, iterator):
+    """Initilizes a PluralityCheckableIterator instance.
+
+    Args:
+      iterator: The iterator to be wrapped.
+        PluralityCheckableIterator yields items from this iterator and checks
+        its plurality and emptiness.
+    """
+
     self._iterator = iterator
     self._buffer = []
 
@@ -35,7 +59,11 @@ class PluralityCheckableIterator:
   def __next__(self):
     self._populate_buffer()
     if self._buffer:
-      return self._buffer.pop(0)
+      item = self._buffer.pop(0)
+      if isinstance(item, BufferedException):
+        exceptions.reraise(item.exception, tb=item.stack_trace)
+      else:
+        return item
     else:
       raise StopIteration
 
@@ -43,10 +71,18 @@ class PluralityCheckableIterator:
     self._populate_buffer(num_elements=2)
     return len(self._buffer) > 1
 
+  def is_empty(self):
+    self._populate_buffer()
+    return not self._buffer
+
   def _populate_buffer(self, num_elements=1):
     while len(self._buffer) < num_elements:
-      # TODO(b/162756667): Handle and test buffering exceptions.
       try:
         self._buffer.append(next(self._iterator))
       except StopIteration:
         break
+      except Exception as e:  # pylint: disable=broad-except
+        self._buffer.append(BufferedException(
+            exception=e,
+            stack_trace=sys.exc_info()[2]
+        ))

@@ -153,8 +153,10 @@ class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
     r"""Controls the set of fields returned in the GET response.
 
     Values:
-      BASIC_CERTIFICATE: <no description>
-      FULL_CERTIFICATE: <no description>
+      BASIC_CERTIFICATE: Basic certificate information, including applicable
+        domains and expiration date.
+      FULL_CERTIFICATE: The information from BASIC_CERTIFICATE, plus detailed
+        information on the domain mappings that have this certificate mapped.
     """
     BASIC_CERTIFICATE = 0
     FULL_CERTIFICATE = 1
@@ -181,8 +183,10 @@ class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
     r"""Controls the set of fields returned in the LIST response.
 
     Values:
-      BASIC_CERTIFICATE: <no description>
-      FULL_CERTIFICATE: <no description>
+      BASIC_CERTIFICATE: Basic certificate information, including applicable
+        domains and expiration date.
+      FULL_CERTIFICATE: The information from BASIC_CERTIFICATE, plus detailed
+        information on the domain mappings that have this certificate mapped.
     """
     BASIC_CERTIFICATE = 0
     FULL_CERTIFICATE = 1
@@ -245,9 +249,15 @@ class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
     this domain. By default, overrides are rejected.
 
     Values:
-      UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY: <no description>
-      STRICT: <no description>
-      OVERRIDE: <no description>
+      UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY: Strategy unspecified. Defaults to
+        STRICT.
+      STRICT: Overrides not allowed. If a mapping already exists for the
+        specified domain, the request will return an ALREADY_EXISTS (409).
+      OVERRIDE: Overrides allowed. If a mapping already exists for the
+        specified domain, the request will overwrite it. Note that this might
+        stop another Google product from serving. For example, if the domain
+        is mapped to another App Engine application, that app will no longer
+        serve from that domain.
     """
     UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY = 0
     STRICT = 1
@@ -588,8 +598,11 @@ class AppengineAppsServicesVersionsGetRequest(_messages.Message):
     r"""Controls the set of fields returned in the Get response.
 
     Values:
-      BASIC: <no description>
-      FULL: <no description>
+      BASIC: Basic version information including scaling and inbound services,
+        but not detailed deployment information.
+      FULL: The information from BASIC, plus detailed information about the
+        deployment. This format is required when creating resources, but is
+        not returned in Get or List by default.
     """
     BASIC = 0
     FULL = 1
@@ -668,8 +681,11 @@ class AppengineAppsServicesVersionsListRequest(_messages.Message):
     r"""Controls the set of fields returned in the List response.
 
     Values:
-      BASIC: <no description>
-      FULL: <no description>
+      BASIC: Basic version information including scaling and inbound services,
+        but not detailed deployment information.
+      FULL: The information from BASIC, plus detailed information about the
+        deployment. This format is required when creating resources, but is
+        not returned in Get or List by default.
     """
     BASIC = 0
     FULL = 1
@@ -959,13 +975,11 @@ class CertificateRawData(_messages.Message):
   Fields:
     privateKey: Unencrypted PEM encoded RSA private key. This field is set
       once on certificate creation and then encrypted. The key size must be
-      2048 bits or fewer. Must include the header and footer. Example: <pre>
-      -----BEGIN RSA PRIVATE KEY----- <unencrypted_key_value> -----END RSA
-      PRIVATE KEY----- </pre> @InputOnly
+      2048 bits or fewer. Must include the header and footer. Example:
+      -----BEGIN RSA PRIVATE KEY----- -----END RSA PRIVATE KEY----- @InputOnly
     publicCertificate: PEM encoded x.509 public key certificate. This field is
       set once on certificate creation. Must include the header and footer.
-      Example: <pre> -----BEGIN CERTIFICATE----- <certificate_value> -----END
-      CERTIFICATE----- </pre>
+      Example: -----BEGIN CERTIFICATE----- -----END CERTIFICATE-----
   """
 
   privateKey = _messages.StringField(1)
@@ -1190,7 +1204,7 @@ class DomainMapping(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo {   rpc
+  or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
   representation for Empty is empty JSON object {}.
   """
@@ -1324,7 +1338,7 @@ class FileInfo(_messages.Message):
     sha1Sum: The SHA1 hash of the file, in hex.
     sourceUrl: URL source to use to fetch this file. Must be a URL to a
       resource in Google Cloud Storage in the form
-      'http(s)://storage.googleapis.com/<bucket>/<object>'.
+      'http(s)://storage.googleapis.com//'.
   """
 
   mimeType = _messages.StringField(1)
@@ -1351,8 +1365,8 @@ class FirewallRule(_messages.Message):
     sourceRange: IP address or range, defined using CIDR notation, of requests
       that this rule applies to. You can use the wildcard character "*" to
       match all IPs equivalent to "0/0" and "::/0" together. Examples:
-      192.168.1.1 or 192.168.0.0/16 or 2001:db8::/32  or
-      2001:0db8:0000:0042:0000:8a2e:0370:7334.<p>Truncation will be silently
+      192.168.1.1 or 192.168.0.0/16 or 2001:db8::/32 or
+      2001:0db8:0000:0042:0000:8a2e:0370:7334. Truncation will be silently
       performed on addresses which are not properly truncated. For example,
       1.2.3.4/24 is accepted as the same address as 1.2.3.0/24. Similarly, for
       IPv6, 2001:db8::1/32 is accepted as the same address as 2001:db8::/32.
@@ -2747,8 +2761,8 @@ class Version(_messages.Message):
       Engine flexible environment.
     runtime: Desired runtime. Example: python27.
     runtimeApiVersion: The version of the API in the given runtime
-      environment. Please see the app.yaml reference for valid values at https
-      ://cloud.google.com/appengine/docs/standard/<language>/config/appref
+      environment. Please see the app.yaml reference for valid values at
+      https://cloud.google.com/appengine/docs/standard//config/appref
     runtimeChannel: The channel of the runtime to use. Only available for some
       runtimes. Defaults to the default channel.
     runtimeMainExecutablePath: The path or name of the app's main executable.
@@ -2770,15 +2784,21 @@ class Version(_messages.Message):
     r"""InboundServicesValueListEntryValuesEnum enum type.
 
     Values:
-      INBOUND_SERVICE_UNSPECIFIED: <no description>
-      INBOUND_SERVICE_MAIL: <no description>
-      INBOUND_SERVICE_MAIL_BOUNCE: <no description>
-      INBOUND_SERVICE_XMPP_ERROR: <no description>
-      INBOUND_SERVICE_XMPP_MESSAGE: <no description>
-      INBOUND_SERVICE_XMPP_SUBSCRIBE: <no description>
-      INBOUND_SERVICE_XMPP_PRESENCE: <no description>
-      INBOUND_SERVICE_CHANNEL_PRESENCE: <no description>
-      INBOUND_SERVICE_WARMUP: <no description>
+      INBOUND_SERVICE_UNSPECIFIED: Not specified.
+      INBOUND_SERVICE_MAIL: Allows an application to receive mail.
+      INBOUND_SERVICE_MAIL_BOUNCE: Allows an application to receive email-
+        bound notifications.
+      INBOUND_SERVICE_XMPP_ERROR: Allows an application to receive error
+        stanzas.
+      INBOUND_SERVICE_XMPP_MESSAGE: Allows an application to receive instant
+        messages.
+      INBOUND_SERVICE_XMPP_SUBSCRIBE: Allows an application to receive user
+        subscription POSTs.
+      INBOUND_SERVICE_XMPP_PRESENCE: Allows an application to receive a user's
+        chat presence.
+      INBOUND_SERVICE_CHANNEL_PRESENCE: Registers an application for
+        notifications when a client connects or disconnects from a channel.
+      INBOUND_SERVICE_WARMUP: Enables warmup requests.
     """
     INBOUND_SERVICE_UNSPECIFIED = 0
     INBOUND_SERVICE_MAIL = 1
@@ -2934,7 +2954,7 @@ class ZipInfo(_messages.Message):
       may be slow.
     sourceUrl: URL of the zip file to deploy from. Must be a URL to a resource
       in Google Cloud Storage in the form
-      'http(s)://storage.googleapis.com/<bucket>/<object>'.
+      'http(s)://storage.googleapis.com//'.
   """
 
   filesCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)

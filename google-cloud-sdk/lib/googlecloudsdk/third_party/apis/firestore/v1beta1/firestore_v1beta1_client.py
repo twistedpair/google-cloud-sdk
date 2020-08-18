@@ -55,10 +55,7 @@ class FirestoreV1beta1(base_api.BaseApiClient):
           }
 
     def BatchGet(self, request, global_params=None):
-      r"""Gets multiple documents.
-
-Documents returned by this method are not guaranteed to be returned in the
-same order that they were requested.
+      r"""Gets multiple documents. Documents returned by this method are not guaranteed to be returned in the same order that they were requested.
 
       Args:
         request: (FirestoreProjectsDatabasesDocumentsBatchGetRequest) input message
@@ -85,15 +82,7 @@ same order that they were requested.
     )
 
     def BatchWrite(self, request, global_params=None):
-      r"""Applies a batch of write operations.
-
-The BatchWrite method does not apply the write operations atomically
-and can apply them out of order. Method does not allow more than one write
-per document. Each write succeeds or fails independently. See the
-BatchWriteResponse for the success status of each write.
-
-If you require an atomically applied set of writes, use
-Commit instead.
+      r"""Applies a batch of write operations. The BatchWrite method does not apply the write operations atomically and can apply them out of order. Method does not allow more than one write per document. Each write succeeds or fails independently. See the BatchWriteResponse for the success status of each write. If you require an atomically applied set of writes, use Commit instead.
 
       Args:
         request: (FirestoreProjectsDatabasesDocumentsBatchWriteRequest) input message
@@ -336,9 +325,7 @@ Commit instead.
     )
 
     def PartitionQuery(self, request, global_params=None):
-      r"""Partitions a query by returning partition cursors that can be used to run.
-the query in parallel. The returned partition cursors are split points that
-can be used by RunQuery as starting/end points for the query results.
+      r"""Partitions a query by returning partition cursors that can be used to run the query in parallel. The returned partition cursors are split points that can be used by RunQuery as starting/end points for the query results.
 
       Args:
         request: (FirestoreProjectsDatabasesDocumentsPartitionQueryRequest) input message
@@ -483,19 +470,7 @@ can be used by RunQuery as starting/end points for the query results.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates the specified index.
-A newly created index's initial state is `CREATING`. On completion of the
-returned google.longrunning.Operation, the state will be `READY`.
-If the index already exists, the call will return an `ALREADY_EXISTS`
-status.
-
-During creation, the process could result in an error, in which case the
-index will move to the `ERROR` state. The process can be recovered by
-fixing the data that caused the error, removing the index with
-delete, then re-creating the index with
-create.
-
-Indexes with a single field cannot be created.
+      r"""Creates the specified index. A newly created index's initial state is `CREATING`. On completion of the returned google.longrunning.Operation, the state will be `READY`. If the index already exists, the call will return an `ALREADY_EXISTS` status. During creation, the process could result in an error, in which case the index will move to the `ERROR` state. The process can be recovered by fixing the data that caused the error, removing the index with delete, then re-creating the index with create. Indexes with a single field cannot be created.
 
       Args:
         request: (FirestoreProjectsDatabasesIndexesCreateRequest) input message
@@ -613,14 +588,7 @@ Indexes with a single field cannot be created.
           }
 
     def ExportDocuments(self, request, global_params=None):
-      r"""Exports a copy of all or a subset of documents from Google Cloud Firestore.
-to another storage system, such as Google Cloud Storage. Recent updates to
-documents may not be reflected in the export. The export occurs in the
-background and its progress can be monitored and managed via the
-Operation resource that is created. The output of an export may only be
-used once the associated operation is done. If an export operation is
-cancelled before completion it may leave partial data behind in Google
-Cloud Storage.
+      r"""Exports a copy of all or a subset of documents from Google Cloud Firestore to another storage system, such as Google Cloud Storage. Recent updates to documents may not be reflected in the export. The export occurs in the background and its progress can be monitored and managed via the Operation resource that is created. The output of an export may only be used once the associated operation is done. If an export operation is cancelled before completion it may leave partial data behind in Google Cloud Storage.
 
       Args:
         request: (FirestoreProjectsDatabasesExportDocumentsRequest) input message
@@ -647,11 +615,7 @@ Cloud Storage.
     )
 
     def ImportDocuments(self, request, global_params=None):
-      r"""Imports documents into Google Cloud Firestore. Existing documents with the.
-same name are overwritten. The import occurs in the background and its
-progress can be monitored and managed via the Operation resource that is
-created. If an ImportDocuments operation is cancelled, it is possible
-that a subset of the data has already been imported to Cloud Firestore.
+      r"""Imports documents into Google Cloud Firestore. Existing documents with the same name are overwritten. The import occurs in the background and its progress can be monitored and managed via the Operation resource that is created. If an ImportDocuments operation is cancelled, it is possible that a subset of the data has already been imported to Cloud Firestore.
 
       Args:
         request: (FirestoreProjectsDatabasesImportDocumentsRequest) input message

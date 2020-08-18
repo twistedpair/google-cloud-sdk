@@ -57,7 +57,7 @@ class AsymmetricDecryptResponse(_messages.Message):
       checksum. Note: This field is defined as int64 for reasons of
       compatibility across different languages. However, it is a non-negative
       integer, which will never exceed 2^32-1, and can be safely downconverted
-      to uint32 in languages that support this type.  NOTE: This field is in
+      to uint32 in languages that support this type. NOTE: This field is in
       Beta.
     verifiedCiphertextCrc32c: Integrity verification field. A flag indicating
       whether AsymmetricDecryptRequest.ciphertext_crc32c was received by
@@ -119,7 +119,7 @@ class AsymmetricSignResponse(_messages.Message):
       checksum. Note: This field is defined as int64 for reasons of
       compatibility across different languages. However, it is a non-negative
       integer, which will never exceed 2^32-1, and can be safely downconverted
-      to uint32 in languages that support this type.  NOTE: This field is in
+      to uint32 in languages that support this type. NOTE: This field is in
       Beta.
     verifiedDigestCrc32c: Integrity verification field. A flag indicating
       whether AsymmetricSignRequest.digest_crc32c was received by
@@ -128,8 +128,8 @@ class AsymmetricSignResponse(_messages.Message):
       AsymmetricSignRequest.digest_crc32c was left unset or that it was not
       delivered to KeyManagementService. If you've set
       AsymmetricSignRequest.digest_crc32c but this field is still false,
-      discard the response and perform a limited number of retries.  NOTE:
-      This field is in Beta.
+      discard the response and perform a limited number of retries. NOTE: This
+      field is in Beta.
   """
 
   name = _messages.StringField(1)
@@ -142,23 +142,19 @@ class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices",           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE"             },             {
-  "log_type": "ADMIN_READ"             }           ]         },         {
-  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
-  {               "log_type": "DATA_READ"             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:aliya@example.com"               ]             }           ]         }
-  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
-  and aliya@example.com from DATA_WRITE logging.
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -172,12 +168,11 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE"         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  jose@example.com from DATA_READ logging.
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -210,9 +205,9 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding.  If the
+    condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
-      request.  If the condition evaluates to `false`, then this binding does
+      request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
@@ -220,35 +215,35 @@ class Binding(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -256,6 +251,24 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class CertificateChains(_messages.Message):
+  r"""Certificate chains needed to verify the attestation. Certificates in
+  chains are PEM-encoded and are ordered based on
+  https://tools.ietf.org/html/rfc5246#section-7.4.2.
+
+  Fields:
+    caviumCerts: Cavium certificate chain corresponding to the attestation.
+    googleCardCerts: Google card certificate chain corresponding to the
+      attestation.
+    googlePartitionCerts: Google partition certificate chain corresponding to
+      the attestation.
+  """
+
+  caviumCerts = _messages.StringField(1, repeated=True)
+  googleCardCerts = _messages.StringField(2, repeated=True)
+  googlePartitionCerts = _messages.StringField(3, repeated=True)
 
 
 class CloudkmsProjectsLocationsGetRequest(_messages.Message):
@@ -434,8 +447,10 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest(_m
     r"""The fields to include in the response.
 
     Values:
-      CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED: <no description>
-      FULL: <no description>
+      CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED: Default view for each
+        CryptoKeyVersion. Does not include the attestation field.
+      FULL: Provides all fields in each CryptoKeyVersion, including the
+        attestation.
     """
     CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED = 0
     FULL = 1
@@ -503,8 +518,8 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysEncryptRequest(_messages.Messag
     encryptRequest: A EncryptRequest resource to be passed as the request
       body.
     name: Required. The resource name of the CryptoKey or CryptoKeyVersion to
-      use for encryption.  If a CryptoKey is specified, the server will use
-      its primary version.
+      use for encryption. If a CryptoKey is specified, the server will use its
+      primary version.
   """
 
   encryptRequest = _messages.MessageField('EncryptRequest', 1)
@@ -516,10 +531,10 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest(_messages.M
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -558,9 +573,9 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest(_messages.Message):
       information, see [Sorting and filtering list
       results](https://cloud.google.com/kms/docs/sorting-and-filtering).
     pageSize: Optional. Optional limit on the number of CryptoKeys to include
-      in the response.  Further CryptoKeys can subsequently be obtained by
+      in the response. Further CryptoKeys can subsequently be obtained by
       including the ListCryptoKeysResponse.next_page_token in a subsequent
-      request.  If unspecified, the server will pick an appropriate default.
+      request. If unspecified, the server will pick an appropriate default.
     pageToken: Optional. Optional pagination token, returned earlier via
       ListCryptoKeysResponse.next_page_token.
     parent: Required. The resource name of the KeyRing to list, in the format
@@ -572,8 +587,10 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest(_messages.Message):
     r"""The fields of the primary version to include in the response.
 
     Values:
-      CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED: <no description>
-      FULL: <no description>
+      CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED: Default view for each
+        CryptoKeyVersion. Does not include the attestation field.
+      FULL: Provides all fields in each CryptoKeyVersion, including the
+        attestation.
     """
     CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED = 0
     FULL = 1
@@ -652,10 +669,10 @@ class CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -698,10 +715,10 @@ class CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicyRequest(_messages.M
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -791,13 +808,13 @@ class CloudkmsProjectsLocationsKeyRingsListRequest(_messages.Message):
       response. For more information, see [Sorting and filtering list
       results](https://cloud.google.com/kms/docs/sorting-and-filtering).
     orderBy: Optional. Specify how the results should be sorted. If not
-      specified, the results will be sorted in the default order.  For more
+      specified, the results will be sorted in the default order. For more
       information, see [Sorting and filtering list
       results](https://cloud.google.com/kms/docs/sorting-and-filtering).
     pageSize: Optional. Optional limit on the number of KeyRings to include in
-      the response.  Further KeyRings can subsequently be obtained by
-      including the ListKeyRingsResponse.next_page_token in a subsequent
-      request.  If unspecified, the server will pick an appropriate default.
+      the response. Further KeyRings can subsequently be obtained by including
+      the ListKeyRingsResponse.next_page_token in a subsequent request. If
+      unspecified, the server will pick an appropriate default.
     pageToken: Optional. Optional pagination token, returned earlier via
       ListKeyRingsResponse.next_page_token.
     parent: Required. The resource name of the location associated with the
@@ -859,8 +876,8 @@ class CloudkmsProjectsLocationsListRequest(_messages.Message):
 
 class CryptoKey(_messages.Message):
   r"""A CryptoKey represents a logical key that can be used for cryptographic
-  operations.  A CryptoKey is made up of zero or more versions, which
-  represent the actual key material used in cryptographic operations.
+  operations. A CryptoKey is made up of zero or more versions, which represent
+  the actual key material used in cryptographic operations.
 
   Enums:
     PurposeValueValuesEnum: Immutable. The immutable purpose of this
@@ -877,21 +894,21 @@ class CryptoKey(_messages.Message):
     name: Output only. The resource name for this CryptoKey in the format
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     nextRotationTime: At next_rotation_time, the Key Management Service will
-      automatically:  1. Create a new version of this CryptoKey. 2. Mark the
-      new version as primary.  Key rotations performed manually via
+      automatically: 1. Create a new version of this CryptoKey. 2. Mark the
+      new version as primary. Key rotations performed manually via
       CreateCryptoKeyVersion and UpdateCryptoKeyPrimaryVersion do not affect
-      next_rotation_time.  Keys with purpose ENCRYPT_DECRYPT support automatic
+      next_rotation_time. Keys with purpose ENCRYPT_DECRYPT support automatic
       rotation. For other keys, this field must be omitted.
     primary: Output only. A copy of the "primary" CryptoKeyVersion that will
       be used by Encrypt when this CryptoKey is given in EncryptRequest.name.
       The CryptoKey's primary version can be updated via
-      UpdateCryptoKeyPrimaryVersion.  Keys with purpose ENCRYPT_DECRYPT may
+      UpdateCryptoKeyPrimaryVersion. Keys with purpose ENCRYPT_DECRYPT may
       have a primary. For other keys, this field will be omitted.
     purpose: Immutable. The immutable purpose of this CryptoKey.
     rotationPeriod: next_rotation_time will be advanced by this period when
       the service automatically rotates a key. Must be at least 24 hours and
-      at most 876,000 hours.  If rotation_period is set, next_rotation_time
-      must also be set.  Keys with purpose ENCRYPT_DECRYPT support automatic
+      at most 876,000 hours. If rotation_period is set, next_rotation_time
+      must also be set. Keys with purpose ENCRYPT_DECRYPT support automatic
       rotation. For other keys, this field must be omitted.
     versionTemplate: A template describing settings for new CryptoKeyVersion
       instances. The properties of new CryptoKeyVersion instances created by
@@ -953,8 +970,8 @@ class CryptoKey(_messages.Message):
 
 class CryptoKeyVersion(_messages.Message):
   r"""A CryptoKeyVersion represents an individual cryptographic key, and the
-  associated key material.  An ENABLED version can be used for cryptographic
-  operations.  For security reasons, the raw cryptographic key material
+  associated key material. An ENABLED version can be used for cryptographic
+  operations. For security reasons, the raw cryptographic key material
   represented by a CryptoKeyVersion can never be viewed or exported. It can
   only be used to encrypt, decrypt, or sign data when an authorized user or
   application invokes Cloud KMS.
@@ -1122,7 +1139,7 @@ class CryptoKeyVersionTemplate(_messages.Message):
 
   Enums:
     AlgorithmValueValuesEnum: Required. Algorithm to use when creating a
-      CryptoKeyVersion based on this template.  For backwards compatibility,
+      CryptoKeyVersion based on this template. For backwards compatibility,
       GOOGLE_SYMMETRIC_ENCRYPTION is implied if both this field is omitted and
       CryptoKey.purpose is ENCRYPT_DECRYPT.
     ProtectionLevelValueValuesEnum: ProtectionLevel to use when creating a
@@ -1131,7 +1148,7 @@ class CryptoKeyVersionTemplate(_messages.Message):
 
   Fields:
     algorithm: Required. Algorithm to use when creating a CryptoKeyVersion
-      based on this template.  For backwards compatibility,
+      based on this template. For backwards compatibility,
       GOOGLE_SYMMETRIC_ENCRYPTION is implied if both this field is omitted and
       CryptoKey.purpose is ENCRYPT_DECRYPT.
     protectionLevel: ProtectionLevel to use when creating a CryptoKeyVersion
@@ -1140,8 +1157,8 @@ class CryptoKeyVersionTemplate(_messages.Message):
 
   class AlgorithmValueValuesEnum(_messages.Enum):
     r"""Required. Algorithm to use when creating a CryptoKeyVersion based on
-    this template.  For backwards compatibility, GOOGLE_SYMMETRIC_ENCRYPTION
-    is implied if both this field is omitted and CryptoKey.purpose is
+    this template. For backwards compatibility, GOOGLE_SYMMETRIC_ENCRYPTION is
+    implied if both this field is omitted and CryptoKey.purpose is
     ENCRYPT_DECRYPT.
 
     Values:
@@ -1229,7 +1246,7 @@ class DecryptRequest(_messages.Message):
       as int64 for reasons of compatibility across different languages.
       However, it is a non-negative integer, which will never exceed 2^32-1,
       and can be safely downconverted to uint32 in languages that support this
-      type.  NOTE: This field is in Beta.
+      type. NOTE: This field is in Beta.
     ciphertext: Required. The encrypted data originally returned in
       EncryptResponse.ciphertext.
     ciphertextCrc32c: Optional. An optional CRC32C checksum of the
@@ -1243,7 +1260,7 @@ class DecryptRequest(_messages.Message):
       of the CRC32C checksum. Note: This field is defined as int64 for reasons
       of compatibility across different languages. However, it is a non-
       negative integer, which will never exceed 2^32-1, and can be safely
-      downconverted to uint32 in languages that support this type.  NOTE: This
+      downconverted to uint32 in languages that support this type. NOTE: This
       field is in Beta.
   """
 
@@ -1302,7 +1319,7 @@ class EncryptRequest(_messages.Message):
   Fields:
     additionalAuthenticatedData: Optional. Optional data that, if specified,
       must also be provided during decryption through
-      DecryptRequest.additional_authenticated_data.  The maximum size depends
+      DecryptRequest.additional_authenticated_data. The maximum size depends
       on the key version's protection_level. For SOFTWARE keys, the AAD must
       be no larger than 64KiB. For HSM keys, the combined length of the
       plaintext and additional_authenticated_data fields must be no larger
@@ -1320,7 +1337,7 @@ class EncryptRequest(_messages.Message):
       as int64 for reasons of compatibility across different languages.
       However, it is a non-negative integer, which will never exceed 2^32-1,
       and can be safely downconverted to uint32 in languages that support this
-      type.  NOTE: This field is in Beta.
+      type. NOTE: This field is in Beta.
     plaintext: Required. The data to encrypt. Must be no larger than 64KiB.
       The maximum size depends on the key version's protection_level. For
       SOFTWARE keys, the plaintext must be no larger than 64KiB. For HSM keys,
@@ -1337,7 +1354,7 @@ class EncryptRequest(_messages.Message):
       of the CRC32C checksum. Note: This field is defined as int64 for reasons
       of compatibility across different languages. However, it is a non-
       negative integer, which will never exceed 2^32-1, and can be safely
-      downconverted to uint32 in languages that support this type.  NOTE: This
+      downconverted to uint32 in languages that support this type. NOTE: This
       field is in Beta.
   """
 
@@ -1362,7 +1379,7 @@ class EncryptResponse(_messages.Message):
       This field is defined as int64 for reasons of compatibility across
       different languages. However, it is a non-negative integer, which will
       never exceed 2^32-1, and can be safely downconverted to uint32 in
-      languages that support this type.  NOTE: This field is in Beta.
+      languages that support this type. NOTE: This field is in Beta.
     name: The resource name of the CryptoKeyVersion used in encryption. Check
       this field to verify that the intended resource was used for encryption.
     verifiedAdditionalAuthenticatedDataCrc32c: Integrity verification field. A
@@ -1374,7 +1391,7 @@ class EncryptResponse(_messages.Message):
       that it was not delivered to KeyManagementService. If you've set
       EncryptRequest.additional_authenticated_data_crc32c but this field is
       still false, discard the response and perform a limited number of
-      retries.  NOTE: This field is in Beta.
+      retries. NOTE: This field is in Beta.
     verifiedPlaintextCrc32c: Integrity verification field. A flag indicating
       whether EncryptRequest.plaintext_crc32c was received by
       KeyManagementService and used for the integrity verification of the
@@ -1382,7 +1399,7 @@ class EncryptResponse(_messages.Message):
       EncryptRequest.plaintext_crc32c was left unset or that it was not
       delivered to KeyManagementService. If you've set
       EncryptRequest.plaintext_crc32c but this field is still false, discard
-      the response and perform a limited number of retries.  NOTE: This field
+      the response and perform a limited number of retries. NOTE: This field
       is in Beta.
   """
 
@@ -1396,20 +1413,20 @@ class EncryptResponse(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -1457,17 +1474,16 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     importJob: Required. The name of the ImportJob that was used to wrap this
       key material.
     rsaAesWrappedKey: Wrapped key material produced with
-      RSA_OAEP_3072_SHA1_AES_256 or RSA_OAEP_4096_SHA1_AES_256.  This field
-      contains the concatenation of two wrapped keys: <ol>   <li>An ephemeral
-      AES-256 wrapping key wrapped with the       public_key using RSAES-OAEP
-      with SHA-1,       MGF1 with SHA-1, and an empty label.   </li>   <li>The
-      key to be imported, wrapped with the ephemeral AES-256 key       using
-      AES-KWP (RFC 5649).   </li> </ol>  If importing symmetric key material,
-      it is expected that the unwrapped key contains plain bytes. If importing
-      asymmetric key material, it is expected that the unwrapped key is in
-      PKCS#8-encoded DER format (the PrivateKeyInfo structure from RFC 5208).
-      This format is the same as the format produced by PKCS#11 mechanism
-      CKM_RSA_AES_KEY_WRAP.
+      RSA_OAEP_3072_SHA1_AES_256 or RSA_OAEP_4096_SHA1_AES_256. This field
+      contains the concatenation of two wrapped keys: 1. An ephemeral AES-256
+      wrapping key wrapped with the public_key using RSAES-OAEP with SHA-1,
+      MGF1 with SHA-1, and an empty label. 2. The key to be imported, wrapped
+      with the ephemeral AES-256 key using AES-KWP (RFC 5649). If importing
+      symmetric key material, it is expected that the unwrapped key contains
+      plain bytes. If importing asymmetric key material, it is expected that
+      the unwrapped key is in PKCS#8-encoded DER format (the PrivateKeyInfo
+      structure from RFC 5208). This format is the same as the format produced
+      by PKCS#11 mechanism CKM_RSA_AES_KEY_WRAP.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
@@ -1527,21 +1543,21 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
 
 class ImportJob(_messages.Message):
   r"""An ImportJob can be used to create CryptoKeys and CryptoKeyVersions
-  using pre-existing key material, generated outside of Cloud KMS.  When an
+  using pre-existing key material, generated outside of Cloud KMS. When an
   ImportJob is created, Cloud KMS will generate a "wrapping key", which is a
   public/private key pair. You use the wrapping key to encrypt (also known as
   wrap) the pre-existing key material to protect it during the import process.
   The nature of the wrapping key depends on the choice of import_method. When
   the wrapping key generation is complete, the state will be set to ACTIVE and
   the public_key can be fetched. The fetched public key can then be used to
-  wrap your pre-existing key material.  Once the key material is wrapped, it
+  wrap your pre-existing key material. Once the key material is wrapped, it
   can be imported into a new CryptoKeyVersion in an existing CryptoKey by
   calling ImportCryptoKeyVersion. Multiple CryptoKeyVersions can be imported
   with a single ImportJob. Cloud KMS uses the private key portion of the
   wrapping key to unwrap the key material. Only Cloud KMS has access to the
-  private key.  An ImportJob expires 3 days after it is created. Once expired,
+  private key. An ImportJob expires 3 days after it is created. Once expired,
   Cloud KMS will no longer be able to import or unwrap any key material that
-  was wrapped with the ImportJob's public key.  For more information, see
+  was wrapped with the ImportJob's public key. For more information, see
   [Importing a key](https://cloud.google.com/kms/docs/importing-a-key).
 
   Enums:
@@ -1660,6 +1676,8 @@ class KeyOperationAttestation(_messages.Message):
     FormatValueValuesEnum: Output only. The format of the attestation data.
 
   Fields:
+    certChains: Output only. The certificate chains needed to validate the
+      attestation
     content: Output only. The attestation data provided by the HSM when the
       key operation was performed.
     format: Output only. The format of the attestation data.
@@ -1680,8 +1698,9 @@ class KeyOperationAttestation(_messages.Message):
     CAVIUM_V1_COMPRESSED = 1
     CAVIUM_V2_COMPRESSED = 2
 
-  content = _messages.BytesField(1)
-  format = _messages.EnumField('FormatValueValuesEnum', 2)
+  certChains = _messages.MessageField('CertificateChains', 1)
+  content = _messages.BytesField(2)
+  format = _messages.EnumField('FormatValueValuesEnum', 3)
 
 
 class KeyRing(_messages.Message):
@@ -1869,37 +1888,33 @@ class LocationMetadata(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  For some types of
+  be an IAM predefined role or a user-created custom role. For some types of
   Google Cloud resources, a `binding` can also specify a `condition`, which is
   a logical expression that allows access to a resource only if the expression
   evaluates to `true`. A condition can add constraints based on attributes of
   the request, the resource, or both. To learn which resources support
   conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies).  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members": [
-  "user:eve@example.com"           ],           "condition": {
-  "title": "expirable access",             "description": "Does not grant
-  access after Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -1914,24 +1929,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.  To learn which resources support
+      version or leave the field unset. To learn which resources support
       conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -1952,7 +1967,7 @@ class PublicKey(_messages.Message):
   Fields:
     algorithm: The Algorithm associated with this key.
     name: The name of the CryptoKeyVersion public key. Provided here for
-      verification.  NOTE: This field is in Beta.
+      verification. NOTE: This field is in Beta.
     pem: The public key, encoded in PEM format. For more information, see the
       [RFC 7468](https://tools.ietf.org/html/rfc7468) sections for [General
       Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
@@ -1967,7 +1982,7 @@ class PublicKey(_messages.Message):
       checksum. Note: This field is defined as int64 for reasons of
       compatibility across different languages. However, it is a non-negative
       integer, which will never exceed 2^32-1, and can be safely downconverted
-      to uint32 in languages that support this type.  NOTE: This field is in
+      to uint32 in languages that support this type. NOTE: This field is in
       Beta.
   """
 
@@ -2040,7 +2055,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used:  `paths: "bindings, etag"`
+      provided, the following default mask is used: `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)

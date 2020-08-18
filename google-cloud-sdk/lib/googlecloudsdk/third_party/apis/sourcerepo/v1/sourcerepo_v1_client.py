@@ -53,10 +53,7 @@ class SourcerepoV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a repo in the given project with the given name.
-
-If the named repository already exists, `CreateRepo` returns
-`ALREADY_EXISTS`.
+      r"""Creates a repo in the given project with the given name. If the named repository already exists, `CreateRepo` returns `ALREADY_EXISTS`.
 
       Args:
         request: (SourcerepoProjectsReposCreateRequest) input message
@@ -137,9 +134,7 @@ If the named repository already exists, `CreateRepo` returns
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (SourcerepoProjectsReposGetIamPolicyRequest) input message
@@ -166,8 +161,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      r"""Returns all repos belonging to a project. The sizes of the repos are.
-not set by ListRepos.  To get the size of a repo, use GetRepo.
+      r"""Returns all repos belonging to a project. The sizes of the repos are not set by ListRepos. To get the size of a repo, use GetRepo.
 
       Args:
         request: (SourcerepoProjectsReposListRequest) input message
@@ -221,8 +215,7 @@ not set by ListRepos.  To get the size of a repo, use GetRepo.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (SourcerepoProjectsReposSetIamPolicyRequest) input message
@@ -249,9 +242,7 @@ existing policy.
     )
 
     def Sync(self, request, global_params=None):
-      r"""Synchronize a connected repo.
-
-The response contains SyncRepoMetadata in the metadata field.
+      r"""Synchronize a connected repo. The response contains SyncRepoMetadata in the metadata field.
 
       Args:
         request: (SourcerepoProjectsReposSyncRequest) input message
@@ -278,9 +269,7 @@ The response contains SyncRepoMetadata in the metadata field.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.
 
       Args:
         request: (SourcerepoProjectsReposTestIamPermissionsRequest) input message

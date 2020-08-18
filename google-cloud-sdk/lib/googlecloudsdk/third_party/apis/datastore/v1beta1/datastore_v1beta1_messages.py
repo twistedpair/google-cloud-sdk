@@ -141,18 +141,18 @@ class GoogleDatastoreAdminV1CommonMetadata(_messages.Message):
 class GoogleDatastoreAdminV1EntityFilter(_messages.Message):
   r"""Identifies a subset of entities in a project. This is specified as
   combinations of kinds and namespaces (either or both of which may be all, as
-  described in the following examples). Example usage:  Entire project:
-  kinds=[], namespace_ids=[]  Kinds Foo and Bar in all namespaces:
-  kinds=['Foo', 'Bar'], namespace_ids=[]  Kinds Foo and Bar only in the
-  default namespace:   kinds=['Foo', 'Bar'], namespace_ids=['']  Kinds Foo and
-  Bar in both the default and Baz namespaces:   kinds=['Foo', 'Bar'],
-  namespace_ids=['', 'Baz']  The entire Baz namespace:   kinds=[],
+  described in the following examples). Example usage: Entire project:
+  kinds=[], namespace_ids=[] Kinds Foo and Bar in all namespaces:
+  kinds=['Foo', 'Bar'], namespace_ids=[] Kinds Foo and Bar only in the default
+  namespace: kinds=['Foo', 'Bar'], namespace_ids=[''] Kinds Foo and Bar in
+  both the default and Baz namespaces: kinds=['Foo', 'Bar'],
+  namespace_ids=['', 'Baz'] The entire Baz namespace: kinds=[],
   namespace_ids=['Baz']
 
   Fields:
     kinds: If empty, then this represents all kinds.
     namespaceIds: An empty list represents all namespaces. This is the
-      preferred usage for projects that don't use namespaces.  An empty string
+      preferred usage for projects that don't use namespaces. An empty string
       element represents the default namespace. This should be used if the
       project has data in non-default namespaces, but doesn't want to include
       them. Each namespace in this list must be unique.
@@ -340,18 +340,18 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
 class GoogleDatastoreAdminV1beta1EntityFilter(_messages.Message):
   r"""Identifies a subset of entities in a project. This is specified as
   combinations of kinds and namespaces (either or both of which may be all, as
-  described in the following examples). Example usage:  Entire project:
-  kinds=[], namespace_ids=[]  Kinds Foo and Bar in all namespaces:
-  kinds=['Foo', 'Bar'], namespace_ids=[]  Kinds Foo and Bar only in the
-  default namespace:   kinds=['Foo', 'Bar'], namespace_ids=['']  Kinds Foo and
-  Bar in both the default and Baz namespaces:   kinds=['Foo', 'Bar'],
-  namespace_ids=['', 'Baz']  The entire Baz namespace:   kinds=[],
+  described in the following examples). Example usage: Entire project:
+  kinds=[], namespace_ids=[] Kinds Foo and Bar in all namespaces:
+  kinds=['Foo', 'Bar'], namespace_ids=[] Kinds Foo and Bar only in the default
+  namespace: kinds=['Foo', 'Bar'], namespace_ids=[''] Kinds Foo and Bar in
+  both the default and Baz namespaces: kinds=['Foo', 'Bar'],
+  namespace_ids=['', 'Baz'] The entire Baz namespace: kinds=[],
   namespace_ids=['Baz']
 
   Fields:
     kinds: If empty, then this represents all kinds.
     namespaceIds: An empty list represents all namespaces. This is the
-      preferred usage for projects that don't use namespaces.  An empty string
+      preferred usage for projects that don't use namespaces. An empty string
       element represents the default namespace. This should be used if the
       project has data in non-default namespaces, but doesn't want to include
       them. Each namespace in this list must be unique.
@@ -394,19 +394,18 @@ class GoogleDatastoreAdminV1beta1ExportEntitiesRequest(_messages.Message):
     entityFilter: Description of what data from the project is included in the
       export.
     labels: Client-assigned labels.
-    outputUrlPrefix: Location for the export metadata and data files.  The
-      full resource URL of the external storage location. Currently, only
-      Google Cloud Storage is supported. So output_url_prefix should be of the
-      form: `gs://BUCKET_NAME[/NAMESPACE_PATH]`, where `BUCKET_NAME` is the
-      name of the Cloud Storage bucket and `NAMESPACE_PATH` is an optional
-      Cloud Storage namespace path (this is not a Cloud Datastore namespace).
-      For more information about Cloud Storage namespace paths, see [Object
-      name
+    outputUrlPrefix: Location for the export metadata and data files. The full
+      resource URL of the external storage location. Currently, only Google
+      Cloud Storage is supported. So output_url_prefix should be of the form:
+      `gs://BUCKET_NAME[/NAMESPACE_PATH]`, where `BUCKET_NAME` is the name of
+      the Cloud Storage bucket and `NAMESPACE_PATH` is an optional Cloud
+      Storage namespace path (this is not a Cloud Datastore namespace). For
+      more information about Cloud Storage namespace paths, see [Object name
       considerations](https://cloud.google.com/storage/docs/naming#object-
-      considerations).  The resulting files will be nested deeper than the
+      considerations). The resulting files will be nested deeper than the
       specified URL prefix. The final output URL will be provided in the
       google.datastore.admin.v1beta1.ExportEntitiesResponse.output_url field.
-      That value should be used for subsequent ImportEntities operations.  By
+      That value should be used for subsequent ImportEntities operations. By
       nesting the data files deeper, the same Cloud Storage bucket can be used
       in multiple ExportEntities operations without conflict.
   """
@@ -497,7 +496,7 @@ class GoogleDatastoreAdminV1beta1ImportEntitiesRequest(_messages.Message):
       file written by the ExportEntities operation. For more information about
       Cloud Storage namespace paths, see [Object name
       considerations](https://cloud.google.com/storage/docs/naming#object-
-      considerations).  For more information, see
+      considerations). For more information, see
       google.datastore.admin.v1beta1.ExportEntitiesResponse.output_url.
     labels: Client-assigned labels.
   """
@@ -550,17 +549,17 @@ class GoogleLongrunningOperation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -569,29 +568,29 @@ class GoogleLongrunningOperation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -617,12 +616,12 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -720,7 +719,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -729,7 +728,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

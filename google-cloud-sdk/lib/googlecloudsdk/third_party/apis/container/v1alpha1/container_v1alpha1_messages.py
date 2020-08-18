@@ -134,13 +134,13 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       cpu-platform) To unset the min cpu platform field pass "automatic" as
       field value.
     oauthScopes: The set of Google API scopes to be made available on all of
-      the node VMs under the "default" service account.  The following scopes
-      are recommended, but not required, and by default are not included:  *
+      the node VMs under the "default" service account. The following scopes
+      are recommended, but not required, and by default are not included: *
       `https://www.googleapis.com/auth/compute` is required for mounting
       persistent storage on your nodes. *
       `https://www.googleapis.com/auth/devstorage.read_only` is required for
       communicating with **gcr.io** (the [Google Container
-      Registry](https://cloud.google.com/container-registry/)).  If
+      Registry](https://cloud.google.com/container-registry/)). If
       unspecified, no scopes are added, unless Cloud Logging or Cloud
       Monitoring are enabled, in which case their required scopes will be
       added.
@@ -253,13 +253,13 @@ class CloudNatStatus(_messages.Message):
   on this cluster.
 
   Fields:
-    enabled: Enables Cloud Nat on this cluster.  On an update if
+    enabled: Enables Cloud Nat on this cluster. On an update if
       update.desired_cloud_nat_status.enabled = true, The API will check if
       any Routers in the cluster's network has Cloud NAT enabled on the pod
-      range.   a. If so, then the cluster nodes will be updated to not perform
-      SNAT.   b. If no NAT configuration exists, a new Router with Cloud NAT
-      on      the secondary range will be created first, and then the nodes
-      will be      updated to no longer do SNAT.
+      range. a. If so, then the cluster nodes will be updated to not perform
+      SNAT. b. If no NAT configuration exists, a new Router with Cloud NAT on
+      the secondary range will be created first, and then the nodes will be
+      updated to no longer do SNAT.
   """
 
   enabled = _messages.BooleanField(1)
@@ -330,7 +330,7 @@ class Cluster(_messages.Message):
     createTime: [Output only] The time the cluster was created, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     currentMasterVersion: The current software version of the master endpoint.
-    currentNodeCount: [Output only]  The number of nodes currently in the
+    currentNodeCount: [Output only] The number of nodes currently in the
       cluster. Deprecated. Call Kubernetes API directly to retrieve node
       information.
     currentNodeVersion: [Output only] Deprecated, use
@@ -360,29 +360,29 @@ class Cluster(_messages.Message):
       field is deprecated, use tpu_config.enabled instead.
     endpoint: [Output only] The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
-      `https://username:password@endpoint/`.  See the `masterAuth` property of
+      `https://username:password@endpoint/`. See the `masterAuth` property of
       this resource for username and password information.
     expireTime: [Output only] The time the cluster will be automatically
       deleted in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
+    gkeOidcConfig: Security message for security related configuration
     initialClusterVersion: The initial Kubernetes version for this cluster.
       Valid versions are those found in validMasterVersions returned by
-      getServerConfig.  The version can be upgraded over time; such upgrades
-      are reflected in currentMasterVersion and currentNodeVersion.  Users may
+      getServerConfig. The version can be upgraded over time; such upgrades
+      are reflected in currentMasterVersion and currentNodeVersion. Users may
       specify either explicit versions offered by Kubernetes Engine or version
-      aliases, which have the following behavior:  - "latest": picks the
+      aliases, which have the following behavior: - "latest": picks the
       highest valid Kubernetes version - "1.X": picks the highest valid
       patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest valid
       gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
       Kubernetes version - "","-": picks the default Kubernetes version
     initialNodeCount: The number of nodes to create in this cluster. You must
-      ensure that your Compute Engine <a href="/compute/docs/resource-
-      quotas">resource quota</a> is sufficient for this number of instances.
-      You must also have available firewall and routes quota. For requests,
-      this field should only be used in lieu of a "node_pool" object, since
-      this configuration (along with the "node_config") will be used to create
-      a "NodePool" object with an auto-generated name. Do not use this and a
-      node_pool at the same time.  This field is deprecated, use
-      node_pool.initial_node_count instead.
+      ensure that your Compute Engine resource quota is sufficient for this
+      number of instances. You must also have available firewall and routes
+      quota. For requests, this field should only be used in lieu of a
+      "node_pool" object, since this configuration (along with the
+      "node_config") will be used to create a "NodePool" object with an auto-
+      generated name. Do not use this and a node_pool at the same time. This
+      field is deprecated, use node_pool.initial_node_count instead.
     instanceGroupUrls: Deprecated. Use node_pools.instance_group_urls.
     ipAllocationPolicy: Configuration for cluster IP allocation.
     kubernetesObjectsExportConfig: Configuration which enables export of
@@ -397,11 +397,11 @@ class Cluster(_messages.Message):
       [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located.
     loggingService: The logging service the cluster should use to write logs.
-      Currently available options:  * `logging.googleapis.com/kubernetes` -
-      The Cloud Logging service with a Kubernetes-native resource model *
+      Currently available options: * `logging.googleapis.com/kubernetes` - The
+      Cloud Logging service with a Kubernetes-native resource model *
       `logging.googleapis.com` - The legacy Cloud Logging service (no longer
       available as of GKE 1.15). * `none` - no logs will be exported from the
-      cluster.  If left as an empty string,`logging.googleapis.com/kubernetes`
+      cluster. If left as an empty string,`logging.googleapis.com/kubernetes`
       will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
       versions.
     maintenancePolicy: Configure the maintenance policy for this cluster.
@@ -419,16 +419,16 @@ class Cluster(_messages.Message):
       field is deprecated, use private_cluster_config.master_ipv4_cidr_block
       instead.
     monitoringService: The monitoring service the cluster should use to write
-      metrics. Currently available options:  *
+      metrics. Currently available options: *
       "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
       with a Kubernetes-native resource model * `monitoring.googleapis.com` -
-      The legacy Cloud Monitoring service (no   longer available as of GKE
-      1.15). * `none` - No metrics will be exported from the cluster.  If left
+      The legacy Cloud Monitoring service (no longer available as of GKE
+      1.15). * `none` - No metrics will be exported from the cluster. If left
       as an empty string,`monitoring.googleapis.com/kubernetes` will be used
       for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     name: The name of this cluster. The name must be unique within this
       project and location (e.g. zone or region), and can be up to 40
-      characters with the following restrictions:  * Lowercase letters,
+      characters with the following restrictions: * Lowercase letters,
       numbers, and hyphens only. * Must start with a letter. * Must end with a
       number or a letter.
     network: The name of the Google Compute Engine
@@ -443,9 +443,9 @@ class Cluster(_messages.Message):
       create a "NodePool" object with an auto-generated name. Do not use this
       and a node_pool at the same time. For responses, this field will be
       populated with the node configuration of the first node pool. (For
-      configuration of each node pool, see `node_pool.config`)  If
-      unspecified, the defaults are used. This field is deprecated, use
-      node_pool.config instead.
+      configuration of each node pool, see `node_pool.config`) If unspecified,
+      the defaults are used. This field is deprecated, use node_pool.config
+      instead.
     nodeIpv4CidrSize: [Output only] The size of the address space on each node
       for hosting containers. This is provisioned from within the
       `container_ipv4_cidr` range. This field will only be set when cluster is
@@ -586,50 +586,51 @@ class Cluster(_messages.Message):
   enableTpu = _messages.BooleanField(21)
   endpoint = _messages.StringField(22)
   expireTime = _messages.StringField(23)
-  initialClusterVersion = _messages.StringField(24)
-  initialNodeCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(26, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 27)
-  kubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 28)
-  labelFingerprint = _messages.StringField(29)
-  legacyAbac = _messages.MessageField('LegacyAbac', 30)
-  location = _messages.StringField(31)
-  locations = _messages.StringField(32, repeated=True)
-  loggingService = _messages.StringField(33)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 34)
-  master = _messages.MessageField('Master', 35)
-  masterAuth = _messages.MessageField('MasterAuth', 36)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 37)
-  masterIpv4CidrBlock = _messages.StringField(38)
-  monitoringService = _messages.StringField(39)
-  name = _messages.StringField(40)
-  network = _messages.StringField(41)
-  networkConfig = _messages.MessageField('NetworkConfig', 42)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 43)
-  nodeConfig = _messages.MessageField('NodeConfig', 44)
-  nodeIpv4CidrSize = _messages.IntegerField(45, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 46, repeated=True)
-  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 47)
-  notificationConfig = _messages.MessageField('NotificationConfig', 48)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 49)
-  privateCluster = _messages.BooleanField(50)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 51)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 52)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 53)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 54)
-  resourceVersion = _messages.StringField(55)
-  securityProfile = _messages.MessageField('SecurityProfile', 56)
-  selfLink = _messages.StringField(57)
-  servicesIpv4Cidr = _messages.StringField(58)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 59)
-  status = _messages.EnumField('StatusValueValuesEnum', 60)
-  statusMessage = _messages.StringField(61)
-  subnetwork = _messages.StringField(62)
-  tpuConfig = _messages.MessageField('TpuConfig', 63)
-  tpuIpv4CidrBlock = _messages.StringField(64)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 65)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 66)
-  zone = _messages.StringField(67)
+  gkeOidcConfig = _messages.MessageField('GkeOidcConfig', 24)
+  initialClusterVersion = _messages.StringField(25)
+  initialNodeCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(27, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 28)
+  kubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 29)
+  labelFingerprint = _messages.StringField(30)
+  legacyAbac = _messages.MessageField('LegacyAbac', 31)
+  location = _messages.StringField(32)
+  locations = _messages.StringField(33, repeated=True)
+  loggingService = _messages.StringField(34)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 35)
+  master = _messages.MessageField('Master', 36)
+  masterAuth = _messages.MessageField('MasterAuth', 37)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 38)
+  masterIpv4CidrBlock = _messages.StringField(39)
+  monitoringService = _messages.StringField(40)
+  name = _messages.StringField(41)
+  network = _messages.StringField(42)
+  networkConfig = _messages.MessageField('NetworkConfig', 43)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 44)
+  nodeConfig = _messages.MessageField('NodeConfig', 45)
+  nodeIpv4CidrSize = _messages.IntegerField(46, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 47, repeated=True)
+  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 48)
+  notificationConfig = _messages.MessageField('NotificationConfig', 49)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 50)
+  privateCluster = _messages.BooleanField(51)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 52)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 53)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 54)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 55)
+  resourceVersion = _messages.StringField(56)
+  securityProfile = _messages.MessageField('SecurityProfile', 57)
+  selfLink = _messages.StringField(58)
+  servicesIpv4Cidr = _messages.StringField(59)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 60)
+  status = _messages.EnumField('StatusValueValuesEnum', 61)
+  statusMessage = _messages.StringField(62)
+  subnetwork = _messages.StringField(63)
+  tpuConfig = _messages.MessageField('TpuConfig', 64)
+  tpuIpv4CidrBlock = _messages.StringField(65)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 66)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 67)
+  zone = _messages.StringField(68)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -751,32 +752,32 @@ class ClusterUpdate(_messages.Message):
       [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located. Changing the locations a cluster is in will result in
       nodes being either created or removed from the cluster, depending on
-      whether locations are being added or removed.  This list must always
+      whether locations are being added or removed. This list must always
       include the cluster's primary zone.
     desiredLoggingService: The logging service the cluster should use to write
-      logs. Currently available options:  *
-      `logging.googleapis.com/kubernetes` - The Cloud Logging service with a
-      Kubernetes-native resource model * `logging.googleapis.com` - The legacy
-      Cloud Logging service (no longer   available as of GKE 1.15). * `none` -
-      no logs will be exported from the cluster.  If left as an empty
-      string,`logging.googleapis.com/kubernetes` will be used for GKE 1.14+ or
-      `logging.googleapis.com` for earlier versions.
+      logs. Currently available options: * `logging.googleapis.com/kubernetes`
+      - The Cloud Logging service with a Kubernetes-native resource model *
+      `logging.googleapis.com` - The legacy Cloud Logging service (no longer
+      available as of GKE 1.15). * `none` - no logs will be exported from the
+      cluster. If left as an empty string,`logging.googleapis.com/kubernetes`
+      will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
+      versions.
     desiredMaster: Configuration for master components.
     desiredMasterAuthorizedNetworksConfig: The desired configuration options
       for master authorized networks feature.
     desiredMasterVersion: The Kubernetes version to change the master to.
       Users may specify either explicit versions offered by Kubernetes Engine
-      or version aliases, which have the following behavior:  - "latest":
-      picks the highest valid Kubernetes version - "1.X": picks the highest
-      valid patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest
-      valid gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an
-      explicit Kubernetes version - "-": picks the default Kubernetes version
+      or version aliases, which have the following behavior: - "latest": picks
+      the highest valid Kubernetes version - "1.X": picks the highest valid
+      patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest valid
+      gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
+      Kubernetes version - "-": picks the default Kubernetes version
     desiredMonitoringService: The monitoring service the cluster should use to
-      write metrics. Currently available options:  *
+      write metrics. Currently available options: *
       "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
       with a Kubernetes-native resource model * `monitoring.googleapis.com` -
-      The legacy Cloud Monitoring service (no   longer available as of GKE
-      1.15). * `none` - No metrics will be exported from the cluster.  If left
+      The legacy Cloud Monitoring service (no longer available as of GKE
+      1.15). * `none` - No metrics will be exported from the cluster. If left
       as an empty string,`monitoring.googleapis.com/kubernetes` will be used
       for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
@@ -788,9 +789,9 @@ class ClusterUpdate(_messages.Message):
       "desired_node_pool_autoscaling", or "desired_workload_metadata_config"
       is specified and there is more than one node pool on the cluster.
     desiredNodeVersion: The Kubernetes version to change the nodes to
-      (typically an upgrade).  Users may specify either explicit versions
+      (typically an upgrade). Users may specify either explicit versions
       offered by Kubernetes Engine or version aliases, which have the
-      following behavior:  - "latest": picks the highest valid Kubernetes
+      following behavior: - "latest": picks the highest valid Kubernetes
       version - "1.X": picks the highest valid patch+gke.N patch in the 1.X
       version - "1.X.Y": picks the highest valid gke.N patch in the 1.X.Y
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
@@ -1608,9 +1609,9 @@ class DnsCacheConfig(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -1667,6 +1668,17 @@ class GetOpenIDConfigResponse(_messages.Message):
   jwks_uri = _messages.StringField(6)
   response_types_supported = _messages.StringField(7, repeated=True)
   subject_types_supported = _messages.StringField(8, repeated=True)
+
+
+class GkeOidcConfig(_messages.Message):
+  r"""GkeOidcConfig is configuration for GKE OIDC which allows customers to
+  use external OIDC providers with the K8S API
+
+  Fields:
+    enabled: Whether to enable the GKD OIDC component
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class HorizontalPodAutoscaling(_messages.Message):
@@ -1729,35 +1741,35 @@ class IPAllocationPolicy(_messages.Message):
       overlap with certain kinds of network routes. By default we do not allow
       cluster CIDR ranges to intersect with any user declared routes. With
       allow_route_overlap == true, we allow overlapping with CIDR ranges that
-      are larger than the cluster CIDR range.  If this field is set to true,
+      are larger than the cluster CIDR range. If this field is set to true,
       then cluster and services CIDRs must be fully-specified (e.g.
       `10.96.0.0/14`, but not `/14`), which means: 1) When `use_ip_aliases` is
-      true, `cluster_ipv4_cidr_block` and    `services_ipv4_cidr_block` must
-      be fully-specified. 2) When `use_ip_aliases` is false,
-      `cluster.cluster_ipv4_cidr` muse be    fully-specified.
+      true, `cluster_ipv4_cidr_block` and `services_ipv4_cidr_block` must be
+      fully-specified. 2) When `use_ip_aliases` is false,
+      `cluster.cluster_ipv4_cidr` muse be fully-specified.
     clusterIpv4Cidr: This field is deprecated, use cluster_ipv4_cidr_block.
     clusterIpv4CidrBlock: The IP address range for the cluster pod IPs. If
       this field is set, then `cluster.cluster_ipv4_cidr` must be left blank.
-      This field is only applicable when `use_ip_aliases` is true.  Set to
-      blank to have a range chosen with the default size.  Set to /netmask
-      (e.g. `/14`) to have a range chosen with a specific netmask.  Set to a
+      This field is only applicable when `use_ip_aliases` is true. Set to
+      blank to have a range chosen with the default size. Set to /netmask
+      (e.g. `/14`) to have a range chosen with a specific netmask. Set to a
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
     clusterSecondaryRangeName: The name of the secondary range to be used for
-      the cluster CIDR block.  The secondary range will be used for pod IP
+      the cluster CIDR block. The secondary range will be used for pod IP
       addresses. This must be an existing secondary range associated with the
-      cluster subnetwork.  This field is only applicable if use_ip_aliases is
+      cluster subnetwork. This field is only applicable if use_ip_aliases is
       true and create_subnetwork is false.
     createSubnetwork: Whether a new subnetwork will be created automatically
-      for the cluster.  This field is only applicable when `use_ip_aliases` is
+      for the cluster. This field is only applicable when `use_ip_aliases` is
       true.
     nodeIpv4Cidr: This field is deprecated, use node_ipv4_cidr_block.
     nodeIpv4CidrBlock: The IP address range of the instance IPs in this
-      cluster.  This is applicable only if `create_subnetwork` is true.  Set
-      to blank to have a range chosen with the default size.  Set to /netmask
-      (e.g. `/14`) to have a range chosen with a specific netmask.  Set to a
+      cluster. This is applicable only if `create_subnetwork` is true. Set to
+      blank to have a range chosen with the default size. Set to /netmask
+      (e.g. `/14`) to have a range chosen with a specific netmask. Set to a
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
@@ -1765,35 +1777,35 @@ class IPAllocationPolicy(_messages.Message):
     servicesIpv4Cidr: This field is deprecated, use services_ipv4_cidr_block.
     servicesIpv4CidrBlock: The IP address range of the services IPs in this
       cluster. If blank, a range will be automatically chosen with the default
-      size.  This field is only applicable when `use_ip_aliases` is true.  Set
-      to blank to have a range chosen with the default size.  Set to /netmask
-      (e.g. `/14`) to have a range chosen with a specific netmask.  Set to a
+      size. This field is only applicable when `use_ip_aliases` is true. Set
+      to blank to have a range chosen with the default size. Set to /netmask
+      (e.g. `/14`) to have a range chosen with a specific netmask. Set to a
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
     servicesSecondaryRangeName: The name of the secondary range to be used as
-      for the services CIDR block.  The secondary range will be used for
+      for the services CIDR block. The secondary range will be used for
       service ClusterIPs. This must be an existing secondary range associated
-      with the cluster subnetwork.  This field is only applicable with
+      with the cluster subnetwork. This field is only applicable with
       use_ip_aliases is true and create_subnetwork is false.
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
-      is true.  If this field is empty, then an automatic name will be chosen
+      is true. If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
     tpuIpv4CidrBlock: The IP address range of the Cloud TPUs in this cluster.
       If unspecified, a range will be automatically chosen with the default
-      size.  This field is only applicable when `use_ip_aliases` is true, and
+      size. This field is only applicable when `use_ip_aliases` is true, and
       it must not be specified when the `tpu_use_service_networking` is
-      `true`.  Unspecified to have a range chosen with the default size `/20`.
+      `true`. Unspecified to have a range chosen with the default size `/20`.
       Set to /netmask (e.g. `/14`) to have a range chosen with a specific
-      netmask.  Set to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
+      netmask. Set to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `10.96.0.0/14`) from the RFC-1918 private
       networks (e.g. `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick
       a specific range to use. This field is deprecated, use
       cluster.tpu_config.ipv4_cidr_block instead.
     tpuUseServiceNetworking: Enable Cloud TPU's Service Networking mode. In
       this mode, the CIDR blocks used by the Cloud TPUs will be allocated and
-      managed by Service Networking, instead of GKE.  This field must be
+      managed by Service Networking, instead of GKE. This field must be
       `false` when `tpu_ipv4_cidr_block` is specified. This field is
       deprecated, use cluster.tpu_config.use_service_networking instead.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
@@ -1942,14 +1954,14 @@ class LinuxNodeConfig(_messages.Message):
 
   Messages:
     SysctlsValue: The Linux kernel parameters to be applied to the nodes and
-      all pods running on the nodes.  The following parameters are supported.
+      all pods running on the nodes. The following parameters are supported.
       net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
       net.core.wmem_max net.core.optmem_max net.core.somaxconn
       net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
 
   Fields:
     sysctls: The Linux kernel parameters to be applied to the nodes and all
-      pods running on the nodes.  The following parameters are supported.
+      pods running on the nodes. The following parameters are supported.
       net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
       net.core.wmem_max net.core.optmem_max net.core.somaxconn
       net.ipv4.tcp_rmem net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
@@ -1958,7 +1970,7 @@ class LinuxNodeConfig(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SysctlsValue(_messages.Message):
     r"""The Linux kernel parameters to be applied to the nodes and all pods
-    running on the nodes.  The following parameters are supported.
+    running on the nodes. The following parameters are supported.
     net.core.netdev_max_backlog net.core.rmem_max net.core.wmem_default
     net.core.wmem_max net.core.optmem_max net.core.somaxconn net.ipv4.tcp_rmem
     net.ipv4.tcp_wmem net.ipv4.tcp_tw_reuse
@@ -2225,7 +2237,7 @@ class MasterAuth(_messages.Message):
       is the root of trust for the cluster.
     password: The password to use for HTTP basic authentication to the master
       endpoint. Because the master endpoint is open to the Internet, you
-      should create a strong password.  If a password is provided for cluster
+      should create a strong password. If a password is provided for cluster
       creation, username must be non-empty.
     username: The username to use for HTTP basic authentication to the master
       endpoint. For clusters v1.6.0 and later, basic authentication can be
@@ -2273,11 +2285,12 @@ class MasterSignalsConfig(_messages.Message):
     r"""LogEnabledComponentsValueListEntryValuesEnum enum type.
 
     Values:
-      COMPONENT_UNSPECIFIED: <no description>
-      APISERVER: <no description>
-      SCHEDULER: <no description>
-      CONTROLLER_MANAGER: <no description>
-      ADDON_MANAGER: <no description>
+      COMPONENT_UNSPECIFIED: Didn't specify any components. Used to avoid
+        overriding existing list.
+      APISERVER: kube-apiserver
+      SCHEDULER: kube-scheduler
+      CONTROLLER_MANAGER: kube-controller-manager
+      ADDON_MANAGER: kube-addon-manager
     """
     COMPONENT_UNSPECIFIED = 0
     APISERVER = 1
@@ -2463,21 +2476,21 @@ class NodeConfig(_messages.Message):
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/labels/
     MetadataValue: The metadata key/value pairs assigned to instances in the
-      cluster.  Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less
+      cluster. Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      reserved keys:  - "cluster-location"  - "cluster-name"  - "cluster-uid"
-      - "configure-sh"  - "containerd-configure-sh"  - "enable-os-login"  -
-      "gci-ensure-gke-docker"  - "gci-metrics-enabled"  - "gci-update-
-      strategy"  - "instance-template"  - "kube-env"  - "startup-script"  -
-      "user-data"  - "disable-address-manager"  - "windows-startup-script-ps1"
-      - "common-psm1"  - "k8s-node-setup-psm1"  - "install-ssh-psm1"  - "user-
-      profile-psm1"  - "serial-port-logging-enable"  Values are free-form
-      strings, and only have meaning as interpreted by the image running in
-      the instance. The only restriction placed on them is that each value's
-      size must be less than or equal to 32 KB.  The total size of all keys
-      and values must be less than 512 KB.
+      reserved keys: - "cluster-location" - "cluster-name" - "cluster-uid" -
+      "configure-sh" - "containerd-configure-sh" - "enable-os-login" - "gci-
+      ensure-gke-docker" - "gci-metrics-enabled" - "gci-update-strategy" -
+      "instance-template" - "kube-env" - "startup-script" - "user-data" -
+      "disable-address-manager" - "windows-startup-script-ps1" - "common-psm1"
+      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" -
+      "serial-port-logging-enable" Values are free-form strings, and only have
+      meaning as interpreted by the image running in the instance. The only
+      restriction placed on them is that each value's size must be less than
+      or equal to 32 KB. The total size of all keys and values must be less
+      than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2490,10 +2503,10 @@ class NodeConfig(_messages.Message):
       with Cloud KMS Keys please see:
       https://cloud.google.com/compute/docs/disks/customer-managed-encryption
     diskSizeGb: Size of the disk attached to each node, specified in GB. The
-      smallest allowed disk size is 10GB.  If unspecified, the default disk
+      smallest allowed disk size is 10GB. If unspecified, the default disk
       size is 100GB.
     diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
-      'pd-ssd')  If unspecified, the default disk type is 'pd-standard'
+      'pd-ssd') If unspecified, the default disk type is 'pd-standard'
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
     kubeletConfig: Node kubelet configs.
@@ -2514,24 +2527,24 @@ class NodeConfig(_messages.Message):
     localSsdVolumeConfigs: Parameters for using Local SSD with extra options
       as hostpath or local volumes
     machineType: The name of a Google Compute Engine [machine
-      type](/compute/docs/machine-types) (e.g. `n1-standard-1`).  If
+      type](/compute/docs/machine-types) (e.g. `n1-standard-1`). If
       unspecified, the default machine type is `n1-standard-1`.
     metadata: The metadata key/value pairs assigned to instances in the
-      cluster.  Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less
+      cluster. Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less
       than 128 bytes in length. These are reflected as part of a URL in the
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
-      reserved keys:  - "cluster-location"  - "cluster-name"  - "cluster-uid"
-      - "configure-sh"  - "containerd-configure-sh"  - "enable-os-login"  -
-      "gci-ensure-gke-docker"  - "gci-metrics-enabled"  - "gci-update-
-      strategy"  - "instance-template"  - "kube-env"  - "startup-script"  -
-      "user-data"  - "disable-address-manager"  - "windows-startup-script-ps1"
-      - "common-psm1"  - "k8s-node-setup-psm1"  - "install-ssh-psm1"  - "user-
-      profile-psm1"  - "serial-port-logging-enable"  Values are free-form
-      strings, and only have meaning as interpreted by the image running in
-      the instance. The only restriction placed on them is that each value's
-      size must be less than or equal to 32 KB.  The total size of all keys
-      and values must be less than 512 KB.
+      reserved keys: - "cluster-location" - "cluster-name" - "cluster-uid" -
+      "configure-sh" - "containerd-configure-sh" - "enable-os-login" - "gci-
+      ensure-gke-docker" - "gci-metrics-enabled" - "gci-update-strategy" -
+      "instance-template" - "kube-env" - "startup-script" - "user-data" -
+      "disable-address-manager" - "windows-startup-script-ps1" - "common-psm1"
+      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" -
+      "serial-port-logging-enable" Values are free-form strings, and only have
+      meaning as interpreted by the image running in the instance. The only
+      restriction placed on them is that each value's size must be less than
+      or equal to 32 KB. The total size of all keys and values must be less
+      than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -2547,13 +2560,13 @@ class NodeConfig(_messages.Message):
       Note that this is only applicable for node pools using
       image_type=CUSTOM.
     oauthScopes: The set of Google API scopes to be made available on all of
-      the node VMs under the "default" service account.  The following scopes
-      are recommended, but not required, and by default are not included:  *
+      the node VMs under the "default" service account. The following scopes
+      are recommended, but not required, and by default are not included: *
       `https://www.googleapis.com/auth/compute` is required for mounting
       persistent storage on your nodes. *
       `https://www.googleapis.com/auth/devstorage.read_only` is required for
       communicating with **gcr.io** (the [Google Container
-      Registry](/container-registry/)).  If unspecified, no scopes are added,
+      Registry](/container-registry/)). If unspecified, no scopes are added,
       unless Cloud Logging or Cloud Monitoring are enabled, in which case
       their required scopes will be added.
     preemptible: Whether the nodes are created as preemptible VM instances.
@@ -2573,7 +2586,7 @@ class NodeConfig(_messages.Message):
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
       within the list must comply with RFC1035.
-    taints: List of kubernetes taints to be applied to each node.  For more
+    taints: List of kubernetes taints to be applied to each node. For more
       information, including usage and the valid values, see:
       https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
     workloadMetadataConfig: The workload metadata configuration for this node.
@@ -2615,17 +2628,17 @@ class NodeConfig(_messages.Message):
     Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less than 128
     bytes in length. These are reflected as part of a URL in the metadata
     server. Additionally, to avoid ambiguity, keys must not conflict with any
-    other metadata keys for the project or be one of the reserved keys:  -
-    "cluster-location"  - "cluster-name"  - "cluster-uid"  - "configure-sh"  -
-    "containerd-configure-sh"  - "enable-os-login"  - "gci-ensure-gke-docker"
-    - "gci-metrics-enabled"  - "gci-update-strategy"  - "instance-template"  -
-    "kube-env"  - "startup-script"  - "user-data"  - "disable-address-manager"
-    - "windows-startup-script-ps1"  - "common-psm1"  - "k8s-node-setup-psm1"
-    - "install-ssh-psm1"  - "user-profile-psm1"  - "serial-port-logging-
-    enable"  Values are free-form strings, and only have meaning as
-    interpreted by the image running in the instance. The only restriction
-    placed on them is that each value's size must be less than or equal to 32
-    KB.  The total size of all keys and values must be less than 512 KB.
+    other metadata keys for the project or be one of the reserved keys: -
+    "cluster-location" - "cluster-name" - "cluster-uid" - "configure-sh" -
+    "containerd-configure-sh" - "enable-os-login" - "gci-ensure-gke-docker" -
+    "gci-metrics-enabled" - "gci-update-strategy" - "instance-template" -
+    "kube-env" - "startup-script" - "user-data" - "disable-address-manager" -
+    "windows-startup-script-ps1" - "common-psm1" - "k8s-node-setup-psm1" -
+    "install-ssh-psm1" - "user-profile-psm1" - "serial-port-logging-enable"
+    Values are free-form strings, and only have meaning as interpreted by the
+    image running in the instance. The only restriction placed on them is that
+    each value's size must be less than or equal to 32 KB. The total size of
+    all keys and values must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2678,12 +2691,12 @@ class NodeKubeletConfig(_messages.Message):
 
   Fields:
     cpuCfsQuota: Enable CPU CFS quota enforcement for containers that specify
-      CPU limits.  If this option is enabled, kubelet uses CFS quota
+      CPU limits. If this option is enabled, kubelet uses CFS quota
       (https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt) to
       enforce container CPU limits. Otherwise, CPU limits will not be enforced
-      at all.  Disable this option to mitigate CPU throttling problems while
+      at all. Disable this option to mitigate CPU throttling problems while
       still having your pods to be in Guaranteed QoS class by specifying the
-      CPU limits.  The default value is 'true' if unspecified.
+      CPU limits. The default value is 'true' if unspecified.
     cpuCfsQuotaPeriod: Set the CPU CFS quota period value 'cpu.cfs_period_us'.
       The string must be a sequence of decimal numbers, each with optional
       fraction and a unit suffix, such as "300ms". Valid time units are "ns",
@@ -2691,10 +2704,10 @@ class NodeKubeletConfig(_messages.Message):
       duration.
     cpuManagerPolicy: Control the CPU management policy on the node. See
       https://kubernetes.io/docs/tasks/administer-cluster/cpu-management-
-      policies/  The following values are allowed.   - "none": the default,
-      which represents the existing scheduling behavior.   - "static": allows
-      pods with certain resource characteristics to be               granted
-      increased CPU affinity and exclusivity on the node.
+      policies/ The following values are allowed. - "none": the default, which
+      represents the existing scheduling behavior. - "static": allows pods
+      with certain resource characteristics to be granted increased CPU
+      affinity and exclusivity on the node.
   """
 
   cpuCfsQuota = _messages.BooleanField(1)
@@ -2735,9 +2748,8 @@ class NodePool(_messages.Message):
     conditions: Which conditions caused the current node pool state.
     config: The node configuration of the pool.
     initialNodeCount: The initial node count for the pool. You must ensure
-      that your Compute Engine <a href="/compute/docs/resource-
-      quotas">resource quota</a> is sufficient for this number of instances.
-      You must also have available firewall and routes quota.
+      that your Compute Engine resource quota is sufficient for this number of
+      instances. You must also have available firewall and routes quota.
     instanceGroupUrls: [Output only] The resource URLs of the [managed
       instance groups](/compute/docs/instance-groups/creating-groups-of-
       managed-instances) associated with this node pool.
@@ -2828,8 +2840,8 @@ class NodePoolAutoscaling(_messages.Message):
 
 class NodeTaint(_messages.Message):
   r"""Kubernetes taint is comprised of three fields: key, value, and effect.
-  Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
-  NoExecute.  See
+  Effect can only be one of three types: NoSchedule, PreferNoSchedule or
+  NoExecute. See
   [here](https://kubernetes.io/docs/concepts/configuration/taint-and-
   toleration) for more information, including usage and the valid values.
 
@@ -2991,10 +3003,10 @@ class OperationProgress(_messages.Message):
       stage operations.
 
   Fields:
-    metrics: Progress metric bundle, for example:   metrics: [{name: "nodes
-      done",     int_value: 15},             {name: "nodes total",
-      int_value: 32}] or   metrics: [{name: "progress",       double_value:
-      0.56},             {name: "progress scale", double_value: 1.0}]
+    metrics: Progress metric bundle, for example: metrics: [{name: "nodes
+      done", int_value: 15}, {name: "nodes total", int_value: 32}] or metrics:
+      [{name: "progress", double_value: 0.56}, {name: "progress scale",
+      double_value: 1.0}]
     name: A non-parameterized string describing an operation stage. Unset for
       single-stage operations.
     stages: Substages of an operation or a stage.
@@ -3108,19 +3120,18 @@ class RecurringTimeWindow(_messages.Message):
   Fields:
     recurrence: An RRULE (https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
       for how this window reccurs. They go on for the span of time between the
-      start and end time.  For example, to have something repeat every
-      weekday, you'd use: `FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR`  To repeat some
-      window daily (equivalent to the DailyMaintenanceWindow): `FREQ=DAILY`
-      For the first weekend of every month:
-      `FREQ=MONTHLY;BYSETPOS=1;BYDAY=SA,SU`  This specifies how frequently the
-      window starts. Eg, if you wanted to have a 9-5 UTC-4 window every
-      weekday, you'd use something like: ``` start time =
-      2019-01-01T09:00:00-0400 end time = 2019-01-01T17:00:00-0400 recurrence
-      = FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR ```  Windows can span multiple days.
-      Eg, to make the window encompass every weekend from midnight Saturday
-      till the last minute of Sunday UTC: ``` start time =
+      start and end time. For example, to have something repeat every weekday,
+      you'd use: `FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR` To repeat some window
+      daily (equivalent to the DailyMaintenanceWindow): `FREQ=DAILY` For the
+      first weekend of every month: `FREQ=MONTHLY;BYSETPOS=1;BYDAY=SA,SU` This
+      specifies how frequently the window starts. Eg, if you wanted to have a
+      9-5 UTC-4 window every weekday, you'd use something like: ``` start time
+      = 2019-01-01T09:00:00-0400 end time = 2019-01-01T17:00:00-0400
+      recurrence = FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR ``` Windows can span
+      multiple days. Eg, to make the window encompass every weekend from
+      midnight Saturday till the last minute of Sunday UTC: ``` start time =
       2019-01-05T00:00:00Z end time = 2019-01-07T23:59:00Z recurrence =
-      FREQ=WEEKLY;BYDAY=SA ```  Note the start and end time's specific dates
+      FREQ=WEEKLY;BYDAY=SA ``` Note the start and end time's specific dates
       are largely arbitrary except to specify duration of the window and when
       it first starts. The FREQ values of HOURLY, MINUTELY, and SECONDLY are
       not supported.
@@ -3133,7 +3144,7 @@ class RecurringTimeWindow(_messages.Message):
 
 class ReleaseChannel(_messages.Message):
   r"""ReleaseChannel indicates which release channel a cluster is subscribed
-  to. Release channels are arranged in order of risk.  When a cluster is
+  to. Release channels are arranged in order of risk. When a cluster is
   subscribed to a release channel, Google maintains both the master version
   and the node version. Node auto-upgrade defaults to true and cannot be
   disabled.
@@ -3153,7 +3164,7 @@ class ReleaseChannel(_messages.Message):
     Values:
       UNSPECIFIED: No channel specified.
       RAPID: RAPID channel is offered on an early access basis for customers
-        who want to test new releases.  WARNING: Versions available in the
+        who want to test new releases. WARNING: Versions available in the
         RAPID Channel may be subject to unresolved issues with no known
         workaround and are not subject to any SLAs.
       REGULAR: Clusters subscribed to REGULAR receive versions that are
@@ -3191,7 +3202,7 @@ class ReleaseChannelConfig(_messages.Message):
     Values:
       UNSPECIFIED: No channel specified.
       RAPID: RAPID channel is offered on an early access basis for customers
-        who want to test new releases.  WARNING: Versions available in the
+        who want to test new releases. WARNING: Versions available in the
         RAPID Channel may be subject to unresolved issues with no known
         workaround and are not subject to any SLAs.
       REGULAR: Clusters subscribed to REGULAR receive versions that are
@@ -3414,8 +3425,8 @@ class SetLabelsRequest(_messages.Message):
       resource, used to detect conflicts. The fingerprint is initially
       generated by Kubernetes Engine and changes after every request to modify
       or update labels. You must always provide an up-to-date fingerprint hash
-      when updating or changing labels. Make a <code>get()</code> request to
-      the resource to get the latest fingerprint.
+      when updating or changing labels. Make a get() request to the resource
+      to get the latest fingerprint.
     name: The name (project, location, cluster id) of the cluster to set
       labels. Specified in the format 'projects/*/locations/*/clusters/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
@@ -3497,7 +3508,7 @@ class SetLocationsRequest(_messages.Message):
       [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located. Changing the locations a cluster is in will result in
       nodes being either created or removed from the cluster, depending on
-      whether locations are being added or removed.  This list must always
+      whether locations are being added or removed. This list must always
       include the cluster's primary zone.
     name: The name (project, location, cluster) of the cluster to set
       locations. Specified in the format 'projects/*/locations/*/clusters/*'.
@@ -3523,11 +3534,11 @@ class SetLoggingServiceRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
     loggingService: The logging service the cluster should use to write logs.
-      Currently available options:  * `logging.googleapis.com/kubernetes` -
-      The Cloud Logging service with a Kubernetes-native resource model *
+      Currently available options: * `logging.googleapis.com/kubernetes` - The
+      Cloud Logging service with a Kubernetes-native resource model *
       `logging.googleapis.com` - The legacy Cloud Logging service (no longer
       available as of GKE 1.15). * `none` - no logs will be exported from the
-      cluster.  If left as an empty string,`logging.googleapis.com/kubernetes`
+      cluster. If left as an empty string,`logging.googleapis.com/kubernetes`
       will be used for GKE 1.14+ or `logging.googleapis.com` for earlier
       versions.
     name: The name (project, location, cluster) of the cluster to set logging.
@@ -3599,9 +3610,9 @@ class SetMasterAuthRequest(_messages.Message):
       UNKNOWN: Operation is unknown and will error out.
       SET_PASSWORD: Set the password to a user generated value.
       GENERATE_PASSWORD: Generate a new password and set it to that.
-      SET_USERNAME: Set the username.  If an empty username is provided, basic
-        authentication is disabled for the cluster.  If a non-empty username
-        is provided, basic authentication is enabled, with either a provided
+      SET_USERNAME: Set the username. If an empty username is provided, basic
+        authentication is disabled for the cluster. If a non-empty username is
+        provided, basic authentication is enabled, with either a provided
         password or a generated one.
     """
     UNKNOWN = 0
@@ -3624,11 +3635,11 @@ class SetMonitoringServiceRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
     monitoringService: The monitoring service the cluster should use to write
-      metrics. Currently available options:  *
+      metrics. Currently available options: *
       "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
       with a Kubernetes-native resource model * `monitoring.googleapis.com` -
-      The legacy Cloud Monitoring service (no   longer available as of GKE
-      1.15). * `none` - No metrics will be exported from the cluster.  If left
+      The legacy Cloud Monitoring service (no longer available as of GKE
+      1.15). * `none` - No metrics will be exported from the cluster. If left
       as an empty string,`monitoring.googleapis.com/kubernetes` will be used
       for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     name: The name (project, location, cluster) of the cluster to set
@@ -3876,7 +3887,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -3885,7 +3896,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -3943,32 +3954,32 @@ class StatusCondition(_messages.Message):
     r"""Canonical code of the condition.
 
     Values:
-      OK: Not an error; returned on success  HTTP Mapping: 200 OK
-      CANCELLED: The operation was cancelled, typically by the caller.  HTTP
+      OK: Not an error; returned on success HTTP Mapping: 200 OK
+      CANCELLED: The operation was cancelled, typically by the caller. HTTP
         Mapping: 499 Client Closed Request
-      UNKNOWN: Unknown error.  For example, this error may be returned when a
+      UNKNOWN: Unknown error. For example, this error may be returned when a
         `Status` value received from another address space belongs to an error
-        space that is not known in this address space.  Also errors raised by
+        space that is not known in this address space. Also errors raised by
         APIs that do not return enough error information may be converted to
-        this error.  HTTP Mapping: 500 Internal Server Error
-      INVALID_ARGUMENT: The client specified an invalid argument.  Note that
-        this differs from `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates
+        this error. HTTP Mapping: 500 Internal Server Error
+      INVALID_ARGUMENT: The client specified an invalid argument. Note that
+        this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates
         arguments that are problematic regardless of the state of the system
-        (e.g., a malformed file name).  HTTP Mapping: 400 Bad Request
+        (e.g., a malformed file name). HTTP Mapping: 400 Bad Request
       DEADLINE_EXCEEDED: The deadline expired before the operation could
         complete. For operations that change the state of the system, this
         error may be returned even if the operation has completed
-        successfully.  For example, a successful response from a server could
-        have been delayed long enough for the deadline to expire.  HTTP
+        successfully. For example, a successful response from a server could
+        have been delayed long enough for the deadline to expire. HTTP
         Mapping: 504 Gateway Timeout
       NOT_FOUND: Some requested entity (e.g., file or directory) was not
-        found.  Note to server developers: if a request is denied for an
-        entire class of users, such as gradual feature rollout or undocumented
+        found. Note to server developers: if a request is denied for an entire
+        class of users, such as gradual feature rollout or undocumented
         allowlist, `NOT_FOUND` may be used. If a request is denied for some
         users within a class of users, such as user-based access control,
-        `PERMISSION_DENIED` must be used.  HTTP Mapping: 404 Not Found
+        `PERMISSION_DENIED` must be used. HTTP Mapping: 404 Not Found
       ALREADY_EXISTS: The entity that a client attempted to create (e.g., file
-        or directory) already exists.  HTTP Mapping: 409 Conflict
+        or directory) already exists. HTTP Mapping: 409 Conflict
       PERMISSION_DENIED: The caller does not have permission to execute the
         specified operation. `PERMISSION_DENIED` must not be used for
         rejections caused by exhausting some resource (use
@@ -3976,55 +3987,55 @@ class StatusCondition(_messages.Message):
         must not be used if the caller can not be identified (use
         `UNAUTHENTICATED` instead for those errors). This error code does not
         imply the request is valid or the requested entity exists or satisfies
-        other pre-conditions.  HTTP Mapping: 403 Forbidden
+        other pre-conditions. HTTP Mapping: 403 Forbidden
       UNAUTHENTICATED: The request does not have valid authentication
-        credentials for the operation.  HTTP Mapping: 401 Unauthorized
+        credentials for the operation. HTTP Mapping: 401 Unauthorized
       RESOURCE_EXHAUSTED: Some resource has been exhausted, perhaps a per-user
-        quota, or perhaps the entire file system is out of space.  HTTP
+        quota, or perhaps the entire file system is out of space. HTTP
         Mapping: 429 Too Many Requests
       FAILED_PRECONDITION: The operation was rejected because the system is
-        not in a state required for the operation's execution.  For example,
+        not in a state required for the operation's execution. For example,
         the directory to be deleted is non-empty, an rmdir operation is
-        applied to a non-directory, etc.  Service implementors can use the
+        applied to a non-directory, etc. Service implementors can use the
         following guidelines to decide between `FAILED_PRECONDITION`,
-        `ABORTED`, and `UNAVAILABLE`:  (a) Use `UNAVAILABLE` if the client can
-        retry just the failing call.  (b) Use `ABORTED` if the client should
-        retry at a higher level      (e.g., when a client-specified test-and-
-        set fails, indicating the      client should restart a read-modify-
-        write sequence).  (c) Use `FAILED_PRECONDITION` if the client should
-        not retry until      the system state has been explicitly fixed.
-        E.g., if an "rmdir"      fails because the directory is non-empty,
-        `FAILED_PRECONDITION`      should be returned since the client should
-        not retry unless      the files are deleted from the directory.  HTTP
-        Mapping: 400 Bad Request
+        `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
+        retry just the failing call. (b) Use `ABORTED` if the client should
+        retry at a higher level (e.g., when a client-specified test-and-set
+        fails, indicating the client should restart a read-modify-write
+        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. E.g., if an
+        "rmdir" fails because the directory is non-empty,
+        `FAILED_PRECONDITION` should be returned since the client should not
+        retry unless the files are deleted from the directory. HTTP Mapping:
+        400 Bad Request
       ABORTED: The operation was aborted, typically due to a concurrency issue
-        such as a sequencer check failure or transaction abort.  See the
+        such as a sequencer check failure or transaction abort. See the
         guidelines above for deciding between `FAILED_PRECONDITION`,
-        `ABORTED`, and `UNAVAILABLE`.  HTTP Mapping: 409 Conflict
-      OUT_OF_RANGE: The operation was attempted past the valid range.  E.g.,
-        seeking or reading past end-of-file.  Unlike `INVALID_ARGUMENT`, this
+        `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict
+      OUT_OF_RANGE: The operation was attempted past the valid range. E.g.,
+        seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this
         error indicates a problem that may be fixed if the system state
         changes. For example, a 32-bit file system will generate
         `INVALID_ARGUMENT` if asked to read at an offset that is not in the
         range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read
-        from an offset past the current file size.  There is a fair bit of
-        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`.  We
-        recommend using `OUT_OF_RANGE` (the more specific error) when it
-        applies so that callers who are iterating through a space can easily
-        look for an `OUT_OF_RANGE` error to detect when they are done.  HTTP
-        Mapping: 400 Bad Request
+        from an offset past the current file size. There is a fair bit of
+        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend
+        using `OUT_OF_RANGE` (the more specific error) when it applies so that
+        callers who are iterating through a space can easily look for an
+        `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400
+        Bad Request
       UNIMPLEMENTED: The operation is not implemented or is not
-        supported/enabled in this service.  HTTP Mapping: 501 Not Implemented
-      INTERNAL: Internal errors.  This means that some invariants expected by
-        the underlying system have been broken.  This error code is reserved
-        for serious errors.  HTTP Mapping: 500 Internal Server Error
-      UNAVAILABLE: The service is currently unavailable.  This is most likely
-        a transient condition, which can be corrected by retrying with a
+        supported/enabled in this service. HTTP Mapping: 501 Not Implemented
+      INTERNAL: Internal errors. This means that some invariants expected by
+        the underlying system have been broken. This error code is reserved
+        for serious errors. HTTP Mapping: 500 Internal Server Error
+      UNAVAILABLE: The service is currently unavailable. This is most likely a
+        transient condition, which can be corrected by retrying with a
         backoff. Note that it is not always safe to retry non-idempotent
-        operations.  See the guidelines above for deciding between
-        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`.  HTTP Mapping:
-        503 Service Unavailable
-      DATA_LOSS: Unrecoverable data loss or corruption.  HTTP Mapping: 500
+        operations. See the guidelines above for deciding between
+        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 503
+        Service Unavailable
+      DATA_LOSS: Unrecoverable data loss or corruption. HTTP Mapping: 500
         Internal Server Error
     """
     OK = 0
@@ -4134,9 +4145,9 @@ class UpdateMasterRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
-    masterVersion: The Kubernetes version to change the master to.  Users may
+    masterVersion: The Kubernetes version to change the master to. Users may
       specify either explicit versions offered by Kubernetes Engine or version
-      aliases, which have the following behavior:  - "latest": picks the
+      aliases, which have the following behavior: - "latest": picks the
       highest valid Kubernetes version - "1.X": picks the highest valid
       patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest valid
       gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
@@ -4181,7 +4192,7 @@ class UpdateNodePoolRequest(_messages.Message):
     nodePoolId: Deprecated. The name of the node pool to upgrade. This field
       has been deprecated and replaced by the name field.
     nodeVersion: The Kubernetes version to change the nodes to (typically an
-      upgrade).  Users may specify either explicit versions offered by
+      upgrade). Users may specify either explicit versions offered by
       Kubernetes Engine or version aliases, which have the following behavior:
       - "latest": picks the highest valid Kubernetes version - "1.X": picks
       the highest valid patch+gke.N patch in the 1.X version - "1.X.Y": picks
@@ -4220,21 +4231,60 @@ class UpdateNodePoolRequest(_messages.Message):
   zone = _messages.StringField(15)
 
 
+class UpgradeEvent(_messages.Message):
+  r"""UpgradeEvent is a notification sent to customers by the cluster server
+  when a resource is upgrading.
+
+  Enums:
+    ResourceTypeValueValuesEnum: Required. The resource type that is
+      upgrading.
+
+  Fields:
+    currentVersion: Required. The current version before the upgrade.
+    operation: Required. The operation associated with this upgrade.
+    operationStartTime: Required. The time when the operation was started.
+    resource: Optional. Optional relative path to the resource. For example in
+      node pool upgrades, the relative path of the node pool.
+    resourceType: Required. The resource type that is upgrading.
+    targetVersion: Required. The target version for the upgrade.
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The resource type that is upgrading.
+
+    Values:
+      UPGRADE_RESOURCE_TYPE_UNSPECIFIED: Default value. This shouldn't be
+        used.
+      MASTER: Master / control plane
+      NODE_POOL: Node pool
+    """
+    UPGRADE_RESOURCE_TYPE_UNSPECIFIED = 0
+    MASTER = 1
+    NODE_POOL = 2
+
+  currentVersion = _messages.StringField(1)
+  operation = _messages.StringField(2)
+  operationStartTime = _messages.StringField(3)
+  resource = _messages.StringField(4)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 5)
+  targetVersion = _messages.StringField(6)
+
+
 class UpgradeSettings(_messages.Message):
   r"""These upgrade settings control the level of parallelism and the level of
-  disruption caused by an upgrade.  maxUnavailable controls the number of
-  nodes that can be simultaneously unavailable.  maxSurge controls the number
-  of additional nodes that can be added to the node pool temporarily for the
-  time of the upgrade to increase the number of available nodes.
-  (maxUnavailable + maxSurge) determines the level of parallelism (how many
-  nodes are being upgraded at the same time).  Note: upgrades inevitably
-  introduce some disruption since workloads need to be moved from old nodes to
-  new, upgraded ones. Even if maxUnavailable=0, this holds true. (Disruption
-  stays within the limits of PodDisruptionBudget, if it is configured.)    For
-  example, a 5-node pool is created with maxSurge set to 2 and maxUnavailable
-  set to 1. During an upgrade, GKE creates 2 upgraded nodes, then brings down
-  up to 3 existing nodes after the upgraded nodes are ready. GKE will only
-  bring down 1 node at a time.
+  disruption caused by an upgrade. maxUnavailable controls the number of nodes
+  that can be simultaneously unavailable. maxSurge controls the number of
+  additional nodes that can be added to the node pool temporarily for the time
+  of the upgrade to increase the number of available nodes. (maxUnavailable +
+  maxSurge) determines the level of parallelism (how many nodes are being
+  upgraded at the same time). Note: upgrades inevitably introduce some
+  disruption since workloads need to be moved from old nodes to new, upgraded
+  ones. Even if maxUnavailable=0, this holds true. (Disruption stays within
+  the limits of PodDisruptionBudget, if it is configured.) For example, a
+  5-node pool is created with maxSurge set to 2 and maxUnavailable set to 1.
+  During an upgrade, GKE creates 2 upgraded nodes, then brings down up to 3
+  existing nodes after the upgraded nodes are ready. GKE will only bring down
+  1 node at a time.
 
   Fields:
     maxSurge: The maximum number of nodes that can be created beyond the
@@ -4386,11 +4436,11 @@ class WorkloadMetadataConfig(_messages.Message):
       UNSPECIFIED: Not set.
       SECURE: Prevent workloads not in hostNetwork from accessing certain VM
         metadata, specifically kube-env, which contains Kubelet credentials,
-        and the instance identity token.  Metadata concealment is a temporary
+        and the instance identity token. Metadata concealment is a temporary
         security solution available while the bootstrapping process for
         cluster nodes is being redesigned with significant security
-        improvements.  This feature is scheduled to be deprecated in the
-        future and later removed.
+        improvements. This feature is scheduled to be deprecated in the future
+        and later removed.
       EXPOSE: Expose all VM metadata to pods.
       GKE_METADATA_SERVER: Run the GKE Metadata Server on this node. The GKE
         Metadata Server exposes a metadata API to workloads that is compatible

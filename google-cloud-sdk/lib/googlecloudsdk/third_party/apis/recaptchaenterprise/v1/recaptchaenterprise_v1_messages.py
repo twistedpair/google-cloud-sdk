@@ -142,16 +142,14 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   that use reCAPTCHA Enterprise.
 
   Messages:
-    LabelsValue: See <a href="https://cloud.google.com/recaptcha-
-      enterprise/docs/labels"> Creating and managing labels</a>.
+    LabelsValue: See Creating and managing labels.
 
   Fields:
     androidSettings: Settings for keys that can be used by Android apps.
     createTime: The timestamp corresponding to the creation of this Key.
     displayName: Human-readable display name of this key. Modifiable by user.
     iosSettings: Settings for keys that can be used by iOS apps.
-    labels: See <a href="https://cloud.google.com/recaptcha-
-      enterprise/docs/labels"> Creating and managing labels</a>.
+    labels: See Creating and managing labels.
     name: The resource name for the Key in the format
       "projects/{project}/keys/{key}".
     webSettings: Settings for keys that can be used by websites.
@@ -159,8 +157,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See <a href="https://cloud.google.com/recaptcha-
-    enterprise/docs/labels"> Creating and managing labels</a>.
+    r"""See Creating and managing labels.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -237,12 +234,16 @@ class GoogleCloudRecaptchaenterpriseV1RiskAnalysis(_messages.Message):
     r"""ReasonsValueListEntryValuesEnum enum type.
 
     Values:
-      CLASSIFICATION_REASON_UNSPECIFIED: <no description>
-      AUTOMATION: <no description>
-      UNEXPECTED_ENVIRONMENT: <no description>
-      TOO_MUCH_TRAFFIC: <no description>
-      UNEXPECTED_USAGE_PATTERNS: <no description>
-      LOW_CONFIDENCE_SCORE: <no description>
+      CLASSIFICATION_REASON_UNSPECIFIED: Default unspecified type.
+      AUTOMATION: Interactions matched the behavior of an automated agent.
+      UNEXPECTED_ENVIRONMENT: The event originated from an illegitimate
+        environment.
+      TOO_MUCH_TRAFFIC: Traffic volume from the event source is higher than
+        normal.
+      UNEXPECTED_USAGE_PATTERNS: Interactions with the site were significantly
+        different than expected patterns.
+      LOW_CONFIDENCE_SCORE: Too little traffic has been received from this
+        site thus far to generate quality risk analysis.
     """
     CLASSIFICATION_REASON_UNSPECIFIED = 0
     AUTOMATION = 1
@@ -463,9 +464,9 @@ class GoogleCloudRecaptchaenterpriseV1WebKeySettings(_messages.Message):
 class GoogleProtobufEmpty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 

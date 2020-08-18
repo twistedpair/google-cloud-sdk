@@ -61,12 +61,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
           }
 
     def CheckValidCreds(self, request, global_params=None):
-      r"""Returns true if valid credentials exist for the given data source and.
-requesting user.
-Some data sources doesn't support service account, so we need to talk to
-them on behalf of the end user. This API just checks whether we have OAuth
-token for the particular user, which is a pre-requisite before user can
-create a transfer config.
+      r"""Returns true if valid credentials exist for the given data source and requesting user. Some data sources doesn't support service account, so we need to talk to them on behalf of the end user. This API just checks whether we have OAuth token for the particular user, which is a pre-requisite before user can create a transfer config.
 
       Args:
         request: (BigquerydatatransferProjectsDataSourcesCheckValidCredsRequest) input message
@@ -93,8 +88,7 @@ create a transfer config.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a supported data source and returns its settings,.
-which can be used for UI rendering.
+      r"""Retrieves a supported data source and returns its settings, which can be used for UI rendering.
 
       Args:
         request: (BigquerydatatransferProjectsDataSourcesGetRequest) input message
@@ -121,8 +115,7 @@ which can be used for UI rendering.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists supported data sources and returns their settings,.
-which can be used for UI rendering.
+      r"""Lists supported data sources and returns their settings, which can be used for UI rendering.
 
       Args:
         request: (BigquerydatatransferProjectsDataSourcesListRequest) input message
@@ -159,12 +152,7 @@ which can be used for UI rendering.
           }
 
     def CheckValidCreds(self, request, global_params=None):
-      r"""Returns true if valid credentials exist for the given data source and.
-requesting user.
-Some data sources doesn't support service account, so we need to talk to
-them on behalf of the end user. This API just checks whether we have OAuth
-token for the particular user, which is a pre-requisite before user can
-create a transfer config.
+      r"""Returns true if valid credentials exist for the given data source and requesting user. Some data sources doesn't support service account, so we need to talk to them on behalf of the end user. This API just checks whether we have OAuth token for the particular user, which is a pre-requisite before user can create a transfer config.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsDataSourcesCheckValidCredsRequest) input message
@@ -191,8 +179,7 @@ create a transfer config.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a supported data source and returns its settings,.
-which can be used for UI rendering.
+      r"""Retrieves a supported data source and returns its settings, which can be used for UI rendering.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsDataSourcesGetRequest) input message
@@ -219,8 +206,7 @@ which can be used for UI rendering.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists supported data sources and returns their settings,.
-which can be used for UI rendering.
+      r"""Lists supported data sources and returns their settings, which can be used for UI rendering.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsDataSourcesListRequest) input message
@@ -412,8 +398,7 @@ which can be used for UI rendering.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a data transfer configuration,.
-including any associated transfer runs and logs.
+      r"""Deletes a data transfer configuration, including any associated transfer runs and logs.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsTransferConfigsDeleteRequest) input message
@@ -494,8 +479,7 @@ including any associated transfer runs and logs.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a data transfer configuration.
-All fields must be set, even if they are not updated.
+      r"""Updates a data transfer configuration. All fields must be set, even if they are not updated.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest) input message
@@ -522,11 +506,7 @@ All fields must be set, even if they are not updated.
     )
 
     def ScheduleRuns(self, request, global_params=None):
-      r"""Creates transfer runs for a time range [start_time, end_time].
-For each date - or whatever granularity the data source supports - in the
-range, one transfer run is created.
-Note that runs are created per UTC time in the time range.
-DEPRECATED: use StartManualTransferRuns instead.
+      r"""Creates transfer runs for a time range [start_time, end_time]. For each date - or whatever granularity the data source supports - in the range, one transfer run is created. Note that runs are created per UTC time in the time range. DEPRECATED: use StartManualTransferRuns instead.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsTransferConfigsScheduleRunsRequest) input message
@@ -553,10 +533,7 @@ DEPRECATED: use StartManualTransferRuns instead.
     )
 
     def StartManualRuns(self, request, global_params=None):
-      r"""Start manual transfer runs to be executed now with schedule_time equal to.
-current time. The transfer runs can be created for a time range where the
-run_time is between start_time (inclusive) and end_time (exclusive), or for
-a specific run_time.
+      r"""Start manual transfer runs to be executed now with schedule_time equal to current time. The transfer runs can be created for a time range where the run_time is between start_time (inclusive) and end_time (exclusive), or for a specific run_time.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest) input message
@@ -812,8 +789,7 @@ a specific run_time.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a data transfer configuration,.
-including any associated transfer runs and logs.
+      r"""Deletes a data transfer configuration, including any associated transfer runs and logs.
 
       Args:
         request: (BigquerydatatransferProjectsTransferConfigsDeleteRequest) input message
@@ -894,8 +870,7 @@ including any associated transfer runs and logs.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a data transfer configuration.
-All fields must be set, even if they are not updated.
+      r"""Updates a data transfer configuration. All fields must be set, even if they are not updated.
 
       Args:
         request: (BigquerydatatransferProjectsTransferConfigsPatchRequest) input message
@@ -922,11 +897,7 @@ All fields must be set, even if they are not updated.
     )
 
     def ScheduleRuns(self, request, global_params=None):
-      r"""Creates transfer runs for a time range [start_time, end_time].
-For each date - or whatever granularity the data source supports - in the
-range, one transfer run is created.
-Note that runs are created per UTC time in the time range.
-DEPRECATED: use StartManualTransferRuns instead.
+      r"""Creates transfer runs for a time range [start_time, end_time]. For each date - or whatever granularity the data source supports - in the range, one transfer run is created. Note that runs are created per UTC time in the time range. DEPRECATED: use StartManualTransferRuns instead.
 
       Args:
         request: (BigquerydatatransferProjectsTransferConfigsScheduleRunsRequest) input message
@@ -953,10 +924,7 @@ DEPRECATED: use StartManualTransferRuns instead.
     )
 
     def StartManualRuns(self, request, global_params=None):
-      r"""Start manual transfer runs to be executed now with schedule_time equal to.
-current time. The transfer runs can be created for a time range where the
-run_time is between start_time (inclusive) and end_time (exclusive), or for
-a specific run_time.
+      r"""Start manual transfer runs to be executed now with schedule_time equal to current time. The transfer runs can be created for a time range where the run_time is between start_time (inclusive) and end_time (exclusive), or for a specific run_time.
 
       Args:
         request: (BigquerydatatransferProjectsTransferConfigsStartManualRunsRequest) input message

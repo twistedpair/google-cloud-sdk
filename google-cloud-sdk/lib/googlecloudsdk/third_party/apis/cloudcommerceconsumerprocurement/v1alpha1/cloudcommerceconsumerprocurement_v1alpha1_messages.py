@@ -24,8 +24,7 @@ class CloudcommerceconsumerprocurementBillingAccountsAccountsCreateRequest(_mess
       GoogleCloudCommerceConsumerProcurementV1alpha1Account resource to be
       passed as the request body.
     parent: Required. The parent resource of this account. This field is of
-      the form "<type>/<id>". Currently supported type:
-      'billingAccounts/<billing-account-id>'
+      the form "/". Currently supported type: 'billingAccounts/'
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1Account = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Account', 1)
@@ -62,7 +61,7 @@ class CloudcommerceconsumerprocurementBillingAccountsAccountsListRequest(_messag
     pageSize: The maximum number of entries that are requested.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for accounts. This field is
-      of the form `billingAccounts/<billing-account-id>`.
+      of the form `billingAccounts/`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -157,20 +156,20 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
   object.
 
   Fields:
-    filter: The filter that can be used to limit the list request.  The filter
+    filter: The filter that can be used to limit the list request. The filter
       is a query string that can match a selected set of attributes with
       string values. For example `display_name=abc`. Supported query
-      attributes are  * `display_name`  If the query contains some special
+      attributes are * `display_name` If the query contains some special
       characters other than letters, underscore, or digits, the phrase must be
       quoted with double quotes. For example, `display_name="foo:bar"`, where
       the display name needs to be quoted because it contains special
-      character colon.  Queries can be combined with `OR`, and `NOT` to form
+      character colon. Queries can be combined with `OR`, and `NOT` to form
       more complex queries. They can also be grouped to force a desired
       evaluation order. For example, `display_name=abc OR display_name=def`.
     pageSize: The maximum number of entries that are requested.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for orders. This field is
-      of the form `billingAccounts/<billing-account-id>`.
+      of the form `billingAccounts/`.
   """
 
   filter = _messages.StringField(1)
@@ -261,7 +260,7 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest(_message
       GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest resource
       to be passed as the request body.
     parent: Required. The resource name of the parent resource. This field is
-      of the form `billingAccounts/<billing-account-id>`.
+      of the form `billingAccounts/`.
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest', 1)
@@ -273,9 +272,8 @@ class CloudcommerceconsumerprocurementProjectsEntitlementsGetRequest(_messages.M
 
   Fields:
     name: Required. The name of the entitlement to retrieve. This field is one
-      of the following forms: `projects/<project-
-      number>/entitlements/<entitlement-id>` `projects/<project-
-      id>/entitlements/<entitlement-id>`.
+      of the following forms: `projects//entitlements/`
+      `projects//entitlements/`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -289,8 +287,7 @@ class CloudcommerceconsumerprocurementProjectsEntitlementsListRequest(_messages.
     pageSize: The maximum number of entries that are requested.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for Entitlements. Currently
-      the only parents supported are "projects/<project-number>" and
-      "projects/<project-id>".
+      the only parents supported are "projects/" and "projects/".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -307,7 +304,7 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsCreateRequest(_messages.
       GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial resource to be
       passed as the request body.
     parent: Required. The parent resource to query for FreeTrials. Currently
-      the only parent supported is "projects/<project-id>".
+      the only parent supported is "projects/".
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1FreeTrial = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial', 1)
@@ -319,7 +316,7 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsGetRequest(_messages.Mes
 
   Fields:
     name: Required. The name of the freeTrial to retrieve. This field is of
-      the form `projects/<project-id>/freeTrials/<freetrial-id>`.
+      the form `projects//freeTrials/`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -329,17 +326,17 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsListRequest(_messages.Me
   r"""A CloudcommerceconsumerprocurementProjectsFreeTrialsListRequest object.
 
   Fields:
-    filter: The filter that can be used to limit the list request.  The filter
+    filter: The filter that can be used to limit the list request. The filter
       is a query string that can match a selected set of attributes with
       string values. For example `product_external_name=1234-5678-ABCD-EFG`.
-      Supported query attributes are  * `product_external_name` * `provider`
-      If the query contains some special characters other than letters,
+      Supported query attributes are * `product_external_name` * `provider` If
+      the query contains some special characters other than letters,
       underscore, or digits, the phrase must be quoted with double quotes. For
       example, `product_external_name="foo:bar"`, where the product name needs
-      to be quoted because it contains special character colon.  Queries can
-      be combined with `AND`, `OR`, and `NOT` to form more complex queries.
-      They can also be grouped to force a desired evaluation order. For
-      example, `provider=providers/E-1234 OR provider=providers/5678 AND NOT
+      to be quoted because it contains special character colon. Queries can be
+      combined with `AND`, `OR`, and `NOT` to form more complex queries. They
+      can also be grouped to force a desired evaluation order. For example,
+      `provider=providers/E-1234 OR provider=providers/5678 AND NOT
       (product_external_name=foo-product)`. Connective `AND` can be omitted
       between two predicates. For example `provider=providers/E-1234
       product_external_name=foo` is equivalent to `provider=providers/E-1234
@@ -347,7 +344,7 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsListRequest(_messages.Me
     pageSize: The maximum number of entries that are requested.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for FreeTrials. Currently
-      the only parent supported is "projects/<project-id>".
+      the only parent supported is "projects/".
   """
 
   filter = _messages.StringField(1)
@@ -415,12 +412,12 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsOperationsListRequest(_m
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1Account(_messages.Message):
   r"""Represents an account that was established by the customer with a
-  service provider.  When consuming services on external service provider's
+  service provider. When consuming services on external service provider's
   systems, the service provider generally needs to create a linked-account on
   their system to track customers. The account resource represents this
-  relationship.  Products/Services that are hosted by external service
+  relationship. Products/Services that are hosted by external service
   providers generally require an account to be present before they can be
-  purchased and used.  The metadata that indicates whether an Account is
+  purchased and used. The metadata that indicates whether an Account is
   required for a purchase, or what parameters are needed for creating an
   Account is configured by service providers.
 
@@ -496,13 +493,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1AccountApproval(_messages.Me
 
     Values:
       STATE_UNSPECIFIED: Sentinel value; do not use.
-      PENDING: The approval is pending response from the provider.  The
+      PENDING: The approval is pending response from the provider. The
         approval state can transition to Account.Approval.State.APPROVED or
         Account.Approval.State.REJECTED.
       APPROVED: The approval has been granted by the provider.
-      REJECTED: The approval has been rejected by the provider.  A provider
-        may choose to approve a previously rejected approval, so is it
-        possible to transition to Account.Approval.State.APPROVED.
+      REJECTED: The approval has been rejected by the provider. A provider may
+        choose to approve a previously rejected approval, so is it possible to
+        transition to Account.Approval.State.APPROVED.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -538,7 +535,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderRequest(_messages
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing(_messages.Message):
-  r"""Information about active custom pricing on an entitlement.
+  r"""Information about custom pricing on a resource.
 
   Fields:
     endTime: The end time of the custom pricing.
@@ -553,8 +550,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
   Order, the system will create Entitlement resources under projects
   associated with the same billing account as the order, for all
   products/services procured in the order. Users can enable/disable
-  Entitlements to allow/disallow using the product/service in a project.  Next
-  Id: 15
+  Entitlements to allow/disallow using the product/service in a project. Next
+  Id: 17
 
   Enums:
     StateValueValuesEnum: Output only. The state of the entitlement.
@@ -620,7 +617,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementChange(_messages.Message):
-  r"""Entitlement change information.
+  r"""Entitlement change information. Next Id: 7
 
   Enums:
     ChangeStateValueValuesEnum: Output only. State of the change.
@@ -706,7 +703,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial(_messages.Message)
   r"""FreeTrial represents the free trial created for a specific provider,
   product id and billing id with argentum. Free Trial resource are created for
   products by placing orders for 3p or just enabling free trials for 1p
-  product.  Next Id: 5
+  product. Next Id: 5
 
   Fields:
     credit: Output only. Credit tracking the real time credit status.
@@ -1068,15 +1065,15 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
   r"""Order represents a purchase made by a customer on the Cloud Commerce
   Platform. Creation of an order programs both the Google backend systems as
   well as external service provider's systems (if needed) to allow use of
-  purchased products and to ensure the appropriate billing events occur.  An
+  purchased products and to ensure the appropriate billing events occur. An
   Order can be made against one Product with multiple add-ons (optional) or
-  one Quote which could potentially references multiple products.  Customers
+  one Quote which could potentially references multiple products. Customers
   typically choose a price plan for each Product purchased when creating an
   order and can change their plan later, if the product allows. Customers can
   also cancel their purchases through the Order resource once they no longer
-  need it.  The metadata that is needed during an Order's creation is hosted
-  on the Cloud Commerce Inventory system, as part of a Product's definition.
-  Next Id: 13
+  need it. The metadata that is needed during an Order's creation is hosted on
+  the Cloud Commerce Inventory system, as part of a Product's definition. Next
+  Id: 13
 
   Enums:
     OrderStateValueValuesEnum: Output only. The state of the order.
@@ -1092,7 +1089,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
     etag: The weak etag of the order.
     lineItems: Output only. The items being purchased.
     name: Output only. The resource name of the order. Order names have the
-      form `billingAccounts/<billing-account-id>/orders/{order_id}`.
+      form `billingAccounts//orders/{order_id}`.
     orderState: Output only. The state of the order.
     provider: Provider of the products being purchased. Provider has the
       format of `providers/{provider_id}`.
@@ -1176,7 +1173,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
       the format of `providers/{provider_id}`.
     requestId: Optional. A unique identifier for this request. The server will
       ignore subsequent requests that provide a duplicate request ID for at
-      least 120 minutes after the first request.  The request ID must be a
+      least 120 minutes after the first request. The request ID must be a
       valid [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier
       #Format).
   """
@@ -1245,17 +1242,17 @@ class GoogleLongrunningOperation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1264,29 +1261,29 @@ class GoogleLongrunningOperation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1312,12 +1309,12 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1351,9 +1348,9 @@ class GoogleLongrunningOperation(_messages.Message):
 class GoogleProtobufEmpty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -1362,7 +1359,7 @@ class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1371,7 +1368,7 @@ class GoogleRpcStatus(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

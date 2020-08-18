@@ -53,9 +53,7 @@ class BillingbudgetsV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new budget. See.
-<a href="https://cloud.google.com/billing/quotas">Quotas and limits</a>
-for more information on the limits of the number of budgets you can create.
+      r"""Creates a new budget. See Quotas and limits for more information on the limits of the number of budgets you can create.
 
       Args:
         request: (BillingbudgetsBillingAccountsBudgetsCreateRequest) input message
@@ -109,12 +107,7 @@ for more information on the limits of the number of budgets you can create.
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns a budget.
-
-WARNING: There are some fields exposed on the Google Cloud Console that
-aren't available on this API. When reading from the API, you will not
-see these fields in the return value, though they may have been set
-in the Cloud Console.
+      r"""Returns a budget. WARNING: There are some fields exposed on the Google Cloud Console that aren't available on this API. When reading from the API, you will not see these fields in the return value, though they may have been set in the Cloud Console.
 
       Args:
         request: (BillingbudgetsBillingAccountsBudgetsGetRequest) input message
@@ -141,12 +134,7 @@ in the Cloud Console.
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of budgets for a billing account.
-
-WARNING: There are some fields exposed on the Google Cloud Console that
-aren't available on this API. When reading from the API, you will not
-see these fields in the return value, though they may have been set
-in the Cloud Console.
+      r"""Returns a list of budgets for a billing account. WARNING: There are some fields exposed on the Google Cloud Console that aren't available on this API. When reading from the API, you will not see these fields in the return value, though they may have been set in the Cloud Console.
 
       Args:
         request: (BillingbudgetsBillingAccountsBudgetsListRequest) input message
@@ -173,11 +161,7 @@ in the Cloud Console.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a budget and returns the updated budget.
-
-WARNING: There are some fields exposed on the Google Cloud Console that
-aren't available on this API. Budget fields that are not exposed in
-this API will not be changed by this method.
+      r"""Updates a budget and returns the updated budget. WARNING: There are some fields exposed on the Google Cloud Console that aren't available on this API. Budget fields that are not exposed in this API will not be changed by this method.
 
       Args:
         request: (BillingbudgetsBillingAccountsBudgetsPatchRequest) input message

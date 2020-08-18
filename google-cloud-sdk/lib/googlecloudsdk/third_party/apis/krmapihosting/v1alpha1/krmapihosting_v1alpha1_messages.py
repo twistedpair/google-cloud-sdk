@@ -40,8 +40,6 @@ class AnthosApiEndpoint(_messages.Message):
     gitPolicyDir: The path within the Git repository that represents the top
       level of the repo to sync. Default: the root directory of the
       repository.
-    gitSecretKey: The git secret key. Can be an SSH key, a cookiefile, a
-      token, or none.
     gitSecretType: The type of secret configured for access to the Git
       repository. One of ssh, cookiefile, token, gcenode, or none.
     labels: Labels are used for additional label information for a
@@ -97,16 +95,15 @@ class AnthosApiEndpoint(_messages.Message):
   gitBranch = _messages.StringField(4)
   gitEndpoint = _messages.StringField(5)
   gitPolicyDir = _messages.StringField(6)
-  gitSecretKey = _messages.StringField(7)
-  gitSecretType = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  manBlock = _messages.StringField(10)
-  masterIpv4CidrBlock = _messages.StringField(11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  servicesCidrBlock = _messages.StringField(14)
-  servicesNamedRange = _messages.StringField(15)
-  usePrivateEndpoint = _messages.BooleanField(16)
+  gitSecretType = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  manBlock = _messages.StringField(9)
+  masterIpv4CidrBlock = _messages.StringField(10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  servicesCidrBlock = _messages.StringField(13)
+  servicesNamedRange = _messages.StringField(14)
+  usePrivateEndpoint = _messages.BooleanField(15)
 
 
 class AuditConfig(_messages.Message):

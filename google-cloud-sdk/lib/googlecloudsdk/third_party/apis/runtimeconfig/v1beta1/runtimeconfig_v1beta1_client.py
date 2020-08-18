@@ -56,9 +56,7 @@ class RuntimeconfigV1beta1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (RuntimeconfigProjectsConfigsOperationsGetRequest) input message
@@ -85,13 +83,7 @@ service.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest) input message
@@ -128,14 +120,7 @@ may "fail open" without warning.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a variable within the given configuration. You cannot create.
-a variable with a name that is a prefix of an existing variable name, or a
-name that has an existing variable name as a prefix.
-
-To learn more about creating a variable, read the
-[Setting and Getting
-Data](/deployment-manager/runtime-configurator/set-and-get-variables)
-documentation.
+      r"""Creates a variable within the given configuration. You cannot create a variable with a name that is a prefix of an existing variable name, or a name that has an existing variable name as a prefix. To learn more about creating a variable, read the [Setting and Getting Data](/deployment-manager/runtime-configurator/set-and-get-variables) documentation.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesCreateRequest) input message
@@ -162,12 +147,7 @@ documentation.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a variable or multiple variables.
-
-If you specify a variable name, then that variable is deleted. If you
-specify a prefix and `recursive` is true, then all variables with that
-prefix are deleted. You must set a `recursive` to true if you delete
-variables by prefix.
+      r"""Deletes a variable or multiple variables. If you specify a variable name, then that variable is deleted. If you specify a prefix and `recursive` is true, then all variables with that prefix are deleted. You must set a `recursive` to true if you delete variables by prefix.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesDeleteRequest) input message
@@ -221,10 +201,7 @@ variables by prefix.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists variables within given a configuration, matching any provided.
-filters. This only lists variable names, not the values, unless
-`return_values` is true, in which case only variables that user has IAM
-permission to GetVariable will be returned.
+      r"""Lists variables within given a configuration, matching any provided filters. This only lists variable names, not the values, unless `return_values` is true, in which case only variables that user has IAM permission to GetVariable will be returned.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesListRequest) input message
@@ -251,13 +228,7 @@ permission to GetVariable will be returned.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest) input message
@@ -311,20 +282,7 @@ may "fail open" without warning.
     )
 
     def Watch(self, request, global_params=None):
-      r"""Watches a specific variable and waits for a change in the variable's value.
-When there is a change, this method returns the new value or times out.
-
-If a variable is deleted while being watched, the `variableState` state is
-set to `DELETED` and the method returns the last known variable `value`.
-
-If you set the deadline for watching to a larger value than internal
-timeout (60 seconds), the current variable value is returned and the
-`variableState` will be `VARIABLE_STATE_UNSPECIFIED`.
-
-To learn more about creating a watcher, read the
-[Watching a Variable for
-Changes](/deployment-manager/runtime-configurator/watching-a-variable)
-documentation.
+      r"""Watches a specific variable and waits for a change in the variable's value. When there is a change, this method returns the new value or times out. If a variable is deleted while being watched, the `variableState` state is set to `DELETED` and the method returns the last known variable `value`. If you set the deadline for watching to a larger value than internal timeout (60 seconds), the current variable value is returned and the `variableState` will be `VARIABLE_STATE_UNSPECIFIED`. To learn more about creating a watcher, read the [Watching a Variable for Changes](/deployment-manager/runtime-configurator/watching-a-variable) documentation.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesWatchRequest) input message
@@ -361,11 +319,7 @@ documentation.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a Waiter resource. This operation returns a long-running Operation.
-resource which can be polled for completion. However, a waiter with the
-given name will exist (and can be retrieved) prior to the operation
-completing. If the operation fails, the failed Waiter resource will
-still exist and must be deleted prior to subsequent creation attempts.
+      r"""Creates a Waiter resource. This operation returns a long-running Operation resource which can be polled for completion. However, a waiter with the given name will exist (and can be retrieved) prior to the operation completing. If the operation fails, the failed Waiter resource will still exist and must be deleted prior to subsequent creation attempts.
 
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersCreateRequest) input message
@@ -473,13 +427,7 @@ still exist and must be deleted prior to subsequent creation attempts.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest) input message
@@ -516,8 +464,7 @@ may "fail open" without warning.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new RuntimeConfig resource. The configuration name must be.
-unique within project.
+      r"""Creates a new RuntimeConfig resource. The configuration name must be unique within project.
 
       Args:
         request: (RuntimeconfigProjectsConfigsCreateRequest) input message
@@ -598,9 +545,7 @@ unique within project.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (RuntimeconfigProjectsConfigsGetIamPolicyRequest) input message
@@ -654,10 +599,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (RuntimeconfigProjectsConfigsSetIamPolicyRequest) input message
@@ -684,13 +626,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (RuntimeconfigProjectsConfigsTestIamPermissionsRequest) input message

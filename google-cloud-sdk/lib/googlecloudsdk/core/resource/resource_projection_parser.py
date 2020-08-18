@@ -450,6 +450,8 @@ class Parser(object):
           value = self._lex.Token(',])', space=False, convert=True)
         else:
           value = 1
+        if isinstance(value, six.string_types):
+          value = value.replace('\\n', '\n').replace('\\t', '\t')
         self._projection.AddAttribute(name, value)
         if name.startswith('no-'):
           self._projection.DelAttribute(name[3:])

@@ -93,18 +93,18 @@ class GoogleCloudRecommenderV1alpha1CreateRecommendationRuleRequest(_messages.Me
     Values:
       STATE_UNSPECIFIED: Default state. Don't use directly.
       ACTIVE: Recommendation is active and can be applied. Recommendations
-        content can be updated by Google.  ACTIVE recommendations can be
-        marked as CLAIMED, SUCCEEDED, or FAILED.
+        content can be updated by Google. ACTIVE recommendations can be marked
+        as CLAIMED, SUCCEEDED, or FAILED.
       CLAIMED: Recommendation is in claimed state. Recommendations content is
-        immutable and cannot be updated by Google.  CLAIMED recommendations
-        can be marked as CLAIMED, SUCCEEDED, or FAILED.
+        immutable and cannot be updated by Google. CLAIMED recommendations can
+        be marked as CLAIMED, SUCCEEDED, or FAILED.
       SUCCEEDED: Recommendation is in succeeded state. Recommendations content
-        is immutable and cannot be updated by Google.  SUCCEEDED
+        is immutable and cannot be updated by Google. SUCCEEDED
         recommendations can be marked as SUCCEEDED, or FAILED.
       FAILED: Recommendation is in failed state. Recommendations content is
-        immutable and cannot be updated by Google.  FAILED recommendations can
+        immutable and cannot be updated by Google. FAILED recommendations can
         be marked as SUCCEEDED, or FAILED.
-      DISMISSED: Recommendation is in dismissed state.  DISMISSED
+      DISMISSED: Recommendation is in dismissed state. DISMISSED
         recommendations can be marked as ACTIVE.
     """
     STATE_UNSPECIFIED = 0
@@ -193,14 +193,14 @@ class GoogleCloudRecommenderV1alpha1MarkClaimedRequest(_messages.Message):
 
   Fields:
     etag: Fingerprint of the Recommendation. Provides optimistic locking.
-    stateMetadata: State properties user wish to include with this state.
-      Full replace of the current state_metadata.
+    stateMetadata: State properties user wish to include with this state. Full
+      replace of the current state_metadata.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
-    r"""State properties user wish to include with this state.  Full replace
-    of the current state_metadata.
+    r"""State properties user wish to include with this state. Full replace of
+    the current state_metadata.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -236,14 +236,14 @@ class GoogleCloudRecommenderV1alpha1MarkFailedRequest(_messages.Message):
 
   Fields:
     etag: Fingerprint of the Recommendation. Provides optimistics locking.
-    stateMetadata: State properties user wish to include with this state.
-      Full replace of the current state_metadata.
+    stateMetadata: State properties user wish to include with this state. Full
+      replace of the current state_metadata.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
-    r"""State properties user wish to include with this state.  Full replace
-    of the current state_metadata.
+    r"""State properties user wish to include with this state. Full replace of
+    the current state_metadata.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -279,14 +279,14 @@ class GoogleCloudRecommenderV1alpha1MarkSucceededRequest(_messages.Message):
 
   Fields:
     etag: Fingerprint of the Recommendation. Provides optimistic locking.
-    stateMetadata: State properties user wish to include with this state.
-      Full replace of the current state_metadata.
+    stateMetadata: State properties user wish to include with this state. Full
+      replace of the current state_metadata.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
-    r"""State properties user wish to include with this state.  Full replace
-    of the current state_metadata.
+    r"""State properties user wish to include with this state. Full replace of
+    the current state_metadata.
 
     Messages:
       AdditionalProperty: An additional property for a StateMetadataValue
@@ -317,15 +317,15 @@ class GoogleCloudRecommenderV1alpha1Operation(_messages.Message):
   r"""Contains an operation for a resource inspired by the JSON-PATCH format
   with support for: * Custom filters for describing partial array patch. *
   Extended path values for describing nested arrays. * Custom fields for
-  describing the resource for which the operation is being   described. *
-  Allows extension to custom operations not natively supported by RFC6902. See
+  describing the resource for which the operation is being described. * Allows
+  extension to custom operations not natively supported by RFC6902. See
   https://tools.ietf.org/html/rfc6902 for details on the original RFC.
 
   Messages:
     PathFilterValue: Set of filters to apply if `path` refers to array
       elements or nested array elements in order to narrow down to a single
       unique element that is being tested/modified. Example: {
-      "/versions/*/name" : "it-123"   "/versions/*/targetSize/percent": "20" }
+      "/versions/*/name" : "it-123" "/versions/*/targetSize/percent": "20" }
 
   Fields:
     action: Required. Type of this operation. Supports 'add', 'remove',
@@ -335,8 +335,8 @@ class GoogleCloudRecommenderV1alpha1Operation(_messages.Message):
       operation is at the resource level, then path should be "/".
     pathFilter: Set of filters to apply if `path` refers to array elements or
       nested array elements in order to narrow down to a single unique element
-      that is being tested/modified. Example: {   "/versions/*/name" :
-      "it-123"   "/versions/*/targetSize/percent": "20" }
+      that is being tested/modified. Example: { "/versions/*/name" : "it-123"
+      "/versions/*/targetSize/percent": "20" }
     resource: Required. Contains the fully qualified resource name. ex:
       //cloudresourcemanager.googleapis.com/projects/foo.
     resourceType: Required. Type of GCP resource being modified/tested.
@@ -346,8 +346,7 @@ class GoogleCloudRecommenderV1alpha1Operation(_messages.Message):
       field or resource, ignored if provided for other operation types.
     sourceResource: Use for COPY operation across different resources (of the
       same type). Example: A resource clone can be done via action = 'copy',
-      path = "/", from = "/", source_resource = <source> and resource_name =
-      <target>.
+      path = "/", from = "/", source_resource = and resource_name = .
     value: Value for the `path` field. Required if action is
       'add'/'replace'/'test'.
   """
@@ -356,7 +355,7 @@ class GoogleCloudRecommenderV1alpha1Operation(_messages.Message):
   class PathFilterValue(_messages.Message):
     r"""Set of filters to apply if `path` refers to array elements or nested
     array elements in order to narrow down to a single unique element that is
-    being tested/modified. Example: {   "/versions/*/name" : "it-123"
+    being tested/modified. Example: { "/versions/*/name" : "it-123"
     "/versions/*/targetSize/percent": "20" }
 
     Messages:
@@ -418,13 +417,12 @@ class GoogleCloudRecommenderV1alpha1Recommendation(_messages.Message):
       locking when updating states.
     lastRefreshTime: Output only. Last time this recommendation was refreshed
       by the system that created it in the first place.
-    name: Name of recommendation.  * A project recommendation is represented
-      as   projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/[RECOMM
-      ENDER_ID]/recommendations/[RECOMMENDATION_ID]  Example: A recommendation
-      for a GCP resource such as compute instance, storage bucket is
-      represented as a project recommendation.   projects/[PROJECT_NUMBER]/loc
-      ations/[LOCATION]/recommenders/[RECOMMENDER_ID]/recommendations/[RECOMME
-      NDATION_ID]
+    name: Name of recommendation. * A project recommendation is represented as
+      projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/[RECOMMENDER
+      _ID]/recommendations/[RECOMMENDATION_ID] Example: A recommendation for a
+      GCP resource such as compute instance, storage bucket is represented as
+      a project recommendation. projects/[PROJECT_NUMBER]/locations/[LOCATION]
+      /recommenders/[RECOMMENDER_ID]/recommendations/[RECOMMENDATION_ID]
     primaryImpact: Required. The primary impact that this recommendation can
       have while trying to optimize for one category.
     stateInfo: Information for state. Contains state and metadata.
@@ -514,18 +512,18 @@ class GoogleCloudRecommenderV1alpha1RecommendationStateInfo(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Default state. Don't use directly.
       ACTIVE: Recommendation is active and can be applied. Recommendations
-        content can be updated by Google.  ACTIVE recommendations can be
-        marked as CLAIMED, SUCCEEDED, or FAILED.
+        content can be updated by Google. ACTIVE recommendations can be marked
+        as CLAIMED, SUCCEEDED, or FAILED.
       CLAIMED: Recommendation is in claimed state. Recommendations content is
-        immutable and cannot be updated by Google.  CLAIMED recommendations
-        can be marked as CLAIMED, SUCCEEDED, or FAILED.
+        immutable and cannot be updated by Google. CLAIMED recommendations can
+        be marked as CLAIMED, SUCCEEDED, or FAILED.
       SUCCEEDED: Recommendation is in succeeded state. Recommendations content
-        is immutable and cannot be updated by Google.  SUCCEEDED
+        is immutable and cannot be updated by Google. SUCCEEDED
         recommendations can be marked as SUCCEEDED, or FAILED.
       FAILED: Recommendation is in failed state. Recommendations content is
-        immutable and cannot be updated by Google.  FAILED recommendations can
+        immutable and cannot be updated by Google. FAILED recommendations can
         be marked as SUCCEEDED, or FAILED.
-      DISMISSED: Recommendation is in dismissed state.  DISMISSED
+      DISMISSED: Recommendation is in dismissed state. DISMISSED
         recommendations can be marked as ACTIVE.
     """
     STATE_UNSPECIFIED = 0
@@ -588,18 +586,18 @@ class GoogleCloudRecommenderV1alpha1Rule(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Default state. Don't use directly.
       ACTIVE: Recommendation is active and can be applied. Recommendations
-        content can be updated by Google.  ACTIVE recommendations can be
-        marked as CLAIMED, SUCCEEDED, or FAILED.
+        content can be updated by Google. ACTIVE recommendations can be marked
+        as CLAIMED, SUCCEEDED, or FAILED.
       CLAIMED: Recommendation is in claimed state. Recommendations content is
-        immutable and cannot be updated by Google.  CLAIMED recommendations
-        can be marked as CLAIMED, SUCCEEDED, or FAILED.
+        immutable and cannot be updated by Google. CLAIMED recommendations can
+        be marked as CLAIMED, SUCCEEDED, or FAILED.
       SUCCEEDED: Recommendation is in succeeded state. Recommendations content
-        is immutable and cannot be updated by Google.  SUCCEEDED
+        is immutable and cannot be updated by Google. SUCCEEDED
         recommendations can be marked as SUCCEEDED, or FAILED.
       FAILED: Recommendation is in failed state. Recommendations content is
-        immutable and cannot be updated by Google.  FAILED recommendations can
+        immutable and cannot be updated by Google. FAILED recommendations can
         be marked as SUCCEEDED, or FAILED.
-      DISMISSED: Recommendation is in dismissed state.  DISMISSED
+      DISMISSED: Recommendation is in dismissed state. DISMISSED
         recommendations can be marked as ACTIVE.
     """
     STATE_UNSPECIFIED = 0
@@ -620,17 +618,17 @@ class GoogleLongrunningOperation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -639,29 +637,29 @@ class GoogleLongrunningOperation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -687,12 +685,12 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -726,9 +724,9 @@ class GoogleLongrunningOperation(_messages.Message):
 class GoogleProtobufEmpty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -737,7 +735,7 @@ class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -746,7 +744,7 @@ class GoogleRpcStatus(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -850,8 +848,8 @@ class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messag
       `next_page_token` from the previous response. The values of other method
       parameters should be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats:  1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/
-      recommenders/[RECOMMENDER_ID]",
+      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]",
   """
 
   filter = _messages.StringField(1)

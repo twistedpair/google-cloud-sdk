@@ -751,6 +751,22 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListSQLIntegrationsResponse(_messages.Message):
+  r"""ListSQLIntegrationsResponse is the response message for
+  ListSQLIntegrations method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    sqlIntegrations: A list of SQLIntegrations of a domain.
+    unreachable: A list of locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sqlIntegrations = _messages.MessageField('SQLIntegration', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -1026,6 +1042,49 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest(_messag
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsGetRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsGetRequest
+  object.
+
+  Fields:
+    name: Required. MangedOU resource name using the form:
+      `projects/{project_id}/locations/global/domains/*/sqlIntegrations/{name}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsListRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter specifying constraints of a list operation. For
+      example, `SqlIntegration.name="sql"`.
+    orderBy: Optional. Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response'ANIZATIONs
+      next_page_token to determine if there are more instances left to be
+      queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The resource name of the SqlIntegrations using the form:
+      `projects/{project_id}/locations/global/domains/*`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest(_messages.Message):
@@ -1357,6 +1416,46 @@ class ResetAdminPasswordResponse(_messages.Message):
   """
 
   password = _messages.StringField(1)
+
+
+class SQLIntegration(_messages.Message):
+  r"""Represents the SQL instance integrated with AD.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the managed OU.
+
+  Fields:
+    createTime: Output only. The time the instance was created. Synthetic
+      field is populated automatically by CCFE. go/ccfe-synthetic-field-user-
+      guide
+    name: The unique name of the sql integration in the form of `projects/{pro
+      ject_id}/locations/global/domains/{domain_name}/sqlIntegrations/{sql_int
+      egration}`
+    sqlInstance: The full resource name of an integrated sql instance
+    state: Output only. The current state of the managed OU.
+    updateTime: Output only. Last update time. Synthetic field is populated
+      automatically by CCFE.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the managed OU.
+
+    Values:
+      STATE_UNSPECIFIED: Not Set
+      CREATING: The sqlIntegration is being created.
+      DELETING: The sqlIntegration is being deleted.
+      READY: The sqlIntegration is ready.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    DELETING = 2
+    READY = 3
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  sqlInstance = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
 
 
 class SetIamPolicyRequest(_messages.Message):

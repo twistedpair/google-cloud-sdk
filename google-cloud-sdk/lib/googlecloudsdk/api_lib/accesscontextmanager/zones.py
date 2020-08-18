@@ -48,16 +48,23 @@ def _SetIfNotNone(field_name, field_value, obj, update_mask):
   return False
 
 
-def _CreateServicePerimeterConfig(messages, mask_prefix, resources,
-                                  restricted_services, levels,
+def _CreateServicePerimeterConfig(messages,
+                                  mask_prefix,
+                                  resources,
+                                  restricted_services,
+                                  levels,
                                   vpc_allowed_services,
-                                  enable_vpc_accessible_services):
+                                  enable_vpc_accessible_services,
+                                  ingress_policies=None,
+                                  egress_policies=None):
   """Returns a ServicePerimeterConfig and its update mask."""
 
   config = messages.ServicePerimeterConfig()
   mask = []
   _SetIfNotNone('resources', resources, config, mask)
   _SetIfNotNone('restrictedServices', restricted_services, config, mask)
+  _SetIfNotNone('ingressPolicies', ingress_policies, config, mask)
+  _SetIfNotNone('egressPolicies', egress_policies, config, mask)
   if levels is not None:
     mask.append('accessLevels')
     level_names = []
@@ -154,7 +161,9 @@ class Client(object):
             restricted_services=None,
             levels=None,
             vpc_allowed_services=None,
-            enable_vpc_accessible_services=None):
+            enable_vpc_accessible_services=None,
+            ingress_policies=None,
+            egress_policies=None):
     """Patch a service perimeter.
 
     Args:
@@ -175,6 +184,8 @@ class Client(object):
         access zone, or None if not updating.
       enable_vpc_accessible_services: bool, whether to restrict the set of APIs
         callable within the access zone, or None if not updating.
+      ingress_policies: list of IngressPolicy, or None if not updating.
+      egress_policies: list of EgressPolicy, or None if not updating.
 
     Returns:
       ServicePerimeter, the updated Service Perimeter.
@@ -194,7 +205,9 @@ class Client(object):
         restricted_services=restricted_services,
         levels=levels,
         vpc_allowed_services=vpc_allowed_services,
-        enable_vpc_accessible_services=enable_vpc_accessible_services)
+        enable_vpc_accessible_services=enable_vpc_accessible_services,
+        ingress_policies=ingress_policies,
+        egress_policies=egress_policies)
     perimeter.status = config
     update_mask.extend(config_mask_additions)
 
@@ -216,7 +229,9 @@ class Client(object):
                         restricted_services=None,
                         levels=None,
                         vpc_allowed_services=None,
-                        enable_vpc_accessible_services=None):
+                        enable_vpc_accessible_services=None,
+                        ingress_policies=None,
+                        egress_policies=None):
     """Patch the dry-run config (spec) for a Service Perimeter.
 
     Args:
@@ -237,6 +252,8 @@ class Client(object):
         access zone, or None if not updating.
       enable_vpc_accessible_services: bool, whether to restrict the set of APIs
         callable within the access zone, or None if not updating.
+      ingress_policies: list of IngressPolicy, or None if not updating.
+      egress_policies: list of EgressPolicy, or None if not updating.
 
     Returns:
       ServicePerimeter, the updated Service Perimeter.
@@ -258,7 +275,9 @@ class Client(object):
         restricted_services=restricted_services,
         levels=levels,
         vpc_allowed_services=vpc_allowed_services,
-        enable_vpc_accessible_services=enable_vpc_accessible_services)
+        enable_vpc_accessible_services=enable_vpc_accessible_services,
+        ingress_policies=ingress_policies,
+        egress_policies=egress_policies)
 
     perimeter.spec = config
     update_mask.extend(config_mask_additions)

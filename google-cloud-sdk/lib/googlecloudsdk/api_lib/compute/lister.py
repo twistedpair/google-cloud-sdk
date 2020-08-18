@@ -922,7 +922,6 @@ class GlobalLister(object):
       utils.RaiseException(errors, ListException)
 
 
-# TODO(b/139816191) Update all usages to use allow_partial_server_failure
 class MultiScopeLister(object):
   """General purpose lister implementation.
 
@@ -951,15 +950,18 @@ class MultiScopeLister(object):
   Attributes:
     client: base_api.BaseApiClient, The compute client.
     zonal_service: base_api.BaseApiService, Zonal service whose resources will
-    be listed using List call.
+      be listed using List call.
     regional_service: base_api.BaseApiService, Regional service whose resources
-    will be listed using List call.
+      will be listed using List call.
     global_service: base_api.BaseApiService, Global service whose resources will
-    be listed using List call.
+      be listed using List call.
     aggregation_service: base_api.BaseApiService, Aggregation service whose
-    resources will be listed using AggregatedList call.
+      resources will be listed using AggregatedList call.
     allow_partial_server_failure: Allows Lister to continue presenting items
-    from scopes that return succesfully while logging failures as a warning.
+      from scopes that return succesfully while logging failures as a warning.
+    return_partial_success: Allows Lister to pass returnPartialSuccess to
+      aggregatedList requests to prevent single scope failures from failng the
+      entire operation.
   """
 
   def __init__(self,
@@ -968,13 +970,15 @@ class MultiScopeLister(object):
                regional_service=None,
                global_service=None,
                aggregation_service=None,
-               allow_partial_server_failure=True):
+               allow_partial_server_failure=True,
+               return_partial_success=False):
     self.client = client
     self.zonal_service = zonal_service
     self.regional_service = regional_service
     self.global_service = global_service
     self.aggregation_service = aggregation_service
     self.allow_partial_server_failure = allow_partial_server_failure
+    self.return_partial_success = return_partial_success
 
   def __deepcopy__(self, memodict=None):
     return self  # MultiScopeLister is immutable
@@ -987,24 +991,24 @@ class MultiScopeLister(object):
         self.regional_service == other.regional_service and
         self.global_service == other.global_service and
         self.aggregation_service == other.aggregation_service and
-        self.allow_partial_server_failure == other.allow_partial_server_failure)
+        self.allow_partial_server_failure == other.allow_partial_server_failure
+        and self.return_partial_success == other.return_partial_success)
 
   def __ne__(self, other):
     return not self == other
 
   def __hash__(self):
-    return hash((self.client, self.zonal_service, self.regional_service,
-                 self.global_service, self.aggregation_service,
-                 self.allow_partial_server_failure))
+    return hash(
+        (self.client, self.zonal_service, self.regional_service,
+         self.global_service, self.aggregation_service,
+         self.allow_partial_server_failure, self.return_partial_success))
 
   def __repr__(self):
-    return 'MultiScopeLister({}, {}, {}, {}, {}, {})'.format(
-        repr(self.client),
-        repr(self.zonal_service),
-        repr(self.regional_service),
-        repr(self.global_service),
-        repr(self.aggregation_service),
-        repr(self.allow_partial_server_failure))
+    return 'MultiScopeLister({}, {}, {}, {}, {}, {}, {})'.format(
+        repr(self.client), repr(self.zonal_service),
+        repr(self.regional_service), repr(self.global_service),
+        repr(self.aggregation_service), repr(self.allow_partial_server_failure),
+        repr(self.return_partial_success))
 
   def __call__(self, frontend):
     scope_set = frontend.scope_set
@@ -1042,19 +1046,20 @@ class MultiScopeLister(object):
       request_message = self.aggregation_service.GetRequestType(
           'AggregatedList')
       for project_ref in sorted(list(scope_set.projects)):
+        input_params = {}
+
         if hasattr(request_message, 'includeAllScopes'):
-          requests.append((self.aggregation_service, 'AggregatedList',
-                           request_message(
-                               filter=frontend.filter,
-                               maxResults=frontend.max_results,
-                               project=project_ref.project,
-                               includeAllScopes=True)))
-        else:
-          requests.append((self.aggregation_service, 'AggregatedList',
-                           request_message(
-                               filter=frontend.filter,
-                               maxResults=frontend.max_results,
-                               project=project_ref.project)))
+          input_params['includeAllScopes'] = True
+        if hasattr(request_message,
+                   'returnPartialSuccess') and self.return_partial_success:
+          input_params['returnPartialSuccess'] = True
+
+        requests.append((self.aggregation_service, 'AggregatedList',
+                         request_message(
+                             filter=frontend.filter,
+                             maxResults=frontend.max_results,
+                             project=project_ref.project,
+                             **input_params)))
 
     errors = []
     response_count = 0
@@ -1089,10 +1094,13 @@ class ZonalParallelLister(object):
     service: Zonal service whose resources will be listed.
     resources: The compute resource registry.
     allow_partial_server_failure: Allows Lister to continue presenting items
-    from scopes that return succesfully while logging failures as a warning.
+      from scopes that return succesfully while logging failures as a warning.
   """
 
-  def __init__(self, client, service, resources,
+  def __init__(self,
+               client,
+               service,
+               resources,
                allow_partial_server_failure=True):
     self.client = client
     self.service = service
@@ -1143,7 +1151,8 @@ class ZonalParallelLister(object):
         maxResults=frontend.max_results,
         scopeSet=zones)
     service_list_implementation = MultiScopeLister(
-        self.client, zonal_service=self.service,
+        self.client,
+        zonal_service=self.service,
         allow_partial_server_failure=self.allow_partial_server_failure)
 
     return Invoke(service_list_data, service_list_implementation)

@@ -21,7 +21,7 @@ class AddProductToProductSetRequest(_messages.Message):
 
   Fields:
     product: Required. The resource name for the Product to be added to this
-      ProductSet.  Format is:
+      ProductSet. Format is:
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
   """
 
@@ -36,12 +36,12 @@ class AnnotateFileRequest(_messages.Message):
     imageContext: Additional context that may accompany the image(s) in the
       file.
     inputConfig: Required. Information about the input file.
-    pages: Pages of the file to perform image annotation.  Pages starts from
-      1, we assume the first page of the file is page 1. At most 5 pages are
-      supported per request. Pages can be negative.  Page 1 means the first
+    pages: Pages of the file to perform image annotation. Pages starts from 1,
+      we assume the first page of the file is page 1. At most 5 pages are
+      supported per request. Pages can be negative. Page 1 means the first
       page. Page 2 means the second page. Page -1 means the last page. Page -2
-      means the second to the last page.  If the file is GIF instead of PDF or
-      TIFF, page refers to GIF frames.  If this field is empty, by default the
+      means the second to the last page. If the file is GIF instead of PDF or
+      TIFF, page refers to GIF frames. If this field is empty, by default the
       service performs image annotation for the first 5 pages of the file.
   """
 
@@ -168,11 +168,11 @@ class AsyncBatchAnnotateFilesRequest(_messages.Message):
   service call.
 
   Fields:
-    parent: Optional. Target project and location to make a call.  Format:
-      `projects/{project-id}/locations/{location-id}`.  If no parent is
-      specified, a region will be chosen automatically.  Supported location-
-      ids:     `us`: USA country only,     `asia`: East asia areas, like
-      Japan, Taiwan,     `eu`: The European Union.  Example:
+    parent: Optional. Target project and location to make a call. Format:
+      `projects/{project-id}/locations/{location-id}`. If no parent is
+      specified, a region will be chosen automatically. Supported location-
+      ids: `us`: USA country only, `asia`: East asia areas, like Japan,
+      Taiwan, `eu`: The European Union. Example:
       `projects/project-A/locations/eu`.
     requests: Required. Individual async file annotation requests for this
       batch.
@@ -199,11 +199,11 @@ class AsyncBatchAnnotateImagesRequest(_messages.Message):
   Fields:
     outputConfig: Required. The desired output location and metadata (e.g.
       format).
-    parent: Optional. Target project and location to make a call.  Format:
-      `projects/{project-id}/locations/{location-id}`.  If no parent is
-      specified, a region will be chosen automatically.  Supported location-
-      ids:     `us`: USA country only,     `asia`: East asia areas, like
-      Japan, Taiwan,     `eu`: The European Union.  Example:
+    parent: Optional. Target project and location to make a call. Format:
+      `projects/{project-id}/locations/{location-id}`. If no parent is
+      specified, a region will be chosen automatically. Supported location-
+      ids: `us`: USA country only, `asia`: East asia areas, like Japan,
+      Taiwan, `eu`: The European Union. Example:
       `projects/project-A/locations/eu`.
     requests: Required. Individual image annotation requests for this batch.
   """
@@ -228,11 +228,11 @@ class BatchAnnotateFilesRequest(_messages.Message):
   r"""A list of requests to annotate files using the BatchAnnotateFiles API.
 
   Fields:
-    parent: Optional. Target project and location to make a call.  Format:
-      `projects/{project-id}/locations/{location-id}`.  If no parent is
-      specified, a region will be chosen automatically.  Supported location-
-      ids:     `us`: USA country only,     `asia`: East asia areas, like
-      Japan, Taiwan,     `eu`: The European Union.  Example:
+    parent: Optional. Target project and location to make a call. Format:
+      `projects/{project-id}/locations/{location-id}`. If no parent is
+      specified, a region will be chosen automatically. Supported location-
+      ids: `us`: USA country only, `asia`: East asia areas, like Japan,
+      Taiwan, `eu`: The European Union. Example:
       `projects/project-A/locations/eu`.
     requests: Required. The list of file annotation requests. Right now we
       support only one AnnotateFileRequest in BatchAnnotateFilesRequest.
@@ -258,11 +258,11 @@ class BatchAnnotateImagesRequest(_messages.Message):
   call.
 
   Fields:
-    parent: Optional. Target project and location to make a call.  Format:
-      `projects/{project-id}/locations/{location-id}`.  If no parent is
-      specified, a region will be chosen automatically.  Supported location-
-      ids:     `us`: USA country only,     `asia`: East asia areas, like
-      Japan, Taiwan,     `eu`: The European Union.  Example:
+    parent: Optional. Target project and location to make a call. Format:
+      `projects/{project-id}/locations/{location-id}`. If no parent is
+      specified, a region will be chosen automatically. Supported location-
+      ids: `us`: USA country only, `asia`: East asia areas, like Japan,
+      Taiwan, `eu`: The European Union. Example:
       `projects/project-A/locations/eu`.
     requests: Required. Individual image annotation requests for this batch.
   """
@@ -283,7 +283,7 @@ class BatchAnnotateImagesResponse(_messages.Message):
 
 
 class BatchOperationMetadata(_messages.Message):
-  r"""Metadata for the batch operations such as the current state.  This is
+  r"""Metadata for the batch operations such as the current state. This is
   included in the `metadata` field of the `Operation` returned by the
   `GetOperation` call of the `google::longrunning::Operations` service.
 
@@ -335,11 +335,10 @@ class Block(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:  * when the text is horizontal it might look
-      like:          0----1         |    |         3----2  * when it's rotated
-      180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertex order will still be (0, 1, 2,
-      3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
       text).
@@ -395,63 +394,56 @@ class Color(_messages.Message):
   "java.awt.Color" in Java; it can also be trivially provided to UIColor's
   "+colorWithRed:green:blue:alpha" method in iOS; and, with just a little
   work, it can be easily formatted into a CSS "rgba()" string in JavaScript,
-  as well.  Note: this proto does not carry information about the absolute
+  as well. Note: this proto does not carry information about the absolute
   color space that should be used to interpret the RGB value (e.g. sRGB, Adobe
   RGB, DCI-P3, BT.2020, etc.). By default, applications SHOULD assume the sRGB
-  color space.  Note: when color equality needs to be decided,
-  implementations, unless documented otherwise, will treat two colors to be
-  equal if all their red, green, blue and alpha values each differ by at most
-  1e-5.  Example (Java):       import com.google.type.Color;       // ...
-  public static java.awt.Color fromProto(Color protocolor) {        float
-  alpha = protocolor.hasAlpha()            ? protocolor.getAlpha().getValue()
-  : 1.0;         return new java.awt.Color(            protocolor.getRed(),
-  protocolor.getGreen(),            protocolor.getBlue(),            alpha);
-  }       public static Color toProto(java.awt.Color color) {        float red
-  = (float) color.getRed();        float green = (float) color.getGreen();
-  float blue = (float) color.getBlue();        float denominator = 255.0;
-  Color.Builder resultBuilder =            Color                .newBuilder()
-  .setRed(red / denominator)                .setGreen(green / denominator)
-  .setBlue(blue / denominator);        int alpha = color.getAlpha();        if
-  (alpha != 255) {          result.setAlpha(              FloatValue
-  .newBuilder()                  .setValue(((float) alpha) / denominator)
-  .build());        }        return resultBuilder.build();      }      // ...
-  Example (iOS / Obj-C):       // ...      static UIColor* fromProto(Color*
-  protocolor) {         float red = [protocolor red];         float green =
-  [protocolor green];         float blue = [protocolor blue];
-  FloatValue* alpha_wrapper = [protocolor alpha];         float alpha = 1.0;
-  if (alpha_wrapper != nil) {           alpha = [alpha_wrapper value];
-  }         return [UIColor colorWithRed:red green:green blue:blue
-  alpha:alpha];      }       static Color* toProto(UIColor* color) {
-  CGFloat red, green, blue, alpha;          if (![color getRed:&red
-  green:&green blue:&blue alpha:&alpha]) {            return nil;          }
-  Color* result = [[Color alloc] init];          [result setRed:red];
-  [result setGreen:green];          [result setBlue:blue];          if (alpha
-  <= 0.9999) {            [result setAlpha:floatWrapperWithValue(alpha)];
-  }          [result autorelease];          return result;     }     // ...
-  Example (JavaScript):      // ...      var protoToCssColor =
-  function(rgb_color) {        var redFrac = rgb_color.red || 0.0;        var
-  greenFrac = rgb_color.green || 0.0;        var blueFrac = rgb_color.blue ||
-  0.0;        var red = Math.floor(redFrac * 255);        var green =
-  Math.floor(greenFrac * 255);        var blue = Math.floor(blueFrac * 255);
-  if (!('alpha' in rgb_color)) {           return rgbToCssColor_(red, green,
-  blue);        }         var alphaFrac = rgb_color.alpha.value || 0.0;
-  var rgbParams = [red, green, blue].join(',');        return ['rgba(',
-  rgbParams, ',', alphaFrac, ')'].join('');     };      var rgbToCssColor_ =
-  function(red, green, blue) {       var rgbNumber = new Number((red << 16) |
-  (green << 8) | blue);       var hexString = rgbNumber.toString(16);
-  var missingZeros = 6 - hexString.length;       var resultBuilder = ['#'];
-  for (var i = 0; i < missingZeros; i++) {          resultBuilder.push('0');
-  }       resultBuilder.push(hexString);       return resultBuilder.join('');
-  };      // ...
+  color space. Note: when color equality needs to be decided, implementations,
+  unless documented otherwise, will treat two colors to be equal if all their
+  red, green, blue and alpha values each differ by at most 1e-5. Example
+  (Java): import com.google.type.Color; // ... public static java.awt.Color
+  fromProto(Color protocolor) { float alpha = protocolor.hasAlpha() ?
+  protocolor.getAlpha().getValue() : 1.0; return new java.awt.Color(
+  protocolor.getRed(), protocolor.getGreen(), protocolor.getBlue(), alpha); }
+  public static Color toProto(java.awt.Color color) { float red = (float)
+  color.getRed(); float green = (float) color.getGreen(); float blue = (float)
+  color.getBlue(); float denominator = 255.0; Color.Builder resultBuilder =
+  Color .newBuilder() .setRed(red / denominator) .setGreen(green /
+  denominator) .setBlue(blue / denominator); int alpha = color.getAlpha(); if
+  (alpha != 255) { result.setAlpha( FloatValue .newBuilder()
+  .setValue(((float) alpha) / denominator) .build()); } return
+  resultBuilder.build(); } // ... Example (iOS / Obj-C): // ... static
+  UIColor* fromProto(Color* protocolor) { float red = [protocolor red]; float
+  green = [protocolor green]; float blue = [protocolor blue]; FloatValue*
+  alpha_wrapper = [protocolor alpha]; float alpha = 1.0; if (alpha_wrapper !=
+  nil) { alpha = [alpha_wrapper value]; } return [UIColor colorWithRed:red
+  green:green blue:blue alpha:alpha]; } static Color* toProto(UIColor* color)
+  { CGFloat red, green, blue, alpha; if (![color getRed:&red green:&green
+  blue:&blue alpha:&alpha]) { return nil; } Color* result = [[Color alloc]
+  init]; [result setRed:red]; [result setGreen:green]; [result setBlue:blue];
+  if (alpha <= 0.9999) { [result setAlpha:floatWrapperWithValue(alpha)]; }
+  [result autorelease]; return result; } // ... Example (JavaScript): // ...
+  var protoToCssColor = function(rgb_color) { var redFrac = rgb_color.red ||
+  0.0; var greenFrac = rgb_color.green || 0.0; var blueFrac = rgb_color.blue
+  || 0.0; var red = Math.floor(redFrac * 255); var green =
+  Math.floor(greenFrac * 255); var blue = Math.floor(blueFrac * 255); if
+  (!('alpha' in rgb_color)) { return rgbToCssColor_(red, green, blue); } var
+  alphaFrac = rgb_color.alpha.value || 0.0; var rgbParams = [red, green,
+  blue].join(','); return ['rgba(', rgbParams, ',', alphaFrac, ')'].join('');
+  }; var rgbToCssColor_ = function(red, green, blue) { var rgbNumber = new
+  Number((red << 16) | (green << 8) | blue); var hexString =
+  rgbNumber.toString(16); var missingZeros = 6 - hexString.length; var
+  resultBuilder = ['#']; for (var i = 0; i < missingZeros; i++) {
+  resultBuilder.push('0'); } resultBuilder.push(hexString); return
+  resultBuilder.join(''); }; // ...
 
   Fields:
     alpha: The fraction of this color that should be applied to the pixel.
-      That is, the final pixel color is defined by the equation:    pixel
-      color = alpha * (this color) + (1.0 - alpha) * (background color)  This
-      means that a value of 1.0 corresponds to a solid color, whereas a value
-      of 0.0 corresponds to a completely transparent color. This uses a
-      wrapper message rather than a simple float scalar so that it is possible
-      to distinguish between a default value and the value being unset. If
+      That is, the final pixel color is defined by the equation: pixel color =
+      alpha * (this color) + (1.0 - alpha) * (background color) This means
+      that a value of 1.0 corresponds to a solid color, whereas a value of 0.0
+      corresponds to a completely transparent color. This uses a wrapper
+      message rather than a simple float scalar so that it is possible to
+      distinguish between a default value and the value being unset. If
       omitted, this color object is to be rendered as a solid color (as if the
       alpha value had been explicitly given with a value of 1.0).
     blue: The amount of blue in the color as a value in the interval [0, 1].
@@ -488,7 +480,7 @@ class CropHint(_messages.Message):
   Fields:
     boundingPoly: The bounding polygon for the crop region. The coordinates of
       the bounding box are in the original image's scale.
-    confidence: Confidence of this being a salient region.  Range [0, 1].
+    confidence: Confidence of this being a salient region. Range [0, 1].
     importanceFraction: Fraction of importance of this salient region with
       respect to the original image.
   """
@@ -515,7 +507,7 @@ class CropHintsParams(_messages.Message):
   Fields:
     aspectRatios: Aspect ratios in floats, representing the ratio of the width
       to the height of the image. For example, if the desired aspect ratio is
-      4/3, the corresponding float value should be 1.33333.  If not specified,
+      4/3, the corresponding float value should be 1.33333. If not specified,
       the best possible crop is returned. The number of provided aspect ratios
       is limited to a maximum of 16; any aspect ratios provided after the 16th
       are ignored.
@@ -585,9 +577,9 @@ class DominantColorsAnnotation(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -661,8 +653,8 @@ class FaceAnnotation(_messages.Message):
       the `boundingPoly`, and encloses only the skin part of the face.
       Typically, it is used to eliminate the face from any image analysis that
       detects the "amount of skin" visible in an image. It is not based on the
-      landmarker results, only on the initial face detection, hence the
-      <code>fd</code> (face detection) prefix.
+      landmarker results, only on the initial face detection, hence the fd
+      (face detection) prefix.
     headwearLikelihood: Headwear likelihood.
     joyLikelihood: Joy likelihood.
     landmarkingConfidence: Face landmarking confidence. Range [0, 1].
@@ -892,17 +884,17 @@ class GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix:
-      gs://bucket-name/here/filenameprefix   The output files will be created
-      in gs://bucket-name/here/ and the names of the output files will begin
-      with "filenameprefix".  *    Directory Prefix: gs://bucket-
-      name/some/location/   The output files will be created in gs://bucket-
-      name/some/location/ and the names of the output files could be anything
-      because there was no filename prefix specified.  If multiple outputs,
-      each response is still AnnotateFileResponse, each of which contains some
-      subset of the full list of AnnotateImageResponse. Multiple outputs can
-      happen if, for example, the output JSON is too large and overflows into
-      multiple sharded files.
+      on the uri prefix you provide. Examples: * File Prefix: gs://bucket-
+      name/here/filenameprefix The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix". * Directory Prefix: gs://bucket-name/some/location/
+      The output files will be created in gs://bucket-name/some/location/ and
+      the names of the output files could be anything because there was no
+      filename prefix specified. If multiple outputs, each response is still
+      AnnotateFileResponse, each of which contains some subset of the full
+      list of AnnotateImageResponse. Multiple outputs can happen if, for
+      example, the output JSON is too large and overflows into multiple
+      sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -1022,11 +1014,10 @@ class GoogleCloudVisionV1p1beta1Block(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:  * when the text is horizontal it might look
-      like:          0----1         |    |         3----2  * when it's rotated
-      180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertex order will still be (0, 1, 2,
-      3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
       text).
@@ -1093,7 +1084,7 @@ class GoogleCloudVisionV1p1beta1CropHint(_messages.Message):
   Fields:
     boundingPoly: The bounding polygon for the crop region. The coordinates of
       the bounding box are in the original image's scale.
-    confidence: Confidence of this being a salient region.  Range [0, 1].
+    confidence: Confidence of this being a salient region. Range [0, 1].
     importanceFraction: Fraction of importance of this salient region with
       respect to the original image.
   """
@@ -1193,8 +1184,8 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
       the `boundingPoly`, and encloses only the skin part of the face.
       Typically, it is used to eliminate the face from any image analysis that
       detects the "amount of skin" visible in an image. It is not based on the
-      landmarker results, only on the initial face detection, hence the
-      <code>fd</code> (face detection) prefix.
+      landmarker results, only on the initial face detection, hence the fd
+      (face detection) prefix.
     headwearLikelihood: Headwear likelihood.
     joyLikelihood: Joy likelihood.
     landmarkingConfidence: Face landmarking confidence. Range [0, 1].
@@ -1406,6 +1397,8 @@ class GoogleCloudVisionV1p1beta1FaceAnnotationLandmark(_messages.Message):
       CHIN_GNATHION: Chin gnathion.
       CHIN_LEFT_GONION: Chin left gonion.
       CHIN_RIGHT_GONION: Chin right gonion.
+      LEFT_CHEEK_CENTER: Left cheek center.
+      RIGHT_CHEEK_CENTER: Right cheek center.
     """
     UNKNOWN_LANDMARK = 0
     LEFT_EYE = 1
@@ -1442,6 +1435,8 @@ class GoogleCloudVisionV1p1beta1FaceAnnotationLandmark(_messages.Message):
     CHIN_GNATHION = 32
     CHIN_LEFT_GONION = 33
     CHIN_RIGHT_GONION = 34
+    LEFT_CHEEK_CENTER = 35
+    RIGHT_CHEEK_CENTER = 36
 
   position = _messages.MessageField('GoogleCloudVisionV1p1beta1Position', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -1456,17 +1451,17 @@ class GoogleCloudVisionV1p1beta1GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix:
-      gs://bucket-name/here/filenameprefix   The output files will be created
-      in gs://bucket-name/here/ and the names of the output files will begin
-      with "filenameprefix".  *    Directory Prefix: gs://bucket-
-      name/some/location/   The output files will be created in gs://bucket-
-      name/some/location/ and the names of the output files could be anything
-      because there was no filename prefix specified.  If multiple outputs,
-      each response is still AnnotateFileResponse, each of which contains some
-      subset of the full list of AnnotateImageResponse. Multiple outputs can
-      happen if, for example, the output JSON is too large and overflows into
-      multiple sharded files.
+      on the uri prefix you provide. Examples: * File Prefix: gs://bucket-
+      name/here/filenameprefix The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix". * Directory Prefix: gs://bucket-name/some/location/
+      The output files will be created in gs://bucket-name/some/location/ and
+      the names of the output files could be anything because there was no
+      filename prefix specified. If multiple outputs, each response is still
+      AnnotateFileResponse, each of which contains some subset of the full
+      list of AnnotateImageResponse. Multiple outputs can happen if, for
+      example, the output JSON is too large and overflows into multiple
+      sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -1513,7 +1508,7 @@ class GoogleCloudVisionV1p1beta1InputConfig(_messages.Message):
   Fields:
     content: File content, represented as a stream of bytes. Note: As with all
       `bytes` fields, protobuffers use a pure binary representation, whereas
-      JSON representations use base64.  Currently, this field only works for
+      JSON representations use base64. Currently, this field only works for
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
@@ -1609,10 +1604,10 @@ class GoogleCloudVisionV1p1beta1OutputConfig(_messages.Message):
   Fields:
     batchSize: The max number of response protos to put into each output JSON
       file on Google Cloud Storage. The valid range is [1, 100]. If not
-      specified, the default value is 20.  For example, for one pdf file with
+      specified, the default value is 20. For example, for one pdf file with
       100 pages, 100 response protos will be generated. If `batch_size` = 20,
       then 5 json files each containing 20 response protos will be written
-      under the prefix `gcs_destination`.`uri`.  Currently, batch_size only
+      under the prefix `gcs_destination`.`uri`. Currently, batch_size only
       applies to GcsDestination, with potential future support for other
       output configurations.
     gcsDestination: The Google Cloud Storage location to write the output(s)
@@ -1651,10 +1646,10 @@ class GoogleCloudVisionV1p1beta1Paragraph(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of all words in this paragraph.
@@ -1690,19 +1685,20 @@ class GoogleCloudVisionV1p1beta1Product(_messages.Message):
       be at most 4096 characters long.
     displayName: The user-provided name for this Product. Must not be empty.
       Must be at most 4096 characters long.
-    name: The resource name of the product.  Format is:
-      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+    name: The resource name of the product. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`. This field
       is ignored when creating a product.
     productCategory: Immutable. The category for the product identified by the
-      reference image. This should be either "homegoods-v2", "apparel-v2", or
-      "toys-v2". The legacy categories "homegoods", "apparel", and "toys" are
-      still supported, but these should not be used for new products.
+      reference image. This should be one of "homegoods-v2", "apparel-v2",
+      "toys-v2", "packagedgoods-v1" or "general-v1". The legacy categories
+      "homegoods", "apparel", and "toys" are still supported, but these should
+      not be used for new products.
     productLabels: Key-value pairs that can be attached to a product. At query
-      time, constraints can be specified based on the product_labels.  Note
+      time, constraints can be specified based on the product_labels. Note
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
-      to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 500 product_labels.  Notice that the total
+      to be supported soon. Multiple values can be assigned to the same key.
+      One product may have up to 500 product_labels. Notice that the total
       number of distinct product_labels over all products in one ProductSet
       cannot exceed 1M, otherwise the product search pipeline will refuse to
       work for that ProductSet.
@@ -1959,10 +1955,10 @@ class GoogleCloudVisionV1p1beta1Symbol(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -2160,10 +2156,10 @@ class GoogleCloudVisionV1p1beta1Word(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -2279,11 +2275,10 @@ class GoogleCloudVisionV1p2beta1Block(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:  * when the text is horizontal it might look
-      like:          0----1         |    |         3----2  * when it's rotated
-      180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertex order will still be (0, 1, 2,
-      3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
       text).
@@ -2350,7 +2345,7 @@ class GoogleCloudVisionV1p2beta1CropHint(_messages.Message):
   Fields:
     boundingPoly: The bounding polygon for the crop region. The coordinates of
       the bounding box are in the original image's scale.
-    confidence: Confidence of this being a salient region.  Range [0, 1].
+    confidence: Confidence of this being a salient region. Range [0, 1].
     importanceFraction: Fraction of importance of this salient region with
       respect to the original image.
   """
@@ -2450,8 +2445,8 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
       the `boundingPoly`, and encloses only the skin part of the face.
       Typically, it is used to eliminate the face from any image analysis that
       detects the "amount of skin" visible in an image. It is not based on the
-      landmarker results, only on the initial face detection, hence the
-      <code>fd</code> (face detection) prefix.
+      landmarker results, only on the initial face detection, hence the fd
+      (face detection) prefix.
     headwearLikelihood: Headwear likelihood.
     joyLikelihood: Joy likelihood.
     landmarkingConfidence: Face landmarking confidence. Range [0, 1].
@@ -2663,6 +2658,8 @@ class GoogleCloudVisionV1p2beta1FaceAnnotationLandmark(_messages.Message):
       CHIN_GNATHION: Chin gnathion.
       CHIN_LEFT_GONION: Chin left gonion.
       CHIN_RIGHT_GONION: Chin right gonion.
+      LEFT_CHEEK_CENTER: Left cheek center.
+      RIGHT_CHEEK_CENTER: Right cheek center.
     """
     UNKNOWN_LANDMARK = 0
     LEFT_EYE = 1
@@ -2699,6 +2696,8 @@ class GoogleCloudVisionV1p2beta1FaceAnnotationLandmark(_messages.Message):
     CHIN_GNATHION = 32
     CHIN_LEFT_GONION = 33
     CHIN_RIGHT_GONION = 34
+    LEFT_CHEEK_CENTER = 35
+    RIGHT_CHEEK_CENTER = 36
 
   position = _messages.MessageField('GoogleCloudVisionV1p2beta1Position', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -2713,17 +2712,17 @@ class GoogleCloudVisionV1p2beta1GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix:
-      gs://bucket-name/here/filenameprefix   The output files will be created
-      in gs://bucket-name/here/ and the names of the output files will begin
-      with "filenameprefix".  *    Directory Prefix: gs://bucket-
-      name/some/location/   The output files will be created in gs://bucket-
-      name/some/location/ and the names of the output files could be anything
-      because there was no filename prefix specified.  If multiple outputs,
-      each response is still AnnotateFileResponse, each of which contains some
-      subset of the full list of AnnotateImageResponse. Multiple outputs can
-      happen if, for example, the output JSON is too large and overflows into
-      multiple sharded files.
+      on the uri prefix you provide. Examples: * File Prefix: gs://bucket-
+      name/here/filenameprefix The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix". * Directory Prefix: gs://bucket-name/some/location/
+      The output files will be created in gs://bucket-name/some/location/ and
+      the names of the output files could be anything because there was no
+      filename prefix specified. If multiple outputs, each response is still
+      AnnotateFileResponse, each of which contains some subset of the full
+      list of AnnotateImageResponse. Multiple outputs can happen if, for
+      example, the output JSON is too large and overflows into multiple
+      sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -2770,7 +2769,7 @@ class GoogleCloudVisionV1p2beta1InputConfig(_messages.Message):
   Fields:
     content: File content, represented as a stream of bytes. Note: As with all
       `bytes` fields, protobuffers use a pure binary representation, whereas
-      JSON representations use base64.  Currently, this field only works for
+      JSON representations use base64. Currently, this field only works for
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
@@ -2866,10 +2865,10 @@ class GoogleCloudVisionV1p2beta1OutputConfig(_messages.Message):
   Fields:
     batchSize: The max number of response protos to put into each output JSON
       file on Google Cloud Storage. The valid range is [1, 100]. If not
-      specified, the default value is 20.  For example, for one pdf file with
+      specified, the default value is 20. For example, for one pdf file with
       100 pages, 100 response protos will be generated. If `batch_size` = 20,
       then 5 json files each containing 20 response protos will be written
-      under the prefix `gcs_destination`.`uri`.  Currently, batch_size only
+      under the prefix `gcs_destination`.`uri`. Currently, batch_size only
       applies to GcsDestination, with potential future support for other
       output configurations.
     gcsDestination: The Google Cloud Storage location to write the output(s)
@@ -2908,10 +2907,10 @@ class GoogleCloudVisionV1p2beta1Paragraph(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of all words in this paragraph.
@@ -2947,19 +2946,20 @@ class GoogleCloudVisionV1p2beta1Product(_messages.Message):
       be at most 4096 characters long.
     displayName: The user-provided name for this Product. Must not be empty.
       Must be at most 4096 characters long.
-    name: The resource name of the product.  Format is:
-      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+    name: The resource name of the product. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`. This field
       is ignored when creating a product.
     productCategory: Immutable. The category for the product identified by the
-      reference image. This should be either "homegoods-v2", "apparel-v2", or
-      "toys-v2". The legacy categories "homegoods", "apparel", and "toys" are
-      still supported, but these should not be used for new products.
+      reference image. This should be one of "homegoods-v2", "apparel-v2",
+      "toys-v2", "packagedgoods-v1" or "general-v1". The legacy categories
+      "homegoods", "apparel", and "toys" are still supported, but these should
+      not be used for new products.
     productLabels: Key-value pairs that can be attached to a product. At query
-      time, constraints can be specified based on the product_labels.  Note
+      time, constraints can be specified based on the product_labels. Note
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
-      to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 500 product_labels.  Notice that the total
+      to be supported soon. Multiple values can be assigned to the same key.
+      One product may have up to 500 product_labels. Notice that the total
       number of distinct product_labels over all products in one ProductSet
       cannot exceed 1M, otherwise the product search pipeline will refuse to
       work for that ProductSet.
@@ -3216,10 +3216,10 @@ class GoogleCloudVisionV1p2beta1Symbol(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -3417,10 +3417,10 @@ class GoogleCloudVisionV1p2beta1Word(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -3524,7 +3524,7 @@ class GoogleCloudVisionV1p3beta1AsyncBatchAnnotateFilesResponse(_messages.Messag
 
 
 class GoogleCloudVisionV1p3beta1BatchOperationMetadata(_messages.Message):
-  r"""Metadata for the batch operations such as the current state.  This is
+  r"""Metadata for the batch operations such as the current state. This is
   included in the `metadata` field of the `Operation` returned by the
   `GetOperation` call of the `google::longrunning::Operations` service.
 
@@ -3576,11 +3576,10 @@ class GoogleCloudVisionV1p3beta1Block(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:  * when the text is horizontal it might look
-      like:          0----1         |    |         3----2  * when it's rotated
-      180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertex order will still be (0, 1, 2,
-      3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
       text).
@@ -3647,7 +3646,7 @@ class GoogleCloudVisionV1p3beta1CropHint(_messages.Message):
   Fields:
     boundingPoly: The bounding polygon for the crop region. The coordinates of
       the bounding box are in the original image's scale.
-    confidence: Confidence of this being a salient region.  Range [0, 1].
+    confidence: Confidence of this being a salient region. Range [0, 1].
     importanceFraction: Fraction of importance of this salient region with
       respect to the original image.
   """
@@ -3747,8 +3746,8 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
       the `boundingPoly`, and encloses only the skin part of the face.
       Typically, it is used to eliminate the face from any image analysis that
       detects the "amount of skin" visible in an image. It is not based on the
-      landmarker results, only on the initial face detection, hence the
-      <code>fd</code> (face detection) prefix.
+      landmarker results, only on the initial face detection, hence the fd
+      (face detection) prefix.
     headwearLikelihood: Headwear likelihood.
     joyLikelihood: Joy likelihood.
     landmarkingConfidence: Face landmarking confidence. Range [0, 1].
@@ -3960,6 +3959,8 @@ class GoogleCloudVisionV1p3beta1FaceAnnotationLandmark(_messages.Message):
       CHIN_GNATHION: Chin gnathion.
       CHIN_LEFT_GONION: Chin left gonion.
       CHIN_RIGHT_GONION: Chin right gonion.
+      LEFT_CHEEK_CENTER: Left cheek center.
+      RIGHT_CHEEK_CENTER: Right cheek center.
     """
     UNKNOWN_LANDMARK = 0
     LEFT_EYE = 1
@@ -3996,6 +3997,8 @@ class GoogleCloudVisionV1p3beta1FaceAnnotationLandmark(_messages.Message):
     CHIN_GNATHION = 32
     CHIN_LEFT_GONION = 33
     CHIN_RIGHT_GONION = 34
+    LEFT_CHEEK_CENTER = 35
+    RIGHT_CHEEK_CENTER = 36
 
   position = _messages.MessageField('GoogleCloudVisionV1p3beta1Position', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -4010,17 +4013,17 @@ class GoogleCloudVisionV1p3beta1GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix:
-      gs://bucket-name/here/filenameprefix   The output files will be created
-      in gs://bucket-name/here/ and the names of the output files will begin
-      with "filenameprefix".  *    Directory Prefix: gs://bucket-
-      name/some/location/   The output files will be created in gs://bucket-
-      name/some/location/ and the names of the output files could be anything
-      because there was no filename prefix specified.  If multiple outputs,
-      each response is still AnnotateFileResponse, each of which contains some
-      subset of the full list of AnnotateImageResponse. Multiple outputs can
-      happen if, for example, the output JSON is too large and overflows into
-      multiple sharded files.
+      on the uri prefix you provide. Examples: * File Prefix: gs://bucket-
+      name/here/filenameprefix The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix". * Directory Prefix: gs://bucket-name/some/location/
+      The output files will be created in gs://bucket-name/some/location/ and
+      the names of the output files could be anything because there was no
+      filename prefix specified. If multiple outputs, each response is still
+      AnnotateFileResponse, each of which contains some subset of the full
+      list of AnnotateImageResponse. Multiple outputs can happen if, for
+      example, the output JSON is too large and overflows into multiple
+      sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -4062,7 +4065,7 @@ class GoogleCloudVisionV1p3beta1ImageProperties(_messages.Message):
 
 
 class GoogleCloudVisionV1p3beta1ImportProductSetsResponse(_messages.Message):
-  r"""Response message for the `ImportProductSets` method.  This message is
+  r"""Response message for the `ImportProductSets` method. This message is
   returned by the google.longrunning.Operations.GetOperation method in the
   returned google.longrunning.Operation.response field.
 
@@ -4070,7 +4073,7 @@ class GoogleCloudVisionV1p3beta1ImportProductSetsResponse(_messages.Message):
     referenceImages: The list of reference_images that are imported
       successfully.
     statuses: The rpc status for each ImportProductSet request, including both
-      successes and errors.  The number of statuses here matches the number of
+      successes and errors. The number of statuses here matches the number of
       lines in the csv file, and statuses[i] stores the success or failure
       status of processing the i-th line of the csv, starting from line 0.
   """
@@ -4085,7 +4088,7 @@ class GoogleCloudVisionV1p3beta1InputConfig(_messages.Message):
   Fields:
     content: File content, represented as a stream of bytes. Note: As with all
       `bytes` fields, protobuffers use a pure binary representation, whereas
-      JSON representations use base64.  Currently, this field only works for
+      JSON representations use base64. Currently, this field only works for
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
@@ -4181,10 +4184,10 @@ class GoogleCloudVisionV1p3beta1OutputConfig(_messages.Message):
   Fields:
     batchSize: The max number of response protos to put into each output JSON
       file on Google Cloud Storage. The valid range is [1, 100]. If not
-      specified, the default value is 20.  For example, for one pdf file with
+      specified, the default value is 20. For example, for one pdf file with
       100 pages, 100 response protos will be generated. If `batch_size` = 20,
       then 5 json files each containing 20 response protos will be written
-      under the prefix `gcs_destination`.`uri`.  Currently, batch_size only
+      under the prefix `gcs_destination`.`uri`. Currently, batch_size only
       applies to GcsDestination, with potential future support for other
       output configurations.
     gcsDestination: The Google Cloud Storage location to write the output(s)
@@ -4223,10 +4226,10 @@ class GoogleCloudVisionV1p3beta1Paragraph(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of all words in this paragraph.
@@ -4262,19 +4265,20 @@ class GoogleCloudVisionV1p3beta1Product(_messages.Message):
       be at most 4096 characters long.
     displayName: The user-provided name for this Product. Must not be empty.
       Must be at most 4096 characters long.
-    name: The resource name of the product.  Format is:
-      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+    name: The resource name of the product. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`. This field
       is ignored when creating a product.
     productCategory: Immutable. The category for the product identified by the
-      reference image. This should be either "homegoods-v2", "apparel-v2", or
-      "toys-v2". The legacy categories "homegoods", "apparel", and "toys" are
-      still supported, but these should not be used for new products.
+      reference image. This should be one of "homegoods-v2", "apparel-v2",
+      "toys-v2", "packagedgoods-v1" or "general-v1". The legacy categories
+      "homegoods", "apparel", and "toys" are still supported, but these should
+      not be used for new products.
     productLabels: Key-value pairs that can be attached to a product. At query
-      time, constraints can be specified based on the product_labels.  Note
+      time, constraints can be specified based on the product_labels. Note
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
-      to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 500 product_labels.  Notice that the total
+      to be supported soon. Multiple values can be assigned to the same key.
+      One product may have up to 500 product_labels. Notice that the total
       number of distinct product_labels over all products in one ProductSet
       cannot exceed 1M, otherwise the product search pipeline will refuse to
       work for that ProductSet.
@@ -4398,10 +4402,10 @@ class GoogleCloudVisionV1p3beta1ReferenceImage(_messages.Message):
       converted, the small edge of the rectangle must be greater than or equal
       to 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is ok; 1:5
       is not).
-    name: The resource name of the reference image.  Format is:  `projects/PRO
-      JECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE_ID`.
+    name: The resource name of the reference image. Format is: `projects/PROJE
+      CT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE_ID`.
       This field is ignored when creating a reference image.
-    uri: Required. The Google Cloud Storage URI of the reference image.  The
+    uri: Required. The Google Cloud Storage URI of the reference image. The
       URI must start with `gs://`.
   """
 
@@ -4555,10 +4559,10 @@ class GoogleCloudVisionV1p3beta1Symbol(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -4756,10 +4760,10 @@ class GoogleCloudVisionV1p3beta1Word(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -4885,7 +4889,7 @@ class GoogleCloudVisionV1p4beta1BatchAnnotateFilesResponse(_messages.Message):
 
 
 class GoogleCloudVisionV1p4beta1BatchOperationMetadata(_messages.Message):
-  r"""Metadata for the batch operations such as the current state.  This is
+  r"""Metadata for the batch operations such as the current state. This is
   included in the `metadata` field of the `Operation` returned by the
   `GetOperation` call of the `google::longrunning::Operations` service.
 
@@ -4937,11 +4941,10 @@ class GoogleCloudVisionV1p4beta1Block(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:  * when the text is horizontal it might look
-      like:          0----1         |    |         3----2  * when it's rotated
-      180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertex order will still be (0, 1, 2,
-      3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
       text).
@@ -5023,7 +5026,7 @@ class GoogleCloudVisionV1p4beta1CropHint(_messages.Message):
   Fields:
     boundingPoly: The bounding polygon for the crop region. The coordinates of
       the bounding box are in the original image's scale.
-    confidence: Confidence of this being a salient region.  Range [0, 1].
+    confidence: Confidence of this being a salient region. Range [0, 1].
     importanceFraction: Fraction of importance of this salient region with
       respect to the original image.
   """
@@ -5123,8 +5126,8 @@ class GoogleCloudVisionV1p4beta1FaceAnnotation(_messages.Message):
       the `boundingPoly`, and encloses only the skin part of the face.
       Typically, it is used to eliminate the face from any image analysis that
       detects the "amount of skin" visible in an image. It is not based on the
-      landmarker results, only on the initial face detection, hence the
-      <code>fd</code> (face detection) prefix.
+      landmarker results, only on the initial face detection, hence the fd
+      (face detection) prefix.
     headwearLikelihood: Headwear likelihood.
     joyLikelihood: Joy likelihood.
     landmarkingConfidence: Face landmarking confidence. Range [0, 1].
@@ -5341,6 +5344,8 @@ class GoogleCloudVisionV1p4beta1FaceAnnotationLandmark(_messages.Message):
       CHIN_GNATHION: Chin gnathion.
       CHIN_LEFT_GONION: Chin left gonion.
       CHIN_RIGHT_GONION: Chin right gonion.
+      LEFT_CHEEK_CENTER: Left cheek center.
+      RIGHT_CHEEK_CENTER: Right cheek center.
     """
     UNKNOWN_LANDMARK = 0
     LEFT_EYE = 1
@@ -5377,6 +5382,8 @@ class GoogleCloudVisionV1p4beta1FaceAnnotationLandmark(_messages.Message):
     CHIN_GNATHION = 32
     CHIN_LEFT_GONION = 33
     CHIN_RIGHT_GONION = 34
+    LEFT_CHEEK_CENTER = 35
+    RIGHT_CHEEK_CENTER = 36
 
   position = _messages.MessageField('GoogleCloudVisionV1p4beta1Position', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -5403,17 +5410,17 @@ class GoogleCloudVisionV1p4beta1GcsDestination(_messages.Message):
       URI prefix. This field can either represent a gcs file prefix or gcs
       directory. In either case, the uri should be unique because in order to
       get all of the output files, you will need to do a wildcard gcs search
-      on the uri prefix you provide.  Examples:  *    File Prefix:
-      gs://bucket-name/here/filenameprefix   The output files will be created
-      in gs://bucket-name/here/ and the names of the output files will begin
-      with "filenameprefix".  *    Directory Prefix: gs://bucket-
-      name/some/location/   The output files will be created in gs://bucket-
-      name/some/location/ and the names of the output files could be anything
-      because there was no filename prefix specified.  If multiple outputs,
-      each response is still AnnotateFileResponse, each of which contains some
-      subset of the full list of AnnotateImageResponse. Multiple outputs can
-      happen if, for example, the output JSON is too large and overflows into
-      multiple sharded files.
+      on the uri prefix you provide. Examples: * File Prefix: gs://bucket-
+      name/here/filenameprefix The output files will be created in
+      gs://bucket-name/here/ and the names of the output files will begin with
+      "filenameprefix". * Directory Prefix: gs://bucket-name/some/location/
+      The output files will be created in gs://bucket-name/some/location/ and
+      the names of the output files could be anything because there was no
+      filename prefix specified. If multiple outputs, each response is still
+      AnnotateFileResponse, each of which contains some subset of the full
+      list of AnnotateImageResponse. Multiple outputs can happen if, for
+      example, the output JSON is too large and overflows into multiple
+      sharded files.
   """
 
   uri = _messages.StringField(1)
@@ -5455,7 +5462,7 @@ class GoogleCloudVisionV1p4beta1ImageProperties(_messages.Message):
 
 
 class GoogleCloudVisionV1p4beta1ImportProductSetsResponse(_messages.Message):
-  r"""Response message for the `ImportProductSets` method.  This message is
+  r"""Response message for the `ImportProductSets` method. This message is
   returned by the google.longrunning.Operations.GetOperation method in the
   returned google.longrunning.Operation.response field.
 
@@ -5463,7 +5470,7 @@ class GoogleCloudVisionV1p4beta1ImportProductSetsResponse(_messages.Message):
     referenceImages: The list of reference_images that are imported
       successfully.
     statuses: The rpc status for each ImportProductSet request, including both
-      successes and errors.  The number of statuses here matches the number of
+      successes and errors. The number of statuses here matches the number of
       lines in the csv file, and statuses[i] stores the success or failure
       status of processing the i-th line of the csv, starting from line 0.
   """
@@ -5478,7 +5485,7 @@ class GoogleCloudVisionV1p4beta1InputConfig(_messages.Message):
   Fields:
     content: File content, represented as a stream of bytes. Note: As with all
       `bytes` fields, protobuffers use a pure binary representation, whereas
-      JSON representations use base64.  Currently, this field only works for
+      JSON representations use base64. Currently, this field only works for
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
@@ -5574,10 +5581,10 @@ class GoogleCloudVisionV1p4beta1OutputConfig(_messages.Message):
   Fields:
     batchSize: The max number of response protos to put into each output JSON
       file on Google Cloud Storage. The valid range is [1, 100]. If not
-      specified, the default value is 20.  For example, for one pdf file with
+      specified, the default value is 20. For example, for one pdf file with
       100 pages, 100 response protos will be generated. If `batch_size` = 20,
       then 5 json files each containing 20 response protos will be written
-      under the prefix `gcs_destination`.`uri`.  Currently, batch_size only
+      under the prefix `gcs_destination`.`uri`. Currently, batch_size only
       applies to GcsDestination, with potential future support for other
       output configurations.
     gcsDestination: The Google Cloud Storage location to write the output(s)
@@ -5616,10 +5623,10 @@ class GoogleCloudVisionV1p4beta1Paragraph(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of all words in this paragraph.
@@ -5655,19 +5662,20 @@ class GoogleCloudVisionV1p4beta1Product(_messages.Message):
       be at most 4096 characters long.
     displayName: The user-provided name for this Product. Must not be empty.
       Must be at most 4096 characters long.
-    name: The resource name of the product.  Format is:
-      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+    name: The resource name of the product. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`. This field
       is ignored when creating a product.
     productCategory: Immutable. The category for the product identified by the
-      reference image. This should be either "homegoods-v2", "apparel-v2", or
-      "toys-v2". The legacy categories "homegoods", "apparel", and "toys" are
-      still supported, but these should not be used for new products.
+      reference image. This should be one of "homegoods-v2", "apparel-v2",
+      "toys-v2", "packagedgoods-v1" or "general-v1". The legacy categories
+      "homegoods", "apparel", and "toys" are still supported, but these should
+      not be used for new products.
     productLabels: Key-value pairs that can be attached to a product. At query
-      time, constraints can be specified based on the product_labels.  Note
+      time, constraints can be specified based on the product_labels. Note
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
-      to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 500 product_labels.  Notice that the total
+      to be supported soon. Multiple values can be assigned to the same key.
+      One product may have up to 500 product_labels. Notice that the total
       number of distinct product_labels over all products in one ProductSet
       cannot exceed 1M, otherwise the product search pipeline will refuse to
       work for that ProductSet.
@@ -5791,10 +5799,10 @@ class GoogleCloudVisionV1p4beta1ReferenceImage(_messages.Message):
       converted, the small edge of the rectangle must be greater than or equal
       to 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is ok; 1:5
       is not).
-    name: The resource name of the reference image.  Format is:  `projects/PRO
-      JECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE_ID`.
+    name: The resource name of the reference image. Format is: `projects/PROJE
+      CT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE_ID`.
       This field is ignored when creating a reference image.
-    uri: Required. The Google Cloud Storage URI of the reference image.  The
+    uri: Required. The Google Cloud Storage URI of the reference image. The
       URI must start with `gs://`.
   """
 
@@ -5948,10 +5956,10 @@ class GoogleCloudVisionV1p4beta1Symbol(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -6149,10 +6157,10 @@ class GoogleCloudVisionV1p4beta1Word(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -6188,7 +6196,7 @@ class Image(_messages.Message):
   Fields:
     content: Image content, represented as a stream of bytes. Note: As with
       all `bytes` fields, protobuffers use a pure binary representation,
-      whereas JSON representations use base64.  Currently, this field only
+      whereas JSON representations use base64. Currently, this field only
       works for BatchAnnotateImages requests. It does not work for
       AsyncBatchAnnotateImages requests.
     source: Google Cloud Storage image location, or publicly-accessible image
@@ -6254,23 +6262,23 @@ class ImageSource(_messages.Message):
   r"""External image source (Google Cloud Storage or web URL image location).
 
   Fields:
-    gcsImageUri: **Use `image_uri` instead.**  The Google Cloud Storage  URI
-      of the form `gs://bucket_name/object_name`. Object versioning is not
+    gcsImageUri: **Use `image_uri` instead.** The Google Cloud Storage URI of
+      the form `gs://bucket_name/object_name`. Object versioning is not
       supported. See [Google Cloud Storage Request
       URIs](https://cloud.google.com/storage/docs/reference-uris) for more
       info.
-    imageUri: The URI of the source image. Can be either:  1. A Google Cloud
-      Storage URI of the form    `gs://bucket_name/object_name`. Object
-      versioning is not supported. See    [Google Cloud Storage Request
+    imageUri: The URI of the source image. Can be either: 1. A Google Cloud
+      Storage URI of the form `gs://bucket_name/object_name`. Object
+      versioning is not supported. See [Google Cloud Storage Request
       URIs](https://cloud.google.com/storage/docs/reference-uris) for more
-      info.  2. A publicly-accessible image HTTP/HTTPS URL. When fetching
-      images from    HTTP/HTTPS URLs, Google cannot guarantee that the request
-      will be    completed. Your request may fail if the specified host denies
-      the    request (e.g. due to request throttling or DOS prevention), or if
-      Google    throttles requests to the site for abuse prevention. You
-      should not    depend on externally-hosted images for production
-      applications.  When both `gcs_image_uri` and `image_uri` are specified,
-      `image_uri` takes precedence.
+      info. 2. A publicly-accessible image HTTP/HTTPS URL. When fetching
+      images from HTTP/HTTPS URLs, Google cannot guarantee that the request
+      will be completed. Your request may fail if the specified host denies
+      the request (e.g. due to request throttling or DOS prevention), or if
+      Google throttles requests to the site for abuse prevention. You should
+      not depend on externally-hosted images for production applications. When
+      both `gcs_image_uri` and `image_uri` are specified, `image_uri` takes
+      precedence.
   """
 
   gcsImageUri = _messages.StringField(1)
@@ -6282,39 +6290,39 @@ class ImportProductSetsGcsSource(_messages.Message):
   of ImportProductSetRequests in each line.
 
   Fields:
-    csvFileUri: The Google Cloud Storage URI of the input csv file.  The URI
-      must start with `gs://`.  The format of the input csv file should be one
-      image per line. In each line, there are 8 columns.  1.  image-uri 2.
-      image-id 3.  product-set-id 4.  product-id 5.  product-category 6.
-      product-display-name 7.  labels 8.  bounding-poly  The `image-uri`,
-      `product-set-id`, `product-id`, and `product-category` columns are
-      required. All other columns are optional.  If the `ProductSet` or
-      `Product` specified by the `product-set-id` and `product-id` values does
-      not exist, then the system will create a new `ProductSet` or `Product`
-      for the image. In this case, the `product-display-name` column refers to
-      display_name, the `product-category` column refers to product_category,
-      and the `labels` column refers to product_labels.  The `image-id` column
-      is optional but must be unique if provided. If it is empty, the system
-      will automatically assign a unique id to the image.  The `product-
-      display-name` column is optional. If it is empty, the system sets the
+    csvFileUri: The Google Cloud Storage URI of the input csv file. The URI
+      must start with `gs://`. The format of the input csv file should be one
+      image per line. In each line, there are 8 columns. 1. image-uri 2.
+      image-id 3. product-set-id 4. product-id 5. product-category 6. product-
+      display-name 7. labels 8. bounding-poly The `image-uri`, `product-set-
+      id`, `product-id`, and `product-category` columns are required. All
+      other columns are optional. If the `ProductSet` or `Product` specified
+      by the `product-set-id` and `product-id` values does not exist, then the
+      system will create a new `ProductSet` or `Product` for the image. In
+      this case, the `product-display-name` column refers to display_name, the
+      `product-category` column refers to product_category, and the `labels`
+      column refers to product_labels. The `image-id` column is optional but
+      must be unique if provided. If it is empty, the system will
+      automatically assign a unique id to the image. The `product-display-
+      name` column is optional. If it is empty, the system sets the
       display_name field for the product to a space (" "). You can update the
-      `display_name` later by using the API.  If a `Product` with the
-      specified `product-id` already exists, then the system ignores the
-      `product-display-name`, `product-category`, and `labels` columns.  The
-      `labels` column (optional) is a line containing a list of comma-
-      separated key-value pairs, in the following format:
-      "key_1=value_1,key_2=value_2,...,key_n=value_n"  The `bounding-poly`
+      `display_name` later by using the API. If a `Product` with the specified
+      `product-id` already exists, then the system ignores the `product-
+      display-name`, `product-category`, and `labels` columns. The `labels`
+      column (optional) is a line containing a list of comma-separated key-
+      value pairs, in the following format:
+      "key_1=value_1,key_2=value_2,...,key_n=value_n" The `bounding-poly`
       column (optional) identifies one region of interest from the image in
       the same manner as `CreateReferenceImage`. If you do not specify the
       `bounding-poly` column, then the system will try to detect regions of
-      interest automatically.  At most one `bounding-poly` column is allowed
+      interest automatically. At most one `bounding-poly` column is allowed
       per line. If the image contains multiple regions of interest, add a line
       to the CSV file that includes the same product information, and the
-      `bounding-poly` values for each region of interest.  The `bounding-poly`
+      `bounding-poly` values for each region of interest. The `bounding-poly`
       column must contain an even number of comma-separated numbers, in the
       format "p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y". Use non-negative integers
       for absolute bounding polygons, and float values in [0, 1] for
-      normalized bounding polygons.  The system will resize the image if the
+      normalized bounding polygons. The system will resize the image if the
       image resolution is too large to process (larger than 20MP).
   """
 
@@ -6343,7 +6351,7 @@ class ImportProductSetsRequest(_messages.Message):
 
 
 class ImportProductSetsResponse(_messages.Message):
-  r"""Response message for the `ImportProductSets` method.  This message is
+  r"""Response message for the `ImportProductSets` method. This message is
   returned by the google.longrunning.Operations.GetOperation method in the
   returned google.longrunning.Operation.response field.
 
@@ -6351,7 +6359,7 @@ class ImportProductSetsResponse(_messages.Message):
     referenceImages: The list of reference_images that are imported
       successfully.
     statuses: The rpc status for each ImportProductSet request, including both
-      successes and errors.  The number of statuses here matches the number of
+      successes and errors. The number of statuses here matches the number of
       lines in the csv file, and statuses[i] stores the success or failure
       status of processing the i-th line of the csv, starting from line 0.
   """
@@ -6366,7 +6374,7 @@ class InputConfig(_messages.Message):
   Fields:
     content: File content, represented as a stream of bytes. Note: As with all
       `bytes` fields, protobuffers use a pure binary representation, whereas
-      JSON representations use base64.  Currently, this field only works for
+      JSON representations use base64. Currently, this field only works for
       BatchAnnotateFiles requests. It does not work for
       AsyncBatchAnnotateFiles requests.
     gcsSource: The Google Cloud Storage location to read the input from.
@@ -6443,6 +6451,8 @@ class Landmark(_messages.Message):
       CHIN_GNATHION: Chin gnathion.
       CHIN_LEFT_GONION: Chin left gonion.
       CHIN_RIGHT_GONION: Chin right gonion.
+      LEFT_CHEEK_CENTER: Left cheek center.
+      RIGHT_CHEEK_CENTER: Right cheek center.
     """
     UNKNOWN_LANDMARK = 0
     LEFT_EYE = 1
@@ -6479,6 +6489,8 @@ class Landmark(_messages.Message):
     CHIN_GNATHION = 32
     CHIN_LEFT_GONION = 33
     CHIN_RIGHT_GONION = 34
+    LEFT_CHEEK_CENTER = 35
+    RIGHT_CHEEK_CENTER = 36
 
   position = _messages.MessageField('Position', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -6487,9 +6499,8 @@ class Landmark(_messages.Message):
 class LatLng(_messages.Message):
   r"""An object representing a latitude/longitude pair. This is expressed as a
   pair of doubles representing degrees latitude and degrees longitude. Unless
-  specified otherwise, this must conform to the <a
-  href="http://www.unoosa.org/pdf/icg/2012/template/WGS_84.pdf">WGS84
-  standard</a>. Values must be within normalized ranges.
+  specified otherwise, this must conform to the WGS84 standard. Values must be
+  within normalized ranges.
 
   Fields:
     latitude: The latitude in degrees. It must be in the range [-90.0, +90.0].
@@ -6647,17 +6658,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -6666,29 +6677,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -6714,12 +6725,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -6789,10 +6800,10 @@ class OutputConfig(_messages.Message):
   Fields:
     batchSize: The max number of response protos to put into each output JSON
       file on Google Cloud Storage. The valid range is [1, 100]. If not
-      specified, the default value is 20.  For example, for one pdf file with
+      specified, the default value is 20. For example, for one pdf file with
       100 pages, 100 response protos will be generated. If `batch_size` = 20,
       then 5 json files each containing 20 response protos will be written
-      under the prefix `gcs_destination`.`uri`.  Currently, batch_size only
+      under the prefix `gcs_destination`.`uri`. Currently, batch_size only
       applies to GcsDestination, with potential future support for other
       output configurations.
     gcsDestination: The Google Cloud Storage location to write the output(s)
@@ -6831,10 +6842,10 @@ class Paragraph(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of all words in this paragraph.
@@ -6870,19 +6881,20 @@ class Product(_messages.Message):
       be at most 4096 characters long.
     displayName: The user-provided name for this Product. Must not be empty.
       Must be at most 4096 characters long.
-    name: The resource name of the product.  Format is:
-      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+    name: The resource name of the product. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`. This field
       is ignored when creating a product.
     productCategory: Immutable. The category for the product identified by the
-      reference image. This should be either "homegoods-v2", "apparel-v2", or
-      "toys-v2". The legacy categories "homegoods", "apparel", and "toys" are
-      still supported, but these should not be used for new products.
+      reference image. This should be one of "homegoods-v2", "apparel-v2",
+      "toys-v2", "packagedgoods-v1" or "general-v1". The legacy categories
+      "homegoods", "apparel", and "toys" are still supported, but these should
+      not be used for new products.
     productLabels: Key-value pairs that can be attached to a product. At query
-      time, constraints can be specified based on the product_labels.  Note
+      time, constraints can be specified based on the product_labels. Note
       that integer values can be provided as strings, e.g. "1199". Only
       strings with integer values can match a range-based restriction which is
-      to be supported soon.  Multiple values can be assigned to the same key.
-      One product may have up to 500 product_labels.  Notice that the total
+      to be supported soon. Multiple values can be assigned to the same key.
+      One product may have up to 500 product_labels. Notice that the total
       number of distinct product_labels over all products in one ProductSet
       cannot exceed 1M, otherwise the product search pipeline will refuse to
       work for that ProductSet.
@@ -6904,7 +6916,7 @@ class ProductSearchParams(_messages.Message):
     filter: The filtering expression. This can be used to restrict search
       results based on Product labels. We currently support an AND of OR of
       key-value expressions, where each expression within an OR must have the
-      same key. An '=' should be used to connect the key and value.  For
+      same key. An '=' should be used to connect the key and value. For
       example, "(color = red OR color = blue) AND brand = Google" is
       acceptable, but "(color = red OR brand = Google)" is not acceptable.
       "color: red" is not acceptable because it uses a ':' instead of an '='.
@@ -6917,7 +6929,7 @@ class ProductSearchParams(_messages.Message):
       accuracy. It is recommended to migrate existing products to these
       categories as well.
     productSet: The resource name of a ProductSet to be searched for similar
-      images.  Format is:
+      images. Format is:
       `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.
   """
 
@@ -6956,15 +6968,15 @@ class ProductSet(_messages.Message):
     displayName: The user-provided name for this ProductSet. Must not be
       empty. Must be at most 4096 characters long.
     indexError: Output only. If there was an error with indexing the product
-      set, the field is populated.  This field is ignored when creating a
+      set, the field is populated. This field is ignored when creating a
       ProductSet.
     indexTime: Output only. The time at which this ProductSet was last
       indexed. Query results will reflect all updates before this time. If
       this ProductSet has never been indexed, this timestamp is the default
-      value "1970-01-01T00:00:00Z".  This field is ignored when creating a
+      value "1970-01-01T00:00:00Z". This field is ignored when creating a
       ProductSet.
-    name: The resource name of the ProductSet.  Format is:
-      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.  This
+    name: The resource name of the ProductSet. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`. This
       field is ignored when creating a ProductSet.
   """
 
@@ -7029,10 +7041,10 @@ class ReferenceImage(_messages.Message):
       converted, the small edge of the rectangle must be greater than or equal
       to 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is ok; 1:5
       is not).
-    name: The resource name of the reference image.  Format is:  `projects/PRO
-      JECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE_ID`.
+    name: The resource name of the reference image. Format is: `projects/PROJE
+      CT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE_ID`.
       This field is ignored when creating a reference image.
-    uri: Required. The Google Cloud Storage URI of the reference image.  The
+    uri: Required. The Google Cloud Storage URI of the reference image. The
       URI must start with `gs://`.
   """
 
@@ -7046,7 +7058,7 @@ class RemoveProductFromProductSetRequest(_messages.Message):
 
   Fields:
     product: Required. The resource name for the Product to be removed from
-      this ProductSet.  Format is:
+      this ProductSet. Format is:
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
   """
 
@@ -7273,7 +7285,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -7282,7 +7294,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -7328,10 +7340,10 @@ class Symbol(_messages.Message):
       order of top-left, top-right, bottom-right, bottom-left. When a rotation
       of the bounding box is detected the rotation is represented as around
       the top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the symbol. Range [0, 1].
     property: Additional information detected for the symbol.
     text: The actual UTF-8 representation of the symbol.
@@ -7461,8 +7473,8 @@ class VisionProjectsLocationsProductSetsAddProductRequest(_messages.Message):
   Fields:
     addProductToProductSetRequest: A AddProductToProductSetRequest resource to
       be passed as the request body.
-    name: Required. The resource name for the ProductSet to modify.  Format
-      is: `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+    name: Required. The resource name for the ProductSet to modify. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
   """
 
   addProductToProductSetRequest = _messages.MessageField('AddProductToProductSetRequest', 1)
@@ -7491,7 +7503,7 @@ class VisionProjectsLocationsProductSetsDeleteRequest(_messages.Message):
   r"""A VisionProjectsLocationsProductSetsDeleteRequest object.
 
   Fields:
-    name: Required. Resource name of the ProductSet to delete.  Format is:
+    name: Required. Resource name of the ProductSet to delete. Format is:
       `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
   """
 
@@ -7502,7 +7514,7 @@ class VisionProjectsLocationsProductSetsGetRequest(_messages.Message):
   r"""A VisionProjectsLocationsProductSetsGetRequest object.
 
   Fields:
-    name: Required. Resource name of the ProductSet to get.  Format is:
+    name: Required. Resource name of the ProductSet to get. Format is:
       `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
   """
 
@@ -7543,8 +7555,8 @@ class VisionProjectsLocationsProductSetsPatchRequest(_messages.Message):
   r"""A VisionProjectsLocationsProductSetsPatchRequest object.
 
   Fields:
-    name: The resource name of the ProductSet.  Format is:
-      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.  This
+    name: The resource name of the ProductSet. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`. This
       field is ignored when creating a ProductSet.
     productSet: A ProductSet resource to be passed as the request body.
     updateMask: The FieldMask that specifies which fields to update. If
@@ -7578,8 +7590,8 @@ class VisionProjectsLocationsProductSetsRemoveProductRequest(_messages.Message):
   r"""A VisionProjectsLocationsProductSetsRemoveProductRequest object.
 
   Fields:
-    name: Required. The resource name for the ProductSet to modify.  Format
-      is: `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+    name: Required. The resource name for the ProductSet to modify. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
     removeProductFromProductSetRequest: A RemoveProductFromProductSetRequest
       resource to be passed as the request body.
   """
@@ -7610,7 +7622,7 @@ class VisionProjectsLocationsProductsDeleteRequest(_messages.Message):
   r"""A VisionProjectsLocationsProductsDeleteRequest object.
 
   Fields:
-    name: Required. Resource name of product to delete.  Format is:
+    name: Required. Resource name of product to delete. Format is:
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
   """
 
@@ -7621,7 +7633,7 @@ class VisionProjectsLocationsProductsGetRequest(_messages.Message):
   r"""A VisionProjectsLocationsProductsGetRequest object.
 
   Fields:
-    name: Required. Resource name of the Product to get.  Format is:
+    name: Required. Resource name of the Product to get. Format is:
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
   """
 
@@ -7636,7 +7648,7 @@ class VisionProjectsLocationsProductsListRequest(_messages.Message):
     pageToken: The next_page_token returned from a previous List request, if
       any.
     parent: Required. The project OR ProductSet from which Products should be
-      listed.  Format: `projects/PROJECT_ID/locations/LOC_ID`
+      listed. Format: `projects/PROJECT_ID/locations/LOC_ID`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -7648,8 +7660,8 @@ class VisionProjectsLocationsProductsPatchRequest(_messages.Message):
   r"""A VisionProjectsLocationsProductsPatchRequest object.
 
   Fields:
-    name: The resource name of the product.  Format is:
-      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+    name: The resource name of the product. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`. This field
       is ignored when creating a product.
     product: A Product resource to be passed as the request body.
     updateMask: The FieldMask that specifies which fields to update. If
@@ -7667,7 +7679,7 @@ class VisionProjectsLocationsProductsPurgeRequest(_messages.Message):
 
   Fields:
     parent: Required. The project and location in which the Products should be
-      deleted.  Format is `projects/PROJECT_ID/locations/LOC_ID`.
+      deleted. Format is `projects/PROJECT_ID/locations/LOC_ID`.
     purgeProductsRequest: A PurgeProductsRequest resource to be passed as the
       request body.
   """
@@ -7681,7 +7693,7 @@ class VisionProjectsLocationsProductsReferenceImagesCreateRequest(_messages.Mess
 
   Fields:
     parent: Required. Resource name of the product in which to create the
-      reference image.  Format is
+      reference image. Format is
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
     referenceImage: A ReferenceImage resource to be passed as the request
       body.
@@ -7701,9 +7713,9 @@ class VisionProjectsLocationsProductsReferenceImagesDeleteRequest(_messages.Mess
   r"""A VisionProjectsLocationsProductsReferenceImagesDeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the reference image to delete.
-      Format is:  `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID/re
-      ferenceImages/IMAGE_ID`
+    name: Required. The resource name of the reference image to delete. Format
+      is: `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceI
+      mages/IMAGE_ID`
   """
 
   name = _messages.StringField(1, required=True)
@@ -7713,9 +7725,9 @@ class VisionProjectsLocationsProductsReferenceImagesGetRequest(_messages.Message
   r"""A VisionProjectsLocationsProductsReferenceImagesGetRequest object.
 
   Fields:
-    name: Required. The resource name of the ReferenceImage to get.  Format
-      is:  `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID/reference
-      Images/IMAGE_ID`.
+    name: Required. The resource name of the ReferenceImage to get. Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImage
+      s/IMAGE_ID`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -7728,9 +7740,9 @@ class VisionProjectsLocationsProductsReferenceImagesListRequest(_messages.Messag
     pageSize: The maximum number of items to return. Default 10, maximum 100.
     pageToken: A token identifying a page of results to be returned. This is
       the value of `nextPageToken` returned in a previous reference image list
-      request.  Defaults to the first page if not specified.
+      request. Defaults to the first page if not specified.
     parent: Required. Resource name of the product containing the reference
-      images.  Format is
+      images. Format is
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
   """
 
@@ -7855,10 +7867,10 @@ class Word(_messages.Message):
       of top-left, top-right, bottom-right, bottom-left. When a rotation of
       the bounding box is detected the rotation is represented as around the
       top-left corner as defined when the text is read in the 'natural'
-      orientation. For example:   * when the text is horizontal it might look
-      like:      0----1      |    |      3----2   * when it's rotated 180
-      degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertex order will still be (0, 1, 2, 3).
+      orientation. For example: * when the text is horizontal it might look
+      like: 0----1 | | 3----2 * when it's rotated 180 degrees around the top-
+      left corner it becomes: 2----3 | | 1----0 and the vertex order will
+      still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the

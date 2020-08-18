@@ -59,8 +59,7 @@ class CloudiotV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists the last few versions of the device configuration in descending.
-order (i.e.: newest first).
+      r"""Lists the last few versions of the device configuration in descending order (i.e.: newest first).
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest) input message
@@ -97,8 +96,7 @@ order (i.e.: newest first).
           }
 
     def List(self, request, global_params=None):
-      r"""Lists the last few versions of the device state in descending order (i.e.:.
-newest first).
+      r"""Lists the last few versions of the device state in descending order (i.e.: newest first).
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesDevicesStatesListRequest) input message
@@ -243,9 +241,7 @@ newest first).
     )
 
     def ModifyCloudToDeviceConfig(self, request, global_params=None):
-      r"""Modifies the configuration for the device, which is eventually sent from.
-the Cloud IoT Core servers. Returns the modified configuration version and
-its metadata.
+      r"""Modifies the configuration for the device, which is eventually sent from the Cloud IoT Core servers. Returns the modified configuration version and its metadata.
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfigRequest) input message
@@ -299,19 +295,7 @@ its metadata.
     )
 
     def SendCommandToDevice(self, request, global_params=None):
-      r"""Sends a command to the specified device. In order for a device to be able.
-to receive commands, it must:
-1) be connected to Cloud IoT Core using the MQTT protocol, and
-2) be subscribed to the group of MQTT topics specified by
-   /devices/{device-id}/commands/#. This subscription will receive commands
-   at the top-level topic /devices/{device-id}/commands as well as commands
-   for subfolders, like /devices/{device-id}/commands/subfolder.
-   Note that subscribing to specific subfolders is not supported.
-If the command could not be delivered to the device, this method will
-return an error; in particular, if the device is not subscribed, this
-method will return FAILED_PRECONDITION. Otherwise, this method will
-return OK. If the subscription is QoS 1, at least once delivery will be
-guaranteed; for QoS 0, no acknowledgment will be expected from the device.
+      r"""Sends a command to the specified device. In order for a device to be able to receive commands, it must: 1) be connected to Cloud IoT Core using the MQTT protocol, and 2) be subscribed to the group of MQTT topics specified by /devices/{device-id}/commands/#. This subscription will receive commands at the top-level topic /devices/{device-id}/commands as well as commands for subfolders, like /devices/{device-id}/commands/subfolder. Note that subscribing to specific subfolders is not supported. If the command could not be delivered to the device, this method will return an error; in particular, if the device is not subscribed, this method will return FAILED_PRECONDITION. Otherwise, this method will return OK. If the subscription is QoS 1, at least once delivery will be guaranteed; for QoS 0, no acknowledgment will be expected from the device.
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesDevicesSendCommandToDeviceRequest) input message
@@ -385,9 +369,7 @@ guaranteed; for QoS 0, no acknowledgment will be expected from the device.
           }
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesGroupsGetIamPolicyRequest) input message
@@ -414,8 +396,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesGroupsSetIamPolicyRequest) input message
@@ -442,9 +423,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesGroupsTestIamPermissionsRequest) input message
@@ -589,9 +568,7 @@ permissions, not a NOT_FOUND error.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesGetIamPolicyRequest) input message
@@ -672,8 +649,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesSetIamPolicyRequest) input message
@@ -700,9 +676,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.
 
       Args:
         request: (CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest) input message

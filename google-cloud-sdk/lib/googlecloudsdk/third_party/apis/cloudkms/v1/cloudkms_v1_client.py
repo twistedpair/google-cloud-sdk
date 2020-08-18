@@ -57,9 +57,7 @@ class CloudkmsV1(base_api.BaseApiClient):
           }
 
     def AsymmetricDecrypt(self, request, global_params=None):
-      r"""Decrypts data that was encrypted with a public key retrieved from.
-GetPublicKey corresponding to a CryptoKeyVersion with
-CryptoKey.purpose ASYMMETRIC_DECRYPT.
+      r"""Decrypts data that was encrypted with a public key retrieved from GetPublicKey corresponding to a CryptoKeyVersion with CryptoKey.purpose ASYMMETRIC_DECRYPT.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecryptRequest) input message
@@ -86,9 +84,7 @@ CryptoKey.purpose ASYMMETRIC_DECRYPT.
     )
 
     def AsymmetricSign(self, request, global_params=None):
-      r"""Signs data using a CryptoKeyVersion with CryptoKey.purpose.
-ASYMMETRIC_SIGN, producing a signature that can be verified with the public
-key retrieved from GetPublicKey.
+      r"""Signs data using a CryptoKeyVersion with CryptoKey.purpose ASYMMETRIC_SIGN, producing a signature that can be verified with the public key retrieved from GetPublicKey.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSignRequest) input message
@@ -115,11 +111,7 @@ key retrieved from GetPublicKey.
     )
 
     def Create(self, request, global_params=None):
-      r"""Create a new CryptoKeyVersion in a CryptoKey.
-
-The server will assign the next sequential id. If unset,
-state will be set to
-ENABLED.
+      r"""Create a new CryptoKeyVersion in a CryptoKey. The server will assign the next sequential id. If unset, state will be set to ENABLED.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreateRequest) input message
@@ -146,18 +138,7 @@ ENABLED.
     )
 
     def Destroy(self, request, global_params=None):
-      r"""Schedule a CryptoKeyVersion for destruction.
-
-Upon calling this method, CryptoKeyVersion.state will be set to
-DESTROY_SCHEDULED
-and destroy_time will be set to a time 24
-hours in the future, at which point the state
-will be changed to
-DESTROYED, and the key
-material will be irrevocably destroyed.
-
-Before the destroy_time is reached,
-RestoreCryptoKeyVersion may be called to reverse the process.
+      r"""Schedule a CryptoKeyVersion for destruction. Upon calling this method, CryptoKeyVersion.state will be set to DESTROY_SCHEDULED and destroy_time will be set to a time 24 hours in the future, at which point the state will be changed to DESTROYED, and the key material will be irrevocably destroyed. Before the destroy_time is reached, RestoreCryptoKeyVersion may be called to reverse the process.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroyRequest) input message
@@ -211,10 +192,7 @@ RestoreCryptoKeyVersion may be called to reverse the process.
     )
 
     def GetPublicKey(self, request, global_params=None):
-      r"""Returns the public key for the given CryptoKeyVersion. The.
-CryptoKey.purpose must be
-ASYMMETRIC_SIGN or
-ASYMMETRIC_DECRYPT.
+      r"""Returns the public key for the given CryptoKeyVersion. The CryptoKey.purpose must be ASYMMETRIC_SIGN or ASYMMETRIC_DECRYPT.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKeyRequest) input message
@@ -241,11 +219,7 @@ ASYMMETRIC_DECRYPT.
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports a new CryptoKeyVersion into an existing CryptoKey using the.
-wrapped key material provided in the request.
-
-The version ID will be assigned the next sequential id within the
-CryptoKey.
+      r"""Imports a new CryptoKeyVersion into an existing CryptoKey using the wrapped key material provided in the request. The version ID will be assigned the next sequential id within the CryptoKey.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImportRequest) input message
@@ -299,13 +273,7 @@ CryptoKey.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update a CryptoKeyVersion's metadata.
-
-state may be changed between
-ENABLED and
-DISABLED using this
-method. See DestroyCryptoKeyVersion and RestoreCryptoKeyVersion to
-move between other states.
+      r"""Update a CryptoKeyVersion's metadata. state may be changed between ENABLED and DISABLED using this method. See DestroyCryptoKeyVersion and RestoreCryptoKeyVersion to move between other states.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest) input message
@@ -332,13 +300,7 @@ move between other states.
     )
 
     def Restore(self, request, global_params=None):
-      r"""Restore a CryptoKeyVersion in the.
-DESTROY_SCHEDULED
-state.
-
-Upon restoration of the CryptoKeyVersion, state
-will be set to DISABLED,
-and destroy_time will be cleared.
+      r"""Restore a CryptoKeyVersion in the DESTROY_SCHEDULED state. Upon restoration of the CryptoKeyVersion, state will be set to DISABLED, and destroy_time will be cleared.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestoreRequest) input message
@@ -375,11 +337,7 @@ and destroy_time will be cleared.
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new CryptoKey within a KeyRing.
-
-CryptoKey.purpose and
-CryptoKey.version_template.algorithm
-are required.
+      r"""Create a new CryptoKey within a KeyRing. CryptoKey.purpose and CryptoKey.version_template.algorithm are required.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest) input message
@@ -406,8 +364,7 @@ are required.
     )
 
     def Decrypt(self, request, global_params=None):
-      r"""Decrypts data that was protected by Encrypt. The CryptoKey.purpose.
-must be ENCRYPT_DECRYPT.
+      r"""Decrypts data that was protected by Encrypt. The CryptoKey.purpose must be ENCRYPT_DECRYPT.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysDecryptRequest) input message
@@ -434,9 +391,7 @@ must be ENCRYPT_DECRYPT.
     )
 
     def Encrypt(self, request, global_params=None):
-      r"""Encrypts data, so that it can only be recovered by a call to Decrypt.
-The CryptoKey.purpose must be
-ENCRYPT_DECRYPT.
+      r"""Encrypts data, so that it can only be recovered by a call to Decrypt. The CryptoKey.purpose must be ENCRYPT_DECRYPT.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysEncryptRequest) input message
@@ -463,8 +418,7 @@ ENCRYPT_DECRYPT.
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns metadata for a given CryptoKey, as well as its.
-primary CryptoKeyVersion.
+      r"""Returns metadata for a given CryptoKey, as well as its primary CryptoKeyVersion.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysGetRequest) input message
@@ -491,9 +445,7 @@ primary CryptoKeyVersion.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest) input message
@@ -574,10 +526,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicyRequest) input message
@@ -604,13 +553,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissionsRequest) input message
@@ -637,9 +580,7 @@ may "fail open" without warning.
     )
 
     def UpdatePrimaryVersion(self, request, global_params=None):
-      r"""Update the version of a CryptoKey that will be used in Encrypt.
-
-Returns an error if called on an asymmetric key.
+      r"""Update the version of a CryptoKey that will be used in Encrypt. Returns an error if called on an asymmetric key.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersionRequest) input message
@@ -676,9 +617,7 @@ Returns an error if called on an asymmetric key.
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new ImportJob within a KeyRing.
-
-ImportJob.import_method is required.
+      r"""Create a new ImportJob within a KeyRing. ImportJob.import_method is required.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsImportJobsCreateRequest) input message
@@ -732,9 +671,7 @@ ImportJob.import_method is required.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsImportJobsGetIamPolicyRequest) input message
@@ -788,10 +725,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsImportJobsSetIamPolicyRequest) input message
@@ -818,13 +752,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsImportJobsTestIamPermissionsRequest) input message
@@ -915,9 +843,7 @@ may "fail open" without warning.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest) input message
@@ -971,10 +897,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsSetIamPolicyRequest) input message
@@ -1001,13 +924,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsTestIamPermissionsRequest) input message

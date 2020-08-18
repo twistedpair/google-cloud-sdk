@@ -33,7 +33,7 @@ class BatchGetDocumentsRequest(_messages.Message):
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `. The request will fail if any of the document is not a child resource
       of the given `database`. Duplicate names will be elided.
-    mask: The fields to return. If not set, returns all fields.  If a document
+    mask: The fields to return. If not set, returns all fields. If a document
       has a field that is not present in this mask, that field will not be
       returned in the response.
     newTransaction: Starts a new transaction and reads the documents. Defaults
@@ -81,7 +81,7 @@ class BatchWriteRequest(_messages.Message):
 
   Fields:
     labels: Labels associated with this batch write.
-    writes: The writes to apply.  Method does not apply writes atomically and
+    writes: The writes to apply. Method does not apply writes atomically and
       does not guarantee ordering. Each write succeeds or fails independently.
       You cannot write to the same document more than once per request.
   """
@@ -118,9 +118,9 @@ class BatchWriteResponse(_messages.Message):
   r"""The response from Firestore.BatchWrite.
 
   Fields:
-    status: The status of applying the writes.  This i-th write status
+    status: The status of applying the writes. This i-th write status
       corresponds to the i-th write in the request.
-    writeResults: The result of applying the writes.  This i-th write result
+    writeResults: The result of applying the writes. This i-th write result
       corresponds to the i-th write in the request.
   """
 
@@ -170,7 +170,7 @@ class CommitRequest(_messages.Message):
   Fields:
     transaction: If set, applies all writes in this transaction, and commits
       it.
-    writes: The writes to apply.  Always executed atomically and in order.
+    writes: The writes to apply. Always executed atomically and in order.
   """
 
   transaction = _messages.BytesField(1)
@@ -183,7 +183,7 @@ class CommitResponse(_messages.Message):
   Fields:
     commitTime: The time at which the commit occurred. Any read with an equal
       or greater `read_time` is guaranteed to see the effects of the commit.
-    writeResults: The result of applying the writes.  This i-th write result
+    writeResults: The result of applying the writes. This i-th write result
       corresponds to the i-th write in the request.
   """
 
@@ -223,7 +223,7 @@ class Cursor(_messages.Message):
     before: If the position is just before or just after the given values,
       relative to the sort order defined by the query.
     values: The values that represent a position, in the order they appear in
-      the order by clause of a query.  Can contain fewer values than specified
+      the order by clause of a query. Can contain fewer values than specified
       in the order by clause.
   """
 
@@ -232,43 +232,43 @@ class Cursor(_messages.Message):
 
 
 class Document(_messages.Message):
-  r"""A Firestore document.  Must not exceed 1 MiB - 4 bytes.
+  r"""A Firestore document. Must not exceed 1 MiB - 4 bytes.
 
   Messages:
-    FieldsValue: The document's fields.  The map keys represent field names.
-      A simple field name contains only characters `a` to `z`, `A` to `Z`, `0`
+    FieldsValue: The document's fields. The map keys represent field names. A
+      simple field name contains only characters `a` to `z`, `A` to `Z`, `0`
       to `9`, or `_`, and must not start with `0` to `9`. For example,
-      `foo_bar_17`.  Field names matching the regular expression `__.*__` are
+      `foo_bar_17`. Field names matching the regular expression `__.*__` are
       reserved. Reserved field names are forbidden except in certain
       documented contexts. The map keys, represented as UTF-8, must not exceed
-      1,500 bytes and cannot be empty.  Field paths may be used in other
+      1,500 bytes and cannot be empty. Field paths may be used in other
       contexts to refer to structured fields defined here. For `map_value`,
       the field path is represented by the simple or quoted field names of the
       containing fields, delimited by `.`. For example, the structured field
       `"foo" : { map_value: { "x&y" : { string_value: "hello" }}}` would be
-      represented by the field path `foo.x&y`.  Within a field path, a quoted
+      represented by the field path `foo.x&y`. Within a field path, a quoted
       field name starts and ends with `` ` `` and may contain any character.
       Some characters, including `` ` ``, must be escaped using a `\`. For
       example, `` `x&y` `` represents `x&y` and `` `bak\`tik` `` represents ``
       bak`tik ``.
 
   Fields:
-    createTime: Output only. The time at which the document was created.  This
+    createTime: Output only. The time at which the document was created. This
       value increases monotonically when a document is deleted then recreated.
       It can also be compared to values from other documents and the
       `read_time` of a query.
-    fields: The document's fields.  The map keys represent field names.  A
+    fields: The document's fields. The map keys represent field names. A
       simple field name contains only characters `a` to `z`, `A` to `Z`, `0`
       to `9`, or `_`, and must not start with `0` to `9`. For example,
-      `foo_bar_17`.  Field names matching the regular expression `__.*__` are
+      `foo_bar_17`. Field names matching the regular expression `__.*__` are
       reserved. Reserved field names are forbidden except in certain
       documented contexts. The map keys, represented as UTF-8, must not exceed
-      1,500 bytes and cannot be empty.  Field paths may be used in other
+      1,500 bytes and cannot be empty. Field paths may be used in other
       contexts to refer to structured fields defined here. For `map_value`,
       the field path is represented by the simple or quoted field names of the
       containing fields, delimited by `.`. For example, the structured field
       `"foo" : { map_value: { "x&y" : { string_value: "hello" }}}` would be
-      represented by the field path `foo.x&y`.  Within a field path, a quoted
+      represented by the field path `foo.x&y`. Within a field path, a quoted
       field name starts and ends with `` ` `` and may contain any character.
       Some characters, including `` ` ``, must be escaped using a `\`. For
       example, `` `x&y` `` represents `x&y` and `` `bak\`tik` `` represents ``
@@ -284,18 +284,18 @@ class Document(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):
-    r"""The document's fields.  The map keys represent field names.  A simple
+    r"""The document's fields. The map keys represent field names. A simple
     field name contains only characters `a` to `z`, `A` to `Z`, `0` to `9`, or
-    `_`, and must not start with `0` to `9`. For example, `foo_bar_17`.  Field
+    `_`, and must not start with `0` to `9`. For example, `foo_bar_17`. Field
     names matching the regular expression `__.*__` are reserved. Reserved
     field names are forbidden except in certain documented contexts. The map
     keys, represented as UTF-8, must not exceed 1,500 bytes and cannot be
-    empty.  Field paths may be used in other contexts to refer to structured
+    empty. Field paths may be used in other contexts to refer to structured
     fields defined here. For `map_value`, the field path is represented by the
     simple or quoted field names of the containing fields, delimited by `.`.
     For example, the structured field `"foo" : { map_value: { "x&y" : {
     string_value: "hello" }}}` would be represented by the field path
-    `foo.x&y`.  Within a field path, a quoted field name starts and ends with
+    `foo.x&y`. Within a field path, a quoted field name starts and ends with
     `` ` `` and may contain any character. Some characters, including `` ` ``,
     must be escaped using a `\`. For example, `` `x&y` `` represents `x&y` and
     `` `bak\`tik` `` represents `` bak`tik ``.
@@ -327,13 +327,13 @@ class Document(_messages.Message):
 
 
 class DocumentChange(_messages.Message):
-  r"""A Document has changed.  May be the result of multiple writes, including
-  deletes, that ultimately resulted in a new value for the Document.  Multiple
+  r"""A Document has changed. May be the result of multiple writes, including
+  deletes, that ultimately resulted in a new value for the Document. Multiple
   DocumentChange messages may be returned for the same logical change, if
   multiple targets are affected.
 
   Fields:
-    document: The new state of the Document.  If `mask` is set, contains only
+    document: The new state of the Document. If `mask` is set, contains only
       fields that were updated or added.
     removedTargetIds: A set of target IDs for targets that no longer match
       this document.
@@ -346,14 +346,14 @@ class DocumentChange(_messages.Message):
 
 
 class DocumentDelete(_messages.Message):
-  r"""A Document has been deleted.  May be the result of multiple writes,
-  including updates, the last of which deleted the Document.  Multiple
+  r"""A Document has been deleted. May be the result of multiple writes,
+  including updates, the last of which deleted the Document. Multiple
   DocumentDelete messages may be returned for the same logical delete, if
   multiple targets are affected.
 
   Fields:
     document: The resource name of the Document that was deleted.
-    readTime: The read timestamp at which the delete was observed.  Greater or
+    readTime: The read timestamp at which the delete was observed. Greater or
       equal to the `commit_time` of the delete.
     removedTargetIds: A set of target IDs for targets that previously matched
       this entity.
@@ -379,16 +379,16 @@ class DocumentMask(_messages.Message):
 
 
 class DocumentRemove(_messages.Message):
-  r"""A Document has been removed from the view of the targets.  Sent if the
+  r"""A Document has been removed from the view of the targets. Sent if the
   document is no longer relevant to a target and is out of view. Can be sent
   instead of a DocumentDelete or a DocumentChange if the server can not send
-  the new value of the document.  Multiple DocumentRemove messages may be
+  the new value of the document. Multiple DocumentRemove messages may be
   returned for the same logical write or delete, if multiple targets are
   affected.
 
   Fields:
     document: The resource name of the Document that has gone out of view.
-    readTime: The read timestamp at which the remove was observed.  Greater or
+    readTime: The read timestamp at which the remove was observed. Greater or
       equal to the `commit_time` of the change/delete/remove.
     removedTargetIds: A set of target IDs for targets that previously matched
       this document.
@@ -428,9 +428,9 @@ class DocumentsTarget(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -439,7 +439,7 @@ class ExistenceFilter(_messages.Message):
   r"""A digest of all the documents that match a given target.
 
   Fields:
-    count: The total count of documents that match target_id.  If different
+    count: The total count of documents that match target_id. If different
       from the count of documents in the client that match, the client must
       manually determine which documents no longer match the target.
     targetId: The target ID to which this filter applies.
@@ -466,23 +466,23 @@ class FieldFilter(_messages.Message):
 
     Values:
       OPERATOR_UNSPECIFIED: Unspecified. This value must not be used.
-      LESS_THAN: The given `field` is less than the given `value`.  Requires:
-        * That `field` come first in `order_by`.
+      LESS_THAN: The given `field` is less than the given `value`. Requires: *
+        That `field` come first in `order_by`.
       LESS_THAN_OR_EQUAL: The given `field` is less than or equal to the given
-        `value`.  Requires:  * That `field` come first in `order_by`.
+        `value`. Requires: * That `field` come first in `order_by`.
       GREATER_THAN: The given `field` is greater than the given `value`.
-        Requires:  * That `field` come first in `order_by`.
+        Requires: * That `field` come first in `order_by`.
       GREATER_THAN_OR_EQUAL: The given `field` is greater than or equal to the
-        given `value`.  Requires:  * That `field` come first in `order_by`.
+        given `value`. Requires: * That `field` come first in `order_by`.
       EQUAL: The given `field` is equal to the given `value`.
       ARRAY_CONTAINS: The given `field` is an array that contains the given
         `value`.
       IN: The given `field` is equal to at least one value in the given array.
-        Requires:  * That `value` is a non-empty `ArrayValue` with at most 10
+        Requires: * That `value` is a non-empty `ArrayValue` with at most 10
         values. * No other `IN` or `ARRAY_CONTAINS_ANY`.
       ARRAY_CONTAINS_ANY: The given `field` is an array that contains any of
-        the values in the given array.  Requires:  * That `value` is a non-
-        empty `ArrayValue` with at most 10 values. * No other `IN` or
+        the values in the given array. Requires: * That `value` is a non-empty
+        `ArrayValue` with at most 10 values. * No other `IN` or
         `ARRAY_CONTAINS_ANY`.
     """
     OPERATOR_UNSPECIFIED = 0
@@ -520,24 +520,24 @@ class FieldTransform(_messages.Message):
     appendMissingElements: Append the given elements in order if they are not
       already present in the current field value. If the field is not an
       array, or if the field does not yet exist, it is first set to the empty
-      array.  Equivalent numbers of different types (e.g. 3L and 3.0) are
+      array. Equivalent numbers of different types (e.g. 3L and 3.0) are
       considered equal when checking if a value is missing. NaN is equal to
       NaN, and Null is equal to Null. If the input contains multiple
-      equivalent values, only the first will be considered.  The corresponding
+      equivalent values, only the first will be considered. The corresponding
       transform_result will be the null value.
     fieldPath: The path of the field. See Document.fields for the field path
       syntax reference.
-    increment: Adds the given value to the field's current value.  This must
-      be an integer or a double value. If the field is not an integer or
-      double, or if the field does not yet exist, the transformation will set
-      the field to the given value. If either of the given value or the
-      current field value are doubles, both values will be interpreted as
-      doubles. Double arithmetic and representation of double values follow
-      IEEE 754 semantics. If there is positive/negative integer overflow, the
-      field is resolved to the largest magnitude positive/negative integer.
+    increment: Adds the given value to the field's current value. This must be
+      an integer or a double value. If the field is not an integer or double,
+      or if the field does not yet exist, the transformation will set the
+      field to the given value. If either of the given value or the current
+      field value are doubles, both values will be interpreted as doubles.
+      Double arithmetic and representation of double values follow IEEE 754
+      semantics. If there is positive/negative integer overflow, the field is
+      resolved to the largest magnitude positive/negative integer.
     maximum: Sets the field to the maximum of its current value and the given
-      value.  This must be an integer or a double value. If the field is not
-      an integer or double, or if the field does not yet exist, the
+      value. This must be an integer or a double value. If the field is not an
+      integer or double, or if the field does not yet exist, the
       transformation will set the field to the given value. If a maximum
       operation is applied where the field and the input value are of mixed
       types (that is - one is an integer and one is a double) the field takes
@@ -546,8 +546,8 @@ class FieldTransform(_messages.Message):
       The maximum of a zero stored value and zero input value is always the
       stored value. The maximum of any numeric value x and NaN is NaN.
     minimum: Sets the field to the minimum of its current value and the given
-      value.  This must be an integer or a double value. If the field is not
-      an integer or double, or if the field does not yet exist, the
+      value. This must be an integer or a double value. If the field is not an
+      integer or double, or if the field does not yet exist, the
       transformation will set the field to the input value. If a minimum
       operation is applied where the field and the input value are of mixed
       types (that is - one is an integer and one is a double) the field takes
@@ -557,10 +557,10 @@ class FieldTransform(_messages.Message):
       stored value. The minimum of any numeric value x and NaN is NaN.
     removeAllFromArray: Remove all of the given elements from the array in the
       field. If the field is not an array, or if the field does not yet exist,
-      it is set to the empty array.  Equivalent numbers of the different types
+      it is set to the empty array. Equivalent numbers of the different types
       (e.g. 3L and 3.0) are considered equal when deciding whether an element
       should be removed. NaN is equal to NaN, and Null is equal to Null. This
-      will remove all equivalent values if there are duplicates.  The
+      will remove all equivalent values if there are duplicates. The
       corresponding transform_result will be the null value.
     setToServerValue: Sets the field to the given server value.
   """
@@ -754,7 +754,7 @@ class FirestoreProjectsDatabasesDocumentsListRequest(_messages.Message):
     showMissing: If the list should show missing documents. A missing document
       is a document that does not exist but has sub-documents. These documents
       will be returned with a key but will not have fields,
-      Document.create_time, or Document.update_time set.  Requests with
+      Document.create_time, or Document.update_time set. Requests with
       `show_missing` may not specify `where` or `order_by`.
     transaction: Reads documents in a transaction.
   """
@@ -1252,17 +1252,17 @@ class GoogleLongrunningOperation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1271,29 +1271,29 @@ class GoogleLongrunningOperation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1319,12 +1319,12 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1358,9 +1358,8 @@ class GoogleLongrunningOperation(_messages.Message):
 class LatLng(_messages.Message):
   r"""An object representing a latitude/longitude pair. This is expressed as a
   pair of doubles representing degrees latitude and degrees longitude. Unless
-  specified otherwise, this must conform to the <a
-  href="http://www.unoosa.org/pdf/icg/2012/template/WGS_84.pdf">WGS84
-  standard</a>. Values must be within normalized ranges.
+  specified otherwise, this must conform to the WGS84 standard. Values must be
+  within normalized ranges.
 
   Fields:
     latitude: The latitude in degrees. It must be in the range [-90.0, +90.0].
@@ -1458,8 +1457,8 @@ class ListenResponse(_messages.Message):
     documentRemove: A Document has been removed from a target (because it is
       no longer relevant to that target).
     filter: A filter to apply to the set of documents previously returned for
-      the given target.  Returned when documents may have been removed from
-      the given target, but the exact documents are unknown.
+      the given target. Returned when documents may have been removed from the
+      given target, but the exact documents are unknown.
     targetChange: Targets have changed.
   """
 
@@ -1474,14 +1473,14 @@ class MapValue(_messages.Message):
   r"""A map value.
 
   Messages:
-    FieldsValue: The map's fields.  The map keys represent field names. Field
+    FieldsValue: The map's fields. The map keys represent field names. Field
       names matching the regular expression `__.*__` are reserved. Reserved
       field names are forbidden except in certain documented contexts. The map
       keys, represented as UTF-8, must not exceed 1,500 bytes and cannot be
       empty.
 
   Fields:
-    fields: The map's fields.  The map keys represent field names. Field names
+    fields: The map's fields. The map keys represent field names. Field names
       matching the regular expression `__.*__` are reserved. Reserved field
       names are forbidden except in certain documented contexts. The map keys,
       represented as UTF-8, must not exceed 1,500 bytes and cannot be empty.
@@ -1489,7 +1488,7 @@ class MapValue(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):
-    r"""The map's fields.  The map keys represent field names. Field names
+    r"""The map's fields. The map keys represent field names. Field names
     matching the regular expression `__.*__` are reserved. Reserved field
     names are forbidden except in certain documented contexts. The map keys,
     represented as UTF-8, must not exceed 1,500 bytes and cannot be empty.
@@ -1550,7 +1549,7 @@ class PartitionQueryRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of partitions to return in this call, subject
-      to `partition_count`.  For example, if `partition_count` = 10 and
+      to `partition_count`. For example, if `partition_count` = 10 and
       `page_size` = 8, the first call to PartitionQuery will return up to 8
       partitions and a `next_page_token` if more results exist. A second call
       to PartitionQuery will return up to 2 partitions, to complete the total
@@ -1559,9 +1558,9 @@ class PartitionQueryRequest(_messages.Message):
       PartitionQuery that may be used to get an additional set of results.
       There are no ordering guarantees between sets of results. Thus, using
       multiple sets of results will require merging the different result sets.
-      For example, two subsequent calls using a page_token may return:   *
-      cursor B, cursor M, cursor Q  * cursor A, cursor U, cursor W  To obtain
-      a complete result set ordered with respect to the results of the query
+      For example, two subsequent calls using a page_token may return: *
+      cursor B, cursor M, cursor Q * cursor A, cursor U, cursor W To obtain a
+      complete result set ordered with respect to the results of the query
       supplied to PartitionQuery, the results sets should be merged: cursor A,
       cursor B, cursor M, cursor Q, cursor U, cursor W
     partitionCount: The desired maximum number of partition points. The
@@ -1595,9 +1594,9 @@ class PartitionQueryResponse(_messages.Message):
       to same ordering as the results of the query supplied to PartitionQuery.
       For example, if a PartitionQuery request returns partition cursors A and
       B, running the following three queries will return the entire result set
-      of the original query:   * query, end_at A  * query, start_at A, end_at
-      B  * query, start_at B  An empty result may indicate that the query has
-      too few results to be partitioned.
+      of the original query: * query, end_at A * query, start_at A, end_at B *
+      query, start_at B An empty result may indicate that the query has too
+      few results to be partitioned.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1622,7 +1621,7 @@ class Projection(_messages.Message):
   r"""The projection of document's fields to return.
 
   Fields:
-    fields: The fields to return.  If empty, all fields are returned. To only
+    fields: The fields to return. If empty, all fields are returned. To only
       return the name of the document, use `['__name__']`.
   """
 
@@ -1704,7 +1703,7 @@ class RunQueryResponse(_messages.Message):
     readTime: The time at which the document was read. This may be
       monotonically increasing; in this case, the previous documents in the
       result stream are guaranteed not to have changed between their
-      `read_time` and this one.  If the query returns no results, a response
+      `read_time` and this one. If the query returns no results, a response
       with `read_time` and no `document` will be sent, and this represents the
       time at which the query was run.
     skippedResults: The number of results that have been skipped due to an
@@ -1788,7 +1787,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1797,7 +1796,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1841,21 +1840,21 @@ class StructuredQuery(_messages.Message):
   Fields:
     endAt: A end point for the query results.
     from_: The collections to query.
-    limit: The maximum number of results to return.  Applies after all other
+    limit: The maximum number of results to return. Applies after all other
       constraints. Must be >= 0 if specified.
-    offset: The number of results to skip.  Applies before limit, but after
-      all other constraints. Must be >= 0 if specified.
-    orderBy: The order to apply to the query results.  Firestore guarantees a
-      stable ordering through the following rules:   * Any field required to
-      appear in `order_by`, that is not already    specified in `order_by`, is
-      appended to the order in field name order    by default.  * If an order
-      on `__name__` is not specified, it is appended by default.  Fields are
+    offset: The number of results to skip. Applies before limit, but after all
+      other constraints. Must be >= 0 if specified.
+    orderBy: The order to apply to the query results. Firestore guarantees a
+      stable ordering through the following rules: * Any field required to
+      appear in `order_by`, that is not already specified in `order_by`, is
+      appended to the order in field name order by default. * If an order on
+      `__name__` is not specified, it is appended by default. Fields are
       appended with the same sort direction as the last order specified, or
-      'ASCENDING' if no order was specified. For example:   * `SELECT * FROM
-      Foo ORDER BY A` becomes    `SELECT * FROM Foo ORDER BY A, __name__`  *
-      `SELECT * FROM Foo ORDER BY A DESC` becomes    `SELECT * FROM Foo ORDER
-      BY A DESC, __name__ DESC`  * `SELECT * FROM Foo WHERE A > 1` becomes
-      `SELECT * FROM Foo WHERE A > 1 ORDER BY A, __name__`
+      'ASCENDING' if no order was specified. For example: * `SELECT * FROM Foo
+      ORDER BY A` becomes `SELECT * FROM Foo ORDER BY A, __name__` * `SELECT *
+      FROM Foo ORDER BY A DESC` becomes `SELECT * FROM Foo ORDER BY A DESC,
+      __name__ DESC` * `SELECT * FROM Foo WHERE A > 1` becomes `SELECT * FROM
+      Foo WHERE A > 1 ORDER BY A, __name__`
     select: The projection to return.
     startAt: A starting point for the query results.
     where: The filter to apply.
@@ -1878,10 +1877,10 @@ class Target(_messages.Message):
     documents: A target specified by a set of document names.
     once: If the target should be removed once it is current and consistent.
     query: A target specified by a query.
-    readTime: Start listening after a specific `read_time`.  The client must
+    readTime: Start listening after a specific `read_time`. The client must
       know the state of matching documents at this time.
     resumeToken: A resume token from a prior TargetChange for an identical
-      target.  Using a resume token with a different target is unsupported and
+      target. Using a resume token with a different target is unsupported and
       may fail.
     targetId: The target ID that identifies the target on the stream. Must be
       a positive number and non-zero.
@@ -1904,18 +1903,18 @@ class TargetChange(_messages.Message):
   Fields:
     cause: The error that resulted in this change, if applicable.
     readTime: The consistent `read_time` for the given `target_ids` (omitted
-      when the target_ids are not at a consistent snapshot).  The stream is
+      when the target_ids are not at a consistent snapshot). The stream is
       guaranteed to send a `read_time` with `target_ids` empty whenever the
       entire stream reaches a new consistent snapshot. ADD, CURRENT, and RESET
       messages are guaranteed to (eventually) result in a new consistent
-      snapshot (while NO_CHANGE and REMOVE messages are not).  For a given
+      snapshot (while NO_CHANGE and REMOVE messages are not). For a given
       stream, `read_time` is guaranteed to be monotonically increasing.
     resumeToken: A token that can be used to resume the stream for the given
-      `target_ids`, or all targets if `target_ids` is empty.  Not set on every
+      `target_ids`, or all targets if `target_ids` is empty. Not set on every
       target change.
     targetChangeType: The type of change that occurred.
-    targetIds: The target IDs of targets that have changed.  If empty, the
-      change applies to all targets.  The order of the target IDs is not
+    targetIds: The target IDs of targets that have changed. If empty, the
+      change applies to all targets. The order of the target IDs is not
       defined.
   """
 
@@ -1928,12 +1927,12 @@ class TargetChange(_messages.Message):
       ADD: The targets have been added.
       REMOVE: The targets have been removed.
       CURRENT: The targets reflect all changes committed before the targets
-        were added to the stream.  This will be sent after or with a
+        were added to the stream. This will be sent after or with a
         `read_time` that is greater than or equal to the time at which the
-        targets were added.  Listeners can wait for this change if read-after-
+        targets were added. Listeners can wait for this change if read-after-
         write semantics are desired.
       RESET: The targets have been reset, and a new initial state for the
-        targets will be returned in subsequent changes.  After the initial
+        targets will be returned in subsequent changes. After the initial
         state is complete, `CURRENT` will be returned even if the target was
         previously indicated to be `CURRENT`.
     """
@@ -1996,10 +1995,10 @@ class Value(_messages.Message):
     NullValueValueValuesEnum: A null value.
 
   Fields:
-    arrayValue: An array value.  Cannot directly contain another array value,
+    arrayValue: An array value. Cannot directly contain another array value,
       though can contain an map which contains another array.
     booleanValue: A boolean value.
-    bytesValue: A bytes value.  Must not exceed 1 MiB - 89 bytes. Only the
+    bytesValue: A bytes value. Must not exceed 1 MiB - 89 bytes. Only the
       first 1,500 bytes are considered by queries.
     doubleValue: A double value.
     geoPointValue: A geo point value representing a point on the surface of
@@ -2010,10 +2009,10 @@ class Value(_messages.Message):
     referenceValue: A reference to a document. For example:
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `.
-    stringValue: A string value.  The string, represented as UTF-8, must not
+    stringValue: A string value. The string, represented as UTF-8, must not
       exceed 1 MiB - 89 bytes. Only the first 1,500 bytes of the UTF-8
       representation are considered by queries.
-    timestampValue: A timestamp value.  Precise only to microseconds. When
+    timestampValue: A timestamp value. Precise only to microseconds. When
       stored, any additional precision is rounded down.
   """
 
@@ -2042,22 +2041,22 @@ class Write(_messages.Message):
   r"""A write on a document.
 
   Fields:
-    currentDocument: An optional precondition on the document.  The write will
+    currentDocument: An optional precondition on the document. The write will
       fail if this is set and not met by the target document.
     delete: A document name to delete. In the format:
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `.
     transform: Applies a transformation to a document.
     update: A document to write.
-    updateMask: The fields to update in this write.  This field can be set
-      only when the operation is `update`. If the mask is not set for an
-      `update` and the document exists, any existing data will be overwritten.
-      If the mask is set and the document on the server has fields not covered
-      by the mask, they are left unchanged. Fields referenced in the mask, but
-      not present in the input document, are deleted from the document on the
+    updateMask: The fields to update in this write. This field can be set only
+      when the operation is `update`. If the mask is not set for an `update`
+      and the document exists, any existing data will be overwritten. If the
+      mask is set and the document on the server has fields not covered by the
+      mask, they are left unchanged. Fields referenced in the mask, but not
+      present in the input document, are deleted from the document on the
       server. The field paths in this mask must not contain a reserved field
       name.
-    updateTransforms: The transforms to perform after update.  This field can
+    updateTransforms: The transforms to perform after update. This field can
       be set only when the operation is `update`. If present, this write is
       equivalent to performing `update` and `transform` to the same document
       atomically and in order.
@@ -2072,12 +2071,12 @@ class Write(_messages.Message):
 
 
 class WriteRequest(_messages.Message):
-  r"""The request for Firestore.Write.  The first request creates a stream, or
-  resumes an existing one from a token.  When creating a new stream, the
-  server replies with a response containing only an ID and a token, to use in
-  the next request.  When resuming a stream, the server first streams any
-  responses later than the given token, then a response containing only an up-
-  to-date token, to use in the next request.
+  r"""The request for Firestore.Write. The first request creates a stream, or
+  resumes an existing one from a token. When creating a new stream, the server
+  replies with a response containing only an ID and a token, to use in the
+  next request. When resuming a stream, the server first streams any responses
+  later than the given token, then a response containing only an up-to-date
+  token, to use in the next request.
 
   Messages:
     LabelsValue: Labels associated with this write request.
@@ -2086,17 +2085,17 @@ class WriteRequest(_messages.Message):
     labels: Labels associated with this write request.
     streamId: The ID of the write stream to resume. This may only be set in
       the first message. When left empty, a new write stream will be created.
-    streamToken: A stream token that was previously sent by the server.  The
+    streamToken: A stream token that was previously sent by the server. The
       client should set this field to the token from the most recent
       WriteResponse it has received. This acknowledges that the client has
       received responses up to this token. After sending this token, earlier
-      tokens may not be used anymore.  The server may close the stream if
-      there are too many unacknowledged responses.  Leave this field unset
-      when creating a new stream. To resume a stream at a specific point, set
-      this field and the `stream_id` field.  Leave this field unset when
-      creating a new stream.
-    writes: The writes to apply.  Always executed atomically and in order.
-      This must be empty on the first request. This may be empty on the last
+      tokens may not be used anymore. The server may close the stream if there
+      are too many unacknowledged responses. Leave this field unset when
+      creating a new stream. To resume a stream at a specific point, set this
+      field and the `stream_id` field. Leave this field unset when creating a
+      new stream.
+    writes: The writes to apply. Always executed atomically and in order. This
+      must be empty on the first request. This may be empty on the last
       request. This must not be empty on all other requests.
   """
 
@@ -2141,7 +2140,7 @@ class WriteResponse(_messages.Message):
     streamToken: A token that represents the position of this response in the
       stream. This can be used by a client to resume the stream at this point.
       This field is always set.
-    writeResults: The result of applying the writes.  This i-th write result
+    writeResults: The result of applying the writes. This i-th write result
       corresponds to the i-th write in the request.
   """
 
@@ -2158,7 +2157,7 @@ class WriteResult(_messages.Message):
     transformResults: The results of applying each
       DocumentTransform.FieldTransform, in the same order.
     updateTime: The last update time of the document after applying the write.
-      Not set after a `delete`.  If the write did not actually change the
+      Not set after a `delete`. If the write did not actually change the
       document, this will be the previous update_time.
   """
 

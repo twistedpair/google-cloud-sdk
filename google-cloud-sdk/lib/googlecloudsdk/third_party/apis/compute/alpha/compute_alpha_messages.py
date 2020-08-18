@@ -731,6 +731,7 @@ class Address(_messages.Message):
     Values:
       DNS_RESOLVER: <no description>
       GCE_ENDPOINT: <no description>
+      IPSEC_INTERCONNECT: <no description>
       NAT_AUTO: <no description>
       PRIVATE_SERVICE_CONNECT: <no description>
       PSC_PRODUCER_NAT_RANGE: <no description>
@@ -739,11 +740,12 @@ class Address(_messages.Message):
     """
     DNS_RESOLVER = 0
     GCE_ENDPOINT = 1
-    NAT_AUTO = 2
-    PRIVATE_SERVICE_CONNECT = 3
-    PSC_PRODUCER_NAT_RANGE = 4
-    SHARED_LOADBALANCER_VIP = 5
-    VPC_PEERING = 6
+    IPSEC_INTERCONNECT = 2
+    NAT_AUTO = 3
+    PRIVATE_SERVICE_CONNECT = 4
+    PSC_PRODUCER_NAT_RANGE = 5
+    SHARED_LOADBALANCER_VIP = 6
+    VPC_PEERING = 7
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -1217,9 +1219,14 @@ class AdvancedMachineFeatures(_messages.Message):
   Fields:
     enableNestedVirtualization: Whether to enable nested virtualization or not
       (default is false).
+    threadsPerCore: The number of threads per physical core. To disable
+      simultaneous multithreading (SMT) set this to 1. If unset, the maximum
+      number of threads supported per core by the underlying processor is
+      assumed.
   """
 
   enableNestedVirtualization = _messages.BooleanField(1)
+  threadsPerCore = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class AliasIpRange(_messages.Message):
@@ -3376,13 +3383,18 @@ class BackendService(_messages.Message):
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
       INTERNAL_MANAGED.  - A global backend service with the
       load_balancing_scheme set to INTERNAL_SELF_MANAGED.    If
-      sessionAffinity is not NONE, and this field is not set to >MAGLEV or
-      RING_HASH, session affinity settings will not take effect.
+      sessionAffinity is not NONE, and this field is not set to MAGLEV or
+      RING_HASH, session affinity settings will not take effect.  Only the
+      default ROUND_ROBIN policy is supported when the backend service is
+      referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, HTTP2, TCP,
       SSL, UDP or GRPC. depending on the chosen load balancer or Traffic
       Director configuration. Refer to the documentation for the load balancer
-      or for Traffic Director for more information.
+      or for Traffic Director for more information.  Must be set to GRPC when
+      the backend service is referenced by a URL map that is bound to target
+      gRPC proxy.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
       default is NONE. Session affinity is not applicable if the --protocol is
       UDP.  When the loadBalancingScheme is EXTERNAL, possible values are
@@ -3391,12 +3403,17 @@ class BackendService(_messages.Message):
       INTERNAL, possible values are NONE, CLIENT_IP, CLIENT_IP_PROTO, or
       CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
       INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE,
-      CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.
+      CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.  Not
+      supported when the backend service is referenced by a URL map that is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
 
   Fields:
     affinityCookieTtlSec: If set to 0, the cookie is non-persistent and lasts
       only until the end of the browser session (or equivalent). The maximum
-      allowed value is one day (86,400).
+      allowed value is one day (86,400).  Not supported when the backend
+      service is referenced by a URL map that is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService.
     circuitBreakers: Settings controlling the volume of connections to a
@@ -3404,7 +3421,9 @@ class BackendService(_messages.Message):
       field is applicable to either:   - A regional backend service with the
       service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme
       set to INTERNAL_MANAGED.  - A global backend service with the
-      load_balancing_scheme set to INTERNAL_SELF_MANAGED.
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED.    Not supported
+      when the backend service is referenced by a URL map that is bound to
+      target gRPC proxy that has validateForProxyless field set to true.
     connectionDraining: A ConnectionDraining attribute.
     consistentHash: Consistent Hash-based load balancing can be used to
       provide soft session affinity based on HTTP headers, cookies or other
@@ -3417,6 +3436,9 @@ class BackendService(_messages.Message):
       service with the service_protocol set to HTTP, HTTPS, or HTTP2, and
       load_balancing_scheme set to INTERNAL_MANAGED.  - A global backend
       service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
+      Not supported when the backend service is referenced by a URL map that
+      is bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customRequestHeaders: Headers that the HTTP/S load balancer should add to
@@ -3479,8 +3501,11 @@ class BackendService(_messages.Message):
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
       INTERNAL_MANAGED.  - A global backend service with the
       load_balancing_scheme set to INTERNAL_SELF_MANAGED.    If
-      sessionAffinity is not NONE, and this field is not set to >MAGLEV or
-      RING_HASH, session affinity settings will not take effect.
+      sessionAffinity is not NONE, and this field is not set to MAGLEV or
+      RING_HASH, session affinity settings will not take effect.  Only the
+      default ROUND_ROBIN policy is supported when the backend service is
+      referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     logConfig: This field denotes the logging options for the load balancer
       traffic served by this backend service. If logging is enabled, logs will
       be exported to Stackdriver.
@@ -3500,7 +3525,9 @@ class BackendService(_messages.Message):
       A regional backend service with the service_protocol set to HTTP, HTTPS,
       or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.  - A global
       backend service with the load_balancing_scheme set to
-      INTERNAL_SELF_MANAGED.
+      INTERNAL_SELF_MANAGED.    Not supported when the backend service is
+      referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     port: Deprecated in favor of portName. The TCP port to connect on the
       backend. The default value is 80.  This cannot be used if the
       loadBalancingScheme is INTERNAL (Internal TCP/UDP Load Balancing).
@@ -3515,7 +3542,9 @@ class BackendService(_messages.Message):
       backends.  Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or
       GRPC. depending on the chosen load balancer or Traffic Director
       configuration. Refer to the documentation for the load balancer or for
-      Traffic Director for more information.
+      Traffic Director for more information.  Must be set to GRPC when the
+      backend service is referenced by a URL map that is bound to target gRPC
+      proxy.
     region: [Output Only] URL of the region where the regional backend service
       resides. This field is not applicable to global backend services. You
       must specify this field as part of the HTTP request URL. It is not
@@ -3538,7 +3567,9 @@ class BackendService(_messages.Message):
       NONE, CLIENT_IP, CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the
       loadBalancingScheme is INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED,
       possible values are NONE, CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or
-      HTTP_COOKIE.
+      HTTP_COOKIE.  Not supported when the backend service is referenced by a
+      URL map that is bound to target gRPC proxy that has validateForProxyless
+      field set to true.
     timeoutSec: The backend service timeout has a different meaning depending
       on the type of load balancer. For more information see,  Backend service
       settings The default is 30 seconds.
@@ -3587,8 +3618,10 @@ class BackendService(_messages.Message):
     HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.
     - A global backend service with the load_balancing_scheme set to
     INTERNAL_SELF_MANAGED.    If sessionAffinity is not NONE, and this field
-    is not set to >MAGLEV or RING_HASH, session affinity settings will not
-    take effect.
+    is not set to MAGLEV or RING_HASH, session affinity settings will not take
+    effect.  Only the default ROUND_ROBIN policy is supported when the backend
+    service is referenced by a URL map that is bound to target gRPC proxy that
+    has validateForProxyless field set to true.
 
     Values:
       INVALID_LB_POLICY: <no description>
@@ -3612,7 +3645,8 @@ class BackendService(_messages.Message):
     Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or GRPC. depending
     on the chosen load balancer or Traffic Director configuration. Refer to
     the documentation for the load balancer or for Traffic Director for more
-    information.
+    information.  Must be set to GRPC when the backend service is referenced
+    by a URL map that is bound to target gRPC proxy.
 
     Values:
       ALL: <no description>
@@ -3641,7 +3675,9 @@ class BackendService(_messages.Message):
     loadBalancingScheme is INTERNAL, possible values are NONE, CLIENT_IP,
     CLIENT_IP_PROTO, or CLIENT_IP_PORT_PROTO.  When the loadBalancingScheme is
     INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, possible values are NONE,
-    CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.
+    CLIENT_IP, GENERATED_COOKIE, HEADER_FIELD, or HTTP_COOKIE.  Not supported
+    when the backend service is referenced by a URL map that is bound to
+    target gRPC proxy that has validateForProxyless field set to true.
 
     Values:
       CLIENT_IP: <no description>
@@ -15238,7 +15274,9 @@ class ComputeOrganizationSecurityPoliciesInsertRequest(_messages.Message):
   r"""A ComputeOrganizationSecurityPoliciesInsertRequest object.
 
   Fields:
-    parentId: Parent ID for this request.
+    parentId: Parent ID for this request. The ID can be either be
+      "folders/[FOLDER_ID]" if the parent is a folder or
+      "organizations/[ORGANIZATION_ID]" if the parent is an organization.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
@@ -22523,6 +22561,32 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(6)
 
 
+class ComputeTargetHttpProxiesPatchRequest(_messages.Message):
+  r"""A ComputeTargetHttpProxiesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetHttpProxy: Name of the TargetHttpProxy resource to patch.
+    targetHttpProxyResource: A TargetHttpProxy resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetHttpProxy = _messages.StringField(3, required=True)
+  targetHttpProxyResource = _messages.MessageField('TargetHttpProxy', 4)
+
+
 class ComputeTargetHttpProxiesSetUrlMapRequest(_messages.Message):
   r"""A ComputeTargetHttpProxiesSetUrlMapRequest object.
 
@@ -25627,6 +25691,19 @@ class Disk(_messages.Message):
       snapshot that was later deleted and recreated under the same name, the
       source in-place snapshot ID would identify the exact version of the in-
       place snapshot that was used.
+    sourceInstantSnapshot: The source instant snapshot used to create this
+      disk. You can provide this as a partial or full URL to the resource. For
+      example, the following are valid values:   - https://www.googleapis.com/
+      compute/v1/projects/project/zones/zone/instantSnapshots/instantSnapshot
+      - projects/project/zones/zone/instantSnapshots/instantSnapshot  -
+      zones/zone/instantSnapshots/instantSnapshot
+    sourceInstantSnapshotId: [Output Only] The unique ID of the instant
+      snapshot used to create this disk. This value identifies the exact
+      instant snapshot that was used to create this persistent disk. For
+      example, if you created the persistent disk from an instant snapshot
+      that was later deleted and recreated under the same name, the source
+      instant snapshot ID would identify the exact version of the instant
+      snapshot that was used.
     sourceSnapshot: The source snapshot used to create this disk. You can
       provide this as a partial or full URL to the resource. For example, the
       following are valid values:   - https://www.googleapis.com/compute/v1/pr
@@ -25760,15 +25837,17 @@ class Disk(_messages.Message):
   sourceImageId = _messages.StringField(31)
   sourceInPlaceSnapshot = _messages.StringField(32)
   sourceInPlaceSnapshotId = _messages.StringField(33)
-  sourceSnapshot = _messages.StringField(34)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 35)
-  sourceSnapshotId = _messages.StringField(36)
-  sourceStorageObject = _messages.StringField(37)
-  status = _messages.EnumField('StatusValueValuesEnum', 38)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 39)
-  type = _messages.StringField(40)
-  users = _messages.StringField(41, repeated=True)
-  zone = _messages.StringField(42)
+  sourceInstantSnapshot = _messages.StringField(34)
+  sourceInstantSnapshotId = _messages.StringField(35)
+  sourceSnapshot = _messages.StringField(36)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
+  sourceSnapshotId = _messages.StringField(38)
+  sourceStorageObject = _messages.StringField(39)
+  status = _messages.EnumField('StatusValueValuesEnum', 40)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 41)
+  type = _messages.StringField(42)
+  users = _messages.StringField(43, repeated=True)
+  zone = _messages.StringField(44)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -28048,6 +28127,8 @@ class ForwardingRule(_messages.Message):
       determine the type of IP address that you can use. For detailed
       information, refer to [IP address specifications](/load-
       balancing/docs/forwarding-rule-concepts#ip_address_specifications).
+      Must be set to `0.0.0.0` when the target is targetGrpcProxy that has
+      validateForProxyless field set to true.
     IPProtocol: The IP protocol to which this rule applies. For protocol
       forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For
       Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL,
@@ -28118,7 +28199,7 @@ class ForwardingRule(_messages.Message):
     metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
       routing configuration to a limited set of xDS compliant clients. In
       their xDS requests to Loadbalancer, xDS clients present node metadata.
-      If a match takes place, the relevant configuration is made available to
+      When there is a match, the relevant configuration is made available to
       those proxies. Otherwise, all the resources (e.g. TargetHttpProxy,
       UrlMap) referenced by the ForwardingRule will not be visible to those
       proxies. For each metadataFilter in this list, if its
@@ -28126,10 +28207,12 @@ class ForwardingRule(_messages.Message):
       filterLabels must match the corresponding label provided in the
       metadata. If its filterMatchCriteria is set to MATCH_ALL, then all of
       its filterLabels must match with corresponding labels provided in the
-      metadata. metadataFilters specified here will be applifed before those
-      specified in the UrlMap that this ForwardingRule references.
-      metadataFilters only applies to Loadbalancers that have their
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+      metadata. If multiple metadataFilters are specified, all of them need to
+      be satisfied in order to be considered a match. metadataFilters
+      specified here will be applifed before those specified in the UrlMap
+      that this ForwardingRule references. metadataFilters only applies to
+      Loadbalancers that have their loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -28137,10 +28220,10 @@ class ForwardingRule(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    network: This field is not used for external load balancing.  For INTERNAL
-      and INTERNAL_SELF_MANAGED load balancing, this field identifies the
-      network that the load balanced IP should belong to for this Forwarding
-      Rule. If this field is not specified, the default network will be used.
+    network: This field is not used for external load balancing.  For internal
+      load balancing, this field identifies the network that the load balanced
+      IP should belong to for this Forwarding Rule. If this field is not
+      specified, the default network will be used.
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM, STANDARD.
       For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
@@ -28194,7 +28277,7 @@ class ForwardingRule(_messages.Message):
     serviceName: [Output Only] The internal fully qualified service name for
       this Forwarding Rule.  This field is only used for internal load
       balancing.
-    subnetwork: This field is only used for INTERNAL load balancing.  For
+    subnetwork: This field is only used for internal load balancing.  For
       internal load balancing, this field identifies the subnetwork that the
       load balanced IP should belong to for this Forwarding Rule.  If the
       network specified is in auto subnet mode, this field is optional.
@@ -30208,7 +30291,9 @@ class HostRule(_messages.Message):
     hosts: The list of host patterns to match. They must be valid hostnames
       with optional port numbers in the format host:port. * matches any string
       of ([a-z0-9-.]*). In that case, * must be the first character and must
-      be followed in the pattern by either - or ..
+      be followed in the pattern by either - or ..  * based matching is not
+      supported when the URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     pathMatcher: The name of the PathMatcher to use to match the path portion
       of the URL if the hostRule matches the URL's host portion.
   """
@@ -30848,17 +30933,18 @@ class HttpRouteRuleMatch(_messages.Message):
     metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
       routing configuration to a limited set of xDS compliant clients. In
       their xDS requests to Loadbalancer, xDS clients present node metadata.
-      If a match takes place, the relevant routing configuration is made
+      When there is a match, the relevant routing configuration is made
       available to those proxies. For each metadataFilter in this list, if its
       filterMatchCriteria is set to MATCH_ANY, at least one of the
       filterLabels must match the corresponding label provided in the
       metadata. If its filterMatchCriteria is set to MATCH_ALL, then all of
       its filterLabels must match with corresponding labels provided in the
-      metadata. metadataFilters specified here will be applied after those
-      specified in ForwardingRule that refers to the UrlMap this
-      HttpRouteRuleMatch belongs to. metadataFilters only applies to
-      Loadbalancers that have their loadBalancingScheme set to
-      INTERNAL_SELF_MANAGED.
+      metadata. If multiple metadataFilters are specified, all of them need to
+      be satisfied in order to be considered a match. metadataFilters
+      specified here will be applied after those specified in ForwardingRule
+      that refers to the UrlMap this HttpRouteRuleMatch belongs to.
+      metadataFilters only applies to Loadbalancers that have their
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
     prefixMatch: For satisfying the matchRule condition, the request's path
       must begin with the specified prefixMatch. prefixMatch must begin with a
       /. The value must be between 1 and 1024 characters. Only one of
@@ -31820,6 +31906,9 @@ class Instance(_messages.Message):
     satisfiesPhysicalZoneSeparation: [Output Only] Specifies whether this
       instance satisfies zone separation.
     scheduling: Sets the scheduling options for this instance.
+    secureLabels: Secure labels to apply to this instance. These can be later
+      modified by the update method. Maximum number of secure labels allowed
+      is 300.
     selfLink: [Output Only] Server-defined URL for this resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -31967,21 +32056,22 @@ class Instance(_messages.Message):
   resourcePolicies = _messages.StringField(31, repeated=True)
   satisfiesPhysicalZoneSeparation = _messages.BooleanField(32)
   scheduling = _messages.MessageField('Scheduling', 33)
-  selfLink = _messages.StringField(34)
-  selfLinkWithId = _messages.StringField(35)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 36, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 37)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 38)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 39)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 40)
-  sourceMachineImage = _messages.StringField(41)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 42)
-  startRestricted = _messages.BooleanField(43)
-  status = _messages.EnumField('StatusValueValuesEnum', 44)
-  statusMessage = _messages.StringField(45)
-  tags = _messages.MessageField('Tags', 46)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 47)
-  zone = _messages.StringField(48)
+  secureLabels = _messages.StringField(34, repeated=True)
+  selfLink = _messages.StringField(35)
+  selfLinkWithId = _messages.StringField(36)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 37, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 38)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 39)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 40)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 41)
+  sourceMachineImage = _messages.StringField(42)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 43)
+  startRestricted = _messages.BooleanField(44)
+  status = _messages.EnumField('StatusValueValuesEnum', 45)
+  statusMessage = _messages.StringField(46)
+  tags = _messages.MessageField('Tags', 47)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 48)
+  zone = _messages.StringField(49)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -35403,6 +35493,8 @@ class InterconnectAttachment(_messages.Message):
       via the pairing key, so that the provisioned circuit will lie in the
       specified domain. If not specified, the value will default to
       AVAILABILITY_DOMAIN_ANY.
+    EncryptionValueValuesEnum: Indicates the user-supplied encryption option
+      of this interconnect attachment.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional, which can
       take one of the following values:  - OS_ACTIVE: The attachment has been
@@ -35474,6 +35566,8 @@ class InterconnectAttachment(_messages.Message):
       via the pairing key, so that the provisioned circuit will lie in the
       specified domain. If not specified, the value will default to
       AVAILABILITY_DOMAIN_ANY.
+    encryption: Indicates the user-supplied encryption option of this
+      interconnect attachment.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues. [Deprecated] This field is not used.
@@ -35481,6 +35575,20 @@ class InterconnectAttachment(_messages.Message):
       is defined by the server.
     interconnect: URL of the underlying Interconnect object that this
       attachment's traffic will traverse through.
+    ipsecInternalAddresses: URL of addresses that have been reserved for the
+      interconnect attachment, Used only for interconnect attachment that has
+      the encryption option as IPSEC. The addresses must be RFC 1918 IP
+      address ranges. When creating HA VPN gateway over the interconnect
+      attachment, if the attachment is configured to use an RFC 1918 IP
+      address, then the VPN gateway?s IP address will be allocated from the IP
+      address range specified here. For example, if the HA VPN gateway?s
+      interface 0 is paired to this interconnect attachment, then an RFC 1918
+      IP address for the VPN gateway interface 0 will be allocated from the IP
+      address specified for this interconnect attachment. If this field is not
+      specified for interconnect attachment that has encryption option as
+      IPSEC, later on when creating HA VPN gateway on this interconnect
+      attachment, the HA VPN gateway's IP address will be allocated from
+      regional external IP address pool.
     kind: [Output Only] Type of the resource. Always
       compute#interconnectAttachment for interconnect attachments.
     labelFingerprint: A fingerprint for the labels being applied to this
@@ -35616,6 +35724,17 @@ class InterconnectAttachment(_messages.Message):
     AVAILABILITY_DOMAIN_2 = 1
     AVAILABILITY_DOMAIN_ANY = 2
 
+  class EncryptionValueValuesEnum(_messages.Enum):
+    r"""Indicates the user-supplied encryption option of this interconnect
+    attachment.
+
+    Values:
+      IPSEC: <no description>
+      NONE: <no description>
+    """
+    IPSEC = 0
+    NONE = 1
+
   class OperationalStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current status of whether or not this interconnect
     attachment is functional, which can take one of the following values:  -
@@ -35715,26 +35834,28 @@ class InterconnectAttachment(_messages.Message):
   customerRouterIpAddress = _messages.StringField(6)
   description = _messages.StringField(7)
   edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 8)
-  googleReferenceId = _messages.StringField(9)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(11)
-  kind = _messages.StringField(12, default='compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  mtu = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  name = _messages.StringField(16)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 17)
-  pairingKey = _messages.StringField(18)
-  partnerAsn = _messages.IntegerField(19)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 20)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 21)
-  region = _messages.StringField(22)
-  router = _messages.StringField(23)
-  selfLink = _messages.StringField(24)
-  selfLinkWithId = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  type = _messages.EnumField('TypeValueValuesEnum', 27)
-  vlanTag8021q = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  encryption = _messages.EnumField('EncryptionValueValuesEnum', 9)
+  googleReferenceId = _messages.StringField(10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(12)
+  ipsecInternalAddresses = _messages.StringField(13, repeated=True)
+  kind = _messages.StringField(14, default='compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  mtu = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  name = _messages.StringField(18)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 19)
+  pairingKey = _messages.StringField(20)
+  partnerAsn = _messages.IntegerField(21)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 22)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 23)
+  region = _messages.StringField(24)
+  router = _messages.StringField(25)
+  selfLink = _messages.StringField(26)
+  selfLinkWithId = _messages.StringField(27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  type = _messages.EnumField('TypeValueValuesEnum', 29)
+  vlanTag8021q = _messages.IntegerField(30, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -37853,7 +37974,7 @@ class MachineType(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deprecated: [Output Only] The deprecation status associated with this
-      machine type.
+      machine type. Only applicable if the machine type is unavailable.
     description: [Output Only] An optional textual description of the
       resource.
     guestCpus: [Output Only] The number of virtual CPUs that are available to
@@ -43452,7 +43573,9 @@ class PathMatcher(_messages.Message):
       any  weightedBackendServices. Only one of defaultRouteAction or
       defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
       balancers support only the urlRewrite action within a pathMatcher's
-      defaultRouteAction.
+      defaultRouteAction.  Not supported when the backend service is
+      referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     defaultService: The full or partial URL to the BackendService resource.
       This will be used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -43469,11 +43592,14 @@ class PathMatcher(_messages.Message):
       defaultRouteAction.weightedBackendService must be set. Authorization
       requires one or more of the following Google IAM permissions on the
       specified resource default_service:   - compute.backendBuckets.use  -
-      compute.backendServices.use
+      compute.backendServices.use    pathMatchers[].defaultService is the only
+      option available when the URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     defaultUrlRedirect: When none of the specified pathRules or routeRules
       match, the request is redirected to a URL specified by
       defaultUrlRedirect. If defaultUrlRedirect is specified, defaultService
-      or defaultRouteAction must not be set.
+      or defaultRouteAction must not be set.  Not supported when the backend
+      service is referenced by a URL map that is bound to target gRPC proxy.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     headerAction: Specifies changes to request and response headers that need
@@ -43481,7 +43607,9 @@ class PathMatcher(_messages.Message):
       here are applied after the matching HttpRouteRule HeaderAction and
       before the HeaderAction in the UrlMap  Note that headerAction is not
       supported for Loadbalancers that have their loadBalancingScheme set to
-      EXTERNAL.
+      EXTERNAL.  Not supported when the backend service is referenced by a URL
+      map that is bound to target gRPC proxy that has validateForProxyless
+      field set to true.
     name: The name to which this PathMatcher is referred by the HostRule.
     pathRules: The list of path rules. Use this list instead of routeRules
       when routing based on simple path matching is all that's required. The
@@ -43489,12 +43617,16 @@ class PathMatcher(_messages.Message):
       always done on the longest-path-first basis. For example: a pathRule
       with a path /a/b/c/* will match before /a/b/* irrespective of the order
       in which those paths appear in this list. Within a given pathMatcher,
-      only one of pathRules or routeRules must be set.
+      only one of pathRules or routeRules must be set.  Not supported when the
+      backend service is referenced by a URL map that is bound to target gRPC
+      proxy that has validateForProxyless field set to true.
     routeRules: The list of HTTP route rules. Use this list instead of
       pathRules when advanced route matching and routing actions are desired.
       routeRules are evaluated in order of priority, from the lowest to
       highest number. Within a given pathMatcher, you can set only one of
-      pathRules or routeRules.
+      pathRules or routeRules.  Not supported when the backend service is
+      referenced by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
   """
 
   defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)
@@ -43937,8 +44069,8 @@ class Project(_messages.Message):
       following values: PREMIUM, STANDARD. Initially the default network tier
       is PREMIUM.
     XpnProjectStatusValueValuesEnum: [Output Only] The role this project has
-      in a shared VPC configuration. Currently only HOST projects are
-      differentiated.
+      in a shared VPC configuration. Currently, only projects with the host
+      role, which is specified by the value HOST, are differentiated.
 
   Fields:
     commonInstanceMetadata: Metadata key/value pairs available to all
@@ -43966,7 +44098,8 @@ class Project(_messages.Message):
     usageExportLocation: The naming prefix for daily usage reports and the
       Google Cloud Storage bucket where they are stored.
     xpnProjectStatus: [Output Only] The role this project has in a shared VPC
-      configuration. Currently only HOST projects are differentiated.
+      configuration. Currently, only projects with the host role, which is
+      specified by the value HOST, are differentiated.
   """
 
   class DefaultNetworkTierValueValuesEnum(_messages.Enum):
@@ -43985,7 +44118,8 @@ class Project(_messages.Message):
 
   class XpnProjectStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The role this project has in a shared VPC configuration.
-    Currently only HOST projects are differentiated.
+    Currently, only projects with the host role, which is specified by the
+    value HOST, are differentiated.
 
     Values:
       HOST: <no description>
@@ -50385,7 +50519,7 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       requests matching this rule.
 
   Fields:
-    blockDuration: Can only be specifed if the action for the rule is
+    blockDuration: Can only be specified if the action for the rule is
       "rate_based_blacklist" If specified, determines the time (in seconds)
       the traffic will continue to be blocked by the rate limit after the rate
       falls below the threshold. The default value is 0 seconds.
@@ -53659,6 +53793,13 @@ class TargetHttpProxy(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    fingerprint: Fingerprint of this resource. A hash of the contents stored
+      in this object. This field is used in optimistic locking. This field
+      will be ignored when inserting a TargetHttpProxy. An up-to-date
+      fingerprint must be provided in order to patch/update the
+      TargetHttpProxy; otherwise, the request will fail with error 412
+      conditionNotMet. To see the latest fingerprint, make a get() request to
+      retrieve the TargetHttpProxy.
     httpFilters: Urls to networkservices.HttpFilter resources enabled for xDS
       clients using this configuration. For example, https://networkservices.g
       oogleapis.com/v1alpha1/projects/project/locations/locationhttpFilters/ht
@@ -53697,15 +53838,16 @@ class TargetHttpProxy(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  httpFilters = _messages.StringField(3, repeated=True)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#targetHttpProxy')
-  name = _messages.StringField(6)
-  proxyBind = _messages.BooleanField(7)
-  region = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  selfLinkWithId = _messages.StringField(10)
-  urlMap = _messages.StringField(11)
+  fingerprint = _messages.BytesField(3)
+  httpFilters = _messages.StringField(4, repeated=True)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#targetHttpProxy')
+  name = _messages.StringField(7)
+  proxyBind = _messages.BooleanField(8)
+  region = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  selfLinkWithId = _messages.StringField(11)
+  urlMap = _messages.StringField(12)
 
 
 class TargetHttpProxyAggregatedList(_messages.Message):
@@ -56768,9 +56910,11 @@ class UpcomingMaintenance(_messages.Message):
 
   Fields:
     date: [Output Only] The date when the maintenance will take place. This
-      value is in RFC3339 text format.
+      value is in RFC3339 text format. DEPRECATED: Use start_time_window
+      instead.
     time: [Output Only] The time when the maintenance will take place. This
-      value is in RFC3339 text format.
+      value is in RFC3339 text format. DEPRECATED: Use start_time_window
+      instead.
     type: Defines the type of maintenance.
   """
 
@@ -56798,12 +56942,16 @@ class UrlMap(_messages.Message):
   URL map resource is a component of certain types of GCP load balancers and
   Traffic Director.  * urlMaps are used by external HTTP(S) load balancers and
   Traffic Director. * regionUrlMaps are used by internal HTTP(S) load
-  balancers.  This resource defines mappings from host names and URL paths to
-  either a backend service or a backend bucket.  To use the global urlMaps
-  resource, the backend service must have a loadBalancingScheme of either
-  EXTERNAL or INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the
-  backend service must have a loadBalancingScheme of INTERNAL_MANAGED. For
-  more information, read URL Map Concepts.
+  balancers.  For a list of supported URL map features by load balancer type,
+  see the  Load balancing features: Routing and traffic management table.  For
+  a list of supported URL map features for Traffic Director, see the  Traffic
+  Director features: Routing and traffic management table.  This resource
+  defines mappings from host names and URL paths to either a backend service
+  or a backend bucket.  To use the global urlMaps resource, the backend
+  service must have a loadBalancingScheme of either EXTERNAL or
+  INTERNAL_SELF_MANAGED. To use the regionUrlMaps resource, the backend
+  service must have a loadBalancingScheme of INTERNAL_MANAGED. For more
+  information, read URL Map Concepts.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -56817,6 +56965,9 @@ class UrlMap(_messages.Message):
       weightedBackendServices. Only one of defaultRouteAction or
       defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
       balancers support only the urlRewrite action within defaultRouteAction.
+      defaultRouteAction has no effect when the backend service is referenced
+      by a URL map that is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     defaultService: The full or partial URL of the defaultService resource to
       which traffic is directed if none of the hostRules match. If
       defaultRouteAction is additionally specified, advanced routing actions
@@ -56825,11 +56976,15 @@ class UrlMap(_messages.Message):
       cannot contain any weightedBackendServices. Conversely, if routeAction
       specifies any weightedBackendServices, service must not be specified.
       Only one of defaultService, defaultUrlRedirect  or
-      defaultRouteAction.weightedBackendService must be set.
+      defaultRouteAction.weightedBackendService must be set.  defaultService
+      has no effect when the backend service is referenced by a URL map that
+      is bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     defaultUrlRedirect: When none of the specified hostRules match, the
       request is redirected to a URL specified by defaultUrlRedirect. If
       defaultUrlRedirect is specified, defaultService or defaultRouteAction
-      must not be set.
+      must not be set.  Not supported when the backend service is referenced
+      by a URL map that is bound to target gRPC proxy.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
@@ -56841,7 +56996,9 @@ class UrlMap(_messages.Message):
     headerAction: Specifies changes to request and response headers that need
       to take effect for the selected backendService. The headerAction
       specified here take effect after headerAction specified under
-      pathMatcher.
+      pathMatcher.  Not supported when the backend service is referenced by a
+      URL map that is bound to target gRPC proxy that has validateForProxyless
+      field set to true.
     hostRules: The list of HostRules to use against the URL.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -56862,7 +57019,9 @@ class UrlMap(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     tests: The list of expected URL mapping tests. Request to update this
       UrlMap will succeed only if all of the test cases pass. You can specify
-      a maximum of 100 tests per UrlMap.
+      a maximum of 100 tests per UrlMap.  Not supported when the backend
+      service is referenced by a URL map that is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -57026,11 +57185,14 @@ class UrlMapTest(_messages.Message):
       when using advanced routing rules that involve traffic splitting.
     description: Description of this test case.
     expectedUrlRedirect: The expected URL that should be redirected to for the
-      host and path being tested.
-    host: Host portion of the URL.
+      host and path being tested. [Deprecated] This field is deprecated. Use
+      expected_output_url instead.
+    host: Host portion of the URL. If headers contains a host header, then
+      host must also match the header value.
     path: Path portion of the URL.
-    service: Expected BackendService resource the given URL should be mapped
-      to.
+    service: Expected BackendService or BackendBucket resource the given URL
+      should be mapped to. service cannot be set if
+      expectedRedirectResponseCode is set.
   """
 
   backendServiceWeight = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
@@ -58221,12 +58383,18 @@ class VpnGatewayVpnGatewayInterface(_messages.Message):
 
   Fields:
     id: The numeric ID of this VPN gateway interface.
+    interconnectAttachment: URL of the interconnect attachment resource. When
+      the value of this field is present, the VPN Gateway will be used for
+      IPsec over Interconnect; all Egress or Ingress traffic for this VPN
+      Gateway interface will go through the specified interconnect attachment
+      resource.
     ipAddress: [Output Only] The external IP address for this VPN gateway
       interface.
   """
 
   id = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
-  ipAddress = _messages.StringField(2)
+  interconnectAttachment = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
 
 
 class VpnGatewaysGetStatusResponse(_messages.Message):

@@ -240,14 +240,7 @@ class EventsV1beta1(base_api.BaseApiClient):
     )
 
     def ReplaceTrigger(self, request, global_params=None):
-      r"""Rpc to replace a trigger.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Events for Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a trigger. Only the spec and metadata labels and annotations are modifiable. After the Update request, Events for Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (EventsNamespacesTriggersReplaceTriggerRequest) input message
@@ -466,14 +459,7 @@ optimistic concurrency control.
     )
 
     def ReplaceTrigger(self, request, global_params=None):
-      r"""Rpc to replace a trigger.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Events for Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a trigger. Only the spec and metadata labels and annotations are modifiable. After the Update request, Events for Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (EventsProjectsLocationsTriggersReplaceTriggerRequest) input message

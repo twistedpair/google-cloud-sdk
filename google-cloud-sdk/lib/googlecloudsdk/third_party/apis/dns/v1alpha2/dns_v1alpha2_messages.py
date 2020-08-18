@@ -73,7 +73,7 @@ class ChangesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your
-      pagination token.  In this way you can retrieve the complete contents of
+      pagination token. In this way you can retrieve the complete contents of
       even very large collections one page at a time. However, if the contents
       of the collection change between the first and last paginated list
       request, the set of all elements returned will be an inconsistent view
@@ -452,7 +452,7 @@ class DnsKeysListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your
-      pagination token.  In this way you can retrieve the complete contents of
+      pagination token. In this way you can retrieve the complete contents of
       even very large collections one page at a time. However, if the contents
       of the collection change between the first and last paginated list
       request, the set of all elements returned will be an inconsistent view
@@ -796,7 +796,7 @@ class ManagedZone(_messages.Message):
     dnsName: The DNS name of this managed zone, for instance "example.com.".
     dnssecConfig: DNSSEC configuration.
     forwardingConfig: The presence for this field indicates that outbound
-      forwarding is enabled for this zone.  The value of this field contains
+      forwarding is enabled for this zone. The value of this field contains
       the set of destinations to forward to.
     id: Unique identifier for the resource; defined by the server (output
       only)
@@ -994,7 +994,7 @@ class ManagedZoneOperationsListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token.  In this way you can retrieve the complete contents of even very
+      token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned will be an inconsistent view of the
@@ -1118,7 +1118,7 @@ class ManagedZonesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token.  In this way you can retrieve the complete contents of even very
+      token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned will be an inconsistent view of the
@@ -1237,7 +1237,7 @@ class PeeringZonesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token.  In this way you can retrieve the complete contents of even very
+      token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned will be an inconsistent view of the
@@ -1262,7 +1262,7 @@ class PoliciesListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your page
-      token.  In this way you can retrieve the complete contents of even very
+      token. In this way you can retrieve the complete contents of even very
       large collections one page at a time. However, if the contents of the
       collection change between the first and last paginated list request, the
       set of all elements returned will be an inconsistent view of the
@@ -1485,13 +1485,12 @@ class ResourceRecordSet(_messages.Message):
     kind: A string attribute.
     name: For example, www.example.com.
     rrdatas: As defined in RFC 1035 (section 5) and RFC 1034 (section 3.6.1)
-      -- see <a href="/dns/records/json-record">examples</a>.
+      -- see examples.
     signatureRrdatas: As defined in RFC 4034 (section 3.2).
     ttl: Number of seconds that this ResourceRecordSet can be cached by
       resolvers.
-    type: The identifier of a supported record type. See the list of <a
-      href="/dns/docs/overview#supported_dns_record_types">Supported DNS
-      record types</a>.
+    type: The identifier of a supported record type. See the list of Supported
+      DNS record types.
   """
 
   kind = _messages.StringField(1, default='dns#resourceRecordSet')
@@ -1511,7 +1510,7 @@ class ResourceRecordSetsListResponse(_messages.Message):
     nextPageToken: The presence of this field indicates that there exist more
       results following your last page of results in pagination order. To
       fetch them, make another list request using this value as your
-      pagination token.  In this way you can retrieve the complete contents of
+      pagination token. In this way you can retrieve the complete contents of
       even very large collections one page at a time. However, if the contents
       of the collection change between the first and last paginated list
       request, the set of all elements returned will be an inconsistent view

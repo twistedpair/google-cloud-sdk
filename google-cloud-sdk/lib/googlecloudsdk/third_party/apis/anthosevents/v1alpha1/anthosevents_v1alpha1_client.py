@@ -66,13 +66,13 @@ class AnthoseventsV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/addons.sigs.k8s.io/v1alpha1/namespaces/{namespacesId}/cloudruns',
+        flat_path='apis/operator.run.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudruns',
         http_method='POST',
         method_id='anthosevents.namespaces.cloudruns.create',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
-        relative_path='apis/addons.sigs.k8s.io/v1alpha1/{+parent}/cloudruns',
+        relative_path='apis/operator.run.cloud.google.com/v1alpha1/{+parent}/cloudruns',
         request_field='cloudRun',
         request_type_name='AnthoseventsNamespacesCloudrunsCreateRequest',
         response_type_name='CloudRun',
@@ -93,13 +93,13 @@ class AnthoseventsV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/addons.sigs.k8s.io/v1alpha1/namespaces/{namespacesId}/cloudruns/{cloudrunsId}',
+        flat_path='apis/operator.run.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudruns/{cloudrunsId}',
         http_method='DELETE',
         method_id='anthosevents.namespaces.cloudruns.delete',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='apis/addons.sigs.k8s.io/v1alpha1/{+name}',
+        relative_path='apis/operator.run.cloud.google.com/v1alpha1/{+name}',
         request_field='',
         request_type_name='AnthoseventsNamespacesCloudrunsDeleteRequest',
         response_type_name='Empty',
@@ -120,13 +120,13 @@ class AnthoseventsV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/addons.sigs.k8s.io/v1alpha1/namespaces/{namespacesId}/cloudruns/{cloudrunsId}',
+        flat_path='apis/operator.run.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudruns/{cloudrunsId}',
         http_method='GET',
         method_id='anthosevents.namespaces.cloudruns.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='apis/addons.sigs.k8s.io/v1alpha1/{+name}',
+        relative_path='apis/operator.run.cloud.google.com/v1alpha1/{+name}',
         request_field='',
         request_type_name='AnthoseventsNamespacesCloudrunsGetRequest',
         response_type_name='CloudRun',
@@ -147,13 +147,13 @@ class AnthoseventsV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/addons.sigs.k8s.io/v1alpha1/namespaces/{namespacesId}/cloudruns',
+        flat_path='apis/operator.run.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudruns',
         http_method='GET',
         method_id='anthosevents.namespaces.cloudruns.list',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['continue_', 'fieldSelector', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
-        relative_path='apis/addons.sigs.k8s.io/v1alpha1/{+parent}/cloudruns',
+        relative_path='apis/operator.run.cloud.google.com/v1alpha1/{+parent}/cloudruns',
         request_field='',
         request_type_name='AnthoseventsNamespacesCloudrunsListRequest',
         response_type_name='ListCloudRunsResponse',
@@ -174,13 +174,13 @@ class AnthoseventsV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/addons.sigs.k8s.io/v1alpha1/namespaces/{namespacesId}/cloudruns/{cloudrunsId}',
+        flat_path='apis/operator.run.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudruns/{cloudrunsId}',
         http_method='PATCH',
         method_id='anthosevents.namespaces.cloudruns.patch',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='apis/addons.sigs.k8s.io/v1alpha1/{+name}',
+        relative_path='apis/operator.run.cloud.google.com/v1alpha1/{+name}',
         request_field='cloudRun',
         request_type_name='AnthoseventsNamespacesCloudrunsPatchRequest',
         response_type_name='CloudRun',
@@ -188,14 +188,7 @@ class AnthoseventsV1alpha1(base_api.BaseApiClient):
     )
 
     def ReplaceCloudRun(self, request, global_params=None):
-      r"""Rpc to replace a CloudRun resource.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a CloudRun resource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (AnthoseventsNamespacesCloudrunsReplaceCloudRunRequest) input message
@@ -208,13 +201,13 @@ optimistic concurrency control.
           config, request, global_params=global_params)
 
     ReplaceCloudRun.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='apis/addons.sigs.k8s.io/v1alpha1/namespaces/{namespacesId}/cloudruns/{cloudrunsId}',
+        flat_path='apis/operator.run.cloud.google.com/v1alpha1/namespaces/{namespacesId}/cloudruns/{cloudrunsId}',
         http_method='PUT',
         method_id='anthosevents.namespaces.cloudruns.replaceCloudRun',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='apis/addons.sigs.k8s.io/v1alpha1/{+name}',
+        relative_path='apis/operator.run.cloud.google.com/v1alpha1/{+name}',
         request_field='cloudRun',
         request_type_name='AnthoseventsNamespacesCloudrunsReplaceCloudRunRequest',
         response_type_name='CloudRun',

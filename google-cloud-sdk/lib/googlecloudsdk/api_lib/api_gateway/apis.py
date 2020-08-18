@@ -55,12 +55,13 @@ class ApiClient(base.BaseClient):
 
     return True
 
-  def Create(self, api_ref, managed_service, labels=None, display_name=None):
+  def Create(self, api_ref, managed_service=None, labels=None,
+             display_name=None):
     """Creates a new Api object.
 
     Args:
       api_ref: Resource, a resource reference for the api
-      managed_service: String, reference name for OP service
+      managed_service: Optional string, reference name for OP service
       labels: Optional cloud labels
       display_name: Optional display name
 
@@ -70,12 +71,9 @@ class ApiClient(base.BaseClient):
     labels = common_flags.ProcessLabelsFlag(
         labels,
         self.messages.ApigatewayApi.LabelsValue)
-
-    api_controller = self.messages.ApigatewayApiApiController(
-        managedService=managed_service)
     api = self.messages.ApigatewayApi(
         name=api_ref.RelativeName(),
-        apiController=api_controller,
+        managedService=managed_service,
         labels=labels,
         displayName=display_name)
 

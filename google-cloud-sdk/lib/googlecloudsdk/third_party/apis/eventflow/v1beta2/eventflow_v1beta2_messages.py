@@ -70,18 +70,18 @@ class Condition(_messages.Message):
         this API. The reason field will be the error code. The message field
         will be the error message.
       DEPLOYED: Whether the flow is deployed to all regions. The reason field
-        will be of the following form:   0of4RegionsDeployed
-        1of4RegionsDeployed   4of4RegionsDeployed The message field will be a
-        comma-separated list of regions deployed. For example "us-
-        west1,europe-west1,us-east1,asia-east1"
+        will be of the following form: 0of4RegionsDeployed 1of4RegionsDeployed
+        4of4RegionsDeployed The message field will be a comma-separated list
+        of regions deployed. For example "us-west1,europe-west1,us-east1,asia-
+        east1"
       SOURCE_ACTIVATED: Whether the source is activated. The reason field will
-        be one of:   DoesNotNeedActivation   AwaitingResponse
-        AcknowledgedActivation   ActivationFailed The message field will be
-        the error code and message in case of error.
+        be one of: DoesNotNeedActivation AwaitingResponse
+        AcknowledgedActivation ActivationFailed The message field will be the
+        error code and message in case of error.
       ACTION_ACTIVATED: Whether the action is activated. The reason field will
-        be one of:   DoesNotNeedActivation   AwaitingResponse
-        AcknowledgedActivation   ActivationFailed The message field will be
-        the error code and message in case of error.
+        be one of: DoesNotNeedActivation AwaitingResponse
+        AcknowledgedActivation ActivationFailed The message field will be the
+        error code and message in case of error.
     """
     UNKNOWN_TYPE = 0
     SERVER_ERROR = 1
@@ -101,9 +101,9 @@ class Condition(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -115,49 +115,49 @@ class EventTrigger(_messages.Message):
   Fields:
     eventType: Required. The type of event to observe. For example:
       `google.storage.object.finalize` and
-      `google.firebase.analytics.event.log`.  Event type consists of three
-      parts:  1. namespace: The domain name of the organization in reverse-
-      domain     notation (e.g. `acme.net` appears as `net.acme`) and any
-      organization     specific subdivisions. If the organization's top-level
-      domain is `com`,     the top-level domain is omitted (e.g. `google.com`
-      appears as     `google`). For example, `google.storage` and
-      `google.firebase.analytics`.  2. resource type: The type of resource on
-      which event occurs. For     example, the Google Cloud Storage API
-      includes the types `object`     and `bucket`.  3. action: The action
-      that generates the event. For example, actions for     a Google Cloud
-      Storage Object include 'finalize' and 'delete'. These parts are lower
-      case and joined by '.'.
+      `google.firebase.analytics.event.log`. Event type consists of three
+      parts: 1. namespace: The domain name of the organization in reverse-
+      domain notation (e.g. `acme.net` appears as `net.acme`) and any
+      organization specific subdivisions. If the organization's top-level
+      domain is `com`, the top-level domain is omitted (e.g. `google.com`
+      appears as `google`). For example, `google.storage` and
+      `google.firebase.analytics`. 2. resource type: The type of resource on
+      which event occurs. For example, the Google Cloud Storage API includes
+      the types `object` and `bucket`. 3. action: The action that generates
+      the event. For example, actions for a Google Cloud Storage Object
+      include 'finalize' and 'delete'. These parts are lower case and joined
+      by '.'.
     resource: Required. The resource(s) from which to observe events, for
-      example, `projects/_/buckets/myBucket/objects/{objectPath=**}`.  Can be
-      a specific resource or use wildcards to match a set of resources.
+      example, `projects/_/buckets/myBucket/objects/{objectPath=**}`. Can be a
+      specific resource or use wildcards to match a set of resources.
       Wildcards can either match a single segment in the resource name, using
       '*', or multiple segments, using '**'. For example,
       `projects/myProject/buckets/*/objects/**` would match all objects in all
-      buckets in the 'myProject' project.  The contents of wildcards can also
+      buckets in the 'myProject' project. The contents of wildcards can also
       be captured. This is done by assigning it to a variable name in braces.
       For example,
       `projects/myProject/buckets/{bucket_id=*}/objects/{object_path=**}`.
       Additionally, a single segment capture can omit `=*` and a multiple
       segment capture can specify additional structure. For example, the
       following all match the same buckets, but capture different data:
-      `projects/myProject/buckets/*/objects/users/*/data/**`     `projects/myP
-      roject/buckets/{bucket_id=*}/objects/users/{user_id}/data/{data_path=**}
-      `     `projects/myProject/buckets/{bucket_id}/objects/{object_path=users
-      /*/data/**}`  Not all syntactically correct values are accepted by all
-      services. For example:  1. The authorization model must support it.
-      Google Cloud Functions    only allows EventTriggers to be deployed that
-      observe resources in the    same project as the `CloudFunction`. 2. The
-      resource type must match the pattern expected for an    `event_type`.
-      For example, an `EventTrigger` that has an    `event_type` of
-      "google.pubsub.topic.publish" should have a resource    that matches
-      Google Cloud Pub/Sub topics.  Additionally, some services may support
-      short names when creating an `EventTrigger`. These will always be
-      returned in the normalized "long" format.  See each *service's*
-      documentation for supported formats.
-    service: The hostname of the service that should be observed.  If no
-      string is provided, the default service implementing the API will be
-      used. For example, `storage.googleapis.com` is the default for all event
-      types in the 'google.storage` namespace.
+      `projects/myProject/buckets/*/objects/users/*/data/**` `projects/myProje
+      ct/buckets/{bucket_id=*}/objects/users/{user_id}/data/{data_path=**}` `p
+      rojects/myProject/buckets/{bucket_id}/objects/{object_path=users/*/data/
+      **}` Not all syntactically correct values are accepted by all services.
+      For example: 1. The authorization model must support it. Google Cloud
+      Functions only allows EventTriggers to be deployed that observe
+      resources in the same project as the `CloudFunction`. 2. The resource
+      type must match the pattern expected for an `event_type`. For example,
+      an `EventTrigger` that has an `event_type` of
+      "google.pubsub.topic.publish" should have a resource that matches Google
+      Cloud Pub/Sub topics. Additionally, some services may support short
+      names when creating an `EventTrigger`. These will always be returned in
+      the normalized "long" format. See each *service's* documentation for
+      supported formats.
+    service: The hostname of the service that should be observed. If no string
+      is provided, the default service implementing the API will be used. For
+      example, `storage.googleapis.com` is the default for all event types in
+      the 'google.storage` namespace.
   """
 
   eventType = _messages.StringField(1)
@@ -174,7 +174,7 @@ class EventflowProjectsFlowsCreateRequest(_messages.Message):
       empty namespace is equivalent to the "default" namespace, but "default"
       is the canonical representation. Not all objects are required to be
       scoped to a namespace - the value of this field for those objects will
-      be empty.  Must be a DNS_LABEL. Cannot be updated. More info:
+      be empty. Must be a DNS_LABEL. Cannot be updated. More info:
       http://kubernetes.io/docs/user-guide/namespaces +optional
   """
 
@@ -237,7 +237,7 @@ class EventflowProjectsFlowsUpdateRequest(_messages.Message):
       empty namespace is equivalent to the "default" namespace, but "default"
       is the canonical representation. Not all objects are required to be
       scoped to a namespace - the value of this field for those objects will
-      be empty.  Must be a DNS_LABEL. Cannot be updated. More info:
+      be empty. Must be a DNS_LABEL. Cannot be updated. More info:
       http://kubernetes.io/docs/user-guide/namespaces +optional
   """
 
@@ -255,19 +255,19 @@ class Flow(_messages.Message):
       "eventing.dev/v1beta2".
     kind: Always "Flow".
     metadata: Kubernates-style standard metadata. The Google Hosted version of
-      this API uses the flow metadata fields as follows:  name: is of the form
-      "flowId" (does not include project ID or slashes)  generate_name: is
+      this API uses the flow metadata fields as follows: name: is of the form
+      "flowId" (does not include project ID or slashes) generate_name: is
       optionally used on creation if name is not set, in which case it is a
-      prefix of a system-generated name.  namespace: the project ID for the
+      prefix of a system-generated name. namespace: the project ID for the
       project storing owning this flow (not necessarily the project of the
-      event source)  creation_timestamp: The time at which the flow was first
-      created in the underlying database.  Output only. labels["event_type"]:
+      event source) creation_timestamp: The time at which the flow was first
+      created in the underlying database. Output only. labels["event_type"]:
       Set by the system on creation time to be the same as
-      spec.trigger.event_type  Output only. labels["source"]: Set by the
-      system on creation time to be the same as spec.trigger.resource  Output
-      only. labels["action"]: Set by the system on creation time to be the
-      same as spec.action.name  Output only. labels["processor"]: Set by the
-      system on creation time to be the same as spec.action.processor
+      spec.trigger.event_type Output only. labels["source"]: Set by the system
+      on creation time to be the same as spec.trigger.resource Output only.
+      labels["action"]: Set by the system on creation time to be the same as
+      spec.action.name Output only. labels["processor"]: Set by the system on
+      creation time to be the same as spec.action.processor
     spec: Desired state of the flow.
     status: Output only. A set of status conditions and when they were last
       observed.
@@ -346,7 +346,7 @@ class ObjectMeta(_messages.Message):
     creationTimestamp: CreationTimestamp is a timestamp representing the
       server time when this object was created. It is not guaranteed to be set
       in happens-before order across separate operations. Clients may not set
-      this value. It is represented in RFC3339 form and is in UTC.  Populated
+      this value. It is represented in RFC3339 form and is in UTC. Populated
       by the system. Read-only. Null for lists. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata +optional
@@ -356,14 +356,14 @@ class ObjectMeta(_messages.Message):
       than the name passed. This value will also be combined with a unique
       suffix. The provided value has the same validation rules as the Name
       field, and may be truncated by the length of the suffix required to make
-      the value unique on the server.  If this field is specified and the
+      the value unique on the server. If this field is specified and the
       generated name exists, the server will NOT return a 409 - instead, it
       will either return 201 Created or 500 with Reason ServerTimeout
       indicating a unique name could not be found in the time allotted, and
       the client should retry (optionally after the time indicated in the
-      Retry-After header).  Applied only if Name is not specified. More info:
+      Retry-After header). Applied only if Name is not specified. More info:
       https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#idempotency +optional  string generateName = 2;
+      conventions.md#idempotency +optional string generateName = 2;
     generation: A sequence number representing a specific generation of the
       desired state. Populated by the system. Read-only. +optional
     labels: Map of string keys and values that can be used to organize and
@@ -380,7 +380,7 @@ class ObjectMeta(_messages.Message):
       empty namespace is equivalent to the "default" namespace, but "default"
       is the canonical representation. Not all objects are required to be
       scoped to a namespace - the value of this field for those objects will
-      be empty.  Must be a DNS_LABEL. Cannot be updated. More info:
+      be empty. Must be a DNS_LABEL. Cannot be updated. More info:
       http://kubernetes.io/docs/user-guide/namespaces +optional
     resourceVersion: An opaque value that represents the internal version of
       this object that can be used by clients to determine when objects have
@@ -393,11 +393,11 @@ class ObjectMeta(_messages.Message):
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#concurrency-control-and-consistency +optional
     selfLink: SelfLink is a URL representing this object. Populated by the
-      system. Read-only. +optional  string selfLink = 4;
+      system. Read-only. +optional string selfLink = 4;
     uid: UID is the unique in time and space value for this object. It is
       typically generated by the server on successful creation of a resource
-      and is not allowed to change on PUT operations.  Populated by the
-      system. Read-only. More info: http://kubernetes.io/docs/user-
+      and is not allowed to change on PUT operations. Populated by the system.
+      Read-only. More info: http://kubernetes.io/docs/user-
       guide/identifiers#uids +optional
   """
 

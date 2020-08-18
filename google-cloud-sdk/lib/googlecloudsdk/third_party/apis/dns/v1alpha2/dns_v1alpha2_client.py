@@ -59,9 +59,7 @@ class DnsV1alpha2(base_api.BaseApiClient):
           }
 
     def Deactivate(self, request, global_params=None):
-      r"""Deactivate a Peering Zone if it's not already deactivated. Returns an.
-error if the managed zone cannot be found, is not a peering zone. If the
-zone is already deactivated, returns false for deactivate_succeeded field.
+      r"""Deactivate a Peering Zone if it's not already deactivated. Returns an error if the managed zone cannot be found, is not a peering zone. If the zone is already deactivated, returns false for deactivate_succeeded field.
 
       Args:
         request: (DnsActivePeeringZonesDeactivateRequest) input message
@@ -553,8 +551,7 @@ zone is already deactivated, returns false for deactivate_succeeded field.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete a previously created Policy. Will fail if the policy is still being.
-referenced by a network.
+      r"""Delete a previously created Policy. Will fail if the policy is still being referenced by a network.
 
       Args:
         request: (DnsPoliciesDeleteRequest) input message

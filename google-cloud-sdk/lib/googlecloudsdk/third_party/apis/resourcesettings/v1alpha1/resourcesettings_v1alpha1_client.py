@@ -60,14 +60,7 @@ class ResourcesettingsV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a setting value.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting does not exist.
-Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the
-setting value already exists on the given Cloud resource.
-Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if
-the setting is flagged as read only.
+      r"""Creates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the setting value already exists on the given Cloud resource. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only.
 
       Args:
         request: (ResourcesettingsFoldersSettingsValueCreateRequest) input message
@@ -104,15 +97,7 @@ the setting is flagged as read only.
           }
 
     def DeleteValue(self, request, global_params=None):
-      r"""Deletes a setting value. If the setting value does not exist, the operation.
-is a no-op.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting or the setting value does not exist. The setting value will not
-exist if a prior call to `DeleteSetting` for the setting value already
-returned a success code.
-Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if
-the setting is flagged as read only.
+      r"""Deletes a setting value. If the setting value does not exist, the operation is a no-op. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. The setting value will not exist if a prior call to `DeleteSetting` for the setting value already returned a success code. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only.
 
       Args:
         request: (ResourcesettingsFoldersSettingsDeleteValueRequest) input message
@@ -139,10 +124,7 @@ the setting is flagged as read only.
     )
 
     def GetValue(self, request, global_params=None):
-      r"""Gets a setting value.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting value does not exist.
+      r"""Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist.
 
       Args:
         request: (ResourcesettingsFoldersSettingsGetValueRequest) input message
@@ -196,19 +178,7 @@ setting value does not exist.
     )
 
     def LookupEffectiveValue(self, request, global_params=None):
-      r"""Computes the effective setting value of a setting at the Cloud resource.
-`parent`. The effective setting value is the calculated setting value at a
-Cloud resource and evaluates to one of the following options in the given
-order (the next option is used if the previous one does not exist):
-
-1. the setting value on the given resource
-2. the setting value on the given resource's nearest ancestor
-3. the setting's default value
-4. an empty setting value, defined as a `SettingValue` with all fields
-unset
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting does not exist.
+      r"""Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
 
       Args:
         request: (ResourcesettingsFoldersSettingsLookupEffectiveValueRequest) input message
@@ -235,8 +205,7 @@ setting does not exist.
     )
 
     def Search(self, request, global_params=None):
-      r"""Searches for all setting values that exist on the resource `parent`. The.
-setting values are not limited to those of a particular setting.
+      r"""Searches for all setting values that exist on the resource `parent`. The setting values are not limited to those of a particular setting.
 
       Args:
         request: (ResourcesettingsFoldersSettingsSearchRequest) input message
@@ -263,18 +232,7 @@ setting values are not limited to those of a particular setting.
     )
 
     def UpdateValue(self, request, global_params=None):
-      r"""Updates a setting value.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting or the setting value does not exist.
-Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if
-the setting is flagged as read only.
-Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag
-supplied in the request does not match the persisted etag of the setting
-value.
-
-Note: the supplied setting value will perform a full overwrite of all
-fields.
+      r"""Updates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. Note: the supplied setting value will perform a full overwrite of all fields.
 
       Args:
         request: (ResourcesettingsFoldersSettingsUpdateValueRequest) input message
@@ -321,14 +279,7 @@ fields.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a setting value.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting does not exist.
-Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the
-setting value already exists on the given Cloud resource.
-Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if
-the setting is flagged as read only.
+      r"""Creates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the setting value already exists on the given Cloud resource. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only.
 
       Args:
         request: (ResourcesettingsOrganizationsSettingsValueCreateRequest) input message
@@ -365,15 +316,7 @@ the setting is flagged as read only.
           }
 
     def DeleteValue(self, request, global_params=None):
-      r"""Deletes a setting value. If the setting value does not exist, the operation.
-is a no-op.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting or the setting value does not exist. The setting value will not
-exist if a prior call to `DeleteSetting` for the setting value already
-returned a success code.
-Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if
-the setting is flagged as read only.
+      r"""Deletes a setting value. If the setting value does not exist, the operation is a no-op. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. The setting value will not exist if a prior call to `DeleteSetting` for the setting value already returned a success code. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only.
 
       Args:
         request: (ResourcesettingsOrganizationsSettingsDeleteValueRequest) input message
@@ -400,10 +343,7 @@ the setting is flagged as read only.
     )
 
     def GetValue(self, request, global_params=None):
-      r"""Gets a setting value.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting value does not exist.
+      r"""Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist.
 
       Args:
         request: (ResourcesettingsOrganizationsSettingsGetValueRequest) input message
@@ -457,19 +397,7 @@ setting value does not exist.
     )
 
     def LookupEffectiveValue(self, request, global_params=None):
-      r"""Computes the effective setting value of a setting at the Cloud resource.
-`parent`. The effective setting value is the calculated setting value at a
-Cloud resource and evaluates to one of the following options in the given
-order (the next option is used if the previous one does not exist):
-
-1. the setting value on the given resource
-2. the setting value on the given resource's nearest ancestor
-3. the setting's default value
-4. an empty setting value, defined as a `SettingValue` with all fields
-unset
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting does not exist.
+      r"""Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
 
       Args:
         request: (ResourcesettingsOrganizationsSettingsLookupEffectiveValueRequest) input message
@@ -496,8 +424,7 @@ setting does not exist.
     )
 
     def Search(self, request, global_params=None):
-      r"""Searches for all setting values that exist on the resource `parent`. The.
-setting values are not limited to those of a particular setting.
+      r"""Searches for all setting values that exist on the resource `parent`. The setting values are not limited to those of a particular setting.
 
       Args:
         request: (ResourcesettingsOrganizationsSettingsSearchRequest) input message
@@ -524,18 +451,7 @@ setting values are not limited to those of a particular setting.
     )
 
     def UpdateValue(self, request, global_params=None):
-      r"""Updates a setting value.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting or the setting value does not exist.
-Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if
-the setting is flagged as read only.
-Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag
-supplied in the request does not match the persisted etag of the setting
-value.
-
-Note: the supplied setting value will perform a full overwrite of all
-fields.
+      r"""Updates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. Note: the supplied setting value will perform a full overwrite of all fields.
 
       Args:
         request: (ResourcesettingsOrganizationsSettingsUpdateValueRequest) input message
@@ -582,14 +498,7 @@ fields.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a setting value.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting does not exist.
-Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the
-setting value already exists on the given Cloud resource.
-Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if
-the setting is flagged as read only.
+      r"""Creates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the setting value already exists on the given Cloud resource. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only.
 
       Args:
         request: (ResourcesettingsProjectsSettingsValueCreateRequest) input message
@@ -626,15 +535,7 @@ the setting is flagged as read only.
           }
 
     def DeleteValue(self, request, global_params=None):
-      r"""Deletes a setting value. If the setting value does not exist, the operation.
-is a no-op.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting or the setting value does not exist. The setting value will not
-exist if a prior call to `DeleteSetting` for the setting value already
-returned a success code.
-Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if
-the setting is flagged as read only.
+      r"""Deletes a setting value. If the setting value does not exist, the operation is a no-op. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. The setting value will not exist if a prior call to `DeleteSetting` for the setting value already returned a success code. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only.
 
       Args:
         request: (ResourcesettingsProjectsSettingsDeleteValueRequest) input message
@@ -661,10 +562,7 @@ the setting is flagged as read only.
     )
 
     def GetValue(self, request, global_params=None):
-      r"""Gets a setting value.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting value does not exist.
+      r"""Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist.
 
       Args:
         request: (ResourcesettingsProjectsSettingsGetValueRequest) input message
@@ -718,19 +616,7 @@ setting value does not exist.
     )
 
     def LookupEffectiveValue(self, request, global_params=None):
-      r"""Computes the effective setting value of a setting at the Cloud resource.
-`parent`. The effective setting value is the calculated setting value at a
-Cloud resource and evaluates to one of the following options in the given
-order (the next option is used if the previous one does not exist):
-
-1. the setting value on the given resource
-2. the setting value on the given resource's nearest ancestor
-3. the setting's default value
-4. an empty setting value, defined as a `SettingValue` with all fields
-unset
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting does not exist.
+      r"""Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist.
 
       Args:
         request: (ResourcesettingsProjectsSettingsLookupEffectiveValueRequest) input message
@@ -757,8 +643,7 @@ setting does not exist.
     )
 
     def Search(self, request, global_params=None):
-      r"""Searches for all setting values that exist on the resource `parent`. The.
-setting values are not limited to those of a particular setting.
+      r"""Searches for all setting values that exist on the resource `parent`. The setting values are not limited to those of a particular setting.
 
       Args:
         request: (ResourcesettingsProjectsSettingsSearchRequest) input message
@@ -785,18 +670,7 @@ setting values are not limited to those of a particular setting.
     )
 
     def UpdateValue(self, request, global_params=None):
-      r"""Updates a setting value.
-
-Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the
-setting or the setting value does not exist.
-Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if
-the setting is flagged as read only.
-Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag
-supplied in the request does not match the persisted etag of the setting
-value.
-
-Note: the supplied setting value will perform a full overwrite of all
-fields.
+      r"""Updates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. Note: the supplied setting value will perform a full overwrite of all fields.
 
       Args:
         request: (ResourcesettingsProjectsSettingsUpdateValueRequest) input message

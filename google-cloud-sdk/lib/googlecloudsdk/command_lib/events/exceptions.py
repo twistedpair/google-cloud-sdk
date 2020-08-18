@@ -59,6 +59,10 @@ class TriggerNotFound(exceptions.Error):
   """When a specified trigger is not found."""
 
 
+class SecretNotFound(exceptions.Error):
+  """When a specified secret is not found."""
+
+
 class TriggerCreationError(exceptions.Error):
   """When trigger creation fails."""
 

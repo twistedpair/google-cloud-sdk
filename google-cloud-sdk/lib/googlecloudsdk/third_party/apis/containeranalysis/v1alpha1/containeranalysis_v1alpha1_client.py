@@ -60,9 +60,7 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists `Occurrences` referencing the specified `Note`. Use this method to.
-get all occurrences referencing your `Note` across all your customer
-projects.
+      r"""Lists `Occurrences` referencing the specified `Note`. Use this method to get all occurrences referencing your `Note` across all your customer projects.
 
       Args:
         request: (ContaineranalysisProjectsNotesOccurrencesListRequest) input message
@@ -180,17 +178,7 @@ projects.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a note or an `Occurrence` resource.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a note or occurrence, respectively.
-Attempting to call this method on a resource without the required
-permission will result in a `PERMISSION_DENIED` error. Attempting to call
-this method on a non-existent resource will result in a `NOT_FOUND` error
-if the user has list permission on the project, or a `PERMISSION_DENIED`
-error otherwise. The resource takes the following formats:
-`projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for occurrences and
-projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
+      r"""Gets the access control policy for a note or an `Occurrence` resource. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or occurrence, respectively. Attempting to call this method on a resource without the required permission will result in a `PERMISSION_DENIED` error. Attempting to call this method on a non-existent resource will result in a `NOT_FOUND` error if the user has list permission on the project, or a `PERMISSION_DENIED` error otherwise. The resource takes the following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for occurrences and projects/{PROJECT_ID}/notes/{NOTE_ID} for notes.
 
       Args:
         request: (ContaineranalysisProjectsNotesGetIamPolicyRequest) input message
@@ -271,18 +259,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified `Note` or `Occurrence`.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a `Note` or an `Occurrence`, respectively.
-Attempting to call this method without these permissions will result in a `
-`PERMISSION_DENIED` error.
-Attempting to call this method on a non-existent resource will result in a
-`NOT_FOUND` error if the user has `containeranalysis.notes.list` permission
-on a `Note` or `containeranalysis.occurrences.list` on an `Occurrence`, or
-a `PERMISSION_DENIED` error otherwise. The resource takes the following
-formats: `projects/{projectid}/occurrences/{occurrenceid}` for occurrences
-and projects/{projectid}/notes/{noteid} for notes
+      r"""Sets the access control policy on the specified `Note` or `Occurrence`. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a `Note` or an `Occurrence`, respectively. Attempting to call this method without these permissions will result in a ` `PERMISSION_DENIED` error. Attempting to call this method on a non-existent resource will result in a `NOT_FOUND` error if the user has `containeranalysis.notes.list` permission on a `Note` or `containeranalysis.occurrences.list` on an `Occurrence`, or a `PERMISSION_DENIED` error otherwise. The resource takes the following formats: `projects/{projectid}/occurrences/{occurrenceid}` for occurrences and projects/{projectid}/notes/{noteid} for notes.
 
       Args:
         request: (ContaineranalysisProjectsNotesSetIamPolicyRequest) input message
@@ -309,14 +286,7 @@ and projects/{projectid}/notes/{noteid} for notes
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the permissions that a caller has on the specified note or.
-occurrence resource. Requires list permission on the project (for example,
-"storage.objects.list" on the containing bucket for testing permission of
-an object). Attempting to call this method on a non-existent resource will
-result in a `NOT_FOUND` error if the user has list permission on the
-project, or a `PERMISSION_DENIED` error otherwise. The resource takes the
-following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for
-`Occurrences` and `projects/{PROJECT_ID}/notes/{NOTE_ID}` for `Notes`
+      r"""Returns the permissions that a caller has on the specified note or occurrence resource. Requires list permission on the project (for example, "storage.objects.list" on the containing bucket for testing permission of an object). Attempting to call this method on a non-existent resource will result in a `NOT_FOUND` error if the user has list permission on the project, or a `PERMISSION_DENIED` error otherwise. The resource takes the following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for `Occurrences` and `projects/{PROJECT_ID}/notes/{NOTE_ID}` for `Notes`.
 
       Args:
         request: (ContaineranalysisProjectsNotesTestIamPermissionsRequest) input message
@@ -353,8 +323,7 @@ following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `Occurrence`. Use this method to create `Occurrences`.
-for a resource.
+      r"""Creates a new `Occurrence`. Use this method to create `Occurrences` for a resource.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesCreateRequest) input message
@@ -381,8 +350,7 @@ for a resource.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the given `Occurrence` from the system. Use this when.
-an `Occurrence` is no longer applicable for the given resource.
+      r"""Deletes the given `Occurrence` from the system. Use this when an `Occurrence` is no longer applicable for the given resource.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesDeleteRequest) input message
@@ -436,17 +404,7 @@ an `Occurrence` is no longer applicable for the given resource.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a note or an `Occurrence` resource.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a note or occurrence, respectively.
-Attempting to call this method on a resource without the required
-permission will result in a `PERMISSION_DENIED` error. Attempting to call
-this method on a non-existent resource will result in a `NOT_FOUND` error
-if the user has list permission on the project, or a `PERMISSION_DENIED`
-error otherwise. The resource takes the following formats:
-`projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for occurrences and
-projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
+      r"""Gets the access control policy for a note or an `Occurrence` resource. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or occurrence, respectively. Attempting to call this method on a resource without the required permission will result in a `PERMISSION_DENIED` error. Attempting to call this method on a non-existent resource will result in a `NOT_FOUND` error if the user has list permission on the project, or a `PERMISSION_DENIED` error otherwise. The resource takes the following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for occurrences and projects/{PROJECT_ID}/notes/{NOTE_ID} for notes.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesGetIamPolicyRequest) input message
@@ -581,18 +539,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified `Note` or `Occurrence`.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a `Note` or an `Occurrence`, respectively.
-Attempting to call this method without these permissions will result in a `
-`PERMISSION_DENIED` error.
-Attempting to call this method on a non-existent resource will result in a
-`NOT_FOUND` error if the user has `containeranalysis.notes.list` permission
-on a `Note` or `containeranalysis.occurrences.list` on an `Occurrence`, or
-a `PERMISSION_DENIED` error otherwise. The resource takes the following
-formats: `projects/{projectid}/occurrences/{occurrenceid}` for occurrences
-and projects/{projectid}/notes/{noteid} for notes
+      r"""Sets the access control policy on the specified `Note` or `Occurrence`. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a `Note` or an `Occurrence`, respectively. Attempting to call this method without these permissions will result in a ` `PERMISSION_DENIED` error. Attempting to call this method on a non-existent resource will result in a `NOT_FOUND` error if the user has `containeranalysis.notes.list` permission on a `Note` or `containeranalysis.occurrences.list` on an `Occurrence`, or a `PERMISSION_DENIED` error otherwise. The resource takes the following formats: `projects/{projectid}/occurrences/{occurrenceid}` for occurrences and projects/{projectid}/notes/{noteid} for notes.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesSetIamPolicyRequest) input message
@@ -619,14 +566,7 @@ and projects/{projectid}/notes/{noteid} for notes
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the permissions that a caller has on the specified note or.
-occurrence resource. Requires list permission on the project (for example,
-"storage.objects.list" on the containing bucket for testing permission of
-an object). Attempting to call this method on a non-existent resource will
-result in a `NOT_FOUND` error if the user has list permission on the
-project, or a `PERMISSION_DENIED` error otherwise. The resource takes the
-following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for
-`Occurrences` and `projects/{PROJECT_ID}/notes/{NOTE_ID}` for `Notes`
+      r"""Returns the permissions that a caller has on the specified note or occurrence resource. Requires list permission on the project (for example, "storage.objects.list" on the containing bucket for testing permission of an object). Attempting to call this method on a non-existent resource will result in a `NOT_FOUND` error if the user has list permission on the project, or a `PERMISSION_DENIED` error otherwise. The resource takes the following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for `Occurrences` and `projects/{PROJECT_ID}/notes/{NOTE_ID}` for `Notes`.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest) input message
@@ -690,9 +630,7 @@ following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing operation returns an error if operation.
- does not exist. The only valid operations are to update mark the done bit
-change the result.
+      r"""Updates an existing operation returns an error if operation does not exist. The only valid operations are to update mark the done bit change the result.
 
       Args:
         request: (ContaineranalysisProjectsOperationsPatchRequest) input message
@@ -830,9 +768,7 @@ change the result.
           }
 
     def List(self, request, global_params=None):
-      r"""Lists `Occurrences` referencing the specified `Note`. Use this method to.
-get all occurrences referencing your `Note` across all your customer
-projects.
+      r"""Lists `Occurrences` referencing the specified `Note`. Use this method to get all occurrences referencing your `Note` across all your customer projects.
 
       Args:
         request: (ContaineranalysisProvidersNotesOccurrencesListRequest) input message
@@ -950,17 +886,7 @@ projects.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a note or an `Occurrence` resource.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a note or occurrence, respectively.
-Attempting to call this method on a resource without the required
-permission will result in a `PERMISSION_DENIED` error. Attempting to call
-this method on a non-existent resource will result in a `NOT_FOUND` error
-if the user has list permission on the project, or a `PERMISSION_DENIED`
-error otherwise. The resource takes the following formats:
-`projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for occurrences and
-projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
+      r"""Gets the access control policy for a note or an `Occurrence` resource. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or occurrence, respectively. Attempting to call this method on a resource without the required permission will result in a `PERMISSION_DENIED` error. Attempting to call this method on a non-existent resource will result in a `NOT_FOUND` error if the user has list permission on the project, or a `PERMISSION_DENIED` error otherwise. The resource takes the following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for occurrences and projects/{PROJECT_ID}/notes/{NOTE_ID} for notes.
 
       Args:
         request: (ContaineranalysisProvidersNotesGetIamPolicyRequest) input message
@@ -1041,18 +967,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified `Note` or `Occurrence`.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a `Note` or an `Occurrence`, respectively.
-Attempting to call this method without these permissions will result in a `
-`PERMISSION_DENIED` error.
-Attempting to call this method on a non-existent resource will result in a
-`NOT_FOUND` error if the user has `containeranalysis.notes.list` permission
-on a `Note` or `containeranalysis.occurrences.list` on an `Occurrence`, or
-a `PERMISSION_DENIED` error otherwise. The resource takes the following
-formats: `projects/{projectid}/occurrences/{occurrenceid}` for occurrences
-and projects/{projectid}/notes/{noteid} for notes
+      r"""Sets the access control policy on the specified `Note` or `Occurrence`. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a `Note` or an `Occurrence`, respectively. Attempting to call this method without these permissions will result in a ` `PERMISSION_DENIED` error. Attempting to call this method on a non-existent resource will result in a `NOT_FOUND` error if the user has `containeranalysis.notes.list` permission on a `Note` or `containeranalysis.occurrences.list` on an `Occurrence`, or a `PERMISSION_DENIED` error otherwise. The resource takes the following formats: `projects/{projectid}/occurrences/{occurrenceid}` for occurrences and projects/{projectid}/notes/{noteid} for notes.
 
       Args:
         request: (ContaineranalysisProvidersNotesSetIamPolicyRequest) input message
@@ -1079,14 +994,7 @@ and projects/{projectid}/notes/{noteid} for notes
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the permissions that a caller has on the specified note or.
-occurrence resource. Requires list permission on the project (for example,
-"storage.objects.list" on the containing bucket for testing permission of
-an object). Attempting to call this method on a non-existent resource will
-result in a `NOT_FOUND` error if the user has list permission on the
-project, or a `PERMISSION_DENIED` error otherwise. The resource takes the
-following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for
-`Occurrences` and `projects/{PROJECT_ID}/notes/{NOTE_ID}` for `Notes`
+      r"""Returns the permissions that a caller has on the specified note or occurrence resource. Requires list permission on the project (for example, "storage.objects.list" on the containing bucket for testing permission of an object). Attempting to call this method on a non-existent resource will result in a `NOT_FOUND` error if the user has list permission on the project, or a `PERMISSION_DENIED` error otherwise. The resource takes the following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for `Occurrences` and `projects/{PROJECT_ID}/notes/{NOTE_ID}` for `Notes`.
 
       Args:
         request: (ContaineranalysisProvidersNotesTestIamPermissionsRequest) input message

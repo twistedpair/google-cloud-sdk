@@ -542,7 +542,7 @@ class Document(_messages.Message):
       NOTE: Cloud Storage object versioning is not supported.
     language: The language of the document (if not specified, the language is
       automatically detected). Both ISO and BCP-47 language codes are
-      accepted.<br> [Language Support](https://cloud.google.com/natural-
+      accepted. [Language Support](https://cloud.google.com/natural-
       language/docs/languages) lists currently supported languages for each
       API method. If the language (either specified by the caller or
       automatically detected) is not supported by the called API method, an
@@ -579,21 +579,21 @@ class Entity(_messages.Message):
     TypeValueValuesEnum: The entity type.
 
   Messages:
-    MetadataValue: Metadata associated with the entity.  For most entity
-      types, the metadata is a Wikipedia URL (`wikipedia_url`) and Knowledge
-      Graph MID (`mid`), if they are available. For the metadata associated
-      with other entity types, see the Type table below.
+    MetadataValue: Metadata associated with the entity. For most entity types,
+      the metadata is a Wikipedia URL (`wikipedia_url`) and Knowledge Graph
+      MID (`mid`), if they are available. For the metadata associated with
+      other entity types, see the Type table below.
 
   Fields:
     mentions: The mentions of this entity in the input document. The API
       currently supports proper noun mentions.
-    metadata: Metadata associated with the entity.  For most entity types, the
+    metadata: Metadata associated with the entity. For most entity types, the
       metadata is a Wikipedia URL (`wikipedia_url`) and Knowledge Graph MID
       (`mid`), if they are available. For the metadata associated with other
       entity types, see the Type table below.
     name: The representative name for the entity.
     salience: The salience score associated with the entity in the [0, 1.0]
-      range.  The salience score for an entity provides information about the
+      range. The salience score for an entity provides information about the
       importance or centrality of that entity to the entire document text.
       Scores closer to 0 are less salient, while scores closer to 1.0 are
       highly salient.
@@ -616,15 +616,15 @@ class Entity(_messages.Message):
       WORK_OF_ART: Artwork
       CONSUMER_GOOD: Consumer product
       OTHER: Other types of entities
-      PHONE_NUMBER: Phone number  The metadata lists the phone number,
+      PHONE_NUMBER: Phone number The metadata lists the phone number,
         formatted according to local convention, plus whichever additional
-        elements appear in the text:  * `number` - the actual number, broken
+        elements appear in the text: * `number` - the actual number, broken
         down into sections as per local convention * `national_prefix` -
         country code, if detected * `area_code` - region or area code, if
         detected * `extension` - phone extension (to be dialed after
         connection), if detected
-      ADDRESS: Address  The metadata identifies the street number and locality
-        plus whichever additional elements appear in the text:  *
+      ADDRESS: Address The metadata identifies the street number and locality
+        plus whichever additional elements appear in the text: *
         `street_number` - street number * `locality` - city or town *
         `street_name` - street/route name, if detected * `postal_code` -
         postal code, if detected * `country` - country, if detected< *
@@ -632,11 +632,11 @@ class Entity(_messages.Message):
         `narrow_region` - smaller administrative area, such as county, if
         detected * `sublocality` - used in Asian addresses to demark a
         district within a city, if detected
-      DATE: Date  The metadata identifies the components of the date:  *
-        `year` - four digit year, if detected * `month` - two digit month
-        number, if detected * `day` - two digit day number, if detected
-      NUMBER: Number  The metadata is the number itself.
-      PRICE: Price  The metadata identifies the `value` and `currency`.
+      DATE: Date The metadata identifies the components of the date: * `year`
+        - four digit year, if detected * `month` - two digit month number, if
+        detected * `day` - two digit day number, if detected
+      NUMBER: Number The metadata is the number itself.
+      PRICE: Price The metadata identifies the `value` and `currency`.
     """
     UNKNOWN = 0
     PERSON = 1
@@ -654,7 +654,7 @@ class Entity(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Metadata associated with the entity.  For most entity types, the
+    r"""Metadata associated with the entity. For most entity types, the
     metadata is a Wikipedia URL (`wikipedia_url`) and Knowledge Graph MID
     (`mid`), if they are available. For the metadata associated with other
     entity types, see the Type table below.
@@ -1131,7 +1131,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1140,7 +1140,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

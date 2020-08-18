@@ -89,18 +89,26 @@ class Authority(_messages.Message):
   https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 
   Fields:
-    identityNamespace: Output only. The identity namespace in which the issuer
-      will be recognized.
     identityProvider: Output only. An identity provider that reflects this
-      issuer in the identity namespace.
-    issuer: An JWT issuer URI. Google will attempt OIDC discovery on this URI,
-      and allow valid OIDC tokens from this issuer to authenticate within the
-      below identity namespace.
+      issuer in the workload identity pool.
+    issuer: A JWT issuer URI. If set, then Google will attempt OIDC discovery
+      on this URI, and allow valid OIDC tokens from this issuer to
+      authenticate within the below identity namespace. This can be updated
+      from a non-empty to empty value and vice-versa. But cannot be changed
+      from one non-empty value to another. Setting to empty will disable
+      Workload Identity. issuer should be a valid URL of length < 2000 that
+      can be parsed, and must start with https://.
+    workloadIdentityPool: Output only. The name of the workload identity pool
+      in which the above issuer will be recognized. There is a single Workload
+      Identity Pool per Hub that is shared between all Memberships that belong
+      to this Hub. For a Hub hosted in {PROJECT_ID}, the workload pool format
+      is {PROJECT_ID}.hub.id.goog, although this is subject to change in newer
+      versions of this API.
   """
 
-  identityNamespace = _messages.StringField(1)
-  identityProvider = _messages.StringField(2)
-  issuer = _messages.StringField(3)
+  identityProvider = _messages.StringField(1)
+  issuer = _messages.StringField(2)
+  workloadIdentityPool = _messages.StringField(3)
 
 
 class AuthorizationLoggingOptions(_messages.Message):

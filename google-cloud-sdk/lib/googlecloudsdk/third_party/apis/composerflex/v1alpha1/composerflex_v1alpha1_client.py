@@ -83,8 +83,7 @@ class ComposerflexV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a context. A context cannot be deleted if any workflows are bound.
-to it.
+      r"""Deletes a context. A context cannot be deleted if any workflows are bound to it.
 
       Args:
         request: (ComposerflexProjectsLocationsContextsDeleteRequest) input message
@@ -202,9 +201,7 @@ to it.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists runs of a workflow in a project and location.
-If the workflow is set to the wildcard "-", then workflow runs from all
-workflows in the project and location will be listed.
+      r"""Lists runs of a workflow in a project and location. If the workflow is set to the wildcard "-", then workflow runs from all workflows in the project and location will be listed.
 
       Args:
         request: (ComposerflexProjectsLocationsWorkflowsRunsListRequest) input message
@@ -268,9 +265,7 @@ workflows in the project and location will be listed.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a workflow, forcefully stopping any pending workflow runs and task.
-instances. Long-running operations executing in external systems will
-continue.
+      r"""Deletes a workflow, forcefully stopping any pending workflow runs and task instances. Long-running operations executing in external systems will continue.
 
       Args:
         request: (ComposerflexProjectsLocationsWorkflowsDeleteRequest) input message

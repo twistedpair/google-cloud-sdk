@@ -7,7 +7,7 @@
   "version": "v1beta2",
   "revision": "0",
   "title": "Event Flow Management API",
-  "description": "Creates and manages flows, each of which that specifies a trigger condition for emitting an event and a resulting action that should happen.\n",
+  "description": "Creates and manages flows, each of which that specifies a trigger condition for emitting an event and a resulting action that should happen. ",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -114,11 +114,11 @@
   "schemas": {
     "Flow": {
       "id": "Flow",
-      "description": "A binding of a Source to an Action specifying the trigger\ncondition and the event type.",
+      "description": "A binding of a Source to an Action specifying the trigger condition and the event type.",
       "type": "object",
       "properties": {
         "apiVersion": {
-          "description": "The version of the schema the object should have. e.g.\n\"eventing.dev\/v1beta2\".",
+          "description": "The version of the schema the object should have. e.g. \"eventing.dev\/v1beta2\".",
           "type": "string"
         },
         "kind": {
@@ -126,7 +126,7 @@
           "type": "string"
         },
         "metadata": {
-          "description": "Kubernates-style standard metadata. The Google Hosted version of\nthis API uses the flow metadata fields as follows:\n\nname: is of the form \"flowId\" (does not include project ID or slashes)\n\ngenerate_name: is optionally used on creation if name is not set, in\nwhich case it is a prefix of a system-generated name.\n\nnamespace: the project ID for the project storing owning this flow (not\nnecessarily the project of the event source)\n\ncreation_timestamp: The time at which the flow was first created in the\nunderlying database.\n\nOutput only. labels[\"event_type\"]: Set by the system on creation time to be\nthe same as spec.trigger.event_type\n\nOutput only. labels[\"source\"]: Set by the system on creation time to be the\nsame as spec.trigger.resource\n\nOutput only. labels[\"action\"]: Set by the system on creation time to be the\nsame as spec.action.name\n\nOutput only. labels[\"processor\"]: Set by the system on creation time to be\nthe same as spec.action.processor",
+          "description": "Kubernates-style standard metadata. The Google Hosted version of this API uses the flow metadata fields as follows: name: is of the form \"flowId\" (does not include project ID or slashes) generate_name: is optionally used on creation if name is not set, in which case it is a prefix of a system-generated name. namespace: the project ID for the project storing owning this flow (not necessarily the project of the event source) creation_timestamp: The time at which the flow was first created in the underlying database. Output only. labels[\"event_type\"]: Set by the system on creation time to be the same as spec.trigger.event_type Output only. labels[\"source\"]: Set by the system on creation time to be the same as spec.trigger.resource Output only. labels[\"action\"]: Set by the system on creation time to be the same as spec.action.name Output only. labels[\"processor\"]: Set by the system on creation time to be the same as spec.action.processor",
           "$ref": "ObjectMeta"
         },
         "spec": {
@@ -141,51 +141,51 @@
     },
     "ObjectMeta": {
       "id": "ObjectMeta",
-      "description": "ObjectMeta is metadata that all persisted resources must have, which includes\nall objects users must create.",
+      "description": "ObjectMeta is metadata that all persisted resources must have, which includes all objects users must create.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name must be unique within a namespace. Is required when creating\nresources, although some resources may allow a client to request the\ngeneration of an appropriate name automatically. Name is primarily intended\nfor creation idempotence and configuration definition. Cannot be updated.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#names\n+optional",
+          "description": "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#names +optional",
           "type": "string"
         },
         "generateName": {
-          "description": "GenerateName is an optional prefix, used by the server, to generate a\nunique name ONLY IF the Name field has not been provided. If this field is\nused, the name returned to the client will be different than the name\npassed. This value will also be combined with a unique suffix. The provided\nvalue has the same validation rules as the Name field, and may be truncated\nby the length of the suffix required to make the value unique on the\nserver.\n\nIf this field is specified and the generated name exists, the server will\nNOT return a 409 - instead, it will either return 201 Created or 500 with\nReason ServerTimeout indicating a unique name could not be found in the\ntime allotted, and the client should retry (optionally after the time\nindicated in the Retry-After header).\n\nApplied only if Name is not specified.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#idempotency\n+optional\n string generateName = 2;",
+          "description": "GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided. If this field is used, the name returned to the client will be different than the name passed. This value will also be combined with a unique suffix. The provided value has the same validation rules as the Name field, and may be truncated by the length of the suffix required to make the value unique on the server. If this field is specified and the generated name exists, the server will NOT return a 409 - instead, it will either return 201 Created or 500 with Reason ServerTimeout indicating a unique name could not be found in the time allotted, and the client should retry (optionally after the time indicated in the Retry-After header). Applied only if Name is not specified. More info: https:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#idempotency +optional string generateName = 2;",
           "type": "string"
         },
         "namespace": {
-          "description": "Namespace defines the space within each name must be unique. An empty\nnamespace is equivalent to the \"default\" namespace, but \"default\" is the\ncanonical representation. Not all objects are required to be scoped to a\nnamespace - the value of this field for those objects will be empty.\n\nMust be a DNS_LABEL.\nCannot be updated.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/namespaces\n+optional",
+          "description": "Namespace defines the space within each name must be unique. An empty namespace is equivalent to the \"default\" namespace, but \"default\" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty. Must be a DNS_LABEL. Cannot be updated. More info: http:\/\/kubernetes.io\/docs\/user-guide\/namespaces +optional",
           "type": "string"
         },
         "selfLink": {
-          "description": "SelfLink is a URL representing this object.\nPopulated by the system.\nRead-only.\n+optional\n string selfLink = 4;",
+          "description": "SelfLink is a URL representing this object. Populated by the system. Read-only. +optional string selfLink = 4;",
           "type": "string"
         },
         "uid": {
-          "description": "UID is the unique in time and space value for this object. It is typically\ngenerated by the server on successful creation of a resource and is not\nallowed to change on PUT operations.\n\nPopulated by the system.\nRead-only.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#uids\n+optional",
+          "description": "UID is the unique in time and space value for this object. It is typically generated by the server on successful creation of a resource and is not allowed to change on PUT operations. Populated by the system. Read-only. More info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#uids +optional",
           "type": "string"
         },
         "resourceVersion": {
-          "description": "An opaque value that represents the internal version of this object that\ncan be used by clients to determine when objects have changed. May be used\nfor optimistic concurrency, change detection, and the watch operation on a\nresource or set of resources. Clients must treat these values as opaque and\npassed unmodified back to the server. They may only be valid for a\nparticular resource or set of resources.\n\nPopulated by the system.\nRead-only.\nValue must be treated as opaque by clients and .\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#concurrency-control-and-consistency\n+optional",
+          "description": "An opaque value that represents the internal version of this object that can be used by clients to determine when objects have changed. May be used for optimistic concurrency, change detection, and the watch operation on a resource or set of resources. Clients must treat these values as opaque and passed unmodified back to the server. They may only be valid for a particular resource or set of resources. Populated by the system. Read-only. Value must be treated as opaque by clients and . More info: https:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#concurrency-control-and-consistency +optional",
           "type": "string"
         },
         "generation": {
-          "description": "A sequence number representing a specific generation of the desired state.\nPopulated by the system. Read-only.\n+optional",
+          "description": "A sequence number representing a specific generation of the desired state. Populated by the system. Read-only. +optional",
           "type": "number",
           "format": "double"
         },
         "creationTimestamp": {
-          "description": "CreationTimestamp is a timestamp representing the server time when this\nobject was created. It is not guaranteed to be set in happens-before order\nacross separate operations. Clients may not set this value. It is\nrepresented in RFC3339 form and is in UTC.\n\nPopulated by the system.\nRead-only.\nNull for lists.\nMore info:\nhttps:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#metadata\n+optional",
+          "description": "CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC. Populated by the system. Read-only. Null for lists. More info: https:\/\/git.k8s.io\/community\/contributors\/devel\/api-conventions.md#metadata +optional",
           "type": "string"
         },
         "labels": {
-          "description": "Map of string keys and values that can be used to organize and categorize\n(scope and select) objects. May match selectors of replication controllers\nand routes.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/labels\n+optional",
+          "description": "Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and routes. More info: http:\/\/kubernetes.io\/docs\/user-guide\/labels +optional",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "annotations": {
-          "description": "Annotations is an unstructured key value map stored with a resource that\nmay be set by external tools to store and retrieve arbitrary metadata. They\nare not queryable and should be preserved when modifying objects. More\ninfo: http:\/\/kubernetes.io\/docs\/user-guide\/annotations +optional",
+          "description": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: http:\/\/kubernetes.io\/docs\/user-guide\/annotations +optional",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -199,7 +199,7 @@
       "type": "object",
       "properties": {
         "trigger": {
-          "description": "Contains the event_type, the \"resource\" path, and the hostname of the\nservice hosting the event source. The \"resource\" includes the event source\nand a path match expression specifying a condition for emitting an event.",
+          "description": "Contains the event_type, the \"resource\" path, and the hostname of the service hosting the event source. The \"resource\" includes the event source and a path match expression specifying a condition for emitting an event.",
           "$ref": "EventTrigger"
         },
         "action": {
@@ -210,30 +210,30 @@
     },
     "EventTrigger": {
       "id": "EventTrigger",
-      "description": "An EventTrigger represents an interest in a subset of events occurring in\na service.",
+      "description": "An EventTrigger represents an interest in a subset of events occurring in a service.",
       "type": "object",
       "properties": {
         "eventType": {
-          "description": "Required. The type of event to observe. For example:\n`google.storage.object.finalize` and\n`google.firebase.analytics.event.log`.\n\nEvent type consists of three parts:\n 1. namespace: The domain name of the organization in reverse-domain\n    notation (e.g. `acme.net` appears as `net.acme`) and any organization\n    specific subdivisions. If the organization's top-level domain is `com`,\n    the top-level domain is omitted (e.g. `google.com` appears as\n    `google`). For example, `google.storage` and\n    `google.firebase.analytics`.\n 2. resource type: The type of resource on which event occurs. For\n    example, the Google Cloud Storage API includes the types `object`\n    and `bucket`.\n 3. action: The action that generates the event. For example, actions for\n    a Google Cloud Storage Object include 'finalize' and 'delete'.\nThese parts are lower case and joined by '.'.",
+          "description": "Required. The type of event to observe. For example: `google.storage.object.finalize` and `google.firebase.analytics.event.log`. Event type consists of three parts: 1. namespace: The domain name of the organization in reverse-domain notation (e.g. `acme.net` appears as `net.acme`) and any organization specific subdivisions. If the organization's top-level domain is `com`, the top-level domain is omitted (e.g. `google.com` appears as `google`). For example, `google.storage` and `google.firebase.analytics`. 2. resource type: The type of resource on which event occurs. For example, the Google Cloud Storage API includes the types `object` and `bucket`. 3. action: The action that generates the event. For example, actions for a Google Cloud Storage Object include 'finalize' and 'delete'. These parts are lower case and joined by '.'.",
           "type": "string"
         },
         "resource": {
-          "description": "Required. The resource(s) from which to observe events, for example,\n`projects\/_\/buckets\/myBucket\/objects\/{objectPath=**}`.\n\nCan be a specific resource or use wildcards to match a set of resources.\nWildcards can either match a single segment in the resource name,\nusing '*', or multiple segments, using '**'. For example,\n`projects\/myProject\/buckets\/*\/objects\/**` would match all objects in all\nbuckets in the 'myProject' project.\n\nThe contents of wildcards can also be captured. This is done by assigning\nit to a variable name in braces. For example,\n`projects\/myProject\/buckets\/{bucket_id=*}\/objects\/{object_path=**}`.\nAdditionally, a single segment capture can omit `=*` and a multiple segment\ncapture can specify additional structure. For example, the following\nall match the same buckets, but capture different data:\n    `projects\/myProject\/buckets\/*\/objects\/users\/*\/data\/**`\n    `projects\/myProject\/buckets\/{bucket_id=*}\/objects\/users\/{user_id}\/data\/{data_path=**}`\n    `projects\/myProject\/buckets\/{bucket_id}\/objects\/{object_path=users\/*\/data\/**}`\n\nNot all syntactically correct values are accepted by all services. For\nexample:\n\n1. The authorization model must support it. Google Cloud Functions\n   only allows EventTriggers to be deployed that observe resources in the\n   same project as the `CloudFunction`.\n2. The resource type must match the pattern expected for an\n   `event_type`. For example, an `EventTrigger` that has an\n   `event_type` of \"google.pubsub.topic.publish\" should have a resource\n   that matches Google Cloud Pub\/Sub topics.\n\nAdditionally, some services may support short names when creating an\n`EventTrigger`. These will always be returned in the normalized \"long\"\nformat.\n\nSee each *service's* documentation for supported formats.",
+          "description": "Required. The resource(s) from which to observe events, for example, `projects\/_\/buckets\/myBucket\/objects\/{objectPath=**}`. Can be a specific resource or use wildcards to match a set of resources. Wildcards can either match a single segment in the resource name, using '*', or multiple segments, using '**'. For example, `projects\/myProject\/buckets\/*\/objects\/**` would match all objects in all buckets in the 'myProject' project. The contents of wildcards can also be captured. This is done by assigning it to a variable name in braces. For example, `projects\/myProject\/buckets\/{bucket_id=*}\/objects\/{object_path=**}`. Additionally, a single segment capture can omit `=*` and a multiple segment capture can specify additional structure. For example, the following all match the same buckets, but capture different data: `projects\/myProject\/buckets\/*\/objects\/users\/*\/data\/**` `projects\/myProject\/buckets\/{bucket_id=*}\/objects\/users\/{user_id}\/data\/{data_path=**}` `projects\/myProject\/buckets\/{bucket_id}\/objects\/{object_path=users\/*\/data\/**}` Not all syntactically correct values are accepted by all services. For example: 1. The authorization model must support it. Google Cloud Functions only allows EventTriggers to be deployed that observe resources in the same project as the `CloudFunction`. 2. The resource type must match the pattern expected for an `event_type`. For example, an `EventTrigger` that has an `event_type` of \"google.pubsub.topic.publish\" should have a resource that matches Google Cloud Pub\/Sub topics. Additionally, some services may support short names when creating an `EventTrigger`. These will always be returned in the normalized \"long\" format. See each *service's* documentation for supported formats.",
           "type": "string"
         },
         "service": {
-          "description": "The hostname of the service that should be observed.\n\nIf no string is provided, the default service implementing the API will\nbe used. For example, `storage.googleapis.com` is the default for all\nevent types in the 'google.storage` namespace.",
+          "description": "The hostname of the service that should be observed. If no string is provided, the default service implementing the API will be used. For example, `storage.googleapis.com` is the default for all event types in the 'google.storage` namespace.",
           "type": "string"
         }
       }
     },
     "Action": {
       "id": "Action",
-      "description": "A consumer of events running in a Processor, for example a\nparticular Google Cloud Function.",
+      "description": "A consumer of events running in a Processor, for example a particular Google Cloud Function.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Where the event will be delivered to, for example\n\"projects\/my-project-id\/locations\/mordor-central1\/functions\/functionName\"",
+          "description": "Where the event will be delivered to, for example \"projects\/my-project-id\/locations\/mordor-central1\/functions\/functionName\"",
           "type": "string"
         },
         "processor": {
@@ -255,7 +255,7 @@
           }
         },
         "observedGeneration": {
-          "description": "The generation most recently observed by the component responsible for\nacting upon changes to the desired state of the resource.",
+          "description": "The generation most recently observed by the component responsible for acting upon changes to the desired state of the resource.",
           "type": "string",
           "format": "int64"
         }
@@ -270,13 +270,21 @@
           "description": "Required. What type of condition is this.",
           "enumDescriptions": [
             "Never set by the API.",
-            "Whether there is an error caused by the server hosting this API.\nThe reason field will be the error code.\nThe message field will be the error message.",
-            "Whether there is an error caused by how the client calls this API.\nThe reason field will be the error code.\nThe message field will be the error message.",
-            "Whether the flow is deployed to all regions.\nThe reason field will be of the following form:\n  0of4RegionsDeployed\n  1of4RegionsDeployed\n  4of4RegionsDeployed\nThe message field will be a comma-separated list of regions deployed.\nFor example \"us-west1,europe-west1,us-east1,asia-east1\"",
-            "Whether the source is activated.\nThe reason field will be one of:\n  DoesNotNeedActivation\n  AwaitingResponse\n  AcknowledgedActivation\n  ActivationFailed\nThe message field will be the error code and message in case of error.",
-            "Whether the action is activated.\nThe reason field will be one of:\n  DoesNotNeedActivation\n  AwaitingResponse\n  AcknowledgedActivation\n  ActivationFailed\nThe message field will be the error code and message in case of error."
+            "Whether there is an error caused by the server hosting this API. The reason field will be the error code. The message field will be the error message.",
+            "Whether there is an error caused by how the client calls this API. The reason field will be the error code. The message field will be the error message.",
+            "Whether the flow is deployed to all regions. The reason field will be of the following form: 0of4RegionsDeployed 1of4RegionsDeployed 4of4RegionsDeployed The message field will be a comma-separated list of regions deployed. For example \"us-west1,europe-west1,us-east1,asia-east1\"",
+            "Whether the source is activated. The reason field will be one of: DoesNotNeedActivation AwaitingResponse AcknowledgedActivation ActivationFailed The message field will be the error code and message in case of error.",
+            "Whether the action is activated. The reason field will be one of: DoesNotNeedActivation AwaitingResponse AcknowledgedActivation ActivationFailed The message field will be the error code and message in case of error."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Never set by the API.",
+            "Whether there is an error caused by the server hosting this API. The reason field will be the error code. The message field will be the error message.",
+            "Whether there is an error caused by how the client calls this API. The reason field will be the error code. The message field will be the error message.",
+            "Whether the flow is deployed to all regions. The reason field will be of the following form: 0of4RegionsDeployed 1of4RegionsDeployed 4of4RegionsDeployed The message field will be a comma-separated list of regions deployed. For example \"us-west1,europe-west1,us-east1,asia-east1\"",
+            "Whether the source is activated. The reason field will be one of: DoesNotNeedActivation AwaitingResponse AcknowledgedActivation ActivationFailed The message field will be the error code and message in case of error.",
+            "Whether the action is activated. The reason field will be one of: DoesNotNeedActivation AwaitingResponse AcknowledgedActivation ActivationFailed The message field will be the error code and message in case of error."
+          ],
           "enum": [
             "UNKNOWN_TYPE",
             "SERVER_ERROR",
@@ -294,6 +302,11 @@
             "The condition is inactive."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Should never be set in the API.",
+            "The condition is active.",
+            "The condition is inactive."
+          ],
           "enum": [
             "UNKNOWN",
             "TRUE",
@@ -340,7 +353,7 @@
     },
     "Empty": {
       "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
       }
@@ -358,7 +371,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "namespace": {
-                  "description": "Namespace defines the space within each name must be unique. An empty\nnamespace is equivalent to the \"default\" namespace, but \"default\" is the\ncanonical representation. Not all objects are required to be scoped to a\nnamespace - the value of this field for those objects will be empty.\n\nMust be a DNS_LABEL.\nCannot be updated.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/namespaces\n+optional",
+                  "description": "Namespace defines the space within each name must be unique. An empty namespace is equivalent to the \"default\" namespace, but \"default\" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty. Must be a DNS_LABEL. Cannot be updated. More info: http:\/\/kubernetes.io\/docs\/user-guide\/namespaces +optional",
                   "location": "path",
                   "required": true,
                   "pattern": "^[^\/]+$",
@@ -387,7 +400,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the flow, of the form \"projects\/{projectId}\/flows\/{flowId}\".\n(Note, this is different from the flowId that is stored in\nflow.metadata.name.)",
+                  "description": "The name of the flow, of the form \"projects\/{projectId}\/flows\/{flowId}\". (Note, this is different from the flowId that is stored in flow.metadata.name.)",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/flows\/[^\/]+$",
@@ -413,14 +426,14 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The parent, of form \"projects\/{projectId}\", from which the flows should be\nlisted.",
+                  "description": "The parent, of form \"projects\/{projectId}\", from which the flows should be listed.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "Requested page size. Server may return more items than requested.\nIf unspecified, server will pick an appropriate default.",
+                  "description": "Requested page size. Server may return more items than requested. If unspecified, server will pick an appropriate default.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -450,7 +463,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the flow, of the form \"projects\/{projectId}\/flows\/{flowId}\".\n(Note, this is different from the flowId that is stored in\nflow.metadata.name.)",
+                  "description": "The name of the flow, of the form \"projects\/{projectId}\/flows\/{flowId}\". (Note, this is different from the flowId that is stored in flow.metadata.name.)",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/flows\/[^\/]+$",
@@ -476,14 +489,14 @@
               "httpMethod": "PUT",
               "parameters": {
                 "namespace": {
-                  "description": "Namespace defines the space within each name must be unique. An empty\nnamespace is equivalent to the \"default\" namespace, but \"default\" is the\ncanonical representation. Not all objects are required to be scoped to a\nnamespace - the value of this field for those objects will be empty.\n\nMust be a DNS_LABEL.\nCannot be updated.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/namespaces\n+optional",
+                  "description": "Namespace defines the space within each name must be unique. An empty namespace is equivalent to the \"default\" namespace, but \"default\" is the canonical representation. Not all objects are required to be scoped to a namespace - the value of this field for those objects will be empty. Must be a DNS_LABEL. Cannot be updated. More info: http:\/\/kubernetes.io\/docs\/user-guide\/namespaces +optional",
                   "location": "path",
                   "required": true,
                   "pattern": "^[^\/]+$",
                   "type": "string"
                 },
                 "name": {
-                  "description": "Name must be unique within a namespace. Is required when creating\nresources, although some resources may allow a client to request the\ngeneration of an appropriate name automatically. Name is primarily intended\nfor creation idempotence and configuration definition. Cannot be updated.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#names\n+optional",
+                  "description": "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http:\/\/kubernetes.io\/docs\/user-guide\/identifiers#names +optional",
                   "location": "path",
                   "required": true,
                   "pattern": "^[^\/]+$",
@@ -504,7 +517,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/firebase"
               ],
-              "description": "Updates a flow, returning the updated flow. Empty fields (proto3 default\nvalues) mean don't change those fields. The call returns INVALID_ARGUMENT\nstatus if the spec.name, spec.namespace, or spec.trigger.event_type is\nchange.  trigger.event_type is changed."
+              "description": "Updates a flow, returning the updated flow. Empty fields (proto3 default values) mean don't change those fields. The call returns INVALID_ARGUMENT status if the spec.name, spec.namespace, or spec.trigger.event_type is change. trigger.event_type is changed."
             }
           }
         }

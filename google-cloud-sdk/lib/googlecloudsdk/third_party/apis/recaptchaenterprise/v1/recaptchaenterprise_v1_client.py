@@ -54,8 +54,7 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
           }
 
     def Annotate(self, request, global_params=None):
-      r"""Annotates a previously created Assessment to provide additional information.
-on whether the event turned out to be authentic or fradulent.
+      r"""Annotates a previously created Assessment to provide additional information on whether the event turned out to be authentic or fradulent.
 
       Args:
         request: (RecaptchaenterpriseProjectsAssessmentsAnnotateRequest) input message
@@ -200,8 +199,7 @@ on whether the event turned out to be authentic or fradulent.
     )
 
     def GetMetrics(self, request, global_params=None):
-      r"""Get some aggregated metrics for a Key. This data can be used to build.
-dashboards.
+      r"""Get some aggregated metrics for a Key. This data can be used to build dashboards.
 
       Args:
         request: (RecaptchaenterpriseProjectsKeysGetMetricsRequest) input message

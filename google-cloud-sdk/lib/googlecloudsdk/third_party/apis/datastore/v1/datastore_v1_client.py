@@ -54,19 +54,7 @@ class DatastoreV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates the specified index.
-A newly created index's initial state is `CREATING`. On completion of the
-returned google.longrunning.Operation, the state will be `READY`.
-If the index already exists, the call will return an `ALREADY_EXISTS`
-status.
-
-During index creation, the process could result in an error, in which
-case the index will move to the `ERROR` state. The process can be recovered
-by fixing the data that caused the error, removing the index with
-delete, then
-re-creating the index with create.
-
-Indexes with a single property cannot be created.
+      r"""Creates the specified index. A newly created index's initial state is `CREATING`. On completion of the returned google.longrunning.Operation, the state will be `READY`. If the index already exists, the call will return an `ALREADY_EXISTS` status. During index creation, the process could result in an error, in which case the index will move to the `ERROR` state. The process can be recovered by fixing the data that caused the error, removing the index with delete, then re-creating the index with create. Indexes with a single property cannot be created.
 
       Args:
         request: (GoogleDatastoreAdminV1Index) input message
@@ -92,16 +80,7 @@ Indexes with a single property cannot be created.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing index.
-An index can only be deleted if it is in a `READY` or `ERROR` state. On
-successful execution of the request, the index will be in a `DELETING`
-state. And on completion of the
-returned google.longrunning.Operation, the index will be removed.
-
-During index deletion, the process could result in an error, in which
-case the index will move to the `ERROR` state. The process can be recovered
-by fixing the data that caused the error, followed by calling
-delete again.
+      r"""Deletes an existing index. An index can only be deleted if it is in a `READY` or `ERROR` state. On successful execution of the request, the index will be in a `DELETING` state. And on completion of the returned google.longrunning.Operation, the index will be removed. During index deletion, the process could result in an error, in which case the index will move to the `ERROR` state. The process can be recovered by fixing the data that caused the error, followed by calling delete again.
 
       Args:
         request: (DatastoreProjectsIndexesDeleteRequest) input message
@@ -153,9 +132,7 @@ delete again.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the indexes that match the specified filters.  Datastore uses an.
-eventually consistent query to fetch the list of indexes and may
-occasionally return stale results.
+      r"""Lists the indexes that match the specified filters. Datastore uses an eventually consistent query to fetch the list of indexes and may occasionally return stale results.
 
       Args:
         request: (DatastoreProjectsIndexesListRequest) input message
@@ -191,16 +168,7 @@ occasionally return stale results.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (DatastoreProjectsOperationsCancelRequest) input message
@@ -227,10 +195,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (DatastoreProjectsOperationsDeleteRequest) input message
@@ -257,9 +222,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (DatastoreProjectsOperationsGetRequest) input message
@@ -286,16 +249,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (DatastoreProjectsOperationsListRequest) input message
@@ -332,8 +286,7 @@ is the parent resource, without the operations collection id.
           }
 
     def AllocateIds(self, request, global_params=None):
-      r"""Allocates IDs for the given keys, which is useful for referencing an entity.
-before it is inserted.
+      r"""Allocates IDs for the given keys, which is useful for referencing an entity before it is inserted.
 
       Args:
         request: (DatastoreProjectsAllocateIdsRequest) input message
@@ -385,8 +338,7 @@ before it is inserted.
     )
 
     def Commit(self, request, global_params=None):
-      r"""Commits a transaction, optionally creating, deleting or modifying some.
-entities.
+      r"""Commits a transaction, optionally creating, deleting or modifying some entities.
 
       Args:
         request: (DatastoreProjectsCommitRequest) input message
@@ -412,14 +364,7 @@ entities.
     )
 
     def Export(self, request, global_params=None):
-      r"""Exports a copy of all or a subset of entities from Google Cloud Datastore.
-to another storage system, such as Google Cloud Storage. Recent updates to
-entities may not be reflected in the export. The export occurs in the
-background and its progress can be monitored and managed via the
-Operation resource that is created. The output of an export may only be
-used once the associated operation is done. If an export operation is
-cancelled before completion it may leave partial data behind in Google
-Cloud Storage.
+      r"""Exports a copy of all or a subset of entities from Google Cloud Datastore to another storage system, such as Google Cloud Storage. Recent updates to entities may not be reflected in the export. The export occurs in the background and its progress can be monitored and managed via the Operation resource that is created. The output of an export may only be used once the associated operation is done. If an export operation is cancelled before completion it may leave partial data behind in Google Cloud Storage.
 
       Args:
         request: (DatastoreProjectsExportRequest) input message
@@ -445,11 +390,7 @@ Cloud Storage.
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports entities into Google Cloud Datastore. Existing entities with the.
-same key are overwritten. The import occurs in the background and its
-progress can be monitored and managed via the Operation resource that is
-created. If an ImportEntities operation is cancelled, it is possible
-that a subset of the data has already been imported to Cloud Datastore.
+      r"""Imports entities into Google Cloud Datastore. Existing entities with the same key are overwritten. The import occurs in the background and its progress can be monitored and managed via the Operation resource that is created. If an ImportEntities operation is cancelled, it is possible that a subset of the data has already been imported to Cloud Datastore.
 
       Args:
         request: (DatastoreProjectsImportRequest) input message
@@ -501,8 +442,7 @@ that a subset of the data has already been imported to Cloud Datastore.
     )
 
     def ReserveIds(self, request, global_params=None):
-      r"""Prevents the supplied keys' IDs from being auto-allocated by Cloud.
-Datastore.
+      r"""Prevents the supplied keys' IDs from being auto-allocated by Cloud Datastore.
 
       Args:
         request: (DatastoreProjectsReserveIdsRequest) input message

@@ -55,8 +55,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a LabelBinding between a LabelValue and a cloud resource.
-(currently Project, Folder, or Organization).
+      r"""Creates a LabelBinding between a LabelValue and a cloud resource (currently Project, Folder, or Organization).
 
       Args:
         request: (LabelBinding) input message
@@ -109,18 +108,7 @@ class LabelmanagerV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the LabelBindings for the given LabelValue or cloud resource.
-(currently Project, Folder, or Organization) determined by the given
-filter.
-
-List LabelBindings for LabelValue with id 123 will map to:
-/v1alpha1/labelBindings?filter=labelValue:labelValues/123
-List LabelBindings for Project resource with id 456 will map to:
-/v1alpha1/labelBindings?filter=resource://cloudresourcemanager.googleapis.com/projects/456
-because the full resource name is required.
-
-For additional details see:
-https://cloud.google.com/apis/design/resource_names#full_resource_name.
+      r"""Lists the LabelBindings for the given LabelValue or cloud resource (currently Project, Folder, or Organization) determined by the given filter. List LabelBindings for LabelValue with id 123 will map to: /v1alpha1/labelBindings?filter=labelValue:labelValues/123 List LabelBindings for Project resource with id 456 will map to: /v1alpha1/labelBindings?filter=resource://cloudresourcemanager.googleapis.com/projects/456 because the full resource name is required. For additional details see: https://cloud.google.com/apis/design/resource_names#full_resource_name.
 
       Args:
         request: (LabelmanagerLabelBindingsListRequest) input message
@@ -156,10 +144,7 @@ https://cloud.google.com/apis/design/resource_names#full_resource_name.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new LabelKey. If another request with the same parameters is.
-sent while the original request is in process, the second request
-will receive an error. A maximum of 300 LabelKeys (with any lifecycle
-state) can exist under a parent at any given time.
+      r"""Creates a new LabelKey. If another request with the same parameters is sent while the original request is in process, the second request will receive an error. A maximum of 300 LabelKeys (with any lifecycle state) can exist under a parent at any given time.
 
       Args:
         request: (LabelKey) input message
@@ -185,11 +170,7 @@ state) can exist under a parent at any given time.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Requests deletion of a LabelKey. The LabelKey is moved into the.
-DELETE_REQUESTED state
-immediately, and is deleted approximately 30 days later. The LabelKey
-cannot be deleted if it has any child LabelValues in the
-ACTIVE state.
+      r"""Requests deletion of a LabelKey. The LabelKey is moved into the DELETE_REQUESTED state immediately, and is deleted approximately 30 days later. The LabelKey cannot be deleted if it has any child LabelValues in the ACTIVE state.
 
       Args:
         request: (LabelmanagerLabelKeysDeleteRequest) input message
@@ -216,8 +197,7 @@ ACTIVE state.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a LabelKey. This method will return PERMISSION_DENIED if the.
-key does not exist or the user does not have permission to view it.
+      r"""Retrieves a LabelKey. This method will return PERMISSION_DENIED if the key does not exist or the user does not have permission to view it.
 
       Args:
         request: (LabelmanagerLabelKeysGetRequest) input message
@@ -244,9 +224,7 @@ key does not exist or the user does not have permission to view it.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (LabelmanagerLabelKeysGetIamPolicyRequest) input message
@@ -326,10 +304,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (LabelmanagerLabelKeysSetIamPolicyRequest) input message
@@ -356,13 +331,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (LabelmanagerLabelKeysTestIamPermissionsRequest) input message
@@ -389,10 +358,7 @@ may "fail open" without warning.
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Cancels the deletion request for a LabelKey. This method may only be.
-called on a LabelKey in the
-DELETE_REQUESTED state.
-In order to succeed, the LabelKey's parent must be in the active state.
+      r"""Cancels the deletion request for a LabelKey. This method may only be called on a LabelKey in the DELETE_REQUESTED state. In order to succeed, the LabelKey's parent must be in the active state.
 
       Args:
         request: (LabelmanagerLabelKeysUndeleteRequest) input message
@@ -429,11 +395,7 @@ In order to succeed, the LabelKey's parent must be in the active state.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a LabelValue as a child of the specified LabelKey. If a another.
-request with the same parameters is sent while the original request is in
-process the second request will receive an error. A maximum of 300
-LabelValues (with any lifecycle state) can exist under a LabelKey at any
-given time.
+      r"""Creates a LabelValue as a child of the specified LabelKey. If a another request with the same parameters is sent while the original request is in process the second request will receive an error. A maximum of 300 LabelValues (with any lifecycle state) can exist under a LabelKey at any given time.
 
       Args:
         request: (LabelValue) input message
@@ -459,10 +421,7 @@ given time.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Requests deletion of a LabelValue. The LabelValue is moved into the.
-DELETE_REQUESTED state
-immediately, and is deleted approximately 30 days later. The LabelValue
-cannot have any bindings when it is deleted.
+      r"""Requests deletion of a LabelValue. The LabelValue is moved into the DELETE_REQUESTED state immediately, and is deleted approximately 30 days later. The LabelValue cannot have any bindings when it is deleted.
 
       Args:
         request: (LabelmanagerLabelValuesDeleteRequest) input message
@@ -489,8 +448,7 @@ cannot have any bindings when it is deleted.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves LabelValue. This method will return PERMISSION_DENIED if the.
-LabelValue does not exist or the user does not have permission to view it.
+      r"""Retrieves LabelValue. This method will return PERMISSION_DENIED if the LabelValue does not exist or the user does not have permission to view it.
 
       Args:
         request: (LabelmanagerLabelValuesGetRequest) input message
@@ -570,11 +528,7 @@ LabelValue does not exist or the user does not have permission to view it.
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Cancels the deletion request for a LabelValue. This method may only be.
-called on a LabelValue in the
-DELETE_REQUESTED state.
-In order to succeed, the LabelValue's parent must be in the
-ACTIVE state.
+      r"""Cancels the deletion request for a LabelValue. This method may only be called on a LabelValue in the DELETE_REQUESTED state. In order to succeed, the LabelValue's parent must be in the ACTIVE state.
 
       Args:
         request: (LabelmanagerLabelValuesUndeleteRequest) input message
@@ -611,9 +565,7 @@ ACTIVE state.
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (LabelmanagerOperationsGetRequest) input message

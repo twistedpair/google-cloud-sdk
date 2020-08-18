@@ -369,16 +369,16 @@
       "type": "object",
       "properties": {
         "issuer": {
-          "description": "An JWT issuer URI. Google will attempt OIDC discovery on this URI, and allow valid OIDC tokens from this issuer to authenticate within the below identity namespace.",
+          "description": "A JWT issuer URI. If set, then Google will attempt OIDC discovery on this URI, and allow valid OIDC tokens from this issuer to authenticate within the below identity namespace. This can be updated from a non-empty to empty value and vice-versa. But cannot be changed from one non-empty value to another. Setting to empty will disable Workload Identity. issuer should be a valid URL of length < 2000 that can be parsed, and must start with https:\/\/.",
           "type": "string"
         },
-        "identityNamespace": {
-          "description": "Output only. The identity namespace in which the issuer will be recognized.",
+        "workloadIdentityPool": {
+          "description": "Output only. The name of the workload identity pool in which the above issuer will be recognized. There is a single Workload Identity Pool per Hub that is shared between all Memberships that belong to this Hub. For a Hub hosted in {PROJECT_ID}, the workload pool format is {PROJECT_ID}.hub.id.goog, although this is subject to change in newer versions of this API.",
           "readOnly": true,
           "type": "string"
         },
         "identityProvider": {
-          "description": "Output only. An identity provider that reflects this issuer in the identity namespace.",
+          "description": "Output only. An identity provider that reflects this issuer in the workload identity pool.",
           "readOnly": true,
           "type": "string"
         }

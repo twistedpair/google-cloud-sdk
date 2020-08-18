@@ -21,7 +21,7 @@ class BatchTranslateTextRequest(_messages.Message):
     GlossariesValue: Optional. Glossaries to be applied for translation. It's
       keyed by target language code.
     LabelsValue: Optional. The labels with user-defined metadata for the
-      request.  Label keys and values can be no longer than 63 characters
+      request. Label keys and values can be no longer than 63 characters
       (Unicode codepoints), can only contain lowercase letters, numeric
       characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter.
@@ -29,14 +29,14 @@ class BatchTranslateTextRequest(_messages.Message):
       information.
     ModelsValue: Optional. The models to use for translation. Map's key is
       target language code. Map's value is model name. Value can be a built-in
-      general model, or an AutoML Translation model.  The value format depends
-      on model type:  - AutoML Translation models:   `projects/{project-
-      number-or-id}/locations/{location-id}/models/{model-id}`  - General
-      (built-in) models:   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
-      number-or-id}/locations/{location-id}/models/general/base`   If the map
-      is empty or a specific model is not requested for a language pair, then
-      default google model (nmt) is used.
+      general model, or an AutoML Translation model. The value format depends
+      on model type: - AutoML Translation models: `projects/{project-number-
+      or-id}/locations/{location-id}/models/{model-id}` - General (built-in)
+      models: `projects/{project-number-or-id}/locations/{location-
+      id}/models/general/nmt`, `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/base` If the map is empty or
+      a specific model is not requested for a language pair, then default
+      google model (nmt) is used.
 
   Fields:
     glossaries: Optional. Glossaries to be applied for translation. It's keyed
@@ -48,19 +48,19 @@ class BatchTranslateTextRequest(_messages.Message):
       Label keys and values can be no longer than 63 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
       underscores and dashes. International characters are allowed. Label
-      values are optional. Label keys must start with a letter.  See
+      values are optional. Label keys must start with a letter. See
       https://cloud.google.com/translate/docs/advanced/labels for more
       information.
     models: Optional. The models to use for translation. Map's key is target
       language code. Map's value is model name. Value can be a built-in
-      general model, or an AutoML Translation model.  The value format depends
-      on model type:  - AutoML Translation models:   `projects/{project-
-      number-or-id}/locations/{location-id}/models/{model-id}`  - General
-      (built-in) models:   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
-      number-or-id}/locations/{location-id}/models/general/base`   If the map
-      is empty or a specific model is not requested for a language pair, then
-      default google model (nmt) is used.
+      general model, or an AutoML Translation model. The value format depends
+      on model type: - AutoML Translation models: `projects/{project-number-
+      or-id}/locations/{location-id}/models/{model-id}` - General (built-in)
+      models: `projects/{project-number-or-id}/locations/{location-
+      id}/models/general/nmt`, `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/base` If the map is empty or
+      a specific model is not requested for a language pair, then default
+      google model (nmt) is used.
     outputConfig: Required. Output configuration. If 2 input configs match to
       the same file (that is, same input path), we don't generate output for
       duplicate inputs.
@@ -95,11 +95,11 @@ class BatchTranslateTextRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. The labels with user-defined metadata for the request.
-    Label keys and values can be no longer than 63 characters (Unicode
-    codepoints), can only contain lowercase letters, numeric characters,
-    underscores and dashes. International characters are allowed. Label values
-    are optional. Label keys must start with a letter.  See
+    r"""Optional. The labels with user-defined metadata for the request. Label
+    keys and values can be no longer than 63 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. Label values are optional.
+    Label keys must start with a letter. See
     https://cloud.google.com/translate/docs/advanced/labels for more
     information.
 
@@ -127,13 +127,13 @@ class BatchTranslateTextRequest(_messages.Message):
   class ModelsValue(_messages.Message):
     r"""Optional. The models to use for translation. Map's key is target
     language code. Map's value is model name. Value can be a built-in general
-    model, or an AutoML Translation model.  The value format depends on model
-    type:  - AutoML Translation models:   `projects/{project-number-or-
-    id}/locations/{location-id}/models/{model-id}`  - General (built-in)
-    models:   `projects/{project-number-or-id}/locations/{location-
-    id}/models/general/nmt`,   `projects/{project-number-or-
-    id}/locations/{location-id}/models/general/base`   If the map is empty or
-    a specific model is not requested for a language pair, then default google
+    model, or an AutoML Translation model. The value format depends on model
+    type: - AutoML Translation models: `projects/{project-number-or-
+    id}/locations/{location-id}/models/{model-id}` - General (built-in)
+    models: `projects/{project-number-or-id}/locations/{location-
+    id}/models/general/nmt`, `projects/{project-number-or-
+    id}/locations/{location-id}/models/general/base` If the map is empty or a
+    specific model is not requested for a language pair, then default google
     model (nmt) is used.
 
     Messages:
@@ -174,7 +174,7 @@ class DetectLanguageRequest(_messages.Message):
 
   Messages:
     LabelsValue: Optional. The labels with user-defined metadata for the
-      request.  Label keys and values can be no longer than 63 characters
+      request. Label keys and values can be no longer than 63 characters
       (Unicode codepoints), can only contain lowercase letters, numeric
       characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter.
@@ -187,27 +187,27 @@ class DetectLanguageRequest(_messages.Message):
       Label keys and values can be no longer than 63 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
       underscores and dashes. International characters are allowed. Label
-      values are optional. Label keys must start with a letter.  See
+      values are optional. Label keys must start with a letter. See
       https://cloud.google.com/translate/docs/advanced/labels for more
       information.
     mimeType: Optional. The format of the source text, for example,
       "text/html", "text/plain". If left blank, the MIME type defaults to
       "text/html".
-    model: Optional. The language detection model to be used.  Format:
+    model: Optional. The language detection model to be used. Format:
       `projects/{project-number-or-id}/locations/{location-
-      id}/models/language-detection/{model-id}`  Only one language detection
+      id}/models/language-detection/{model-id}` Only one language detection
       model is currently supported: `projects/{project-number-or-
-      id}/locations/{location-id}/models/language-detection/default`.  If not
+      id}/locations/{location-id}/models/language-detection/default`. If not
       specified, the default model is used.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. The labels with user-defined metadata for the request.
-    Label keys and values can be no longer than 63 characters (Unicode
-    codepoints), can only contain lowercase letters, numeric characters,
-    underscores and dashes. International characters are allowed. Label values
-    are optional. Label keys must start with a letter.  See
+    r"""Optional. The labels with user-defined metadata for the request. Label
+    keys and values can be no longer than 63 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. Label values are optional.
+    Label keys must start with a letter. See
     https://cloud.google.com/translate/docs/advanced/labels for more
     information.
 
@@ -264,9 +264,9 @@ class DetectedLanguage(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -279,7 +279,7 @@ class GcsDestination(_messages.Message):
       exist and there must be no files under 'output_uri_prefix'.
       'output_uri_prefix' must end with "/" and start with "gs://". One
       'output_uri_prefix' can only be used by one batch translation job at a
-      time. Otherwise an INVALID_ARGUMENT (400) error is  returned.
+      time. Otherwise an INVALID_ARGUMENT (400) error is returned.
   """
 
   outputUriPrefix = _messages.StringField(1)
@@ -329,14 +329,14 @@ class GlossaryInputConfig(_messages.Message):
       format is determined based on the filename extension. API returns
       [google.rpc.Code.INVALID_ARGUMENT] for unsupported URI-s and file
       formats. Wildcards are not allowed. This must be a single file in one of
-      the following formats:  For unidirectional glossaries:  - TSV/CSV
-      (`.tsv`/`.csv`): 2 column file, tab- or comma-separated.   The first
-      column is source text. The second column is target text.   The file must
-      not contain headers. That is, the first row is data, not   column names.
-      - TMX (`.tmx`): TMX file with parallel data defining source/target term
-      pairs.  For equivalent term sets glossaries:  - CSV (`.csv`): Multi-
-      column CSV file defining equivalent glossary terms   in multiple
-      languages. See documentation for more information -
+      the following formats: For unidirectional glossaries: - TSV/CSV
+      (`.tsv`/`.csv`): 2 column file, tab- or comma-separated. The first
+      column is source text. The second column is target text. The file must
+      not contain headers. That is, the first row is data, not column names. -
+      TMX (`.tmx`): TMX file with parallel data defining source/target term
+      pairs. For equivalent term sets glossaries: - CSV (`.csv`): Multi-column
+      CSV file defining equivalent glossary terms in multiple languages. See
+      documentation for more information -
       [glossaries](https://cloud.google.com/translate/docs/advanced/glossary).
   """
 
@@ -356,11 +356,10 @@ class InputConfig(_messages.Message):
       as the ID in the output file. The second column is the actual text to be
       translated. We recommend each row be <= 10K Unicode codepoints,
       otherwise an error might be returned. Note that the input tsv must be
-      RFC 4180 compliant.  You could use https://github.com/Clever/csvlint to
+      RFC 4180 compliant. You could use https://github.com/Clever/csvlint to
       check potential formatting errors in your tsv file. csvlint
-      --delimiter='\t' your_input_file.tsv  The other supported file
-      extensions are `.txt` or `.html`, which is treated as a single large
-      chunk of text.
+      --delimiter='\t' your_input_file.tsv The other supported file extensions
+      are `.txt` or `.html`, which is treated as a single large chunk of text.
     mimeType: Optional. Can be "text/plain" or "text/html". For `.tsv`,
       "text/html" is used if mime_type is missing. For `.html`, this field
       must be "text/html" or empty. For `.txt`, this field must be
@@ -524,17 +523,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -543,29 +542,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -591,12 +590,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -634,15 +633,15 @@ class OutputConfig(_messages.Message):
     gcsDestination: Google Cloud Storage destination for output content. For
       every single input file (for example, gs://a/b/c.[extension]), we
       generate at most 2 * n output files. (n is the # of
-      target_language_codes in the BatchTranslateTextRequest).  Output files
+      target_language_codes in the BatchTranslateTextRequest). Output files
       (tsv) generated are compliant with RFC 4180 except that record
       delimiters are '\n' instead of '\r\n'. We don't provide any way to
-      change record delimiters.  While the input files are being processed, we
-      write/update an index file 'index.csv'  under 'output_uri_prefix' (for
+      change record delimiters. While the input files are being processed, we
+      write/update an index file 'index.csv' under 'output_uri_prefix' (for
       example, gs://translation-test/index.csv) The index file is
       generated/updated as new files are being translated. The format is:
       input_file,target_language_code,translations_file,errors_file,
-      glossary_translations_file,glossary_errors_file  input_file is one file
+      glossary_translations_file,glossary_errors_file input_file is one file
       we matched using gcs_source.input_uri. target_language_code is provided
       in the request. translations_file contains the translations. (details
       provided below) errors_file contains the errors during processing of the
@@ -650,12 +649,12 @@ class OutputConfig(_messages.Message):
       empty strings if we have no content to output.
       glossary_translations_file and glossary_errors_file are always empty
       strings if the input_file is tsv. They could also be empty if we have no
-      content to output.  Once a row is present in index.csv, the input/output
+      content to output. Once a row is present in index.csv, the input/output
       matching never changes. Callers should also expect all the content in
       input_file are processed and ready to be consumed (that is, no partial
-      output file is written).  The format of translations_file (for target
+      output file is written). The format of translations_file (for target
       language code 'trg') is:
-      gs://translation_test/a_b_c_'trg'_translations.[extension]  If the input
+      gs://translation_test/a_b_c_'trg'_translations.[extension] If the input
       file extension is tsv, the output has the following columns: Column 1:
       ID of the request provided in the input, if it's not provided in the
       input, then the input row number is used (0-based). Column 2: source
@@ -663,19 +662,19 @@ class OutputConfig(_messages.Message):
       string if there is an error. Column 4 (only present if a glossary is
       provided in the request): translation after applying the glossary. Empty
       string if there is an error applying the glossary. Could be same string
-      as column 3 if there is no glossary applied.  If input file extension is
+      as column 3 if there is no glossary applied. If input file extension is
       a txt or html, the translation is directly written to the output file.
       If glossary is requested, a separate glossary_translations_file has
       format of
-      gs://translation_test/a_b_c_'trg'_glossary_translations.[extension]  The
+      gs://translation_test/a_b_c_'trg'_glossary_translations.[extension] The
       format of errors file (for target language code 'trg') is:
-      gs://translation_test/a_b_c_'trg'_errors.[extension]  If the input file
+      gs://translation_test/a_b_c_'trg'_errors.[extension] If the input file
       extension is tsv, errors_file contains the following: Column 1: ID of
       the request provided in the input, if it's not provided in the input,
       then the input row number is used (0-based). Column 2: source sentence.
       Column 3: Error detail for the translation. Could be empty. Column 4
       (only present if a glossary is provided in the request): Error when
-      applying the glossary.  If the input file extension is txt or html,
+      applying the glossary. If the input file extension is txt or html,
       glossary_error_file will be generated that contains error details.
       glossary_error_file has format of
       gs://translation_test/a_b_c_'trg'_glossary_errors.[extension]
@@ -751,7 +750,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -760,7 +759,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -837,10 +836,10 @@ class TranslateProjectsDetectLanguageRequest(_messages.Message):
     detectLanguageRequest: A DetectLanguageRequest resource to be passed as
       the request body.
     parent: Required. Project or location to make a call. Must refer to a
-      caller's project.  Format: `projects/{project-number-or-
-      id}/locations/{location-id}` or `projects/{project-number-or-id}`.  For
+      caller's project. Format: `projects/{project-number-or-
+      id}/locations/{location-id}` or `projects/{project-number-or-id}`. For
       global calls, use `projects/{project-number-or-id}/locations/global` or
-      `projects/{project-number-or-id}`.  Only models within the same region
+      `projects/{project-number-or-id}`. Only models within the same region
       (has same location-id) can be used. Otherwise an INVALID_ARGUMENT (400)
       error is returned.
   """
@@ -856,20 +855,20 @@ class TranslateProjectsGetSupportedLanguagesRequest(_messages.Message):
     displayLanguageCode: Optional. The language to use to return localized,
       human readable names of supported languages. If missing, then display
       names are not returned in a response.
-    model: Optional. Get supported languages of this model.  The format
-      depends on model type:  - AutoML Translation models:
-      `projects/{project-number-or-id}/locations/{location-id}/models/{model-
-      id}`  - General (built-in) models:   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
-      number-or-id}/locations/{location-id}/models/general/base`   Returns
-      languages supported by the specified model. If missing, we get supported
-      languages of Google general base (PBMT) model.
+    model: Optional. Get supported languages of this model. The format depends
+      on model type: - AutoML Translation models: `projects/{project-number-
+      or-id}/locations/{location-id}/models/{model-id}` - General (built-in)
+      models: `projects/{project-number-or-id}/locations/{location-
+      id}/models/general/nmt`, `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/base` Returns languages
+      supported by the specified model. If missing, we get supported languages
+      of Google general base (PBMT) model.
     parent: Required. Project or location to make a call. Must refer to a
-      caller's project.  Format: `projects/{project-number-or-id}` or
-      `projects/{project-number-or-id}/locations/{location-id}`.  For global
+      caller's project. Format: `projects/{project-number-or-id}` or
+      `projects/{project-number-or-id}/locations/{location-id}`. For global
       calls, use `projects/{project-number-or-id}/locations/global` or
-      `projects/{project-number-or-id}`.  Non-global location is required for
-      AutoML models.  Only models within the same region (have same location-
+      `projects/{project-number-or-id}`. Non-global location is required for
+      AutoML models. Only models within the same region (have same location-
       id) can be used, otherwise an INVALID_ARGUMENT (400) error is returned.
   """
 
@@ -885,11 +884,11 @@ class TranslateProjectsLocationsBatchTranslateTextRequest(_messages.Message):
     batchTranslateTextRequest: A BatchTranslateTextRequest resource to be
       passed as the request body.
     parent: Required. Location to make a call. Must refer to a caller's
-      project.  Format: `projects/{project-number-or-id}/locations/{location-
-      id}`.  The `global` location is not supported for batch translation.
-      Only AutoML Translation models or glossaries within the same region
-      (have the same location-id) can be used, otherwise an INVALID_ARGUMENT
-      (400) error is returned.
+      project. Format: `projects/{project-number-or-id}/locations/{location-
+      id}`. The `global` location is not supported for batch translation. Only
+      AutoML Translation models or glossaries within the same region (have the
+      same location-id) can be used, otherwise an INVALID_ARGUMENT (400) error
+      is returned.
   """
 
   batchTranslateTextRequest = _messages.MessageField('BatchTranslateTextRequest', 1)
@@ -903,10 +902,10 @@ class TranslateProjectsLocationsDetectLanguageRequest(_messages.Message):
     detectLanguageRequest: A DetectLanguageRequest resource to be passed as
       the request body.
     parent: Required. Project or location to make a call. Must refer to a
-      caller's project.  Format: `projects/{project-number-or-
-      id}/locations/{location-id}` or `projects/{project-number-or-id}`.  For
+      caller's project. Format: `projects/{project-number-or-
+      id}/locations/{location-id}` or `projects/{project-number-or-id}`. For
       global calls, use `projects/{project-number-or-id}/locations/global` or
-      `projects/{project-number-or-id}`.  Only models within the same region
+      `projects/{project-number-or-id}`. Only models within the same region
       (has same location-id) can be used. Otherwise an INVALID_ARGUMENT (400)
       error is returned.
   """
@@ -932,20 +931,20 @@ class TranslateProjectsLocationsGetSupportedLanguagesRequest(_messages.Message):
     displayLanguageCode: Optional. The language to use to return localized,
       human readable names of supported languages. If missing, then display
       names are not returned in a response.
-    model: Optional. Get supported languages of this model.  The format
-      depends on model type:  - AutoML Translation models:
-      `projects/{project-number-or-id}/locations/{location-id}/models/{model-
-      id}`  - General (built-in) models:   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
-      number-or-id}/locations/{location-id}/models/general/base`   Returns
-      languages supported by the specified model. If missing, we get supported
-      languages of Google general base (PBMT) model.
+    model: Optional. Get supported languages of this model. The format depends
+      on model type: - AutoML Translation models: `projects/{project-number-
+      or-id}/locations/{location-id}/models/{model-id}` - General (built-in)
+      models: `projects/{project-number-or-id}/locations/{location-
+      id}/models/general/nmt`, `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/base` Returns languages
+      supported by the specified model. If missing, we get supported languages
+      of Google general base (PBMT) model.
     parent: Required. Project or location to make a call. Must refer to a
-      caller's project.  Format: `projects/{project-number-or-id}` or
-      `projects/{project-number-or-id}/locations/{location-id}`.  For global
+      caller's project. Format: `projects/{project-number-or-id}` or
+      `projects/{project-number-or-id}/locations/{location-id}`. For global
       calls, use `projects/{project-number-or-id}/locations/global` or
-      `projects/{project-number-or-id}`.  Non-global location is required for
-      AutoML models.  Only models within the same region (have same location-
+      `projects/{project-number-or-id}`. Non-global location is required for
+      AutoML models. Only models within the same region (have same location-
       id) can be used, otherwise an INVALID_ARGUMENT (400) error is returned.
   """
 
@@ -1106,13 +1105,13 @@ class TranslateProjectsLocationsTranslateTextRequest(_messages.Message):
 
   Fields:
     parent: Required. Project or location to make a call. Must refer to a
-      caller's project.  Format: `projects/{project-number-or-id}` or
-      `projects/{project-number-or-id}/locations/{location-id}`.  For global
+      caller's project. Format: `projects/{project-number-or-id}` or
+      `projects/{project-number-or-id}/locations/{location-id}`. For global
       calls, use `projects/{project-number-or-id}/locations/global` or
-      `projects/{project-number-or-id}`.  Non-global location is required for
-      requests using AutoML models or custom glossaries.  Models and
-      glossaries must be within the same region (have same location-id),
-      otherwise an INVALID_ARGUMENT (400) error is returned.
+      `projects/{project-number-or-id}`. Non-global location is required for
+      requests using AutoML models or custom glossaries. Models and glossaries
+      must be within the same region (have same location-id), otherwise an
+      INVALID_ARGUMENT (400) error is returned.
     translateTextRequest: A TranslateTextRequest resource to be passed as the
       request body.
   """
@@ -1126,13 +1125,13 @@ class TranslateProjectsTranslateTextRequest(_messages.Message):
 
   Fields:
     parent: Required. Project or location to make a call. Must refer to a
-      caller's project.  Format: `projects/{project-number-or-id}` or
-      `projects/{project-number-or-id}/locations/{location-id}`.  For global
+      caller's project. Format: `projects/{project-number-or-id}` or
+      `projects/{project-number-or-id}/locations/{location-id}`. For global
       calls, use `projects/{project-number-or-id}/locations/global` or
-      `projects/{project-number-or-id}`.  Non-global location is required for
-      requests using AutoML models or custom glossaries.  Models and
-      glossaries must be within the same region (have same location-id),
-      otherwise an INVALID_ARGUMENT (400) error is returned.
+      `projects/{project-number-or-id}`. Non-global location is required for
+      requests using AutoML models or custom glossaries. Models and glossaries
+      must be within the same region (have same location-id), otherwise an
+      INVALID_ARGUMENT (400) error is returned.
     translateTextRequest: A TranslateTextRequest resource to be passed as the
       request body.
   """
@@ -1146,8 +1145,8 @@ class TranslateTextGlossaryConfig(_messages.Message):
   and defines options for applying that glossary.
 
   Fields:
-    glossary: Required. The `glossary` to be applied for this translation.
-      The format depends on glossary:  - User provided custom glossary:
+    glossary: Required. The `glossary` to be applied for this translation. The
+      format depends on glossary: - User provided custom glossary:
       `projects/{project-number-or-id}/locations/{location-
       id}/glossaries/{glossary-id}`
     ignoreCase: Optional. Indicates match is case-insensitive. Default value
@@ -1163,7 +1162,7 @@ class TranslateTextRequest(_messages.Message):
 
   Messages:
     LabelsValue: Optional. The labels with user-defined metadata for the
-      request.  Label keys and values can be no longer than 63 characters
+      request. Label keys and values can be no longer than 63 characters
       (Unicode codepoints), can only contain lowercase letters, numeric
       characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter.
@@ -1181,18 +1180,18 @@ class TranslateTextRequest(_messages.Message):
       Label keys and values can be no longer than 63 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
       underscores and dashes. International characters are allowed. Label
-      values are optional. Label keys must start with a letter.  See
+      values are optional. Label keys must start with a letter. See
       https://cloud.google.com/translate/docs/advanced/labels for more
       information.
     mimeType: Optional. The format of the source text, for example,
-      "text/html",  "text/plain". If left blank, the MIME type defaults to
+      "text/html", "text/plain". If left blank, the MIME type defaults to
       "text/html".
-    model: Optional. The `model` type requested for this translation.  The
-      format depends on model type:  - AutoML Translation models:
+    model: Optional. The `model` type requested for this translation. The
+      format depends on model type: - AutoML Translation models:
       `projects/{project-number-or-id}/locations/{location-id}/models/{model-
-      id}`  - General (built-in) models:   `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/nmt`,   `projects/{project-
-      number-or-id}/locations/{location-id}/models/general/base`   For global
+      id}` - General (built-in) models: `projects/{project-number-or-
+      id}/locations/{location-id}/models/general/nmt`, `projects/{project-
+      number-or-id}/locations/{location-id}/models/general/base` For global
       (non-regionalized) requests, use `location-id` `global`. For example,
       `projects/{project-number-or-id}/locations/global/models/general/nmt`.
       If missing, the system decides which google base model to use.
@@ -1208,11 +1207,11 @@ class TranslateTextRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. The labels with user-defined metadata for the request.
-    Label keys and values can be no longer than 63 characters (Unicode
-    codepoints), can only contain lowercase letters, numeric characters,
-    underscores and dashes. International characters are allowed. Label values
-    are optional. Label keys must start with a letter.  See
+    r"""Optional. The labels with user-defined metadata for the request. Label
+    keys and values can be no longer than 63 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. Label values are optional.
+    Label keys must start with a letter. See
     https://cloud.google.com/translate/docs/advanced/labels for more
     information.
 
@@ -1270,7 +1269,7 @@ class Translation(_messages.Message):
       auto-detection of the language does not occur and this field is empty.
     glossaryConfig: The `glossary_config` used for this translation.
     model: Only present when `model` is present in the request. `model` here
-      is normalized to have project number.  For example: If the `model`
+      is normalized to have project number. For example: If the `model`
       requested in TranslationTextRequest is `projects/{project-
       id}/locations/{location-id}/models/general/nmt` then `model` here would
       be normalized to `projects/{project-number}/locations/{location-

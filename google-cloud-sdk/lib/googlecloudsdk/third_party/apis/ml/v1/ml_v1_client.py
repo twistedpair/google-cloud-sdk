@@ -141,9 +141,7 @@ class MlV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (MlProjectsJobsGetIamPolicyRequest) input message
@@ -170,10 +168,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the jobs in the project.
-
-If there are no jobs that match the request parameters, the list
-request returns an empty response body: {}.
+      r"""Lists the jobs in the project. If there are no jobs that match the request parameters, the list request returns an empty response body: {}.
 
       Args:
         request: (MlProjectsJobsListRequest) input message
@@ -200,9 +195,7 @@ request returns an empty response body: {}.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a specific job resource.
-
-Currently the only supported fields to update are `labels`.
+      r"""Updates a specific job resource. Currently the only supported fields to update are `labels`.
 
       Args:
         request: (MlProjectsJobsPatchRequest) input message
@@ -229,10 +222,7 @@ Currently the only supported fields to update are `labels`.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (MlProjectsJobsSetIamPolicyRequest) input message
@@ -259,13 +249,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (MlProjectsJobsTestIamPermissionsRequest) input message
@@ -302,16 +286,7 @@ may "fail open" without warning.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (MlProjectsLocationsOperationsCancelRequest) input message
@@ -338,9 +313,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (MlProjectsLocationsOperationsGetRequest) input message
@@ -377,8 +350,7 @@ service.
           }
 
     def AddMeasurement(self, request, global_params=None):
-      r"""Adds a measurement of the objective metrics to a trial. This measurement.
-is assumed to have been taken before the trial is complete.
+      r"""Adds a measurement of the objective metrics to a trial. This measurement is assumed to have been taken before the trial is complete.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsAddMeasurementRequest) input message
@@ -405,10 +377,7 @@ is assumed to have been taken before the trial is complete.
     )
 
     def CheckEarlyStoppingState(self, request, global_params=None):
-      r"""Checks  whether a trial should stop or not. Returns a.
-long-running operation. When the operation is successful,
-it will contain a
-CheckTrialEarlyStoppingStateResponse.
+      r"""Checks whether a trial should stop or not. Returns a long-running operation. When the operation is successful, it will contain a CheckTrialEarlyStoppingStateResponse.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsCheckEarlyStoppingStateRequest) input message
@@ -597,11 +566,7 @@ CheckTrialEarlyStoppingStateResponse.
     )
 
     def Suggest(self, request, global_params=None):
-      r"""Adds one or more trials to a study, with parameter values.
-suggested by AI Platform Optimizer. Returns a long-running
-operation associated with the generation of trial suggestions.
-When this long-running operation succeeds, it will contain
-a SuggestTrialsResponse.
+      r"""Adds one or more trials to a study, with parameter values suggested by AI Platform Optimizer. Returns a long-running operation associated with the generation of trial suggestions. When this long-running operation succeeds, it will contain a SuggestTrialsResponse.
 
       Args:
         request: (MlProjectsLocationsStudiesTrialsSuggestRequest) input message
@@ -756,8 +721,7 @@ a SuggestTrialsResponse.
           }
 
     def Get(self, request, global_params=None):
-      r"""Get the complete list of CMLE capabilities in a location, along with their.
-location-specific properties.
+      r"""Get the complete list of CMLE capabilities in a location, along with their location-specific properties.
 
       Args:
         request: (MlProjectsLocationsGetRequest) input message
@@ -821,14 +785,7 @@ location-specific properties.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new version of a model from a trained TensorFlow model.
-
-If the version created in the cloud by this call is the first deployed
-version of the specified model, it will be made the default version of the
-model. When you add a version to a model that already has one or more
-versions, the default version does not automatically change. If you want a
-new version to be the default, you must call
-projects.models.versions.setDefault.
+      r"""Creates a new version of a model from a trained TensorFlow model. If the version created in the cloud by this call is the first deployed version of the specified model, it will be made the default version of the model. When you add a version to a model that already has one or more versions, the default version does not automatically change. If you want a new version to be the default, you must call projects.models.versions.setDefault.
 
       Args:
         request: (MlProjectsModelsVersionsCreateRequest) input message
@@ -855,13 +812,7 @@ projects.models.versions.setDefault.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a model version.
-
-Each model can have multiple versions deployed and in use at any given
-time. Use this method to remove a single version.
-
-Note: You cannot delete the version that is set as the default version
-of the model unless it is the only remaining version.
+      r"""Deletes a model version. Each model can have multiple versions deployed and in use at any given time. Use this method to remove a single version. Note: You cannot delete the version that is set as the default version of the model unless it is the only remaining version.
 
       Args:
         request: (MlProjectsModelsVersionsDeleteRequest) input message
@@ -888,12 +839,7 @@ of the model unless it is the only remaining version.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets information about a model version.
-
-Models can have multiple versions. You can call
-projects.models.versions.list
-to get the same information that this method returns for all of the
-versions of a model.
+      r"""Gets information about a model version. Models can have multiple versions. You can call projects.models.versions.list to get the same information that this method returns for all of the versions of a model.
 
       Args:
         request: (MlProjectsModelsVersionsGetRequest) input message
@@ -920,14 +866,7 @@ versions of a model.
     )
 
     def List(self, request, global_params=None):
-      r"""Gets basic information about all the versions of a model.
-
-If you expect that a model has many versions, or if you need to handle
-only a limited number of results at a time, you can request that the list
-be retrieved in batches (called pages).
-
-If there are no versions that match the request parameters, the list
-request returns an empty response body: {}.
+      r"""Gets basic information about all the versions of a model. If you expect that a model has many versions, or if you need to handle only a limited number of results at a time, you can request that the list be retrieved in batches (called pages). If there are no versions that match the request parameters, the list request returns an empty response body: {}.
 
       Args:
         request: (MlProjectsModelsVersionsListRequest) input message
@@ -954,10 +893,7 @@ request returns an empty response body: {}.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified Version resource.
-
-Currently the only update-able fields are `description`,
-`requestLoggingConfig`, `autoScaling.minNodes`, and `manualScaling.nodes`.
+      r"""Updates the specified Version resource. Currently the only update-able fields are `description`, `requestLoggingConfig`, `autoScaling.minNodes`, and `manualScaling.nodes`.
 
       Args:
         request: (MlProjectsModelsVersionsPatchRequest) input message
@@ -984,14 +920,7 @@ Currently the only update-able fields are `description`,
     )
 
     def SetDefault(self, request, global_params=None):
-      r"""Designates a version to be the default for the model.
-
-The default version is used for prediction requests made against the model
-that don't specify a version.
-
-The first version to be created for a model is automatically set as the
-default. You must make any subsequent changes to the default version
-setting manually using this method.
+      r"""Designates a version to be the default for the model. The default version is used for prediction requests made against the model that don't specify a version. The first version to be created for a model is automatically set as the default. You must make any subsequent changes to the default version setting manually using this method.
 
       Args:
         request: (MlProjectsModelsVersionsSetDefaultRequest) input message
@@ -1028,11 +957,7 @@ setting manually using this method.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a model which will later contain one or more versions.
-
-You must add at least one version before you can request predictions from
-the model. Add versions by calling
-projects.models.versions.create.
+      r"""Creates a model which will later contain one or more versions. You must add at least one version before you can request predictions from the model. Add versions by calling projects.models.versions.create.
 
       Args:
         request: (MlProjectsModelsCreateRequest) input message
@@ -1059,11 +984,7 @@ projects.models.versions.create.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a model.
-
-You can only delete a model if there are no versions in it. You can delete
-versions by calling
-projects.models.versions.delete.
+      r"""Deletes a model. You can only delete a model if there are no versions in it. You can delete versions by calling projects.models.versions.delete.
 
       Args:
         request: (MlProjectsModelsDeleteRequest) input message
@@ -1090,9 +1011,7 @@ projects.models.versions.delete.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets information about a model, including its name, the description (if.
-set), and the default version (if at least one version of the model has
-been deployed).
+      r"""Gets information about a model, including its name, the description (if set), and the default version (if at least one version of the model has been deployed).
 
       Args:
         request: (MlProjectsModelsGetRequest) input message
@@ -1119,9 +1038,7 @@ been deployed).
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (MlProjectsModelsGetIamPolicyRequest) input message
@@ -1148,13 +1065,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the models in a project.
-
-Each project can contain multiple models, and each model can have multiple
-versions.
-
-If there are no models that match the request parameters, the list request
-returns an empty response body: {}.
+      r"""Lists the models in a project. Each project can contain multiple models, and each model can have multiple versions. If there are no models that match the request parameters, the list request returns an empty response body: {}.
 
       Args:
         request: (MlProjectsModelsListRequest) input message
@@ -1181,10 +1092,7 @@ returns an empty response body: {}.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a specific model resource.
-
-Currently the only supported fields to update are `description` and
-`default_version.name`.
+      r"""Updates a specific model resource. Currently the only supported fields to update are `description` and `default_version.name`.
 
       Args:
         request: (MlProjectsModelsPatchRequest) input message
@@ -1211,10 +1119,7 @@ Currently the only supported fields to update are `description` and
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (MlProjectsModelsSetIamPolicyRequest) input message
@@ -1241,13 +1146,7 @@ Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a `NOT_FOUND` error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (MlProjectsModelsTestIamPermissionsRequest) input message
@@ -1284,16 +1183,7 @@ may "fail open" without warning.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (MlProjectsOperationsCancelRequest) input message
@@ -1320,9 +1210,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (MlProjectsOperationsGetRequest) input message
@@ -1349,16 +1237,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (MlProjectsOperationsListRequest) input message
@@ -1395,9 +1274,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Explain(self, request, global_params=None):
-      r"""Performs explanation on the data in the request.
-
-<div>{% dynamic include "/ai-platform/includes/___explain-request" %}</div>
+      r"""Performs explanation on the data in the request. {% dynamic include "/ai-platform/includes/___explain-request" %} .
 
       Args:
         request: (MlProjectsExplainRequest) input message
@@ -1424,10 +1301,7 @@ is the parent resource, without the operations collection id.
     )
 
     def GetConfig(self, request, global_params=None):
-      r"""Get the service account information associated with your project. You need.
-this information in order to grant the service account permissions for
-the Google Cloud Storage location where you put your model training code
-for training the model with Google Cloud Machine Learning.
+      r"""Get the service account information associated with your project. You need this information in order to grant the service account permissions for the Google Cloud Storage location where you put your model training code for training the model with Google Cloud Machine Learning.
 
       Args:
         request: (MlProjectsGetConfigRequest) input message
@@ -1454,9 +1328,7 @@ for training the model with Google Cloud Machine Learning.
     )
 
     def Predict(self, request, global_params=None):
-      r"""Performs online prediction on the data in the request.
-
-<div>{% dynamic include "/ai-platform/includes/___predict-request" %}</div>
+      r"""Performs online prediction on the data in the request. {% dynamic include "/ai-platform/includes/___predict-request" %} .
 
       Args:
         request: (MlProjectsPredictRequest) input message

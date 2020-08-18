@@ -14,6 +14,39 @@ from apitools.base.py import extra_types
 package = 'redis'
 
 
+class CategoryHealth(_messages.Message):
+  r"""Category health, such as CPU/memory
+
+  Enums:
+    StateValueValuesEnum: Health state, such as unhealthy/warning/healthy
+
+  Fields:
+    category: Name of this category
+    metrics: Associated metrics
+    state: Health state, such as unhealthy/warning/healthy
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Health state, such as unhealthy/warning/healthy
+
+    Values:
+      HEALTH_STATE_UNSPECIFIED: Invalid
+      UNKNOWN: Unknown. May indicate exceptions.
+      HEALTHY: Healthy
+      WARNING: Warning
+      UNHEALTHY: Unhealthy
+    """
+    HEALTH_STATE_UNSPECIFIED = 0
+    UNKNOWN = 1
+    HEALTHY = 2
+    WARNING = 3
+    UNHEALTHY = 4
+
+  category = _messages.StringField(1)
+  metrics = _messages.MessageField('MetricHealth', 2, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -506,6 +539,8 @@ class Instance(_messages.Message):
       DIRECT_PEERING.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
+    TlsModeValueValuesEnum: The TLS mode of Redis instance. If not provided,
+      default one will be used. Current default: DISABLED.
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata
@@ -519,6 +554,9 @@ class Instance(_messages.Message):
       protects the instance against zonal failures by provisioning it across
       two zones. If provided, it must be a different zone from the one
       provided in [location_id].
+    authEnabled: Optional. Indicates whether OSS Redis AUTH is enabled for the
+      instance. If set to "true" AUTH will be enabled on the instance. Default
+      value is "false" meaning AUTH is disabled.
     authorizedNetwork: Optional. The full name of the Google Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       instance is connected. If left unspecified, the `default` network will
@@ -569,10 +607,16 @@ class Instance(_messages.Message):
       reserved for this instance. If not provided, the service will choose an
       unused /29 block, for example, 10.0.0.0/29 or 192.168.0.0/29. Ranges
       must be unique and non-overlapping with existing subnets in a network.
+    serverCaCerts: Output only. List of server CA certificates for the
+      instance. The visibility of this data will be controlled by a
+      GetInstanceRequest.view field once CCFE support partial view of
+      GetInstance. https://google.aip.dev/157.
     state: Output only. The current state of this instance.
     statusMessage: Output only. Additional information about the current
       status of this instance, if available.
     tier: Required. The service tier of the instance.
+    tlsMode: The TLS mode of Redis instance. If not provided, default one will
+      be used. Current default: DISABLED.
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
@@ -633,6 +677,19 @@ class Instance(_messages.Message):
     BASIC = 1
     STANDARD_HA = 2
 
+  class TlsModeValueValuesEnum(_messages.Enum):
+    r"""The TLS mode of Redis instance. If not provided, default one will be
+    used. Current default: DISABLED.
+
+    Values:
+      TLS_MODE_UNSPECIFIED: Not set.
+      DISABLED: TLS is disabled for instance.
+      BASIC_TLS: Basic TLS mode with server authentication
+    """
+    TLS_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    BASIC_TLS = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Resource labels to represent user provided metadata
@@ -686,24 +743,37 @@ class Instance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   alternativeLocationId = _messages.StringField(1)
-  authorizedNetwork = _messages.StringField(2)
-  connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 3)
-  createTime = _messages.StringField(4)
-  currentLocationId = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  host = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  locationId = _messages.StringField(9)
-  memorySizeGb = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  name = _messages.StringField(11)
-  persistenceIamIdentity = _messages.StringField(12)
-  port = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 14)
-  redisVersion = _messages.StringField(15)
-  reservedIpRange = _messages.StringField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  statusMessage = _messages.StringField(18)
-  tier = _messages.EnumField('TierValueValuesEnum', 19)
+  authEnabled = _messages.BooleanField(2)
+  authorizedNetwork = _messages.StringField(3)
+  connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 4)
+  createTime = _messages.StringField(5)
+  currentLocationId = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  host = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  locationId = _messages.StringField(10)
+  memorySizeGb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  name = _messages.StringField(12)
+  persistenceIamIdentity = _messages.StringField(13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 15)
+  redisVersion = _messages.StringField(16)
+  reservedIpRange = _messages.StringField(17)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 18, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  tier = _messages.EnumField('TierValueValuesEnum', 21)
+  tlsMode = _messages.EnumField('TlsModeValueValuesEnum', 22)
+
+
+class InstanceAuthString(_messages.Message):
+  r"""Instance AUTH string details.
+
+  Fields:
+    authString: AUTH string set on the instance.
+  """
+
+  authString = _messages.StringField(1)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -888,6 +958,41 @@ class LocationMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   availableZones = _messages.MessageField('AvailableZonesValue', 1)
+
+
+class MetricHealth(_messages.Message):
+  r"""Metric health, such as used_memory_ratio, redis_server_cpu_usage
+
+  Enums:
+    StateValueValuesEnum: Health state, such as unhealthy/warning/healthy
+
+  Fields:
+    metric: Name of this metric
+    reason: Reason if the status is not healthy
+    state: Health state, such as unhealthy/warning/healthy
+    suggestion: Actional suggestion if the status is not healthy
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Health state, such as unhealthy/warning/healthy
+
+    Values:
+      HEALTH_STATE_UNSPECIFIED: Invalid
+      UNKNOWN: Unknown. May indicate exceptions.
+      HEALTHY: Healthy
+      WARNING: Warning
+      UNHEALTHY: Unhealthy
+    """
+    HEALTH_STATE_UNSPECIFIED = 0
+    UNKNOWN = 1
+    HEALTHY = 2
+    WARNING = 3
+    UNHEALTHY = 4
+
+  metric = _messages.StringField(1)
+  reason = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  suggestion = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -1078,6 +1183,18 @@ class RedisProjectsLocationsInstancesExportRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class RedisProjectsLocationsInstancesGetAuthStringRequest(_messages.Message):
+  r"""A RedisProjectsLocationsInstancesGetAuthStringRequest object.
+
+  Fields:
+    name: Required. Redis instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class RedisProjectsLocationsInstancesGetRequest(_messages.Message):
   r"""A RedisProjectsLocationsInstancesGetRequest object.
 
@@ -1148,6 +1265,40 @@ class RedisProjectsLocationsInstancesPatchRequest(_messages.Message):
   instance = _messages.MessageField('Instance', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class RedisProjectsLocationsInstancesReportInstanceHealthRequest(_messages.Message):
+  r"""A RedisProjectsLocationsInstancesReportInstanceHealthRequest object.
+
+  Enums:
+    WindowValueValuesEnum: Optional. Window associated with the health report.
+      Default: ONE_HOUR
+
+  Fields:
+    instance: Required. Name of Redis instance for which health report will be
+      retrieved
+    reportTime: Optional. Timestamp for the health report. Default: latest
+    window: Optional. Window associated with the health report. Default:
+      ONE_HOUR
+  """
+
+  class WindowValueValuesEnum(_messages.Enum):
+    r"""Optional. Window associated with the health report. Default: ONE_HOUR
+
+    Values:
+      HEALTH_WINDOW_UNSPECIFIED: Invalid window
+      ONE_HOUR: 1 hour
+      ONE_DAY: 1 day
+      ONE_WEEK: 1 week
+    """
+    HEALTH_WINDOW_UNSPECIFIED = 0
+    ONE_HOUR = 1
+    ONE_DAY = 2
+    ONE_WEEK = 3
+
+  instance = _messages.StringField(1, required=True)
+  reportTime = _messages.StringField(2)
+  window = _messages.EnumField('WindowValueValuesEnum', 3)
 
 
 class RedisProjectsLocationsInstancesUpgradeRequest(_messages.Message):
@@ -1225,6 +1376,40 @@ class RedisProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class ReportInstanceHealthResponse(_messages.Message):
+  r"""Response for ReportInstanceHealth.
+
+  Enums:
+    OverallStateValueValuesEnum: Health state of overall health of this
+      instance. Such as unhealthy/warning/healthy
+
+  Fields:
+    categories: Associated categories, such as CPU/Memory
+    overallState: Health state of overall health of this instance. Such as
+      unhealthy/warning/healthy
+  """
+
+  class OverallStateValueValuesEnum(_messages.Enum):
+    r"""Health state of overall health of this instance. Such as
+    unhealthy/warning/healthy
+
+    Values:
+      HEALTH_STATE_UNSPECIFIED: Invalid
+      UNKNOWN: Unknown. May indicate exceptions.
+      HEALTHY: Healthy
+      WARNING: Warning
+      UNHEALTHY: Unhealthy
+    """
+    HEALTH_STATE_UNSPECIFIED = 0
+    UNKNOWN = 1
+    HEALTHY = 2
+    WARNING = 3
+    UNHEALTHY = 4
+
+  categories = _messages.MessageField('CategoryHealth', 1, repeated=True)
+  overallState = _messages.EnumField('OverallStateValueValuesEnum', 2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1339,6 +1524,47 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TlsCertificate(_messages.Message):
+  r"""TlsCertificate Resource
+
+  Enums:
+    StateValueValuesEnum: Status of current TLS Cert
+
+  Fields:
+    cert: PEM representation.
+    createTime: Output only. The time when the certificate was created in [RFC
+      3339](https://tools.ietf.org/html/rfc3339) format, for example
+      `2020-05-18T00:00:00.094Z`.
+    expireTime: Output only. The time when the certificate expires in [RFC
+      3339](https://tools.ietf.org/html/rfc3339) format, for example
+      `2020-05-18T00:00:00.094Z`.
+    serialNumber: Serial number, as extracted from the certificate.
+    sha1Fingerprint: Sha1 Fingerprint of the certificate.
+    state: Status of current TLS Cert
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Status of current TLS Cert
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Current certificate is active
+      PHASED_OUT: certificate is just phased out
+      NEW_TO_ROTATE: new certificate to rotate to.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PHASED_OUT = 2
+    NEW_TO_ROTATE = 3
+
+  cert = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  expireTime = _messages.StringField(3)
+  serialNumber = _messages.StringField(4)
+  sha1Fingerprint = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class UpgradeInstanceRequest(_messages.Message):

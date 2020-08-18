@@ -24,6 +24,23 @@ DOCS_URL = 'https://cloud.google.com/identity/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  CUSTOMERS = (
+      'customers',
+      'customers/{customersId}',
+      {},
+      ['customersId'],
+      True
+  )
+  CUSTOMERS_USERINVITATIONS = (
+      'customers.userInvitations',
+      '{+name}',
+      {
+          '':
+              'customers/{customersId}/userInvitations/{userInvitationsId}',
+      },
+      ['name'],
+      True
+  )
   GROUPS = (
       'groups',
       '{+name}',

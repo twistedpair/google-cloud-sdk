@@ -59,9 +59,7 @@ class ArtifactregistryV1beta1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (ArtifactregistryProjectsLocationsOperationsGetRequest) input message
@@ -88,16 +86,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (ArtifactregistryProjectsLocationsOperationsListRequest) input message
@@ -343,8 +332,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a version and all of its content. The returned operation will.
-complete once the version has been deleted.
+      r"""Deletes a version and all of its content. The returned operation will complete once the version has been deleted.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsDeleteRequest) input message
@@ -435,8 +423,7 @@ complete once the version has been deleted.
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a package and all of its versions and tags. The returned operation.
-will complete once the package has been deleted.
+      r"""Deletes a package and all of its versions and tags. The returned operation will complete once the package has been deleted.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest) input message
@@ -527,8 +514,7 @@ will complete once the package has been deleted.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a repository. The returned Operation will finish once the.
-repository has been created. Its response will be the created Repository.
+      r"""Creates a repository. The returned Operation will finish once the repository has been created. Its response will be the created Repository.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesCreateRequest) input message
@@ -555,9 +541,7 @@ repository has been created. Its response will be the created Repository.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a repository and all of its contents. The returned Operation will.
-finish once the repository has been deleted. It will not have any Operation
-metadata and will return a google.protobuf.Empty response.
+      r"""Deletes a repository and all of its contents. The returned Operation will finish once the repository has been deleted. It will not have any Operation metadata and will return a google.protobuf.Empty response.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesDeleteRequest) input message

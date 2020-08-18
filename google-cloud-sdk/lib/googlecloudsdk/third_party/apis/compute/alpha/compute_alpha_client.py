@@ -16805,6 +16805,32 @@ For more information, see Deleting snapshots.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified TargetHttpProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+
+      Args:
+        request: (ComputeTargetHttpProxiesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.targetHttpProxies.patch',
+        ordered_params=['project', 'targetHttpProxy'],
+        path_params=['project', 'targetHttpProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpProxies/{targetHttpProxy}',
+        request_field='targetHttpProxyResource',
+        request_type_name='ComputeTargetHttpProxiesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetUrlMap(self, request, global_params=None):
       r"""Changes the URL map for TargetHttpProxy.
 

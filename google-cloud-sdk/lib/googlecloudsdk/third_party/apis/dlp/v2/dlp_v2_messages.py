@@ -26,7 +26,8 @@ class DlpInfoTypesListRequest(_messages.Message):
       If omitted, or if localized strings are not available, en-US strings
       will be returned.
     locationId: Deprecated. This field has no effect.
-    parent: The parent resource name. - Format:locations/[LOCATION-ID]
+    parent: The parent resource name. The format of this value is as follows:
+      locations/ LOCATION_ID
   """
 
   filter = _messages.StringField(1)
@@ -45,7 +46,8 @@ class DlpLocationsInfoTypesListRequest(_messages.Message):
       If omitted, or if localized strings are not available, en-US strings
       will be returned.
     locationId: Deprecated. This field has no effect.
-    parent: The parent resource name. - Format:locations/[LOCATION-ID]
+    parent: The parent resource name. The format of this value is as follows:
+      locations/ LOCATION_ID
   """
 
   filter = _messages.StringField(1)
@@ -61,10 +63,19 @@ class DlpOrganizationsDeidentifyTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
@@ -104,8 +115,8 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc,update_time, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
@@ -114,10 +125,19 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -151,10 +171,19 @@ class DlpOrganizationsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
@@ -194,8 +223,8 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc,update_time, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
@@ -204,10 +233,19 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -241,10 +279,19 @@ class DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest(_messages.Messag
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
@@ -284,8 +331,8 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc,update_time, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
@@ -294,10 +341,19 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -331,10 +387,19 @@ class DlpOrganizationsLocationsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
@@ -374,8 +439,8 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc,update_time, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
@@ -384,10 +449,19 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -421,10 +495,19 @@ class DlpOrganizationsLocationsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
@@ -462,8 +545,8 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc, display_name, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc, display_name, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
@@ -472,10 +555,19 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -508,10 +600,19 @@ class DlpOrganizationsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
@@ -549,8 +650,8 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc, display_name, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc, display_name, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
@@ -559,10 +660,19 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -595,8 +705,15 @@ class DlpProjectsContentDeidentifyRequest(_messages.Message):
     googlePrivacyDlpV2DeidentifyContentRequest: A
       GooglePrivacyDlpV2DeidentifyContentRequest resource to be passed as the
       request body.
-    parent: Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Parent resource name. The format of this value varies depending on
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
@@ -610,8 +727,15 @@ class DlpProjectsContentInspectRequest(_messages.Message):
     googlePrivacyDlpV2InspectContentRequest: A
       GooglePrivacyDlpV2InspectContentRequest resource to be passed as the
       request body.
-    parent: Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Parent resource name. The format of this value varies depending on
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
@@ -625,8 +749,15 @@ class DlpProjectsContentReidentifyRequest(_messages.Message):
     googlePrivacyDlpV2ReidentifyContentRequest: A
       GooglePrivacyDlpV2ReidentifyContentRequest resource to be passed as the
       request body.
-    parent: Required. The parent resource name. - Format:projects/[PROJECT-ID]
-      - Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
@@ -640,10 +771,19 @@ class DlpProjectsDeidentifyTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
@@ -683,8 +823,8 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc,update_time, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
@@ -693,10 +833,19 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -744,8 +893,15 @@ class DlpProjectsDlpJobsCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDlpJobRequest: A
       GooglePrivacyDlpV2CreateDlpJobRequest resource to be passed as the
       request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDlpJobRequest', 1)
@@ -779,36 +935,43 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
     TypeValueValuesEnum: The type of job. Defaults to `DlpJobType.INSPECT`
 
   Fields:
-    filter: Allows filtering.  Supported syntax:  * Filter expressions are
-      made up of one or more restrictions. * Restrictions can be combined by
-      `AND` or `OR` logical operators. A sequence of restrictions implicitly
-      uses `AND`. * A restriction has the form of `{field} {operator}
-      {value}`. * Supported fields/values for inspect jobs:     - `state` -
-      PENDING|RUNNING|CANCELED|FINISHED|FAILED     - `inspected_storage` -
-      DATASTORE|CLOUD_STORAGE|BIGQUERY     - `trigger_name` - The resource
-      name of the trigger that created job.     - 'end_time` - Corresponds to
-      time the job finished.     - 'start_time` - Corresponds to time the job
-      finished. * Supported fields for risk analysis jobs:     - `state` -
-      RUNNING|CANCELED|FINISHED|FAILED     - 'end_time` - Corresponds to time
-      the job finished.     - 'start_time` - Corresponds to time the job
-      finished. * The operator must be `=` or `!=`.  Examples:  *
-      inspected_storage = cloud_storage AND state = done * inspected_storage =
-      cloud_storage OR inspected_storage = bigquery * inspected_storage =
-      cloud_storage AND (state = done OR state = canceled) * end_time >
-      \"2017-12-12T00:00:00+00:00\"  The length of this field should be no
-      more than 500 characters.
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values for inspect jobs: - `state` -
+      PENDING|RUNNING|CANCELED|FINISHED|FAILED - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY - `trigger_name` - The resource name of
+      the trigger that created job. - 'end_time` - Corresponds to time the job
+      finished. - 'start_time` - Corresponds to time the job finished. *
+      Supported fields for risk analysis jobs: - `state` -
+      RUNNING|CANCELED|FINISHED|FAILED - 'end_time` - Corresponds to time the
+      job finished. - 'start_time` - Corresponds to time the job finished. *
+      The operator must be `=` or `!=`. Examples: * inspected_storage =
+      cloud_storage AND state = done * inspected_storage = cloud_storage OR
+      inspected_storage = bigquery * inspected_storage = cloud_storage AND
+      (state = done OR state = canceled) * end_time >
+      \"2017-12-12T00:00:00+00:00\" The length of this field should be no more
+      than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc, end_time asc, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc, end_time asc, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the job was created. - `end_time`:
       corresponds to time the job ended. - `name`: corresponds to job's name.
       - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -816,9 +979,9 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
     r"""The type of job. Defaults to `DlpJobType.INSPECT`
 
     Values:
-      DLP_JOB_TYPE_UNSPECIFIED: <no description>
-      INSPECT_JOB: <no description>
-      RISK_ANALYSIS_JOB: <no description>
+      DLP_JOB_TYPE_UNSPECIFIED: Unused
+      INSPECT_JOB: The job inspected Google Cloud for sensitive data.
+      RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
     """
     DLP_JOB_TYPE_UNSPECIFIED = 0
     INSPECT_JOB = 1
@@ -840,8 +1003,15 @@ class DlpProjectsImageRedactRequest(_messages.Message):
     googlePrivacyDlpV2RedactImageRequest: A
       GooglePrivacyDlpV2RedactImageRequest resource to be passed as the
       request body.
-    parent: The parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Parent resource name. The format of this value varies depending on
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
@@ -855,10 +1025,19 @@ class DlpProjectsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
@@ -898,8 +1077,8 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc,update_time, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
@@ -908,10 +1087,19 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -960,8 +1148,15 @@ class DlpProjectsJobTriggersCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateJobTriggerRequest: A
       GooglePrivacyDlpV2CreateJobTriggerRequest resource to be passed as the
       request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -994,28 +1189,27 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
   r"""A DlpProjectsJobTriggersListRequest object.
 
   Fields:
-    filter: Allows filtering.  Supported syntax:  * Filter expressions are
-      made up of one or more restrictions. * Restrictions can be combined by
-      `AND` or `OR` logical operators. A sequence of restrictions implicitly
-      uses `AND`. * A restriction has the form of `{field} {operator}
-      {value}`. * Supported fields/values for inspect jobs:     - `status` -
-      HEALTHY|PAUSED|CANCELLED     - `inspected_storage` -
-      DATASTORE|CLOUD_STORAGE|BIGQUERY     - 'last_run_time` - RFC 3339
-      formatted timestamp, surrounded by     quotation marks. Nanoseconds are
-      ignored.     - 'error_count' - Number of errors that have occurred while
-      running. * The operator must be `=` or `!=` for status and
-      inspected_storage.  Examples:  * inspected_storage = cloud_storage AND
-      status = HEALTHY * inspected_storage = cloud_storage OR
-      inspected_storage = bigquery * inspected_storage = cloud_storage AND
-      (state = PAUSED OR state = HEALTHY) * last_run_time >
-      \"2017-12-12T00:00:00+00:00\"  The length of this field should be no
-      more than 500 characters.
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values for inspect jobs: - `status` -
+      HEALTHY|PAUSED|CANCELLED - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY - 'last_run_time` - RFC 3339 formatted
+      timestamp, surrounded by quotation marks. Nanoseconds are ignored. -
+      'error_count' - Number of errors that have occurred while running. * The
+      operator must be `=` or `!=` for status and inspected_storage. Examples:
+      * inspected_storage = cloud_storage AND status = HEALTHY *
+      inspected_storage = cloud_storage OR inspected_storage = bigquery *
+      inspected_storage = cloud_storage AND (state = PAUSED OR state =
+      HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\" The length of
+      this field should be no more than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of triggeredJob fields to order by, followed
       by `asc` or `desc` postfix. This list is case-insensitive, default
       sorting order is ascending, redundant space characters are
-      insignificant.  Example: `name asc,update_time, create_time desc`
-      Supported fields are:  - `create_time`: corresponds to time the
+      insignificant. Example: `name asc,update_time, create_time desc`
+      Supported fields are: - `create_time`: corresponds to time the
       JobTrigger was created. - `update_time`: corresponds to time the
       JobTrigger was last updated. - `last_run_time`: corresponds to the last
       time the JobTrigger ran. - `name`: corresponds to JobTrigger's name. -
@@ -1024,8 +1218,15 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
     pageSize: Size of the page, can be limited by a server.
     pageToken: Page token to continue retrieval. Comes from previous call to
       ListJobTriggers. `order_by` field must not change for subsequent calls.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   filter = _messages.StringField(1)
@@ -1058,8 +1259,15 @@ class DlpProjectsLocationsContentDeidentifyRequest(_messages.Message):
     googlePrivacyDlpV2DeidentifyContentRequest: A
       GooglePrivacyDlpV2DeidentifyContentRequest resource to be passed as the
       request body.
-    parent: Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Parent resource name. The format of this value varies depending on
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
@@ -1073,8 +1281,15 @@ class DlpProjectsLocationsContentInspectRequest(_messages.Message):
     googlePrivacyDlpV2InspectContentRequest: A
       GooglePrivacyDlpV2InspectContentRequest resource to be passed as the
       request body.
-    parent: Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Parent resource name. The format of this value varies depending on
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
@@ -1088,8 +1303,15 @@ class DlpProjectsLocationsContentReidentifyRequest(_messages.Message):
     googlePrivacyDlpV2ReidentifyContentRequest: A
       GooglePrivacyDlpV2ReidentifyContentRequest resource to be passed as the
       request body.
-    parent: Required. The parent resource name. - Format:projects/[PROJECT-ID]
-      - Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
@@ -1103,10 +1325,19 @@ class DlpProjectsLocationsDeidentifyTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
       GooglePrivacyDlpV2CreateDeidentifyTemplateRequest resource to be passed
       as the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDeidentifyTemplateRequest', 1)
@@ -1146,8 +1377,8 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc,update_time, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
@@ -1156,10 +1387,19 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListDeidentifyTemplates`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -1207,8 +1447,15 @@ class DlpProjectsLocationsDlpJobsCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateDlpJobRequest: A
       GooglePrivacyDlpV2CreateDlpJobRequest resource to be passed as the
       request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDlpJobRequest', 1)
@@ -1271,36 +1518,43 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
     TypeValueValuesEnum: The type of job. Defaults to `DlpJobType.INSPECT`
 
   Fields:
-    filter: Allows filtering.  Supported syntax:  * Filter expressions are
-      made up of one or more restrictions. * Restrictions can be combined by
-      `AND` or `OR` logical operators. A sequence of restrictions implicitly
-      uses `AND`. * A restriction has the form of `{field} {operator}
-      {value}`. * Supported fields/values for inspect jobs:     - `state` -
-      PENDING|RUNNING|CANCELED|FINISHED|FAILED     - `inspected_storage` -
-      DATASTORE|CLOUD_STORAGE|BIGQUERY     - `trigger_name` - The resource
-      name of the trigger that created job.     - 'end_time` - Corresponds to
-      time the job finished.     - 'start_time` - Corresponds to time the job
-      finished. * Supported fields for risk analysis jobs:     - `state` -
-      RUNNING|CANCELED|FINISHED|FAILED     - 'end_time` - Corresponds to time
-      the job finished.     - 'start_time` - Corresponds to time the job
-      finished. * The operator must be `=` or `!=`.  Examples:  *
-      inspected_storage = cloud_storage AND state = done * inspected_storage =
-      cloud_storage OR inspected_storage = bigquery * inspected_storage =
-      cloud_storage AND (state = done OR state = canceled) * end_time >
-      \"2017-12-12T00:00:00+00:00\"  The length of this field should be no
-      more than 500 characters.
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values for inspect jobs: - `state` -
+      PENDING|RUNNING|CANCELED|FINISHED|FAILED - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY - `trigger_name` - The resource name of
+      the trigger that created job. - 'end_time` - Corresponds to time the job
+      finished. - 'start_time` - Corresponds to time the job finished. *
+      Supported fields for risk analysis jobs: - `state` -
+      RUNNING|CANCELED|FINISHED|FAILED - 'end_time` - Corresponds to time the
+      job finished. - 'start_time` - Corresponds to time the job finished. *
+      The operator must be `=` or `!=`. Examples: * inspected_storage =
+      cloud_storage AND state = done * inspected_storage = cloud_storage OR
+      inspected_storage = bigquery * inspected_storage = cloud_storage AND
+      (state = done OR state = canceled) * end_time >
+      \"2017-12-12T00:00:00+00:00\" The length of this field should be no more
+      than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc, end_time asc, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc, end_time asc, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the job was created. - `end_time`:
       corresponds to time the job ended. - `name`: corresponds to job's name.
       - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -1308,9 +1562,9 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
     r"""The type of job. Defaults to `DlpJobType.INSPECT`
 
     Values:
-      DLP_JOB_TYPE_UNSPECIFIED: <no description>
-      INSPECT_JOB: <no description>
-      RISK_ANALYSIS_JOB: <no description>
+      DLP_JOB_TYPE_UNSPECIFIED: Unused
+      INSPECT_JOB: The job inspected Google Cloud for sensitive data.
+      RISK_ANALYSIS_JOB: The job executed a Risk Analysis computation.
     """
     DLP_JOB_TYPE_UNSPECIFIED = 0
     INSPECT_JOB = 1
@@ -1332,8 +1586,15 @@ class DlpProjectsLocationsImageRedactRequest(_messages.Message):
     googlePrivacyDlpV2RedactImageRequest: A
       GooglePrivacyDlpV2RedactImageRequest resource to be passed as the
       request body.
-    parent: The parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Parent resource name. The format of this value varies depending on
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
@@ -1347,10 +1608,19 @@ class DlpProjectsLocationsInspectTemplatesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
       GooglePrivacyDlpV2CreateInspectTemplateRequest resource to be passed as
       the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateInspectTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2CreateInspectTemplateRequest', 1)
@@ -1390,8 +1660,8 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc,update_time, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the template was created. -
       `update_time`: corresponds to time the template was last updated. -
       `name`: corresponds to template's name. - `display_name`: corresponds to
@@ -1400,10 +1670,19 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListInspectTemplates`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -1452,8 +1731,15 @@ class DlpProjectsLocationsJobTriggersCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateJobTriggerRequest: A
       GooglePrivacyDlpV2CreateJobTriggerRequest resource to be passed as the
       request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -1501,28 +1787,27 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
   r"""A DlpProjectsLocationsJobTriggersListRequest object.
 
   Fields:
-    filter: Allows filtering.  Supported syntax:  * Filter expressions are
-      made up of one or more restrictions. * Restrictions can be combined by
-      `AND` or `OR` logical operators. A sequence of restrictions implicitly
-      uses `AND`. * A restriction has the form of `{field} {operator}
-      {value}`. * Supported fields/values for inspect jobs:     - `status` -
-      HEALTHY|PAUSED|CANCELLED     - `inspected_storage` -
-      DATASTORE|CLOUD_STORAGE|BIGQUERY     - 'last_run_time` - RFC 3339
-      formatted timestamp, surrounded by     quotation marks. Nanoseconds are
-      ignored.     - 'error_count' - Number of errors that have occurred while
-      running. * The operator must be `=` or `!=` for status and
-      inspected_storage.  Examples:  * inspected_storage = cloud_storage AND
-      status = HEALTHY * inspected_storage = cloud_storage OR
-      inspected_storage = bigquery * inspected_storage = cloud_storage AND
-      (state = PAUSED OR state = HEALTHY) * last_run_time >
-      \"2017-12-12T00:00:00+00:00\"  The length of this field should be no
-      more than 500 characters.
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values for inspect jobs: - `status` -
+      HEALTHY|PAUSED|CANCELLED - `inspected_storage` -
+      DATASTORE|CLOUD_STORAGE|BIGQUERY - 'last_run_time` - RFC 3339 formatted
+      timestamp, surrounded by quotation marks. Nanoseconds are ignored. -
+      'error_count' - Number of errors that have occurred while running. * The
+      operator must be `=` or `!=` for status and inspected_storage. Examples:
+      * inspected_storage = cloud_storage AND status = HEALTHY *
+      inspected_storage = cloud_storage OR inspected_storage = bigquery *
+      inspected_storage = cloud_storage AND (state = PAUSED OR state =
+      HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\" The length of
+      this field should be no more than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of triggeredJob fields to order by, followed
       by `asc` or `desc` postfix. This list is case-insensitive, default
       sorting order is ascending, redundant space characters are
-      insignificant.  Example: `name asc,update_time, create_time desc`
-      Supported fields are:  - `create_time`: corresponds to time the
+      insignificant. Example: `name asc,update_time, create_time desc`
+      Supported fields are: - `create_time`: corresponds to time the
       JobTrigger was created. - `update_time`: corresponds to time the
       JobTrigger was last updated. - `last_run_time`: corresponds to the last
       time the JobTrigger ran. - `name`: corresponds to JobTrigger's name. -
@@ -1531,8 +1816,15 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
     pageSize: Size of the page, can be limited by a server.
     pageToken: Page token to continue retrieval. Comes from previous call to
       ListJobTriggers. `order_by` field must not change for subsequent calls.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:projects/[PROJECT-ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on whether you have [specified a processing
+      location](/dlp/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   filter = _messages.StringField(1)
@@ -1565,10 +1857,19 @@ class DlpProjectsLocationsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
@@ -1606,8 +1907,8 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc, display_name, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc, display_name, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
@@ -1616,10 +1917,19 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -1652,10 +1962,19 @@ class DlpProjectsStoredInfoTypesCreateRequest(_messages.Message):
     googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
       GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
       the request body.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
@@ -1693,8 +2012,8 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant.  Example: `name
-      asc, display_name, create_time desc`  Supported fields are:  -
+      ascending, redundant space characters are insignificant. Example: `name
+      asc, display_name, create_time desc` Supported fields are: -
       `create_time`: corresponds to time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
@@ -1703,10 +2022,19 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
       returns a page of max size 100.
     pageToken: Page token to continue retrieval. Comes from previous call to
       `ListStoredInfoTypes`.
-    parent: Required. Parent resource name. - Format:projects/[PROJECT-ID] -
-      Format:organizations/[ORGANIZATION-ID] - Format:projects/[PROJECT-
-      ID]/locations/[LOCATION-ID] - Format:organizations/[ORGANIZATION-
-      ID]/locations/[LOCATION-ID]
+    parent: Required. Parent resource name. The format of this value varies
+      depending on the scope of the request (project or organization) and
+      whether you have [specified a processing location](/dlp/docs/specifying-
+      location): + Projects scope, location specified:
+      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
+      location specified (defaults to global): `projects/`PROJECT_ID +
+      Organizations scope, location specified:
+      `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
+      location specified (defaults to global): `organizations/`ORG_ID The
+      following example `parent` string specifies a parent project with the
+      identifier `example-project`, and specifies the `europe-west3` location
+      for processing data: parent=projects/example-project/locations/europe-
+      west3
   """
 
   locationId = _messages.StringField(1)
@@ -1885,10 +2213,8 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
 
 class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
   r"""Message defining the location of a BigQuery table. A table is uniquely
-  identified  by its project_id, dataset_id, and table_name. Within a query a
-  table is often referenced with a string in the format of:
-  `<project_id>:<dataset_id>.<table_id>` or
-  `<project_id>.<dataset_id>.<table_id>`.
+  identified by its project_id, dataset_id, and table_name. Within a query a
+  table is often referenced with a string in the format of: `:.` or `..`.
 
   Fields:
     datasetId: Dataset ID of the table.
@@ -2061,7 +2387,7 @@ class GooglePrivacyDlpV2CharacterMaskConfig(_messages.Message):
       skipped when replacing characters. For example, if the input string is
       `555-555-5555` and you instruct Cloud DLP to skip `-` and mask 5
       characters with `*`, Cloud DLP returns `***-**5-5555`.
-    maskingCharacter: Character to use to mask the sensitive values&mdash;for
+    maskingCharacter: Character to use to mask the sensitive values-for
       example, `*` for an alphabetic string such as a name, or `0` for a
       numeric string such as ZIP code or credit card number. This string must
       have a length of 1. If not supplied, this value defaults to `*` for
@@ -2123,8 +2449,8 @@ class GooglePrivacyDlpV2CloudStorageFileSet(_messages.Message):
   r"""Message representing a set of files in Cloud Storage.
 
   Fields:
-    url: The url, in the format `gs://<bucket>/<path>`. Trailing wildcard in
-      the path is allowed.
+    url: The url, in the format `gs:///`. Trailing wildcard in the path is
+      allowed.
   """
 
   url = _messages.StringField(1)
@@ -2166,15 +2492,27 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
     r"""FileTypesValueListEntryValuesEnum enum type.
 
     Values:
-      FILE_TYPE_UNSPECIFIED: <no description>
-      BINARY_FILE: <no description>
-      TEXT_FILE: <no description>
-      IMAGE: <no description>
-      WORD: <no description>
-      PDF: <no description>
-      AVRO: <no description>
-      CSV: <no description>
-      TSV: <no description>
+      FILE_TYPE_UNSPECIFIED: Includes all files.
+      BINARY_FILE: Includes all file extensions not covered by another entry.
+        Binary scanning attempts to convert the content of the file to utf_8
+        to scan the file. If you wish to avoid this fall back, specify one or
+        more of the other FileType's in your storage scan.
+      TEXT_FILE: Included file extensions: asc, brf, c, cc, cpp, csv, cxx,
+        c++, cs, css, dart, eml, go, h, hh, hpp, hxx, h++, hs, html, htm,
+        shtml, shtm, xhtml, lhs, ini, java, js, json, ocaml, md, mkd,
+        markdown, m, ml, mli, pl, pm, php, phtml, pht, py, pyw, rb, rbw, rs,
+        rc, scala, sh, sql, tex, txt, text, tsv, vcard, vcs, wml, xml, xsl,
+        xsd, yml, yaml.
+      IMAGE: Included file extensions: bmp, gif, jpg, jpeg, jpe, png.
+        bytes_limit_per_file has no effect on image files. Image inspection is
+        restricted to 'global', 'us', 'asia', and 'europe'.
+      WORD: Word files >30 MB will be scanned as binary files. Included file
+        extensions: docx, dotx, docm, dotm
+      PDF: PDF files >30 MB will be scanned as binary files. Included file
+        extensions: pdf
+      AVRO: Included file extensions: avro
+      CSV: Included file extensions: csv
+      TSV: Included file extensions: tsv
     """
     FILE_TYPE_UNSPECIFIED = 0
     BINARY_FILE = 1
@@ -2221,20 +2559,20 @@ class GooglePrivacyDlpV2CloudStoragePath(_messages.Message):
 class GooglePrivacyDlpV2CloudStorageRegexFileSet(_messages.Message):
   r"""Message representing a set of files in a Cloud Storage bucket. Regular
   expressions are used to allow fine-grained control over which files in the
-  bucket to include.  Included files are those that match at least one item in
+  bucket to include. Included files are those that match at least one item in
   `include_regex` and do not match any items in `exclude_regex`. Note that a
   file that matches items from both lists will _not_ be included. For a match
   to occur, the entire file path (i.e., everything in the url after the bucket
-  name) must match the regular expression.  For example, given the input
+  name) must match the regular expression. For example, given the input
   `{bucket_name: "mybucket", include_regex: ["directory1/.*"], exclude_regex:
-  ["directory1/excluded.*"]}`:  * `gs://mybucket/directory1/myfile` will be
+  ["directory1/excluded.*"]}`: * `gs://mybucket/directory1/myfile` will be
   included * `gs://mybucket/directory1/directory2/myfile` will be included
   (`.*` matches across `/`) * `gs://mybucket/directory0/directory1/myfile`
   will _not_ be included (the full path doesn't match any items in
   `include_regex`) * `gs://mybucket/directory1/excludedfile` will _not_ be
-  included (the path matches an item in `exclude_regex`)  If `include_regex`
-  is left empty, it will match all files by default (this is equivalent to
-  setting `include_regex: [".*"]`).  Some other common use cases:  *
+  included (the path matches an item in `exclude_regex`) If `include_regex` is
+  left empty, it will match all files by default (this is equivalent to
+  setting `include_regex: [".*"]`). Some other common use cases: *
   `{bucket_name: "mybucket", exclude_regex: [".*\.pdf"]}` will include all
   files in `mybucket` except for .pdf files * `{bucket_name: "mybucket",
   include_regex: ["directory/[^/]+"]}` will include all files directly under
@@ -2244,7 +2582,7 @@ class GooglePrivacyDlpV2CloudStorageRegexFileSet(_messages.Message):
     bucketName: The name of a Cloud Storage bucket. Required.
     excludeRegex: A list of regular expressions matching file paths to
       exclude. All files in the bucket that match at least one of these
-      regular expressions will be excluded from the scan.  Regular expressions
+      regular expressions will be excluded from the scan. Regular expressions
       use RE2 [syntax](https://github.com/google/re2/wiki/Syntax); a guide can
       be found under the google/re2 repository on GitHub.
     includeRegex: A list of regular expressions matching file paths to
@@ -2252,7 +2590,7 @@ class GooglePrivacyDlpV2CloudStorageRegexFileSet(_messages.Message):
       regular expressions will be included in the set of files, except for
       those that also match an item in `exclude_regex`. Leaving this field
       empty will match all files by default (this is equivalent to including
-      `.*` in the list).  Regular expressions use RE2
+      `.*` in the list). Regular expressions use RE2
       [syntax](https://github.com/google/re2/wiki/Syntax); a guide can be
       found under the google/re2 repository on GitHub.
   """
@@ -2280,14 +2618,14 @@ class GooglePrivacyDlpV2Condition(_messages.Message):
   r"""The field type of `value` and `field` do not need to match to be
   considered equal, but not all comparisons are possible. EQUAL_TO and
   NOT_EQUAL_TO attempt to compare even with incompatible types, but all other
-  comparisons are invalid with incompatible types. A `value` of type:  -
+  comparisons are invalid with incompatible types. A `value` of type: -
   `string` can be compared against all other types - `boolean` can only be
   compared against other booleans - `integer` can be compared against doubles
   or a string if the string value can be parsed as an integer. - `double` can
   be compared against integers or a string if the string can be parsed as a
   double. - `Timestamp` can be compared against strings in RFC 3339 date
   string format. - `TimeOfDay` can be compared against timestamps and strings
-  in the format of 'HH:mm:ss'.  If we fail to compare do to type mismatch, a
+  in the format of 'HH:mm:ss'. If we fail to compare do to type mismatch, a
   warning will be given and the condition will evaluate to false.
 
   Enums:
@@ -2353,11 +2691,11 @@ class GooglePrivacyDlpV2Container(_messages.Message):
     relativePath: The rest of the path after the root. Examples: - For
       BigQuery table `project_id:dataset_id.table_id`, the relative path is
       `table_id` - Google Cloud Storage file
-      `gs://bucket/folder/filename.txt`, the relative  path is
+      `gs://bucket/folder/filename.txt`, the relative path is
       `folder/filename.txt`
     rootPath: The root of the container. Examples: - For BigQuery table
-      `project_id:dataset_id.table_id`, the root is  `dataset_id` - For Google
-      Cloud Storage file `gs://bucket/folder/filename.txt`, the root  is
+      `project_id:dataset_id.table_id`, the root is `dataset_id` - For Google
+      Cloud Storage file `gs://bucket/folder/filename.txt`, the root is
       `gs://bucket`
     type: Container type, for example BigQuery or Google Cloud Storage.
     updateTime: Findings container modification timestamp, if applicable. For
@@ -2400,9 +2738,9 @@ class GooglePrivacyDlpV2ContentLocation(_messages.Message):
   Fields:
     containerName: Name of the container where the finding is located. The top
       level name is the source file name or table name. Names of some common
-      storage containers are formatted as follows:  * BigQuery tables:
+      storage containers are formatted as follows: * BigQuery tables:
       `{project_id}:{dataset_id}.{table_id}` * Cloud Storage files:
-      `gs://{bucket}/{path}` * Datastore namespace: {namespace}  Nested names
+      `gs://{bucket}/{path}` * Datastore namespace: {namespace} Nested names
       could be absent if the embedded object has no string identifier (for an
       example an image contained within a document).
     containerTimestamp: Findings container modification timestamp, if
@@ -2526,11 +2864,11 @@ class GooglePrivacyDlpV2CryptoDeterministicConfig(_messages.Message):
       plaintext value being encrypted. On decryption the provided context is
       validated against the value used during encryption. If a context was
       provided during encryption, same context must be provided during
-      decryption as well.  If the context is not set, plaintext would be used
-      as is for encryption. If the context is set but:  1. there is no record
+      decryption as well. If the context is not set, plaintext would be used
+      as is for encryption. If the context is set but: 1. there is no record
       present when transforming a given value or 2. the field is not present
-      when transforming a given value,  plaintext would be used as is for
-      encryption.  Note that case (1) is expected when an
+      when transforming a given value, plaintext would be used as is for
+      encryption. Note that case (1) is expected when an
       `InfoTypeTransformation` is applied to both structured and non-
       structured `ContentItem`s.
     cryptoKey: The key used by the encryption function.
@@ -2538,19 +2876,19 @@ class GooglePrivacyDlpV2CryptoDeterministicConfig(_messages.Message):
       This annotation will be applied to the surrogate by prefixing it with
       the name of the custom info type followed by the number of characters
       comprising the surrogate. The following scheme defines the format: {info
-      type name}({surrogate character count}):{surrogate}  For example, if the
+      type name}({surrogate character count}):{surrogate} For example, if the
       name of custom info type is 'MY_TOKEN_INFO_TYPE' and the surrogate is
       'abc', the full replacement value will be: 'MY_TOKEN_INFO_TYPE(3):abc'
       This annotation identifies the surrogate when inspecting content using
       the custom info type 'Surrogate'. This facilitates reversal of the
-      surrogate when it occurs in free text.  Note: For record transformations
+      surrogate when it occurs in free text. Note: For record transformations
       where the entire cell in a table is being transformed, surrogates are
       not mandatory. Surrogates are used to denote the location of the token
-      and are necessary for re-identification in free form text.  In order for
+      and are necessary for re-identification in free form text. In order for
       inspection to work properly, the name of this info type must not occur
-      naturally anywhere in your data; otherwise, inspection may either  -
+      naturally anywhere in your data; otherwise, inspection may either -
       reverse a surrogate that does not correspond to an actual identifier -
-      be unable to parse the surrogate and result in an error  Therefore,
+      be unable to parse the surrogate and result in an error Therefore,
       choose your custom info type name carefully after considering what your
       data looks like. One way to select a name that has a high chance of
       yielding reliable detection is to include one or more unicode characters
@@ -2605,7 +2943,7 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
   will be replaced with the same surrogate. Identifiers must be at least two
   characters long. In the case that the identifier is the empty string, it
   will be skipped. See https://cloud.google.com/dlp/docs/pseudonymization to
-  learn more.  Note: We recommend using  CryptoDeterministicConfig for all use
+  learn more. Note: We recommend using CryptoDeterministicConfig for all use
   cases which do not require preserving the input alphabet space and size,
   plus warrant referential integrity.
 
@@ -2616,14 +2954,14 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
     commonAlphabet: Common alphabets.
     context: The 'tweak', a context may be used for higher security since the
       same identifier in two different contexts won't be given the same
-      surrogate. If the context is not set, a default tweak will be used.  If
-      the context is set but:  1. there is no record present when transforming
+      surrogate. If the context is not set, a default tweak will be used. If
+      the context is set but: 1. there is no record present when transforming
       a given value or 1. the field is not present when transforming a given
-      value,  a default tweak will be used.  Note that case (1) is expected
-      when an `InfoTypeTransformation` is applied to both structured and non-
+      value, a default tweak will be used. Note that case (1) is expected when
+      an `InfoTypeTransformation` is applied to both structured and non-
       structured `ContentItem`s. Currently, the referenced field may be of
-      value type integer or string.  The tweak is constructed as a sequence of
-      bytes in big endian byte order such that:  - a 64 bit integer is encoded
+      value type integer or string. The tweak is constructed as a sequence of
+      bytes in big endian byte order such that: - a 64 bit integer is encoded
       followed by a single byte of value 1 - a string is encoded in UTF-8
       format followed by a single byte of value 2
     cryptoKey: Required. The key used by the encryption algorithm.
@@ -2633,21 +2971,21 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
       only once. Number of characters must be in the range [2, 95]. This must
       be encoded as ASCII. The order of characters does not matter. The full
       list of allowed characters is:
-      <code>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
-      ~`!@#$%^&*()_-+={[}]|\:;"'<,>.?/</code>
+      0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+      ~`!@#$%^&*()_-+={[}]|\:;"'<,>.?/
     radix: The native way to select the alphabet. Must be in the range [2,
       95].
     surrogateInfoType: The custom infoType to annotate the surrogate with.
       This annotation will be applied to the surrogate by prefixing it with
       the name of the custom infoType followed by the number of characters
       comprising the surrogate. The following scheme defines the format:
-      info_type_name(surrogate_character_count):surrogate  For example, if the
+      info_type_name(surrogate_character_count):surrogate For example, if the
       name of custom infoType is 'MY_TOKEN_INFO_TYPE' and the surrogate is
       'abc', the full replacement value will be: 'MY_TOKEN_INFO_TYPE(3):abc'
       This annotation identifies the surrogate when inspecting content using
       the custom infoType [`SurrogateType`](https://cloud.google.com/dlp/docs/
       reference/rest/v2/InspectConfig#surrogatetype). This facilitates
-      reversal of the surrogate when it occurs in free text.  In order for
+      reversal of the surrogate when it occurs in free text. In order for
       inspection to work properly, the name of this infoType must not occur
       naturally anywhere in your data; otherwise, inspection may find a
       surrogate that does not correspond to an actual identifier. Therefore,
@@ -2804,7 +3142,7 @@ class GooglePrivacyDlpV2DateShiftConfig(_messages.Message):
     upperBoundDays: Required. Range of shift in days. Actual shift will be
       selected at random within this range (inclusive ends). Negative means
       shift to earlier in time. Must not be more than 365250 days (1000 years)
-      each direction.  For example, 3 means shift date to at most 3 days into
+      each direction. For example, 3 means shift date to at most 3 days into
       the future.
   """
 
@@ -2924,11 +3262,11 @@ class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
 
   Fields:
     createTime: Output only. The creation timestamp of an inspectTemplate.
-    deidentifyConfig: ///////////// // The core content of the template  //
+    deidentifyConfig: ///////////// // The core content of the template //
       ///////////////
     description: Short description (max 256 chars).
     displayName: Display name (max 256 chars).
-    name: Output only. The template name.  The template will have one of the
+    name: Output only. The template name. The template will have one of the
       following formats: `projects/PROJECT_ID/deidentifyTemplates/TEMPLATE_ID`
       OR `organizations/ORGANIZATION_ID/deidentifyTemplates/TEMPLATE_ID`
     updateTime: Output only. The last update timestamp of an inspectTemplate.
@@ -2967,8 +3305,8 @@ class GooglePrivacyDlpV2DeltaPresenceEstimationConfig(_messages.Message):
 
 class GooglePrivacyDlpV2DeltaPresenceEstimationHistogramBucket(_messages.Message):
   r"""A DeltaPresenceEstimationHistogramBucket message with the following
-  values:   min_probability: 0.1   max_probability: 0.2   frequency: 42 means
-  that there are 42 records for which \u03b4 is in [0.1, 0.2). An important
+  values: min_probability: 0.1 max_probability: 0.2 frequency: 42 means that
+  there are 42 records for which \u03b4 is in [0.1, 0.2). An important
   particular case is when min_probability = max_probability = 1: then, every
   individual who shares this quasi-identifier combination is in the dataset.
 
@@ -3016,10 +3354,10 @@ class GooglePrivacyDlpV2DeltaPresenceEstimationResult(_messages.Message):
     deltaPresenceEstimationHistogram: The intervals [min_probability,
       max_probability) do not overlap. If a value doesn't correspond to any
       such interval, the associated frequency is zero. For example, the
-      following records:   {min_probability: 0, max_probability: 0.1,
-      frequency: 17}   {min_probability: 0.2, max_probability: 0.3, frequency:
-      42}   {min_probability: 0.3, max_probability: 0.4, frequency: 99} mean
-      that there are no record with an estimated probability in [0.1, 0.2) nor
+      following records: {min_probability: 0, max_probability: 0.1, frequency:
+      17} {min_probability: 0.2, max_probability: 0.3, frequency: 42}
+      {min_probability: 0.3, max_probability: 0.4, frequency: 99} mean that
+      there are no record with an estimated probability in [0.1, 0.2) nor
       larger or equal to 0.4.
   """
 
@@ -3042,7 +3380,7 @@ class GooglePrivacyDlpV2DetectionRule(_messages.Message):
 class GooglePrivacyDlpV2Dictionary(_messages.Message):
   r"""Custom information type based on a dictionary of words or phrases. This
   can be used to match sensitive information specific to the data, such as a
-  list of employee IDs or job titles.  Dictionary words are case-insensitive
+  list of employee IDs or job titles. Dictionary words are case-insensitive
   and all characters other than letters and digits in the unicode [Basic
   Multilingual Plane](https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_
   Multilingual_Plane) will be replaced with whitespace when scanning for
@@ -3052,7 +3390,7 @@ class GooglePrivacyDlpV2Dictionary(_messages.Message):
   adjacent characters within the word, so letters must be next to non-letters
   and digits next to non-digits. For example, the dictionary word "jen" will
   match the first three letters of the text "jen123" but will return no
-  matches for "jennifer".  Dictionary words containing a large number of
+  matches for "jennifer". Dictionary words containing a large number of
   characters that are not letters or digits may result in unexpected findings
   because such characters are treated as whitespace. The
   [limits](https://cloud.google.com/dlp/limits) page contains details about
@@ -3218,15 +3556,15 @@ class GooglePrivacyDlpV2ExclusionRule(_messages.Message):
 
     Values:
       MATCHING_TYPE_UNSPECIFIED: Invalid.
-      MATCHING_TYPE_FULL_MATCH: Full match.  - Dictionary: join of Dictionary
+      MATCHING_TYPE_FULL_MATCH: Full match. - Dictionary: join of Dictionary
         results matched complete finding quote - Regex: all regex matches fill
         a finding quote start to end - Exclude info type: completely inside
         affecting info types findings
-      MATCHING_TYPE_PARTIAL_MATCH: Partial match.  - Dictionary: at least one
+      MATCHING_TYPE_PARTIAL_MATCH: Partial match. - Dictionary: at least one
         of the tokens in the finding matches - Regex: substring of the finding
         matches - Exclude info type: intersects with affecting info types
         findings
-      MATCHING_TYPE_INVERSE_MATCH: Inverse match.  - Dictionary: no tokens in
+      MATCHING_TYPE_INVERSE_MATCH: Inverse match. - Dictionary: no tokens in
         the finding match the dictionary - Regex: finding doesn't match the
         regex - Exclude info type: no intersection with affecting info types
         findings
@@ -3286,10 +3624,10 @@ class GooglePrivacyDlpV2FieldTransformation(_messages.Message):
   Fields:
     condition: Only apply the transformation if the condition evaluates to
       true for the given `RecordCondition`. The conditions are allowed to
-      reference fields that are not used in the actual transformation.
-      Example Use Cases:  - Apply a different bucket transformation to an age
-      column if the zip code column for the same record is within a specific
-      range. - Redact a field if the date of birth field is greater than 85.
+      reference fields that are not used in the actual transformation. Example
+      Use Cases: - Apply a different bucket transformation to an age column if
+      the zip code column for the same record is within a specific range. -
+      Redact a field if the date of birth field is greater than 85.
     fields: Required. Input field(s) to apply the transformation to.
     infoTypeTransformations: Treat the contents of the field as free text, and
       selectively transform content that matches an `InfoType`.
@@ -3308,14 +3646,13 @@ class GooglePrivacyDlpV2FileSet(_messages.Message):
   Fields:
     regexFileSet: The regex-filtered set of files to scan. Exactly one of
       `url` or `regex_file_set` must be set.
-    url: The Cloud Storage url of the file(s) to scan, in the format
-      `gs://<bucket>/<path>`. Trailing wildcard in the path is allowed.  If
-      the url ends in a trailing slash, the bucket or directory represented by
-      the url will be scanned non-recursively (content in sub-directories will
-      not be scanned). This means that `gs://mybucket/` is equivalent to
-      `gs://mybucket/*`, and `gs://mybucket/directory/` is equivalent to
-      `gs://mybucket/directory/*`.  Exactly one of `url` or `regex_file_set`
-      must be set.
+    url: The Cloud Storage url of the file(s) to scan, in the format `gs:///`.
+      Trailing wildcard in the path is allowed. If the url ends in a trailing
+      slash, the bucket or directory represented by the url will be scanned
+      non-recursively (content in sub-directories will not be scanned). This
+      means that `gs://mybucket/` is equivalent to `gs://mybucket/*`, and
+      `gs://mybucket/directory/` is equivalent to `gs://mybucket/directory/*`.
+      Exactly one of `url` or `regex_file_set` must be set.
   """
 
   regexFileSet = _messages.MessageField('GooglePrivacyDlpV2CloudStorageRegexFileSet', 1)
@@ -3330,12 +3667,12 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
       `info_type` is correct.
 
   Messages:
-    LabelsValue: The labels associated with this `Finding`.  Label keys must
-      be between 1 and 63 characters long and must conform to the following
-      regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be
+    LabelsValue: The labels associated with this `Finding`. Label keys must be
+      between 1 and 63 characters long and must conform to the following
+      regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. Label values must be
       between 0 and 63 characters long and must conform to the regular
-      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can
-      be associated with a given finding.  Examples: * `"environment" :
+      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`. No more than 10 labels can
+      be associated with a given finding. Examples: * `"environment" :
       "production"` * `"pipeline" : "etl"`
 
   Fields:
@@ -3344,12 +3681,12 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
       `excluded_types` is false.
     jobCreateTime: Time the job started that produced this finding.
     jobName: The job that stored the finding.
-    labels: The labels associated with this `Finding`.  Label keys must be
+    labels: The labels associated with this `Finding`. Label keys must be
       between 1 and 63 characters long and must conform to the following
-      regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be
+      regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. Label values must be
       between 0 and 63 characters long and must conform to the regular
-      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can
-      be associated with a given finding.  Examples: * `"environment" :
+      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`. No more than 10 labels can
+      be associated with a given finding. Examples: * `"environment" :
       "production"` * `"pipeline" : "etl"`
     likelihood: Confidence of how likely it is that the `info_type` is
       correct.
@@ -3389,12 +3726,12 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels associated with this `Finding`.  Label keys must be between
+    r"""The labels associated with this `Finding`. Label keys must be between
     1 and 63 characters long and must conform to the following regular
-    expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be between 0
+    expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. Label values must be between 0
     and 63 characters long and must conform to the regular expression
-    `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can be associated
-    with a given finding.  Examples: * `"environment" : "production"` *
+    `([a-z]([-a-z0-9]*[a-z0-9])?)?`. No more than 10 labels can be associated
+    with a given finding. Examples: * `"environment" : "production"` *
     `"pipeline" : "etl"`
 
     Messages:
@@ -3459,14 +3796,14 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
   r"""Buckets values based on fixed size ranges. The Bucketing transformation
   can provide all of this functionality, but requires more configuration. This
   message is provided as a convenience to the user for simple bucketing
-  strategies.  The transformed value will be a hyphenated string of
+  strategies. The transformed value will be a hyphenated string of
   {lower_bound}-{upper_bound}, i.e if lower_bound = 10 and upper_bound = 20
-  all values that are within this bucket will be replaced with "10-20".  This
-  can be used on data of type: double, long.  If the bound Value type differs
+  all values that are within this bucket will be replaced with "10-20". This
+  can be used on data of type: double, long. If the bound Value type differs
   from the type of data being transformed, we will first attempt converting
   the type of the data to be transformed to match the type of the bound before
-  comparing.  See https://cloud.google.com/dlp/docs/concepts-bucketing to
-  learn more.
+  comparing. See https://cloud.google.com/dlp/docs/concepts-bucketing to learn
+  more.
 
   Fields:
     bucketSize: Required. Size of each bucket (except for minimum and maximum
@@ -3534,29 +3871,29 @@ class GooglePrivacyDlpV2HybridFindingDetails(_messages.Message):
     LabelsValue: Labels to represent user provided metadata about the data
       being inspected. If configured by the job, some key values may be
       required. The labels associated with `Finding`'s produced by hybrid
-      inspection.  Label keys must be between 1 and 63 characters long and
-      must conform to the following regular expression:
-      `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be between 0 and 63
+      inspection. Label keys must be between 1 and 63 characters long and must
+      conform to the following regular expression:
+      `[a-z]([-a-z0-9]*[a-z0-9])?`. Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can be
-      associated with a given finding.  Examples: * `"environment" :
+      `([a-z]([-a-z0-9]*[a-z0-9])?)?`. No more than 10 labels can be
+      associated with a given finding. Examples: * `"environment" :
       "production"` * `"pipeline" : "etl"`
 
   Fields:
     containerDetails: Details about the container where the content being
       inspected is from.
     fileOffset: Offset in bytes of the line, from the beginning of the file,
-      where the finding  is located. Populate if the item being scanned is
-      only part of a bigger item, such as a shard of a file and you want to
-      track the absolute position of the finding.
+      where the finding is located. Populate if the item being scanned is only
+      part of a bigger item, such as a shard of a file and you want to track
+      the absolute position of the finding.
     labels: Labels to represent user provided metadata about the data being
       inspected. If configured by the job, some key values may be required.
       The labels associated with `Finding`'s produced by hybrid inspection.
       Label keys must be between 1 and 63 characters long and must conform to
-      the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label
+      the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. Label
       values must be between 0 and 63 characters long and must conform to the
-      regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10
-      labels can be associated with a given finding.  Examples: *
+      regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`. No more than 10
+      labels can be associated with a given finding. Examples: *
       `"environment" : "production"` * `"pipeline" : "etl"`
     rowOffset: Offset of the row for tables. Populate if the row(s) being
       scanned are part of a bigger dataset and you want to keep track of their
@@ -3572,12 +3909,12 @@ class GooglePrivacyDlpV2HybridFindingDetails(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""Labels to represent user provided metadata about the data being
     inspected. If configured by the job, some key values may be required. The
-    labels associated with `Finding`'s produced by hybrid inspection.  Label
+    labels associated with `Finding`'s produced by hybrid inspection. Label
     keys must be between 1 and 63 characters long and must conform to the
-    following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values
+    following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. Label values
     must be between 0 and 63 characters long and must conform to the regular
-    expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can be
-    associated with a given finding.  Examples: * `"environment" :
+    expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`. No more than 10 labels can be
+    associated with a given finding. Examples: * `"environment" :
     "production"` * `"pipeline" : "etl"`
 
     Messages:
@@ -3657,12 +3994,12 @@ class GooglePrivacyDlpV2HybridOptions(_messages.Message):
 
   Messages:
     LabelsValue: To organize findings, these labels will be added to each
-      finding.  Label keys must be between 1 and 63 characters long and must
+      finding. Label keys must be between 1 and 63 characters long and must
       conform to the following regular expression:
-      `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label values must be between 0 and 63
+      `[a-z]([-a-z0-9]*[a-z0-9])?`. Label values must be between 0 and 63
       characters long and must conform to the regular expression
-      `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10 labels can be
-      associated with a given finding.  Examples: * `"environment" :
+      `([a-z]([-a-z0-9]*[a-z0-9])?)?`. No more than 10 labels can be
+      associated with a given finding. Examples: * `"environment" :
       "production"` * `"pipeline" : "etl"`
 
   Fields:
@@ -3670,16 +4007,16 @@ class GooglePrivacyDlpV2HybridOptions(_messages.Message):
       stored once in the job. 256 max length.
     labels: To organize findings, these labels will be added to each finding.
       Label keys must be between 1 and 63 characters long and must conform to
-      the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label
+      the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. Label
       values must be between 0 and 63 characters long and must conform to the
-      regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10
-      labels can be associated with a given finding.  Examples: *
+      regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`. No more than 10
+      labels can be associated with a given finding. Examples: *
       `"environment" : "production"` * `"pipeline" : "etl"`
     requiredFindingLabelKeys: These are labels that each inspection request
       must include within their 'finding_labels' map. Request may contain
-      others, but any missing one of these will be rejected.  Label keys must
+      others, but any missing one of these will be rejected. Label keys must
       be between 1 and 63 characters long and must conform to the following
-      regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  No more than 10 keys
+      regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. No more than 10 keys
       can be required.
     tableOptions: If the container is a table, additional information to make
       findings meaningful such as the columns that are primary keys.
@@ -3689,11 +4026,11 @@ class GooglePrivacyDlpV2HybridOptions(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""To organize findings, these labels will be added to each finding.
     Label keys must be between 1 and 63 characters long and must conform to
-    the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  Label
+    the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. Label
     values must be between 0 and 63 characters long and must conform to the
-    regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  No more than 10
-    labels can be associated with a given finding.  Examples: * `"environment"
-    : "production"` * `"pipeline" : "etl"`
+    regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`. No more than 10 labels
+    can be associated with a given finding. Examples: * `"environment" :
+    "production"` * `"pipeline" : "etl"`
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3758,7 +4095,7 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
     name: Name of the information type. Either a name of your choosing when
       creating a CustomInfoType, or one of the names listed at
       https://cloud.google.com/dlp/docs/infotypes-reference when specifying a
-      built-in type.  When sending Cloud DLP results to Data Catalog, infoType
+      built-in type. When sending Cloud DLP results to Data Catalog, infoType
       names should conform to the pattern `[A-Za-z0-9$-_]{1,64}`.
   """
 
@@ -3783,9 +4120,9 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
     r"""SupportedByValueListEntryValuesEnum enum type.
 
     Values:
-      ENUM_TYPE_UNSPECIFIED: <no description>
-      INSPECT: <no description>
-      RISK_ANALYSIS: <no description>
+      ENUM_TYPE_UNSPECIFIED: Unused.
+      INSPECT: Supported by the inspect operations.
+      RISK_ANALYSIS: Supported by the risk analysis operations.
     """
     ENUM_TYPE_UNSPECIFIED = 0
     INSPECT = 1
@@ -3875,10 +4212,10 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       finding is included in the response; see Finding.quote.
     infoTypes: Restricts what info_types to look for. The values must
       correspond to InfoType values returned by ListInfoTypes or listed at
-      https://cloud.google.com/dlp/docs/infotypes-reference.  When no
-      InfoTypes or CustomInfoTypes are specified in a request, the system may
+      https://cloud.google.com/dlp/docs/infotypes-reference. When no InfoTypes
+      or CustomInfoTypes are specified in a request, the system may
       automatically choose what detectors to run. By default this may be all
-      types, but may change over time as detectors are updated.  If you need
+      types, but may change over time as detectors are updated. If you need
       precise control and predictability as to what detectors are run you
       should specify specific InfoTypes listed in the reference, otherwise a
       default list will be used, which may change over time.
@@ -3895,9 +4232,9 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
     r"""ContentOptionsValueListEntryValuesEnum enum type.
 
     Values:
-      CONTENT_UNSPECIFIED: <no description>
-      CONTENT_TEXT: <no description>
-      CONTENT_IMAGE: <no description>
+      CONTENT_UNSPECIFIED: Includes entire content of a file or a data stream.
+      CONTENT_TEXT: Text content within the data, excluding any metadata.
+      CONTENT_IMAGE: Images found in the data.
     """
     CONTENT_UNSPECIFIED = 0
     CONTENT_TEXT = 1
@@ -4022,7 +4359,7 @@ class GooglePrivacyDlpV2InspectTemplate(_messages.Message):
     displayName: Display name (max 256 chars).
     inspectConfig: The core content of the template. Configuration of the
       scanning process.
-    name: Output only. The template name.  The template will have one of the
+    name: Output only. The template name. The template will have one of the
       following formats: `projects/PROJECT_ID/inspectTemplates/TEMPLATE_ID` OR
       `organizations/ORGANIZATION_ID/inspectTemplates/TEMPLATE_ID`;
     updateTime: Output only. The last update timestamp of an inspectTemplate.
@@ -4134,10 +4471,9 @@ class GooglePrivacyDlpV2KAnonymityConfig(_messages.Message):
       quasi-identifier tuples over distinct rows, we consider the entire
       collection of tuples as the composite quasi-identifier. This collection
       is a multiset: the order in which the different tuples appear in the
-      dataset is ignored, but their frequency is taken into account.
-      Important note: a maximum of 1000 rows can be associated to a single
-      entity ID. If more rows are associated with the same entity ID, some
-      might be ignored.
+      dataset is ignored, but their frequency is taken into account. Important
+      note: a maximum of 1000 rows can be associated to a single entity ID. If
+      more rows are associated with the same entity ID, some might be ignored.
     quasiIds: Set of fields to compute k-anonymity over. When multiple fields
       are specified, they are considered a single composite key. Structs and
       repeated data types are not supported; however, nested fields are
@@ -4223,7 +4559,7 @@ class GooglePrivacyDlpV2KMapEstimationConfig(_messages.Message):
 
 class GooglePrivacyDlpV2KMapEstimationHistogramBucket(_messages.Message):
   r"""A KMapEstimationHistogramBucket message with the following values:
-  min_anonymity: 3   max_anonymity: 5   frequency: 42 means that there are 42
+  min_anonymity: 3 max_anonymity: 5 frequency: 42 means that there are 42
   records whose quasi-identifier values correspond to 3, 4 or 5 people in the
   overlying population. An important particular case is when min_anonymity =
   max_anonymity = 1: the frequency field then corresponds to the number of
@@ -4267,8 +4603,8 @@ class GooglePrivacyDlpV2KMapEstimationResult(_messages.Message):
     kMapEstimationHistogram: The intervals [min_anonymity, max_anonymity] do
       not overlap. If a value doesn't correspond to any such interval, the
       associated frequency is zero. For example, the following records:
-      {min_anonymity: 1, max_anonymity: 1, frequency: 17}   {min_anonymity: 2,
-      max_anonymity: 3, frequency: 42}   {min_anonymity: 5, max_anonymity: 10,
+      {min_anonymity: 1, max_anonymity: 1, frequency: 17} {min_anonymity: 2,
+      max_anonymity: 3, frequency: 42} {min_anonymity: 5, max_anonymity: 10,
       frequency: 99} mean that there are no record with an estimated anonymity
       of 4, 5, or larger than 10.
   """
@@ -4292,7 +4628,7 @@ class GooglePrivacyDlpV2Key(_messages.Message):
       element identifies a _child_ of the root entity, the third element
       identifies a child of the second entity, and so forth. The entities
       identified by all prefixes of the path are called the element's
-      _ancestors_.  A path can never be empty, and a path can have at most 100
+      _ancestors_. A path can never be empty, and a path can have at most 100
       elements.
   """
 
@@ -4646,7 +4982,7 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
       unspecified for Risk jobs. Columns are derived from the `Finding`
       object. If appending to an existing table, any columns from the
       predefined schema that are missing will be added. No columns in the
-      existing table will be deleted.  If unspecified, then all available
+      existing table will be deleted. If unspecified, then all available
       columns will be used for a new table or an (existing) table with no
       schema, and no changes will be made to an existing table that has a
       schema. Only for use with external storage.
@@ -4656,21 +4992,21 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
       field is only used for Inspect and must be unspecified for Risk jobs.
       Columns are derived from the `Finding` object. If appending to an
       existing table, any columns from the predefined schema that are missing
-      will be added. No columns in the existing table will be deleted.  If
+      will be added. No columns in the existing table will be deleted. If
       unspecified, then all available columns will be used for a new table or
       an (existing) table with no schema, and no changes will be made to an
       existing table that has a schema. Only for use with external storage.
     table: Store findings in an existing table or a new table in an existing
       dataset. If table_id is not set a new one will be generated for you with
       the following format: dlp_googleapis_yyyy_mm_dd_[dlp_job_id]. Pacific
-      timezone will be used for generating the date details.  For Inspect,
-      each column in an existing output table must have the same name, type,
-      and mode of a field in the `Finding` object.  For Risk, an existing
-      output table should be the output of a previous Risk analysis job run on
-      the same source table, with the same privacy metric and quasi-
-      identifiers. Risk jobs that analyze the same table but compute a
-      different privacy metric, or use different sets of quasi-identifiers,
-      cannot store their results in the same table.
+      timezone will be used for generating the date details. For Inspect, each
+      column in an existing output table must have the same name, type, and
+      mode of a field in the `Finding` object. For Risk, an existing output
+      table should be the output of a previous Risk analysis job run on the
+      same source table, with the same privacy metric and quasi-identifiers.
+      Risk jobs that analyze the same table but compute a different privacy
+      metric, or use different sets of quasi-identifiers, cannot store their
+      results in the same table.
   """
 
   class OutputSchemaValueValuesEnum(_messages.Enum):
@@ -4678,7 +5014,7 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
     only used for Inspect and must be unspecified for Risk jobs. Columns are
     derived from the `Finding` object. If appending to an existing table, any
     columns from the predefined schema that are missing will be added. No
-    columns in the existing table will be deleted.  If unspecified, then all
+    columns in the existing table will be deleted. If unspecified, then all
     available columns will be used for a new table or an (existing) table with
     no schema, and no changes will be made to an existing table that has a
     schema. Only for use with external storage.
@@ -4709,7 +5045,7 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
 class GooglePrivacyDlpV2PartitionId(_messages.Message):
   r"""Datastore partition ID. A partition ID identifies a grouping of
   entities. The grouping is always by project and namespace, however the
-  namespace ID may be empty.  A partition ID contains several dimensions:
+  namespace ID may be empty. A partition ID contains several dimensions:
   project ID and namespace ID.
 
   Fields:
@@ -4723,7 +5059,7 @@ class GooglePrivacyDlpV2PartitionId(_messages.Message):
 
 
 class GooglePrivacyDlpV2PathElement(_messages.Message):
-  r"""A (kind, ID/name) pair used to construct a key path.  If either name or
+  r"""A (kind, ID/name) pair used to construct a key path. If either name or
   ID is set, the element is complete. If neither is set, the element is
   incomplete.
 
@@ -5080,8 +5416,8 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
       previous de-identification. Re-identification is performed by examining
       the transformations used to de-identify the items and executing the
       reverse. This requires that only reversible transformations be provided
-      here. The reversible transformations are:   -
-      `CryptoDeterministicConfig`  - `CryptoReplaceFfxFpeConfig`
+      here. The reversible transformations are: - `CryptoDeterministicConfig`
+      - `CryptoReplaceFfxFpeConfig`
     reidentifyTemplateName: Template to use. References an instance of
       `DeidentifyTemplate`. Any configuration directly specified in
       `reidentify_config` or `inspect_config` will override those set in the
@@ -5202,9 +5538,9 @@ class GooglePrivacyDlpV2Schedule(_messages.Message):
 
   Fields:
     recurrencePeriodDuration: With this option a job is started a regular
-      periodic basis. For example: every day (86400 seconds).  A scheduled
+      periodic basis. For example: every day (86400 seconds). A scheduled
       start time will be skipped if the previous execution has not ended when
-      its scheduled time occurs.  This value must be set to a time duration
+      its scheduled time occurs. This value must be set to a time duration
       greater than or equal to 1 day and can be no longer than 60 days.
   """
 
@@ -5327,10 +5663,10 @@ class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
     errors: Errors that occurred when creating this storedInfoType version, or
       anomalies detected in the storedInfoType data that render it unusable.
       Only the five most recent errors will be displayed, with the most recent
-      error appearing first.  For example, some of the data for stored custom
+      error appearing first. For example, some of the data for stored custom
       dictionaries is put in the user's Google Cloud Storage bucket, and if
       this data is modified or deleted by the user or another system, the
-      dictionary becomes invalid.  If any errors occur, fix the problem
+      dictionary becomes invalid. If any errors occur, fix the problem
       indicated by the error message and use the UpdateStoredInfoType API
       method to create another version of the storedInfoType to continue using
       it, reusing the same `config` if it was not the source of the error.
@@ -5556,12 +5892,12 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
       upper time limit is applied.
     startTime: Exclude files or rows older than this value.
     timestampField: Specification of the field containing the timestamp of
-      scanned items. Used for data sources like Datastore and BigQuery.  For
+      scanned items. Used for data sources like Datastore and BigQuery. For
       BigQuery: Required to filter out rows based on the given start and end
       times. If not specified and the table was modified between the given
       start and end times, the entire table will be scanned. The valid data
       types of the timestamp field are: `INTEGER`, `DATE`, `TIMESTAMP`, or
-      `DATETIME` BigQuery column.  For Datastore. Valid data types of the
+      `DATETIME` BigQuery column. For Datastore. Valid data types of the
       timestamp field are: `TIMESTAMP`. Datastore entity will be scanned if
       the timestamp property does not exist or its value is empty or invalid.
   """
@@ -5801,9 +6137,9 @@ class GooglePrivacyDlpV2WordList(_messages.Message):
 class GoogleProtobufEmpty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -5812,7 +6148,7 @@ class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -5821,7 +6157,7 @@ class GoogleRpcStatus(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -5863,11 +6199,11 @@ class GoogleTypeDate(_messages.Message):
   r"""Represents a whole or partial calendar date, e.g. a birthday. The time
   of day and time zone are either specified elsewhere or are not significant.
   The date is relative to the Proleptic Gregorian Calendar. This can
-  represent:  * A full date, with non-zero year, month and day values * A
-  month and day value, with a zero year, e.g. an anniversary * A year on its
-  own, with zero month and day values * A year and month value, with a zero
-  day, e.g. a credit card expiration date  Related types are
-  google.type.TimeOfDay and `google.protobuf.Timestamp`.
+  represent: * A full date, with non-zero year, month and day values * A month
+  and day value, with a zero year, e.g. an anniversary * A year on its own,
+  with zero month and day values * A year and month value, with a zero day,
+  e.g. a credit card expiration date Related types are google.type.TimeOfDay
+  and `google.protobuf.Timestamp`.
 
   Fields:
     day: Day of month. Must be from 1 to 31 and valid for the year and month,

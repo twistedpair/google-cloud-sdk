@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.compute.instances.ops_agents import exceptions
 from googlecloudsdk.api_lib.compute.instances.ops_agents import ops_agents_policy as agent_policy
 from googlecloudsdk.core import log
 
+# TODO(b/163135147): Treat 0-prefixed versions as invalid.
 _PINNED_MAJOR_VERSION_RE = re.compile(r'^\d+\.\*\.\*$')
 _PINNED_LEGACY_VERSION_RE = re.compile(r'^5\.5\.2-\d+$')
 _PINNED_VERSION_RE = re.compile(r'^\d+\.\d+\.\d+$')
@@ -56,6 +57,12 @@ _OS_SHORT_NAMES_WITH_OS_AGENT_PREINSTALLED = (
 )
 
 
+_SUPPORTED_AGENT_MAJOR_VERSIONS = {
+    'logging': ('1',),
+    'metrics': ('5', '6'),
+}
+
+
 class AgentTypesUniquenessError(exceptions.PolicyValidationError):
   """Raised when agent type is not unique."""
 
@@ -73,6 +80,17 @@ class AgentVersionInvalidFormatError(exceptions.PolicyValidationError):
         '[current-major], or anything in the format of '
         '[MAJOR_VERSION.MINOR_VERSION.PATCH_VERSION] or '
         '[MAJOR_VERSION.*.*].'.format(version))
+
+
+class AgentUnsupportedMajorVersionError(exceptions.PolicyValidationError):
+  """Raised when agent's major version is not supported."""
+
+  def __init__(self, agent_type, version):
+    supported_versions = _SUPPORTED_AGENT_MAJOR_VERSIONS[agent_type]
+    super(AgentUnsupportedMajorVersionError, self).__init__(
+        'The agent major version [{}] is not supported for agent type [{}]. '
+        'Supported major versions are: {}'.format(
+            version, agent_type, ', '.join(supported_versions)))
 
 
 class AgentVersionAndEnableAutoupgradeConflictError(
@@ -201,18 +219,21 @@ def _ValidateAgentRule(agent_rule):
     * AgentVersionAndEnableAutoupgradeConflictError:
       Agent version is pinned but autoupgrade is enabled.
   """
-  return (_ValidateAgentVersion(agent_rule.version) +
+  return (_ValidateAgentVersion(agent_rule.type, agent_rule.version) +
           _ValidateAgentVersionAndEnableAutoupgrade(
               agent_rule.version, agent_rule.enable_autoupgrade))
 
 
-def _ValidateAgentVersion(version):
+def _ValidateAgentVersion(agent_type, version):
   """Validates agent version format.
 
   This validation happens after the arg parsing stage. At this point, we can
   assume that the field is a valid string.
 
   Args:
+    agent_type: str. The type of agent to be installed. Allowed values:
+      * "logging"
+      * "metrics"
     version: str. The version of agent. Allowed values:
       * "latest"
       * "current-major"
@@ -220,18 +241,29 @@ def _ValidateAgentVersion(version):
       * "[MAJOR_VERSION].[MINOR_VERSION].[PATCH_VERSION]"
 
   Returns:
-    An empty list if the validation passes. A singleton list with the following
-    error if the validation fails.
+    An empty list if the validation passes. A singleton list with one of
+    the following errors if the validation fails.
     * AgentVersionInvalidFormatError:
       Agent version format is invalid.
+    * AgentMajorVersionNotSupportedError:
+      Agent's major version is not supported for the given agent type.
   """
   version_enum = agent_policy.OpsAgentPolicy.AgentRule.Version
-  if not (version in {version_enum.LATEST_OF_ALL,
-                      version_enum.CURRENT_MAJOR} or
-          _PINNED_MAJOR_VERSION_RE.search(version) or
-          _PINNED_LEGACY_VERSION_RE.search(version) or
-          _PINNED_VERSION_RE.search(version)):
+  if version in {version_enum.LATEST_OF_ALL, version_enum.CURRENT_MAJOR}:
+    return []
+
+  valid_pin_res = {
+      _PINNED_MAJOR_VERSION_RE,
+      _PINNED_LEGACY_VERSION_RE,
+      _PINNED_VERSION_RE,
+  }
+  if not any(regex.search(version) for regex in valid_pin_res):
     return [AgentVersionInvalidFormatError(version)]
+
+  major_version = version.split('.')[0]
+  if major_version not in _SUPPORTED_AGENT_MAJOR_VERSIONS[agent_type]:
+    return [AgentUnsupportedMajorVersionError(agent_type, version)]
+
   return []
 
 

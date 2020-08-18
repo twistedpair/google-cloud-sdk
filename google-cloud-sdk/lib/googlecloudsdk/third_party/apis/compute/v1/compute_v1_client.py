@@ -3346,6 +3346,32 @@ If an empty request body is given, clears the deprecation status instead.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Patches the specified image with the data included in the request. Only the following fields can be modified: family, description, deprecation status.
+
+      Args:
+        request: (ComputeImagesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.images.patch',
+        ordered_params=['project', 'image'],
+        path_params=['image', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/images/{image}',
+        request_field='imageResource',
+        request_type_name='ComputeImagesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 

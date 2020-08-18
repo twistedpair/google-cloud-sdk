@@ -13,6 +13,14 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class AppDevExperienceFeatureSpec(_messages.Message):
+  r"""Spec for App Dev Experience Feature."""
+
+
+class AppDevExperienceFeatureState(_messages.Message):
+  r"""State for App Dev Exp Feature."""
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -401,12 +409,14 @@ class ConfigManagementFeatureState(_messages.Message):
       the actual state in the cluster, while the MembershipConfig in the
       FeatureSpec represents the intended state
     operatorState: Current install status of ACM's Operator
+    policyControllerState: PolicyController status
   """
 
   clusterName = _messages.StringField(1)
   configSyncState = _messages.MessageField('ConfigSyncState', 2)
   membershipConfig = _messages.MessageField('MembershipConfig', 3)
   operatorState = _messages.MessageField('OperatorState', 4)
+  policyControllerState = _messages.MessageField('PolicyControllerState', 5)
 
 
 class ConfigSync(_messages.Message):
@@ -673,6 +683,7 @@ class Feature(_messages.Message):
     LabelsValue: GCP labels for this feature.
 
   Fields:
+    appdevexperienceFeatureSpec: Feature for App Dev Experience.
     authorizerFeatureSpec: The specification for the Authorizer Feature.
     cloudauditloggingFeatureSpec: Feature for Anthos Cloud Audit Logging.
     configmanagementFeatureSpec: Feature for Anthos Config Management.
@@ -718,21 +729,22 @@ class Feature(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 1)
-  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 2)
-  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 3)
-  createTime = _messages.StringField(4)
-  deleteTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  featureState = _messages.MessageField('FeatureState', 7)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 10)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 11)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 12)
-  name = _messages.StringField(13)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 14)
-  updateTime = _messages.StringField(15)
+  appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
+  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 2)
+  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 3)
+  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 4)
+  createTime = _messages.StringField(5)
+  deleteTime = _messages.StringField(6)
+  description = _messages.StringField(7)
+  featureState = _messages.MessageField('FeatureState', 8)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 11)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 12)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 13)
+  name = _messages.StringField(14)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 15)
+  updateTime = _messages.StringField(16)
 
 
 class FeatureState(_messages.Message):
@@ -823,6 +835,7 @@ class FeatureStateDetails(_messages.Message):
       of the feature. It also allows for an interpretation of the details.
 
   Fields:
+    appdevexperienceFeatureState: A AppDevExperienceFeatureState attribute.
     authorizerFeatureState: State for the Authorizer Feature.
     cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
       feature.
@@ -854,17 +867,18 @@ class FeatureStateDetails(_messages.Message):
     FAILED = 2
     WARNING = 3
 
-  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 1)
-  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 2)
-  code = _messages.EnumField('CodeValueValuesEnum', 3)
-  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 4)
-  description = _messages.StringField(5)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 6)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 7)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 8)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 9)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 10)
-  updateTime = _messages.StringField(11)
+  appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 1)
+  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 2)
+  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 3)
+  code = _messages.EnumField('CodeValueValuesEnum', 4)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 5)
+  description = _messages.StringField(6)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 7)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 8)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 9)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 10)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 11)
+  updateTime = _messages.StringField(12)
 
 
 class FeatureTest(_messages.Message):
@@ -971,6 +985,56 @@ class FooBar(_messages.Message):
 
   first = _messages.StringField(1)
   second = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GatekeeperDeploymentState(_messages.Message):
+  r"""State of Policy Controller installation.
+
+  Enums:
+    GatekeeperAuditValueValuesEnum: Status of gatekeeper-audit deployment.
+    GatekeeperControllerManagerStateValueValuesEnum: Status of gatekeeper-
+      controller-manager pod.
+
+  Fields:
+    gatekeeperAudit: Status of gatekeeper-audit deployment.
+    gatekeeperControllerManagerState: Status of gatekeeper-controller-manager
+      pod.
+  """
+
+  class GatekeeperAuditValueValuesEnum(_messages.Enum):
+    r"""Status of gatekeeper-audit deployment.
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  class GatekeeperControllerManagerStateValueValuesEnum(_messages.Enum):
+    r"""Status of gatekeeper-controller-manager pod.
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  gatekeeperAudit = _messages.EnumField('GatekeeperAuditValueValuesEnum', 1)
+  gatekeeperControllerManagerState = _messages.EnumField('GatekeeperControllerManagerStateValueValuesEnum', 2)
+
+
+class GatekeeperState(_messages.Message):
+  r"""States for Constraint Templates and Policy Constraints."""
 
 
 class GitConfig(_messages.Message):
@@ -1449,9 +1513,13 @@ class MembershipConfig(_messages.Message):
 
   Fields:
     configSync: Config Sync configuration for the cluster.
+    policyController: Policy Controller configuration for the cluster.
+    version: Version of ACM installed.
   """
 
   configSync = _messages.MessageField('ConfigSync', 1)
+  policyController = _messages.MessageField('PolicyController', 2)
+  version = _messages.StringField(3)
 
 
 class MeteringFeatureSpec(_messages.Message):
@@ -1733,6 +1801,57 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class PolicyController(_messages.Message):
+  r"""Configuration for Policy Controller
+
+  Fields:
+    auditIntervalSeconds: Sets the interval for Policy Controller Audit Scans
+      (in seconds). When set to 0, this disables audit functionality
+      altogether.
+    enabled: Enables the installation of Policy Controller. If false, the rest
+      of PolicyController fields take no effect.
+    exemptableNamespaces: The set of namespaces that are excluded from Policy
+      Controller checks. Namespaces do not need to currently exist on the
+      cluster.
+    referentialRulesEnabled: Enables the ability to use Constraint Templates
+      that reference to objects other than the object currently being
+      evaluated.
+    templateLibraryInstalled: Installs the default template library along with
+      Policy Controller.
+  """
+
+  auditIntervalSeconds = _messages.IntegerField(1)
+  enabled = _messages.BooleanField(2)
+  exemptableNamespaces = _messages.StringField(3, repeated=True)
+  referentialRulesEnabled = _messages.BooleanField(4)
+  templateLibraryInstalled = _messages.BooleanField(5)
+
+
+class PolicyControllerState(_messages.Message):
+  r"""State for PolicyControllerState.
+
+  Fields:
+    deploymentState: The state about the policy controller installation.
+    gatekeeperState: The state of Gatekeeper policies and constraints.
+    version: The version of Gatekeeper Policy Controller deployed.
+  """
+
+  deploymentState = _messages.MessageField('GatekeeperDeploymentState', 1)
+  gatekeeperState = _messages.MessageField('GatekeeperState', 2)
+  version = _messages.MessageField('PolicyControllerVersion', 3)
+
+
+class PolicyControllerVersion(_messages.Message):
+  r"""The build version of Gatekeeper Policy Controller is using.
+
+  Fields:
+    version: The gatekeeper image tag that is composed of ACM version, git
+      tag, build number.
+  """
+
+  version = _messages.StringField(1)
+
+
 class Rule(_messages.Message):
   r"""A rule to be applied in a Policy.
 
@@ -1786,6 +1905,94 @@ class Rule(_messages.Message):
   permissions = _messages.StringField(7, repeated=True)
 
 
+class ServiceMeshAnalysisMessage(_messages.Message):
+  r"""ServiceMeshAnalysisMessage is a single message produced by an analyzer,
+  and it used to communicate to the end user about the state of their Service
+  Mesh configuration.
+
+  Messages:
+    ArgsValue: A UI can combine these args with a template (based on
+      message_base.type) to produce an internationalized message.
+
+  Fields:
+    args: A UI can combine these args with a template (based on
+      message_base.type) to produce an internationalized message.
+    description: A human readable description of what the error means. It is
+      suitable for non-internationalize display purposes.
+    messageBase: Details common to all types of Istio and ServiceMesh analysis
+      messages.
+    resourcePaths: A list of strings specifying the resource identifiers that
+      were the cause of message generation. A "path" here may be: *
+      MEMBERSHIP_ID if the cause is a specific member cluster *
+      MEMBERSHIP_ID/(NAMESPACE\/)?RESOURCETYPE/NAME if the cause is a resource
+      in a cluster
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ArgsValue(_messages.Message):
+    r"""A UI can combine these args with a template (based on
+    message_base.type) to produce an internationalized message.
+
+    Messages:
+      AdditionalProperty: An additional property for a ArgsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ArgsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  args = _messages.MessageField('ArgsValue', 1)
+  description = _messages.StringField(2)
+  messageBase = _messages.MessageField('ServiceMeshAnalysisMessageBase', 3)
+  resourcePaths = _messages.StringField(4, repeated=True)
+
+
+class ServiceMeshAnalysisMessageBase(_messages.Message):
+  r"""AnalysisMessageBase describes some common information that is needed for
+  all messages.
+
+  Enums:
+    LevelValueValuesEnum: Represents how severe a message is.
+
+  Fields:
+    documentationUrl: A url pointing to the Service Mesh or Istio
+      documentation for this specific error type.
+    level: Represents how severe a message is.
+    type: Represents the specific type of a message.
+  """
+
+  class LevelValueValuesEnum(_messages.Enum):
+    r"""Represents how severe a message is.
+
+    Values:
+      LEVEL_UNSPECIFIED: Illegal. Same
+        istio.analysis.v1alpha1.AnalysisMessageBase.Level.UNKNOWN.
+      ERROR: ERROR represents a misconfiguration that must be fixed.
+      WARNING: WARNING represents a misconfiguration that should be fixed.
+      INFO: INFO represents an informational finding.
+    """
+    LEVEL_UNSPECIFIED = 0
+    ERROR = 1
+    WARNING = 2
+    INFO = 3
+
+  documentationUrl = _messages.StringField(1)
+  level = _messages.EnumField('LevelValueValuesEnum', 2)
+  type = _messages.MessageField('Type', 3)
+
+
 class ServiceMeshFeatureSpec(_messages.Message):
   r"""ServiceMeshFeatureSpec contains the input for the service mesh feature.
   """
@@ -1793,15 +2000,15 @@ class ServiceMeshFeatureSpec(_messages.Message):
 
 
 class ServiceMeshFeatureState(_messages.Message):
-  r"""ServiceMeshFeatureState contains the status fields specific to the
-  service mesh feature. Only those fields that reflect the state of the
-  feature are eligible to be in a feature's state message. These fields are
-  expected to be updated only by the automation and that's usually the
-  controllers operating on this feature. This is currently just a placeholder
-  and more fields will be added when we have more state information to report
-  for this feature.
+  r"""ServiceMeshFeatureState describes the state of the Service Mesh hub
+  feature as analyzed by the Service Mesh Hub Controller.
+
+  Fields:
+    analysisMessages: Output only. Results of running Service Mesh analyzers
+      against member clusters, or the entire mesh.
   """
 
+  analysisMessages = _messages.MessageField('ServiceMeshAnalysisMessage', 1, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1972,6 +2179,25 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class Type(_messages.Message):
+  r"""A unique identifier for the type of message. Name is intended to be
+  human-readable, code is intended to be machine readable. There should be a
+  one-to-one mapping between name and code. (i.e. do not re-use names or codes
+  between message types.) See istio.analysis.v1alpha1.AnalysisMessageBase.Type
+
+  Fields:
+    code: A 7 character code matching `^IST[0-9]{4}$` or `^ASM[0-9]{4}$`,
+      intended to uniquely identify the message type. (e.g. "IST0001" is
+      mapped to the "InternalError" message type.)
+    name: A human-readable name for the message type. e.g. "InternalError",
+      "PodMissingProxy". This should be the same for all messages of the same
+      type.
+  """
+
+  code = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

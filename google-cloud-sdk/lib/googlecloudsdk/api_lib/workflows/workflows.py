@@ -18,18 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import json
-
-from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.api_lib.workflows import codes
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.workflows import flags
 from googlecloudsdk.core import resources
-
-import six
 
 
 class UnsupportedReleaseTrackError(Exception):
@@ -175,7 +171,7 @@ class _OperationPoller(waiter.OperationPoller):
     """Overrides."""
     if operation.done:
       if operation.error:
-        raise waiter.OperationError(_SerializeError(operation.error))
+        raise waiter.OperationError(_ExtractErrorMessage(operation.error))
       return True
     return False
 
@@ -188,16 +184,18 @@ class _OperationPoller(waiter.OperationPoller):
     return self.workflows.Get(self.workflow_ref)
 
 
-def _SerializeError(error):
-  """Serializes the error message for better format."""
-  if isinstance(error, six.string_types):
-    return error
-  try:
-    return json.dumps(
-        encoding.MessageToDict(error),
-        indent=2,
-        sort_keys=True,
-        separators=(',', ': '))
-  except Exception:  # pylint: disable=broad-except
-    # try the best, fall back to return error
-    return error
+def _ExtractErrorMessage(error):
+  """Extracts the error message for better format."""
+
+  if hasattr(error, 'code'):
+    code_name = codes.Code(error.code).name
+  else:
+    code_name = 'UNKNOWN'
+
+  if hasattr(error, 'message'):
+    error_message = error.message
+  else:
+    # Returns the entire error object if no message field is available.
+    error_message = error
+
+  return '[{code}] {message}'.format(code=code_name, message=error_message)

@@ -55,9 +55,7 @@ class IapV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an Identity Aware Proxy (IAP) OAuth client. The client is owned.
-by IAP. Requires that the brand for the project exists and that it is
-set for internal-only use.
+      r"""Creates an Identity Aware Proxy (IAP) OAuth client. The client is owned by IAP. Requires that the brand for the project exists and that it is set for internal-only use.
 
       Args:
         request: (IapProjectsBrandsIdentityAwareProxyClientsCreateRequest) input message
@@ -84,9 +82,7 @@ set for internal-only use.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an Identity Aware Proxy (IAP) OAuth client. Useful for removing.
-obsolete clients, managing the number of clients in a given project, and
-cleaning up after tests. Requires that the client is owned by IAP.
+      r"""Deletes an Identity Aware Proxy (IAP) OAuth client. Useful for removing obsolete clients, managing the number of clients in a given project, and cleaning up after tests. Requires that the client is owned by IAP.
 
       Args:
         request: (IapProjectsBrandsIdentityAwareProxyClientsDeleteRequest) input message
@@ -113,8 +109,7 @@ cleaning up after tests. Requires that the client is owned by IAP.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves an Identity Aware Proxy (IAP) OAuth client.
-Requires that the client is owned by IAP.
+      r"""Retrieves an Identity Aware Proxy (IAP) OAuth client. Requires that the client is owned by IAP.
 
       Args:
         request: (IapProjectsBrandsIdentityAwareProxyClientsGetRequest) input message
@@ -168,8 +163,7 @@ Requires that the client is owned by IAP.
     )
 
     def ResetSecret(self, request, global_params=None):
-      r"""Resets an Identity Aware Proxy (IAP) OAuth client secret. Useful if the.
-secret was compromised. Requires that the client is owned by IAP.
+      r"""Resets an Identity Aware Proxy (IAP) OAuth client secret. Useful if the secret was compromised. Requires that the client is owned by IAP.
 
       Args:
         request: (IapProjectsBrandsIdentityAwareProxyClientsResetSecretRequest) input message
@@ -206,13 +200,7 @@ secret was compromised. Requires that the client is owned by IAP.
           }
 
     def Create(self, request, global_params=None):
-      r"""Constructs a new OAuth brand for the project if one does not exist.
-The created brand is "internal only", meaning that OAuth clients created
-under it only accept requests from users who belong to the same G Suite
-organization as the project. The brand is created in an un-reviewed status.
-NOTE: The "internal only" status can be manually changed in the Google
-Cloud console. Requires that a brand does not already exist for the
-project, and that the specified support email is owned by the caller.
+      r"""Constructs a new OAuth brand for the project if one does not exist. The created brand is "internal only", meaning that OAuth clients created under it only accept requests from users who belong to the same G Suite organization as the project. The brand is created in an un-reviewed status. NOTE: The "internal only" status can be manually changed in the Google Cloud console. Requires that a brand does not already exist for the project, and that the specified support email is owned by the caller.
 
       Args:
         request: (IapProjectsBrandsCreateRequest) input message
@@ -313,10 +301,7 @@ project, and that the specified support email is owned by the caller.
           }
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for an Identity-Aware Proxy protected.
-resource.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
+      r"""Gets the access control policy for an Identity-Aware Proxy protected resource. More information about managing access via IAP can be found at: https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api.
 
       Args:
         request: (IapGetIamPolicyRequest) input message
@@ -370,10 +355,7 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for an Identity-Aware Proxy protected.
-resource. Replaces any existing policy.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
+      r"""Sets the access control policy for an Identity-Aware Proxy protected resource. Replaces any existing policy. More information about managing access via IAP can be found at: https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api.
 
       Args:
         request: (IapSetIamPolicyRequest) input message
@@ -400,10 +382,7 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the Identity-Aware Proxy protected.
-resource.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
+      r"""Returns permissions that a caller has on the Identity-Aware Proxy protected resource. More information about managing access via IAP can be found at: https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api.
 
       Args:
         request: (IapTestIamPermissionsRequest) input message
@@ -430,8 +409,7 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
     )
 
     def UpdateIapSettings(self, request, global_params=None):
-      r"""Updates the IAP settings on a particular IAP protected resource. It.
-replaces all fields unless the `update_mask` is set.
+      r"""Updates the IAP settings on a particular IAP protected resource. It replaces all fields unless the `update_mask` is set.
 
       Args:
         request: (IapUpdateIapSettingsRequest) input message

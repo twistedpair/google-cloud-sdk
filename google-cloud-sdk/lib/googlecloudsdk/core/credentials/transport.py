@@ -92,8 +92,11 @@ class CredentialWrappingMixin(object):
                   transport.SetHeader('X-Goog-User-Project', quota_project)))
 
       http_client = self.AuthorizeClient(http_client, creds)
+      # Set this attribute so we can access it later, even after the http_client
+      # request method has been wrapped
+      setattr(http_client, '_googlecloudsdk_credentials', creds)
 
-    http_client = self.WrapRequest(
+    self.WrapRequest(
         http_client, handlers, _HandleAuthError,
         (client.AccessTokenRefreshError, google_auth_exceptions.RefreshError))
 

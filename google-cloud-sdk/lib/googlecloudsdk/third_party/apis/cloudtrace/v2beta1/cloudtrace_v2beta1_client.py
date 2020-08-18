@@ -53,10 +53,7 @@ class CloudtraceV2beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a sink that exports trace spans to a destination.  The.
-export of newly-ingested traces begins immediately, unless the sink's
-`writer_identity` is not permitted to write to the destination.  A sink can
-export traces only from the resource owning the sink (the 'parent').
+      r"""Creates a sink that exports trace spans to a destination. The export of newly-ingested traces begins immediately, unless the sink's `writer_identity` is not permitted to write to the destination. A sink can export traces only from the resource owning the sink (the 'parent').
 
       Args:
         request: (CloudtraceProjectsTraceSinksCreateRequest) input message
@@ -164,9 +161,7 @@ export traces only from the resource owning the sink (the 'parent').
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a sink.  This method updates fields in the existing sink according.
-to the provided update mask. The sink's name cannot be changed nor any
-output-only fields (e.g. the writer_identity).
+      r"""Updates a sink. This method updates fields in the existing sink according to the provided update mask. The sink's name cannot be changed nor any output-only fields (e.g. the writer_identity).
 
       Args:
         request: (CloudtraceProjectsTraceSinksPatchRequest) input message

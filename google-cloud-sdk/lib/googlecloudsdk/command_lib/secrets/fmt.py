@@ -28,7 +28,7 @@ table(
 """
 
 _SECRET_DATA = """
-value[terminator=""](
+value[terminator="",private](
   payload.data.decode(base64).decode(utf8)
 )
 """

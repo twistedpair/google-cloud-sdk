@@ -258,17 +258,17 @@ class GoogleCloudRecommenderV1MarkInsightAcceptedRequest(_messages.Message):
 
   Messages:
     StateMetadataValue: Optional. State properties user wish to include with
-      this state.  Full replace of the current state_metadata.
+      this state. Full replace of the current state_metadata.
 
   Fields:
     etag: Required. Fingerprint of the Insight. Provides optimistic locking.
     stateMetadata: Optional. State properties user wish to include with this
-      state.  Full replace of the current state_metadata.
+      state. Full replace of the current state_metadata.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StateMetadataValue(_messages.Message):
-    r"""Optional. State properties user wish to include with this state.  Full
+    r"""Optional. State properties user wish to include with this state. Full
     replace of the current state_metadata.
 
     Messages:
@@ -442,9 +442,9 @@ class GoogleCloudRecommenderV1MarkRecommendationSucceededRequest(_messages.Messa
 
 class GoogleCloudRecommenderV1Operation(_messages.Message):
   r"""Contains an operation for a resource loosely based on the JSON-PATCH
-  format with support for:  * Custom filters for describing partial array
+  format with support for: * Custom filters for describing partial array
   patch. * Extended path values for describing nested arrays. * Custom fields
-  for describing the resource for which the operation is being   described. *
+  for describing the resource for which the operation is being described. *
   Allows extension to custom operations not natively supported by RFC6902. See
   https://tools.ietf.org/html/rfc6902 for details on the original RFC.
 
@@ -453,11 +453,11 @@ class GoogleCloudRecommenderV1Operation(_messages.Message):
       elements or nested array elements in order to narrow down to a single
       unique element that is being tested/modified. This is intended to be an
       exact match per filter. To perform advanced matching, use
-      path_value_matchers.  * Example: {   "/versions/*/name" : "it-123"
-      "/versions/*/targetSize/percent": 20  } * Example: {
-      "/bindings/*/role": "roles/admin"   "/bindings/*/condition" : null  } *
-      Example: {   "/bindings/*/role": "roles/admin"   "/bindings/*/members/*"
-      : ["x@google.com", "y@google.com"]  } When both path_filters and
+      path_value_matchers. * Example: { "/versions/*/name" : "it-123"
+      "/versions/*/targetSize/percent": 20 } * Example: { "/bindings/*/role":
+      "roles/admin" "/bindings/*/condition" : null } * Example: {
+      "/bindings/*/role": "roles/admin" "/bindings/*/members/*" :
+      ["x@google.com", "y@google.com"] } When both path_filters and
       path_value_matchers are set, an implicit AND must be performed.
     PathValueMatchersValue: Similar to path_filters, this contains set of
       filters to apply if `path` field referes to array elements. This is
@@ -475,12 +475,12 @@ class GoogleCloudRecommenderV1Operation(_messages.Message):
     pathFilters: Set of filters to apply if `path` refers to array elements or
       nested array elements in order to narrow down to a single unique element
       that is being tested/modified. This is intended to be an exact match per
-      filter. To perform advanced matching, use path_value_matchers.  *
-      Example: {   "/versions/*/name" : "it-123"
-      "/versions/*/targetSize/percent": 20  } * Example: {
-      "/bindings/*/role": "roles/admin"   "/bindings/*/condition" : null  } *
-      Example: {   "/bindings/*/role": "roles/admin"   "/bindings/*/members/*"
-      : ["x@google.com", "y@google.com"]  } When both path_filters and
+      filter. To perform advanced matching, use path_value_matchers. *
+      Example: { "/versions/*/name" : "it-123"
+      "/versions/*/targetSize/percent": 20 } * Example: { "/bindings/*/role":
+      "roles/admin" "/bindings/*/condition" : null } * Example: {
+      "/bindings/*/role": "roles/admin" "/bindings/*/members/*" :
+      ["x@google.com", "y@google.com"] } When both path_filters and
       path_value_matchers are set, an implicit AND must be performed.
     pathValueMatchers: Similar to path_filters, this contains set of filters
       to apply if `path` field referes to array elements. This is meant to
@@ -498,8 +498,8 @@ class GoogleCloudRecommenderV1Operation(_messages.Message):
     sourceResource: Can be set with action 'copy' to copy resource
       configuration across different resources of the same type. Example: A
       resource clone can be done via action = 'copy', path = "/", from = "/",
-      source_resource = <source> and resource_name = <target>. This field is
-      empty for all other values of `action`.
+      source_resource = and resource_name = . This field is empty for all
+      other values of `action`.
     value: Value for the `path` field. Will be set for
       actions:'add'/'replace'. Maybe set for action: 'test'. Either this or
       `value_matcher` will be set for 'test' operation. An exact match must be
@@ -514,11 +514,11 @@ class GoogleCloudRecommenderV1Operation(_messages.Message):
     r"""Set of filters to apply if `path` refers to array elements or nested
     array elements in order to narrow down to a single unique element that is
     being tested/modified. This is intended to be an exact match per filter.
-    To perform advanced matching, use path_value_matchers.  * Example: {
-    "/versions/*/name" : "it-123"   "/versions/*/targetSize/percent": 20  } *
-    Example: {   "/bindings/*/role": "roles/admin"   "/bindings/*/condition" :
-    null  } * Example: {   "/bindings/*/role": "roles/admin"
-    "/bindings/*/members/*" : ["x@google.com", "y@google.com"]  } When both
+    To perform advanced matching, use path_value_matchers. * Example: {
+    "/versions/*/name" : "it-123" "/versions/*/targetSize/percent": 20 } *
+    Example: { "/bindings/*/role": "roles/admin" "/bindings/*/condition" :
+    null } * Example: { "/bindings/*/role": "roles/admin"
+    "/bindings/*/members/*" : ["x@google.com", "y@google.com"] } When both
     path_filters and path_value_matchers are set, an implicit AND must be
     performed.
 
@@ -622,8 +622,8 @@ class GoogleCloudRecommenderV1Recommendation(_messages.Message):
       of content and impact, meaning a new subtype might be added when
       significant changes to `content` or `primary_impact.category` are
       introduced. See the Recommenders section to see a list of subtypes for a
-      given Recommender.  Examples:   For recommender =
-      "google.iam.policy.Recommender",   recommender_subtype can be one of
+      given Recommender. Examples: For recommender =
+      "google.iam.policy.Recommender", recommender_subtype can be one of
       "REMOVE_ROLE"/"REPLACE_ROLE"
     stateInfo: Information for state. Contains state and metadata.
   """
@@ -686,19 +686,19 @@ class GoogleCloudRecommenderV1RecommendationStateInfo(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Default state. Don't use directly.
       ACTIVE: Recommendation is active and can be applied. Recommendations
-        content can be updated by Google.  ACTIVE recommendations can be
-        marked as CLAIMED, SUCCEEDED, or FAILED.
+        content can be updated by Google. ACTIVE recommendations can be marked
+        as CLAIMED, SUCCEEDED, or FAILED.
       CLAIMED: Recommendation is in claimed state. Recommendations content is
-        immutable and cannot be updated by Google.  CLAIMED recommendations
-        can be marked as CLAIMED, SUCCEEDED, or FAILED.
+        immutable and cannot be updated by Google. CLAIMED recommendations can
+        be marked as CLAIMED, SUCCEEDED, or FAILED.
       SUCCEEDED: Recommendation is in succeeded state. Recommendations content
-        is immutable and cannot be updated by Google.  SUCCEEDED
+        is immutable and cannot be updated by Google. SUCCEEDED
         recommendations can be marked as SUCCEEDED, or FAILED.
       FAILED: Recommendation is in failed state. Recommendations content is
-        immutable and cannot be updated by Google.  FAILED recommendations can
+        immutable and cannot be updated by Google. FAILED recommendations can
         be marked as SUCCEEDED, or FAILED.
       DISMISSED: Recommendation is in dismissed state. Recommendation content
-        can be updated by Google.  DISMISSED recommendations can be marked as
+        can be updated by Google. DISMISSED recommendations can be marked as
         ACTIVE.
     """
     STATE_UNSPECIFIED = 0
@@ -788,15 +788,15 @@ class RecommenderProjectsLocationsInsightTypesInsightsListRequest(_messages.Mess
     filter: Optional. Filter expression to restrict the insights returned.
       Supported filter fields: state Eg: `state:"DISMISSED" or state:"ACTIVE"
     pageSize: Optional. The maximum number of results to return from this
-      request.  Non-positive values are ignored. If not specified, the server
+      request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
     pageToken: Optional. If present, retrieves the next batch of results from
       the preceding call to this method. `page_token` must be the value of
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats:  1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/
-      insightTypes/[INSIGHT_TYPE_ID]",  LOCATION here refers to GCP Locations:
+      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
+      nsightTypes/[INSIGHT_TYPE_ID]", LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/
   """
 
@@ -841,15 +841,15 @@ class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messag
       Supported filter fields: state_info.state Eg:
       `state_info.state:"DISMISSED" or state_info.state:"FAILED"
     pageSize: Optional. The maximum number of results to return from this
-      request.  Non-positive values are ignored. If not specified, the server
+      request. Non-positive values are ignored. If not specified, the server
       will determine the number of results to return.
     pageToken: Optional. If present, retrieves the next batch of results from
       the preceding call to this method. `page_token` must be the value of
       `next_page_token` from the previous response. The values of other method
       parameters must be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
-      Acceptable formats:  1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/
-      recommenders/[RECOMMENDER_ID]",  LOCATION here refers to GCP Locations:
+      Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
+      ecommenders/[RECOMMENDER_ID]", LOCATION here refers to GCP Locations:
       https://cloud.google.com/about/locations/
   """
 

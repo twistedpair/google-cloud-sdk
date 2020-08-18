@@ -53,6 +53,12 @@ class Resource(object):
   def __str__(self):
     return self.storage_url.url_string
 
+  def __eq__(self, other):
+    return (
+        isinstance(other, self.__class__) and
+        self.storage_url == other.storage_url
+    )
+
 
 class BucketResource(Resource):
   """Class representing a bucket.
@@ -75,6 +81,13 @@ class BucketResource(Resource):
     """Helper method to generate the instance from metadata_object."""
     return cls(CloudUrl(scheme=provider, bucket_name=metadata_object.name),
                metadata_object)
+
+  def __eq__(self, other):
+    return (
+        super().__eq__(other) and
+        self.metadata_object == other.metadata_object and
+        self.additional_metadata == other.additional_metadata
+    )
 
 
 class ObjectResource(Resource):
@@ -102,6 +115,13 @@ class ObjectResource(Resource):
         object_name=metadata_object.name,
         generation=metadata_object.generation)
     return cls(storage_url, metadata_object)
+
+  def __eq__(self, other):
+    return (
+        super().__eq__(other) and
+        self.metadata_object == other.metadata_object and
+        self.additional_metadata == other.additional_metadata
+    )
 
 
 class PrefixResource(Resource):

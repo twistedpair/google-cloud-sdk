@@ -43,9 +43,9 @@ class Asset(_messages.Message):
       topic](https://cloud.google.com/iam/docs/policies#inheritance) for more
       information.
     name: The full name of the asset. Example: `//compute.googleapis.com/proje
-      cts/my_project_123/zones/zone1/instances/instance1`  See [Resource names
-      ](https://cloud.google.com/apis/design/resource_names#full_resource_name
-      ) for more information.
+      cts/my_project_123/zones/zone1/instances/instance1` See [Resource names]
+      (https://cloud.google.com/apis/design/resource_names#full_resource_name)
+      for more information.
     orgPolicy: A representation of an [organization
       policy](https://cloud.google.com/resource-manager/docs/organization-
       policy/overview#organization_policy). There can be more than one
@@ -69,23 +69,19 @@ class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices",           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE"             },             {
-  "log_type": "ADMIN_READ"             }           ]         },         {
-  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
-  {               "log_type": "DATA_READ"             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:aliya@example.com"               ]             }           ]         }
-  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
-  and aliya@example.com from DATA_WRITE logging.
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -99,12 +95,11 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE"         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  jose@example.com from DATA_READ logging.
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -147,9 +142,9 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding.  If the
+    condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
-      request.  If the condition evaluates to `false`, then this binding does
+      request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
@@ -157,35 +152,35 @@ class Binding(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -231,7 +226,7 @@ class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
     assetNames: A list of the full names of the assets. For example: `//comput
       e.googleapis.com/projects/my_project_123/zones/zone1/instances/instance1
       `. See [Resource Names](https://cloud.google.com/apis/design/resource_na
-      mes#full_resource_name) for more info.  The request becomes a no-op if
+      mes#full_resource_name) for more info. The request becomes a no-op if
       the asset name list is empty, and the max size of the asset name list is
       100 in one request.
     contentType: Optional. The content type.
@@ -248,9 +243,9 @@ class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
     r"""Optional. The content type.
 
     Values:
-      CONTENT_TYPE_UNSPECIFIED: <no description>
-      RESOURCE: <no description>
-      IAM_POLICY: <no description>
+      CONTENT_TYPE_UNSPECIFIED: Unspecified content type.
+      RESOURCE: Resource metadata.
+      IAM_POLICY: The actual IAM policy set on a resource.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
@@ -299,7 +294,7 @@ class CloudassetProjectsBatchGetAssetsHistoryRequest(_messages.Message):
     assetNames: A list of the full names of the assets. For example: `//comput
       e.googleapis.com/projects/my_project_123/zones/zone1/instances/instance1
       `. See [Resource Names](https://cloud.google.com/apis/design/resource_na
-      mes#full_resource_name) for more info.  The request becomes a no-op if
+      mes#full_resource_name) for more info. The request becomes a no-op if
       the asset name list is empty, and the max size of the asset name list is
       100 in one request.
     contentType: Optional. The content type.
@@ -316,9 +311,9 @@ class CloudassetProjectsBatchGetAssetsHistoryRequest(_messages.Message):
     r"""Optional. The content type.
 
     Values:
-      CONTENT_TYPE_UNSPECIFIED: <no description>
-      RESOURCE: <no description>
-      IAM_POLICY: <no description>
+      CONTENT_TYPE_UNSPECIFIED: Unspecified content type.
+      RESOURCE: Resource metadata.
+      IAM_POLICY: The actual IAM policy set on a resource.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
@@ -403,20 +398,20 @@ class ExportAssetsRequest(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -446,12 +441,12 @@ class GcsDestination(_messages.Message):
       editing-metadata) for more information.
     uriPrefix: The uri prefix of all generated Cloud Storage objects. For
       example: "gs://bucket_name/object_name_prefix". Each object uri is in
-      format: "gs://bucket_name/object_name_prefix/<asset type>/<shard number>
-      and only contains assets for that type. <shard number> starts from 0.
-      For example: "gs://bucket_name/object_name_prefix/google.compute.disk/0"
-      is the first shard of output objects containing all google.compute.disk
-      assets. An INVALID_ARGUMENT error will be returned if file with the same
-      name "gs://bucket_name/object_name_prefix" already exists.
+      format: "gs://bucket_name/object_name_prefix// and only contains assets
+      for that type. starts from 0. For example:
+      "gs://bucket_name/object_name_prefix/google.compute.disk/0" is the first
+      shard of output objects containing all google.compute.disk assets. An
+      INVALID_ARGUMENT error will be returned if file with the same name
+      "gs://bucket_name/object_name_prefix" already exists.
   """
 
   uri = _messages.StringField(1)
@@ -464,32 +459,31 @@ class GoogleCloudOrgpolicyV1BooleanPolicy(_messages.Message):
 
   Fields:
     enforced: If `true`, then the `Policy` is enforced. If `false`, then any
-      configuration is acceptable.  Suppose you have a `Constraint`
+      configuration is acceptable. Suppose you have a `Constraint`
       `constraints/compute.disableSerialPortAccess` with `constraint_default`
       set to `ALLOW`. A `Policy` for that `Constraint` exhibits the following
-      behavior:   - If the `Policy` at this resource has enforced set to
-      `false`, serial     port connection attempts will be allowed.   - If the
-      `Policy` at this resource has enforced set to `true`, serial     port
-      connection attempts will be refused.   - If the `Policy` at this
-      resource is `RestoreDefault`, serial port     connection attempts will
-      be allowed.   - If no `Policy` is set at this resource or anywhere
-      higher in the     resource hierarchy, serial port connection attempts
-      will be allowed.   - If no `Policy` is set at this resource, but one
-      exists higher in the     resource hierarchy, the behavior is as if
-      the`Policy` were set at     this resource.  The following examples
-      demonstrate the different possible layerings:  Example 1 (nearest
-      `Constraint` wins):   `organizations/foo` has a `Policy` with:
-      {enforced: false}   `projects/bar` has no `Policy` set. The constraint
-      at `projects/bar` and `organizations/foo` will not be enforced.  Example
-      2 (enforcement gets replaced):   `organizations/foo` has a `Policy`
-      with:     {enforced: false}   `projects/bar` has a `Policy` with:
-      {enforced: true} The constraint at `organizations/foo` is not enforced.
-      The constraint at `projects/bar` is enforced.  Example 3
-      (RestoreDefault):   `organizations/foo` has a `Policy` with:
-      {enforced: true}   `projects/bar` has a `Policy` with:
-      {RestoreDefault: {}} The constraint at `organizations/foo` is enforced.
-      The constraint at `projects/bar` is not enforced, because
-      `constraint_default` for the `Constraint` is `ALLOW`.
+      behavior: - If the `Policy` at this resource has enforced set to
+      `false`, serial port connection attempts will be allowed. - If the
+      `Policy` at this resource has enforced set to `true`, serial port
+      connection attempts will be refused. - If the `Policy` at this resource
+      is `RestoreDefault`, serial port connection attempts will be allowed. -
+      If no `Policy` is set at this resource or anywhere higher in the
+      resource hierarchy, serial port connection attempts will be allowed. -
+      If no `Policy` is set at this resource, but one exists higher in the
+      resource hierarchy, the behavior is as if the`Policy` were set at this
+      resource. The following examples demonstrate the different possible
+      layerings: Example 1 (nearest `Constraint` wins): `organizations/foo`
+      has a `Policy` with: {enforced: false} `projects/bar` has no `Policy`
+      set. The constraint at `projects/bar` and `organizations/foo` will not
+      be enforced. Example 2 (enforcement gets replaced): `organizations/foo`
+      has a `Policy` with: {enforced: false} `projects/bar` has a `Policy`
+      with: {enforced: true} The constraint at `organizations/foo` is not
+      enforced. The constraint at `projects/bar` is enforced. Example 3
+      (RestoreDefault): `organizations/foo` has a `Policy` with: {enforced:
+      true} `projects/bar` has a `Policy` with: {RestoreDefault: {}} The
+      constraint at `organizations/foo` is enforced. The constraint at
+      `projects/bar` is not enforced, because `constraint_default` for the
+      `Constraint` is `ALLOW`.
   """
 
   enforced = _messages.BooleanField(1)
@@ -497,7 +491,7 @@ class GoogleCloudOrgpolicyV1BooleanPolicy(_messages.Message):
 
 class GoogleCloudOrgpolicyV1ListPolicy(_messages.Message):
   r"""Used in `policy_type` to specify how `list_policy` behaves at this
-  resource.  `ListPolicy` can define specific values and subtrees of Cloud
+  resource. `ListPolicy` can define specific values and subtrees of Cloud
   Resource Manager resource hierarchy (`Organizations`, `Folders`, `Projects`)
   that are allowed or denied by setting the `allowed_values` and
   `denied_values` fields. This is achieved by using the `under:` and optional
@@ -505,12 +499,11 @@ class GoogleCloudOrgpolicyV1ListPolicy(_messages.Message):
   values. The `is:` prefix is used to denote specific values, and is required
   only if the value contains a ":". Values prefixed with "is:" are treated the
   same as values with no prefix. Ancestry subtrees must be in one of the
-  following formats:     - "projects/<project-id>", e.g. "projects/tokyo-
-  rain-123"     - "folders/<folder-id>", e.g. "folders/1234"     -
-  "organizations/<organization-id>", e.g. "organizations/1234" The
-  `supports_under` field of the associated `Constraint`  defines whether
-  ancestry prefixes can be used. You can set `allowed_values` and
-  `denied_values` in the same `Policy` if `all_values` is
+  following formats: - "projects/", e.g. "projects/tokyo-rain-123" -
+  "folders/", e.g. "folders/1234" - "organizations/", e.g.
+  "organizations/1234" The `supports_under` field of the associated
+  `Constraint` defines whether ancestry prefixes can be used. You can set
+  `allowed_values` and `denied_values` in the same `Policy` if `all_values` is
   `ALL_VALUES_UNSPECIFIED`. `ALLOW` or `DENY` are used to allow or deny all
   values. If `all_values` is set to either `ALLOW` or `DENY`, `allowed_values`
   and `denied_values` must be unset.
@@ -520,8 +513,8 @@ class GoogleCloudOrgpolicyV1ListPolicy(_messages.Message):
 
   Fields:
     allValues: The policy all_values state.
-    allowedValues: List of values allowed  at this resource. Can only be set
-      if `all_values` is set to `ALL_VALUES_UNSPECIFIED`.
+    allowedValues: List of values allowed at this resource. Can only be set if
+      `all_values` is set to `ALL_VALUES_UNSPECIFIED`.
     deniedValues: List of values denied at this resource. Can only be set if
       `all_values` is set to `ALL_VALUES_UNSPECIFIED`.
     inheritFromParent: Determines the inheritance behavior for this `Policy`.
@@ -529,65 +522,62 @@ class GoogleCloudOrgpolicyV1ListPolicy(_messages.Message):
       anywhere up the resource hierarchy. However, if `inherit_from_parent` is
       set to `true`, then the values from the effective `Policy` of the parent
       resource are inherited, meaning the values set in this `Policy` are
-      added to the values inherited up the hierarchy.  Setting `Policy`
+      added to the values inherited up the hierarchy. Setting `Policy`
       hierarchies that inherit both allowed values and denied values isn't
       recommended in most circumstances to keep the configuration simple and
       understandable. However, it is possible to set a `Policy` with
       `allowed_values` set that inherits a `Policy` with `denied_values` set.
       In this case, the values that are allowed must be in `allowed_values`
-      and not present in `denied_values`.  For example, suppose you have a
+      and not present in `denied_values`. For example, suppose you have a
       `Constraint` `constraints/serviceuser.services`, which has a
       `constraint_type` of `list_constraint`, and with `constraint_default`
       set to `ALLOW`. Suppose that at the Organization level, a `Policy` is
       applied that restricts the allowed API activations to {`E1`, `E2`}.
       Then, if a `Policy` is applied to a project below the Organization that
       has `inherit_from_parent` set to `false` and field all_values set to
-      DENY, then an attempt to activate any API will be denied.  The following
+      DENY, then an attempt to activate any API will be denied. The following
       examples demonstrate different possible layerings for `projects/bar`
-      parented by `organizations/foo`:  Example 1 (no inherited values):
-      `organizations/foo` has a `Policy` with values:     {allowed_values:
-      "E1" allowed_values:"E2"}   `projects/bar` has `inherit_from_parent`
-      `false` and values:     {allowed_values: "E3" allowed_values: "E4"} The
-      accepted values at `organizations/foo` are `E1`, `E2`. The accepted
-      values at `projects/bar` are `E3`, and `E4`.  Example 2 (inherited
-      values):   `organizations/foo` has a `Policy` with values:
-      {allowed_values: "E1" allowed_values:"E2"}   `projects/bar` has a
-      `Policy` with values:     {value: "E3" value: "E4" inherit_from_parent:
-      true} The accepted values at `organizations/foo` are `E1`, `E2`. The
-      accepted values at `projects/bar` are `E1`, `E2`, `E3`, and `E4`.
-      Example 3 (inheriting both allowed and denied values):
-      `organizations/foo` has a `Policy` with values:     {allowed_values:
-      "E1" allowed_values: "E2"}   `projects/bar` has a `Policy` with:
-      {denied_values: "E1"} The accepted values at `organizations/foo` are
-      `E1`, `E2`. The value accepted at `projects/bar` is `E2`.  Example 4
-      (RestoreDefault):   `organizations/foo` has a `Policy` with values:
-      {allowed_values: "E1" allowed_values:"E2"}   `projects/bar` has a
-      `Policy` with values:     {RestoreDefault: {}} The accepted values at
+      parented by `organizations/foo`: Example 1 (no inherited values):
+      `organizations/foo` has a `Policy` with values: {allowed_values: "E1"
+      allowed_values:"E2"} `projects/bar` has `inherit_from_parent` `false`
+      and values: {allowed_values: "E3" allowed_values: "E4"} The accepted
+      values at `organizations/foo` are `E1`, `E2`. The accepted values at
+      `projects/bar` are `E3`, and `E4`. Example 2 (inherited values):
+      `organizations/foo` has a `Policy` with values: {allowed_values: "E1"
+      allowed_values:"E2"} `projects/bar` has a `Policy` with values: {value:
+      "E3" value: "E4" inherit_from_parent: true} The accepted values at
+      `organizations/foo` are `E1`, `E2`. The accepted values at
+      `projects/bar` are `E1`, `E2`, `E3`, and `E4`. Example 3 (inheriting
+      both allowed and denied values): `organizations/foo` has a `Policy` with
+      values: {allowed_values: "E1" allowed_values: "E2"} `projects/bar` has a
+      `Policy` with: {denied_values: "E1"} The accepted values at
+      `organizations/foo` are `E1`, `E2`. The value accepted at `projects/bar`
+      is `E2`. Example 4 (RestoreDefault): `organizations/foo` has a `Policy`
+      with values: {allowed_values: "E1" allowed_values:"E2"} `projects/bar`
+      has a `Policy` with values: {RestoreDefault: {}} The accepted values at
       `organizations/foo` are `E1`, `E2`. The accepted values at
       `projects/bar` are either all or none depending on the value of
-      `constraint_default` (if `ALLOW`, all; if `DENY`, none).  Example 5 (no
-      policy inherits parent policy):   `organizations/foo` has no `Policy`
-      set.   `projects/bar` has no `Policy` set. The accepted values at both
-      levels are either all or none depending on the value of
-      `constraint_default` (if `ALLOW`, all; if `DENY`, none).  Example 6
-      (ListConstraint allowing all):   `organizations/foo` has a `Policy` with
-      values:     {allowed_values: "E1" allowed_values: "E2"}   `projects/bar`
-      has a `Policy` with:     {all: ALLOW} The accepted values at
-      `organizations/foo` are `E1`, E2`. Any value is accepted at
-      `projects/bar`.  Example 7 (ListConstraint allowing none):
-      `organizations/foo` has a `Policy` with values:     {allowed_values:
-      "E1" allowed_values: "E2"}   `projects/bar` has a `Policy` with:
-      {all: DENY} The accepted values at `organizations/foo` are `E1`, E2`. No
-      value is accepted at `projects/bar`.  Example 10 (allowed and denied
-      subtrees of Resource Manager hierarchy): Given the following resource
-      hierarchy   O1->{F1, F2}; F1->{P1}; F2->{P2, P3},   `organizations/foo`
-      has a `Policy` with values:     {allowed_values:
-      "under:organizations/O1"}   `projects/bar` has a `Policy` with:
-      {allowed_values: "under:projects/P3"}     {denied_values:
-      "under:folders/F2"} The accepted values at `organizations/foo` are
-      `organizations/O1`,   `folders/F1`, `folders/F2`, `projects/P1`,
-      `projects/P2`,   `projects/P3`. The accepted values at `projects/bar`
-      are `organizations/O1`,   `folders/F1`, `projects/P1`.
+      `constraint_default` (if `ALLOW`, all; if `DENY`, none). Example 5 (no
+      policy inherits parent policy): `organizations/foo` has no `Policy` set.
+      `projects/bar` has no `Policy` set. The accepted values at both levels
+      are either all or none depending on the value of `constraint_default`
+      (if `ALLOW`, all; if `DENY`, none). Example 6 (ListConstraint allowing
+      all): `organizations/foo` has a `Policy` with values: {allowed_values:
+      "E1" allowed_values: "E2"} `projects/bar` has a `Policy` with: {all:
+      ALLOW} The accepted values at `organizations/foo` are `E1`, E2`. Any
+      value is accepted at `projects/bar`. Example 7 (ListConstraint allowing
+      none): `organizations/foo` has a `Policy` with values: {allowed_values:
+      "E1" allowed_values: "E2"} `projects/bar` has a `Policy` with: {all:
+      DENY} The accepted values at `organizations/foo` are `E1`, E2`. No value
+      is accepted at `projects/bar`. Example 10 (allowed and denied subtrees
+      of Resource Manager hierarchy): Given the following resource hierarchy
+      O1->{F1, F2}; F1->{P1}; F2->{P2, P3}, `organizations/foo` has a `Policy`
+      with values: {allowed_values: "under:organizations/O1"} `projects/bar`
+      has a `Policy` with: {allowed_values: "under:projects/P3"}
+      {denied_values: "under:folders/F2"} The accepted values at
+      `organizations/foo` are `organizations/O1`, `folders/F1`, `folders/F2`,
+      `projects/P1`, `projects/P2`, `projects/P3`. The accepted values at
+      `projects/bar` are `organizations/O1`, `folders/F1`, `projects/P1`.
     suggestedValue: Optional. The Google Cloud Console will try to default to
       a configuration that matches the value specified in this `Policy`. If
       `suggested_value` is not set, it will inherit the value specified higher
@@ -622,15 +612,15 @@ class GoogleCloudOrgpolicyV1Policy(_messages.Message):
     booleanPolicy: For boolean `Constraints`, whether to enforce the
       `Constraint` or not.
     constraint: The name of the `Constraint` the `Policy` is configuring, for
-      example, `constraints/serviceuser.services`.  A [list of available
+      example, `constraints/serviceuser.services`. A [list of available
       constraints](/resource-manager/docs/organization-policy/org-policy-
-      constraints) is available.  Immutable after creation.
+      constraints) is available. Immutable after creation.
     etag: An opaque tag indicating the current version of the `Policy`, used
-      for concurrency control.  When the `Policy` is returned from either a
+      for concurrency control. When the `Policy` is returned from either a
       `GetPolicy` or a `ListOrgPolicy` request, this `etag` indicates the
       version of the current `Policy` to use when executing a read-modify-
-      write loop.  When the `Policy` is returned from a `GetEffectivePolicy`
-      request, the `etag` will be unset.  When the `Policy` is used in a
+      write loop. When the `Policy` is returned from a `GetEffectivePolicy`
+      request, the `etag` will be unset. When the `Policy` is used in a
       `SetOrgPolicy` method, use the `etag` value that was returned from a
       `GetOrgPolicy` request as part of a read-modify-write loop for
       concurrency control. Not setting the `etag`in a `SetOrgPolicy` request
@@ -657,7 +647,7 @@ class GoogleCloudOrgpolicyV1Policy(_messages.Message):
 class GoogleCloudOrgpolicyV1RestoreDefault(_messages.Message):
   r"""Ignores policies set above this resource and restores the
   `constraint_default` enforcement behavior of the specific `Constraint` at
-  this resource.  Suppose that `constraint_default` is set to `ALLOW` for the
+  this resource. Suppose that `constraint_default` is set to `ALLOW` for the
   `Constraint` `constraints/serviceuser.services`. Suppose that organization
   foo.com sets a `Policy` at their Organization resource node that restricts
   the allowed service activations to deny all service activations. They could
@@ -846,10 +836,15 @@ class GoogleIdentityAccesscontextmanagerV1DevicePolicy(_messages.Message):
     r"""AllowedDeviceManagementLevelsValueListEntryValuesEnum enum type.
 
     Values:
-      MANAGEMENT_UNSPECIFIED: <no description>
-      NONE: <no description>
-      BASIC: <no description>
-      COMPLETE: <no description>
+      MANAGEMENT_UNSPECIFIED: The device's management level is not specified
+        or not known.
+      NONE: The device is not managed.
+      BASIC: Basic management is enabled, which is generally limited to
+        monitoring and wiping the corporate account.
+      COMPLETE: Complete device management. This includes more thorough
+        monitoring and the ability to directly manage the device (such as
+        remote wiping). This can be enabled through the Android Enterprise
+        Platform.
     """
     MANAGEMENT_UNSPECIFIED = 0
     NONE = 1
@@ -860,10 +855,12 @@ class GoogleIdentityAccesscontextmanagerV1DevicePolicy(_messages.Message):
     r"""AllowedEncryptionStatusesValueListEntryValuesEnum enum type.
 
     Values:
-      ENCRYPTION_UNSPECIFIED: <no description>
-      ENCRYPTION_UNSUPPORTED: <no description>
-      UNENCRYPTED: <no description>
-      ENCRYPTED: <no description>
+      ENCRYPTION_UNSPECIFIED: The encryption status of the device is not
+        specified or not known.
+      ENCRYPTION_UNSUPPORTED: The device does not support encryption.
+      UNENCRYPTED: The device supports encryption, but is currently
+        unencrypted.
+      ENCRYPTED: The device is encrypted.
     """
     ENCRYPTION_UNSPECIFIED = 0
     ENCRYPTION_UNSUPPORTED = 1
@@ -944,7 +941,7 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
-    name: Required. Resource name for the ServicePerimeter.  The `short_name`
+    name: Required. Resource name for the ServicePerimeter. The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
     perimeterType: Perimeter type indicator. A single project is allowed to be
@@ -961,7 +958,7 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
       perimeter content and boundaries.
     title: Human readable title. Must be unique within the Policy.
     useExplicitDryRunSpec: Use explicit dry run spec flag. Ordinarily, a dry-
-      run spec implicitly exists  for all Service Perimeters, and that spec is
+      run spec implicitly exists for all Service Perimeters, and that spec is
       identical to the status for those Service Perimeters. When this flag is
       set, it inhibits the generation of the implicit spec, thereby allowing
       the user to explicitly provide a configuration ("spec") to use in a dry-
@@ -1049,17 +1046,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1068,29 +1065,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1116,12 +1113,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1164,37 +1161,33 @@ class OutputConfig(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  For some types of
+  be an IAM predefined role or a user-created custom role. For some types of
   Google Cloud resources, a `binding` can also specify a `condition`, which is
   a logical expression that allows access to a resource only if the expression
   evaluates to `true`. A condition can add constraints based on attributes of
   the request, the resource, or both. To learn which resources support
   conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies).  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members": [
-  "user:eve@example.com"           ],           "condition": {
-  "title": "expirable access",             "description": "Does not grant
-  access after Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -1209,24 +1202,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.  To learn which resources support
+      version or leave the field unset. To learn which resources support
       conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -1250,15 +1243,15 @@ class Resource(_messages.Message):
       removed and may not be present.
     discoveryDocumentUri: The URL of the discovery document containing the
       resource's JSON schema. Example:
-      `https://www.googleapis.com/discovery/v1/apis/compute/v1/rest`  This
+      `https://www.googleapis.com/discovery/v1/apis/compute/v1/rest` This
       value is unspecified for resources that do not have an API based on a
       discovery document, such as Cloud Bigtable.
     discoveryName: The JSON schema name listed in the discovery document.
-      Example: `Project`  This value is unspecified for resources that do not
+      Example: `Project` This value is unspecified for resources that do not
       have an API based on a discovery document, such as Cloud Bigtable.
     parent: The full name of the immediate parent of this resource. See
       [Resource Names](https://cloud.google.com/apis/design/resource_names#ful
-      l_resource_name) for more information.  For Google Cloud assets, this
+      l_resource_name) for more information. For Google Cloud assets, this
       value is the parent resource defined in the [Cloud IAM policy
       hierarchy](https://cloud.google.com/iam/docs/overview#policy_hierarchy).
       Example: `//cloudresourcemanager.googleapis.com/projects/my_project_123`
@@ -1370,7 +1363,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1379,7 +1372,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

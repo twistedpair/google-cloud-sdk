@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import os
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
@@ -27,6 +28,7 @@ from googlecloudsdk.command_lib.storage import errors
 import six
 
 
+FILE_SCHEME = 'file'
 VALID_CLOUD_SCHEMES = frozenset({
     provider.value for provider in cloud_api.ProviderPrefix})
 
@@ -45,6 +47,53 @@ class StorageUrl(six.with_metaclass(abc.ABCMeta)):
     return hash(self.url_string)
 
 
+class FileUrl(StorageUrl):
+  """File URL class providing parsing and convenience methods.
+
+  This class assists with usage and manipulation of an
+  (optionally wildcarded) file URL string.  Depending on the string
+  contents, this class represents one or more directories or files.
+
+  Attributes:
+    scheme (str): This will always be "file" for FileUrl.
+    bucket_name (str): None for FileUrl.
+    object_name (str): The file/directory path.
+    generation (str): None for FileUrl.
+  """
+
+  def __init__(self, url_string):
+    """Initialize FileUrl instance.
+
+    Args:
+      url_string (str): The string representing the filepath.
+    """
+    super(FileUrl, self).__init__()
+    self.scheme = FILE_SCHEME
+    self.bucket_name = None
+    self.generation = None
+    if url_string.startswith('file://'):
+      self.object_name = url_string[len('file://'):]
+    else:
+      self.object_name = url_string
+
+  @property
+  def delimiter(self):
+    """Returns the pathname separator character used by the OS."""
+    return os.sep
+
+  def exists(self):
+    """Returns True if the file/directory exists."""
+    return os.path.exists(self.object_name)
+
+  def isdir(self):
+    """Returns True if the path represents a directory."""
+    return os.path.isdir(self.object_name)
+
+  @property
+  def url_string(self):
+    return '%s://%s' % (self.scheme, self.object_name)
+
+
 class CloudUrl(StorageUrl):
   """Cloud URL class providing parsing and convenience methods.
 
@@ -54,6 +103,12 @@ class CloudUrl(StorageUrl):
 
     This class operates only on strings.  No cloud storage API calls are
     made from this class.
+
+    Attributes:
+      scheme (str): The cloud provider.
+      bucket_name (str): The bucket name if url represents an object or bucket.
+      object_name (str): The object name if url represents an object or prefix.
+      generation (str): The generation number if present.
   """
   CLOUD_URL_DELIM = '/'
 
@@ -139,7 +194,7 @@ def _get_scheme_from_url_string(url_str):
   end_scheme_idx = url_str.find('://')
   if end_scheme_idx == -1:
     # File is the default scheme.
-    return 'file'
+    return FILE_SCHEME
   else:
     return url_str[0:end_scheme_idx].lower()
 
@@ -156,11 +211,9 @@ def storage_url_from_string(url_str):
   Raises:
     InvalidUrlError if url string is invalid.
   """
-
   scheme = _get_scheme_from_url_string(url_str)
-  if scheme == 'file':
-    # TODO(b/160593328) Add support for file scheme
-    return None
+  if scheme == FILE_SCHEME:
+    return FileUrl(url_str)
   return CloudUrl.from_url_string(url_str)
 
 

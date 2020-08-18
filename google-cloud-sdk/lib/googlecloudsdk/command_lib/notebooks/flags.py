@@ -102,7 +102,7 @@ def AddCreateEnvironmentFlags(parser):
       '--vm-image-project',
       help=('The ID of the Google Cloud project that this VM image belongs to.'
             'Format: projects/`{project_id}`.'),
-      required=True)
+      default='deeplearning-platform-release')
   vm_mutex_group.add_argument(
       '--vm-image-name', help='Use this VM image name to find the image.')
   vm_mutex_group.add_argument(
@@ -264,7 +264,7 @@ def AddCreateInstanceFlags(parser):
       '--vm-image-project',
       help=('The ID of the Google Cloud project that this VM image belongs to. '
             'Format: projects/`{project_id}`.'),
-      required=True)
+      default='deeplearning-platform-release')
   vm_mutex_group.add_argument(
       '--vm-image-name', help='Use this VM image name to find the image.')
   vm_mutex_group.add_argument(
@@ -298,7 +298,7 @@ def AddCreateInstanceFlags(parser):
   parser.add_argument(
       '--machine-type',
       help='The [Compute Engine machine type](/compute/docs/machine-types) of this instance.',
-      required=True)
+      default='n1-standard-1')
   parser.add_argument(
       '--instance-owners',
       help=(

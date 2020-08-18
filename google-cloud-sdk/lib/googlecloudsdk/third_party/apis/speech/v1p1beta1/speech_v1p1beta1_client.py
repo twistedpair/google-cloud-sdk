@@ -61,9 +61,7 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (SpeechOperationsGetRequest) input message
@@ -90,16 +88,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (SpeechOperationsListRequest) input message
@@ -280,9 +269,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new dataset for custom model training. The name of created.
-dataset is stored in `response.metadata.works_on` field. Metadata type
-is SpeechOperationMetadata. Response type is Empty.
+      r"""Creates a new dataset for custom model training. The name of created dataset is stored in `response.metadata.works_on` field. Metadata type is SpeechOperationMetadata. Response type is Empty.
 
       Args:
         request: (SpeechProjectsLocationsDatasetsCreateRequest) input message
@@ -464,8 +451,7 @@ is SpeechOperationMetadata. Response type is Empty.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new custom model. Metadata type is SpeechOperationMetadata.
-Response type is Model.
+      r"""Creates a new custom model. Metadata type is SpeechOperationMetadata. Response type is Model.
 
       Args:
         request: (SpeechProjectsLocationsModelsCreateRequest) input message
@@ -519,10 +505,7 @@ Response type is Model.
     )
 
     def Deploy(self, request, global_params=None):
-      r"""Performs asynchronous model deployment of the model: receive results.
-via the google.longrunning.Operations interface. After the operation is
-completed this returns either an `Operation.error` in case of error or
-a `google.protobuf.Empty` if the deployment was successful.
+      r"""Performs asynchronous model deployment of the model: receive results via the google.longrunning.Operations interface. After the operation is completed this returns either an `Operation.error` in case of error or a `google.protobuf.Empty` if the deployment was successful.
 
       Args:
         request: (SpeechProjectsLocationsModelsDeployRequest) input message
@@ -549,10 +532,7 @@ a `google.protobuf.Empty` if the deployment was successful.
     )
 
     def Evaluate(self, request, global_params=None):
-      r"""Performs asynchronous evaluation of the model: receive results.
-via the google.longrunning.Operations interface. After the operation is
-completed this returns either an `Operation.error` in case of error or
-a `EvaluateModelResponse` with the evaluation results.
+      r"""Performs asynchronous evaluation of the model: receive results via the google.longrunning.Operations interface. After the operation is completed this returns either an `Operation.error` in case of error or a `EvaluateModelResponse` with the evaluation results.
 
       Args:
         request: (SpeechProjectsLocationsModelsEvaluateRequest) input message
@@ -616,9 +596,7 @@ a `EvaluateModelResponse` with the evaluation results.
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (SpeechProjectsLocationsOperationsGetRequest) input message
@@ -645,16 +623,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (SpeechProjectsLocationsOperationsListRequest) input message
@@ -691,9 +660,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a set of phrase hints. Each item in the set can be a single word or.
-a multi-word phrase. The items in the PhraseSet are favored by the
-recognition model when you send a call that includes the PhraseSet.
+      r"""Create a set of phrase hints. Each item in the set can be a single word or a multi-word phrase. The items in the PhraseSet are favored by the recognition model when you send a call that includes the PhraseSet.
 
       Args:
         request: (SpeechProjectsLocationsPhraseSetsCreateRequest) input message
@@ -838,12 +805,7 @@ recognition model when you send a call that includes the PhraseSet.
           }
 
     def LogData(self, request, global_params=None):
-      r"""Purges all log data associated with requested project. Operation response.
-type is google.protobuf.Empty.
-
-Since logs are stored by asynchronous writer process, buffered log data
-might still end up in storage, even after this call. To ensure all data is
-purged, call this method 3 days after last recognition call.
+      r"""Purges all log data associated with requested project. Operation response type is google.protobuf.Empty. Since logs are stored by asynchronous writer process, buffered log data might still end up in storage, even after this call. To ensure all data is purged, call this method 3 days after last recognition call.
 
       Args:
         request: (SpeechProjectsLocationsLogDataRequest) input message
@@ -890,12 +852,7 @@ purged, call this method 3 days after last recognition call.
           }
 
     def Longrunningrecognize(self, request, global_params=None):
-      r"""Performs asynchronous speech recognition: receive results via the.
-google.longrunning.Operations interface. Returns either an
-`Operation.error` or an `Operation.response` which contains
-a `LongRunningRecognizeResponse` message.
-For more information on asynchronous speech recognition, see the
-[how-to](https://cloud.google.com/speech-to-text/docs/async-recognize).
+      r"""Performs asynchronous speech recognition: receive results via the google.longrunning.Operations interface. Returns either an `Operation.error` or an `Operation.response` which contains a `LongRunningRecognizeResponse` message. For more information on asynchronous speech recognition, see the [how-to](https://cloud.google.com/speech-to-text/docs/async-recognize).
 
       Args:
         request: (LongRunningRecognizeRequest) input message
@@ -921,8 +878,7 @@ For more information on asynchronous speech recognition, see the
     )
 
     def Recognize(self, request, global_params=None):
-      r"""Performs synchronous speech recognition: receive results after all audio.
-has been sent and processed.
+      r"""Performs synchronous speech recognition: receive results after all audio has been sent and processed.
 
       Args:
         request: (RecognizeRequest) input message

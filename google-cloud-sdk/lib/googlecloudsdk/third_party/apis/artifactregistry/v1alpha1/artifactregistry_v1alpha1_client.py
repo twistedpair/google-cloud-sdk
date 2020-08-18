@@ -54,10 +54,7 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
           }
 
     def Import(self, request, global_params=None):
-      r"""Imports artifacts. The returned Operation will complete once the resources.
-are imported. Package, Version, and File resources are created based on the
-imported artifacts. Imported artifacts that conflict with existing
-resources are ignored.
+      r"""Imports artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesImportRequest) input message

@@ -29,7 +29,7 @@ class Backup(_messages.Message):
     database: Required for the CreateBackup operation. Name of the database
       from which this backup was created. This needs to be in the same
       instance as the backup. Values are of the form
-      `projects/<project>/instances/<instance>/databases/<database>`.
+      `projects//instances//databases/`.
     expireTime: Required for the CreateBackup operation. The expiration time
       of the backup, with microseconds granularity that must be at least 6
       hours and at most 366 days from the time the CreateBackup request is
@@ -37,21 +37,19 @@ class Backup(_messages.Message):
       be automatically deleted by Cloud Spanner to free the resources used by
       the backup.
     name: Output only for the CreateBackup operation. Required for the
-      UpdateBackup operation.  A globally unique identifier for the backup
+      UpdateBackup operation. A globally unique identifier for the backup
       which cannot be changed. Values are of the form
-      `projects/<project>/instances/<instance>/backups/a-z*[a-z0-9]` The final
-      segment of the name must be between 2 and 60 characters in length.  The
-      backup is stored in the location(s) specified in the instance
-      configuration of the instance containing the backup, identified by the
-      prefix of the backup name of the form
-      `projects/<project>/instances/<instance>`.
+      `projects//instances//backups/a-z*[a-z0-9]` The final segment of the
+      name must be between 2 and 60 characters in length. The backup is stored
+      in the location(s) specified in the instance configuration of the
+      instance containing the backup, identified by the prefix of the backup
+      name of the form `projects//instances/`.
     referencingDatabases: Output only. The names of the restored databases
       that reference the backup. The database names are of the form
-      `projects/<project>/instances/<instance>/databases/<database>`.
-      Referencing databases may exist in different instances. The existence of
-      any referencing database prevents the backup from being deleted. When a
-      restored database from the backup enters the `READY` state, the
-      reference to the backup is removed.
+      `projects//instances//databases/`. Referencing databases may exist in
+      different instances. The existence of any referencing database prevents
+      the backup from being deleted. When a restored database from the backup
+      enters the `READY` state, the reference to the backup is removed.
     sizeBytes: Output only. Size of the backup in bytes.
     state: Output only. The current state of the backup.
   """
@@ -133,9 +131,9 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding.  If the
+    condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
-      request.  If the condition evaluates to `false`, then this binding does
+      request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
@@ -143,35 +141,35 @@ class Binding(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -276,7 +274,7 @@ class CreateDatabaseRequest(_messages.Message):
 
   Fields:
     createStatement: Required. A `CREATE DATABASE` statement, which specifies
-      the ID of the new database.  The database ID must conform to the regular
+      the ID of the new database. The database ID must conform to the regular
       expression `a-z*[a-z0-9]` and be between 2 and 30 characters in length.
       If the database ID is a reserved word or if it contains a hyphen, the
       database ID must be enclosed in backticks (`` ` ``).
@@ -313,9 +311,9 @@ class CreateInstanceRequest(_messages.Message):
   r"""The request for CreateInstance.
 
   Fields:
-    instance: Required. The instance to create.  The name may be omitted, but
-      if specified must be `<parent>/instances/<instance_id>`.
-    instanceId: Required. The ID of the instance to create.  Valid identifiers
+    instance: Required. The instance to create. The name may be omitted, but
+      if specified must be `/instances/`.
+    instanceId: Required. The ID of the instance to create. Valid identifiers
       are of the form `a-z*[a-z0-9]` and must be between 2 and 64 characters
       in length.
   """
@@ -344,9 +342,9 @@ class Database(_messages.Message):
     createTime: Output only. If exists, the time at which the database
       creation started.
     name: Required. The name of the database. Values are of the form
-      `projects/<project>/instances/<instance>/databases/<database>`, where
-      `<database>` is as specified in the `CREATE DATABASE` statement. This
-      name can be passed to other API methods to identify the database.
+      `projects//instances//databases/`, where `` is as specified in the
+      `CREATE DATABASE` statement. This name can be passed to other API
+      methods to identify the database.
     restoreInfo: Output only. Applicable only for restored databases. Contains
       information about the restore source.
     state: Output only. The current database state.
@@ -382,10 +380,10 @@ class Delete(_messages.Message):
   r"""Arguments to delete operations.
 
   Fields:
-    keySet: Required. The primary keys of the rows within table to delete.
-      The primary keys must be specified in the order in which they appear in
-      the `PRIMARY KEY()` clause of the table's equivalent DDL statement (the
-      DDL statement used to create the table). Delete is idempotent. The
+    keySet: Required. The primary keys of the rows within table to delete. The
+      primary keys must be specified in the order in which they appear in the
+      `PRIMARY KEY()` clause of the table's equivalent DDL statement (the DDL
+      statement used to create the table). Delete is idempotent. The
       transaction will succeed even if some or all rows do not exist.
     table: Required. The table whose rows will be deleted.
   """
@@ -397,9 +395,9 @@ class Delete(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -410,7 +408,7 @@ class ExecuteBatchDmlRequest(_messages.Message):
   Fields:
     seqno: Required. A per-transaction sequence number used to identify this
       request. This field makes each request idempotent such that if the
-      request is received multiple times, at most one will succeed.  The
+      request is received multiple times, at most one will succeed. The
       sequence number must be monotonically increasing within the transaction.
       If a request arrives for the first time with an out-of-order sequence
       number, the transaction may be aborted. Replays of previously handled
@@ -419,11 +417,11 @@ class ExecuteBatchDmlRequest(_messages.Message):
       Statements are executed serially, such that the effects of statement `i`
       are visible to statement `i+1`. Each statement must be a DML statement.
       Execution stops at the first failed statement; the remaining statements
-      are not executed.  Callers must provide at least one statement.
+      are not executed. Callers must provide at least one statement.
     transaction: Required. The transaction to use. Must be a read-write
-      transaction.  To protect against replays, single-use transactions are
-      not supported. The caller must either supply an existing transaction ID
-      or begin a new transaction.
+      transaction. To protect against replays, single-use transactions are not
+      supported. The caller must either supply an existing transaction ID or
+      begin a new transaction.
   """
 
   seqno = _messages.IntegerField(1)
@@ -435,25 +433,25 @@ class ExecuteBatchDmlResponse(_messages.Message):
   r"""The response for ExecuteBatchDml. Contains a list of ResultSet messages,
   one for each DML statement that has successfully executed, in the same order
   as the statements in the request. If a statement fails, the status in the
-  response body identifies the cause of the failure.  To check for DML
-  statements that failed, use the following approach:  1. Check the status in
-  the response message. The google.rpc.Code enum    value `OK` indicates that
-  all statements were executed successfully. 2. If the status was not `OK`,
-  check the number of result sets in the    response. If the response contains
-  `N` ResultSet messages, then    statement `N+1` in the request failed.
-  Example 1:  * Request: 5 DML statements, all executed successfully. *
-  Response: 5 ResultSet messages, with the status `OK`.  Example 2:  *
-  Request: 5 DML statements. The third statement has a syntax error. *
-  Response: 2 ResultSet messages, and a syntax error (`INVALID_ARGUMENT`)
-  status. The number of ResultSet messages indicates that the third
-  statement failed, and the fourth and fifth statements were not executed.
+  response body identifies the cause of the failure. To check for DML
+  statements that failed, use the following approach: 1. Check the status in
+  the response message. The google.rpc.Code enum value `OK` indicates that all
+  statements were executed successfully. 2. If the status was not `OK`, check
+  the number of result sets in the response. If the response contains `N`
+  ResultSet messages, then statement `N+1` in the request failed. Example 1: *
+  Request: 5 DML statements, all executed successfully. * Response: 5
+  ResultSet messages, with the status `OK`. Example 2: * Request: 5 DML
+  statements. The third statement has a syntax error. * Response: 2 ResultSet
+  messages, and a syntax error (`INVALID_ARGUMENT`) status. The number of
+  ResultSet messages indicates that the third statement failed, and the fourth
+  and fifth statements were not executed.
 
   Fields:
     resultSets: One ResultSet for each statement in the request that ran
       successfully, in the same order as the statements in the request. Each
       ResultSet does not contain any rows. The ResultSetStats in each
-      ResultSet contain the number of rows modified by the statement.  Only
-      the first ResultSet in the response contains valid ResultSetMetadata.
+      ResultSet contain the number of rows modified by the statement. Only the
+      first ResultSet in the response contains valid ResultSetMetadata.
     status: If all DML statements are executed successfully, the status is
       `OK`. Otherwise, the error status of the first failed statement.
   """
@@ -472,39 +470,39 @@ class ExecuteSqlRequest(_messages.Message):
 
   Messages:
     ParamTypesValue: It is not always possible for Cloud Spanner to infer the
-      right SQL type from a JSON value.  For example, values of type `BYTES`
-      and values of type `STRING` both appear in params as JSON strings.  In
+      right SQL type from a JSON value. For example, values of type `BYTES`
+      and values of type `STRING` both appear in params as JSON strings. In
       these cases, `param_types` can be used to specify the exact SQL type for
       some or all of the SQL statement parameters. See the definition of Type
       for more information about SQL types.
     ParamsValue: Parameter names and values that bind to placeholders in the
-      SQL string.  A parameter placeholder consists of the `@` character
+      SQL string. A parameter placeholder consists of the `@` character
       followed by the parameter name (for example, `@firstName`). Parameter
       names must conform to the naming requirements of identifiers as
       specified at https://cloud.google.com/spanner/docs/lexical#identifiers.
-      Parameters can appear anywhere that a literal value is expected.  The
-      same parameter name can be used more than once, for example:  `"WHERE id
-      > @msg_id AND id < @msg_id + 100"`  It is an error to execute a SQL
+      Parameters can appear anywhere that a literal value is expected. The
+      same parameter name can be used more than once, for example: `"WHERE id
+      > @msg_id AND id < @msg_id + 100"` It is an error to execute a SQL
       statement with unbound parameters.
 
   Fields:
     paramTypes: It is not always possible for Cloud Spanner to infer the right
-      SQL type from a JSON value.  For example, values of type `BYTES` and
-      values of type `STRING` both appear in params as JSON strings.  In these
+      SQL type from a JSON value. For example, values of type `BYTES` and
+      values of type `STRING` both appear in params as JSON strings. In these
       cases, `param_types` can be used to specify the exact SQL type for some
       or all of the SQL statement parameters. See the definition of Type for
       more information about SQL types.
     params: Parameter names and values that bind to placeholders in the SQL
-      string.  A parameter placeholder consists of the `@` character followed
+      string. A parameter placeholder consists of the `@` character followed
       by the parameter name (for example, `@firstName`). Parameter names must
       conform to the naming requirements of identifiers as specified at
-      https://cloud.google.com/spanner/docs/lexical#identifiers.  Parameters
-      can appear anywhere that a literal value is expected.  The same
-      parameter name can be used more than once, for example:  `"WHERE id >
-      @msg_id AND id < @msg_id + 100"`  It is an error to execute a SQL
-      statement with unbound parameters.
+      https://cloud.google.com/spanner/docs/lexical#identifiers. Parameters
+      can appear anywhere that a literal value is expected. The same parameter
+      name can be used more than once, for example: `"WHERE id > @msg_id AND
+      id < @msg_id + 100"` It is an error to execute a SQL statement with
+      unbound parameters.
     partitionToken: If present, results will be restricted to the specified
-      partition previously created using PartitionQuery().  There must be an
+      partition previously created using PartitionQuery(). There must be an
       exact match for the values of fields common to this message and the
       PartitionQueryRequest message used to create this partition_token.
     queryMode: Used to control the amount of debugging information returned in
@@ -519,19 +517,19 @@ class ExecuteSqlRequest(_messages.Message):
       yielded this token.
     seqno: A per-transaction sequence number used to identify this request.
       This field makes each request idempotent such that if the request is
-      received multiple times, at most one will succeed.  The sequence number
+      received multiple times, at most one will succeed. The sequence number
       must be monotonically increasing within the transaction. If a request
       arrives for the first time with an out-of-order sequence number, the
       transaction may be aborted. Replays of previously handled requests will
-      yield the same response as the first execution.  Required for DML
+      yield the same response as the first execution. Required for DML
       statements. Ignored for queries.
     sql: Required. The SQL string.
-    transaction: The transaction to use.  For queries, if none is provided,
-      the default is a temporary read-only transaction with strong
-      concurrency.  Standard DML statements require a read-write transaction.
-      To protect against replays, single-use transactions are not supported.
-      The caller must either supply an existing transaction ID or begin a new
-      transaction.  Partitioned DML requires an existing Partitioned DML
+    transaction: The transaction to use. For queries, if none is provided, the
+      default is a temporary read-only transaction with strong concurrency.
+      Standard DML statements require a read-write transaction. To protect
+      against replays, single-use transactions are not supported. The caller
+      must either supply an existing transaction ID or begin a new
+      transaction. Partitioned DML requires an existing Partitioned DML
       transaction ID.
   """
 
@@ -554,8 +552,8 @@ class ExecuteSqlRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamTypesValue(_messages.Message):
     r"""It is not always possible for Cloud Spanner to infer the right SQL
-    type from a JSON value.  For example, values of type `BYTES` and values of
-    type `STRING` both appear in params as JSON strings.  In these cases,
+    type from a JSON value. For example, values of type `BYTES` and values of
+    type `STRING` both appear in params as JSON strings. In these cases,
     `param_types` can be used to specify the exact SQL type for some or all of
     the SQL statement parameters. See the definition of Type for more
     information about SQL types.
@@ -583,13 +581,13 @@ class ExecuteSqlRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
     r"""Parameter names and values that bind to placeholders in the SQL
-    string.  A parameter placeholder consists of the `@` character followed by
+    string. A parameter placeholder consists of the `@` character followed by
     the parameter name (for example, `@firstName`). Parameter names must
     conform to the naming requirements of identifiers as specified at
-    https://cloud.google.com/spanner/docs/lexical#identifiers.  Parameters can
-    appear anywhere that a literal value is expected.  The same parameter name
-    can be used more than once, for example:  `"WHERE id > @msg_id AND id <
-    @msg_id + 100"`  It is an error to execute a SQL statement with unbound
+    https://cloud.google.com/spanner/docs/lexical#identifiers. Parameters can
+    appear anywhere that a literal value is expected. The same parameter name
+    can be used more than once, for example: `"WHERE id > @msg_id AND id <
+    @msg_id + 100"` It is an error to execute a SQL statement with unbound
     parameters.
 
     Messages:
@@ -626,20 +624,20 @@ class ExecuteSqlRequest(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -703,10 +701,10 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -730,24 +728,24 @@ class Instance(_messages.Message):
       organizational needs and deployment strategies. Cloud Labels can be used
       to filter collections of resources. They can be used to control how
       resource metrics are aggregated. And they can be used as arguments to
-      policy management rules (e.g. route, firewall, load balancing, etc.).
-      * Label keys must be between 1 and 63 characters long and must conform
-      to    the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  *
-      Label values must be between 0 and 63 characters long and must conform
-      to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more
-      than 64 labels can be associated with a given resource.  See
-      https://goo.gl/xmQnxf for more information on and examples of labels.
-      If you plan to use labels in your own code, please note that additional
+      policy management rules (e.g. route, firewall, load balancing, etc.). *
+      Label keys must be between 1 and 63 characters long and must conform to
+      the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. * Label
+      values must be between 0 and 63 characters long and must conform to the
+      regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`. * No more than 64
+      labels can be associated with a given resource. See
+      https://goo.gl/xmQnxf for more information on and examples of labels. If
+      you plan to use labels in your own code, please note that additional
       characters may be allowed in the future. And so you are advised to use
       an internal label representation, such as JSON, which doesn't rely upon
-      specific characters being disallowed.  For example, representing labels
-      as the string:  name + "_" + value  would prove problematic if we were
-      to allow "_" in a future release.
+      specific characters being disallowed. For example, representing labels
+      as the string: name + "_" + value would prove problematic if we were to
+      allow "_" in a future release.
 
   Fields:
     config: Required. The name of the instance's configuration. Values are of
-      the form `projects/<project>/instanceConfigs/<configuration>`. See also
-      InstanceConfig and ListInstanceConfigs.
+      the form `projects//instanceConfigs/`. See also InstanceConfig and
+      ListInstanceConfigs.
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Must be unique per project and between 4 and 30
       characters in length.
@@ -757,23 +755,23 @@ class Instance(_messages.Message):
       organizational needs and deployment strategies. Cloud Labels can be used
       to filter collections of resources. They can be used to control how
       resource metrics are aggregated. And they can be used as arguments to
-      policy management rules (e.g. route, firewall, load balancing, etc.).
-      * Label keys must be between 1 and 63 characters long and must conform
-      to    the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  *
-      Label values must be between 0 and 63 characters long and must conform
-      to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more
-      than 64 labels can be associated with a given resource.  See
-      https://goo.gl/xmQnxf for more information on and examples of labels.
-      If you plan to use labels in your own code, please note that additional
+      policy management rules (e.g. route, firewall, load balancing, etc.). *
+      Label keys must be between 1 and 63 characters long and must conform to
+      the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. * Label
+      values must be between 0 and 63 characters long and must conform to the
+      regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`. * No more than 64
+      labels can be associated with a given resource. See
+      https://goo.gl/xmQnxf for more information on and examples of labels. If
+      you plan to use labels in your own code, please note that additional
       characters may be allowed in the future. And so you are advised to use
       an internal label representation, such as JSON, which doesn't rely upon
-      specific characters being disallowed.  For example, representing labels
-      as the string:  name + "_" + value  would prove problematic if we were
-      to allow "_" in a future release.
+      specific characters being disallowed. For example, representing labels
+      as the string: name + "_" + value would prove problematic if we were to
+      allow "_" in a future release.
     name: Required. A unique identifier for the instance, which cannot be
       changed after the instance is created. Values are of the form
-      `projects/<project>/instances/a-z*[a-z0-9]`. The final segment of the
-      name must be between 2 and 64 characters in length.
+      `projects//instances/a-z*[a-z0-9]`. The final segment of the name must
+      be between 2 and 64 characters in length.
     nodeCount: The number of nodes allocated to this instance. This may be
       zero in API responses for instances that are not yet in state `READY`.
       See [the documentation](https://cloud.google.com/spanner/docs/instances#
@@ -806,19 +804,18 @@ class Instance(_messages.Message):
     and deployment strategies. Cloud Labels can be used to filter collections
     of resources. They can be used to control how resource metrics are
     aggregated. And they can be used as arguments to policy management rules
-    (e.g. route, firewall, load balancing, etc.).   * Label keys must be
-    between 1 and 63 characters long and must conform to    the following
-    regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be
-    between 0 and 63 characters long and must conform    to the regular
-    expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels can
-    be associated with a given resource.  See https://goo.gl/xmQnxf for more
-    information on and examples of labels.  If you plan to use labels in your
+    (e.g. route, firewall, load balancing, etc.). * Label keys must be between
+    1 and 63 characters long and must conform to the following regular
+    expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. * Label values must be between 0
+    and 63 characters long and must conform to the regular expression
+    `([a-z]([-a-z0-9]*[a-z0-9])?)?`. * No more than 64 labels can be
+    associated with a given resource. See https://goo.gl/xmQnxf for more
+    information on and examples of labels. If you plan to use labels in your
     own code, please note that additional characters may be allowed in the
     future. And so you are advised to use an internal label representation,
     such as JSON, which doesn't rely upon specific characters being
-    disallowed.  For example, representing labels as the string:  name + "_" +
-    value  would prove problematic if we were to allow "_" in a future
-    release.
+    disallowed. For example, representing labels as the string: name + "_" +
+    value would prove problematic if we were to allow "_" in a future release.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -855,8 +852,8 @@ class InstanceConfig(_messages.Message):
 
   Fields:
     displayName: The name of this instance configuration as it appears in UIs.
-    name: A unique identifier for the instance configuration.  Values are of
-      the form `projects/<project>/instanceConfigs/a-z*`
+    name: A unique identifier for the instance configuration. Values are of
+      the form `projects//instanceConfigs/a-z*`
     replicas: The geographic placement of nodes in this instance configuration
       and their replication properties.
   """
@@ -867,42 +864,40 @@ class InstanceConfig(_messages.Message):
 
 
 class KeyRange(_messages.Message):
-  r"""KeyRange represents a range of rows in a table or index.  A range has a
+  r"""KeyRange represents a range of rows in a table or index. A range has a
   start key and an end key. These keys can be open or closed, indicating if
-  the range includes rows with that key.  Keys are represented by lists, where
+  the range includes rows with that key. Keys are represented by lists, where
   the ith value in the list corresponds to the ith component of the table or
-  index primary key. Individual values are encoded as described here.  For
-  example, consider the following table definition:      CREATE TABLE
-  UserEvents (       UserName STRING(MAX),       EventDate STRING(10)     )
-  PRIMARY KEY(UserName, EventDate);  The following keys name rows in this
-  table:      "Bob", "2014-09-23"  Since the `UserEvents` table's `PRIMARY
-  KEY` clause names two columns, each `UserEvents` key has two elements; the
-  first is the `UserName`, and the second is the `EventDate`.  Key ranges with
-  multiple components are interpreted lexicographically by component using the
-  table or index key's declared sort order. For example, the following range
-  returns all events for user `"Bob"` that occurred in the year 2015:
-  "start_closed": ["Bob", "2015-01-01"]     "end_closed": ["Bob",
-  "2015-12-31"]  Start and end keys can omit trailing key components. This
-  affects the inclusion and exclusion of rows that exactly match the provided
-  key components: if the key is closed, then rows that exactly match the
-  provided components are included; if the key is open, then rows that exactly
-  match are not included.  For example, the following range includes all
-  events for `"Bob"` that occurred during and after the year 2000:
-  "start_closed": ["Bob", "2000-01-01"]     "end_closed": ["Bob"]  The next
-  example retrieves all events for `"Bob"`:      "start_closed": ["Bob"]
-  "end_closed": ["Bob"]  To retrieve events before the year 2000:
-  "start_closed": ["Bob"]     "end_open": ["Bob", "2000-01-01"]  The following
-  range includes all rows in the table:      "start_closed": []
-  "end_closed": []  This range returns all users whose `UserName` begins with
-  any character from A to C:      "start_closed": ["A"]     "end_open": ["D"]
-  This range returns all users whose `UserName` begins with B:
-  "start_closed": ["B"]     "end_open": ["C"]  Key ranges honor column sort
-  order. For example, suppose a table is defined as follows:      CREATE TABLE
-  DescendingSortedTable {       Key INT64,       ...     ) PRIMARY KEY(Key
-  DESC);  The following range retrieves all rows with key values between 1 and
-  100 inclusive:      "start_closed": ["100"]     "end_closed": ["1"]  Note
-  that 100 is passed as the start, and 1 is passed as the end, because `Key`
-  is a descending column in the schema.
+  index primary key. Individual values are encoded as described here. For
+  example, consider the following table definition: CREATE TABLE UserEvents (
+  UserName STRING(MAX), EventDate STRING(10) ) PRIMARY KEY(UserName,
+  EventDate); The following keys name rows in this table: "Bob", "2014-09-23"
+  Since the `UserEvents` table's `PRIMARY KEY` clause names two columns, each
+  `UserEvents` key has two elements; the first is the `UserName`, and the
+  second is the `EventDate`. Key ranges with multiple components are
+  interpreted lexicographically by component using the table or index key's
+  declared sort order. For example, the following range returns all events for
+  user `"Bob"` that occurred in the year 2015: "start_closed": ["Bob",
+  "2015-01-01"] "end_closed": ["Bob", "2015-12-31"] Start and end keys can
+  omit trailing key components. This affects the inclusion and exclusion of
+  rows that exactly match the provided key components: if the key is closed,
+  then rows that exactly match the provided components are included; if the
+  key is open, then rows that exactly match are not included. For example, the
+  following range includes all events for `"Bob"` that occurred during and
+  after the year 2000: "start_closed": ["Bob", "2000-01-01"] "end_closed":
+  ["Bob"] The next example retrieves all events for `"Bob"`: "start_closed":
+  ["Bob"] "end_closed": ["Bob"] To retrieve events before the year 2000:
+  "start_closed": ["Bob"] "end_open": ["Bob", "2000-01-01"] The following
+  range includes all rows in the table: "start_closed": [] "end_closed": []
+  This range returns all users whose `UserName` begins with any character from
+  A to C: "start_closed": ["A"] "end_open": ["D"] This range returns all users
+  whose `UserName` begins with B: "start_closed": ["B"] "end_open": ["C"] Key
+  ranges honor column sort order. For example, suppose a table is defined as
+  follows: CREATE TABLE DescendingSortedTable { Key INT64, ... ) PRIMARY
+  KEY(Key DESC); The following range retrieves all rows with key values
+  between 1 and 100 inclusive: "start_closed": ["100"] "end_closed": ["1"]
+  Note that 100 is passed as the start, and 1 is passed as the end, because
+  `Key` is a descending column in the schema.
 
   Fields:
     endClosed: If the end is closed, then the range includes all rows whose
@@ -925,7 +920,7 @@ class KeyRange(_messages.Message):
 class KeySet(_messages.Message):
   r"""`KeySet` defines a collection of Cloud Spanner keys and/or key ranges.
   All the keys are expected to be in the same table or index. The keys need
-  not be sorted in any particular way.  If the same key is specified multiple
+  not be sorted in any particular way. If the same key is specified multiple
   times in the set (for example if two ranges, two keys, or a key and a range
   overlap), Cloud Spanner behaves as if the key were only specified once.
 
@@ -938,7 +933,7 @@ class KeySet(_messages.Message):
       specified in `keys` or `ranges` are only yielded once.
     keys: A list of specific keys. Entries in `keys` should have exactly as
       many elements as there are columns in the primary or index key with
-      which this `KeySet` is used.  Individual key values are encoded as
+      which this `KeySet` is used. Individual key values are encoded as
       described here.
     ranges: A list of key ranges. See KeyRange for more information about key
       range specifications.
@@ -1075,7 +1070,7 @@ class ListSessionsResponse(_messages.Message):
 
 
 class Mutation(_messages.Message):
-  r"""A modification to one or more Cloud Spanner rows.  Mutations can be
+  r"""A modification to one or more Cloud Spanner rows. Mutations can be
   applied to a Cloud Spanner database by sending them in a Commit call.
 
   Fields:
@@ -1085,14 +1080,14 @@ class Mutation(_messages.Message):
       write or transaction fails with error `ALREADY_EXISTS`.
     insertOrUpdate: Like insert, except that if the row already exists, then
       its column values are overwritten with the ones provided. Any column
-      values not explicitly written are preserved.  When using
+      values not explicitly written are preserved. When using
       insert_or_update, just as when using insert, all `NOT NULL` columns in
       the table must be given a value. This holds true even when the row
       already exists and will therefore actually be updated.
     replace: Like insert, except that if the row already exists, it is
       deleted, and the column values provided are inserted instead. Unlike
       insert_or_update, this means any values not explicitly written become
-      `NULL`.  In an interleaved table, if you create the child table with the
+      `NULL`. In an interleaved table, if you create the child table with the
       `ON DELETE CASCADE` annotation, then replacing a parent row also deletes
       the child rows. Otherwise, you must delete the child rows before you
       replace the parent row.
@@ -1112,17 +1107,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1131,29 +1126,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1179,12 +1174,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1271,37 +1266,35 @@ class PartialResultSet(_messages.Message):
     values: A streamed result set consists of a stream of values, which might
       be split into many `PartialResultSet` messages to accommodate large rows
       and/or large values. Every N complete values defines a row, where N is
-      equal to the number of entries in metadata.row_type.fields.  Most values
-      are encoded based on type as described here.  It is possible that the
+      equal to the number of entries in metadata.row_type.fields. Most values
+      are encoded based on type as described here. It is possible that the
       last value in values is "chunked", meaning that the rest of the value is
       sent in subsequent `PartialResultSet`(s). This is denoted by the
       chunked_value field. Two or more chunked values can be merged to form a
-      complete value as follows:    * `bool/number/null`: cannot be chunked
-      * `string`: concatenate the strings   * `list`: concatenate the lists.
-      If the last element in a list is a     `string`, `list`, or `object`,
-      merge it with the first element in     the next list by applying these
-      rules recursively.   * `object`: concatenate the (field name, field
-      value) pairs. If a     field name is duplicated, then apply these rules
-      recursively     to merge the field values.  Some examples of merging:
-      # Strings are concatenated.     "foo", "bar" => "foobar"      # Lists of
-      non-strings are concatenated.     [2, 3], [4] => [2, 3, 4]      # Lists
-      are concatenated, but the last and first elements are merged     #
-      because they are strings.     ["a", "b"], ["c", "d"] => ["a", "bc", "d"]
-      # Lists are concatenated, but the last and first elements are merged
-      # because they are lists. Recursively, the last and first elements     #
-      of the inner lists are merged because they are strings.     ["a", ["b",
-      "c"]], [["d"], "e"] => ["a", ["b", "cd"], "e"]      # Non-overlapping
-      object fields are combined.     {"a": "1"}, {"b": "2"} => {"a": "1",
-      "b": 2"}      # Overlapping object fields are merged.     {"a": "1"},
-      {"a": "2"} => {"a": "12"}      # Examples of merging objects containing
-      lists of strings.     {"a": ["1"]}, {"a": ["2"]} => {"a": ["12"]}  For a
-      more complete example, suppose a streaming SQL query is yielding a
-      result set whose rows contain a single string field. The following
-      `PartialResultSet`s might be yielded:      {       "metadata": { ... }
-      "values": ["Hello", "W"]       "chunked_value": true
-      "resume_token": "Af65..."     }     {       "values": ["orl"]
-      "chunked_value": true       "resume_token": "Bqp2..."     }     {
-      "values": ["d"]       "resume_token": "Zx1B..."     }  This sequence of
+      complete value as follows: * `bool/number/null`: cannot be chunked *
+      `string`: concatenate the strings * `list`: concatenate the lists. If
+      the last element in a list is a `string`, `list`, or `object`, merge it
+      with the first element in the next list by applying these rules
+      recursively. * `object`: concatenate the (field name, field value)
+      pairs. If a field name is duplicated, then apply these rules recursively
+      to merge the field values. Some examples of merging: # Strings are
+      concatenated. "foo", "bar" => "foobar" # Lists of non-strings are
+      concatenated. [2, 3], [4] => [2, 3, 4] # Lists are concatenated, but the
+      last and first elements are merged # because they are strings. ["a",
+      "b"], ["c", "d"] => ["a", "bc", "d"] # Lists are concatenated, but the
+      last and first elements are merged # because they are lists.
+      Recursively, the last and first elements # of the inner lists are merged
+      because they are strings. ["a", ["b", "c"]], [["d"], "e"] => ["a", ["b",
+      "cd"], "e"] # Non-overlapping object fields are combined. {"a": "1"},
+      {"b": "2"} => {"a": "1", "b": 2"} # Overlapping object fields are
+      merged. {"a": "1"}, {"a": "2"} => {"a": "12"} # Examples of merging
+      objects containing lists of strings. {"a": ["1"]}, {"a": ["2"]} => {"a":
+      ["12"]} For a more complete example, suppose a streaming SQL query is
+      yielding a result set whose rows contain a single string field. The
+      following `PartialResultSet`s might be yielded: { "metadata": { ... }
+      "values": ["Hello", "W"] "chunked_value": true "resume_token": "Af65..."
+      } { "values": ["orl"] "chunked_value": true "resume_token": "Bqp2..." }
+      { "values": ["d"] "resume_token": "Zx1B..." } This sequence of
       `PartialResultSet`s encodes two rows, one containing the field value
       `"Hello"`, and a second containing the field value `"World" = "W" +
       "orl" + "d"`.
@@ -1331,16 +1324,15 @@ class PartitionOptions(_messages.Message):
 
   Fields:
     maxPartitions: **Note:** This hint is currently ignored by PartitionQuery
-      and PartitionRead requests.  The desired maximum number of partitions to
-      return.  For example, this may be set to the number of workers
-      available.  The default for this option is currently 10,000. The maximum
-      value is currently 200,000.  This is only a hint.  The actual number of
-      partitions returned may be smaller or larger than this maximum count
-      request.
+      and PartitionRead requests. The desired maximum number of partitions to
+      return. For example, this may be set to the number of workers available.
+      The default for this option is currently 10,000. The maximum value is
+      currently 200,000. This is only a hint. The actual number of partitions
+      returned may be smaller or larger than this maximum count request.
     partitionSizeBytes: **Note:** This hint is currently ignored by
-      PartitionQuery and PartitionRead requests.  The desired data size for
-      each partition generated.  The default for this option is currently 1
-      GiB.  This is only a hint. The actual size of each partition may be
+      PartitionQuery and PartitionRead requests. The desired data size for
+      each partition generated. The default for this option is currently 1
+      GiB. This is only a hint. The actual size of each partition may be
       smaller or larger than this size request.
   """
 
@@ -1353,34 +1345,34 @@ class PartitionQueryRequest(_messages.Message):
 
   Messages:
     ParamTypesValue: It is not always possible for Cloud Spanner to infer the
-      right SQL type from a JSON value.  For example, values of type `BYTES`
-      and values of type `STRING` both appear in params as JSON strings.  In
+      right SQL type from a JSON value. For example, values of type `BYTES`
+      and values of type `STRING` both appear in params as JSON strings. In
       these cases, `param_types` can be used to specify the exact SQL type for
       some or all of the SQL query parameters. See the definition of Type for
       more information about SQL types.
     ParamsValue: Parameter names and values that bind to placeholders in the
-      SQL string.  A parameter placeholder consists of the `@` character
+      SQL string. A parameter placeholder consists of the `@` character
       followed by the parameter name (for example, `@firstName`). Parameter
-      names can contain letters, numbers, and underscores.  Parameters can
-      appear anywhere that a literal value is expected.  The same parameter
-      name can be used more than once, for example:  `"WHERE id > @msg_id AND
-      id < @msg_id + 100"`  It is an error to execute a SQL statement with
+      names can contain letters, numbers, and underscores. Parameters can
+      appear anywhere that a literal value is expected. The same parameter
+      name can be used more than once, for example: `"WHERE id > @msg_id AND
+      id < @msg_id + 100"` It is an error to execute a SQL statement with
       unbound parameters.
 
   Fields:
     paramTypes: It is not always possible for Cloud Spanner to infer the right
-      SQL type from a JSON value.  For example, values of type `BYTES` and
-      values of type `STRING` both appear in params as JSON strings.  In these
+      SQL type from a JSON value. For example, values of type `BYTES` and
+      values of type `STRING` both appear in params as JSON strings. In these
       cases, `param_types` can be used to specify the exact SQL type for some
       or all of the SQL query parameters. See the definition of Type for more
       information about SQL types.
     params: Parameter names and values that bind to placeholders in the SQL
-      string.  A parameter placeholder consists of the `@` character followed
+      string. A parameter placeholder consists of the `@` character followed
       by the parameter name (for example, `@firstName`). Parameter names can
-      contain letters, numbers, and underscores.  Parameters can appear
-      anywhere that a literal value is expected.  The same parameter name can
-      be used more than once, for example:  `"WHERE id > @msg_id AND id <
-      @msg_id + 100"`  It is an error to execute a SQL statement with unbound
+      contain letters, numbers, and underscores. Parameters can appear
+      anywhere that a literal value is expected. The same parameter name can
+      be used more than once, for example: `"WHERE id > @msg_id AND id <
+      @msg_id + 100"` It is an error to execute a SQL statement with unbound
       parameters.
     partitionOptions: Additional options that affect how many partitions are
       created.
@@ -1389,7 +1381,7 @@ class PartitionQueryRequest(_messages.Message):
       root partitionable query has a single distributed union operator. A
       distributed union operator conceptually divides one or more tables into
       multiple splits, remotely evaluates a subquery independently on each
-      split, and then unions all results.  This must not contain DML commands,
+      split, and then unions all results. This must not contain DML commands,
       such as INSERT, UPDATE, or DELETE. Use ExecuteStreamingSql with a
       PartitionedDml transaction for large, partition-friendly DML operations.
     transaction: Read only snapshot transactions are supported, read/write and
@@ -1399,8 +1391,8 @@ class PartitionQueryRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamTypesValue(_messages.Message):
     r"""It is not always possible for Cloud Spanner to infer the right SQL
-    type from a JSON value.  For example, values of type `BYTES` and values of
-    type `STRING` both appear in params as JSON strings.  In these cases,
+    type from a JSON value. For example, values of type `BYTES` and values of
+    type `STRING` both appear in params as JSON strings. In these cases,
     `param_types` can be used to specify the exact SQL type for some or all of
     the SQL query parameters. See the definition of Type for more information
     about SQL types.
@@ -1428,12 +1420,12 @@ class PartitionQueryRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
     r"""Parameter names and values that bind to placeholders in the SQL
-    string.  A parameter placeholder consists of the `@` character followed by
+    string. A parameter placeholder consists of the `@` character followed by
     the parameter name (for example, `@firstName`). Parameter names can
-    contain letters, numbers, and underscores.  Parameters can appear anywhere
-    that a literal value is expected.  The same parameter name can be used
-    more than once, for example:  `"WHERE id > @msg_id AND id < @msg_id +
-    100"`  It is an error to execute a SQL statement with unbound parameters.
+    contain letters, numbers, and underscores. Parameters can appear anywhere
+    that a literal value is expected. The same parameter name can be used more
+    than once, for example: `"WHERE id > @msg_id AND id < @msg_id + 100"` It
+    is an error to execute a SQL statement with unbound parameters.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.
@@ -1474,7 +1466,7 @@ class PartitionReadRequest(_messages.Message):
     keySet: Required. `key_set` identifies the rows to be yielded. `key_set`
       names the primary keys of the rows in table to be yielded, unless index
       is present. If index is present, then key_set instead names index keys
-      in index.  It is not an error for the `key_set` to name rows that do not
+      in index. It is not an error for the `key_set` to name rows that do not
       exist in the database. Read yields nothing for nonexistent rows.
     partitionOptions: Additional options that affect how many partitions are
       created.
@@ -1523,8 +1515,8 @@ class PlanNode(_messages.Message):
       executions, number of rows/time per execution etc.
     MetadataValue: Attributes relevant to the node contained in a group of
       key-value pairs. For example, a Parameter Reference node could have the
-      following information in its metadata:      {
-      "parameter_reference": "param1",       "parameter_type": "array"     }
+      following information in its metadata: { "parameter_reference":
+      "param1", "parameter_type": "array" }
 
   Fields:
     childLinks: List of child node `index`es and their relationship to this
@@ -1541,8 +1533,8 @@ class PlanNode(_messages.Message):
       to directly embed a description of the node in its parent.
     metadata: Attributes relevant to the node contained in a group of key-
       value pairs. For example, a Parameter Reference node could have the
-      following information in its metadata:      {
-      "parameter_reference": "param1",       "parameter_type": "array"     }
+      following information in its metadata: { "parameter_reference":
+      "param1", "parameter_type": "array" }
     shortRepresentation: Condensed representation for SCALAR nodes.
   """
 
@@ -1599,8 +1591,8 @@ class PlanNode(_messages.Message):
   class MetadataValue(_messages.Message):
     r"""Attributes relevant to the node contained in a group of key-value
     pairs. For example, a Parameter Reference node could have the following
-    information in its metadata:      {       "parameter_reference": "param1",
-    "parameter_type": "array"     }
+    information in its metadata: { "parameter_reference": "param1",
+    "parameter_type": "array" }
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -1633,37 +1625,33 @@ class PlanNode(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  For some types of
+  be an IAM predefined role or a user-created custom role. For some types of
   Google Cloud resources, a `binding` can also specify a `condition`, which is
   a logical expression that allows access to a resource only if the expression
   evaluates to `true`. A condition can add constraints based on attributes of
   the request, the resource, or both. To learn which resources support
   conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies).  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members": [
-  "user:eve@example.com"           ],           "condition": {
-  "title": "expirable access",             "description": "Does not grant
-  access after Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -1677,24 +1665,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.  To learn which resources support
+      version or leave the field unset. To learn which resources support
       conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -1711,7 +1699,7 @@ class QueryOptions(_messages.Message):
   Fields:
     optimizerVersion: An option to control the selection of optimizer version.
       This parameter allows individual queries to pick different query
-      optimizer versions.  Specifying "latest" as a value instructs Cloud
+      optimizer versions. Specifying "latest" as a value instructs Cloud
       Spanner to use the latest supported query optimizer version. If not
       specified, Cloud Spanner uses optimizer version set at the database
       level options. Any other positive integer (from the list of supported
@@ -1721,7 +1709,7 @@ class QueryOptions(_messages.Message):
       an invalid optimizer version will fail with a syntax error
       (`INVALID_ARGUMENT`) status. See
       https://cloud.google.com/spanner/docs/query-optimizer/manage-query-
-      optimizer for more information on managing the query optimizer.  The
+      optimizer for more information on managing the query optimizer. The
       `optimizer_version` statement hint has precedence over this setting.
   """
 
@@ -1746,7 +1734,7 @@ class ReadOnly(_messages.Message):
   Fields:
     exactStaleness: Executes all reads at a timestamp that is
       `exact_staleness` old. The timestamp is chosen soon after the read is
-      started.  Guarantees that all writes that have committed more than the
+      started. Guarantees that all writes that have committed more than the
       specified number of seconds ago are visible. Because Cloud Spanner
       chooses the exact timestamp, this mode works even if the client's local
       clock is substantially skewed from Cloud Spanner commit timestamps.
@@ -1756,24 +1744,24 @@ class ReadOnly(_messages.Message):
       Guarantees that all writes that have committed more than the specified
       number of seconds ago are visible. Because Cloud Spanner chooses the
       exact timestamp, this mode works even if the client's local clock is
-      substantially skewed from Cloud Spanner commit timestamps.  Useful for
+      substantially skewed from Cloud Spanner commit timestamps. Useful for
       reading the freshest data available at a nearby replica, while bounding
-      the possible staleness if the local replica has fallen behind.  Note
-      that this option can only be used in single-use transactions.
+      the possible staleness if the local replica has fallen behind. Note that
+      this option can only be used in single-use transactions.
     minReadTimestamp: Executes all reads at a timestamp >=
-      `min_read_timestamp`.  This is useful for requesting fresher data than
+      `min_read_timestamp`. This is useful for requesting fresher data than
       some previous read, or data that is fresh enough to observe the effects
-      of some previously committed transaction whose timestamp is known.  Note
-      that this option can only be used in single-use transactions.  A
+      of some previously committed transaction whose timestamp is known. Note
+      that this option can only be used in single-use transactions. A
       timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.
       Example: `"2014-10-02T15:01:23.045123456Z"`.
     readTimestamp: Executes all reads at the given timestamp. Unlike other
       modes, reads at a specific timestamp are repeatable; the same read at
       the same timestamp always returns the same data. If the timestamp is in
       the future, the read will block until the specified timestamp, modulo
-      the read's deadline.  Useful for large scale consistent reads such as
+      the read's deadline. Useful for large scale consistent reads such as
       mapreduces, or for coordinating many reads against a consistent snapshot
-      of the data.  A timestamp in RFC3339 UTC \"Zulu\" format, accurate to
+      of the data. A timestamp in RFC3339 UTC \"Zulu\" format, accurate to
       nanoseconds. Example: `"2014-10-02T15:01:23.045123456Z"`.
     returnReadTimestamp: If true, the Cloud Spanner-selected read timestamp is
       included in the Transaction message that describes the transaction.
@@ -1801,17 +1789,17 @@ class ReadRequest(_messages.Message):
     keySet: Required. `key_set` identifies the rows to be yielded. `key_set`
       names the primary keys of the rows in table to be yielded, unless index
       is present. If index is present, then key_set instead names index keys
-      in index.  If the partition_token field is empty, rows are yielded in
+      in index. If the partition_token field is empty, rows are yielded in
       table primary key order (if index is empty) or index key order (if index
-      is non-empty).  If the partition_token field is not empty, rows will be
-      yielded in an unspecified order.  It is not an error for the `key_set`
-      to name rows that do not exist in the database. Read yields nothing for
+      is non-empty). If the partition_token field is not empty, rows will be
+      yielded in an unspecified order. It is not an error for the `key_set` to
+      name rows that do not exist in the database. Read yields nothing for
       nonexistent rows.
     limit: If greater than zero, only the first `limit` rows are yielded. If
       `limit` is zero, the default is no limit. A limit cannot be specified if
       `partition_token` is set.
     partitionToken: If present, results will be restricted to the specified
-      partition previously created using PartitionRead().    There must be an
+      partition previously created using PartitionRead(). There must be an
       exact match for the values of fields common to this message and the
       PartitionReadRequest message used to create this partition_token.
     resumeToken: If this request is resuming a previously interrupted read,
@@ -1862,15 +1850,15 @@ class ReplicaInfo(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Not specified.
       READ_WRITE: Read-write replicas support both reads and writes. These
-        replicas:  * Maintain a full copy of your data. * Serve reads. * Can
+        replicas: * Maintain a full copy of your data. * Serve reads. * Can
         vote whether to commit a write. * Participate in leadership election.
         * Are eligible to become a leader.
       READ_ONLY: Read-only replicas only support reads (not writes). Read-only
-        replicas:  * Maintain a full copy of your data. * Serve reads. * Do
-        not participate in voting to commit writes. * Are not eligible to
-        become a leader.
+        replicas: * Maintain a full copy of your data. * Serve reads. * Do not
+        participate in voting to commit writes. * Are not eligible to become a
+        leader.
       WITNESS: Witness replicas don't support reads but do participate in
-        voting to commit writes. Witness replicas:  * Do not maintain a full
+        voting to commit writes. Witness replicas: * Do not maintain a full
         copy of data. * Do not serve reads. * Vote whether to commit writes. *
         Participate in leader election but are not eligible to become leader.
     """
@@ -1906,14 +1894,13 @@ class RestoreDatabaseMetadata(_messages.Message):
     optimizeDatabaseOperationName: If exists, the name of the long-running
       operation that will be used to track the post-restore optimization
       process to optimize the performance of the restored database, and remove
-      the dependency on the restore source. The name is of the form `projects/
-      <project>/instances/<instance>/databases/<database>/operations/<operatio
-      n>` where the <database> is the name of database being created and
-      restored to. The metadata type of the  long-running operation is
-      OptimizeRestoredDatabaseMetadata. This long-running operation will be
-      automatically created by the system after the RestoreDatabase long-
-      running operation completes successfully. This operation will not be
-      created if the restore was not successful.
+      the dependency on the restore source. The name is of the form
+      `projects//instances//databases//operations/` where the is the name of
+      database being created and restored to. The metadata type of the long-
+      running operation is OptimizeRestoredDatabaseMetadata. This long-running
+      operation will be automatically created by the system after the
+      RestoreDatabase long-running operation completes successfully. This
+      operation will not be created if the restore was not successful.
     progress: The progress of the RestoreDatabase operation.
     sourceType: The type of the restore source.
   """
@@ -1940,12 +1927,12 @@ class RestoreDatabaseRequest(_messages.Message):
   r"""The request for RestoreDatabase.
 
   Fields:
-    backup: Name of the backup from which to restore.  Values are of the form
-      `projects/<project>/instances/<instance>/backups/<backup>`.
+    backup: Name of the backup from which to restore. Values are of the form
+      `projects//instances//backups/`.
     databaseId: Required. The id of the database to create and restore to.
       This database must not already exist. The `database_id` appended to
       `parent` forms the full database name of the form
-      `projects/<project>/instances/<instance>/databases/<database_id>`.
+      `projects//instances//databases/`.
   """
 
   backup = _messages.StringField(1)
@@ -2017,10 +2004,10 @@ class ResultSetMetadata(_messages.Message):
 
   Fields:
     rowType: Indicates the field names and types for the rows in the result
-      set.  For example, a SQL query like `"SELECT UserId, UserName FROM
-      Users"` could return a `row_type` value like:      "fields": [       {
-      "name": "UserId", "type": { "code": "INT64" } },       { "name":
-      "UserName", "type": { "code": "STRING" } },     ]
+      set. For example, a SQL query like `"SELECT UserId, UserName FROM
+      Users"` could return a `row_type` value like: "fields": [ { "name":
+      "UserId", "type": { "code": "INT64" } }, { "name": "UserName", "type": {
+      "code": "STRING" } }, ]
     transaction: If the read or SQL query began a transaction as a side-
       effect, the information about the new transaction is yielded here.
   """
@@ -2035,15 +2022,15 @@ class ResultSetStats(_messages.Message):
   Messages:
     QueryStatsValue: Aggregated statistics from the execution of the query.
       Only present when the query is profiled. For example, a query could
-      return the statistics as follows:      {       "rows_returned": "3",
-      "elapsed_time": "1.22 secs",       "cpu_time": "1.19 secs"     }
+      return the statistics as follows: { "rows_returned": "3",
+      "elapsed_time": "1.22 secs", "cpu_time": "1.19 secs" }
 
   Fields:
     queryPlan: QueryPlan for the query associated with this result.
     queryStats: Aggregated statistics from the execution of the query. Only
       present when the query is profiled. For example, a query could return
-      the statistics as follows:      {       "rows_returned": "3",
-      "elapsed_time": "1.22 secs",       "cpu_time": "1.19 secs"     }
+      the statistics as follows: { "rows_returned": "3", "elapsed_time": "1.22
+      secs", "cpu_time": "1.19 secs" }
     rowCountExact: Standard DML returns an exact count of rows that were
       modified.
     rowCountLowerBound: Partitioned DML does not offer exactly-once semantics,
@@ -2054,8 +2041,8 @@ class ResultSetStats(_messages.Message):
   class QueryStatsValue(_messages.Message):
     r"""Aggregated statistics from the execution of the query. Only present
     when the query is profiled. For example, a query could return the
-    statistics as follows:      {       "rows_returned": "3",
-    "elapsed_time": "1.22 secs",       "cpu_time": "1.19 secs"     }
+    statistics as follows: { "rows_returned": "3", "elapsed_time": "1.22
+    secs", "cpu_time": "1.19 secs" }
 
     Messages:
       AdditionalProperty: An additional property for a QueryStatsValue object.
@@ -2097,38 +2084,38 @@ class Session(_messages.Message):
   r"""A session in the Cloud Spanner API.
 
   Messages:
-    LabelsValue: The labels for the session.   * Label keys must be between 1
-      and 63 characters long and must conform to    the following regular
-      expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be
-      between 0 and 63 characters long and must conform    to the regular
-      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels
-      can be associated with a given session.  See https://goo.gl/xmQnxf for
-      more information on and examples of labels.
+    LabelsValue: The labels for the session. * Label keys must be between 1
+      and 63 characters long and must conform to the following regular
+      expression: `[a-z]([-a-z0-9]*[a-z0-9])?`. * Label values must be between
+      0 and 63 characters long and must conform to the regular expression
+      `([a-z]([-a-z0-9]*[a-z0-9])?)?`. * No more than 64 labels can be
+      associated with a given session. See https://goo.gl/xmQnxf for more
+      information on and examples of labels.
 
   Fields:
     approximateLastUseTime: Output only. The approximate timestamp when the
       session is last used. It is typically earlier than the actual last use
       time.
     createTime: Output only. The timestamp when the session is created.
-    labels: The labels for the session.   * Label keys must be between 1 and
-      63 characters long and must conform to    the following regular
-      expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be
-      between 0 and 63 characters long and must conform    to the regular
-      expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels
-      can be associated with a given session.  See https://goo.gl/xmQnxf for
-      more information on and examples of labels.
+    labels: The labels for the session. * Label keys must be between 1 and 63
+      characters long and must conform to the following regular expression:
+      `[a-z]([-a-z0-9]*[a-z0-9])?`. * Label values must be between 0 and 63
+      characters long and must conform to the regular expression
+      `([a-z]([-a-z0-9]*[a-z0-9])?)?`. * No more than 64 labels can be
+      associated with a given session. See https://goo.gl/xmQnxf for more
+      information on and examples of labels.
     name: Output only. The name of the session. This is always system-
       assigned.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels for the session.   * Label keys must be between 1 and 63
-    characters long and must conform to    the following regular expression:
-    `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be between 0 and 63
-    characters long and must conform    to the regular expression
-    `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels can be
-    associated with a given session.  See https://goo.gl/xmQnxf for more
+    r"""The labels for the session. * Label keys must be between 1 and 63
+    characters long and must conform to the following regular expression:
+    `[a-z]([-a-z0-9]*[a-z0-9])?`. * Label values must be between 0 and 63
+    characters long and must conform to the regular expression
+    `([a-z]([-a-z0-9]*[a-z0-9])?)?`. * No more than 64 labels can be
+    associated with a given session. See https://goo.gl/xmQnxf for more
     information on and examples of labels.
 
     Messages:
@@ -2227,7 +2214,7 @@ class SpannerProjectsInstanceConfigsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the requested instance configuration. Values
-      are of the form `projects/<project>/instanceConfigs/<config>`.
+      are of the form `projects//instanceConfigs/`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2244,7 +2231,7 @@ class SpannerProjectsInstanceConfigsListRequest(_messages.Message):
       from a previous ListInstanceConfigsResponse.
     parent: Required. The name of the project for which a list of supported
       instance configurations is requested. Values are of the form
-      `projects/<project>`.
+      `projects/`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2261,34 +2248,33 @@ class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):
       a value for filtering. The value must be a string, a number, or a
       boolean. The comparison operator must be one of: `<`, `>`, `<=`, `>=`,
       `!=`, `=`, or `:`. Colon `:` is the contains operator. Filter rules are
-      not case sensitive.  The following fields in the operation are eligible
-      for filtering:    * `name` - The name of the long-running operation   *
-      `done` - False if the operation is in progress, else true.   *
+      not case sensitive. The following fields in the operation are eligible
+      for filtering: * `name` - The name of the long-running operation *
+      `done` - False if the operation is in progress, else true. *
       `metadata.@type` - the type of metadata. For example, the type string
-      for CreateBackupMetadata is      `type.googleapis.com/google.spanner.adm
-      in.database.v1.CreateBackupMetadata`.   * `metadata.<field_name>` - any
-      field in metadata.value.   * `error` - Error associated with the long-
-      running operation.   * `response.@type` - the type of response.   *
-      `response.<field_name>` - any field in response.value.  You can combine
-      multiple expressions by enclosing each expression in parentheses. By
-      default, expressions are combined with AND logic, but you can specify
-      AND, OR, and NOT logic explicitly.  Here are a few examples:    *
-      `done:true` - The operation is complete.   * `metadata.database:prod` -
-      The database the backup was taken from has      a name containing the
-      string "prod".   * `(metadata.@type=type.googleapis.com/google.spanner.a
-      dmin.database.v1.CreateBackupMetadata) AND` \     `(metadata.name:howl)
-      AND` \     `(metadata.progress.start_time < \"2018-03-28T14:50:00Z\")
-      AND` \     `(error:*)` - Returns operations where:     * The operation's
-      metadata type is CreateBackupMetadata.     * The backup name contains
-      the string "howl".     * The operation started before
-      2018-03-28T14:50:00Z.     * The operation resulted in an error.
+      for CreateBackupMetadata is `type.googleapis.com/google.spanner.admin.da
+      tabase.v1.CreateBackupMetadata`. * `metadata.` - any field in
+      metadata.value. * `error` - Error associated with the long-running
+      operation. * `response.@type` - the type of response. * `response.` -
+      any field in response.value. You can combine multiple expressions by
+      enclosing each expression in parentheses. By default, expressions are
+      combined with AND logic, but you can specify AND, OR, and NOT logic
+      explicitly. Here are a few examples: * `done:true` - The operation is
+      complete. * `metadata.database:prod` - The database the backup was taken
+      from has a name containing the string "prod". * `(metadata.@type=type.go
+      ogleapis.com/google.spanner.admin.database.v1.CreateBackupMetadata) AND`
+      \ `(metadata.name:howl) AND` \ `(metadata.progress.start_time <
+      \"2018-03-28T14:50:00Z\") AND` \ `(error:*)` - Returns operations where:
+      * The operation's metadata type is CreateBackupMetadata. * The backup
+      name contains the string "howl". * The operation started before
+      2018-03-28T14:50:00Z. * The operation resulted in an error.
     pageSize: Number of operations to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListBackupOperationsResponse to the same `parent` and
       with the same `filter`.
     parent: Required. The instance of the backup operations. Values are of the
-      form `projects/<project>/instances/<instance>`.
+      form `projects//instances/`.
   """
 
   filter = _messages.StringField(1)
@@ -2304,12 +2290,12 @@ class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
     backup: A Backup resource to be passed as the request body.
     backupId: Required. The id of the backup to be created. The `backup_id`
       appended to `parent` forms the full backup name of the form
-      `projects/<project>/instances/<instance>/backups/<backup_id>`.
+      `projects//instances//backups/`.
     parent: Required. The name of the instance in which the backup will be
       created. This must be the same instance that contains the database the
       backup will be created from. The backup will be stored in the
       location(s) specified in the instance configuration of this instance.
-      Values are of the form `projects/<project>/instances/<instance>`.
+      Values are of the form `projects//instances/`.
   """
 
   backup = _messages.MessageField('Backup', 1)
@@ -2322,7 +2308,7 @@ class SpannerProjectsInstancesBackupsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the backup to delete. Values are of the form
-      `projects/<project>/instances/<instance>/backups/<backup>`.
+      `projects//instances//backups/`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2335,10 +2321,8 @@ class SpannerProjectsInstancesBackupsGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The Cloud Spanner resource for which the policy is
-      being retrieved. The format is `projects/<project
-      ID>/instances/<instance ID>` for instance resources and
-      `projects/<project ID>/instances/<instance ID>/databases/<database ID>`
-      for database resources.
+      being retrieved. The format is `projects//instances/` for instance
+      resources and `projects//instances//databases/` for database resources.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -2350,7 +2334,7 @@ class SpannerProjectsInstancesBackupsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the backup. Values are of the form
-      `projects/<project>/instances/<instance>/backups/<backup>`.
+      `projects//instances//backups/`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2360,35 +2344,34 @@ class SpannerProjectsInstancesBackupsListRequest(_messages.Message):
   r"""A SpannerProjectsInstancesBackupsListRequest object.
 
   Fields:
-    filter: An expression that filters the list of returned backups.  A filter
+    filter: An expression that filters the list of returned backups. A filter
       expression consists of a field name, a comparison operator, and a value
       for filtering. The value must be a string, a number, or a boolean. The
       comparison operator must be one of: `<`, `>`, `<=`, `>=`, `!=`, `=`, or
       `:`. Colon `:` is the contains operator. Filter rules are not case
-      sensitive.  The following fields in the Backup are eligible for
-      filtering:    * `name`   * `database`   * `state`   * `create_time` (and
-      values are of the format YYYY-MM-DDTHH:MM:SSZ)   * `expire_time` (and
-      values are of the format YYYY-MM-DDTHH:MM:SSZ)   * `size_bytes`  You can
-      combine multiple expressions by enclosing each expression in
-      parentheses. By default, expressions are combined with AND logic, but
-      you can specify AND, OR, and NOT logic explicitly.  Here are a few
-      examples:    * `name:Howl` - The backup's name contains the string
-      "howl".   * `database:prod`          - The database's name contains the
-      string "prod".   * `state:CREATING` - The backup is pending creation.
-      * `state:READY` - The backup is fully created and ready for use.   *
-      `(name:howl) AND (create_time < \"2018-03-28T14:50:00Z\")`          -
-      The backup name contains the string "howl" and `create_time`
-      of the backup is before 2018-03-28T14:50:00Z.   * `expire_time <
-      \"2018-03-28T14:50:00Z\"`          - The backup `expire_time` is before
-      2018-03-28T14:50:00Z.   * `size_bytes > 10000000000` - The backup's size
-      is greater than 10GB
+      sensitive. The following fields in the Backup are eligible for
+      filtering: * `name` * `database` * `state` * `create_time` (and values
+      are of the format YYYY-MM-DDTHH:MM:SSZ) * `expire_time` (and values are
+      of the format YYYY-MM-DDTHH:MM:SSZ) * `size_bytes` You can combine
+      multiple expressions by enclosing each expression in parentheses. By
+      default, expressions are combined with AND logic, but you can specify
+      AND, OR, and NOT logic explicitly. Here are a few examples: *
+      `name:Howl` - The backup's name contains the string "howl". *
+      `database:prod` - The database's name contains the string "prod". *
+      `state:CREATING` - The backup is pending creation. * `state:READY` - The
+      backup is fully created and ready for use. * `(name:howl) AND
+      (create_time < \"2018-03-28T14:50:00Z\")` - The backup name contains the
+      string "howl" and `create_time` of the backup is before
+      2018-03-28T14:50:00Z. * `expire_time < \"2018-03-28T14:50:00Z\"` - The
+      backup `expire_time` is before 2018-03-28T14:50:00Z. * `size_bytes >
+      10000000000` - The backup's size is greater than 10GB
     pageSize: Number of backups to be returned in the response. If 0 or less,
       defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListBackupsResponse to the same `parent` and with the
       same `filter`.
-    parent: Required. The instance to list backups from.  Values are of the
-      form `projects/<project>/instances/<instance>`.
+    parent: Required. The instance to list backups from. Values are of the
+      form `projects//instances/`.
   """
 
   filter = _messages.StringField(1)
@@ -2449,14 +2432,13 @@ class SpannerProjectsInstancesBackupsPatchRequest(_messages.Message):
   Fields:
     backup: A Backup resource to be passed as the request body.
     name: Output only for the CreateBackup operation. Required for the
-      UpdateBackup operation.  A globally unique identifier for the backup
+      UpdateBackup operation. A globally unique identifier for the backup
       which cannot be changed. Values are of the form
-      `projects/<project>/instances/<instance>/backups/a-z*[a-z0-9]` The final
-      segment of the name must be between 2 and 60 characters in length.  The
-      backup is stored in the location(s) specified in the instance
-      configuration of the instance containing the backup, identified by the
-      prefix of the backup name of the form
-      `projects/<project>/instances/<instance>`.
+      `projects//instances//backups/a-z*[a-z0-9]` The final segment of the
+      name must be between 2 and 60 characters in length. The backup is stored
+      in the location(s) specified in the instance configuration of the
+      instance containing the backup, identified by the prefix of the backup
+      name of the form `projects//instances/`.
     updateMask: Required. A mask specifying which fields (e.g. `expire_time`)
       in the Backup resource should be updated. This mask is relative to the
       Backup resource, not to the request message. The field mask must always
@@ -2474,9 +2456,8 @@ class SpannerProjectsInstancesBackupsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The Cloud Spanner resource for which the policy is
-      being set. The format is `projects/<project ID>/instances/<instance ID>`
-      for instance resources and `projects/<project ID>/instances/<instance
-      ID>/databases/<database ID>` for databases resources.
+      being set. The format is `projects//instances/` for instance resources
+      and `projects//instances//databases/` for databases resources.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2490,10 +2471,8 @@ class SpannerProjectsInstancesBackupsTestIamPermissionsRequest(_messages.Message
 
   Fields:
     resource: REQUIRED: The Cloud Spanner resource for which permissions are
-      being tested. The format is `projects/<project ID>/instances/<instance
-      ID>` for instance resources and `projects/<project
-      ID>/instances/<instance ID>/databases/<database ID>` for database
-      resources.
+      being tested. The format is `projects//instances/` for instance
+      resources and `projects//instances//databases/` for database resources.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2509,7 +2488,7 @@ class SpannerProjectsInstancesCreateRequest(_messages.Message):
     createInstanceRequest: A CreateInstanceRequest resource to be passed as
       the request body.
     parent: Required. The name of the project in which to create the instance.
-      Values are of the form `projects/<project>`.
+      Values are of the form `projects/`.
   """
 
   createInstanceRequest = _messages.MessageField('CreateInstanceRequest', 1)
@@ -2520,41 +2499,40 @@ class SpannerProjectsInstancesDatabaseOperationsListRequest(_messages.Message):
   r"""A SpannerProjectsInstancesDatabaseOperationsListRequest object.
 
   Fields:
-    filter: An expression that filters the list of returned operations.  A
+    filter: An expression that filters the list of returned operations. A
       filter expression consists of a field name, a comparison operator, and a
       value for filtering. The value must be a string, a number, or a boolean.
       The comparison operator must be one of: `<`, `>`, `<=`, `>=`, `!=`, `=`,
       or `:`. Colon `:` is the contains operator. Filter rules are not case
-      sensitive.  The following fields in the Operation are eligible for
-      filtering:    * `name` - The name of the long-running operation   *
-      `done` - False if the operation is in progress, else true.   *
-      `metadata.@type` - the type of metadata. For example, the type string
-      for RestoreDatabaseMetadata is      `type.googleapis.com/google.spanner.
-      admin.database.v1.RestoreDatabaseMetadata`.   * `metadata.<field_name>`
-      - any field in metadata.value.   * `error` - Error associated with the
-      long-running operation.   * `response.@type` - the type of response.   *
-      `response.<field_name>` - any field in response.value.  You can combine
-      multiple expressions by enclosing each expression in parentheses. By
-      default, expressions are combined with AND logic. However, you can
-      specify AND, OR, and NOT logic explicitly.  Here are a few examples:
-      * `done:true` - The operation is complete.   * `(metadata.@type=type.goo
-      gleapis.com/google.spanner.admin.database.v1.RestoreDatabaseMetadata)
-      AND` \     `(metadata.source_type:BACKUP) AND` \
-      `(metadata.backup_info.backup:backup_howl) AND` \
-      `(metadata.name:restored_howl) AND` \     `(metadata.progress.start_time
-      < \"2018-03-28T14:50:00Z\") AND` \     `(error:*)` - Return operations
-      where:     * The operation's metadata type is RestoreDatabaseMetadata.
-      * The database is restored from a backup.     * The backup name contains
-      "backup_howl".     * The restored database's name contains
-      "restored_howl".     * The operation started before
-      2018-03-28T14:50:00Z.     * The operation resulted in an error.
+      sensitive. The following fields in the Operation are eligible for
+      filtering: * `name` - The name of the long-running operation * `done` -
+      False if the operation is in progress, else true. * `metadata.@type` -
+      the type of metadata. For example, the type string for
+      RestoreDatabaseMetadata is `type.googleapis.com/google.spanner.admin.dat
+      abase.v1.RestoreDatabaseMetadata`. * `metadata.` - any field in
+      metadata.value. * `error` - Error associated with the long-running
+      operation. * `response.@type` - the type of response. * `response.` -
+      any field in response.value. You can combine multiple expressions by
+      enclosing each expression in parentheses. By default, expressions are
+      combined with AND logic. However, you can specify AND, OR, and NOT logic
+      explicitly. Here are a few examples: * `done:true` - The operation is
+      complete. * `(metadata.@type=type.googleapis.com/google.spanner.admin.da
+      tabase.v1.RestoreDatabaseMetadata) AND` \ `(metadata.source_type:BACKUP)
+      AND` \ `(metadata.backup_info.backup:backup_howl) AND` \
+      `(metadata.name:restored_howl) AND` \ `(metadata.progress.start_time <
+      \"2018-03-28T14:50:00Z\") AND` \ `(error:*)` - Return operations where:
+      * The operation's metadata type is RestoreDatabaseMetadata. * The
+      database is restored from a backup. * The backup name contains
+      "backup_howl". * The restored database's name contains "restored_howl".
+      * The operation started before 2018-03-28T14:50:00Z. * The operation
+      resulted in an error.
     pageSize: Number of operations to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListDatabaseOperationsResponse to the same `parent` and
       with the same `filter`.
     parent: Required. The instance of the database operations. Values are of
-      the form `projects/<project>/instances/<instance>`.
+      the form `projects//instances/`.
   """
 
   filter = _messages.StringField(1)
@@ -2570,8 +2548,7 @@ class SpannerProjectsInstancesDatabasesCreateRequest(_messages.Message):
     createDatabaseRequest: A CreateDatabaseRequest resource to be passed as
       the request body.
     parent: Required. The name of the instance that will serve the new
-      database. Values are of the form
-      `projects/<project>/instances/<instance>`.
+      database. Values are of the form `projects//instances/`.
   """
 
   createDatabaseRequest = _messages.MessageField('CreateDatabaseRequest', 1)
@@ -2593,8 +2570,7 @@ class SpannerProjectsInstancesDatabasesGetDdlRequest(_messages.Message):
 
   Fields:
     database: Required. The database whose schema we wish to get. Values are
-      of the form
-      `projects/<project>/instances/<instance>/databases/<database>`
+      of the form `projects//instances//databases/`
   """
 
   database = _messages.StringField(1, required=True)
@@ -2607,10 +2583,8 @@ class SpannerProjectsInstancesDatabasesGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The Cloud Spanner resource for which the policy is
-      being retrieved. The format is `projects/<project
-      ID>/instances/<instance ID>` for instance resources and
-      `projects/<project ID>/instances/<instance ID>/databases/<database ID>`
-      for database resources.
+      being retrieved. The format is `projects//instances/` for instance
+      resources and `projects//instances//databases/` for database resources.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -2622,7 +2596,7 @@ class SpannerProjectsInstancesDatabasesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the requested database. Values are of the form
-      `projects/<project>/instances/<instance>/databases/<database>`.
+      `projects//instances//databases/`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2637,7 +2611,7 @@ class SpannerProjectsInstancesDatabasesListRequest(_messages.Message):
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListDatabasesResponse.
     parent: Required. The instance whose databases should be listed. Values
-      are of the form `projects/<project>/instances/<instance>`.
+      are of the form `projects//instances/`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2698,7 +2672,7 @@ class SpannerProjectsInstancesDatabasesRestoreRequest(_messages.Message):
     parent: Required. The name of the instance in which to create the restored
       database. This instance must be in the same project and have the same
       instance configuration as the instance containing the source backup.
-      Values are of the form `projects/<project>/instances/<instance>`.
+      Values are of the form `projects//instances/`.
     restoreDatabaseRequest: A RestoreDatabaseRequest resource to be passed as
       the request body.
   """
@@ -2828,10 +2802,10 @@ class SpannerProjectsInstancesDatabasesSessionsListRequest(_messages.Message):
   Fields:
     database: Required. The database in which to list sessions.
     filter: An expression for filtering the results of the request. Filter
-      rules are case insensitive. The fields eligible for filtering are:    *
-      `labels.key` where key is the name of a label  Some examples of using
-      filters are:    * `labels.env:*` --> The session has the label "env".
-      * `labels.env:dev` --> The session has the label "env" and the value of
+      rules are case insensitive. The fields eligible for filtering are: *
+      `labels.key` where key is the name of a label Some examples of using
+      filters are: * `labels.env:*` --> The session has the label "env". *
+      `labels.env:dev` --> The session has the label "env" and the value of
       the label contains the string "dev".
     pageSize: Number of sessions to be returned in the response. If 0 or less,
       defaults to the server's maximum allowed page size.
@@ -2914,9 +2888,8 @@ class SpannerProjectsInstancesDatabasesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The Cloud Spanner resource for which the policy is
-      being set. The format is `projects/<project ID>/instances/<instance ID>`
-      for instance resources and `projects/<project ID>/instances/<instance
-      ID>/databases/<database ID>` for databases resources.
+      being set. The format is `projects//instances/` for instance resources
+      and `projects//instances//databases/` for databases resources.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -2930,10 +2903,8 @@ class SpannerProjectsInstancesDatabasesTestIamPermissionsRequest(_messages.Messa
 
   Fields:
     resource: REQUIRED: The Cloud Spanner resource for which permissions are
-      being tested. The format is `projects/<project ID>/instances/<instance
-      ID>` for instance resources and `projects/<project
-      ID>/instances/<instance ID>/databases/<database ID>` for database
-      resources.
+      being tested. The format is `projects//instances/` for instance
+      resources and `projects//instances//databases/` for database resources.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -2960,7 +2931,7 @@ class SpannerProjectsInstancesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the instance to be deleted. Values are of the
-      form `projects/<project>/instances/<instance>`
+      form `projects//instances/`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2973,10 +2944,8 @@ class SpannerProjectsInstancesGetIamPolicyRequest(_messages.Message):
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
     resource: REQUIRED: The Cloud Spanner resource for which the policy is
-      being retrieved. The format is `projects/<project
-      ID>/instances/<instance ID>` for instance resources and
-      `projects/<project ID>/instances/<instance ID>/databases/<database ID>`
-      for database resources.
+      being retrieved. The format is `projects//instances/` for instance
+      resources and `projects//instances//databases/` for database resources.
   """
 
   getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
@@ -2991,7 +2960,7 @@ class SpannerProjectsInstancesGetRequest(_messages.Message):
       fields that should be returned. If absent, all Instance fields are
       returned.
     name: Required. The name of the requested instance. Values are of the form
-      `projects/<project>/instances/<instance>`.
+      `projects//instances/`.
   """
 
   fieldMask = _messages.StringField(1)
@@ -3003,23 +2972,22 @@ class SpannerProjectsInstancesListRequest(_messages.Message):
 
   Fields:
     filter: An expression for filtering the results of the request. Filter
-      rules are case insensitive. The fields eligible for filtering are:    *
-      `name`   * `display_name`   * `labels.key` where key is the name of a
-      label  Some examples of using filters are:    * `name:*` --> The
-      instance has a name.   * `name:Howl` --> The instance's name contains
-      the string "howl".   * `name:HOWL` --> Equivalent to above.   *
-      `NAME:howl` --> Equivalent to above.   * `labels.env:*` --> The instance
-      has the label "env".   * `labels.env:dev` --> The instance has the label
-      "env" and the value of                        the label contains the
-      string "dev".   * `name:howl labels.env:dev` --> The instance's name
-      contains "howl" and                                  it has the label
-      "env" with its value                                  containing "dev".
+      rules are case insensitive. The fields eligible for filtering are: *
+      `name` * `display_name` * `labels.key` where key is the name of a label
+      Some examples of using filters are: * `name:*` --> The instance has a
+      name. * `name:Howl` --> The instance's name contains the string "howl".
+      * `name:HOWL` --> Equivalent to above. * `NAME:howl` --> Equivalent to
+      above. * `labels.env:*` --> The instance has the label "env". *
+      `labels.env:dev` --> The instance has the label "env" and the value of
+      the label contains the string "dev". * `name:howl labels.env:dev` -->
+      The instance's name contains "howl" and it has the label "env" with its
+      value containing "dev".
     pageSize: Number of instances to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListInstancesResponse.
     parent: Required. The name of the project for which a list of instances is
-      requested. Values are of the form `projects/<project>`.
+      requested. Values are of the form `projects/`.
   """
 
   filter = _messages.StringField(1)
@@ -3080,8 +3048,8 @@ class SpannerProjectsInstancesPatchRequest(_messages.Message):
   Fields:
     name: Required. A unique identifier for the instance, which cannot be
       changed after the instance is created. Values are of the form
-      `projects/<project>/instances/a-z*[a-z0-9]`. The final segment of the
-      name must be between 2 and 64 characters in length.
+      `projects//instances/a-z*[a-z0-9]`. The final segment of the name must
+      be between 2 and 64 characters in length.
     updateInstanceRequest: A UpdateInstanceRequest resource to be passed as
       the request body.
   """
@@ -3095,9 +3063,8 @@ class SpannerProjectsInstancesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The Cloud Spanner resource for which the policy is
-      being set. The format is `projects/<project ID>/instances/<instance ID>`
-      for instance resources and `projects/<project ID>/instances/<instance
-      ID>/databases/<database ID>` for databases resources.
+      being set. The format is `projects//instances/` for instance resources
+      and `projects//instances//databases/` for databases resources.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -3111,10 +3078,8 @@ class SpannerProjectsInstancesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     resource: REQUIRED: The Cloud Spanner resource for which permissions are
-      being tested. The format is `projects/<project ID>/instances/<instance
-      ID>` for instance resources and `projects/<project
-      ID>/instances/<instance ID>/databases/<database ID>` for database
-      resources.
+      being tested. The format is `projects//instances/` for instance
+      resources and `projects//instances//databases/` for database resources.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -3191,34 +3156,34 @@ class Statement(_messages.Message):
 
   Messages:
     ParamTypesValue: It is not always possible for Cloud Spanner to infer the
-      right SQL type from a JSON value.  For example, values of type `BYTES`
-      and values of type `STRING` both appear in params as JSON strings.  In
+      right SQL type from a JSON value. For example, values of type `BYTES`
+      and values of type `STRING` both appear in params as JSON strings. In
       these cases, `param_types` can be used to specify the exact SQL type for
       some or all of the SQL statement parameters. See the definition of Type
       for more information about SQL types.
     ParamsValue: Parameter names and values that bind to placeholders in the
-      DML string.  A parameter placeholder consists of the `@` character
+      DML string. A parameter placeholder consists of the `@` character
       followed by the parameter name (for example, `@firstName`). Parameter
-      names can contain letters, numbers, and underscores.  Parameters can
-      appear anywhere that a literal value is expected.  The same parameter
-      name can be used more than once, for example:  `"WHERE id > @msg_id AND
-      id < @msg_id + 100"`  It is an error to execute a SQL statement with
+      names can contain letters, numbers, and underscores. Parameters can
+      appear anywhere that a literal value is expected. The same parameter
+      name can be used more than once, for example: `"WHERE id > @msg_id AND
+      id < @msg_id + 100"` It is an error to execute a SQL statement with
       unbound parameters.
 
   Fields:
     paramTypes: It is not always possible for Cloud Spanner to infer the right
-      SQL type from a JSON value.  For example, values of type `BYTES` and
-      values of type `STRING` both appear in params as JSON strings.  In these
+      SQL type from a JSON value. For example, values of type `BYTES` and
+      values of type `STRING` both appear in params as JSON strings. In these
       cases, `param_types` can be used to specify the exact SQL type for some
       or all of the SQL statement parameters. See the definition of Type for
       more information about SQL types.
     params: Parameter names and values that bind to placeholders in the DML
-      string.  A parameter placeholder consists of the `@` character followed
+      string. A parameter placeholder consists of the `@` character followed
       by the parameter name (for example, `@firstName`). Parameter names can
-      contain letters, numbers, and underscores.  Parameters can appear
-      anywhere that a literal value is expected.  The same parameter name can
-      be used more than once, for example:  `"WHERE id > @msg_id AND id <
-      @msg_id + 100"`  It is an error to execute a SQL statement with unbound
+      contain letters, numbers, and underscores. Parameters can appear
+      anywhere that a literal value is expected. The same parameter name can
+      be used more than once, for example: `"WHERE id > @msg_id AND id <
+      @msg_id + 100"` It is an error to execute a SQL statement with unbound
       parameters.
     sql: Required. The DML string.
   """
@@ -3226,8 +3191,8 @@ class Statement(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamTypesValue(_messages.Message):
     r"""It is not always possible for Cloud Spanner to infer the right SQL
-    type from a JSON value.  For example, values of type `BYTES` and values of
-    type `STRING` both appear in params as JSON strings.  In these cases,
+    type from a JSON value. For example, values of type `BYTES` and values of
+    type `STRING` both appear in params as JSON strings. In these cases,
     `param_types` can be used to specify the exact SQL type for some or all of
     the SQL statement parameters. See the definition of Type for more
     information about SQL types.
@@ -3255,12 +3220,12 @@ class Statement(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
     r"""Parameter names and values that bind to placeholders in the DML
-    string.  A parameter placeholder consists of the `@` character followed by
+    string. A parameter placeholder consists of the `@` character followed by
     the parameter name (for example, `@firstName`). Parameter names can
-    contain letters, numbers, and underscores.  Parameters can appear anywhere
-    that a literal value is expected.  The same parameter name can be used
-    more than once, for example:  `"WHERE id > @msg_id AND id < @msg_id +
-    100"`  It is an error to execute a SQL statement with unbound parameters.
+    contain letters, numbers, and underscores. Parameters can appear anywhere
+    that a literal value is expected. The same parameter name can be used more
+    than once, for example: `"WHERE id > @msg_id AND id < @msg_id + 100"` It
+    is an error to execute a SQL statement with unbound parameters.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.
@@ -3291,7 +3256,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -3300,7 +3265,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -3380,12 +3345,12 @@ class Transaction(_messages.Message):
 
   Fields:
     id: `id` may be used to identify the transaction in subsequent Read,
-      ExecuteSql, Commit, or Rollback calls.  Single-use read-only
-      transactions do not have IDs, because single-use transactions do not
-      support multiple requests.
+      ExecuteSql, Commit, or Rollback calls. Single-use read-only transactions
+      do not have IDs, because single-use transactions do not support multiple
+      requests.
     readTimestamp: For snapshot read-only transactions, the read timestamp
       chosen for the transaction. Not returned by default: see
-      TransactionOptions.ReadOnly.return_read_timestamp.  A timestamp in
+      TransactionOptions.ReadOnly.return_read_timestamp. A timestamp in
       RFC3339 UTC \"Zulu\" format, accurate to nanoseconds. Example:
       `"2014-10-02T15:01:23.045123456Z"`.
   """
@@ -3395,183 +3360,182 @@ class Transaction(_messages.Message):
 
 
 class TransactionOptions(_messages.Message):
-  r"""# Transactions   Each session can have at most one active transaction at
-  a time (note that standalone reads and queries use a transaction internally
+  r"""# Transactions Each session can have at most one active transaction at a
+  time (note that standalone reads and queries use a transaction internally
   and do count towards the one transaction limit). After the active
   transaction is completed, the session can immediately be re-used for the
   next transaction. It is not necessary to create a new session for each
-  transaction.  # Transaction Modes  Cloud Spanner supports three transaction
-  modes:    1. Locking read-write. This type of transaction is the only way
-  to write data into Cloud Spanner. These transactions rely on
-  pessimistic locking and, if necessary, two-phase commit.      Locking read-
-  write transactions may abort, requiring the      application to retry.    2.
-  Snapshot read-only. This transaction type provides guaranteed
-  consistency across several reads, but does not allow      writes. Snapshot
-  read-only transactions can be configured to      read at timestamps in the
-  past. Snapshot read-only      transactions do not need to be committed.
-  3. Partitioned DML. This type of transaction is used to execute      a
-  single Partitioned DML statement. Partitioned DML partitions      the key
-  space and runs the DML statement over each partition      in parallel using
-  separate, internal transactions that commit      independently. Partitioned
-  DML transactions do not need to be      committed.  For transactions that
-  only read, snapshot read-only transactions provide simpler semantics and are
-  almost always faster. In particular, read-only transactions do not take
-  locks, so they do not conflict with read-write transactions. As a
-  consequence of not taking locks, they also do not abort, so retry loops are
-  not needed.  Transactions may only read/write data in a single database.
-  They may, however, read/write data in different tables within that database.
-  ## Locking Read-Write Transactions  Locking transactions may be used to
+  transaction. # Transaction Modes Cloud Spanner supports three transaction
+  modes: 1. Locking read-write. This type of transaction is the only way to
+  write data into Cloud Spanner. These transactions rely on pessimistic
+  locking and, if necessary, two-phase commit. Locking read-write transactions
+  may abort, requiring the application to retry. 2. Snapshot read-only. This
+  transaction type provides guaranteed consistency across several reads, but
+  does not allow writes. Snapshot read-only transactions can be configured to
+  read at timestamps in the past. Snapshot read-only transactions do not need
+  to be committed. 3. Partitioned DML. This type of transaction is used to
+  execute a single Partitioned DML statement. Partitioned DML partitions the
+  key space and runs the DML statement over each partition in parallel using
+  separate, internal transactions that commit independently. Partitioned DML
+  transactions do not need to be committed. For transactions that only read,
+  snapshot read-only transactions provide simpler semantics and are almost
+  always faster. In particular, read-only transactions do not take locks, so
+  they do not conflict with read-write transactions. As a consequence of not
+  taking locks, they also do not abort, so retry loops are not needed.
+  Transactions may only read/write data in a single database. They may,
+  however, read/write data in different tables within that database. ##
+  Locking Read-Write Transactions Locking transactions may be used to
   atomically read-modify-write data anywhere in a database. This type of
-  transaction is externally consistent.  Clients should attempt to minimize
-  the amount of time a transaction is active. Faster transactions commit with
+  transaction is externally consistent. Clients should attempt to minimize the
+  amount of time a transaction is active. Faster transactions commit with
   higher probability and cause less contention. Cloud Spanner attempts to keep
   read locks active as long as the transaction continues to do reads, and the
-  transaction has not been terminated by Commit or Rollback.  Long periods of
+  transaction has not been terminated by Commit or Rollback. Long periods of
   inactivity at the client may cause Cloud Spanner to release a transaction's
-  locks and abort it.  Conceptually, a read-write transaction consists of zero
+  locks and abort it. Conceptually, a read-write transaction consists of zero
   or more reads or SQL statements followed by Commit. At any time before
-  Commit, the client can send a Rollback request to abort the transaction.
-  ### Semantics  Cloud Spanner can commit the transaction if all read locks it
+  Commit, the client can send a Rollback request to abort the transaction. ###
+  Semantics Cloud Spanner can commit the transaction if all read locks it
   acquired are still valid at commit time, and it is able to acquire write
   locks for all writes. Cloud Spanner can abort the transaction for any
   reason. If a commit attempt returns `ABORTED`, Cloud Spanner guarantees that
-  the transaction has not modified any user data in Cloud Spanner.  Unless the
+  the transaction has not modified any user data in Cloud Spanner. Unless the
   transaction commits, Cloud Spanner makes no guarantees about how long the
   transaction's locks were held for. It is an error to use Cloud Spanner locks
   for any sort of mutual exclusion other than between Cloud Spanner
-  transactions themselves.  ### Retrying Aborted Transactions  When a
+  transactions themselves. ### Retrying Aborted Transactions When a
   transaction aborts, the application can choose to retry the whole
   transaction again. To maximize the chances of successfully committing the
   retry, the client should execute the retry in the same session as the
   original attempt. The original session's lock priority increases with each
   consecutive abort, meaning that each attempt has a slightly better chance of
-  success than the previous.  Under some circumstances (e.g., many
-  transactions attempting to modify the same row(s)), a transaction can abort
-  many times in a short period before successfully committing. Thus, it is not
-  a good idea to cap the number of retries a transaction can attempt; instead,
-  it is better to limit the total amount of wall time spent retrying.  ###
-  Idle Transactions  A transaction is considered idle if it has no outstanding
-  reads or SQL queries and has not started a read or SQL query within the last
-  10 seconds. Idle transactions can be aborted by Cloud Spanner so that they
+  success than the previous. Under some circumstances (e.g., many transactions
+  attempting to modify the same row(s)), a transaction can abort many times in
+  a short period before successfully committing. Thus, it is not a good idea
+  to cap the number of retries a transaction can attempt; instead, it is
+  better to limit the total amount of wall time spent retrying. ### Idle
+  Transactions A transaction is considered idle if it has no outstanding reads
+  or SQL queries and has not started a read or SQL query within the last 10
+  seconds. Idle transactions can be aborted by Cloud Spanner so that they
   don't hold on to locks indefinitely. In that case, the commit will fail with
-  error `ABORTED`.  If this behavior is undesirable, periodically executing a
+  error `ABORTED`. If this behavior is undesirable, periodically executing a
   simple SQL query in the transaction (e.g., `SELECT 1`) prevents the
-  transaction from becoming idle.  ## Snapshot Read-Only Transactions
-  Snapshot read-only transactions provides a simpler method than locking read-
-  write transactions for doing several consistent reads. However, this type of
-  transaction does not support writes.  Snapshot transactions do not take
+  transaction from becoming idle. ## Snapshot Read-Only Transactions Snapshot
+  read-only transactions provides a simpler method than locking read-write
+  transactions for doing several consistent reads. However, this type of
+  transaction does not support writes. Snapshot transactions do not take
   locks. Instead, they work by choosing a Cloud Spanner timestamp, then
   executing all reads at that timestamp. Since they do not acquire locks, they
-  do not block concurrent read-write transactions.  Unlike locking read-write
+  do not block concurrent read-write transactions. Unlike locking read-write
   transactions, snapshot read-only transactions never abort. They can fail if
   the chosen read timestamp is garbage collected; however, the default garbage
   collection policy is generous enough that most applications do not need to
-  worry about this in practice.  Snapshot read-only transactions do not need
-  to call Commit or Rollback (and in fact are not permitted to do so).  To
-  execute a snapshot transaction, the client specifies a timestamp bound,
-  which tells Cloud Spanner how to choose a read timestamp.  The types of
-  timestamp bound are:    - Strong (the default).   - Bounded staleness.   -
-  Exact staleness.  If the Cloud Spanner database to be read is geographically
-  distributed, stale read-only transactions can execute more quickly than
-  strong or read-write transaction, because they are able to execute far from
-  the leader replica.  Each type of timestamp bound is discussed in detail
-  below.  ### Strong  Strong reads are guaranteed to see the effects of all
-  transactions that have committed before the start of the read. Furthermore,
-  all rows yielded by a single read are consistent with each other -- if any
-  part of the read observes a transaction, all parts of the read see the
-  transaction.  Strong reads are not repeatable: two consecutive strong read-
-  only transactions might return inconsistent results if there are concurrent
-  writes. If consistency across reads is required, the reads should be
-  executed within a transaction or at an exact read timestamp.  See
-  TransactionOptions.ReadOnly.strong.  ### Exact Staleness  These timestamp
+  worry about this in practice. Snapshot read-only transactions do not need to
+  call Commit or Rollback (and in fact are not permitted to do so). To execute
+  a snapshot transaction, the client specifies a timestamp bound, which tells
+  Cloud Spanner how to choose a read timestamp. The types of timestamp bound
+  are: - Strong (the default). - Bounded staleness. - Exact staleness. If the
+  Cloud Spanner database to be read is geographically distributed, stale read-
+  only transactions can execute more quickly than strong or read-write
+  transaction, because they are able to execute far from the leader replica.
+  Each type of timestamp bound is discussed in detail below. ### Strong Strong
+  reads are guaranteed to see the effects of all transactions that have
+  committed before the start of the read. Furthermore, all rows yielded by a
+  single read are consistent with each other -- if any part of the read
+  observes a transaction, all parts of the read see the transaction. Strong
+  reads are not repeatable: two consecutive strong read-only transactions
+  might return inconsistent results if there are concurrent writes. If
+  consistency across reads is required, the reads should be executed within a
+  transaction or at an exact read timestamp. See
+  TransactionOptions.ReadOnly.strong. ### Exact Staleness These timestamp
   bounds execute reads at a user-specified timestamp. Reads at a timestamp are
   guaranteed to see a consistent prefix of the global transaction history:
   they observe modifications done by all transactions with a commit timestamp
   <= the read timestamp, and observe none of the modifications done by
   transactions with a larger commit timestamp. They will block until all
   conflicting transactions that may be assigned commit timestamps <= the read
-  timestamp have finished.  The timestamp can either be expressed as an
+  timestamp have finished. The timestamp can either be expressed as an
   absolute Cloud Spanner commit timestamp or a staleness relative to the
-  current time.  These modes do not require a "negotiation phase" to pick a
+  current time. These modes do not require a "negotiation phase" to pick a
   timestamp. As a result, they execute slightly faster than the equivalent
   boundedly stale concurrency modes. On the other hand, boundedly stale reads
-  usually return fresher results.  See
+  usually return fresher results. See
   TransactionOptions.ReadOnly.read_timestamp and
-  TransactionOptions.ReadOnly.exact_staleness.  ### Bounded Staleness  Bounded
+  TransactionOptions.ReadOnly.exact_staleness. ### Bounded Staleness Bounded
   staleness modes allow Cloud Spanner to pick the read timestamp, subject to a
   user-provided staleness bound. Cloud Spanner chooses the newest timestamp
   within the staleness bound that allows execution of the reads at the closest
-  available replica without blocking.  All rows yielded are consistent with
+  available replica without blocking. All rows yielded are consistent with
   each other -- if any part of the read observes a transaction, all parts of
   the read see the transaction. Boundedly stale reads are not repeatable: two
   stale reads, even if they use the same staleness bound, can execute at
-  different timestamps and thus return inconsistent results.  Boundedly stale
+  different timestamps and thus return inconsistent results. Boundedly stale
   reads execute in two phases: the first phase negotiates a timestamp among
   all replicas needed to serve the read. In the second phase, reads are
-  executed at the negotiated timestamp.  As a result of the two phase
+  executed at the negotiated timestamp. As a result of the two phase
   execution, bounded staleness reads are usually a little slower than
   comparable exact staleness reads. However, they are typically able to return
   fresher results, and are more likely to execute at the closest replica.
   Because the timestamp negotiation requires up-front knowledge of which rows
   will be read, it can only be used with single-use read-only transactions.
   See TransactionOptions.ReadOnly.max_staleness and
-  TransactionOptions.ReadOnly.min_read_timestamp.  ### Old Read Timestamps and
-  Garbage Collection  Cloud Spanner continuously garbage collects deleted and
+  TransactionOptions.ReadOnly.min_read_timestamp. ### Old Read Timestamps and
+  Garbage Collection Cloud Spanner continuously garbage collects deleted and
   overwritten data in the background to reclaim storage space. This process is
   known as "version GC". By default, version GC reclaims versions after they
   are one hour old. Because of this, Cloud Spanner cannot perform reads at
   read timestamps more than one hour in the past. This restriction also
   applies to in-progress reads and/or SQL queries whose timestamp become too
   old while executing. Reads and SQL queries with too-old read timestamps fail
-  with the error `FAILED_PRECONDITION`.  ## Partitioned DML Transactions
+  with the error `FAILED_PRECONDITION`. ## Partitioned DML Transactions
   Partitioned DML transactions are used to execute DML statements with a
   different execution strategy that provides different, and often better,
   scalability properties for large, table-wide operations than DML in a
   ReadWrite transaction. Smaller scoped statements, such as an OLTP workload,
-  should prefer using ReadWrite transactions.  Partitioned DML partitions the
+  should prefer using ReadWrite transactions. Partitioned DML partitions the
   keyspace and runs the DML statement on each partition in separate, internal
   transactions. These transactions commit automatically when complete, and run
-  independently from one another.  To reduce lock contention, this execution
+  independently from one another. To reduce lock contention, this execution
   strategy only acquires read locks on rows that match the WHERE clause of the
   statement. Additionally, the smaller per-partition transactions hold locks
-  for less time.  That said, Partitioned DML is not a drop-in replacement for
-  standard DML used in ReadWrite transactions.   - The DML statement must be
-  fully-partitionable. Specifically, the statement    must be expressible as
-  the union of many statements which each access only    a single row of the
-  table.   - The statement is not applied atomically to all rows of the table.
-  Rather,    the statement is applied atomically to partitions of the table,
-  in    independent transactions. Secondary index rows are updated atomically
-  with the base table rows.   - Partitioned DML does not guarantee exactly-
-  once execution semantics    against a partition. The statement will be
-  applied at least once to each    partition. It is strongly recommended that
-  the DML statement should be    idempotent to avoid unexpected results. For
-  instance, it is potentially    dangerous to run a statement such as
-  `UPDATE table SET column = column + 1` as it could be run multiple times
-  against some rows.   - The partitions are committed automatically - there is
-  no support for    Commit or Rollback. If the call returns an error, or if
-  the client issuing    the ExecuteSql call dies, it is possible that some
-  rows had the statement    executed on them successfully. It is also possible
-  that statement was    never executed against other rows.   - Partitioned DML
-  transactions may only contain the execution of a single    DML statement via
-  ExecuteSql or ExecuteStreamingSql.   - If any error is encountered during
-  the execution of the partitioned DML    operation (for instance, a UNIQUE
-  INDEX violation, division by zero, or a    value that cannot be stored due
-  to schema constraints), then the    operation is stopped at that point and
-  an error is returned. It is    possible that at this point, some partitions
-  have been committed (or even    committed multiple times), and other
-  partitions have not been run at all.  Given the above, Partitioned DML is
-  good fit for large, database-wide, operations that are idempotent, such as
-  deleting old rows from a very large table.
+  for less time. That said, Partitioned DML is not a drop-in replacement for
+  standard DML used in ReadWrite transactions. - The DML statement must be
+  fully-partitionable. Specifically, the statement must be expressible as the
+  union of many statements which each access only a single row of the table. -
+  The statement is not applied atomically to all rows of the table. Rather,
+  the statement is applied atomically to partitions of the table, in
+  independent transactions. Secondary index rows are updated atomically with
+  the base table rows. - Partitioned DML does not guarantee exactly-once
+  execution semantics against a partition. The statement will be applied at
+  least once to each partition. It is strongly recommended that the DML
+  statement should be idempotent to avoid unexpected results. For instance, it
+  is potentially dangerous to run a statement such as `UPDATE table SET column
+  = column + 1` as it could be run multiple times against some rows. - The
+  partitions are committed automatically - there is no support for Commit or
+  Rollback. If the call returns an error, or if the client issuing the
+  ExecuteSql call dies, it is possible that some rows had the statement
+  executed on them successfully. It is also possible that statement was never
+  executed against other rows. - Partitioned DML transactions may only contain
+  the execution of a single DML statement via ExecuteSql or
+  ExecuteStreamingSql. - If any error is encountered during the execution of
+  the partitioned DML operation (for instance, a UNIQUE INDEX violation,
+  division by zero, or a value that cannot be stored due to schema
+  constraints), then the operation is stopped at that point and an error is
+  returned. It is possible that at this point, some partitions have been
+  committed (or even committed multiple times), and other partitions have not
+  been run at all. Given the above, Partitioned DML is good fit for large,
+  database-wide, operations that are idempotent, such as deleting old rows
+  from a very large table.
 
   Fields:
-    partitionedDml: Partitioned DML transaction.  Authorization to begin a
+    partitionedDml: Partitioned DML transaction. Authorization to begin a
       Partitioned DML transaction requires
       `spanner.databases.beginPartitionedDmlTransaction` permission on the
       `session` resource.
-    readOnly: Transaction will not write.  Authorization to begin a read-only
+    readOnly: Transaction will not write. Authorization to begin a read-only
       transaction requires `spanner.databases.beginReadOnlyTransaction`
       permission on the `session` resource.
-    readWrite: Transaction may write.  Authorization to begin a read-write
+    readWrite: Transaction may write. Authorization to begin a read-write
       transaction requires
       `spanner.databases.beginOrRollbackReadWriteTransaction` permission on
       the `session` resource.
@@ -3584,7 +3548,7 @@ class TransactionOptions(_messages.Message):
 
 class TransactionSelector(_messages.Message):
   r"""This message is used to select the transaction in which a Read or
-  ExecuteSql call runs.  See TransactionOptions for more information about
+  ExecuteSql call runs. See TransactionOptions for more information about
   transactions.
 
   Fields:
@@ -3627,7 +3591,7 @@ class Type(_messages.Message):
       FLOAT64: Encoded as `number`, or the strings `"NaN"`, `"Infinity"`, or
         `"-Infinity"`.
       TIMESTAMP: Encoded as `string` in RFC 3339 timestamp format. The time
-        zone must be present, and must be `"Z"`.  If the schema has the column
+        zone must be present, and must be `"Z"`. If the schema has the column
         option `allow_commit_timestamp=true`, the placeholder string
         `"spanner.commit_timestamp()"` can be used to instruct the system to
         insert the commit timestamp associated with the transaction commit.
@@ -3641,11 +3605,11 @@ class Type(_messages.Message):
         according to
         [struct_type.fields[i]][google.spanner.v1.StructType.fields].
       NUMERIC: Encoded as `string`, in decimal format or scientific notation
-        format. <br>Decimal format: <br>`[+-]Digits[.[Digits]]` or
-        <br>`+-.Digits`  Scientific notation:
-        <br>`[+-]Digits[.[Digits]][ExponentIndicator[+-]Digits]` or
-        <br>`+-.Digits[ExponentIndicator[+-]Digits]` <br>(ExponentIndicator is
-        `"e"` or `"E"`)
+        format. Decimal format: `[+-]Digits[.[Digits]]` or `+-.Digits`
+        Scientific notation:
+        `[+-]Digits[.[Digits]][ExponentIndicator[+-]Digits]` or
+        `+-.Digits[ExponentIndicator[+-]Digits]` (ExponentIndicator is `"e"`
+        or `"E"`)
     """
     TYPE_CODE_UNSPECIFIED = 0
     BOOL = 1
@@ -3690,23 +3654,22 @@ class UpdateDatabaseDdlRequest(_messages.Message):
   another batch of statements is applied first and it conflicts in some way,
   or if there is some data-related problem like a `NULL` value in a column to
   which `NOT NULL` would be added). If a statement fails, all subsequent
-  statements in the batch are automatically cancelled.  Each batch of
+  statements in the batch are automatically cancelled. Each batch of
   statements is assigned a name which can be used with the Operations API to
   monitor progress. See the operation_id field for more details.
 
   Fields:
     operationId: If empty, the new update request is assigned an
       automatically-generated operation ID. Otherwise, `operation_id` is used
-      to construct the name of the resulting Operation.  Specifying an
-      explicit operation ID simplifies determining whether the statements were
-      executed in the event that the UpdateDatabaseDdl call is replayed, or
-      the return value is otherwise lost: the database and `operation_id`
-      fields can be combined to form the name of the resulting
-      longrunning.Operation: `<database>/operations/<operation_id>`.
-      `operation_id` should be unique within the database, and must be a valid
-      identifier: `a-z*`. Note that automatically-generated operation IDs
-      always begin with an underscore. If the named operation already exists,
-      UpdateDatabaseDdl returns `ALREADY_EXISTS`.
+      to construct the name of the resulting Operation. Specifying an explicit
+      operation ID simplifies determining whether the statements were executed
+      in the event that the UpdateDatabaseDdl call is replayed, or the return
+      value is otherwise lost: the database and `operation_id` fields can be
+      combined to form the name of the resulting longrunning.Operation:
+      `/operations/`. `operation_id` should be unique within the database, and
+      must be a valid identifier: `a-z*`. Note that automatically-generated
+      operation IDs always begin with an underscore. If the named operation
+      already exists, UpdateDatabaseDdl returns `ALREADY_EXISTS`.
     statements: Required. DDL statements to be applied to the database.
   """
 
@@ -3742,7 +3705,7 @@ class UpdateInstanceRequest(_messages.Message):
       future fields in Instance from being erased accidentally by clients that
       do not know about them.
     instance: Required. The instance to update, which must always include the
-      instance name.  Otherwise, only fields mentioned in field_mask need be
+      instance name. Otherwise, only fields mentioned in field_mask need be
       included.
   """
 
@@ -3757,7 +3720,7 @@ class Write(_messages.Message):
     ValuesValueListEntry: Single entry in a ValuesValue.
 
   Fields:
-    columns: The names of the columns in table to be written.  The list of
+    columns: The names of the columns in table to be written. The list of
       columns must contain enough columns to allow Cloud Spanner to derive
       values for all primary key columns in the row(s) to be modified.
     table: Required. The table whose rows will be written.

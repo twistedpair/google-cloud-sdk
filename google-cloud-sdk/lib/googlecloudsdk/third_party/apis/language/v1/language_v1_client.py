@@ -52,9 +52,7 @@ class LanguageV1(base_api.BaseApiClient):
           }
 
     def AnalyzeEntities(self, request, global_params=None):
-      r"""Finds named entities (currently proper names and common nouns) in the text.
-along with entity types, salience, mentions for each entity, and
-other properties.
+      r"""Finds named entities (currently proper names and common nouns) in the text along with entity types, salience, mentions for each entity, and other properties.
 
       Args:
         request: (AnalyzeEntitiesRequest) input message
@@ -80,8 +78,7 @@ other properties.
     )
 
     def AnalyzeEntitySentiment(self, request, global_params=None):
-      r"""Finds entities, similar to AnalyzeEntities in the text and analyzes.
-sentiment associated with each entity and its mentions.
+      r"""Finds entities, similar to AnalyzeEntities in the text and analyzes sentiment associated with each entity and its mentions.
 
       Args:
         request: (AnalyzeEntitySentimentRequest) input message
@@ -133,9 +130,7 @@ sentiment associated with each entity and its mentions.
     )
 
     def AnalyzeSyntax(self, request, global_params=None):
-      r"""Analyzes the syntax of the text and provides sentence boundaries and.
-tokenization along with part of speech tags, dependency trees, and other
-properties.
+      r"""Analyzes the syntax of the text and provides sentence boundaries and tokenization along with part of speech tags, dependency trees, and other properties.
 
       Args:
         request: (AnalyzeSyntaxRequest) input message
@@ -161,8 +156,7 @@ properties.
     )
 
     def AnnotateText(self, request, global_params=None):
-      r"""A convenience method that provides all the features that analyzeSentiment,.
-analyzeEntities, and analyzeSyntax provide in one call.
+      r"""A convenience method that provides all the features that analyzeSentiment, analyzeEntities, and analyzeSyntax provide in one call.
 
       Args:
         request: (AnnotateTextRequest) input message

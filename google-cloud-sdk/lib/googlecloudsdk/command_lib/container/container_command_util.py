@@ -245,6 +245,10 @@ def GetAutoRepair(args):
   """Gets the value of node auto-repair."""
   if args.IsSpecified('enable_autorepair'):
     return args.enable_autorepair
+  # Some other flags force this. If the image type isn't compatible, they'll get
+  # the most friendly error message this way.
+  if getattr(args, 'release_channel', None):
+    return True
   if getattr(args, 'enable_kubernetes_alpha', False):
     return None
   # Node pools using COS support auto repairs, enable it for them by

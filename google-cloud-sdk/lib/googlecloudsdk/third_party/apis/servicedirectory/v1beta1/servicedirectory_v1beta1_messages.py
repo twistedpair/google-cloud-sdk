@@ -19,23 +19,19 @@ class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices",           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE"             },             {
-  "log_type": "ADMIN_READ"             }           ]         },         {
-  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
-  {               "log_type": "DATA_READ"             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:aliya@example.com"               ]             }           ]         }
-  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
-  and aliya@example.com from DATA_WRITE logging.
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -51,12 +47,11 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE"         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  jose@example.com from DATA_READ logging.
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -121,9 +116,9 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding.  If the
+    condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
-      request.  If the condition evaluates to `false`, then this binding does
+      request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
@@ -131,35 +126,35 @@ class Binding(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -228,18 +223,18 @@ class Condition(_messages.Message):
         (go/security-realms). When used with IN, the condition indicates "any
         of the request's realms match one of the given values; with NOT_IN,
         "none of the realms match any of the given values". Note that a value
-        can be:  - 'self' (i.e., allow connections from clients that are in
-        the same  security realm)  - 'self:metro' (i.e., clients that are in
-        the same metro)  - 'self:cloud-region' (i.e., allow connections from
-        clients that are in  the same cloud region)  - 'guardians' (i.e.,
-        allow connections from its guardian realms. See  go/security-realms-
-        glossary#guardian for more information.)  - a realm (e.g., 'campus-
-        abc')  - a realm group (e.g., 'realms-for-borg-cell-xx', see:
-        go/realm-groups) A match is determined by a realm group membership
-        check performed by a RealmAclRep object (go/realm-acl-howto). It is
-        not permitted to grant access based on the *absence* of a realm, so
-        realm conditions can only be used in a "positive" context (e.g.,
-        ALLOW/IN or DENY/NOT_IN).
+        can be: - 'self' (i.e., allow connections from clients that are in the
+        same security realm) - 'self:metro' (i.e., clients that are in the
+        same metro) - 'self:cloud-region' (i.e., allow connections from
+        clients that are in the same cloud region) - 'guardians' (i.e., allow
+        connections from its guardian realms. See go/security-realms-
+        glossary#guardian for more information.) - a realm (e.g., 'campus-
+        abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go/realm-
+        groups) A match is determined by a realm group membership check
+        performed by a RealmAclRep object (go/realm-acl-howto). It is not
+        permitted to grant access based on the *absence* of a realm, so realm
+        conditions can only be used in a "positive" context (e.g., ALLOW/IN or
+        DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -251,7 +246,7 @@ class Condition(_messages.Message):
         security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
         not permitted to grant access based on the *absence* of a
         justification, so justification conditions can only be used in a
-        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).  Multiple
+        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
         justifications, e.g., a Buganizer ID and a manually-entered reason,
         are normal and supported.
       CREDENTIALS_TYPE: What type of credentials have been supplied with this
@@ -319,17 +314,17 @@ class CounterOptions(_messages.Message):
   r"""Increment a streamz counter with the specified metric and field names.
   Metric names should start with a '/', generally be lowercase-only, and end
   in "_count". Field names should not contain an initial slash. The actual
-  exported metric names will have "/iam/policy" prepended.  Field names
+  exported metric names will have "/iam/policy" prepended. Field names
   correspond to IAM request parameters and field values are their respective
-  values.  Supported field names:    - "authority", which is "[token]" if
-  IAMContext.token is present,      otherwise the value of
-  IAMContext.authority_selector if present, and      otherwise a
-  representation of IAMContext.principal; or    - "iam_principal", a
-  representation of IAMContext.principal even if a      token or authority
-  selector is present; or    - "" (empty string), resulting in a counter with
-  no fields.  Examples:   counter { metric: "/debug_access_count"  field:
-  "iam_principal" }   ==> increment counter /iam/policy/debug_access_count
-  {iam_principal=[value of IAMContext.principal]}
+  values. Supported field names: - "authority", which is "[token]" if
+  IAMContext.token is present, otherwise the value of
+  IAMContext.authority_selector if present, and otherwise a representation of
+  IAMContext.principal; or - "iam_principal", a representation of
+  IAMContext.principal even if a token or authority selector is present; or -
+  "" (empty string), resulting in a counter with no fields. Examples: counter
+  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
+  counter /iam/policy/debug_access_count {iam_principal=[value of
+  IAMContext.principal]}
 
   Fields:
     customFields: Custom fields.
@@ -380,7 +375,7 @@ class DataAccessOptions(_messages.Message):
         successfully logged to Gin. For instance, the authorization library
         may satisfy this obligation by emitting a partial log entry at
         authorization check time and only returning ALLOW to the application
-        if it succeeds.  If a matching Rule has this directive, but the client
+        if it succeeds. If a matching Rule has this directive, but the client
         has not indicated that it will honor such requirements, then the IAM
         check will result in authorization failure by setting
         CheckPolicyResponse.success=false.
@@ -394,9 +389,9 @@ class DataAccessOptions(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -407,18 +402,18 @@ class Endpoint(_messages.Message):
 
   Messages:
     MetadataValue: Optional. Metadata for the endpoint. This data can be
-      consumed by service clients.  The entire metadata dictionary may contain
+      consumed by service clients. The entire metadata dictionary may contain
       up to 512 characters, spread accoss all key-value pairs. Metadata that
       goes beyond any these limits will be rejected.
 
   Fields:
     address: Optional. An IPv4 or IPv6 address. Service Directory will reject
-      bad addresses like:   "8.8.8"   "8.8.8.8:53"   "test:bad:address"
-      "[::1]"   "[::1]:8080" Limited to 45 characters.
+      bad addresses like: "8.8.8" "8.8.8.8:53" "test:bad:address" "[::1]"
+      "[::1]:8080" Limited to 45 characters.
     metadata: Optional. Metadata for the endpoint. This data can be consumed
-      by service clients.  The entire metadata dictionary may contain up to
-      512 characters, spread accoss all key-value pairs. Metadata that goes
-      beyond any these limits will be rejected.
+      by service clients. The entire metadata dictionary may contain up to 512
+      characters, spread accoss all key-value pairs. Metadata that goes beyond
+      any these limits will be rejected.
     name: Immutable. The resource name for the endpoint in the format
       'projects/*/locations/*/namespaces/*/services/*/endpoints/*'.
     port: Optional. Service Directory will reject values outside of [0,
@@ -428,7 +423,7 @@ class Endpoint(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Optional. Metadata for the endpoint. This data can be consumed by
-    service clients.  The entire metadata dictionary may contain up to 512
+    service clients. The entire metadata dictionary may contain up to 512
     characters, spread accoss all key-value pairs. Metadata that goes beyond
     any these limits will be rejected.
 
@@ -461,20 +456,20 @@ class Endpoint(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -510,10 +505,10 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -674,12 +669,12 @@ class Namespace(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Resource labels associated with this Namespace. No
-      more than 64 user labels can be associated with a given resource.  Label
+      more than 64 user labels can be associated with a given resource. Label
       keys and values can be no longer than 63 characters.
 
   Fields:
     labels: Optional. Resource labels associated with this Namespace. No more
-      than 64 user labels can be associated with a given resource.  Label keys
+      than 64 user labels can be associated with a given resource. Label keys
       and values can be no longer than 63 characters.
     name: Immutable. The resource name for the namespace in the format
       'projects/*/locations/*/namespaces/*'.
@@ -688,7 +683,7 @@ class Namespace(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Resource labels associated with this Namespace. No more than
-    64 user labels can be associated with a given resource.  Label keys and
+    64 user labels can be associated with a given resource. Label keys and
     values can be no longer than 63 characters.
 
     Messages:
@@ -717,37 +712,33 @@ class Namespace(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  For some types of
+  be an IAM predefined role or a user-created custom role. For some types of
   Google Cloud resources, a `binding` can also specify a `condition`, which is
   a logical expression that allows access to a resource only if the expression
   evaluates to `true`. A condition can add constraints based on attributes of
   the request, the resource, or both. To learn which resources support
   conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies).  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members": [
-  "user:eve@example.com"           ],           "condition": {
-  "title": "expirable access",             "description": "Does not grant
-  access after Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -762,32 +753,32 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
     iamOwned: A boolean attribute.
     rules: If more than one rule is specified, the rules are applied in the
       following manner: - All matching LOG rules are always applied. - If any
-      DENY/DENY_WITH_LOG rule matches, permission is denied.   Logging will be
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
       applied if one or more matching rule requires logging. - Otherwise, if
-      any ALLOW/ALLOW_WITH_LOG rule matches, permission is   granted.
-      Logging will be applied if one or more matching rule requires logging. -
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
       Otherwise, if no rule applies, permission is denied.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.  To learn which resources support
+      version or leave the field unset. To learn which resources support
       conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -807,17 +798,16 @@ class ResolveServiceRequest(_messages.Message):
 
   Fields:
     endpointFilter: Optional. The filter applied to the endpoints of the
-      resolved service.  General filter string syntax: <field> <operator>
-      <value> (<logical connector>) <field> can be "name" or "metadata.<key>"
-      for map field. <operator> can be "<, >, <=, >=, !=, =, :". Of which ":"
-      means HAS and is roughly the same as "=". <value> must be the same data
-      type as the field. <logical connector> can be "AND, OR, NOT".  Examples
-      of valid filters: * "metadata.owner" returns Endpoints that have a label
-      with the   key "owner", this is the same as "metadata:owner" *
-      "metadata.protocol=gRPC" returns Endpoints that have key/value
-      "protocol=gRPC" * "metadata.owner!=sd AND metadata.foo=bar" returns
-      Endpoints that have "owner" field in metadata with a value that is not
-      "sd" AND have the key/value foo=bar.
+      resolved service. General filter string syntax: () can be "name" or
+      "metadata." for map field. can be "<, >, <=, >=, !=, =, :". Of which ":"
+      means HAS and is roughly the same as "=". must be the same data type as
+      the field. can be "AND, OR, NOT". Examples of valid filters: *
+      "metadata.owner" returns Endpoints that have a label with the key
+      "owner", this is the same as "metadata:owner" * "metadata.protocol=gRPC"
+      returns Endpoints that have key/value "protocol=gRPC" *
+      "metadata.owner!=sd AND metadata.foo=bar" returns Endpoints that have
+      "owner" field in metadata with a value that is not "sd" AND have the
+      key/value foo=bar.
     maxEndpoints: Optional. The maximum number of endpoints to return.
       Defaults to 25. Maximum is 100. If a value less than one is specified,
       the Default is used. If a value greater than the Maximum is specified,
@@ -857,10 +847,9 @@ class Rule(_messages.Message):
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation
       (see go/local-iam#features).
-    permissions: A permission is a string of form '<service>.<resource
-      type>.<verb>' (e.g., 'storage.buckets.list'). A value of '*' matches all
-      permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches
-      all verbs.
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
@@ -898,7 +887,7 @@ class Service(_messages.Message):
 
   Messages:
     MetadataValue: Optional. Metadata for the service. This data can be
-      consumed by service clients.  The entire metadata dictionary may contain
+      consumed by service clients. The entire metadata dictionary may contain
       up to 2000 characters, spread across all key-value pairs. Metadata that
       goes beyond any these limits will be rejected.
 
@@ -909,26 +898,26 @@ class Service(_messages.Message):
     hostname: Optional. Hostname. Service consumer may use for: 1) HTTP
       parameter for Host (HTTP/1.1) or Authority (HTTP/2, HTTP/3) 2) TLS SNI
       Hostname parameter (most commonly used for HTTPS) 3) TLS Hostname
-      Authorization against the x509 SAN DNS entries (necessary    for HTTPS)
+      Authorization against the x509 SAN DNS entries (necessary for HTTPS)
       Example: `service.example.com` Limits: Field limited to 255 ASCII
       characters per https://www.ietf.org/rfc/rfc1035.txt
     metadata: Optional. Metadata for the service. This data can be consumed by
-      service clients.  The entire metadata dictionary may contain up to 2000
+      service clients. The entire metadata dictionary may contain up to 2000
       characters, spread across all key-value pairs. Metadata that goes beyond
       any these limits will be rejected.
     name: Immutable. The resource name for the service in the format
       'projects/*/locations/*/namespaces/*/services/*'.
     serviceIdentities: Optional. Authorized Service Identities. If provided,
       the consumer may use this information to determine whether the service
-      provider is authorized. Examples:  `spiffe_id:spiffe://example.org/my-
-      service`  `service_account:my-service@iam.gserviceaccount.com` Limits:
+      provider is authorized. Examples: `spiffe_id:spiffe://example.org/my-
+      service` `service_account:my-service@iam.gserviceaccount.com` Limits:
       service_identities list is limited to 10 items.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""Optional. Metadata for the service. This data can be consumed by
-    service clients.  The entire metadata dictionary may contain up to 2000
+    service clients. The entire metadata dictionary may contain up to 2000
     characters, spread across all key-value pairs. Metadata that goes beyond
     any these limits will be rejected.
 
@@ -1012,13 +1001,11 @@ class ServicedirectoryProjectsLocationsNamespacesCreateRequest(_messages.Message
   Fields:
     namespace: A Namespace resource to be passed as the request body.
     namespaceId: Required. The Resource ID must be 1-63 characters long, and
-      comply with <a href="https://www.ietf.org/rfc/rfc1035.txt"
-      target="_blank">RFC1035</a>. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must
-      be a lowercase letter, and all following characters must be a dash,
-      lowercase letter, or digit, except the last character, which cannot be a
-      dash.
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`
+      which means the first character must be a lowercase letter, and all
+      following characters must be a dash, lowercase letter, or digit, except
+      the last character, which cannot be a dash.
     parent: Required. The resource name of the project and location the
       namespace will be created in.
   """
@@ -1067,28 +1054,25 @@ class ServicedirectoryProjectsLocationsNamespacesListRequest(_messages.Message):
   r"""A ServicedirectoryProjectsLocationsNamespacesListRequest object.
 
   Fields:
-    filter: Optional. The filter to list result by.  General filter string
-      syntax: <field> <operator> <value> (<logical connector>) <field> can be
-      "name", or "labels.<key>" for map field. <operator> can be "<, >, <=,
+    filter: Optional. The filter to list result by. General filter string
+      syntax: () can be "name", or "labels." for map field. can be "<, >, <=,
       >=, !=, =, :". Of which ":" means HAS, and is roughly the same as "=".
-      <value> must be the same data type as field. <logical connector> can be
-      "AND, OR, NOT".  Examples of valid filters: * "labels.owner" returns
-      Namespaces that have a label with the key "owner"   this is the same as
-      "labels:owner". * "labels.protocol=gRPC" returns Namespaces that have
-      key/value   "protocol=gRPC". * "name>projects/my-project/locations/us-
-      east/namespaces/namespace-c"   returns Namespaces that have name that is
-      alphabetically later than the   string, so "namespace-e" will be
-      returned but "namespace-a" will not be. * "labels.owner!=sd AND
-      labels.foo=bar" returns Namespaces that have   "owner" in label key but
-      value is not "sd" AND have key/value foo=bar. * "doesnotexist.foo=bar"
-      returns an empty list. Note that Namespace doesn't   have a field called
-      "doesnotexist". Since the filter does not match any   Namespaces, it
-      returns no results.
-    orderBy: Optional. The order to list result by.  General order by string
-      syntax: <field> (<asc|desc>) (,) <field> allows values {"name"}
-      <asc/desc> ascending or descending order by <field>. If this is left
-      blank, "asc" is used. Note that an empty order_by string result in
-      default order, which is order by name in ascending order.
+      must be the same data type as field. can be "AND, OR, NOT". Examples of
+      valid filters: * "labels.owner" returns Namespaces that have a label
+      with the key "owner" this is the same as "labels:owner". *
+      "labels.protocol=gRPC" returns Namespaces that have key/value
+      "protocol=gRPC". * "name>projects/my-project/locations/us-
+      east/namespaces/namespace-c" returns Namespaces that have name that is
+      alphabetically later than the string, so "namespace-e" will be returned
+      but "namespace-a" will not be. * "labels.owner!=sd AND labels.foo=bar"
+      returns Namespaces that have "owner" in label key but value is not "sd"
+      AND have key/value foo=bar. * "doesnotexist.foo=bar" returns an empty
+      list. Note that Namespace doesn't have a field called "doesnotexist".
+      Since the filter does not match any Namespaces, it returns no results.
+    orderBy: Optional. The order to list result by. General order by string
+      syntax: () (,) allows values {"name"} ascending or descending order by .
+      If this is left blank, "asc" is used. Note that an empty order_by string
+      result in default order, which is order by name in ascending order.
     pageSize: Optional. The maximum number of items to return.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
@@ -1127,13 +1111,11 @@ class ServicedirectoryProjectsLocationsNamespacesServicesCreateRequest(_messages
       belong to.
     service: A Service resource to be passed as the request body.
     serviceId: Required. The Resource ID must be 1-63 characters long, and
-      comply with <a href="https://www.ietf.org/rfc/rfc1035.txt"
-      target="_blank">RFC1035</a>. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must
-      be a lowercase letter, and all following characters must be a dash,
-      lowercase letter, or digit, except the last character, which cannot be a
-      dash.
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`
+      which means the first character must be a lowercase letter, and all
+      following characters must be a dash, lowercase letter, or digit, except
+      the last character, which cannot be a dash.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1160,13 +1142,11 @@ class ServicedirectoryProjectsLocationsNamespacesServicesEndpointsCreateRequest(
   Fields:
     endpoint: A Endpoint resource to be passed as the request body.
     endpointId: Required. The Resource ID must be 1-63 characters long, and
-      comply with <a href="https://www.ietf.org/rfc/rfc1035.txt"
-      target="_blank">RFC1035</a>. Specifically, the name must be 1-63
-      characters long and match the regular expression
-      `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?` which means the first character must
-      be a lowercase letter, and all following characters must be a dash,
-      lowercase letter, or digit, except the last character, which cannot be a
-      dash.
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression `[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?`
+      which means the first character must be a lowercase letter, and all
+      following characters must be a dash, lowercase letter, or digit, except
+      the last character, which cannot be a dash.
     parent: Required. The resource name of the service that this endpoint
       provides.
   """
@@ -1205,18 +1185,16 @@ class ServicedirectoryProjectsLocationsNamespacesServicesEndpointsListRequest(_m
   object.
 
   Fields:
-    filter: Optional. The filter to list result by.  General filter string
-      syntax: <field> <operator> <value> (<logical connector>) <field> can be
-      "name", "address", "port" or "metadata.<key>" for map field. <operator>
-      can be "<, >, <=, >=, !=, =, :". Of which ":" means HAS, and is roughly
-      the same as "=". <value> must be the same data type as field. <logical
-      connector> can be "AND, OR, NOT".  Examples of valid filters: *
-      "metadata.owner" returns Endpoints that have a label with the key
-      "owner"   this is the same as "metadata:owner". *
-      "metadata.protocol=gRPC" returns Endpoints that have key/value
-      "protocol=gRPC". * "address=192.108.1.105" returns Endpoints that have
-      this address. * "port>8080" returns Endpoints that have port number
-      larger than 8080. * "name>projects/my-project/locations/us-
+    filter: Optional. The filter to list result by. General filter string
+      syntax: () can be "name", "address", "port" or "metadata." for map
+      field. can be "<, >, <=, >=, !=, =, :". Of which ":" means HAS, and is
+      roughly the same as "=". must be the same data type as field. can be
+      "AND, OR, NOT". Examples of valid filters: * "metadata.owner" returns
+      Endpoints that have a label with the key "owner" this is the same as
+      "metadata:owner". * "metadata.protocol=gRPC" returns Endpoints that have
+      key/value "protocol=gRPC". * "address=192.108.1.105" returns Endpoints
+      that have this address. * "port>8080" returns Endpoints that have port
+      number larger than 8080. * "name>projects/my-project/locations/us-
       east/namespaces/my-namespace/services/my-service/endpoints/endpoint-c"
       returns Endpoints that have name that is alphabetically later than the
       string, so "endpoint-e" will be returned but "endpoint-a" will not be. *
@@ -1287,23 +1265,22 @@ class ServicedirectoryProjectsLocationsNamespacesServicesListRequest(_messages.M
   r"""A ServicedirectoryProjectsLocationsNamespacesServicesListRequest object.
 
   Fields:
-    filter: Optional. The filter to list result by.  General filter string
-      syntax: <field> <operator> <value> (<logical connector>) <field> can be
-      "name", or "metadata.<key>" for map field. <operator> can be "<, >, <=,
-      >=, !=, =, :". Of which ":" means HAS, and is roughly the same as "=".
-      <value> must be the same data type as field. <logical connector> can be
-      "AND, OR, NOT".  Examples of valid filters: * "metadata.owner" returns
-      Services that have a label with the key "owner"   this is the same as
-      "metadata:owner". * "metadata.protocol=gRPC" returns Services that have
-      key/value   "protocol=gRPC". * "name>projects/my-project/locations/us-
-      east/namespaces/my-namespace/services/service-c"   returns Services that
-      have name that is alphabetically later than the   string, so "service-e"
+    filter: Optional. The filter to list result by. General filter string
+      syntax: () can be "name", or "metadata." for map field. can be "<, >,
+      <=, >=, !=, =, :". Of which ":" means HAS, and is roughly the same as
+      "=". must be the same data type as field. can be "AND, OR, NOT".
+      Examples of valid filters: * "metadata.owner" returns Services that have
+      a label with the key "owner" this is the same as "metadata:owner". *
+      "metadata.protocol=gRPC" returns Services that have key/value
+      "protocol=gRPC". * "name>projects/my-project/locations/us-
+      east/namespaces/my-namespace/services/service-c" returns Services that
+      have name that is alphabetically later than the string, so "service-e"
       will be returned but "service-a" will not be. * "metadata.owner!=sd AND
-      metadata.foo=bar" returns Services that have   "owner" in label key but
+      metadata.foo=bar" returns Services that have "owner" in label key but
       value is not "sd" AND have key/value foo=bar. * "doesnotexist.foo=bar"
-      returns an empty list. Note that Service doesn't   have a field called
-      "doesnotexist". Since the filter does not match any   Services, it
-      returns no results.
+      returns an empty list. Note that Service doesn't have a field called
+      "doesnotexist". Since the filter does not match any Services, it returns
+      no results.
     orderBy: Optional. The order to list result by.
     pageSize: Optional. The maximum number of items to return.
     pageToken: Optional. The next_page_token value returned from a previous
@@ -1423,7 +1400,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used:  `paths: "bindings, etag"`
+      provided, the following default mask is used: `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)

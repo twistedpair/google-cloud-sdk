@@ -56,8 +56,7 @@ class RecommenderV1alpha1(base_api.BaseApiClient):
           }
 
     def CreateRule(self, request, global_params=None):
-      r"""Create a Rule from the recommendation.
-Check recommender.*.list and recommender.rule.create IAM permissions.
+      r"""Create a Rule from the recommendation. Check recommender.*.list and recommender.rule.create IAM permissions.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsCreateRuleRequest) input message
@@ -84,8 +83,7 @@ Check recommender.*.list and recommender.rule.create IAM permissions.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the requested recommendation and requires the recommendation.*.get.
-IAM permission.
+      r"""Gets the requested recommendation and requires the recommendation.*.get IAM permission.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsGetRequest) input message
@@ -112,8 +110,7 @@ IAM permission.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists recommendations for a Cloud project and requires the.
-recommendation.*.list IAM permission.
+      r"""Lists recommendations for a Cloud project and requires the recommendation.*.list IAM permission.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsListRequest) input message
@@ -140,13 +137,7 @@ recommendation.*.list IAM permission.
     )
 
     def MarkActive(self, request, global_params=None):
-      r"""Mark the Recommendation State as Active. Users can use this method to.
-indicate to the Recommender API that a DISMISSED recommendation has to
-be marked back as ACTIVE.
-
-MarkActive can be applied to recommendations in DISMISSED state.
-
-recommendation.*.update IAM permission is required to make this change.
+      r"""Mark the Recommendation State as Active. Users can use this method to indicate to the Recommender API that a DISMISSED recommendation has to be marked back as ACTIVE. MarkActive can be applied to recommendations in DISMISSED state. recommendation.*.update IAM permission is required to make this change.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkActiveRequest) input message
@@ -173,14 +164,7 @@ recommendation.*.update IAM permission is required to make this change.
     )
 
     def MarkClaimed(self, request, global_params=None):
-      r"""Mark the Recommendation State as Claimed. Users can use this method to.
-indicate to the Recommender API that they are starting to apply the
-recommendation themselves. This stops the recommendation content from being
-updated.
-
-MarkClaimed can be applied to recommendations in CLAIMED, or ACTIVE state.
-
-recommendation.*.update IAM permission is required to make this change.
+      r"""Mark the Recommendation State as Claimed. Users can use this method to indicate to the Recommender API that they are starting to apply the recommendation themselves. This stops the recommendation content from being updated. MarkClaimed can be applied to recommendations in CLAIMED, or ACTIVE state. recommendation.*.update IAM permission is required to make this change.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest) input message
@@ -207,15 +191,7 @@ recommendation.*.update IAM permission is required to make this change.
     )
 
     def MarkFailed(self, request, global_params=None):
-      r"""Mark the Recommendation State as Failed. Users can use this method to.
-indicate to the Recommender API that they have applied the recommendation
-themselves, and the operation failed. This stops the recommendation content
-from being updated.
-
-MarkFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED,
-or FAILED state.
-
-recommendation.*.update IAM permission is required to make this change.
+      r"""Mark the Recommendation State as Failed. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation failed. This stops the recommendation content from being updated. MarkFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. recommendation.*.update IAM permission is required to make this change.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest) input message
@@ -242,15 +218,7 @@ recommendation.*.update IAM permission is required to make this change.
     )
 
     def MarkSucceeded(self, request, global_params=None):
-      r"""Mark the Recommendation State as Succeeded. Users can use this method to.
-indicate to the Recommender API that they have applied the recommendation
-themselves, and the operation was successful. This stops the recommendation
-content from being updated.
-
-MarkSucceeded can be applied to recommendations in ACTIVE, CLAIMED,
-SUCCEEDED, or FAILED state.
-
-recommendation.*.update IAM permission is required to make this change.
+      r"""Mark the Recommendation State as Succeeded. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation was successful. This stops the recommendation content from being updated. MarkSucceeded can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. recommendation.*.update IAM permission is required to make this change.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededRequest) input message
@@ -307,9 +275,7 @@ recommendation.*.update IAM permission is required to make this change.
           }
 
     def Apply(self, request, global_params=None):
-      r"""Apply a rule. This will set the specified state on all matching.
-recommendations. This is a long running operation.
-Checks recommender.rule.list and recommender.*.update IAM permissions.
+      r"""Apply a rule. This will set the specified state on all matching recommendations. This is a long running operation. Checks recommender.rule.list and recommender.*.update IAM permissions.
 
       Args:
         request: (RecommenderProjectsRulesApplyRequest) input message
@@ -336,8 +302,7 @@ Checks recommender.rule.list and recommender.*.update IAM permissions.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deleting a Rule. Deleting a rule does not affect recommendations.
-Check recommender.rule.delete IAM permission.
+      r"""Deleting a Rule. Deleting a rule does not affect recommendations. Check recommender.rule.delete IAM permission.
 
       Args:
         request: (RecommenderProjectsRulesDeleteRequest) input message
@@ -364,8 +329,7 @@ Check recommender.rule.delete IAM permission.
     )
 
     def Get(self, request, global_params=None):
-      r"""Get a Rule.
-Check recommender.rule.list IAM permission.
+      r"""Get a Rule. Check recommender.rule.list IAM permission.
 
       Args:
         request: (RecommenderProjectsRulesGetRequest) input message
@@ -392,8 +356,7 @@ Check recommender.rule.list IAM permission.
     )
 
     def List(self, request, global_params=None):
-      r"""List Rules.
-Check recommender.rule.list IAM permission.
+      r"""List Rules. Check recommender.rule.list IAM permission.
 
       Args:
         request: (RecommenderProjectsRulesListRequest) input message

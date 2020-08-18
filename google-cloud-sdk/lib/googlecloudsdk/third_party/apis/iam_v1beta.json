@@ -110,6 +110,100 @@
     }
   },
   "schemas": {
+    "GoogleLongrunningListOperationsResponse": {
+      "id": "GoogleLongrunningListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleLongrunningOperation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleLongrunningOperation": {
+      "id": "GoogleLongrunningOperation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "GoogleRpcStatus"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "GoogleRpcStatus": {
+      "id": "GoogleRpcStatus",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "GoogleProtobufEmpty": {
+      "id": "GoogleProtobufEmpty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleLongrunningCancelOperationRequest": {
+      "id": "GoogleLongrunningCancelOperationRequest",
+      "description": "The request message for Operations.CancelOperation.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleIamV1betaListWorkloadIdentityPoolsResponse": {
       "id": "GoogleIamV1betaListWorkloadIdentityPoolsResponse",
       "description": "Response message for ListWorkloadIdentityPools.",
@@ -123,36 +217,43 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages.",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         }
       }
     },
     "GoogleIamV1betaWorkloadIdentityPool": {
       "id": "GoogleIamV1betaWorkloadIdentityPool",
-      "description": "Represents a collection of workloads. WorkloadIdentityPools can be used in\nGoogle Cloud Platform policies, such as in IAM to give workloads\nauthorization to access to Google Cloud Platform.",
+      "description": "Represents a collection of workloads. WorkloadIdentityPools can be used in Google Cloud Platform policies, such as in IAM to give workloads authorization to access to Google Cloud Platform.",
       "type": "object",
       "properties": {
         "name": {
           "description": "Output only. The resource name of the pool.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
-          "description": "A user-specified name for the WorkloadIdentityPool.\nThe value must be less than or equal to 32 characters.",
+          "description": "A user-specified name for the WorkloadIdentityPool. The value must be less than or equal to 32 characters.",
           "type": "string"
         },
         "description": {
-          "description": "A user-specified description about this pool.\nThe value must be less than or equal to 256 characters.",
+          "description": "A user-specified description about this pool. The value must be less than or equal to 256 characters.",
           "type": "string"
         },
         "state": {
-          "description": "Output only. The state of the WorkloadIdentityPool.\n\nNote: Users should code against state enums with the expectation that new\nvalues may be added in the future.",
+          "description": "Output only. The state of the WorkloadIdentityPool. Note: Users should code against state enums with the expectation that new values may be added in the future.",
           "enumDescriptions": [
             "State unspecified.",
-            "The WorkloadIdentityPool is active and may be used in Google Cloud\nPlatform policies.",
-            "The WorkloadIdentityPool is soft-deleted. Soft-deleted\nWorkloadIdentityPools are permanently deleted after approximately 30 days\nunless restored via\nUndeleteWorkloadIdentityPool.\nIDs of soft-deleted WorkloadIdentityPools may not be reused until after\nthe resource has been permanently deleted.\n\nPreviously issued Access tokens for a workload identity pool will be\nrejected while the pool is deleted but will start working again if the\npool is undeleted. Issuance of new tokens will fail while the account\nis deleted."
+            "The WorkloadIdentityPool is active and may be used in Google Cloud Platform policies.",
+            "The WorkloadIdentityPool is soft-deleted. Soft-deleted WorkloadIdentityPools are permanently deleted after approximately 30 days unless restored via UndeleteWorkloadIdentityPool. IDs of soft-deleted WorkloadIdentityPools may not be reused until after the resource has been permanently deleted. Previously issued Access tokens for a workload identity pool will be rejected while the pool is deleted but will start working again if the pool is undeleted. Issuance of new tokens will fail while the account is deleted."
           ],
+          "readOnly": true,
           "type": "string",
+          "enumDescriptions": [
+            "State unspecified.",
+            "The WorkloadIdentityPool is active and may be used in Google Cloud Platform policies.",
+            "The WorkloadIdentityPool is soft-deleted. Soft-deleted WorkloadIdentityPools are permanently deleted after approximately 30 days unless restored via UndeleteWorkloadIdentityPool. IDs of soft-deleted WorkloadIdentityPools may not be reused until after the resource has been permanently deleted. Previously issued Access tokens for a workload identity pool will be rejected while the pool is deleted but will start working again if the pool is undeleted. Issuance of new tokens will fail while the account is deleted."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
@@ -160,70 +261,8 @@
           ]
         },
         "disabled": {
-          "description": "Whether the WorkloadIdentityPool is disabled. A disabled\nWorkloadIdentityPool cannot be used to perform new token exchanges.\nPreviously issued Access tokens for a workload identity pool will be\nrejected while the pool is disabled but will start working again if the\npool is re-enabled.",
+          "description": "Whether the WorkloadIdentityPool is disabled. A disabled WorkloadIdentityPool cannot be used to perform new token exchanges. Previously issued Access tokens for a workload identity pool will be rejected while the pool is disabled but will start working again if the pool is re-enabled.",
           "type": "boolean"
-        }
-      }
-    },
-    "GoogleLongrunningOperation": {
-      "id": "GoogleLongrunningOperation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "GoogleRpcStatus"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "GoogleRpcStatus": {
-      "id": "GoogleRpcStatus",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
         }
       }
     },
@@ -247,36 +286,43 @@
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages.",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
         }
       }
     },
     "GoogleIamV1betaWorkloadIdentityPoolProvider": {
       "id": "GoogleIamV1betaWorkloadIdentityPoolProvider",
-      "description": "Configuration for how Identity Platform will validate authentication\ncredentials minted by an Identity Provider. The total size of a\nWorkloadIdentityPoolProvider may not exceed 100kb. Requests whose outcome\nwould cause a WorkloadIdentityPoolProvider to exceed this limit will be\nrejected.",
+      "description": "Configuration for how Identity Platform will validate authentication credentials minted by an Identity Provider. The total size of a WorkloadIdentityPoolProvider may not exceed 100kb. Requests whose outcome would cause a WorkloadIdentityPoolProvider to exceed this limit will be rejected.",
       "type": "object",
       "properties": {
         "name": {
           "description": "Output only. The resource name of the WorkloadIdentityPoolProvider.",
+          "readOnly": true,
           "type": "string"
         },
         "displayName": {
-          "description": "A user-specified name for the WorkloadIdentityPoolProvider.\nThe value must be less than or equal to 32 characters.",
+          "description": "A user-specified name for the WorkloadIdentityPoolProvider. The value must be less than or equal to 32 characters.",
           "type": "string"
         },
         "description": {
-          "description": "A user-specified description for the WorkloadIdentityPoolProvider.\nThe value must be less than or equal to 256 characters.",
+          "description": "A user-specified description for the WorkloadIdentityPoolProvider. The value must be less than or equal to 256 characters.",
           "type": "string"
         },
         "state": {
-          "description": "Output only. The state of the WorkloadIdentityPoolProvider.\n\nNote: Users should code against state enums with the expectation that new\nvalues may be added in the future.",
+          "description": "Output only. The state of the WorkloadIdentityPoolProvider. Note: Users should code against state enums with the expectation that new values may be added in the future.",
           "enumDescriptions": [
             "State unspecified.",
-            "The WorkloadIdentityPoolProvider is active and may be used to validate\nauthentication credentials.",
-            "The WorkloadIdentityPoolProvider is soft-deleted. Soft-deleted\nWorkloadIdentityPoolProviders are permanently deleted after approximately\n30 days unless restored via\nUndeleteWorkloadIdentityPoolProvider.\nIDs of soft-deleted WorkloadIdentityPoolProviders may not be reused until\nafter the resource has been permanently deleted."
+            "The WorkloadIdentityPoolProvider is active and may be used to validate authentication credentials.",
+            "The WorkloadIdentityPoolProvider is soft-deleted. Soft-deleted WorkloadIdentityPoolProviders are permanently deleted after approximately 30 days unless restored via UndeleteWorkloadIdentityPoolProvider. IDs of soft-deleted WorkloadIdentityPoolProviders may not be reused until after the resource has been permanently deleted."
           ],
+          "readOnly": true,
           "type": "string",
+          "enumDescriptions": [
+            "State unspecified.",
+            "The WorkloadIdentityPoolProvider is active and may be used to validate authentication credentials.",
+            "The WorkloadIdentityPoolProvider is soft-deleted. Soft-deleted WorkloadIdentityPoolProviders are permanently deleted after approximately 30 days unless restored via UndeleteWorkloadIdentityPoolProvider. IDs of soft-deleted WorkloadIdentityPoolProviders may not be reused until after the resource has been permanently deleted."
+          ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
@@ -284,18 +330,18 @@
           ]
         },
         "disabled": {
-          "description": "Whether the WorkloadIdentityPoolProvider is disabled. A disabled\nWorkloadIdentityPoolProvider cannot be used to perform new token exchanges.\nExisting Google Cloud Platform authentication tokens are unaffected when a\nWorkloadIdentityPoolProvider is disabled.",
+          "description": "Whether the WorkloadIdentityPoolProvider is disabled. A disabled WorkloadIdentityPoolProvider cannot be used to perform new token exchanges. Existing Google Cloud Platform authentication tokens are unaffected when a WorkloadIdentityPoolProvider is disabled.",
           "type": "boolean"
         },
         "attributeMapping": {
-          "description": "Maps claims from the authentication credentials issued by the Provider\ninto Google Cloud Platform IAM attributes, e.g. subject, segment.\n\nEach key must be a string specifying the Google Cloud Platform IAM\nattribute to be produced.\n\nThe following predefined keys are currently supported:\n\n* google.subject - indicates the principal that is being authenticated to\n                   IAM, and will be logged in all API accesses for which\n                   Cloud Audit Logging is configured. The mapped subject\n                   may be at most 100 characters.\n\n* google.groups - indicates asserted groups that the workload should be\n                  considered to belong to. You can create IAM bindings\n                  using the group attribute and access to a resource will\n                  be granted if any of the groups asserted here match a\n                  group in the respective binding.\n\nCustom attributes can also be mapped by specifying\n'attribute.{custom_attribute}', replacing {custom_attribute} with the\nname of the custom attribute to be mapped. A maximum of 50 custom attribute\nmappings can be defined. The maximum length of a mapped attribute key is\n100 characters and may only contain the characters [a-z0-9-].\n\nThese attributes can then be referenced in IAM policies to define\nfine-grained access for the workload to GCP resources by specifying:\n\n* google.subject               -\n'principal:\/\/iam.googleapis.com\/projects\/{project}\/locations\/{location}\/workloadIdentityPools\/{pool}\/subject\/{value}'\n\n* google.groups                -\n'principalSet:\/\/iam.googleapis.com\/projects\/{project}\/locations\/{location}\/workloadIdentityPools\/{pool}\/group\/{value}'\n\n* attribute.{custom_attribute} -\n'principalSet:\/\/iam.googleapis.com\/projects\/{project}\/locations\/{location}\/workloadIdentityPools\/{pool}\/attribute.{custom_attribute}\/{value}'\n\nEach value must be a Common Expression Language\n(https:\/\/opensource.google\/projects\/cel) function that maps an\nIdentity Provider token to the normalized attribute specified by the\ncorresponding map key.\n\nThe following keywords may be referenced in the expressions:\n\n* assertion - JSON representing the authentication credential issued by the\n              Provider.\n\nThe maximum length of an attribute mapping expression is 2048 characters.\nWhen evaluated, the total size of all mapped attributes must not exceed\n1kb.\n\nFor AWS-type providers the following rules apply:\n\n- If no attribute mapping is defined for an AWS-type provider, the\nfollowing default mapping will be applied during the exchange:\n\n{\n  \"google.subject\":\"assertion.arn\",\n  \"attribute.aws_role\":\n      \u201Cassertion.arn.contains('assumed-role')\u201D\n      \u201C ? assertion.arn.extract('{account_arn}assumed-role\/')\u201D\n      \u201C   + 'assumed-role\/'\u201D\n      \u201C   + assertion.arn.extract('assumed-role\/{role_name}\/')\u201D\n      \u201C : assertion.arn\u201D,\n}\n\n-  If any custom attribute mappings are defined they must include a mapping\nto the `google.subject` attribute.\n\n\nFor OIDC-type providers the following rules apply:\n\n-  Custom attribute mappings must be defined and must include a mapping to\nthe `google.subject` attribute.\n\n\nExample: Map the 'sub' claim of the incoming credential to the\n         'subject' Google Cloud Platform IAM attribute.\n\n             {\"google.subject\": \"assertion.sub\"}",
+          "description": "Maps claims from the authentication credentials issued by the Provider into Google Cloud Platform IAM attributes, e.g. subject, segment. Each key must be a string specifying the Google Cloud Platform IAM attribute to be produced. The following predefined keys are currently supported: * google.subject - indicates the principal that is being authenticated to IAM, and will be logged in all API accesses for which Cloud Audit Logging is configured. The mapped subject may be at most 100 characters. * google.groups - indicates asserted groups that the workload should be considered to belong to. You can create IAM bindings using the group attribute and access to a resource will be granted if any of the groups asserted here match a group in the respective binding. Custom attributes can also be mapped by specifying 'attribute.{custom_attribute}', replacing {custom_attribute} with the name of the custom attribute to be mapped. A maximum of 50 custom attribute mappings can be defined. The maximum length of a mapped attribute key is 100 characters and may only contain the characters [a-z0-9-]. These attributes can then be referenced in IAM policies to define fine-grained access for the workload to GCP resources by specifying: * google.subject - 'principal:\/\/iam.googleapis.com\/projects\/{project}\/locations\/{location}\/workloadIdentityPools\/{pool}\/subject\/{value}' * google.groups - 'principalSet:\/\/iam.googleapis.com\/projects\/{project}\/locations\/{location}\/workloadIdentityPools\/{pool}\/group\/{value}' * attribute.{custom_attribute} - 'principalSet:\/\/iam.googleapis.com\/projects\/{project}\/locations\/{location}\/workloadIdentityPools\/{pool}\/attribute.{custom_attribute}\/{value}' Each value must be a Common Expression Language (https:\/\/opensource.google\/projects\/cel) function that maps an Identity Provider token to the normalized attribute specified by the corresponding map key. The following keywords may be referenced in the expressions: * assertion - JSON representing the authentication credential issued by the Provider. The maximum length of an attribute mapping expression is 2048 characters. When evaluated, the total size of all mapped attributes must not exceed 8kb. For AWS-type providers the following rules apply: - If no attribute mapping is defined for an AWS-type provider, the following default mapping will be applied during the exchange: { \"google.subject\":\"assertion.arn\", \"attribute.aws_role\": \u201Cassertion.arn.contains('assumed-role')\u201D \u201C ? assertion.arn.extract('{account_arn}assumed-role\/')\u201D \u201C + 'assumed-role\/'\u201D \u201C + assertion.arn.extract('assumed-role\/{role_name}\/')\u201D \u201C : assertion.arn\u201D, } - If any custom attribute mappings are defined they must include a mapping to the `google.subject` attribute. For OIDC-type providers the following rules apply: - Custom attribute mappings must be defined and must include a mapping to the `google.subject` attribute. Example: Map the 'sub' claim of the incoming credential to the 'subject' Google Cloud Platform IAM attribute. {\"google.subject\": \"assertion.sub\"}",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "attributeCondition": {
-          "description": "A Common Expression Language (https:\/\/opensource.google\/projects\/cel)\nexpression in plain text to restrict which otherwise valid authentication\ncredentials issued by the provider should not be accepted.\n\nThe expression must output a boolean representing whether to allow the\nfederation.\n\nThe following keywords may be referenced in the expressions:\n\n  assertion - JSON representing the authentication credential issued by the\n              Provider.\n  google    - the Google attributes mapped from the assertion in the\n              attrubute_mappings.\n  attribute - the custom attributes mapped from the assertion in the\n              attribute_mappings.\n\nThe maximum length of the attribute condition expression is 4096\ncharacters. If unspecified, all valid authentication credential will be\naccepted.\n\nExample: Only allow credentials with a mapped google.groups value of\n         'admins'.\n\n             \"'admins' in google.groups\"",
+          "description": "A Common Expression Language (https:\/\/opensource.google\/projects\/cel) expression in plain text to restrict which otherwise valid authentication credentials issued by the provider should not be accepted. The expression must output a boolean representing whether to allow the federation. The following keywords may be referenced in the expressions: assertion - JSON representing the authentication credential issued by the Provider. google - the Google attributes mapped from the assertion in the attrubute_mappings. attribute - the custom attributes mapped from the assertion in the attribute_mappings. The maximum length of the attribute condition expression is 4096 characters. If unspecified, all valid authentication credential will be accepted. Example: Only allow credentials with a mapped google.groups value of 'admins'. \"'admins' in google.groups\"",
           "type": "string"
         },
         "aws": {
@@ -318,7 +364,7 @@
           "type": "string"
         },
         "stsUri": {
-          "description": "A list of AWS STS URIs to limit the allowed STS hostname in the AWS\nsigned requests used for authentication. If it is not provided, any valid\nAWS STS URI given the AWS signed request during the credential exchange\nis allowed. Each URI must be in the form\n\u2018https:\/\/sts.amazonaws.com\u2019 or\n'https:\/\/sts.{region}.amazonaws.com' where {region} is a valid AWS\nregion. A maximum of 25 URIs may be specified.",
+          "description": "A list of AWS STS URIs to limit the allowed STS hostname in the AWS signed requests used for authentication. If it is not provided, any valid AWS STS URI given the AWS signed request during the credential exchange is allowed. Each URI must be in the form \u2018https:\/\/sts.amazonaws.com\u2019 or 'https:\/\/sts.{region}.amazonaws.com' where {region} is a valid AWS region. A maximum of 25 URIs may be specified.",
           "type": "array",
           "items": {
             "type": "string"
@@ -336,7 +382,7 @@
           "type": "string"
         },
         "allowedAudiences": {
-          "description": "Acceptable values for the \"aud\" field (audience) in the OIDC token. Token\nexchange requests be rejected if the token audience does not match one of\nthe configured values. Each audience may be at most 256 characters. A\nmaximum of 10 audiences may be configured.\n\nIf this list is empty, the OIDC token audience must be equal to\nthe full canonical resource name of the WorkloadIdentityPoolProvider,\nwith or without an HTTPS prefix:\n\n    '\/\/iam.googleapis.com\/projects\/<project-number>\/locations\/<location>\/workloadIdentityPools\/<pool-id>\/providers\/<provider-id>'\n    'https:\/\/iam.googleapis.com\/projects\/<project-number>\/locations\/<location>\/workloadIdentityPools\/<pool-id>\/providers\/<provider-id>'",
+          "description": "Acceptable values for the \"aud\" field (audience) in the OIDC token. Token exchange requests be rejected if the token audience does not match one of the configured values. Each audience may be at most 256 characters. A maximum of 10 audiences may be configured. If this list is empty, the OIDC token audience must be equal to the full canonical resource name of the WorkloadIdentityPoolProvider, with or without an HTTPS prefix: '\/\/iam.googleapis.com\/projects\/\/locations\/\/workloadIdentityPools\/\/providers\/' 'https:\/\/iam.googleapis.com\/projects\/\/locations\/\/workloadIdentityPools\/\/providers\/'",
           "type": "array",
           "items": {
             "type": "string"
@@ -353,7 +399,7 @@
     },
     "GoogleIamAdminV1AuditData": {
       "id": "GoogleIamAdminV1AuditData",
-      "description": "Audit log information specific to Cloud IAM admin APIs. This message is\nserialized as an `Any` type in the `ServiceData` message of an\n`AuditLog` message.",
+      "description": "Audit log information specific to Cloud IAM admin APIs. This message is serialized as an `Any` type in the `ServiceData` message of an `AuditLog` message.",
       "type": "object",
       "properties": {
         "permissionDelta": {
@@ -364,7 +410,7 @@
     },
     "GoogleIamAdminV1AuditDataPermissionDelta": {
       "id": "GoogleIamAdminV1AuditDataPermissionDelta",
-      "description": "A PermissionDelta message to record the added_permissions and\nremoved_permissions inside a role.",
+      "description": "A PermissionDelta message to record the added_permissions and removed_permissions inside a role.",
       "type": "object",
       "properties": {
         "addedPermissions": {
@@ -385,7 +431,7 @@
     },
     "GoogleIamV1LoggingAuditData": {
       "id": "GoogleIamV1LoggingAuditData",
-      "description": "Audit log information specific to Cloud IAM. This message is serialized\nas an `Any` type in the `ServiceData` message of an\n`AuditLog` message.",
+      "description": "Audit log information specific to Cloud IAM. This message is serialized as an `Any` type in the `ServiceData` message of an `AuditLog` message.",
       "type": "object",
       "properties": {
         "policyDelta": {
@@ -410,17 +456,22 @@
     },
     "GoogleIamV1BindingDelta": {
       "id": "GoogleIamV1BindingDelta",
-      "description": "One delta entry for Binding. Each individual change (only one member in each\nentry) to a binding will be a separate entry.",
+      "description": "One delta entry for Binding. Each individual change (only one member in each entry) to a binding will be a separate entry.",
       "type": "object",
       "properties": {
         "action": {
-          "description": "The action that was performed on a Binding.\nRequired",
+          "description": "The action that was performed on a Binding. Required",
           "enumDescriptions": [
             "Unspecified.",
             "Addition of a Binding.",
             "Removal of a Binding."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "Addition of a Binding.",
+            "Removal of a Binding."
+          ],
           "enum": [
             "ACTION_UNSPECIFIED",
             "ADD",
@@ -428,11 +479,11 @@
           ]
         },
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`. Required",
           "type": "string"
         },
         "member": {
-          "description": "A single identity requesting access for a Cloud Platform resource.\nFollows the same format of Binding.members.\nRequired",
+          "description": "A single identity requesting access for a Cloud Platform resource. Follows the same format of Binding.members. Required",
           "type": "string"
         },
         "condition": {
@@ -443,23 +494,23 @@
     },
     "GoogleTypeExpr": {
       "id": "GoogleTypeExpr",
-      "description": "Represents a textual expression in the Common Expression Language (CEL)\nsyntax. CEL is a C-like expression language. The syntax and semantics of CEL\nare documented at https:\/\/github.com\/google\/cel-spec.\n\nExample (Comparison):\n\n    title: \"Summary size limit\"\n    description: \"Determines if a summary is less than 100 chars\"\n    expression: \"document.summary.size() < 100\"\n\nExample (Equality):\n\n    title: \"Requestor is owner\"\n    description: \"Determines if requestor is the document owner\"\n    expression: \"document.owner == request.auth.claims.email\"\n\nExample (Logic):\n\n    title: \"Public documents\"\n    description: \"Determine whether the document should be publicly visible\"\n    expression: \"document.type != 'private' && document.type != 'internal'\"\n\nExample (Data Manipulation):\n\n    title: \"Notification string\"\n    description: \"Create a notification string with a timestamp.\"\n    expression: \"'New message received at ' + string(document.create_time)\"\n\nThe exact variables and functions that may be referenced within an expression\nare determined by the service that evaluates it. See the service\ndocumentation for additional information.",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
       "type": "object",
       "properties": {
         "expression": {
-          "description": "Textual representation of an expression in Common Expression Language\nsyntax.",
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
           "type": "string"
         },
         "title": {
-          "description": "Optional. Title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. Description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
           "type": "string"
         },
         "location": {
-          "description": "Optional. String indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }
@@ -486,13 +537,13 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of WorkloadIdentityPools to return.\nIf unspecified, at most 50 pools will be returned.\nThe maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "description": "The maximum number of WorkloadIdentityPools to return. If unspecified, at most 50 pools will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListWorkloadIdentityPools`\ncall. Provide this to retrieve the subsequent page.",
+                      "description": "A page token, received from a previous `ListWorkloadIdentityPools` call. Provide this to retrieve the subsequent page.",
                       "location": "query",
                       "type": "string"
                     },
@@ -511,7 +562,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists all non-deleted\nWorkloadIdentityPools in a\nproject. If show_deleted = true, then deleted pools are also listed."
+                  "description": "Lists all non-deleted WorkloadIdentityPools in a project. If show_deleted = true, then deleted pools are also listed."
                 },
                 "get": {
                   "id": "iam.projects.locations.workloadIdentityPools.get",
@@ -536,7 +587,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Reads an individual\nWorkloadIdentityPool."
+                  "description": "Reads an individual WorkloadIdentityPool."
                 },
                 "create": {
                   "id": "iam.projects.locations.workloadIdentityPools.create",
@@ -545,14 +596,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource where this pool will be created. Supported locations\nare:\n  \"global\"",
+                      "description": "Required. The parent resource where this pool will be created. Supported locations are: \"global\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "workloadIdentityPoolId": {
-                      "description": "Required. The ID to use for the WorkloadIdentityPool, which will become the\nfinal component of the resource name. This value should be 4-32 characters\nand may contain the characters [a-z0-9-].",
+                      "description": "Required. The ID to use for the WorkloadIdentityPool, which will become the final component of the resource name. This value should be 4-32 characters and may contain the characters [a-z0-9-]. IDs with the prefix 'gcp-' are reserved for use by Google and may not be specified.",
                       "location": "query",
                       "type": "string"
                     }
@@ -569,7 +620,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new\nWorkloadIdentityPool. The name\nof deleted pool cannot be reused if it was deleted less than 30 days ago."
+                  "description": "Creates a new WorkloadIdentityPool. The name of deleted pool cannot be reused if it was deleted less than 30 days ago."
                 },
                 "patch": {
                   "id": "iam.projects.locations.workloadIdentityPools.patch",
@@ -603,7 +654,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates an existing\nWorkloadIdentityPool."
+                  "description": "Updates an existing WorkloadIdentityPool."
                 },
                 "delete": {
                   "id": "iam.projects.locations.workloadIdentityPools.delete",
@@ -628,7 +679,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a\nWorkloadIdentityPool.\n\nA deleted WorkloadIdentityPool cannot be used for exchange of third party\ncredentials for Google Cloud Platform credentials. However, deleting does\nnot revoke credentials that have already been issued. This is a soft delete\nand can be undeleted for 30 days. After 30 days, the delete is permanent.\nDeleted items cannot be updated. However they can be viewed and listed.\nCredentials that were issued for a pool will not work while the pool is\ndeleted. Once the pool is undeleted the credentials will work again if they\nhave not expired."
+                  "description": "Deletes a WorkloadIdentityPool. A deleted WorkloadIdentityPool cannot be used for exchange of third party credentials for Google Cloud Platform credentials. However, deleting does not revoke credentials that have already been issued. This is a soft delete and can be undeleted for 30 days. After 30 days, the delete is permanent. Deleted items cannot be updated. However they can be viewed and listed. Credentials that were issued for a pool will not work while the pool is deleted. Once the pool is undeleted the credentials will work again if they have not expired."
                 },
                 "undelete": {
                   "id": "iam.projects.locations.workloadIdentityPools.undelete",
@@ -656,11 +707,134 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Undeletes a WorkloadIdentityPool\nas long as it was deleted less than 30 days ago."
+                  "description": "Undeletes a WorkloadIdentityPool as long as it was deleted less than 30 days ago."
                 }
               }
               ,
               "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "iam.projects.locations.workloadIdentityPools.operations.list",
+                      "path": "v1beta/{+name}/operations",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "iam.projects.locations.workloadIdentityPools.operations.get",
+                      "path": "v1beta/{+name}",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "iam.projects.locations.workloadIdentityPools.operations.delete",
+                      "path": "v1beta/{+name}",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "iam.projects.locations.workloadIdentityPools.operations.cancel",
+                      "path": "v1beta/{+name}:cancel",
+                      "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleLongrunningCancelOperationRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    }
+                  }
+                },
                 "providers": {
                   "methods": {
                     "list": {
@@ -670,20 +844,20 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource, which owns this collection of\nWorkloadIdentityPoolProviders.",
+                          "description": "Required. The parent resource, which owns this collection of WorkloadIdentityPoolProviders.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of WorkloadIdentityPoolProviders to return.\nIf unspecified, at most 50 WorkloadIdentityPoolProviders will be returned.\nThe maximum value is 100; values above 100 will be coerced to 100.",
+                          "description": "The maximum number of WorkloadIdentityPoolProviders to return. If unspecified, at most 50 WorkloadIdentityPoolProviders will be returned. The maximum value is 100; values above 100 will be coerced to 100.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous\n`ListWorkloadIdentityPoolProviders` call. Provide this to retrieve the\nsubsequent page.",
+                          "description": "A page token, received from a previous `ListWorkloadIdentityPoolProviders` call. Provide this to retrieve the subsequent page.",
                           "location": "query",
                           "type": "string"
                         },
@@ -702,7 +876,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists all non-deleted\nWorkloadIdentityPoolProviders\nin a WorkloadIdentityPool.\nIf show_deleted = true, then deleted providers are also listed."
+                      "description": "Lists all non-deleted WorkloadIdentityPoolProviders in a WorkloadIdentityPool. If show_deleted = true, then deleted providers are also listed."
                     },
                     "get": {
                       "id": "iam.projects.locations.workloadIdentityPools.providers.get",
@@ -727,7 +901,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Reads an individual\nWorkloadIdentityPoolProvider."
+                      "description": "Reads an individual WorkloadIdentityPoolProvider."
                     },
                     "create": {
                       "id": "iam.projects.locations.workloadIdentityPools.providers.create",
@@ -736,14 +910,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource where this WorkloadIdentityPoolProvider will be\ncreated.",
+                          "description": "Required. The parent resource where this WorkloadIdentityPoolProvider will be created.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+$",
                           "type": "string"
                         },
                         "workloadIdentityPoolProviderId": {
-                          "description": "Required. The ID to use for the WorkloadIdentityPoolProvider, which will become the\nfinal component of the resource name. This value should be 4-32 characters\nand may contain the characters [a-z0-9-].",
+                          "description": "Required. The ID to use for the WorkloadIdentityPoolProvider, which will become the final component of the resource name. This value should be 4-32 characters and may contain the characters [a-z0-9-]. IDs with the prefix 'gcp-' are reserved for use by Google and may not be specified.",
                           "location": "query",
                           "type": "string"
                         }
@@ -760,7 +934,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new\nWorkloadIdentityPoolProvider\nin a WorkloadIdentityPool. The\nname of deleted provider cannot be reused if it was deleted less than 30\ndays ago."
+                      "description": "Creates a new WorkloadIdentityPoolProvider in a WorkloadIdentityPool. The name of deleted provider cannot be reused if it was deleted less than 30 days ago."
                     },
                     "patch": {
                       "id": "iam.projects.locations.workloadIdentityPools.providers.patch",
@@ -794,7 +968,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates an existing\nWorkloadIdentityPoolProvider."
+                      "description": "Updates an existing WorkloadIdentityPoolProvider."
                     },
                     "delete": {
                       "id": "iam.projects.locations.workloadIdentityPools.providers.delete",
@@ -819,7 +993,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a\nWorkloadIdentityPoolProvider.\n\nA deleted provider cannot be used for exchange of third party credentials\nfor Google Cloud Platform credentials. However, deleting does not revoke\ncredentials that have already been issued. This is a soft delete and can be\nundeleted for 30 days. After 30 days, the delete is permanent. Deleted\nitems cannot be updated. However they can be viewed and listed."
+                      "description": "Deletes a WorkloadIdentityPoolProvider. A deleted provider cannot be used for exchange of third party credentials for Google Cloud Platform credentials. However, deleting does not revoke credentials that have already been issued. This is a soft delete and can be undeleted for 30 days. After 30 days, the delete is permanent. Deleted items cannot be updated. However they can be viewed and listed."
                     },
                     "undelete": {
                       "id": "iam.projects.locations.workloadIdentityPools.providers.undelete",
@@ -847,7 +1021,133 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Undeletes a\nWorkloadIdentityPoolProvider\nas long as it was deleted less than 30 days ago."
+                      "description": "Undeletes a WorkloadIdentityPoolProvider as long as it was deleted less than 30 days ago."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "operations": {
+                      "methods": {
+                        "list": {
+                          "id": "iam.projects.locations.workloadIdentityPools.providers.operations.list",
+                          "path": "v1beta/{+name}/operations",
+                          "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/providers/{providersId}/operations",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation's parent resource.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "The standard list filter.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The standard list page size.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The standard list page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleLongrunningListOperationsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                        },
+                        "get": {
+                          "id": "iam.projects.locations.workloadIdentityPools.providers.operations.get",
+                          "path": "v1beta/{+name}",
+                          "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/providers/{providersId}/operations/{operationsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+\/operations\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleLongrunningOperation"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                        },
+                        "delete": {
+                          "id": "iam.projects.locations.workloadIdentityPools.providers.operations.delete",
+                          "path": "v1beta/{+name}",
+                          "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/providers/{providersId}/operations/{operationsId}",
+                          "httpMethod": "DELETE",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource to be deleted.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+\/operations\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleProtobufEmpty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                        },
+                        "cancel": {
+                          "id": "iam.projects.locations.workloadIdentityPools.providers.operations.cancel",
+                          "path": "v1beta/{+name}:cancel",
+                          "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/providers/{providersId}/operations/{operationsId}:cancel",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the operation resource to be cancelled.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/workloadIdentityPools\/[^\/]+\/providers\/[^\/]+\/operations\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "GoogleLongrunningCancelOperationRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleProtobufEmpty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                        }
+                      }
                     }
                   }
                 }

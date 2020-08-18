@@ -156,15 +156,15 @@ class GoogleIamV1betaWorkloadIdentityPool(_messages.Message):
     displayName: A user-specified name for the WorkloadIdentityPool. The value
       must be less than or equal to 32 characters.
     name: Output only. The resource name of the pool.
-    state: Output only. The state of the WorkloadIdentityPool.  Note: Users
+    state: Output only. The state of the WorkloadIdentityPool. Note: Users
       should code against state enums with the expectation that new values may
       be added in the future.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the WorkloadIdentityPool.  Note: Users
-    should code against state enums with the expectation that new values may
-    be added in the future.
+    r"""Output only. The state of the WorkloadIdentityPool. Note: Users should
+    code against state enums with the expectation that new values may be added
+    in the future.
 
     Values:
       STATE_UNSPECIFIED: State unspecified.
@@ -174,8 +174,8 @@ class GoogleIamV1betaWorkloadIdentityPool(_messages.Message):
         WorkloadIdentityPools are permanently deleted after approximately 30
         days unless restored via UndeleteWorkloadIdentityPool. IDs of soft-
         deleted WorkloadIdentityPools may not be reused until after the
-        resource has been permanently deleted.  Previously issued Access
-        tokens for a workload identity pool will be rejected while the pool is
+        resource has been permanently deleted. Previously issued Access tokens
+        for a workload identity pool will be rejected while the pool is
         deleted but will start working again if the pool is undeleted.
         Issuance of new tokens will fail while the account is deleted.
     """
@@ -199,124 +199,113 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The state of the
-      WorkloadIdentityPoolProvider.  Note: Users should code against state
+      WorkloadIdentityPoolProvider. Note: Users should code against state
       enums with the expectation that new values may be added in the future.
 
   Messages:
     AttributeMappingValue: Maps claims from the authentication credentials
       issued by the Provider into Google Cloud Platform IAM attributes, e.g.
-      subject, segment.  Each key must be a string specifying the Google Cloud
-      Platform IAM attribute to be produced.  The following predefined keys
-      are currently supported:  * google.subject - indicates the principal
-      that is being authenticated to                    IAM, and will be
-      logged in all API accesses for which                    Cloud Audit
-      Logging is configured. The mapped subject                    may be at
-      most 100 characters.  * google.groups - indicates asserted groups that
-      the workload should be                   considered to belong to. You
-      can create IAM bindings                   using the group attribute and
-      access to a resource will                   be granted if any of the
-      groups asserted here match a                   group in the respective
-      binding.  Custom attributes can also be mapped by specifying
+      subject, segment. Each key must be a string specifying the Google Cloud
+      Platform IAM attribute to be produced. The following predefined keys are
+      currently supported: * google.subject - indicates the principal that is
+      being authenticated to IAM, and will be logged in all API accesses for
+      which Cloud Audit Logging is configured. The mapped subject may be at
+      most 100 characters. * google.groups - indicates asserted groups that
+      the workload should be considered to belong to. You can create IAM
+      bindings using the group attribute and access to a resource will be
+      granted if any of the groups asserted here match a group in the
+      respective binding. Custom attributes can also be mapped by specifying
       'attribute.{custom_attribute}', replacing {custom_attribute} with the
       name of the custom attribute to be mapped. A maximum of 50 custom
       attribute mappings can be defined. The maximum length of a mapped
       attribute key is 100 characters and may only contain the characters
-      [a-z0-9-].  These attributes can then be referenced in IAM policies to
+      [a-z0-9-]. These attributes can then be referenced in IAM policies to
       define fine-grained access for the workload to GCP resources by
-      specifying:  * google.subject               - 'principal://iam.googleapi
-      s.com/projects/{project}/locations/{location}/workloadIdentityPools/{poo
-      l}/subject/{value}'  * google.groups                - 'principalSet://ia
-      m.googleapis.com/projects/{project}/locations/{location}/workloadIdentit
-      yPools/{pool}/group/{value}'  * attribute.{custom_attribute} - 'principa
-      lSet://iam.googleapis.com/projects/{project}/locations/{location}/worklo
-      adIdentityPools/{pool}/attribute.{custom_attribute}/{value}'  Each value
-      must be a Common Expression Language
-      (https://opensource.google/projects/cel) function that maps an Identity
-      Provider token to the normalized attribute specified by the
-      corresponding map key.  The following keywords may be referenced in the
-      expressions:  * assertion - JSON representing the authentication
-      credential issued by the               Provider.  The maximum length of
-      an attribute mapping expression is 2048 characters. When evaluated, the
-      total size of all mapped attributes must not exceed 1kb.  For AWS-type
-      providers the following rules apply:  - If no attribute mapping is
-      defined for an AWS-type provider, the following default mapping will be
-      applied during the exchange:  {   "google.subject":"assertion.arn",
-      "attribute.aws_role":       "assertion.arn.contains('assumed-role')"
-      " ? assertion.arn.extract('{account_arn}assumed-role/')"       "   +
-      'assumed-role/'"       "   + assertion.arn.extract('assumed-
-      role/{role_name}/')"       " : assertion.arn", }  -  If any custom
-      attribute mappings are defined they must include a mapping to the
-      `google.subject` attribute.   For OIDC-type providers the following
-      rules apply:  -  Custom attribute mappings must be defined and must
-      include a mapping to the `google.subject` attribute.   Example: Map the
-      'sub' claim of the incoming credential to the          'subject' Google
-      Cloud Platform IAM attribute.               {"google.subject":
-      "assertion.sub"}
+      specifying: * google.subject - 'principal://iam.googleapis.com/projects/
+      {project}/locations/{location}/workloadIdentityPools/{pool}/subject/{val
+      ue}' * google.groups - 'principalSet://iam.googleapis.com/projects/{proj
+      ect}/locations/{location}/workloadIdentityPools/{pool}/group/{value}' *
+      attribute.{custom_attribute} - 'principalSet://iam.googleapis.com/projec
+      ts/{project}/locations/{location}/workloadIdentityPools/{pool}/attribute
+      .{custom_attribute}/{value}' Each value must be a Common Expression
+      Language (https://opensource.google/projects/cel) function that maps an
+      Identity Provider token to the normalized attribute specified by the
+      corresponding map key. The following keywords may be referenced in the
+      expressions: * assertion - JSON representing the authentication
+      credential issued by the Provider. The maximum length of an attribute
+      mapping expression is 2048 characters. When evaluated, the total size of
+      all mapped attributes must not exceed 8kb. For AWS-type providers the
+      following rules apply: - If no attribute mapping is defined for an AWS-
+      type provider, the following default mapping will be applied during the
+      exchange: { "google.subject":"assertion.arn", "attribute.aws_role":
+      "assertion.arn.contains('assumed-role')" " ?
+      assertion.arn.extract('{account_arn}assumed-role/')" " + 'assumed-
+      role/'" " + assertion.arn.extract('assumed-role/{role_name}/')" " :
+      assertion.arn", } - If any custom attribute mappings are defined they
+      must include a mapping to the `google.subject` attribute. For OIDC-type
+      providers the following rules apply: - Custom attribute mappings must be
+      defined and must include a mapping to the `google.subject` attribute.
+      Example: Map the 'sub' claim of the incoming credential to the 'subject'
+      Google Cloud Platform IAM attribute. {"google.subject": "assertion.sub"}
 
   Fields:
     attributeCondition: A Common Expression Language
       (https://opensource.google/projects/cel) expression in plain text to
       restrict which otherwise valid authentication credentials issued by the
-      provider should not be accepted.  The expression must output a boolean
-      representing whether to allow the federation.  The following keywords
-      may be referenced in the expressions:    assertion - JSON representing
-      the authentication credential issued by the               Provider.
-      google    - the Google attributes mapped from the assertion in the
-      attrubute_mappings.   attribute - the custom attributes mapped from the
-      assertion in the               attribute_mappings.  The maximum length
-      of the attribute condition expression is 4096 characters. If
-      unspecified, all valid authentication credential will be accepted.
-      Example: Only allow credentials with a mapped google.groups value of
-      'admins'.               "'admins' in google.groups"
+      provider should not be accepted. The expression must output a boolean
+      representing whether to allow the federation. The following keywords may
+      be referenced in the expressions: assertion - JSON representing the
+      authentication credential issued by the Provider. google - the Google
+      attributes mapped from the assertion in the attrubute_mappings.
+      attribute - the custom attributes mapped from the assertion in the
+      attribute_mappings. The maximum length of the attribute condition
+      expression is 4096 characters. If unspecified, all valid authentication
+      credential will be accepted. Example: Only allow credentials with a
+      mapped google.groups value of 'admins'. "'admins' in google.groups"
     attributeMapping: Maps claims from the authentication credentials issued
       by the Provider into Google Cloud Platform IAM attributes, e.g. subject,
-      segment.  Each key must be a string specifying the Google Cloud Platform
-      IAM attribute to be produced.  The following predefined keys are
-      currently supported:  * google.subject - indicates the principal that is
-      being authenticated to                    IAM, and will be logged in all
-      API accesses for which                    Cloud Audit Logging is
-      configured. The mapped subject                    may be at most 100
-      characters.  * google.groups - indicates asserted groups that the
-      workload should be                   considered to belong to. You can
-      create IAM bindings                   using the group attribute and
-      access to a resource will                   be granted if any of the
-      groups asserted here match a                   group in the respective
-      binding.  Custom attributes can also be mapped by specifying
+      segment. Each key must be a string specifying the Google Cloud Platform
+      IAM attribute to be produced. The following predefined keys are
+      currently supported: * google.subject - indicates the principal that is
+      being authenticated to IAM, and will be logged in all API accesses for
+      which Cloud Audit Logging is configured. The mapped subject may be at
+      most 100 characters. * google.groups - indicates asserted groups that
+      the workload should be considered to belong to. You can create IAM
+      bindings using the group attribute and access to a resource will be
+      granted if any of the groups asserted here match a group in the
+      respective binding. Custom attributes can also be mapped by specifying
       'attribute.{custom_attribute}', replacing {custom_attribute} with the
       name of the custom attribute to be mapped. A maximum of 50 custom
       attribute mappings can be defined. The maximum length of a mapped
       attribute key is 100 characters and may only contain the characters
-      [a-z0-9-].  These attributes can then be referenced in IAM policies to
+      [a-z0-9-]. These attributes can then be referenced in IAM policies to
       define fine-grained access for the workload to GCP resources by
-      specifying:  * google.subject               - 'principal://iam.googleapi
-      s.com/projects/{project}/locations/{location}/workloadIdentityPools/{poo
-      l}/subject/{value}'  * google.groups                - 'principalSet://ia
-      m.googleapis.com/projects/{project}/locations/{location}/workloadIdentit
-      yPools/{pool}/group/{value}'  * attribute.{custom_attribute} - 'principa
-      lSet://iam.googleapis.com/projects/{project}/locations/{location}/worklo
-      adIdentityPools/{pool}/attribute.{custom_attribute}/{value}'  Each value
-      must be a Common Expression Language
-      (https://opensource.google/projects/cel) function that maps an Identity
-      Provider token to the normalized attribute specified by the
-      corresponding map key.  The following keywords may be referenced in the
-      expressions:  * assertion - JSON representing the authentication
-      credential issued by the               Provider.  The maximum length of
-      an attribute mapping expression is 2048 characters. When evaluated, the
-      total size of all mapped attributes must not exceed 1kb.  For AWS-type
-      providers the following rules apply:  - If no attribute mapping is
-      defined for an AWS-type provider, the following default mapping will be
-      applied during the exchange:  {   "google.subject":"assertion.arn",
-      "attribute.aws_role":       "assertion.arn.contains('assumed-role')"
-      " ? assertion.arn.extract('{account_arn}assumed-role/')"       "   +
-      'assumed-role/'"       "   + assertion.arn.extract('assumed-
-      role/{role_name}/')"       " : assertion.arn", }  -  If any custom
-      attribute mappings are defined they must include a mapping to the
-      `google.subject` attribute.   For OIDC-type providers the following
-      rules apply:  -  Custom attribute mappings must be defined and must
-      include a mapping to the `google.subject` attribute.   Example: Map the
-      'sub' claim of the incoming credential to the          'subject' Google
-      Cloud Platform IAM attribute.               {"google.subject":
-      "assertion.sub"}
+      specifying: * google.subject - 'principal://iam.googleapis.com/projects/
+      {project}/locations/{location}/workloadIdentityPools/{pool}/subject/{val
+      ue}' * google.groups - 'principalSet://iam.googleapis.com/projects/{proj
+      ect}/locations/{location}/workloadIdentityPools/{pool}/group/{value}' *
+      attribute.{custom_attribute} - 'principalSet://iam.googleapis.com/projec
+      ts/{project}/locations/{location}/workloadIdentityPools/{pool}/attribute
+      .{custom_attribute}/{value}' Each value must be a Common Expression
+      Language (https://opensource.google/projects/cel) function that maps an
+      Identity Provider token to the normalized attribute specified by the
+      corresponding map key. The following keywords may be referenced in the
+      expressions: * assertion - JSON representing the authentication
+      credential issued by the Provider. The maximum length of an attribute
+      mapping expression is 2048 characters. When evaluated, the total size of
+      all mapped attributes must not exceed 8kb. For AWS-type providers the
+      following rules apply: - If no attribute mapping is defined for an AWS-
+      type provider, the following default mapping will be applied during the
+      exchange: { "google.subject":"assertion.arn", "attribute.aws_role":
+      "assertion.arn.contains('assumed-role')" " ?
+      assertion.arn.extract('{account_arn}assumed-role/')" " + 'assumed-
+      role/'" " + assertion.arn.extract('assumed-role/{role_name}/')" " :
+      assertion.arn", } - If any custom attribute mappings are defined they
+      must include a mapping to the `google.subject` attribute. For OIDC-type
+      providers the following rules apply: - Custom attribute mappings must be
+      defined and must include a mapping to the `google.subject` attribute.
+      Example: Map the 'sub' claim of the incoming credential to the 'subject'
+      Google Cloud Platform IAM attribute. {"google.subject": "assertion.sub"}
     aws: An Amazon Web Services identity provider.
     description: A user-specified description for the
       WorkloadIdentityPoolProvider. The value must be less than or equal to
@@ -329,13 +318,13 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
       The value must be less than or equal to 32 characters.
     name: Output only. The resource name of the WorkloadIdentityPoolProvider.
     oidc: An OpenId Connect 1.0 identity provider.
-    state: Output only. The state of the WorkloadIdentityPoolProvider.  Note:
+    state: Output only. The state of the WorkloadIdentityPoolProvider. Note:
       Users should code against state enums with the expectation that new
       values may be added in the future.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the WorkloadIdentityPoolProvider.  Note:
+    r"""Output only. The state of the WorkloadIdentityPoolProvider. Note:
     Users should code against state enums with the expectation that new values
     may be added in the future.
 
@@ -357,51 +346,48 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributeMappingValue(_messages.Message):
     r"""Maps claims from the authentication credentials issued by the Provider
-    into Google Cloud Platform IAM attributes, e.g. subject, segment.  Each
-    key must be a string specifying the Google Cloud Platform IAM attribute to
-    be produced.  The following predefined keys are currently supported:  *
+    into Google Cloud Platform IAM attributes, e.g. subject, segment. Each key
+    must be a string specifying the Google Cloud Platform IAM attribute to be
+    produced. The following predefined keys are currently supported: *
     google.subject - indicates the principal that is being authenticated to
-    IAM, and will be logged in all API accesses for which
-    Cloud Audit Logging is configured. The mapped subject
-    may be at most 100 characters.  * google.groups - indicates asserted
-    groups that the workload should be                   considered to belong
-    to. You can create IAM bindings                   using the group
-    attribute and access to a resource will                   be granted if
-    any of the groups asserted here match a                   group in the
-    respective binding.  Custom attributes can also be mapped by specifying
-    'attribute.{custom_attribute}', replacing {custom_attribute} with the name
-    of the custom attribute to be mapped. A maximum of 50 custom attribute
-    mappings can be defined. The maximum length of a mapped attribute key is
-    100 characters and may only contain the characters [a-z0-9-].  These
-    attributes can then be referenced in IAM policies to define fine-grained
-    access for the workload to GCP resources by specifying:  * google.subject
-    - 'principal://iam.googleapis.com/projects/{project}/locations/{location}/
-    workloadIdentityPools/{pool}/subject/{value}'  * google.groups
-    - 'principalSet://iam.googleapis.com/projects/{project}/locations/{locatio
-    n}/workloadIdentityPools/{pool}/group/{value}'  *
+    IAM, and will be logged in all API accesses for which Cloud Audit Logging
+    is configured. The mapped subject may be at most 100 characters. *
+    google.groups - indicates asserted groups that the workload should be
+    considered to belong to. You can create IAM bindings using the group
+    attribute and access to a resource will be granted if any of the groups
+    asserted here match a group in the respective binding. Custom attributes
+    can also be mapped by specifying 'attribute.{custom_attribute}', replacing
+    {custom_attribute} with the name of the custom attribute to be mapped. A
+    maximum of 50 custom attribute mappings can be defined. The maximum length
+    of a mapped attribute key is 100 characters and may only contain the
+    characters [a-z0-9-]. These attributes can then be referenced in IAM
+    policies to define fine-grained access for the workload to GCP resources
+    by specifying: * google.subject - 'principal://iam.googleapis.com/projects
+    /{project}/locations/{location}/workloadIdentityPools/{pool}/subject/{valu
+    e}' * google.groups - 'principalSet://iam.googleapis.com/projects/{project
+    }/locations/{location}/workloadIdentityPools/{pool}/group/{value}' *
     attribute.{custom_attribute} - 'principalSet://iam.googleapis.com/projects
     /{project}/locations/{location}/workloadIdentityPools/{pool}/attribute.{cu
-    stom_attribute}/{value}'  Each value must be a Common Expression Language
+    stom_attribute}/{value}' Each value must be a Common Expression Language
     (https://opensource.google/projects/cel) function that maps an Identity
     Provider token to the normalized attribute specified by the corresponding
-    map key.  The following keywords may be referenced in the expressions:  *
+    map key. The following keywords may be referenced in the expressions: *
     assertion - JSON representing the authentication credential issued by the
-    Provider.  The maximum length of an attribute mapping expression is 2048
+    Provider. The maximum length of an attribute mapping expression is 2048
     characters. When evaluated, the total size of all mapped attributes must
-    not exceed 1kb.  For AWS-type providers the following rules apply:  - If
-    no attribute mapping is defined for an AWS-type provider, the following
-    default mapping will be applied during the exchange:  {
-    "google.subject":"assertion.arn",   "attribute.aws_role":
-    "assertion.arn.contains('assumed-role')"       " ?
-    assertion.arn.extract('{account_arn}assumed-role/')"       "   + 'assumed-
-    role/'"       "   + assertion.arn.extract('assumed-role/{role_name}/')"
-    " : assertion.arn", }  -  If any custom attribute mappings are defined
-    they must include a mapping to the `google.subject` attribute.   For OIDC-
-    type providers the following rules apply:  -  Custom attribute mappings
-    must be defined and must include a mapping to the `google.subject`
-    attribute.   Example: Map the 'sub' claim of the incoming credential to
-    the          'subject' Google Cloud Platform IAM attribute.
-    {"google.subject": "assertion.sub"}
+    not exceed 8kb. For AWS-type providers the following rules apply: - If no
+    attribute mapping is defined for an AWS-type provider, the following
+    default mapping will be applied during the exchange: {
+    "google.subject":"assertion.arn", "attribute.aws_role":
+    "assertion.arn.contains('assumed-role')" " ?
+    assertion.arn.extract('{account_arn}assumed-role/')" " + 'assumed-role/'"
+    " + assertion.arn.extract('assumed-role/{role_name}/')" " :
+    assertion.arn", } - If any custom attribute mappings are defined they must
+    include a mapping to the `google.subject` attribute. For OIDC-type
+    providers the following rules apply: - Custom attribute mappings must be
+    defined and must include a mapping to the `google.subject` attribute.
+    Example: Map the 'sub' claim of the incoming credential to the 'subject'
+    Google Cloud Platform IAM attribute. {"google.subject": "assertion.sub"}
 
     Messages:
       AdditionalProperty: An additional property for a AttributeMappingValue
@@ -461,15 +447,12 @@ class GoogleIamV1betaWorkloadIdentityPoolProviderOidc(_messages.Message):
     allowedAudiences: Acceptable values for the "aud" field (audience) in the
       OIDC token. Token exchange requests be rejected if the token audience
       does not match one of the configured values. Each audience may be at
-      most 256 characters. A maximum of 10 audiences may be configured.  If
+      most 256 characters. A maximum of 10 audiences may be configured. If
       this list is empty, the OIDC token audience must be equal to the full
       canonical resource name of the WorkloadIdentityPoolProvider, with or
-      without an HTTPS prefix:      '//iam.googleapis.com/projects/<project-
-      number>/locations/<location>/workloadIdentityPools/<pool-
-      id>/providers/<provider-id>'
-      'https://iam.googleapis.com/projects/<project-
-      number>/locations/<location>/workloadIdentityPools/<pool-
-      id>/providers/<provider-id>'
+      without an HTTPS prefix: '//iam.googleapis.com/projects//locations//work
+      loadIdentityPools//providers/' 'https://iam.googleapis.com/projects//loc
+      ations//workloadIdentityPools//providers/'
     issuerUri: Required. The OIDC issuer URL.
   """
 
@@ -477,22 +460,39 @@ class GoogleIamV1betaWorkloadIdentityPoolProviderOidc(_messages.Message):
   issuerUri = _messages.StringField(2)
 
 
+class GoogleLongrunningCancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
+
+
+class GoogleLongrunningListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+
+
 class GoogleLongrunningOperation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -501,29 +501,29 @@ class GoogleLongrunningOperation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -549,12 +549,12 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -585,11 +585,21 @@ class GoogleLongrunningOperation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class GoogleProtobufEmpty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
+  """
+
+
+
 class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -598,7 +608,7 @@ class GoogleRpcStatus(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -639,20 +649,20 @@ class GoogleRpcStatus(_messages.Message):
 class GoogleTypeExpr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -679,11 +689,12 @@ class IamProjectsLocationsWorkloadIdentityPoolsCreateRequest(_messages.Message):
     googleIamV1betaWorkloadIdentityPool: A GoogleIamV1betaWorkloadIdentityPool
       resource to be passed as the request body.
     parent: Required. The parent resource where this pool will be created.
-      Supported locations are:   "global"
+      Supported locations are: "global"
     workloadIdentityPoolId: Required. The ID to use for the
       WorkloadIdentityPool, which will become the final component of the
       resource name. This value should be 4-32 characters and may contain the
-      characters [a-z0-9-].
+      characters [a-z0-9-]. IDs with the prefix 'gcp-' are reserved for use by
+      Google and may not be specified.
   """
 
   googleIamV1betaWorkloadIdentityPool = _messages.MessageField('GoogleIamV1betaWorkloadIdentityPool', 1)
@@ -732,6 +743,58 @@ class IamProjectsLocationsWorkloadIdentityPoolsListRequest(_messages.Message):
   showDeleted = _messages.BooleanField(4)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsOperationsCancelRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsOperationsCancelRequest
+  object.
+
+  Fields:
+    googleLongrunningCancelOperationRequest: A
+      GoogleLongrunningCancelOperationRequest resource to be passed as the
+      request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsOperationsDeleteRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsOperationsGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsOperationsListRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsPatchRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsPatchRequest object.
 
@@ -760,7 +823,8 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersCreateRequest(_messages.
     workloadIdentityPoolProviderId: Required. The ID to use for the
       WorkloadIdentityPoolProvider, which will become the final component of
       the resource name. This value should be 4-32 characters and may contain
-      the characters [a-z0-9-].
+      the characters [a-z0-9-]. IDs with the prefix 'gcp-' are reserved for
+      use by Google and may not be specified.
   """
 
   googleIamV1betaWorkloadIdentityPoolProvider = _messages.MessageField('GoogleIamV1betaWorkloadIdentityPoolProvider', 1)
@@ -809,6 +873,63 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersListRequest(_messages.Me
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   showDeleted = _messages.BooleanField(4)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsCancelRequest(_messages.Message):
+  r"""A
+  IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsCancelRequest
+  object.
+
+  Fields:
+    googleLongrunningCancelOperationRequest: A
+      GoogleLongrunningCancelOperationRequest resource to be passed as the
+      request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsDeleteRequest(_messages.Message):
+  r"""A
+  IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsGetRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsListRequest(_messages.Message):
+  r"""A
+  IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsProvidersPatchRequest(_messages.Message):

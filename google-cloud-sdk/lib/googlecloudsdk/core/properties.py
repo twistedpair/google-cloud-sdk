@@ -1856,7 +1856,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.runtimeconfig = self._Add('runtimeconfig')
     self.redis = self._Add('redis')
     self.run = self._Add('run')
-    self.scc = self._Add('scc')
+    self.scc = self._Add('securitycenter')
     self.servicemanagement = self._Add('servicemanagement')
     self.serviceregistry = self._Add('serviceregistry')
     self.serviceusage = self._Add('serviceusage')
@@ -1912,6 +1912,7 @@ class _SectionApiClientOverrides(_Section):
     self.speech = self._Add('speech')
     self.sql = self._Add('sql')
     self.run = self._Add('run')
+    self.scc = self._Add('securitycenter')
 
 
 class _SectionEmulator(_Section):

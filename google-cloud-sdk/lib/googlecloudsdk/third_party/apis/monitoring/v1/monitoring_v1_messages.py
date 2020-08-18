@@ -567,7 +567,7 @@ class DroppedLabels(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo {   rpc
+  or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
   representation for Empty is empty JSON object {}.
   """
@@ -745,7 +745,7 @@ class MonitoringProjectsDashboardsGetRequest(_messages.Message):
   Fields:
     name: Required. The resource name of the Dashboard. The format is one of:
       dashboards/[DASHBOARD_ID] (for system dashboards)
-      projects/[PROJECT_ID_OR_NUMBER]/dashboards/[DASHBOARD_ID]  (for custom
+      projects/[PROJECT_ID_OR_NUMBER]/dashboards/[DASHBOARD_ID] (for custom
       dashboards).
   """
 
@@ -960,10 +960,10 @@ class Scorecard(_messages.Message):
       threshold that triggers above/below, then the scorecard is in a warning
       state - unless x also puts it in a danger state. (Danger trumps
       warning.)As an example, consider a scorecard with the following four
-      thresholds: {  value: 90,  category: 'DANGER',  trigger: 'ABOVE', }, {
-      value: 70,  category: 'WARNING',  trigger: 'ABOVE', }, {  value: 10,
-      category: 'DANGER',  trigger: 'BELOW', }, {  value: 20,  category:
-      'WARNING',  trigger: 'BELOW', }Then: values less than or equal to 10
+      thresholds: { value: 90, category: 'DANGER', trigger: 'ABOVE', }, {
+      value: 70, category: 'WARNING', trigger: 'ABOVE', }, { value: 10,
+      category: 'DANGER', trigger: 'BELOW', }, { value: 20, category:
+      'WARNING', trigger: 'BELOW', }Then: values less than or equal to 10
       would put the scorecard in a DANGER state, values greater than 10 but
       less than or equal to 20 a WARNING state, values strictly between 20 and
       70 an OK state, values greater than or equal to 70 but less than 90 a

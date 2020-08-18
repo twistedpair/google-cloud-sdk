@@ -21,7 +21,7 @@ class ClouderrorreportingProjectsDeleteEventsRequest(_messages.Message):
     projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/{projectID}`, where `{projectID}` is the
       [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840).  Example:
+      ID](https://support.google.com/cloud/answer/6158840). Example:
       `projects/my-project-123`.
   """
 
@@ -42,7 +42,7 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
     projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/{projectID}`, where `{projectID}` is the
       [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840).  Example:
+      ID](https://support.google.com/cloud/answer/6158840). Example:
       `projects/my-project-123`.
     serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
@@ -60,12 +60,17 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
     r"""Restricts the query to the specified time range.
 
     Values:
-      PERIOD_UNSPECIFIED: <no description>
-      PERIOD_1_HOUR: <no description>
-      PERIOD_6_HOURS: <no description>
-      PERIOD_1_DAY: <no description>
-      PERIOD_1_WEEK: <no description>
-      PERIOD_30_DAYS: <no description>
+      PERIOD_UNSPECIFIED: Do not use.
+      PERIOD_1_HOUR: Retrieve data for the last hour. Recommended minimum
+        timed count duration: 1 min.
+      PERIOD_6_HOURS: Retrieve data for the last 6 hours. Recommended minimum
+        timed count duration: 10 min.
+      PERIOD_1_DAY: Retrieve data for the last day. Recommended minimum timed
+        count duration: 1 hour.
+      PERIOD_1_WEEK: Retrieve data for the last week. Recommended minimum
+        timed count duration: 6 hours.
+      PERIOD_30_DAYS: Retrieve data for the last 30 days. Recommended minimum
+        timed count duration: 1 day.
     """
     PERIOD_UNSPECIFIED = 0
     PERIOD_1_HOUR = 1
@@ -91,7 +96,7 @@ class ClouderrorreportingProjectsEventsReportRequest(_messages.Message):
     projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/{projectId}`, where `{projectId}` is the
       [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840).  Example: //
+      ID](https://support.google.com/cloud/answer/6158840). Example: //
       `projects/my-project-123`.
     reportedErrorEvent: A ReportedErrorEvent resource to be passed as the
       request body.
@@ -117,7 +122,7 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       Default is `ALIGNMENT_EQUAL_AT_END`.
     alignmentTime: Optional. Time where the timed counts shall be aligned if
       rounded alignment is chosen. Default is 00:00 UTC.
-    groupId: Optional. List all <code>ErrorGroupStats</code> with these IDs.
+    groupId: Optional. List all ErrorGroupStats with these IDs.
     order: Optional. The sort order in which the results are returned. Default
       is `COUNT_DESC`.
     pageSize: Optional. The maximum number of results to return per response.
@@ -128,7 +133,7 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
     projectName: Required. The resource name of the Google Cloud Platform
       project. Written as `projects/{projectID}`, where `{projectID}` is the
       [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840).  Example:
+      ID](https://support.google.com/cloud/answer/6158840). Example:
       `projects/my-project-123`.
     serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
@@ -149,9 +154,18 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
     `ALIGNMENT_EQUAL_AT_END`.
 
     Values:
-      ERROR_COUNT_ALIGNMENT_UNSPECIFIED: <no description>
-      ALIGNMENT_EQUAL_ROUNDED: <no description>
-      ALIGNMENT_EQUAL_AT_END: <no description>
+      ERROR_COUNT_ALIGNMENT_UNSPECIFIED: No alignment specified.
+      ALIGNMENT_EQUAL_ROUNDED: The time periods shall be consecutive, have
+        width equal to the requested duration, and be aligned at the
+        `alignment_time` provided in the request. The `alignment_time` does
+        not have to be inside the query period but even if it is outside, only
+        time periods are returned which overlap with the query period. A
+        rounded alignment will typically result in a different size of the
+        first or the last time period.
+      ALIGNMENT_EQUAL_AT_END: The time periods shall be consecutive, have
+        width equal to the requested duration, and be aligned at the end of
+        the requested time period. This can result in a different size of the
+        first time period.
     """
     ERROR_COUNT_ALIGNMENT_UNSPECIFIED = 0
     ALIGNMENT_EQUAL_ROUNDED = 1
@@ -162,11 +176,14 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
     `COUNT_DESC`.
 
     Values:
-      GROUP_ORDER_UNSPECIFIED: <no description>
-      COUNT_DESC: <no description>
-      LAST_SEEN_DESC: <no description>
-      CREATED_DESC: <no description>
-      AFFECTED_USERS_DESC: <no description>
+      GROUP_ORDER_UNSPECIFIED: No group order specified.
+      COUNT_DESC: Total count of errors in the given time window in descending
+        order.
+      LAST_SEEN_DESC: Timestamp when the group was last seen in the given time
+        window in descending order.
+      CREATED_DESC: Timestamp when the group was created in descending order.
+      AFFECTED_USERS_DESC: Number of affected users in the given time window
+        in descending order.
     """
     GROUP_ORDER_UNSPECIFIED = 0
     COUNT_DESC = 1
@@ -178,12 +195,17 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
     r"""Restricts the query to the specified time range.
 
     Values:
-      PERIOD_UNSPECIFIED: <no description>
-      PERIOD_1_HOUR: <no description>
-      PERIOD_6_HOURS: <no description>
-      PERIOD_1_DAY: <no description>
-      PERIOD_1_WEEK: <no description>
-      PERIOD_30_DAYS: <no description>
+      PERIOD_UNSPECIFIED: Do not use.
+      PERIOD_1_HOUR: Retrieve data for the last hour. Recommended minimum
+        timed count duration: 1 min.
+      PERIOD_6_HOURS: Retrieve data for the last 6 hours. Recommended minimum
+        timed count duration: 10 min.
+      PERIOD_1_DAY: Retrieve data for the last day. Recommended minimum timed
+        count duration: 1 hour.
+      PERIOD_1_WEEK: Retrieve data for the last week. Recommended minimum
+        timed count duration: 6 hours.
+      PERIOD_30_DAYS: Retrieve data for the last 30 days. Recommended minimum
+        timed count duration: 1 day.
     """
     PERIOD_UNSPECIFIED = 0
     PERIOD_1_HOUR = 1
@@ -214,7 +236,7 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
       `projects/{projectID}/groups/{group_name}`. Call
       [`groupStats.list`](https://cloud.google.com/error-
       reporting/reference/rest/v1beta1/projects.groupStats/list) to return a
-      list of groups belonging to this project.  Example: `projects/my-
+      list of groups belonging to this project. Example: `projects/my-
       project-123/groups/my-group`
   """
 
@@ -275,28 +297,28 @@ class ErrorGroup(_messages.Message):
   r"""Description of a group of similar error events.
 
   Enums:
-    ResolutionStatusValueValuesEnum: Error group's resolution status.  An
+    ResolutionStatusValueValuesEnum: Error group's resolution status. An
       unspecified resolution status will be interpreted as OPEN
 
   Fields:
     groupId: Group IDs are unique for a given project. If the same kind of
       error occurs in different service contexts, it will receive the same
       group ID.
-    name: The group resource name. Example: <code>projects/my-
-      project-123/groups/CNSgkpnppqKCUw</code>
-    resolutionStatus: Error group's resolution status.  An unspecified
+    name: The group resource name. Example: projects/my-
+      project-123/groups/CNSgkpnppqKCUw
+    resolutionStatus: Error group's resolution status. An unspecified
       resolution status will be interpreted as OPEN
     trackingIssues: Associated tracking issues.
   """
 
   class ResolutionStatusValueValuesEnum(_messages.Enum):
-    r"""Error group's resolution status.  An unspecified resolution status
-    will be interpreted as OPEN
+    r"""Error group's resolution status. An unspecified resolution status will
+    be interpreted as OPEN
 
     Values:
       RESOLUTION_STATUS_UNSPECIFIED: Status is unknown.
       OPEN: The error group is not being addressed. This is the default for
-        new groups. It is also used for errors re-occuring after marked
+        new groups. It is also used for errors re-occurring after marked
         RESOLVED.
       ACKNOWLEDGED: Error Group manually acknowledged, it can have an issue
         link attached.
@@ -352,8 +374,8 @@ class ErrorGroupStats(_messages.Message):
       representative provides insight into the characteristics of the group as
       a whole.
     timedCounts: Approximate number of occurrences over time. Timed counts
-      returned by ListGroups are guaranteed to be:  - Inside the requested
-      time interval - Non-overlapping, and - Ordered by ascending time.
+      returned by ListGroups are guaranteed to be: - Inside the requested time
+      interval - Non-overlapping, and - Ordered by ascending time.
   """
 
   affectedServices = _messages.MessageField('ServiceContext', 1, repeated=True)
@@ -448,9 +470,9 @@ class ReportedErrorEvent(_messages.Message):
       exception type name and an error message) and an exception stack trace
       in one of the supported programming languages and formats. Supported
       languages are Java, Python, JavaScript, Ruby, C#, PHP, and Go. Supported
-      stack trace formats are:  * **Java**: Must be the return value of [`Thro
-      wable.printStackTrace()`](https://docs.oracle.com/javase/7/docs/api/java
-      /lang/Throwable.html#printStackTrace%28%29). * **Python**: Must be the
+      stack trace formats are: * **Java**: Must be the return value of [`Throw
+      able.printStackTrace()`](https://docs.oracle.com/javase/7/docs/api/java/
+      lang/Throwable.html#printStackTrace%28%29). * **Python**: Must be the
       return value of [`traceback.format_exc()`](https://docs.python.org/2/lib
       rary/traceback.html#traceback.format_exc). * **JavaScript**: Must be the
       value of [`error.stack`](https://github.com/v8/v8/wiki/Stack-Trace-API)
@@ -480,13 +502,13 @@ class ServiceContext(_messages.Message):
 
   Fields:
     resourceType: Type of the MonitoredResource. List of possible values:
-      https://cloud.google.com/monitoring/api/resources  Value is set
+      https://cloud.google.com/monitoring/api/resources Value is set
       automatically for incoming errors and must not be set when reporting
       errors.
     service: An identifier of the service, such as the name of the executable,
       job, or Google App Engine service name. This field is expected to have a
       low number of values that are relatively stable over time, as opposed to
-      `version`, which can be changed whenever new code is deployed.  Contains
+      `version`, which can be changed whenever new code is deployed. Contains
       the service name for error reports extracted from Google App Engine logs
       or `default` if the App Engine default service is used.
     version: Represents the source code version that the developer provided,

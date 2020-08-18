@@ -36,7 +36,7 @@ class GoogleCloudOrgpolicyV2alpha1Constraint(_messages.Message):
   by setting Policies for `Constraints` at different locations in the
   organization's resource hierarchy. Policies are inherited down the resource
   hierarchy from higher levels, but can also be overridden. For details about
-  the inheritance rules please read about Policies.  `Constraints` have a
+  the inheritance rules please read about Policies. `Constraints` have a
   default behavior determined by the `constraint_default` field, which is the
   enforcement behavior that is used in the absence of a `Policy` being defined
   or inherited for the resource in question.
@@ -50,13 +50,13 @@ class GoogleCloudOrgpolicyV2alpha1Constraint(_messages.Message):
     constraintDefault: The evaluation behavior of this constraint in the
       absense of 'Policy'.
     description: Detailed description of what this `Constraint` controls as
-      well as how and where it is enforced.  Mutable.
-    displayName: The human readable name.  Mutable.
+      well as how and where it is enforced. Mutable.
+    displayName: The human readable name. Mutable.
     listConstraint: Defines this constraint as being a ListConstraint.
     name: The resource name of the Constraint. Must be in one of the following
       forms: * `projects/{project_number}/constraints/{constraint_name}` *
       `folders/{folder_id}/constraints/{constraint_name}` *
-      `organizations/{organization_id}/constraints/{constraint_name}`  For
+      `organizations/{organization_id}/constraints/{constraint_name}` For
       example, "/projects/123/constraints/compute.disableSerialPortAccess".
       Immutable.
   """
@@ -85,7 +85,7 @@ class GoogleCloudOrgpolicyV2alpha1Constraint(_messages.Message):
 
 
 class GoogleCloudOrgpolicyV2alpha1ConstraintBooleanConstraint(_messages.Message):
-  r"""A `Constraint` that is either enforced or not.  For example a constraint
+  r"""A `Constraint` that is either enforced or not. For example a constraint
   `constraints/compute.disableSerialPortAccess`. If it is enforced on a VM
   instance, serial port connections will not be opened to that instance.
   """
@@ -154,8 +154,8 @@ class GoogleCloudOrgpolicyV2alpha1Policy(_messages.Message):
       which this Policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
-      `organizations/{organization_id}/policies/{constraint_name}`  For
-      example, "projects/123/policies/compute.disableSerialPortAccess".  Note:
+      `organizations/{organization_id}/policies/{constraint_name}` For
+      example, "projects/123/policies/compute.disableSerialPortAccess". Note:
       `projects/{project_id}/policies/{constraint_name}` is also an acceptable
       name for API requests, but responses will return the name using the
       equivalent project number.
@@ -173,12 +173,12 @@ class GoogleCloudOrgpolicyV2alpha1PolicySpec(_messages.Message):
 
   Fields:
     etag: An opaque tag indicating the current version of the `Policy`, used
-      for concurrency control.  This field is ignored if used in a
-      `CreatePolicy` request.  When the `Policy` is returned from either a
+      for concurrency control. This field is ignored if used in a
+      `CreatePolicy` request. When the `Policy` is returned from either a
       `GetPolicy` or a `ListPolicies` request, this `etag` indicates the
       version of the current `Policy` to use when executing a read-modify-
-      write loop.  When the `Policy` is returned from a `GetEffectivePolicy`
-      request, the `etag` will be unset.  When the `Policy` is used in a
+      write loop. When the `Policy` is returned from a `GetEffectivePolicy`
+      request, the `etag` will be unset. When the `Policy` is used in a
       `UpdatePolicy` method, use the `etag` value that was returned from a
       `GetPolicy` request as part of a read-modify-write loop for concurrency
       control. If `UpdatePolicyRequest`'s `force_unconditional_write` field is
@@ -191,13 +191,12 @@ class GoogleCloudOrgpolicyV2alpha1PolicySpec(_messages.Message):
       at this resource. This field can be set in policies for either list or
       boolean constraints. If set, `rules` must be empty and
       `inherit_from_parent` must be set to false.
-    rules: Up to 10 PolicyRules are allowed.  In Policies for boolean
-      constraints, the following requirements apply:   - There must be one and
-      only one PolicyRule where condition is unset.   - BooleanPolicyRules
-      with conditions must set `enforced` to the opposite     of the
-      PolicyRule without a condition.   - During policy evaluation,
-      PolicyRules with conditions that are     true for a target resource take
-      precedence.
+    rules: Up to 10 PolicyRules are allowed. In Policies for boolean
+      constraints, the following requirements apply: - There must be one and
+      only one PolicyRule where condition is unset. - BooleanPolicyRules with
+      conditions must set `enforced` to the opposite of the PolicyRule without
+      a condition. - During policy evaluation, PolicyRules with conditions
+      that are true for a target resource take precedence.
     updateTime: Output only. The time stamp this was previously updated. This
       represents the last time a call to `CreatePolicy` or `UpdatePolicy` was
       made for that `Policy`.
@@ -248,11 +247,10 @@ class GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues(_messages.Mes
   The `under:` prefix is used to denote resource subtree values. The `is:`
   prefix is used to denote specific values, and is required only if the value
   contains a ":". Values prefixed with "is:" are treated the same as values
-  with no prefix. Ancestry subtrees must be in one of the following formats:
-  - "projects/<project-id>", e.g. "projects/tokyo-rain-123"     -
-  "folders/<folder-id>", e.g. "folders/1234"     -
-  "organizations/<organization-id>", e.g. "organizations/1234" The
-  `supports_under` field of the associated `Constraint`  defines whether
+  with no prefix. Ancestry subtrees must be in one of the following formats: -
+  "projects/", e.g. "projects/tokyo-rain-123" - "folders/", e.g.
+  "folders/1234" - "organizations/", e.g. "organizations/1234" The
+  `supports_under` field of the associated `Constraint` defines whether
   ancestry prefixes can be used.
 
   Fields:
@@ -267,9 +265,9 @@ class GoogleCloudOrgpolicyV2alpha1PolicySpecPolicyRuleStringValues(_messages.Mes
 class GoogleProtobufEmpty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -277,20 +275,20 @@ class GoogleProtobufEmpty(_messages.Message):
 class GoogleTypeExpr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -416,8 +414,8 @@ class OrgpolicyPoliciesPatchRequest(_messages.Message):
       which this Policy configures: *
       `projects/{project_number}/policies/{constraint_name}` *
       `folders/{folder_id}/policies/{constraint_name}` *
-      `organizations/{organization_id}/policies/{constraint_name}`  For
-      example, "projects/123/policies/compute.disableSerialPortAccess".  Note:
+      `organizations/{organization_id}/policies/{constraint_name}` For
+      example, "projects/123/policies/compute.disableSerialPortAccess". Note:
       `projects/{project_id}/policies/{constraint_name}` is also an acceptable
       name for API requests, but responses will return the name using the
       equivalent project number.

@@ -55,15 +55,7 @@ class LifesciencesV2beta(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.
-The server makes a best effort to cancel the operation, but success is not
-guaranteed. Clients may use Operations.GetOperation
-or Operations.ListOperations
-to check whether the cancellation succeeded or the operation completed
-despite cancellation.
-Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
-
-* `lifesciences.operations.cancel`
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation. Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission: * `lifesciences.operations.cancel`.
 
       Args:
         request: (LifesciencesProjectsLocationsOperationsCancelRequest) input message
@@ -90,12 +82,7 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.
-Clients can use this method to poll the operation result at intervals as
-recommended by the API service.
-Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
-
-* `lifesciences.operations.get`
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service. Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission: * `lifesciences.operations.get`.
 
       Args:
         request: (LifesciencesProjectsLocationsOperationsGetRequest) input message
@@ -122,10 +109,7 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request.
-Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
-
-* `lifesciences.operations.list`
+      r"""Lists operations that match the specified filter in the request. Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission: * `lifesciences.operations.list`.
 
       Args:
         request: (LifesciencesProjectsLocationsOperationsListRequest) input message
@@ -162,22 +146,7 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           }
 
     def Run(self, request, global_params=None):
-      r"""Runs a pipeline.  The returned Operation's metadata field will contain a.
-google.cloud.lifesciences.v2beta.Metadata object describing the status
-of the pipeline execution. The
-response field will contain a
-google.cloud.lifesciences.v2beta.RunPipelineResponse object if the
-pipeline completes successfully.
-
-**Note:** Before you can use this method, the *Life Sciences Service Agent*
-must have access to your project. This is done automatically when the
-Cloud Life Sciences API is first enabled, but if you delete this permission
-you must disable and re-enable the API to grant the Life Sciences
-Service Agent the required permissions.
-Authorization requires the following [Google
-IAM](https://cloud.google.com/iam/) permission:
-
-* `lifesciences.workflows.run`
+      r"""Runs a pipeline. The returned Operation's metadata field will contain a google.cloud.lifesciences.v2beta.Metadata object describing the status of the pipeline execution. The response field will contain a google.cloud.lifesciences.v2beta.RunPipelineResponse object if the pipeline completes successfully. **Note:** Before you can use this method, the *Life Sciences Service Agent* must have access to your project. This is done automatically when the Cloud Life Sciences API is first enabled, but if you delete this permission you must disable and re-enable the API to grant the Life Sciences Service Agent the required permissions. Authorization requires the following [Google IAM](https://cloud.google.com/iam/) permission: * `lifesciences.workflows.run`.
 
       Args:
         request: (LifesciencesProjectsLocationsPipelinesRunRequest) input message

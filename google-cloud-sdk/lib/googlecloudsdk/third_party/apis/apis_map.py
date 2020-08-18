@@ -357,14 +357,6 @@ MAP = {
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
-        'v1p5alpha1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.cloudasset.v1p5alpha1',
-                client_classpath='cloudasset_v1p5alpha1_client.CloudassetV1p5alpha1',
-                messages_modulepath='cloudasset_v1p5alpha1_messages',
-                default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
         'v1p5beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.cloudasset.v1p5beta1',

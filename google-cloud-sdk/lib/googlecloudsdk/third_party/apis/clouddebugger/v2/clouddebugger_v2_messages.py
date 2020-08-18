@@ -47,8 +47,8 @@ class AliasContext(_messages.Message):
 
 class Breakpoint(_messages.Message):
   r"""------------------------------------------------------------------------
-  ------ ## Breakpoint (the resource)  Represents the breakpoint
-  specification, status and results.
+  ------ ## Breakpoint (the resource) Represents the breakpoint specification,
+  status and results.
 
   Enums:
     ActionValueValuesEnum: Action that the agent should perform when the code
@@ -97,28 +97,28 @@ class Breakpoint(_messages.Message):
       to log when the breakpoint hits. The message may include parameter
       placeholders `$0`, `$1`, etc. These placeholders are replaced with the
       evaluated value of the appropriate expression. Expressions not
-      referenced in `log_message_format` are not logged.  Example: `Message
+      referenced in `log_message_format` are not logged. Example: `Message
       received, id = $0, count = $1` with `expressions` = `[ message.id,
       message.count ]`.
     stackFrames: The stack at breakpoint time, where stack_frames[0]
       represents the most recently entered function.
     state: The current state of the breakpoint.
-    status: Breakpoint status.  The status includes an error flag and a human
+    status: Breakpoint status. The status includes an error flag and a human
       readable message. This field is usually unset. The message can be either
       informational or an error message. Regardless, clients should always
-      display the text message back to the user.  Error status indicates
-      complete failure of the breakpoint.  Example (non-final state): `Still
-      loading symbols...`  Examples (final state):  *   `Invalid line number`
-      referring to location *   `Field f not found in class C` referring to
+      display the text message back to the user. Error status indicates
+      complete failure of the breakpoint. Example (non-final state): `Still
+      loading symbols...` Examples (final state): * `Invalid line number`
+      referring to location * `Field f not found in class C` referring to
       condition
     userEmail: E-mail address of the user that created this breakpoint
     variableTable: The `variable_table` exists to aid with computation, memory
-      and network traffic optimization.  It enables storing a variable once
-      and reference it from multiple variables, including variables stored in
-      the `variable_table` itself. For example, the same `this` object, which
-      may appear at many levels of the stack, can have all of its data stored
-      once in this table.  The stack frame variables then would hold only a
-      reference to it.  The variable `var_table_index` field is an index into
+      and network traffic optimization. It enables storing a variable once and
+      reference it from multiple variables, including variables stored in the
+      `variable_table` itself. For example, the same `this` object, which may
+      appear at many levels of the stack, can have all of its data stored once
+      in this table. The stack frame variables then would hold only a
+      reference to it. The variable `var_table_index` field is an index into
       this repeated field. The stored objects are nameless and get their name
       from the referencing variable. The effective variable is a merge of the
       referencing variable and the referenced variable.
@@ -236,7 +236,7 @@ class CloudWorkspaceId(_messages.Message):
   stored before they are committed.
 
   Fields:
-    name: The unique name of the workspace within the repo.  This is the name
+    name: The unique name of the workspace within the repo. This is the name
       chosen by the client in the Source API's CreateWorkspace method.
     repoId: The ID of the repo containing the workspace.
   """
@@ -268,7 +268,7 @@ class ClouddebuggerControllerDebuggeesBreakpointsListRequest(_messages.Message):
     debuggeeId: Required. Identifies the debuggee.
     successOnTimeout: If set to `true` (recommended), returns
       `google.rpc.Code.OK` status and sets the `wait_expired` response field
-      to `true` when the server-selected timeout has expired.  If set to
+      to `true` when the server-selected timeout has expired. If set to
       `false` (deprecated), returns `google.rpc.Code.ABORTED` status when the
       server-selected timeout has expired.
     waitToken: A token that, if specified, blocks the method call until the
@@ -360,8 +360,11 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsListRequest(_messages.Message):
     r"""Only breakpoints with the specified action will pass the filter.
 
     Values:
-      CAPTURE: <no description>
-      LOG: <no description>
+      CAPTURE: Capture stack frame and variables and update the breakpoint.
+        The data is only captured once. After that the breakpoint is set in a
+        final state.
+      LOG: Log each breakpoint hit. The breakpoint remains active until
+        deleted or expired.
     """
     CAPTURE = 0
     LOG = 1
@@ -395,9 +398,13 @@ class ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest(_messages.Message):
     r"""The canary option set by the user upon setting breakpoint.
 
     Values:
-      CANARY_OPTION_UNSPECIFIED: <no description>
-      CANARY_OPTION_TRY_ENABLE: <no description>
-      CANARY_OPTION_TRY_DISABLE: <no description>
+      CANARY_OPTION_UNSPECIFIED: Depends on the canary_mode of the debuggee.
+      CANARY_OPTION_TRY_ENABLE: Enable the canary for this breakpoint if the
+        canary_mode of the debuggee is not CANARY_MODE_ALWAYS_ENABLED or
+        CANARY_MODE_ALWAYS_DISABLED.
+      CANARY_OPTION_TRY_DISABLE: Disable the canary for this breakpoint if the
+        canary_mode of the debuggee is not CANARY_MODE_ALWAYS_ENABLED or
+        CANARY_MODE_ALWAYS_DISABLED.
     """
     CANARY_OPTION_UNSPECIFIED = 0
     CANARY_OPTION_TRY_ENABLE = 1
@@ -540,9 +547,9 @@ class Debuggee(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -593,9 +600,9 @@ class FormatMessage(_messages.Message):
   Fields:
     format: Format template for the message. The `format` uses placeholders
       `$0`, `$1`, etc. to reference parameters. `$$` can be used to denote the
-      `$` character.  Examples:  *   `Failed to load '$0' which helps debug $1
-      the first time it     is loaded.  Again, $0 is very important.` *
-      `Please pay $$10 to use $0 instead of $1.`
+      `$` character. Examples: * `Failed to load '$0' which helps debug $1 the
+      first time it is loaded. Again, $0 is very important.` * `Please pay
+      $$10 to use $0 instead of $1.`
     parameters: Optional parameters to be embedded into the message.
   """
 
@@ -947,46 +954,39 @@ class UpdateActiveBreakpointResponse(_messages.Message):
 
 class Variable(_messages.Message):
   r"""Represents a variable or an argument possibly of a compound object type.
-  Note how the following variables are represented:  1) A simple variable:
-  int x = 5      { name: "x", value: "5", type: "int" }  // Captured variable
-  2) A compound object:      struct T {         int m1;         int m2;     };
-  T x = { 3, 7 };      {  // Captured variable         name: "x",
-  type: "T",         members { name: "m1", value: "3", type: "int" },
-  members { name: "m2", value: "7", type: "int" }     }  3) A pointer where
-  the pointee was captured:      T x = { 3, 7 };     T* p = &x;      {   //
-  Captured variable         name: "p",         type: "T*",         value:
-  "0x00500500",         members { name: "m1", value: "3", type: "int" },
-  members { name: "m2", value: "7", type: "int" }     }  4) A pointer where
-  the pointee was not captured:      T* p = new T;      {   // Captured
-  variable         name: "p",         type: "T*",         value: "0x00400400"
-  status { is_error: true, description { format: "unavailable" } }     }  The
-  status should describe the reason for the missing value, such as `<optimized
-  out>`, `<inaccessible>`, `<pointers limit reached>`.  Note that a null
-  pointer should not have members.  5) An unnamed value:      int* p = new
-  int(7);      {   // Captured variable         name: "p",         value:
-  "0x00500500",         type: "int*",         members { value: "7", type:
-  "int" } }  6) An unnamed pointer where the pointee was not captured:
-  int* p = new int(7);     int** pp = &p;      {  // Captured variable
-  name: "pp",         value: "0x00500500",         type: "int**",
-  members {             value: "0x00400400",             type: "int*"
-  status {                 is_error: true,                 description: {
-  format: "unavailable" } }             }         }     }  To optimize
-  computation, memory and network traffic, variables that repeat in the output
-  multiple times can be stored once in a shared variable table and be
-  referenced using the `var_table_index` field.  The variables stored in the
-  shared table are nameless and are essentially a partition of the complete
-  variable. To reconstruct the complete variable, merge the referencing
-  variable with the referenced variable.  When using the shared variable
-  table, the following variables:      T x = { 3, 7 };     T* p = &x;     T& r
-  = x;      { name: "x", var_table_index: 3, type: "T" }  // Captured
-  variables     { name: "p", value "0x00500500", type="T*", var_table_index: 3
-  }     { name: "r", type="T&", var_table_index: 3 }      {  // Shared
-  variable table entry #3:         members { name: "m1", value: "3", type:
-  "int" },         members { name: "m2", value: "7", type: "int" }     }  Note
-  that the pointer address is stored with the referencing variable and not
-  with the referenced variable. This allows the referenced variable to be
-  shared between pointers and references.  The type field is optional. The
-  debugger agent may or may not support it.
+  Note how the following variables are represented: 1) A simple variable: int
+  x = 5 { name: "x", value: "5", type: "int" } // Captured variable 2) A
+  compound object: struct T { int m1; int m2; }; T x = { 3, 7 }; { // Captured
+  variable name: "x", type: "T", members { name: "m1", value: "3", type: "int"
+  }, members { name: "m2", value: "7", type: "int" } } 3) A pointer where the
+  pointee was captured: T x = { 3, 7 }; T* p = &x; { // Captured variable
+  name: "p", type: "T*", value: "0x00500500", members { name: "m1", value:
+  "3", type: "int" }, members { name: "m2", value: "7", type: "int" } } 4) A
+  pointer where the pointee was not captured: T* p = new T; { // Captured
+  variable name: "p", type: "T*", value: "0x00400400" status { is_error: true,
+  description { format: "unavailable" } } } The status should describe the
+  reason for the missing value, such as ``, ``, ``. Note that a null pointer
+  should not have members. 5) An unnamed value: int* p = new int(7); { //
+  Captured variable name: "p", value: "0x00500500", type: "int*", members {
+  value: "7", type: "int" } } 6) An unnamed pointer where the pointee was not
+  captured: int* p = new int(7); int** pp = &p; { // Captured variable name:
+  "pp", value: "0x00500500", type: "int**", members { value: "0x00400400",
+  type: "int*" status { is_error: true, description: { format: "unavailable" }
+  } } } } To optimize computation, memory and network traffic, variables that
+  repeat in the output multiple times can be stored once in a shared variable
+  table and be referenced using the `var_table_index` field. The variables
+  stored in the shared table are nameless and are essentially a partition of
+  the complete variable. To reconstruct the complete variable, merge the
+  referencing variable with the referenced variable. When using the shared
+  variable table, the following variables: T x = { 3, 7 }; T* p = &x; T& r =
+  x; { name: "x", var_table_index: 3, type: "T" } // Captured variables {
+  name: "p", value "0x00500500", type="T*", var_table_index: 3 } { name: "r",
+  type="T&", var_table_index: 3 } { // Shared variable table entry #3: members
+  { name: "m1", value: "3", type: "int" }, members { name: "m2", value: "7",
+  type: "int" } } Note that the pointer address is stored with the referencing
+  variable and not with the referenced variable. This allows the referenced
+  variable to be shared between pointers and references. The type field is
+  optional. The debugger agent may or may not support it.
 
   Fields:
     members: Members contained or pointed to by the variable.
@@ -995,14 +995,13 @@ class Variable(_messages.Message):
       unset. A status of a single variable only applies to that variable or
       expression. The rest of breakpoint data still remains valid. Variables
       might be reported in error state even when breakpoint is not in final
-      state.  The message may refer to variable name with `refers_to` set to
+      state. The message may refer to variable name with `refers_to` set to
       `VARIABLE_NAME`. Alternatively `refers_to` will be set to
       `VARIABLE_VALUE`. In either case variable value and members will be
-      unset.  Example of error message applied to name: `Invalid expression
-      syntax`.  Example of information message applied to value: `Not
-      captured`.  Examples of error message applied to value:  *   `Malformed
-      string`, *   `Field f not found in class C` *   `Null pointer
-      dereference`
+      unset. Example of error message applied to name: `Invalid expression
+      syntax`. Example of information message applied to value: `Not
+      captured`. Examples of error message applied to value: * `Malformed
+      string`, * `Field f not found in class C` * `Null pointer dereference`
     type: Variable type (e.g. `MyClass`). If the variable is split with
       `var_table_index`, `type` goes next to `value`. The interpretation of a
       type is agent specific. It is recommended to include the dynamic type

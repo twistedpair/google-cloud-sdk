@@ -17,10 +17,9 @@ class AclEntry(_messages.Message):
   r"""An entry for an Access Control list.
 
   Fields:
-    expirationTime: The time when this access control entry expires in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>.
-    kind: This is always <b>sql#aclEntry</b>.
+    expirationTime: The time when this access control entry expires in RFC
+      3339 format, for example *2012-11-15T16:19:00.094Z*.
+    kind: This is always *sql#aclEntry*.
     name: Optional. A label to identify this entry.
     value: The allowlisted value for the access control list.
   """
@@ -65,12 +64,12 @@ class BackupConfiguration(_messages.Message):
     binaryLogEnabled: (MySQL only) Whether binary log is enabled. If backup
       configuration is disabled, binarylog must be disabled as well.
     enabled: Whether this configuration is enabled.
-    kind: This is always <b>sql#backupConfiguration</b>.
+    kind: This is always *sql#backupConfiguration*.
     location: Location of the backup
     pointInTimeRecoveryEnabled: Reserved for future use.
     replicationLogArchivingEnabled: Reserved for future use.
     startTime: Start time for the daily backup configuration in UTC timezone
-      in the 24 hour format - <b>HH:MM</b>.
+      in the 24 hour format - *HH:MM*.
   """
 
   binaryLogEnabled = _messages.BooleanField(1)
@@ -100,29 +99,25 @@ class BackupRun(_messages.Message):
       backup. Applies only to Second Generation instances.
     diskEncryptionStatus: Encryption status specific to a backup. Applies only
       to Second Generation instances.
-    endTime: The time the backup operation completed in UTC timezone in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>.
-    enqueuedTime: The time the run was enqueued in UTC timezone in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>.
+    endTime: The time the backup operation completed in UTC timezone in RFC
+      3339 format, for example *2012-11-15T16:19:00.094Z*.
+    enqueuedTime: The time the run was enqueued in UTC timezone in RFC 3339
+      format, for example *2012-11-15T16:19:00.094Z*.
     error: Information about why the backup operation failed. This is only
       present if the run has the FAILED status.
     id: The identifier for this backup run. Unique only for a specific Cloud
       SQL instance.
     instance: Name of the database instance.
-    kind: This is always <b>sql#backupRun</b>.
+    kind: This is always *sql#backupRun*.
     location: Location of the backups.
     selfLink: The URI of this resource.
     startTime: The time the backup operation actually started in UTC timezone
-      in <a href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format,
-      for example <b>2012-11-15T16:19:00.094Z</b>.
+      in RFC 3339 format, for example *2012-11-15T16:19:00.094Z*.
     status: The status of this run.
     type: The type of this run; can be either "AUTOMATED" or "ON_DEMAND".
     windowStartTime: The start time of the backup window during which this the
-      backup was attempted in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>.
+      backup was attempted in RFC 3339 format, for example
+      *2012-11-15T16:19:00.094Z*.
   """
 
   class BackupKindValueValuesEnum(_messages.Enum):
@@ -202,7 +197,7 @@ class BackupRunsListResponse(_messages.Message):
   Fields:
     items: A list of backup runs in reverse chronological order of the
       enqueued time.
-    kind: This is always <b>sql#backupRunsList</b>.
+    kind: This is always *sql#backupRunsList*.
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
@@ -219,7 +214,7 @@ class BinLogCoordinates(_messages.Message):
   Fields:
     binLogFileName: Name of the binary log file for a Cloud SQL instance.
     binLogPosition: Position (offset) within the binary log file.
-    kind: This is always <b>sql#binLogCoordinates</b>.
+    kind: This is always *sql#binLogCoordinates*.
   """
 
   binLogFileName = _messages.StringField(1)
@@ -237,7 +232,7 @@ class CloneContext(_messages.Message):
       coordinates.
     destinationInstanceName: Name of the Cloud SQL instance to be created as a
       clone.
-    kind: This is always <b>sql#cloneContext</b>.
+    kind: This is always *sql#cloneContext*.
     pitrTimestampMs: Reserved for future use.
     pointInTime: Reserved for future use.
   """
@@ -259,7 +254,7 @@ class Database(_messages.Message):
       of the API.
     instance: The name of the Cloud SQL instance. This does not include the
       project ID.
-    kind: This is always <b>sql#database</b>.
+    kind: This is always *sql#database*.
     name: The name of the database in the Cloud SQL instance. This does not
       include the project ID or instance name.
     project: The project ID of the project containing the Cloud SQL database.
@@ -285,12 +280,10 @@ class DatabaseFlags(_messages.Message):
   Fields:
     name: The name of the flag. These flags are passed at instance startup, so
       include both server options and system variables for MySQL. Flags are
-      specified with underscores, not hyphens. For more information, see <a
-      href="/sql/docs/mysql/flags">Configuring Database Flags</a> in the Cloud
-      SQL documentation.
-    value: The value of the flag. Booleans are set to <b>on</b> for true and
-      <b>off</b> for false. This field must be omitted if the flag doesn't
-      take a value.
+      specified with underscores, not hyphens. For more information, see
+      Configuring Database Flags in the Cloud SQL documentation.
+    value: The value of the flag. Booleans are set to *on* for true and *off*
+      for false. This field must be omitted if the flag doesn't take a value.
   """
 
   name = _messages.StringField(1)
@@ -298,35 +291,32 @@ class DatabaseFlags(_messages.Message):
 
 
 class DatabaseInstance(_messages.Message):
-  r"""A Cloud SQL instance resource. Next field: 34
+  r"""A Cloud SQL instance resource. Next field: 35
 
   Enums:
-    BackendTypeValueValuesEnum: <br><b>SECOND_GEN</b>: Cloud SQL database
-      instance. <br><b>EXTERNAL</b>: A database server that is not managed by
-      Google. <br>This property is read-only; use the <b>tier</b> property in
-      the <b>settings</b> object to determine the database type.
+    BackendTypeValueValuesEnum:  *SECOND_GEN*: Cloud SQL database instance.
+      *EXTERNAL*: A database server that is not managed by Google. This
+      property is read-only; use the *tier* property in the *settings* object
+      to determine the database type.
     DatabaseVersionValueValuesEnum: The database engine type and version. The
-      <b>databaseVersion</b> field cannot be changed after instance creation.
-      <br>MySQL instances: <b>MYSQL_5_7</b> (default), or <b>MYSQL_5_6</b>.
-      <br>PostgreSQL instances: <b>POSTGRES_9_6</b>, <b>POSTGRES_10</b>,
-      <b>POSTGRES_11</b> or <b>POSTGRES_12</b> (default). <br>SQL Server
-      instances: <b>SQLSERVER_2017_STANDARD</b> (default),
-      <b>SQLSERVER_2017_ENTERPRISE</b>, <b>SQLSERVER_2017_EXPRESS</b>, or
-      <b>SQLSERVER_2017_WEB</b>.
+      *databaseVersion* field cannot be changed after instance creation. MySQL
+      instances: *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances:
+      *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default).
+      SQL Server instances: *SQLSERVER_2017_STANDARD* (default),
+      *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
+      *SQLSERVER_2017_WEB*.
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
-      following. <br><b>CLOUD_SQL_INSTANCE</b>: A Cloud SQL instance that is
-      not replicating from a master. <br><b>ON_PREMISES_INSTANCE</b>: An
-      instance running on the customer's premises.
-      <br><b>READ_REPLICA_INSTANCE</b>: A Cloud SQL instance configured as a
-      read-replica.
+      following. *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not
+      replicating from a master. *ON_PREMISES_INSTANCE*: An instance running
+      on the customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL
+      instance configured as a read-replica.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
-      This can be one of the following. <br><b>RUNNABLE</b>: The instance is
-      running, or is ready to run when accessed. <br><b>SUSPENDED</b>: The
-      instance is not available, for example due to problems with billing.
-      <br><b>PENDING_CREATE</b>: The instance is being created.
-      <br><b>MAINTENANCE</b>: The instance is down for maintenance.
-      <br><b>FAILED</b>: The instance creation failed.
-      <br><b>UNKNOWN_STATE</b>: The state of the instance is unknown.
+      This can be one of the following. *RUNNABLE*: The instance is running,
+      or is ready to run when accessed. *SUSPENDED*: The instance is not
+      available, for example due to problems with billing. *PENDING_CREATE*:
+      The instance is being created. *MAINTENANCE*: The instance is down for
+      maintenance. *FAILED*: The instance creation failed. *UNKNOWN_STATE*:
+      The state of the instance is unknown.
     SuspensionReasonValueListEntryValuesEnum:
 
   Messages:
@@ -334,32 +324,29 @@ class DatabaseInstance(_messages.Message):
       property is applicable only to Second Generation instances.
 
   Fields:
-    backendType: <br><b>SECOND_GEN</b>: Cloud SQL database instance.
-      <br><b>EXTERNAL</b>: A database server that is not managed by Google.
-      <br>This property is read-only; use the <b>tier</b> property in the
-      <b>settings</b> object to determine the database type.
+    backendType:  *SECOND_GEN*: Cloud SQL database instance. *EXTERNAL*: A
+      database server that is not managed by Google. This property is read-
+      only; use the *tier* property in the *settings* object to determine the
+      database type.
     connectionName: Connection name of the Cloud SQL instance used in
       connection strings.
     currentDiskSize: The current disk usage of the instance in bytes. This
       property has been deprecated. Use the
       "cloudsql.googleapis.com/database/disk/bytes_used" metric in Cloud
-      Monitoring API instead. Please see <a
-      href="https://groups.google.com/d/msg/google-cloud-sql-
-      announce/I_7-F9EBhT0/BtvFtdFeAgAJ">this announcement</a> for details.
+      Monitoring API instead. Please see this announcement for details.
     databaseVersion: The database engine type and version. The
-      <b>databaseVersion</b> field cannot be changed after instance creation.
-      <br>MySQL instances: <b>MYSQL_5_7</b> (default), or <b>MYSQL_5_6</b>.
-      <br>PostgreSQL instances: <b>POSTGRES_9_6</b>, <b>POSTGRES_10</b>,
-      <b>POSTGRES_11</b> or <b>POSTGRES_12</b> (default). <br>SQL Server
-      instances: <b>SQLSERVER_2017_STANDARD</b> (default),
-      <b>SQLSERVER_2017_ENTERPRISE</b>, <b>SQLSERVER_2017_EXPRESS</b>, or
-      <b>SQLSERVER_2017_WEB</b>.
+      *databaseVersion* field cannot be changed after instance creation. MySQL
+      instances: *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances:
+      *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default).
+      SQL Server instances: *SQLSERVER_2017_STANDARD* (default),
+      *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
+      *SQLSERVER_2017_WEB*.
     diskEncryptionConfiguration: Disk encryption configuration specific to an
       instance. Applies only to Second Generation instances.
     diskEncryptionStatus: Disk encryption status specific to an instance.
       Applies only to Second Generation instances.
     etag: This field is deprecated and will be removed from a future version
-      of the API. Use the <b>settings.settingsVersion</b> field instead.
+      of the API. Use the *settings.settingsVersion* field instead.
     failoverReplica: The name and status of the failover replica. This
       property is applicable only to Second Generation instances.
     gceZone: The Compute Engine zone that the instance is currently serving
@@ -367,14 +354,14 @@ class DatabaseInstance(_messages.Message):
       when the instance was created if the instance has failed over to its
       secondary zone.
     instanceType: The instance type. This can be one of the following.
-      <br><b>CLOUD_SQL_INSTANCE</b>: A Cloud SQL instance that is not
-      replicating from a master. <br><b>ON_PREMISES_INSTANCE</b>: An instance
-      running on the customer's premises. <br><b>READ_REPLICA_INSTANCE</b>: A
-      Cloud SQL instance configured as a read-replica.
+      *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from
+      a master. *ON_PREMISES_INSTANCE*: An instance running on the customer's
+      premises. *READ_REPLICA_INSTANCE*: A Cloud SQL instance configured as a
+      read-replica.
     ipAddresses: The assigned IP addresses for the instance.
     ipv6Address: The IPv6 address assigned to the instance. (Deprecated) This
       property was applicable only to First Generation instances.
-    kind: This is always <b>sql#instance</b>.
+    kind: This is always *sql#instance*.
     masterInstanceName: The name of the instance which will act as master in
       the replication setup.
     maxDiskSize: The maximum disk size of the instance in bytes.
@@ -383,12 +370,11 @@ class DatabaseInstance(_messages.Message):
     onPremisesConfiguration: Configuration specific to on-premises instances.
     project: The project ID of the project containing the Cloud SQL instance.
       The Google apps domain is prefixed if applicable.
-    region: The geographical region. Can be <br><b>us-central</b>
-      (<b>FIRST_GEN</b> instances only) <br><b>us-central1</b>
-      (<b>SECOND_GEN</b> instances only) <br><b>asia-east1</b> or <b>europe-
-      west1</b>. <br>Defaults to <b>us-central</b> or <b>us-central1</b>
-      depending on the instance type. The region cannot be changed after
-      instance creation.
+    region: The geographical region. Can be *us-central* (*FIRST_GEN*
+      instances only) *us-central1* (*SECOND_GEN* instances only) *asia-east1*
+      or *europe-west1*. Defaults to *us-central* or *us-central1* depending
+      on the instance type. The region cannot be changed after instance
+      creation.
     replicaConfiguration: Configuration specific to failover replicas and read
       replicas.
     replicaNames: The replicas of the instance.
@@ -402,22 +388,20 @@ class DatabaseInstance(_messages.Message):
       instances.
     settings: The user settings.
     state: The current serving state of the Cloud SQL instance. This can be
-      one of the following. <br><b>RUNNABLE</b>: The instance is running, or
-      is ready to run when accessed. <br><b>SUSPENDED</b>: The instance is not
-      available, for example due to problems with billing.
-      <br><b>PENDING_CREATE</b>: The instance is being created.
-      <br><b>MAINTENANCE</b>: The instance is down for maintenance.
-      <br><b>FAILED</b>: The instance creation failed.
-      <br><b>UNKNOWN_STATE</b>: The state of the instance is unknown.
+      one of the following. *RUNNABLE*: The instance is running, or is ready
+      to run when accessed. *SUSPENDED*: The instance is not available, for
+      example due to problems with billing. *PENDING_CREATE*: The instance is
+      being created. *MAINTENANCE*: The instance is down for maintenance.
+      *FAILED*: The instance creation failed. *UNKNOWN_STATE*: The state of
+      the instance is unknown.
     suspensionReason: If the instance state is SUSPENDED, the reason for the
       suspension.
   """
 
   class BackendTypeValueValuesEnum(_messages.Enum):
-    r"""<br><b>SECOND_GEN</b>: Cloud SQL database instance.
-    <br><b>EXTERNAL</b>: A database server that is not managed by Google.
-    <br>This property is read-only; use the <b>tier</b> property in the
-    <b>settings</b> object to determine the database type.
+    r""" *SECOND_GEN*: Cloud SQL database instance. *EXTERNAL*: A database
+    server that is not managed by Google. This property is read-only; use the
+    *tier* property in the *settings* object to determine the database type.
 
     Values:
       SQL_BACKEND_TYPE_UNSPECIFIED: This is an unknown backend type for
@@ -432,14 +416,13 @@ class DatabaseInstance(_messages.Message):
     EXTERNAL = 3
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""The database engine type and version. The <b>databaseVersion</b> field
-    cannot be changed after instance creation. <br>MySQL instances:
-    <b>MYSQL_5_7</b> (default), or <b>MYSQL_5_6</b>. <br>PostgreSQL instances:
-    <b>POSTGRES_9_6</b>, <b>POSTGRES_10</b>, <b>POSTGRES_11</b> or
-    <b>POSTGRES_12</b> (default). <br>SQL Server instances:
-    <b>SQLSERVER_2017_STANDARD</b> (default),
-    <b>SQLSERVER_2017_ENTERPRISE</b>, <b>SQLSERVER_2017_EXPRESS</b>, or
-    <b>SQLSERVER_2017_WEB</b>.
+    r"""The database engine type and version. The *databaseVersion* field
+    cannot be changed after instance creation. MySQL instances: *MYSQL_5_7*
+    (default), or *MYSQL_5_6*. PostgreSQL instances: *POSTGRES_9_6*,
+    *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default). SQL Server
+    instances: *SQLSERVER_2017_STANDARD* (default),
+    *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
+    *SQLSERVER_2017_WEB*.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -476,10 +459,10 @@ class DatabaseInstance(_messages.Message):
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following.
-    <br><b>CLOUD_SQL_INSTANCE</b>: A Cloud SQL instance that is not
-    replicating from a master. <br><b>ON_PREMISES_INSTANCE</b>: An instance
-    running on the customer's premises. <br><b>READ_REPLICA_INSTANCE</b>: A
-    Cloud SQL instance configured as a read-replica.
+    *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from a
+    master. *ON_PREMISES_INSTANCE*: An instance running on the customer's
+    premises. *READ_REPLICA_INSTANCE*: A Cloud SQL instance configured as a
+    read-replica.
 
     Values:
       SQL_INSTANCE_TYPE_UNSPECIFIED: This is an unknown Cloud SQL instance
@@ -496,13 +479,12 @@ class DatabaseInstance(_messages.Message):
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current serving state of the Cloud SQL instance. This can be one
-    of the following. <br><b>RUNNABLE</b>: The instance is running, or is
-    ready to run when accessed. <br><b>SUSPENDED</b>: The instance is not
-    available, for example due to problems with billing.
-    <br><b>PENDING_CREATE</b>: The instance is being created.
-    <br><b>MAINTENANCE</b>: The instance is down for maintenance.
-    <br><b>FAILED</b>: The instance creation failed. <br><b>UNKNOWN_STATE</b>:
-    The state of the instance is unknown.
+    of the following. *RUNNABLE*: The instance is running, or is ready to run
+    when accessed. *SUSPENDED*: The instance is not available, for example due
+    to problems with billing. *PENDING_CREATE*: The instance is being created.
+    *MAINTENANCE*: The instance is down for maintenance. *FAILED*: The
+    instance creation failed. *UNKNOWN_STATE*: The state of the instance is
+    unknown.
 
     Values:
       SQL_INSTANCE_STATE_UNSPECIFIED: The state of the instance is unknown.
@@ -526,11 +508,15 @@ class DatabaseInstance(_messages.Message):
     r"""SuspensionReasonValueListEntryValuesEnum enum type.
 
     Values:
-      SQL_SUSPENSION_REASON_UNSPECIFIED: <no description>
-      BILLING_ISSUE: <no description>
-      LEGAL_ISSUE: <no description>
-      OPERATIONAL_ISSUE: <no description>
-      KMS_KEY_ISSUE: <no description>
+      SQL_SUSPENSION_REASON_UNSPECIFIED: This is an unknown suspension reason.
+      BILLING_ISSUE: The instance is suspended due to billing issues (for
+        example:, GCP account issue)
+      LEGAL_ISSUE: The instance is suspended due to illegal content (for
+        example:, child pornography, copyrighted material, etc.).
+      OPERATIONAL_ISSUE: The instance is causing operational issues (for
+        example:, causing the database to crash).
+      KMS_KEY_ISSUE: The KMS key used by the instance is either revoked or
+        denied access to
     """
     SQL_SUSPENSION_REASON_UNSPECIFIED = 0
     BILLING_ISSUE = 1
@@ -591,7 +577,7 @@ class DatabasesListResponse(_messages.Message):
 
   Fields:
     items: List of database resources in the instance.
-    kind: This is always <b>sql#databasesList</b>.
+    kind: This is always *sql#databasesList*.
   """
 
   items = _messages.MessageField('Database', 1, repeated=True)
@@ -602,13 +588,13 @@ class DemoteMasterConfiguration(_messages.Message):
   r"""Read-replica configuration for connecting to the on-premises master.
 
   Fields:
-    kind: This is always <b>sql#demoteMasterConfiguration</b>.
+    kind: This is always *sql#demoteMasterConfiguration*.
     mysqlReplicaConfiguration: MySQL specific configuration when replicating
       from a MySQL on-premises master. Replication configuration information
       such as the username, password, certificates, and keys are not stored in
       the instance metadata. The configuration information is used only to set
       up the replication connection and is stored by MySQL in a file named
-      <b>master.info</b> in the data directory.
+      *master.info* in the data directory.
   """
 
   kind = _messages.StringField(1)
@@ -619,17 +605,17 @@ class DemoteMasterContext(_messages.Message):
   r"""Database instance demote master context.
 
   Fields:
-    kind: This is always <b>sql#demoteMasterContext</b>.
+    kind: This is always *sql#demoteMasterContext*.
     masterInstanceName: The name of the instance which will act as on-premises
       master in the replication setup.
     replicaConfiguration: Configuration specific to read-replicas replicating
       from the on-premises master.
     verifyGtidConsistency: Verify GTID consistency for demote operation.
-      Default value: <b>True</b>. Second Generation instances only.  Setting
-      this flag to false enables you to bypass GTID consistency check between
-      on-premises master and Cloud SQL instance during the demotion operation
-      but also exposes you to the risk of future replication failures. Change
-      the value only if you know the reason for the GTID divergence and are
+      Default value: *True*. Second Generation instances only. Setting this
+      flag to false enables you to bypass GTID consistency check between on-
+      premises master and Cloud SQL instance during the demotion operation but
+      also exposes you to the risk of future replication failures. Change the
+      value only if you know the reason for the GTID divergence and are
       confident that doing so will not cause any replication issues.
   """
 
@@ -648,7 +634,7 @@ class DemoteMasterMySqlReplicaConfiguration(_messages.Message):
     clientKey: PEM representation of the replica's private key. The
       corresponsing public key is encoded in the client's certificate. The
       format of the replica's private key can be either PKCS #1 or PKCS #8.
-    kind: This is always <b>sql#demoteMasterMysqlReplicaConfiguration</b>.
+    kind: This is always *sql#demoteMasterMysqlReplicaConfiguration*.
     password: The password for the replication connection.
     username: The username for the replication connection.
   """
@@ -665,7 +651,7 @@ class DiskEncryptionConfiguration(_messages.Message):
   r"""Disk encryption configuration for an instance.
 
   Fields:
-    kind: This is always <b>sql#diskEncryptionConfiguration</b>.
+    kind: This is always *sql#diskEncryptionConfiguration*.
     kmsKeyName: Resource name of KMS key for disk encryption
   """
 
@@ -677,7 +663,7 @@ class DiskEncryptionStatus(_messages.Message):
   r"""Disk encryption status for an instance.
 
   Fields:
-    kind: This is always <b>sql#diskEncryptionStatus</b>.
+    kind: This is always *sql#diskEncryptionStatus*.
     kmsKeyVersionName: KMS key version used to encrypt the Cloud SQL instance
       resource
   """
@@ -690,9 +676,8 @@ class ExportContext(_messages.Message):
   r"""Database instance export context.
 
   Enums:
-    FileTypeValueValuesEnum: The file type for the specified uri.
-      <br><b>SQL</b>: The file contains SQL statements. <br><b>CSV</b>: The
-      file contains CSV data.
+    FileTypeValueValuesEnum: The file type for the specified uri. *SQL*: The
+      file contains SQL statements. *CSV*: The file contains CSV data.
 
   Messages:
     CsvExportOptionsValue: Options for exporting data as CSV.
@@ -700,30 +685,29 @@ class ExportContext(_messages.Message):
 
   Fields:
     csvExportOptions: Options for exporting data as CSV.
-    databases: Databases to be exported. <br /> <b>MySQL instances:</b> If
-      <b>fileType</b> is <b>SQL</b> and no database is specified, all
-      databases are exported, except for the <b>mysql</b> system database. If
-      <b>fileType</b> is <b>CSV</b>, you can specify one database, either by
-      using this property or by using the <b>csvExportOptions.selectQuery</b>
-      property, which takes precedence over this property. <br />
-      <b>PostgreSQL instances:</b> You must specify one database to be
-      exported. If <b>fileType</b> is <b>CSV</b>, this database must match the
-      one specified in the <b>csvExportOptions.selectQuery</b> property.
-    fileType: The file type for the specified uri. <br><b>SQL</b>: The file
-      contains SQL statements. <br><b>CSV</b>: The file contains CSV data.
-    kind: This is always <b>sql#exportContext</b>.
+    databases: Databases to be exported. *MySQL instances:* If *fileType* is
+      *SQL* and no database is specified, all databases are exported, except
+      for the *mysql* system database. If *fileType* is *CSV*, you can specify
+      one database, either by using this property or by using the
+      *csvExportOptions.selectQuery* property, which takes precedence over
+      this property. *PostgreSQL instances:* You must specify one database to
+      be exported. If *fileType* is *CSV*, this database must match the one
+      specified in the *csvExportOptions.selectQuery* property.
+    fileType: The file type for the specified uri. *SQL*: The file contains
+      SQL statements. *CSV*: The file contains CSV data.
+    kind: This is always *sql#exportContext*.
     offload: Option for export offload.
     sqlExportOptions: Options for exporting data as SQL statements.
     uri: The path to the file in Google Cloud Storage where the export will be
-      stored. The URI is in the form <b>gs: //bucketName/fileName</b>. If the
-      file already exists, the requests // succeeds, but the operation fails.
-      If <b>fileType</b> is // <b>SQL</b> and the filename ends with .gz, the
-      contents are // compressed.
+      stored. The URI is in the form *gs: //bucketName/fileName*. If the file
+      already exists, the requests // succeeds, but the operation fails. If
+      *fileType* is // *SQL* and the filename ends with .gz, the contents are
+      // compressed.
   """
 
   class FileTypeValueValuesEnum(_messages.Enum):
-    r"""The file type for the specified uri. <br><b>SQL</b>: The file contains
-    SQL statements. <br><b>CSV</b>: The file contains CSV data.
+    r"""The file type for the specified uri. *SQL*: The file contains SQL
+    statements. *CSV*: The file contains CSV data.
 
     Values:
       SQL_FILE_TYPE_UNSPECIFIED: Unknown file type.
@@ -764,10 +748,10 @@ class ExportContext(_messages.Message):
 
       Fields:
         masterData: Option to include SQL statement required to set up
-          replication. <br>If set to <b>1</b>, the dump file includes  a
-          CHANGE MASTER TO statement with the binary log coordinates. <br>If
-          set to <b>2</b>, the CHANGE MASTER TO statement is written as  a SQL
-          comment, and has no effect. All other values are ignored.
+          replication. If set to *1*, the dump file includes a CHANGE MASTER
+          TO statement with the binary log coordinates. If set to *2*, the
+          CHANGE MASTER TO statement is written as a SQL comment, and has no
+          effect. All other values are ignored.
       """
 
       masterData = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -789,7 +773,7 @@ class FailoverContext(_messages.Message):
   r"""Database instance failover context.
 
   Fields:
-    kind: This is always <b>sql#failoverContext</b>.
+    kind: This is always *sql#failoverContext*.
     settingsVersion: The current settings version of this instance. Request
       will be rejected if this version doesn't match the current settings
       version.
@@ -805,49 +789,50 @@ class Flag(_messages.Message):
   Enums:
     AppliesToValueListEntryValuesEnum:
     TypeValueValuesEnum: The type of the flag. Flags are typed to being
-      <b>BOOLEAN</b>, <b>STRING</b>, <b>INTEGER</b> or <b>NONE</b>.
-      <b>NONE</b> is used for flags which do not take a value, such as
-      <b>skip_grant_tables</b>.
+      *BOOLEAN*, *STRING*, *INTEGER* or *NONE*. *NONE* is used for flags which
+      do not take a value, such as *skip_grant_tables*.
 
   Fields:
     allowedIntValues: Use this field if only certain integers are accepted.
       Can be combined with min_value and max_value to add additional values.
-    allowedStringValues: For <b>STRING</b> flags, a list of strings that the
-      value can be set to.
-    appliesTo: The database version this flag applies to. Can be
-      <b>MYSQL_5_5</b>, <b>MYSQL_5_6</b>, or <b>MYSQL_5_7</b>.
-      <b>MYSQL_5_7</b> is applicable only to Second Generation instances.
+    allowedStringValues: For *STRING* flags, a list of strings that the value
+      can be set to.
+    appliesTo: The database version this flag applies to. Can be *MYSQL_5_5*,
+      *MYSQL_5_6*, or *MYSQL_5_7*. *MYSQL_5_7* is applicable only to Second
+      Generation instances.
     inBeta: Whether or not the flag is considered in beta.
-    kind: This is always <b>sql#flag</b>.
-    maxValue: For <b>INTEGER</b> flags, the maximum allowed value.
-    minValue: For <b>INTEGER</b> flags, the minimum allowed value.
+    kind: This is always *sql#flag*.
+    maxValue: For *INTEGER* flags, the maximum allowed value.
+    minValue: For *INTEGER* flags, the minimum allowed value.
     name: This is the name of the flag. Flag names always use underscores, not
-      hyphens, for example: <b>max_allowed_packet</b>
+      hyphens, for example: *max_allowed_packet*
     requiresRestart: Indicates whether changing this flag will trigger a
       database restart. Only applicable to Second Generation instances.
-    type: The type of the flag. Flags are typed to being <b>BOOLEAN</b>,
-      <b>STRING</b>, <b>INTEGER</b> or <b>NONE</b>. <b>NONE</b> is used for
-      flags which do not take a value, such as <b>skip_grant_tables</b>.
+    type: The type of the flag. Flags are typed to being *BOOLEAN*, *STRING*,
+      *INTEGER* or *NONE*. *NONE* is used for flags which do not take a value,
+      such as *skip_grant_tables*.
   """
 
   class AppliesToValueListEntryValuesEnum(_messages.Enum):
     r"""AppliesToValueListEntryValuesEnum enum type.
 
     Values:
-      SQL_DATABASE_VERSION_UNSPECIFIED: <no description>
-      MYSQL_5_1: <no description>
-      MYSQL_5_5: <no description>
-      MYSQL_5_6: <no description>
-      MYSQL_5_7: <no description>
-      POSTGRES_9_6: <no description>
-      POSTGRES_11: <no description>
-      SQLSERVER_2017_STANDARD: <no description>
-      SQLSERVER_2017_ENTERPRISE: <no description>
-      SQLSERVER_2017_EXPRESS: <no description>
-      SQLSERVER_2017_WEB: <no description>
-      POSTGRES_10: <no description>
-      POSTGRES_12: <no description>
-      MYSQL_8_0: <no description>
+      SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      MYSQL_5_1: The database version is MySQL 5.1.
+      MYSQL_5_5: The database version is MySQL 5.5.
+      MYSQL_5_6: The database version is MySQL 5.6.
+      MYSQL_5_7: The database version is MySQL 5.7.
+      POSTGRES_9_6: The database version is PostgreSQL 9.6.
+      POSTGRES_11: The database version is PostgreSQL 11.
+      SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
+        Standard.
+      SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
+        Enterprise.
+      SQLSERVER_2017_EXPRESS: The database version is SQL Server 2017 Express.
+      SQLSERVER_2017_WEB: The database version is SQL Server 2017 Web.
+      POSTGRES_10: The database version is PostgreSQL 10.
+      POSTGRES_12: The database version is PostgreSQL 12.
+      MYSQL_8_0: The database version is MySQL 8.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -865,9 +850,9 @@ class Flag(_messages.Message):
     MYSQL_8_0 = 13
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of the flag. Flags are typed to being <b>BOOLEAN</b>,
-    <b>STRING</b>, <b>INTEGER</b> or <b>NONE</b>. <b>NONE</b> is used for
-    flags which do not take a value, such as <b>skip_grant_tables</b>.
+    r"""The type of the flag. Flags are typed to being *BOOLEAN*, *STRING*,
+    *INTEGER* or *NONE*. *NONE* is used for flags which do not take a value,
+    such as *skip_grant_tables*.
 
     Values:
       SQL_FLAG_TYPE_UNSPECIFIED: This is an unknown flag type.
@@ -907,7 +892,7 @@ class FlagsListResponse(_messages.Message):
 
   Fields:
     items: List of flags.
-    kind: This is always <b>sql#flagsList</b>.
+    kind: This is always *sql#flagsList*.
   """
 
   items = _messages.MessageField('Flag', 1, repeated=True)
@@ -918,9 +903,8 @@ class ImportContext(_messages.Message):
   r"""Database instance import context.
 
   Enums:
-    FileTypeValueValuesEnum: The file type for the specified uri.
-      <br><b>SQL</b>: The file contains SQL statements. <br><b>CSV</b>: The
-      file contains CSV data.
+    FileTypeValueValuesEnum: The file type for the specified uri. *SQL*: The
+      file contains SQL statements. *CSV*: The file contains CSV data.
 
   Messages:
     BakImportOptionsValue: Import parameters specific to SQL Server .BAK files
@@ -929,25 +913,24 @@ class ImportContext(_messages.Message):
   Fields:
     bakImportOptions: Import parameters specific to SQL Server .BAK files
     csvImportOptions: Options for importing data as CSV.
-    database: The target database for the import. If <b>fileType</b> is
-      <b>SQL</b>, this field is required only if the import file does not
-      specify a database, and is overridden by any database specification in
-      the import file. If <b>fileType</b> is <b>CSV</b>, one database must be
-      specified.
-    fileType: The file type for the specified uri. <br><b>SQL</b>: The file
-      contains SQL statements. <br><b>CSV</b>: The file contains CSV data.
+    database: The target database for the import. If *fileType* is *SQL*, this
+      field is required only if the import file does not specify a database,
+      and is overridden by any database specification in the import file. If
+      *fileType* is *CSV*, one database must be specified.
+    fileType: The file type for the specified uri. *SQL*: The file contains
+      SQL statements. *CSV*: The file contains CSV data.
     importUser: The PostgreSQL user for this import operation. PostgreSQL
       instances only.
-    kind: This is always <b>sql#importContext</b>.
-    uri: Path to the import file in Cloud Storage, in the form <b>gs:
-      //bucketName/fileName</b>. Compressed gzip files (.gz) are supported //
-      when <b>fileType</b> is <b>SQL</b>. The instance must have // write
-      permissions to the bucket and read access to the file.
+    kind: This is always *sql#importContext*.
+    uri: Path to the import file in Cloud Storage, in the form *gs:
+      //bucketName/fileName*. Compressed gzip files (.gz) are supported //
+      when *fileType* is *SQL*. The instance must have // write permissions to
+      the bucket and read access to the file.
   """
 
   class FileTypeValueValuesEnum(_messages.Enum):
-    r"""The file type for the specified uri. <br><b>SQL</b>: The file contains
-    SQL statements. <br><b>CSV</b>: The file contains CSV data.
+    r"""The file type for the specified uri. *SQL*: The file contains SQL
+    statements. *CSV*: The file contains CSV data.
 
     Values:
       SQL_FILE_TYPE_UNSPECIFIED: Unknown file type.
@@ -975,12 +958,12 @@ class ImportContext(_messages.Message):
 
       Fields:
         certPath: Path to the Certificate (.cer) in Cloud Storage, in the form
-          <b>gs://bucketName/fileName</b>. The instance must have write
-          permissions to the bucket and read access to the file.
+          *gs://bucketName/fileName*. The instance must have write permissions
+          to the bucket and read access to the file.
         pvkPassword: Password that encrypts the private key
-        pvkPath: Path to the Certificate Private Key (.pvk)  in Cloud Storage,
-          in the form <b>gs://bucketName/fileName</b>. The instance must have
-          write permissions to the bucket and read access to the file.
+        pvkPath: Path to the Certificate Private Key (.pvk) in Cloud Storage,
+          in the form *gs://bucketName/fileName*. The instance must have write
+          permissions to the bucket and read access to the file.
       """
 
       certPath = _messages.StringField(1)
@@ -1065,7 +1048,7 @@ class InstancesListResponse(_messages.Message):
 
   Fields:
     items: List of database instance resources.
-    kind: This is always <b>sql#instancesList</b>.
+    kind: This is always *sql#instancesList*.
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
@@ -1084,7 +1067,7 @@ class InstancesListServerCasResponse(_messages.Message):
   Fields:
     activeVersion: A string attribute.
     certs: List of server CA certificates for the instance.
-    kind: This is always <b>sql#instancesListServerCas</b>.
+    kind: This is always *sql#instancesListServerCas*.
   """
 
   activeVersion = _messages.StringField(1)
@@ -1130,11 +1113,11 @@ class IpConfiguration(_messages.Message):
   Fields:
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. In 'CIDR' notation, also known as
-      'slash' notation (for example: <b>192.168.100.0/24</b>).
+      'slash' notation (for example: *192.168.100.0/24*).
     ipv4Enabled: Whether the instance is assigned a public IP address or not.
     privateNetwork: The resource link for the VPC network from which the Cloud
       SQL instance is accessible for private IP. For example,
-      <b>/projects/myProject/global/networks/default</b>. This setting can be
+      */projects/myProject/global/networks/default*. This setting can be
       updated, but it cannot be removed after it is set.
     requireSsl: Whether SSL connections over IP are enforced or not.
   """
@@ -1149,31 +1132,29 @@ class IpMapping(_messages.Message):
   r"""Database instance IP Mapping.
 
   Enums:
-    TypeValueValuesEnum: The type of this IP address. A <b>PRIMARY</b> address
-      is a public address that can accept incoming connections. A
-      <b>PRIVATE</b> address is a private address that can accept incoming
-      connections. An <b>OUTGOING</b> address is the source address of
-      connections originating from the instance, if supported.
+    TypeValueValuesEnum: The type of this IP address. A *PRIMARY* address is a
+      public address that can accept incoming connections. A *PRIVATE* address
+      is a private address that can accept incoming connections. An *OUTGOING*
+      address is the source address of connections originating from the
+      instance, if supported.
 
   Fields:
     ipAddress: The IP address assigned.
-    timeToRetire: The due time for this IP to be retired in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>. This field is only available
+    timeToRetire: The due time for this IP to be retired in RFC 3339 format,
+      for example *2012-11-15T16:19:00.094Z*. This field is only available
       when the IP is scheduled to be retired.
-    type: The type of this IP address. A <b>PRIMARY</b> address is a public
-      address that can accept incoming connections. A <b>PRIVATE</b> address
-      is a private address that can accept incoming connections. An
-      <b>OUTGOING</b> address is the source address of connections originating
-      from the instance, if supported.
+    type: The type of this IP address. A *PRIMARY* address is a public address
+      that can accept incoming connections. A *PRIVATE* address is a private
+      address that can accept incoming connections. An *OUTGOING* address is
+      the source address of connections originating from the instance, if
+      supported.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of this IP address. A <b>PRIMARY</b> address is a public
-    address that can accept incoming connections. A <b>PRIVATE</b> address is
-    a private address that can accept incoming connections. An <b>OUTGOING</b>
-    address is the source address of connections originating from the
-    instance, if supported.
+    r"""The type of this IP address. A *PRIMARY* address is a public address
+    that can accept incoming connections. A *PRIVATE* address is a private
+    address that can accept incoming connections. An *OUTGOING* address is the
+    source address of connections originating from the instance, if supported.
 
     Values:
       SQL_IP_ADDRESS_TYPE_UNSPECIFIED: This is an unknown IP address type.
@@ -1209,7 +1190,7 @@ class LocationPreference(_messages.Message):
   Fields:
     followGaeApplication: The App Engine application to follow, it must be in
       the same region as the Cloud SQL instance.
-    kind: This is always <b>sql#locationPreference</b>.
+    kind: This is always *sql#locationPreference*.
     zone: The preferred Compute Engine zone (for example: us-central1-a, us-
       central1-b, etc.).
   """
@@ -1224,24 +1205,20 @@ class MaintenanceWindow(_messages.Message):
   restarted for system maintenance purposes.
 
   Enums:
-    UpdateTrackValueValuesEnum: Maintenance timing setting: <b>canary</b>
-      (Earlier) or <b>stable</b> (Later). <br /><a
-      href="/sql/docs/db_path/instance-settings#maintenance-timing-2ndgen">
-      Learn more</a>.
+    UpdateTrackValueValuesEnum: Maintenance timing setting: *canary* (Earlier)
+      or *stable* (Later). Learn more.
 
   Fields:
     day: day of week (1-7), starting on Monday.
     hour: hour of day - 0 to 23.
-    kind: This is always <b>sql#maintenanceWindow</b>.
-    updateTrack: Maintenance timing setting: <b>canary</b> (Earlier) or
-      <b>stable</b> (Later). <br /><a href="/sql/docs/db_path/instance-
-      settings#maintenance-timing-2ndgen"> Learn more</a>.
+    kind: This is always *sql#maintenanceWindow*.
+    updateTrack: Maintenance timing setting: *canary* (Earlier) or *stable*
+      (Later). Learn more.
   """
 
   class UpdateTrackValueValuesEnum(_messages.Enum):
-    r"""Maintenance timing setting: <b>canary</b> (Earlier) or <b>stable</b>
-    (Later). <br /><a href="/sql/docs/db_path/instance-settings#maintenance-
-    timing-2ndgen"> Learn more</a>.
+    r"""Maintenance timing setting: *canary* (Earlier) or *stable* (Later).
+    Learn more.
 
     Values:
       SQL_UPDATE_TRACK_UNSPECIFIED: This is an unknown maintenance timing
@@ -1279,7 +1256,7 @@ class MySqlReplicaConfiguration(_messages.Message):
       supported. Dumps have the binlog co-ordinates from which replication
       begins. This can be accomplished by setting --master-data to 1 when
       using mysqldump.
-    kind: This is always <b>sql#mysqlReplicaConfiguration</b>.
+    kind: This is always *sql#mysqlReplicaConfiguration*.
     masterHeartbeatPeriod: Interval in milliseconds between replication
       heartbeats.
     password: The password for the replication connection.
@@ -1313,7 +1290,7 @@ class OnPremisesConfiguration(_messages.Message):
     dumpFilePath: The dump file to create the Cloud SQL replica.
     hostPort: The host and port of the on-premises instance in host:port
       format
-    kind: This is always <b>sql#onPremisesConfiguration</b>.
+    kind: This is always *sql#onPremisesConfiguration*.
     password: The password for connecting to on-premises instance.
     username: The username for connecting to on-premises instance.
   """
@@ -1329,47 +1306,40 @@ class OnPremisesConfiguration(_messages.Message):
 
 
 class Operation(_messages.Message):
-  r"""An Operation resource.&nbsp;For successful operations that return an
+  r"""An Operation resource. For successful operations that return an
   Operation resource, only the fields relevant to the operation are populated
   in the resource.
 
   Enums:
     OperationTypeValueValuesEnum: The type of the operation. Valid values are:
-      <br><b>CREATE</b> <br><b>DELETE</b> <br><b>UPDATE</b> <br><b>RESTART</b>
-      <br><b>IMPORT</b> <br><b>EXPORT</b> <br><b>BACKUP_VOLUME</b>
-      <br><b>RESTORE_VOLUME</b> <br><b>CREATE_USER</b> <br><b>DELETE_USER</b>
-      <br><b>CREATE_DATABASE</b> <br><b>DELETE_DATABASE</b>
+      *CREATE* *DELETE* *UPDATE* *RESTART* *IMPORT* *EXPORT* *BACKUP_VOLUME*
+      *RESTORE_VOLUME* *CREATE_USER* *DELETE_USER* *CREATE_DATABASE*
+      *DELETE_DATABASE*
     StatusValueValuesEnum: The status of an operation. Valid values are:
-      <br><b>PENDING</b> <br><b>RUNNING</b> <br><b>DONE</b>
-      <br><b>SQL_OPERATION_STATUS_UNSPECIFIED</b>
+      *PENDING* *RUNNING* *DONE* *SQL_OPERATION_STATUS_UNSPECIFIED*
 
   Fields:
-    endTime: The time this operation finished in UTC timezone in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>.
+    endTime: The time this operation finished in UTC timezone in RFC 3339
+      format, for example *2012-11-15T16:19:00.094Z*.
     error: If errors occurred during processing of this operation, this field
       will be populated.
     exportContext: The context for export operation, if applicable.
     importContext: The context for import operation, if applicable.
-    insertTime: The time this operation was enqueued in UTC timezone in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>.
-    kind: This is always <b>sql#operation</b>.
+    insertTime: The time this operation was enqueued in UTC timezone in RFC
+      3339 format, for example *2012-11-15T16:19:00.094Z*.
+    kind: This is always *sql#operation*.
     name: An identifier that uniquely identifies the operation. You can use
       this identifier to retrieve the Operations resource that has information
       about the operation.
-    operationType: The type of the operation. Valid values are:
-      <br><b>CREATE</b> <br><b>DELETE</b> <br><b>UPDATE</b> <br><b>RESTART</b>
-      <br><b>IMPORT</b> <br><b>EXPORT</b> <br><b>BACKUP_VOLUME</b>
-      <br><b>RESTORE_VOLUME</b> <br><b>CREATE_USER</b> <br><b>DELETE_USER</b>
-      <br><b>CREATE_DATABASE</b> <br><b>DELETE_DATABASE</b>
+    operationType: The type of the operation. Valid values are: *CREATE*
+      *DELETE* *UPDATE* *RESTART* *IMPORT* *EXPORT* *BACKUP_VOLUME*
+      *RESTORE_VOLUME* *CREATE_USER* *DELETE_USER* *CREATE_DATABASE*
+      *DELETE_DATABASE*
     selfLink: The URI of this resource.
-    startTime: The time this operation actually started in UTC timezone in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>.
-    status: The status of an operation. Valid values are: <br><b>PENDING</b>
-      <br><b>RUNNING</b> <br><b>DONE</b>
-      <br><b>SQL_OPERATION_STATUS_UNSPECIFIED</b>
+    startTime: The time this operation actually started in UTC timezone in RFC
+      3339 format, for example *2012-11-15T16:19:00.094Z*.
+    status: The status of an operation. Valid values are: *PENDING* *RUNNING*
+      *DONE* *SQL_OPERATION_STATUS_UNSPECIFIED*
     targetId: Name of the database instance related to this operation.
     targetLink: A string attribute.
     targetProject: The project ID of the target instance related to this
@@ -1378,11 +1348,9 @@ class Operation(_messages.Message):
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    r"""The type of the operation. Valid values are: <br><b>CREATE</b>
-    <br><b>DELETE</b> <br><b>UPDATE</b> <br><b>RESTART</b> <br><b>IMPORT</b>
-    <br><b>EXPORT</b> <br><b>BACKUP_VOLUME</b> <br><b>RESTORE_VOLUME</b>
-    <br><b>CREATE_USER</b> <br><b>DELETE_USER</b> <br><b>CREATE_DATABASE</b>
-    <br><b>DELETE_DATABASE</b>
+    r"""The type of the operation. Valid values are: *CREATE* *DELETE*
+    *UPDATE* *RESTART* *IMPORT* *EXPORT* *BACKUP_VOLUME* *RESTORE_VOLUME*
+    *CREATE_USER* *DELETE_USER* *CREATE_DATABASE* *DELETE_DATABASE*
 
     Values:
       SQL_OPERATION_TYPE_UNSPECIFIED: Unknown operation type.
@@ -1464,9 +1432,8 @@ class Operation(_messages.Message):
     START_EXTERNAL_SYNC = 34
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""The status of an operation. Valid values are: <br><b>PENDING</b>
-    <br><b>RUNNING</b> <br><b>DONE</b>
-    <br><b>SQL_OPERATION_STATUS_UNSPECIFIED</b>
+    r"""The status of an operation. Valid values are: *PENDING* *RUNNING*
+    *DONE* *SQL_OPERATION_STATUS_UNSPECIFIED*
 
     Values:
       SQL_OPERATION_STATUS_UNSPECIFIED: The state of the operation is unknown.
@@ -1501,7 +1468,7 @@ class OperationError(_messages.Message):
 
   Fields:
     code: Identifies the specific error that occurred.
-    kind: This is always <b>sql#operationError</b>.
+    kind: This is always *sql#operationError*.
     message: Additional information about the error encountered.
   """
 
@@ -1515,7 +1482,7 @@ class OperationErrors(_messages.Message):
 
   Fields:
     errors: The list of errors encountered while processing this operation.
-    kind: This is always <b>sql#operationErrors</b>.
+    kind: This is always *sql#operationErrors*.
   """
 
   errors = _messages.MessageField('OperationError', 1, repeated=True)
@@ -1527,7 +1494,7 @@ class OperationsListResponse(_messages.Message):
 
   Fields:
     items: List of operation resources.
-    kind: This is always <b>sql#operationsList</b>.
+    kind: This is always *sql#operationsList*.
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
@@ -1543,18 +1510,18 @@ class ReplicaConfiguration(_messages.Message):
 
   Fields:
     failoverTarget: Specifies if the replica is the failover target. If the
-      field is set to <b>true</b> the replica will be designated as a failover
+      field is set to *true* the replica will be designated as a failover
       replica. In case the master instance fails, the replica instance will be
-      promoted as the new master instance.  <p>Only one replica can be
-      specified as failover target, and the replica has to be in different
-      zone with the master instance.
-    kind: This is always <b>sql#replicaConfiguration</b>.
+      promoted as the new master instance. Only one replica can be specified
+      as failover target, and the replica has to be in different zone with the
+      master instance.
+    kind: This is always *sql#replicaConfiguration*.
     mysqlReplicaConfiguration: MySQL specific configuration when replicating
       from a MySQL on-premises master. Replication configuration information
       such as the username, password, certificates, and keys are not stored in
       the instance metadata. The configuration information is used only to set
       up the replication connection and is stored by MySQL in a file named
-      <b>master.info</b> in the data directory.
+      *master.info* in the data directory.
   """
 
   failoverTarget = _messages.BooleanField(1)
@@ -1571,9 +1538,8 @@ class Reschedule(_messages.Message):
   Fields:
     rescheduleType: Required. The type of the reschedule.
     scheduleTime: Optional. Timestamp when the maintenance shall be
-      rescheduled to if reschedule_type=SPECIFIC_TIME, in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>.
+      rescheduled to if reschedule_type=SPECIFIC_TIME, in RFC 3339 format, for
+      example *2012-11-15T16:19:00.094Z*.
   """
 
   class RescheduleTypeValueValuesEnum(_messages.Enum):
@@ -1603,7 +1569,7 @@ class RestoreBackupContext(_messages.Message):
   Fields:
     backupRunId: The ID of the backup run to restore from.
     instanceId: The ID of the instance that the backup was taken from.
-    kind: This is always <b>sql#restoreBackupContext</b>.
+    kind: This is always *sql#restoreBackupContext*.
     project: The full project ID of the source instance.
   """
 
@@ -1617,7 +1583,7 @@ class RotateServerCaContext(_messages.Message):
   r"""Instance rotate server CA context.
 
   Fields:
-    kind: This is always <b>sql#rotateServerCaContext</b>.
+    kind: This is always *sql#rotateServerCaContext*.
     nextVersion: The fingerprint of the next version to be rotated to. If left
       unspecified, will be rotated to the most recently added server CA
       version.
@@ -1633,26 +1599,22 @@ class Settings(_messages.Message):
   Enums:
     ActivationPolicyValueValuesEnum: The activation policy specifies when the
       instance is activated; it is applicable only when the instance state is
-      RUNNABLE. Valid values:   <br><b>ALWAYS</b>: The instance is on, and
-      remains so even in the absence of connection requests.
-      <br><b>NEVER</b>: The instance is off; it is not activated, even if a
-      connection request arrives.
+      RUNNABLE. Valid values: *ALWAYS*: The instance is on, and remains so
+      even in the absence of connection requests. *NEVER*: The instance is
+      off; it is not activated, even if a connection request arrives.
     AvailabilityTypeValueValuesEnum: Availability type. Potential values:
-      <br><b>ZONAL</b>: The instance serves data from only one zone. Outages
-      in that zone affect data accessibility.   <br><b>REGIONAL</b>: The
-      instance can serve data from more than one zone   in a region (it is
-      highly available). <br>For more information, see <a
-      href="/sql/docs/postgres/high-availability"> Overview of the High
-      Availability Configuration</a>.
+      *ZONAL*: The instance serves data from only one zone. Outages in that
+      zone affect data accessibility. *REGIONAL*: The instance can serve data
+      from more than one zone in a region (it is highly available). For more
+      information, see Overview of the High Availability Configuration.
     DataDiskTypeValueValuesEnum: The type of data disk: PD_SSD (default) or
       PD_HDD. Not used for First Generation instances.
     PricingPlanValueValuesEnum: The pricing plan for this instance. This can
-      be either <b>PER_USE</b> or <b>PACKAGE</b>. Only <b>PER_USE</b> is
-      supported for Second Generation instances.
+      be either *PER_USE* or *PACKAGE*. Only *PER_USE* is supported for Second
+      Generation instances.
     ReplicationTypeValueValuesEnum: The type of replication this instance
-      uses. This can be either <b>ASYNCHRONOUS</b> or <b>SYNCHRONOUS</b>.
-      (Deprecated_ This property was only applicable to First Generation
-      instances.
+      uses. This can be either *ASYNCHRONOUS* or *SYNCHRONOUS*. (Deprecated_
+      This property was only applicable to First Generation instances.
 
   Messages:
     UserLabelsValue: User-provided labels, represented as a dictionary where
@@ -1661,20 +1623,18 @@ class Settings(_messages.Message):
   Fields:
     activationPolicy: The activation policy specifies when the instance is
       activated; it is applicable only when the instance state is RUNNABLE.
-      Valid values:   <br><b>ALWAYS</b>: The instance is on, and remains so
-      even in the absence of connection requests.   <br><b>NEVER</b>: The
-      instance is off; it is not activated, even if a   connection request
-      arrives.
+      Valid values: *ALWAYS*: The instance is on, and remains so even in the
+      absence of connection requests. *NEVER*: The instance is off; it is not
+      activated, even if a connection request arrives.
     activeDirectoryConfig: Active Directory configuration, for now relevant
       only for SQL Server
     authorizedGaeApplications: The App Engine app IDs that can access this
       instance. (Deprecated) Applied to First Generation instances only.
-    availabilityType: Availability type. Potential values:   <br><b>ZONAL</b>:
-      The instance serves data from only one zone. Outages in that zone affect
-      data accessibility.   <br><b>REGIONAL</b>: The instance can serve data
-      from more than one zone   in a region (it is highly available). <br>For
-      more information, see <a href="/sql/docs/postgres/high-availability">
-      Overview of the High Availability Configuration</a>.
+    availabilityType: Availability type. Potential values: *ZONAL*: The
+      instance serves data from only one zone. Outages in that zone affect
+      data accessibility. *REGIONAL*: The instance can serve data from more
+      than one zone in a region (it is highly available). For more
+      information, see Overview of the High Availability Configuration.
     backupConfiguration: The daily backup configuration for the instance.
     collation: The name of server Instance collation.
     crashSafeReplicationEnabled: Configuration specific to read replica
@@ -1692,7 +1652,7 @@ class Settings(_messages.Message):
       disable the instance IP and manage which external networks can connect
       to the instance. The IPv4 address cannot be disabled for Second
       Generation instances.
-    kind: This is always <b>sql#settings</b>.
+    kind: This is always *sql#settings*.
     locationPreference: The location preference settings. This allows the
       instance to be located as near as possible to either an App Engine app
       or Compute Engine zone for better performance. App Engine co-location
@@ -1700,11 +1660,11 @@ class Settings(_messages.Message):
     maintenanceWindow: The maintenance window for this instance. This
       specifies when the instance can be restarted for maintenance purposes.
     pricingPlan: The pricing plan for this instance. This can be either
-      <b>PER_USE</b> or <b>PACKAGE</b>. Only <b>PER_USE</b> is supported for
-      Second Generation instances.
+      *PER_USE* or *PACKAGE*. Only *PER_USE* is supported for Second
+      Generation instances.
     replicationType: The type of replication this instance uses. This can be
-      either <b>ASYNCHRONOUS</b> or <b>SYNCHRONOUS</b>. (Deprecated_ This
-      property was only applicable to First Generation instances.
+      either *ASYNCHRONOUS* or *SYNCHRONOUS*. (Deprecated_ This property was
+      only applicable to First Generation instances.
     settingsVersion: The version of instance settings. This is a required
       field for update method to make sure concurrent updates are handled
       properly. During update, use the most recent settingsVersion value for
@@ -1715,8 +1675,8 @@ class Settings(_messages.Message):
       automatically increased. The default value is 0, which specifies that
       there is no limit.
     tier: The tier (or machine type) for this instance, for example
-      <b>db-n1-standard-1</b> (MySQL instances) or <b>db-custom-1-3840</b>
-      (PostgreSQL instances).
+      *db-n1-standard-1* (MySQL instances) or *db-custom-1-3840* (PostgreSQL
+      instances).
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
   """
@@ -1724,9 +1684,9 @@ class Settings(_messages.Message):
   class ActivationPolicyValueValuesEnum(_messages.Enum):
     r"""The activation policy specifies when the instance is activated; it is
     applicable only when the instance state is RUNNABLE. Valid values:
-    <br><b>ALWAYS</b>: The instance is on, and remains so even in the absence
-    of connection requests.   <br><b>NEVER</b>: The instance is off; it is not
-    activated, even if a   connection request arrives.
+    *ALWAYS*: The instance is on, and remains so even in the absence of
+    connection requests. *NEVER*: The instance is off; it is not activated,
+    even if a connection request arrives.
 
     Values:
       SQL_ACTIVATION_POLICY_UNSPECIFIED: Unknown activation plan.
@@ -1740,12 +1700,11 @@ class Settings(_messages.Message):
     ON_DEMAND = 3
 
   class AvailabilityTypeValueValuesEnum(_messages.Enum):
-    r"""Availability type. Potential values:   <br><b>ZONAL</b>: The instance
-    serves data from only one zone. Outages in that zone affect data
-    accessibility.   <br><b>REGIONAL</b>: The instance can serve data from
-    more than one zone   in a region (it is highly available). <br>For more
-    information, see <a href="/sql/docs/postgres/high-availability"> Overview
-    of the High Availability Configuration</a>.
+    r"""Availability type. Potential values: *ZONAL*: The instance serves data
+    from only one zone. Outages in that zone affect data accessibility.
+    *REGIONAL*: The instance can serve data from more than one zone in a
+    region (it is highly available). For more information, see Overview of the
+    High Availability Configuration.
 
     Values:
       SQL_AVAILABILITY_TYPE_UNSPECIFIED: This is an unknown Availability type.
@@ -1773,9 +1732,8 @@ class Settings(_messages.Message):
     OBSOLETE_LOCAL_SSD = 3
 
   class PricingPlanValueValuesEnum(_messages.Enum):
-    r"""The pricing plan for this instance. This can be either <b>PER_USE</b>
-    or <b>PACKAGE</b>. Only <b>PER_USE</b> is supported for Second Generation
-    instances.
+    r"""The pricing plan for this instance. This can be either *PER_USE* or
+    *PACKAGE*. Only *PER_USE* is supported for Second Generation instances.
 
     Values:
       SQL_PRICING_PLAN_UNSPECIFIED: This is an unknown pricing plan for this
@@ -1789,8 +1747,8 @@ class Settings(_messages.Message):
 
   class ReplicationTypeValueValuesEnum(_messages.Enum):
     r"""The type of replication this instance uses. This can be either
-    <b>ASYNCHRONOUS</b> or <b>SYNCHRONOUS</b>. (Deprecated_ This property was
-    only applicable to First Generation instances.
+    *ASYNCHRONOUS* or *SYNCHRONOUS*. (Deprecated_ This property was only
+    applicable to First Generation instances.
 
     Values:
       SQL_REPLICATION_TYPE_UNSPECIFIED: This is an unknown replication type
@@ -1872,8 +1830,7 @@ class SqlBackupRunsDeleteRequest(_messages.Message):
 
   Fields:
     id: The ID of the Backup Run to delete. To find a Backup Run ID, use the
-      <a href="/sql/docs/db_path/admin-
-      api/rest/v1beta4/backupRuns/list">list</a> method.
+      list method.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
   """
@@ -2008,7 +1965,7 @@ class SqlExternalSyncSettingError(_messages.Message):
 
   Fields:
     detail: Additional information about the error encountered.
-    kind: This is always <b>sql#migrationSettingError</b>.
+    kind: This is always *sql#migrationSettingError*.
     type: Identifies the specific error that occurred.
   """
 
@@ -2206,7 +2163,7 @@ class SqlInstancesListRequest(_messages.Message):
       The expression is in the form of field:value. For example,
       'instanceType:CLOUD_SQL_INSTANCE'. Fields can be nested as needed as per
       their JSON representation, such as
-      'settings.userLabels.auto_start:true'.  Multiple filter queries are
+      'settings.userLabels.auto_start:true'. Multiple filter queries are
       space-separated. For example. 'state:RUNNABLE
       instanceType:CLOUD_SQL_INSTANCE'. By default, each expression is an AND
       expression. However, you can include AND and OR expressions explicitly.
@@ -2385,7 +2342,7 @@ class SqlInstancesVerifyExternalSyncSettingsResponse(_messages.Message):
 
   Fields:
     errors: List of migration violations.
-    kind: This is always <b>sql#migrationSettingErrorList</b>.
+    kind: This is always *sql#migrationSettingErrorList*.
   """
 
   errors = _messages.MessageField('SqlExternalSyncSettingError', 1, repeated=True)
@@ -2453,9 +2410,12 @@ class SqlProjectsInstancesStartExternalSyncRequest(_messages.Message):
     r"""External sync mode
 
     Values:
-      EXTERNAL_SYNC_MODE_UNSPECIFIED: <no description>
-      ONLINE: <no description>
-      OFFLINE: <no description>
+      EXTERNAL_SYNC_MODE_UNSPECIFIED: Unknown external sync mode, will be
+        defaulted to ONLINE mode
+      ONLINE: Online external sync will set up replication after initial data
+        external sync
+      OFFLINE: Offline external sync only dumps and loads a one-time snapshot
+        of master's data
     """
     EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
     ONLINE = 1
@@ -2483,9 +2443,12 @@ class SqlProjectsInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
     r"""External sync mode
 
     Values:
-      EXTERNAL_SYNC_MODE_UNSPECIFIED: <no description>
-      ONLINE: <no description>
-      OFFLINE: <no description>
+      EXTERNAL_SYNC_MODE_UNSPECIFIED: Unknown external sync mode, will be
+        defaulted to ONLINE mode
+      ONLINE: Online external sync will set up replication after initial data
+        external sync
+      OFFLINE: Offline external sync only dumps and loads a one-time snapshot
+        of master's data
     """
     EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
     ONLINE = 1
@@ -2669,15 +2632,13 @@ class SslCert(_messages.Message):
   Fields:
     cert: PEM representation.
     certSerialNumber: Serial number, as extracted from the certificate.
-    commonName: User supplied name.  Constrained to [a-zA-Z.-_ ]+.
-    createTime: The time when the certificate was created in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>
-    expirationTime: The time when the certificate expires in <a
-      href="https://tools.ietf.org/html/rfc3339">RFC 3339</a> format, for
-      example <b>2012-11-15T16:19:00.094Z</b>.
+    commonName: User supplied name. Constrained to [a-zA-Z.-_ ]+.
+    createTime: The time when the certificate was created in RFC 3339 format,
+      for example *2012-11-15T16:19:00.094Z*
+    expirationTime: The time when the certificate expires in RFC 3339 format,
+      for example *2012-11-15T16:19:00.094Z*.
     instance: Name of the database instance.
-    kind: This is always <b>sql#sslCert</b>.
+    kind: This is always *sql#sslCert*.
     selfLink: The URI of this resource.
     sha1Fingerprint: Sha1 Fingerprint.
   """
@@ -2698,7 +2659,7 @@ class SslCertDetail(_messages.Message):
 
   Fields:
     certInfo: The public information about the cert.
-    certPrivateKey: The private key for the client cert, in pem format.  Keep
+    certPrivateKey: The private key for the client cert, in pem format. Keep
       private in order to protect your security.
   """
 
@@ -2720,7 +2681,7 @@ class SslCertsInsertRequest(_messages.Message):
   r"""SslCerts insert request.
 
   Fields:
-    commonName: User supplied name.  Must be a distinct name from the other
+    commonName: User supplied name. Must be a distinct name from the other
       certificates for this instance.
   """
 
@@ -2732,9 +2693,9 @@ class SslCertsInsertResponse(_messages.Message):
 
   Fields:
     clientCert: The new client certificate and private key.
-    kind: This is always <b>sql#sslCertsInsert</b>.
+    kind: This is always *sql#sslCertsInsert*.
     operation: The operation to track the ssl certs insert request.
-    serverCaCert: The server Certificate Authority's certificate.  If this is
+    serverCaCert: The server Certificate Authority's certificate. If this is
       missing you can force a new one to be generated by calling
       resetSslConfig method on instances resource.
   """
@@ -2750,7 +2711,7 @@ class SslCertsListResponse(_messages.Message):
 
   Fields:
     items: List of client certificates for the instance.
-    kind: This is always <b>sql#sslCertsList</b>.
+    kind: This is always *sql#sslCertsList*.
   """
 
   items = _messages.MessageField('SslCert', 1, repeated=True)
@@ -2826,10 +2787,10 @@ class Tier(_messages.Message):
   Fields:
     DiskQuota: The maximum disk size of this tier in bytes.
     RAM: The maximum RAM usage of this tier in bytes.
-    kind: This is always <b>sql#tier</b>.
+    kind: This is always *sql#tier*.
     region: The applicable regions for this tier.
     tier: An identifier for the machine type, for example, db-n1-standard-1.
-      For related information, see <a href="/sql/pricing">Pricing</a>.
+      For related information, see Pricing.
   """
 
   DiskQuota = _messages.IntegerField(1)
@@ -2844,7 +2805,7 @@ class TiersListResponse(_messages.Message):
 
   Fields:
     items: List of tiers.
-    kind: This is always <b>sql#tiersList</b>.
+    kind: This is always *sql#tiersList*.
   """
 
   items = _messages.MessageField('Tier', 1, repeated=True)
@@ -2855,9 +2816,9 @@ class TruncateLogContext(_messages.Message):
   r"""Database Instance truncate log context.
 
   Fields:
-    kind: This is always <b>sql#truncateLogContext</b>.
+    kind: This is always *sql#truncateLogContext*.
     logType: The type of log to truncate. Valid values are
-      <b>MYSQL_GENERAL_TABLE</b> and <b>MYSQL_SLOW_TABLE</b>.
+      *MYSQL_GENERAL_TABLE* and *MYSQL_SLOW_TABLE*.
   """
 
   kind = _messages.StringField(1)
@@ -2875,20 +2836,20 @@ class User(_messages.Message):
   Fields:
     etag: This field is deprecated and will be removed from a future version
       of the API.
-    host: The host name from which the user can connect. For <b>insert</b>
-      operations, host defaults to an empty string. For <b>update</b>
-      operations, host is specified as part of the request URL. The host name
-      cannot be updated after insertion.
+    host: The host name from which the user can connect. For *insert*
+      operations, host defaults to an empty string. For *update* operations,
+      host is specified as part of the request URL. The host name cannot be
+      updated after insertion.
     instance: The name of the Cloud SQL instance. This does not include the
-      project ID. Can be omitted for <b>update</b> since it is already
-      specified on the URL.
-    kind: This is always <b>sql#user</b>.
+      project ID. Can be omitted for *update* since it is already specified on
+      the URL.
+    kind: This is always *sql#user*.
     name: The name of the user in the Cloud SQL instance. Can be omitted for
-      <b>update</b> since it is already specified in the URL.
+      *update* since it is already specified in the URL.
     password: The password for the user.
     project: The project ID of the project containing the Cloud SQL database.
       The Google apps domain is prefixed if applicable. Can be omitted for
-      <b>update</b> since it is already specified on the URL.
+      *update* since it is already specified on the URL.
     sqlserverUserDetails: A SqlServerUserDetails attribute.
     type: The user type. It determines the method to authenticate the user
       during login. The default is the database's built-in user type.
@@ -2923,7 +2884,7 @@ class UsersListResponse(_messages.Message):
 
   Fields:
     items: List of user resources in the instance.
-    kind: This is always <b>sql#usersList</b>.
+    kind: This is always *sql#usersList*.
     nextPageToken: An identifier that uniquely identifies the operation. You
       can use this identifier to retrieve the Operations resource that has
       information about the operation.

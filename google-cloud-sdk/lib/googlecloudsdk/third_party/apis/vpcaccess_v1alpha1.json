@@ -134,7 +134,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Resource name for the location, which may vary between implementations.\nFor example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
           "type": "string"
         },
         "locationId": {
@@ -142,18 +142,18 @@
           "type": "string"
         },
         "displayName": {
-          "description": "The friendly name for this location, typically a nearby city name.\nFor example, \"Tokyo\".",
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
           "type": "string"
         },
         "labels": {
-          "description": "Cross-service attributes for the location. For example\n\n    {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "metadata": {
-          "description": "Service-specific metadata. For example the available capacity at the given\nlocation.",
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -182,15 +182,15 @@
     },
     "Operation": {
       "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should be a resource name ending with `operations\/{unique_id}`.",
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
           "type": "string"
         },
         "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -198,7 +198,7 @@
           }
         },
         "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
           "type": "boolean"
         },
         "error": {
@@ -206,7 +206,7 @@
           "$ref": "Status"
         },
         "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -217,7 +217,7 @@
     },
     "Status": {
       "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
       "type": "object",
       "properties": {
         "code": {
@@ -226,11 +226,11 @@
           "format": "int32"
         },
         "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
           "type": "string"
         },
         "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
           "type": "array",
           "items": {
             "type": "object",
@@ -260,7 +260,7 @@
           "type": "string"
         },
         "ipCidrRange": {
-          "description": "The range of internal addresses that follows RFC 4632 notation.\nExample: `10.132.0.0\/28`.",
+          "description": "The range of internal addresses that follows RFC 4632 notation. Example: `10.132.0.0\/28`.",
           "type": "string"
         },
         "status": {
@@ -273,7 +273,16 @@
             "Connector is in a bad state, manual deletion recommended.",
             "The connector is being updated."
           ],
+          "readOnly": true,
           "type": "string",
+          "enumDescriptions": [
+            "Invalid state.",
+            "Connector is deployed and ready to receive traffic.",
+            "An Insert operation is in progress.",
+            "A Delete operation is in progress.",
+            "Connector is in a bad state, manual deletion recommended.",
+            "The connector is being updated."
+          ],
           "enum": [
             "STATUS_UNSPECIFIED",
             "READY",
@@ -295,6 +304,7 @@
         },
         "connectedProjects": {
           "description": "Output only. List of projects using the connector.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "type": "string"
@@ -326,21 +336,25 @@
       "type": "object",
       "properties": {
         "method": {
-          "description": "Output only. Method that initiated the operation e.g.\ngoogle.cloud.vpcaccess.v1alpha1.Connectors.CreateConnector.",
+          "description": "Output only. Method that initiated the operation e.g. google.cloud.vpcaccess.v1alpha1.Connectors.CreateConnector.",
+          "readOnly": true,
           "type": "string"
         },
         "insertTime": {
           "description": "Output only. Time when the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. Time when the operation completed.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "Output only. Name of the resource that this operation is acting on e.g.\nprojects\/my-project\/locations\/us-central1\/connectors\/v1.",
+          "description": "Output only. Name of the resource that this operation is acting on e.g. projects\/my-project\/locations\/us-central1\/connectors\/v1.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -351,21 +365,25 @@
       "type": "object",
       "properties": {
         "method": {
-          "description": "Output only. Method that initiated the operation e.g.\ngoogle.cloud.vpcaccess.v1beta1.Connectors.CreateConnector.",
+          "description": "Output only. Method that initiated the operation e.g. google.cloud.vpcaccess.v1beta1.Connectors.CreateConnector.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. Time when the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. Time when the operation completed.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "Output only. Name of the resource that this operation is acting on e.g.\nprojects\/my-project\/locations\/us-central1\/connectors\/v1.",
+          "description": "Output only. Name of the resource that this operation is acting on e.g. projects\/my-project\/locations\/us-central1\/connectors\/v1.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -376,21 +394,25 @@
       "type": "object",
       "properties": {
         "method": {
-          "description": "Output only. Method that initiated the operation e.g.\ngoogle.cloud.vpcaccess.v1.Connectors.CreateConnector.",
+          "description": "Output only. Method that initiated the operation e.g. google.cloud.vpcaccess.v1.Connectors.CreateConnector.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. Time when the operation was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
           "description": "Output only. Time when the operation completed.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "target": {
-          "description": "Output only. Name of the resource that this operation is acting on e.g.\nprojects\/my-project\/locations\/us-central1\/connectors\/v1.",
+          "description": "Output only. Name of the resource that this operation is acting on e.g. projects\/my-project\/locations\/us-central1\/connectors\/v1.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -486,7 +508,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+                  "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
                 },
                 "get": {
                   "id": "vpcaccess.projects.locations.operations.get",
@@ -511,7 +533,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
                 }
               }
             },
@@ -524,7 +546,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The project and location in which the configuration should be created,\nspecified in the format `projects\/*\/locations\/*`.",
+                      "description": "Required. The project and location in which the configuration should be created, specified in the format `projects\/*\/locations\/*`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -559,7 +581,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The fields to update on the entry group. If absent or empty, all modifiable\nfields are updated.",
+                      "description": "The fields to update on the entry group. If absent or empty, all modifiable fields are updated.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -602,7 +624,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets a Serverless VPC Access connector. Returns NOT_FOUND if the resource\ndoes not exist."
+                  "description": "Gets a Serverless VPC Access connector. Returns NOT_FOUND if the resource does not exist."
                 },
                 "list": {
                   "id": "vpcaccess.projects.locations.connectors.list",
@@ -663,7 +685,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a Serverless VPC Access connector. Returns NOT_FOUND if the\nresource does not exist."
+                  "description": "Deletes a Serverless VPC Access connector. Returns NOT_FOUND if the resource does not exist."
                 }
               }
             }

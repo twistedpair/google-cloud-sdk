@@ -40,6 +40,8 @@ class CloudshellV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
+    self.users_environments = self.UsersEnvironmentsService(self)
+    self.users = self.UsersService(self)
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
@@ -52,16 +54,7 @@ class CloudshellV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (CloudshellOperationsCancelRequest) input message
@@ -88,10 +81,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (CloudshellOperationsDeleteRequest) input message
@@ -118,9 +108,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (CloudshellOperationsGetRequest) input message
@@ -147,16 +135,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (CloudshellOperationsListRequest) input message
@@ -181,3 +160,266 @@ is the parent resource, without the operations collection id.
         response_type_name='ListOperationsResponse',
         supports_download=False,
     )
+
+  class UsersEnvironmentsService(base_api.BaseApiService):
+    """Service class for the users_environments resource."""
+
+    _NAME = 'users_environments'
+
+    def __init__(self, client):
+      super(CloudshellV1.UsersEnvironmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddPublicKey(self, request, global_params=None):
+      r"""Adds a public SSH key to an environment, allowing clients with the corresponding private key to connect to that environment via SSH. If a key with the same content already exists, this will error with ALREADY_EXISTS.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsAddPublicKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddPublicKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddPublicKey.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments/{environmentsId}:addPublicKey',
+        http_method='POST',
+        method_id='cloudshell.users.environments.addPublicKey',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:addPublicKey',
+        request_field='addPublicKeyRequest',
+        request_type_name='CloudshellUsersEnvironmentsAddPublicKeyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Authorize(self, request, global_params=None):
+      r"""Sends OAuth credentials to a running environment on behalf of a user. When this completes, the environment will be authorized to run various Google Cloud command line tools without requiring the user to manually authenticate.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsAuthorizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Authorize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Authorize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments/{environmentsId}:authorize',
+        http_method='POST',
+        method_id='cloudshell.users.environments.authorize',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:authorize',
+        request_field='authorizeEnvironmentRequest',
+        request_type_name='CloudshellUsersEnvironmentsAuthorizeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new environment.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments',
+        http_method='POST',
+        method_id='cloudshell.users.environments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['environmentId'],
+        relative_path='v1/{+parent}/environments',
+        request_field='environment',
+        request_type_name='CloudshellUsersEnvironmentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing environment. Any connections to that environment will be terminated.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments/{environmentsId}',
+        http_method='DELETE',
+        method_id='cloudshell.users.environments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudshellUsersEnvironmentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an environment. Returns NOT_FOUND if the environment does not exist.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Environment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments/{environmentsId}',
+        http_method='GET',
+        method_id='cloudshell.users.environments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudshellUsersEnvironmentsGetRequest',
+        response_type_name='Environment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all of a user's environments.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEnvironmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments',
+        http_method='GET',
+        method_id='cloudshell.users.environments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/environments',
+        request_field='',
+        request_type_name='CloudshellUsersEnvironmentsListRequest',
+        response_type_name='ListEnvironmentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing environment.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments/{environmentsId}',
+        http_method='PATCH',
+        method_id='cloudshell.users.environments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='environment',
+        request_type_name='CloudshellUsersEnvironmentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemovePublicKey(self, request, global_params=None):
+      r"""Removes a public SSH key from an environment. Clients will no longer be able to connect to the environment using the corresponding private key. If a key with the same content is not present, this will error with NOT_FOUND.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsRemovePublicKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemovePublicKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemovePublicKey.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments/{environmentsId}:removePublicKey',
+        http_method='POST',
+        method_id='cloudshell.users.environments.removePublicKey',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:removePublicKey',
+        request_field='removePublicKeyRequest',
+        request_type_name='CloudshellUsersEnvironmentsRemovePublicKeyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Start(self, request, global_params=None):
+      r"""Starts an existing environment, allowing clients to connect to it. The returned operation will contain an instance of StartEnvironmentMetadata in its metadata field. Users can wait for the environment to start by polling this operation via GetOperation. Once the environment has finished starting and is ready to accept connections, the operation will contain a StartEnvironmentResponse in its response field.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/users/{usersId}/environments/{environmentsId}:start',
+        http_method='POST',
+        method_id='cloudshell.users.environments.start',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:start',
+        request_field='startEnvironmentRequest',
+        request_type_name='CloudshellUsersEnvironmentsStartRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class UsersService(base_api.BaseApiService):
+    """Service class for the users resource."""
+
+    _NAME = 'users'
+
+    def __init__(self, client):
+      super(CloudshellV1.UsersService, self).__init__(client)
+      self._upload_configs = {
+          }

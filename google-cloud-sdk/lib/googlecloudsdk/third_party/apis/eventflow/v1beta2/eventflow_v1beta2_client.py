@@ -161,10 +161,7 @@ class EventflowV1beta2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a flow, returning the updated flow. Empty fields (proto3 default.
-values) mean don't change those fields. The call returns INVALID_ARGUMENT
-status if the spec.name, spec.namespace, or spec.trigger.event_type is
-change.  trigger.event_type is changed.
+      r"""Updates a flow, returning the updated flow. Empty fields (proto3 default values) mean don't change those fields. The call returns INVALID_ARGUMENT status if the spec.name, spec.namespace, or spec.trigger.event_type is change. trigger.event_type is changed.
 
       Args:
         request: (EventflowProjectsFlowsUpdateRequest) input message

@@ -72,7 +72,7 @@ class CustomResourceColumnDefinition(_messages.Message):
 
 class CustomResourceDefinition(_messages.Message):
   r"""CustomResourceDefinition represents a resource that should be exposed on
-  the API server.  Its name MUST be in the format <.spec.name>.<.spec.group>.
+  the API server. Its name MUST be in the format <.spec.name>.<.spec.group>.
 
   Fields:
     apiVersion: The API version for this call such as
@@ -96,17 +96,17 @@ class CustomResourceDefinitionNames(_messages.Message):
   Fields:
     categories: Categories is a list of grouped resources custom resources
       belong to (e.g. 'all') +optional
-    kind: Kind is the serialized kind of the resource.  It is normally
+    kind: Kind is the serialized kind of the resource. It is normally
       CamelCase and singular.
     listKind: ListKind is the serialized kind of the list for this resource.
-      Defaults to <kind>List. +optional
-    plural: Plural is the plural name of the resource to serve.  It must match
+      Defaults to List. +optional
+    plural: Plural is the plural name of the resource to serve. It must match
       the name of the CustomResourceDefinition-registration too: plural.group
       and it must be all lowercase.
-    shortNames: ShortNames are short names for the resource.  It must be all
+    shortNames: ShortNames are short names for the resource. It must be all
       lowercase. +optional
-    singular: Singular is the singular name of the resource.  It must be all
-      lowercase Defaults to lowercased <kind> +optional
+    singular: Singular is the singular name of the resource. It must be all
+      lowercase Defaults to lowercased +optional
   """
 
   categories = _messages.StringField(1, repeated=True)
@@ -264,9 +264,9 @@ class Destination(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -861,47 +861,47 @@ class ObjectMeta(_messages.Message):
   persisted resources must have, which includes all objects users must create.
 
   Messages:
-    AnnotationsValue: (Optional)  Annotations is an unstructured key value map
+    AnnotationsValue: (Optional) Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
       preserved when modifying objects. More info:
       http://kubernetes.io/docs/user-guide/annotations
-    LabelsValue: (Optional)  Map of string keys and values that can be used to
+    LabelsValue: (Optional) Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
       http://kubernetes.io/docs/user-guide/labels
 
   Fields:
-    annotations: (Optional)  Annotations is an unstructured key value map
+    annotations: (Optional) Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
       preserved when modifying objects. More info:
       http://kubernetes.io/docs/user-guide/annotations
-    clusterName: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  The name of the cluster which the object belongs
+    clusterName: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported The name of the cluster which the object belongs
       to. This is used to distinguish resources with same name and namespace
       in different clusters. This field is not set anywhere right now and
       apiserver is going to ignore it if set in create or update request.
-    creationTimestamp: (Optional)  CreationTimestamp is a timestamp
+    creationTimestamp: (Optional) CreationTimestamp is a timestamp
       representing the server time when this object was created. It is not
       guaranteed to be set in happens-before order across separate operations.
       Clients may not set this value. It is represented in RFC3339 form and is
-      in UTC.  Populated by the system. Read-only. Null for lists. More info:
+      in UTC. Populated by the system. Read-only. Null for lists. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata
-    deletionGracePeriodSeconds: (Optional)  Cloud Run fully managed: not
-      supported  Cloud Run for Anthos: supported  Number of seconds allowed
-      for this object to gracefully terminate before it will be removed from
-      the system. Only set when deletionTimestamp is also set. May only be
+    deletionGracePeriodSeconds: (Optional) Cloud Run fully managed: not
+      supported Cloud Run for Anthos: supported Number of seconds allowed for
+      this object to gracefully terminate before it will be removed from the
+      system. Only set when deletionTimestamp is also set. May only be
       shortened. Read-only.
-    deletionTimestamp: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run for Anthos: supported  DeletionTimestamp is RFC 3339 date and
-      time at which this resource will be deleted. This field is set by the
-      server when a graceful deletion is requested by the user, and is not
-      directly settable by a client. The resource is expected to be deleted
-      (no longer visible from resource lists, and not reachable by name) after
-      the time in this field, once the finalizers list is empty. As long as
-      the finalizers list contains items, deletion is blocked. Once the
+    deletionTimestamp: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported DeletionTimestamp is RFC 3339 date and time at
+      which this resource will be deleted. This field is set by the server
+      when a graceful deletion is requested by the user, and is not directly
+      settable by a client. The resource is expected to be deleted (no longer
+      visible from resource lists, and not reachable by name) after the time
+      in this field, once the finalizers list is empty. As long as the
+      finalizers list contains items, deletion is blocked. Once the
       deletionTimestamp is set, this value may not be unset or be set further
       into the future, although it may be shortened or the resource may be
       deleted prior to this time. For example, a user may request that a pod
@@ -912,35 +912,34 @@ class ObjectMeta(_messages.Message):
       presence of network partitions, this object may still exist after this
       timestamp, until an administrator or automated process can determine the
       resource is fully terminated. If not set, graceful deletion of the
-      object has not been requested.  Populated by the system when a graceful
+      object has not been requested. Populated by the system when a graceful
       deletion is requested. Read-only. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata
-    finalizers: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Must be empty before the object is deleted from
+    finalizers: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Must be empty before the object is deleted from
       the registry. Each entry is an identifier for the responsible component
       that will remove the entry from the list. If the deletionTimestamp of
       the object is non-nil, entries in this list can only be removed.
       +patchStrategy=merge
-    generateName: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  GenerateName is an optional prefix, used by
-      the server, to generate a unique name ONLY IF the Name field has not
-      been provided. If this field is used, the name returned to the client
-      will be different than the name passed. This value will also be combined
-      with a unique suffix. The provided value has the same validation rules
-      as the Name field, and may be truncated by the length of the suffix
-      required to make the value unique on the server.  If this field is
-      specified and the generated name exists, the server will NOT return a
-      409 - instead, it will either return 201 Created or 500 with Reason
-      ServerTimeout indicating a unique name could not be found in the time
-      allotted, and the client should retry (optionally after the time
-      indicated in the Retry-After header).  Applied only if Name is not
-      specified. More info:
+    generateName: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported GenerateName is an optional prefix, used by the
+      server, to generate a unique name ONLY IF the Name field has not been
+      provided. If this field is used, the name returned to the client will be
+      different than the name passed. This value will also be combined with a
+      unique suffix. The provided value has the same validation rules as the
+      Name field, and may be truncated by the length of the suffix required to
+      make the value unique on the server. If this field is specified and the
+      generated name exists, the server will NOT return a 409 - instead, it
+      will either return 201 Created or 500 with Reason ServerTimeout
+      indicating a unique name could not be found in the time allotted, and
+      the client should retry (optionally after the time indicated in the
+      Retry-After header). Applied only if Name is not specified. More info:
       https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#idempotency  string generateName = 2;
-    generation: (Optional)  A sequence number representing a specific
+      conventions.md#idempotency string generateName = 2;
+    generation: (Optional) A sequence number representing a specific
       generation of the desired state. Populated by the system. Read-only.
-    labels: (Optional)  Map of string keys and values that can be used to
+    labels: (Optional) Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
       http://kubernetes.io/docs/user-guide/labels
@@ -953,32 +952,32 @@ class ObjectMeta(_messages.Message):
     namespace: Namespace defines the space within each name must be unique,
       within a Cloud Run region. In Cloud Run the namespace must be equal to
       either the project ID or project number.
-    ownerReferences: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  List of objects that own this object. If ALL
+    ownerReferences: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported List of objects that own this object. If ALL
       objects in the list have been deleted, this object will be garbage
       collected.
-    resourceVersion: (Optional)  An opaque value that represents the internal
+    resourceVersion: (Optional) An opaque value that represents the internal
       version of this object that can be used by clients to determine when
       objects have changed. May be used for optimistic concurrency, change
       detection, and the watch operation on a resource or set of resources.
       Clients must treat these values as opaque and passed unmodified back to
       the server. They may only be valid for a particular resource or set of
-      resources.  Populated by the system. Read-only. Value must be treated as
+      resources. Populated by the system. Read-only. Value must be treated as
       opaque by clients and . More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#concurrency-control-and-consistency
-    selfLink: (Optional)  SelfLink is a URL representing this object.
-      Populated by the system. Read-only.  string selfLink = 4;
-    uid: (Optional)  UID is the unique in time and space value for this
-      object. It is typically generated by the server on successful creation
-      of a resource and is not allowed to change on PUT operations.  Populated
-      by the system. Read-only. More info: http://kubernetes.io/docs/user-
+    selfLink: (Optional) SelfLink is a URL representing this object. Populated
+      by the system. Read-only. string selfLink = 4;
+    uid: (Optional) UID is the unique in time and space value for this object.
+      It is typically generated by the server on successful creation of a
+      resource and is not allowed to change on PUT operations. Populated by
+      the system. Read-only. More info: http://kubernetes.io/docs/user-
       guide/identifiers#uids
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""(Optional)  Annotations is an unstructured key value map stored with a
+    r"""(Optional) Annotations is an unstructured key value map stored with a
     resource that may be set by external tools to store and retrieve arbitrary
     metadata. They are not queryable and should be preserved when modifying
     objects. More info: http://kubernetes.io/docs/user-guide/annotations
@@ -1006,7 +1005,7 @@ class ObjectMeta(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""(Optional)  Map of string keys and values that can be used to organize
+    r"""(Optional) Map of string keys and values that can be used to organize
     and categorize (scope and select) objects. May match selectors of
     replication controllers and routes. More info:
     http://kubernetes.io/docs/user-guide/labels
@@ -1212,14 +1211,14 @@ class TriggerFilter(_messages.Message):
     AttributesValue: Optional. Attributes filters events by exact match on
       event context attributes. Each key in the map is compared with the
       equivalent key in the event context. An event passes the filter if all
-      values are equal to the specified values.  Nested context attributes are
+      values are equal to the specified values. Nested context attributes are
       not supported as keys. Only string values are supported.
 
   Fields:
     attributes: Optional. Attributes filters events by exact match on event
       context attributes. Each key in the map is compared with the equivalent
       key in the event context. An event passes the filter if all values are
-      equal to the specified values.  Nested context attributes are not
+      equal to the specified values. Nested context attributes are not
       supported as keys. Only string values are supported.
   """
 
@@ -1228,7 +1227,7 @@ class TriggerFilter(_messages.Message):
     r"""Optional. Attributes filters events by exact match on event context
     attributes. Each key in the map is compared with the equivalent key in the
     event context. An event passes the filter if all values are equal to the
-    specified values.  Nested context attributes are not supported as keys.
+    specified values. Nested context attributes are not supported as keys.
     Only string values are supported.
 
     Messages:

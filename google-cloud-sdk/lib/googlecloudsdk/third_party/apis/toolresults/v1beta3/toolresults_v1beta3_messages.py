@@ -42,16 +42,15 @@ class AndroidAppInfo(_messages.Message):
 
 class AndroidInstrumentationTest(_messages.Message):
   r"""A test of an Android application that can control an Android component
-  independently of its normal lifecycle.  See
-  <http://developer.android.com/tools/testing/testing_android.html> for more
-  information on types of Android tests.
+  independently of its normal lifecycle. See for more information on types of
+  Android tests.
 
   Fields:
     testPackageId: The java package for the test to be executed. Required
     testRunnerClass: The InstrumentationTestRunner class. Required
     testTargets: Each target must be fully qualified with the package name or
-      class name, in one of these formats:  - "package package_name"  - "class
-      package_name.class_name"  - "class package_name.class_name#method_name"
+      class name, in one of these formats: - "package package_name" - "class
+      package_name.class_name" - "class package_name.class_name#method_name"
       If empty, all targets in the module will be run.
     useOrchestrator: The flag indicates whether Android Test Orchestrator will
       be used to run test or not.
@@ -112,35 +111,31 @@ class AndroidTestLoop(_messages.Message):
 
 class Any(_messages.Message):
   r""" `Any` contains an arbitrary serialized protocol buffer message along
-  with a URL that describes the type of the serialized message.  Protobuf
+  with a URL that describes the type of the serialized message. Protobuf
   library provides support to pack/unpack Any values in the form of utility
-  functions or additional generated methods of the Any type.  Example 1: Pack
-  and unpack a message in C++.      Foo foo = ...;     Any any;
-  any.PackFrom(foo);     ...     if (any.UnpackTo(&foo)) {       ...     }
-  Example 2: Pack and unpack a message in Java.      Foo foo = ...;     Any
-  any = Any.pack(foo);     ...     if (any.is(Foo.class)) {       foo =
-  any.unpack(Foo.class);     }   Example 3: Pack and unpack a message in
-  Python.      foo = Foo(...)     any = Any()     any.Pack(foo)     ...     if
-  any.Is(Foo.DESCRIPTOR):       any.Unpack(foo)       ...   Example 4: Pack
-  and unpack a message in Go       foo := &pb.Foo{...}      any, err :=
-  ptypes.MarshalAny(foo)      ...      foo := &pb.Foo{}      if err :=
-  ptypes.UnmarshalAny(any, foo); err != nil {        ...      }  The pack
-  methods provided by protobuf library will by default use
+  functions or additional generated methods of the Any type. Example 1: Pack
+  and unpack a message in C++. Foo foo = ...; Any any; any.PackFrom(foo); ...
+  if (any.UnpackTo(&foo)) { ... } Example 2: Pack and unpack a message in
+  Java. Foo foo = ...; Any any = Any.pack(foo); ... if (any.is(Foo.class)) {
+  foo = any.unpack(Foo.class); } Example 3: Pack and unpack a message in
+  Python. foo = Foo(...) any = Any() any.Pack(foo) ... if
+  any.Is(Foo.DESCRIPTOR): any.Unpack(foo) ... Example 4: Pack and unpack a
+  message in Go foo := &pb.Foo{...} any, err := ptypes.MarshalAny(foo) ... foo
+  := &pb.Foo{} if err := ptypes.UnmarshalAny(any, foo); err != nil { ... } The
+  pack methods provided by protobuf library will by default use
   'type.googleapis.com/full.type.name' as the type URL and the unpack methods
   only use the fully qualified type name after the last '/' in the type URL,
-  for example "foo.bar.com/x/y.z" will yield type name "y.z".   # JSON  The
-  JSON representation of an `Any` value uses the regular representation of the
+  for example "foo.bar.com/x/y.z" will yield type name "y.z". # JSON The JSON
+  representation of an `Any` value uses the regular representation of the
   deserialized, embedded message, with an additional field `@type` which
-  contains the type URL. Example:      package google.profile;     message
-  Person {       string first_name = 1;       string last_name = 2;     }
-  {       "@type": "type.googleapis.com/google.profile.Person",
-  "firstName": <string>,       "lastName": <string>     }  If the embedded
-  message type is well-known and has a custom JSON representation, that
-  representation will be embedded adding a field `value` which holds the
-  custom JSON in addition to the `@type` field. Example (for message
-  google.protobuf.Duration):      {       "@type":
-  "type.googleapis.com/google.protobuf.Duration",       "value": "1.212s"
-  }
+  contains the type URL. Example: package google.profile; message Person {
+  string first_name = 1; string last_name = 2; } { "@type":
+  "type.googleapis.com/google.profile.Person", "firstName": , "lastName": } If
+  the embedded message type is well-known and has a custom JSON
+  representation, that representation will be embedded adding a field `value`
+  which holds the custom JSON in addition to the `@type` field. Example (for
+  message google.protobuf.Duration): { "@type":
+  "type.googleapis.com/google.protobuf.Duration", "value": "1.212s" }
 
   Fields:
     typeUrl: A URL/resource name that uniquely identifies the type of the
@@ -148,20 +143,20 @@ class Any(_messages.Message):
       one "/" character. The last segment of the URL's path must represent the
       fully qualified name of the type (as in
       `path/google.protobuf.Duration`). The name should be in a canonical form
-      (e.g., leading "." is not accepted).  In practice, teams usually
+      (e.g., leading "." is not accepted). In practice, teams usually
       precompile into the binary all types that they expect it to use in the
       context of Any. However, for URLs which use the scheme `http`, `https`,
       or no scheme, one can optionally set up a type server that maps type
-      URLs to message definitions as follows:  * If no scheme is provided,
+      URLs to message definitions as follows: * If no scheme is provided,
       `https` is assumed. * An HTTP GET on the URL must yield a
-      google.protobuf.Type   value in binary format, or produce an error. *
-      Applications are allowed to cache lookup results based on the   URL, or
-      have them precompiled into a binary to avoid any   lookup. Therefore,
-      binary compatibility needs to be preserved   on changes to types. (Use
-      versioned type names to manage   breaking changes.)  Note: this
+      google.protobuf.Type value in binary format, or produce an error. *
+      Applications are allowed to cache lookup results based on the URL, or
+      have them precompiled into a binary to avoid any lookup. Therefore,
+      binary compatibility needs to be preserved on changes to types. (Use
+      versioned type names to manage breaking changes.) Note: this
       functionality is not currently available in the official protobuf
       release, and it is not used for type URLs beginning with
-      type.googleapis.com.  Schemes other than `http`, `https` (or the empty
+      type.googleapis.com. Schemes other than `http`, `https` (or the empty
       scheme) might be used with implementation specific semantics.
     value: Must be a valid serialized protocol buffer of the above specified
       type.
@@ -398,13 +393,13 @@ class Environment(_messages.Message):
 
   Fields:
     completionTime: Output only. The time when the Environment status was set
-      to complete.  This value will be set automatically when state
-      transitions to COMPLETE.
+      to complete. This value will be set automatically when state transitions
+      to COMPLETE.
     creationTime: Output only. The time when the Environment was created.
     dimensionValue: Dimension values describing the environment. Dimension
       values always consist of "Model", "Version", "Locale", and
-      "Orientation".  - In response: always set - In create request: always
-      set - In update request: never set
+      "Orientation". - In response: always set - In create request: always set
+      - In update request: never set
     displayName: A short human-readable name to display in the UI. Maximum of
       100 characters. For example: Nexus 5, API 27.
     environmentId: Output only. An Environment id.
@@ -414,7 +409,7 @@ class Environment(_messages.Message):
     projectId: Output only. A Project id.
     resultsStorage: The location where output files are stored in the user
       bucket.
-    shardSummaries: Output only. Summaries of shards.  Only one shard will
+    shardSummaries: Output only. Summaries of shards. Only one shard will
       present unless sharding feature is enabled in TestExecutionService.
   """
 
@@ -445,70 +440,68 @@ class EnvironmentDimensionValueEntry(_messages.Message):
 
 class Execution(_messages.Message):
   r"""An Execution represents a collection of Steps. For instance, it could
-  represent:    - a mobile test executed across a range of device
-  configurations    - a jenkins job with a build step followed by a test step
-  The maximum size of an execution message is 1 MiB.  An Execution can be
-  updated until its state is set to COMPLETE at which point it becomes
-  immutable.
+  represent: - a mobile test executed across a range of device configurations
+  - a jenkins job with a build step followed by a test step The maximum size
+  of an execution message is 1 MiB. An Execution can be updated until its
+  state is set to COMPLETE at which point it becomes immutable.
 
   Enums:
-    StateValueValuesEnum: The initial state is IN_PROGRESS.  The only legal
-      state transitions is from IN_PROGRESS to COMPLETE.  A
-      PRECONDITION_FAILED will be returned if an invalid transition is
-      requested.  The state can only be set to COMPLETE once. A
-      FAILED_PRECONDITION will be returned if the state is set to COMPLETE
-      multiple times.  If the state is set to COMPLETE, all the in-progress
-      steps within the execution will be set as COMPLETE. If the outcome of
-      the step is not set, the outcome will be set to INCONCLUSIVE.  - In
-      response always set - In create/update request: optional
+    StateValueValuesEnum: The initial state is IN_PROGRESS. The only legal
+      state transitions is from IN_PROGRESS to COMPLETE. A PRECONDITION_FAILED
+      will be returned if an invalid transition is requested. The state can
+      only be set to COMPLETE once. A FAILED_PRECONDITION will be returned if
+      the state is set to COMPLETE multiple times. If the state is set to
+      COMPLETE, all the in-progress steps within the execution will be set as
+      COMPLETE. If the outcome of the step is not set, the outcome will be set
+      to INCONCLUSIVE. - In response always set - In create/update request:
+      optional
 
   Fields:
     completionTime: The time when the Execution status transitioned to
-      COMPLETE.  This value will be set automatically when state transitions
-      to COMPLETE.  - In response: set if the execution state is COMPLETE. -
-      In create/update request: never set
-    creationTime: The time when the Execution was created.  This value will be
-      set automatically when CreateExecution is called.  - In response: always
+      COMPLETE. This value will be set automatically when state transitions to
+      COMPLETE. - In response: set if the execution state is COMPLETE. - In
+      create/update request: never set
+    creationTime: The time when the Execution was created. This value will be
+      set automatically when CreateExecution is called. - In response: always
       set - In create/update request: never set
     dimensionDefinitions: The dimensions along which different steps in this
       execution may vary. This must remain fixed over the life of the
-      execution.  Returns INVALID_ARGUMENT if this field is set in an update
-      request.  Returns INVALID_ARGUMENT if the same name occurs in more than
-      one dimension_definition.  Returns INVALID_ARGUMENT if the size of the
-      list is over 100.  - In response: present if set by create - In create
+      execution. Returns INVALID_ARGUMENT if this field is set in an update
+      request. Returns INVALID_ARGUMENT if the same name occurs in more than
+      one dimension_definition. Returns INVALID_ARGUMENT if the size of the
+      list is over 100. - In response: present if set by create - In create
       request: optional - In update request: never set
     executionId: A unique identifier within a History for this Execution.
       Returns INVALID_ARGUMENT if this field is set or overwritten by the
-      caller.  - In response always set - In create/update request: never set
-    outcome: Classify the result, for example into SUCCESS or FAILURE  - In
+      caller. - In response always set - In create/update request: never set
+    outcome: Classify the result, for example into SUCCESS or FAILURE - In
       response: present if set by create/update request - In create/update
       request: optional
-    specification: Lightweight information about execution request.  - In
+    specification: Lightweight information about execution request. - In
       response: present if set by create - In create: optional - In update:
       optional
-    state: The initial state is IN_PROGRESS.  The only legal state transitions
-      is from IN_PROGRESS to COMPLETE.  A PRECONDITION_FAILED will be returned
-      if an invalid transition is requested.  The state can only be set to
+    state: The initial state is IN_PROGRESS. The only legal state transitions
+      is from IN_PROGRESS to COMPLETE. A PRECONDITION_FAILED will be returned
+      if an invalid transition is requested. The state can only be set to
       COMPLETE once. A FAILED_PRECONDITION will be returned if the state is
-      set to COMPLETE multiple times.  If the state is set to COMPLETE, all
-      the in-progress steps within the execution will be set as COMPLETE. If
-      the outcome of the step is not set, the outcome will be set to
-      INCONCLUSIVE.  - In response always set - In create/update request:
-      optional
+      set to COMPLETE multiple times. If the state is set to COMPLETE, all the
+      in-progress steps within the execution will be set as COMPLETE. If the
+      outcome of the step is not set, the outcome will be set to INCONCLUSIVE.
+      - In response always set - In create/update request: optional
     testExecutionMatrixId: TestExecution Matrix ID that the
-      TestExecutionService uses.  - In response: present if set by create - In
+      TestExecutionService uses. - In response: present if set by create - In
       create: optional - In update: never set
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The initial state is IN_PROGRESS.  The only legal state transitions is
-    from IN_PROGRESS to COMPLETE.  A PRECONDITION_FAILED will be returned if
-    an invalid transition is requested.  The state can only be set to COMPLETE
+    r"""The initial state is IN_PROGRESS. The only legal state transitions is
+    from IN_PROGRESS to COMPLETE. A PRECONDITION_FAILED will be returned if an
+    invalid transition is requested. The state can only be set to COMPLETE
     once. A FAILED_PRECONDITION will be returned if the state is set to
-    COMPLETE multiple times.  If the state is set to COMPLETE, all the in-
+    COMPLETE multiple times. If the state is set to COMPLETE, all the in-
     progress steps within the execution will be set as COMPLETE. If the
-    outcome of the step is not set, the outcome will be set to INCONCLUSIVE.
-    - In response always set - In create/update request: optional
+    outcome of the step is not set, the outcome will be set to INCONCLUSIVE. -
+    In response always set - In create/update request: optional
 
     Values:
       unknownState: Should never be in this state. Exists for proto
@@ -580,11 +573,11 @@ class FileReference(_messages.Message):
   r"""A reference to a file.
 
   Fields:
-    fileUri: The URI of a file stored in Google Cloud Storage.  For example:
+    fileUri: The URI of a file stored in Google Cloud Storage. For example:
       http://storage.googleapis.com/mybucket/path/to/test.xml or in gsutil
       format: gs://mybucket/path/to/test.xml with version-specific info,
-      gs://mybucket/path/to/test.xml#1360383693690000  An INVALID_ARGUMENT
-      error will be returned if the URI format is not supported.  - In
+      gs://mybucket/path/to/test.xml#1360383693690000 An INVALID_ARGUMENT
+      error will be returned if the URI format is not supported. - In
       response: always set - In create/update request: always set
   """
 
@@ -643,31 +636,30 @@ class GraphicsStatsBucket(_messages.Message):
 class History(_messages.Message):
   r"""A History represents a sorted list of Executions ordered by the
   start_timestamp_millis field (descending). It can be used to group all the
-  Executions of a continuous build.  Note that the ordering only operates on
+  Executions of a continuous build. Note that the ordering only operates on
   one-dimension. If a repository has multiple branches, it means that multiple
   histories will need to be used in order to order Executions per branch.
 
   Enums:
-    TestPlatformValueValuesEnum: The platform of the test history.  - In
+    TestPlatformValueValuesEnum: The platform of the test history. - In
       response: always set. Returns the platform of the last execution if
       unknown.
 
   Fields:
     displayName: A short human-readable (plain text) name to display in the
-      UI. Maximum of 100 characters.  - In response: present if set during
+      UI. Maximum of 100 characters. - In response: present if set during
       create. - In create request: optional
-    historyId: A unique identifier within a project for this History.  Returns
-      INVALID_ARGUMENT if this field is set or overwritten by the caller.  -
-      In response always set - In create request: never set
+    historyId: A unique identifier within a project for this History. Returns
+      INVALID_ARGUMENT if this field is set or overwritten by the caller. - In
+      response always set - In create request: never set
     name: A name to uniquely identify a history within a project. Maximum of
-      200 characters.  - In response always set - In create request: always
-      set
-    testPlatform: The platform of the test history.  - In response: always
-      set. Returns the platform of the last execution if unknown.
+      200 characters. - In response always set - In create request: always set
+    testPlatform: The platform of the test history. - In response: always set.
+      Returns the platform of the last execution if unknown.
   """
 
   class TestPlatformValueValuesEnum(_messages.Enum):
-    r"""The platform of the test history.  - In response: always set. Returns
+    r"""The platform of the test history. - In response: always set. Returns
     the platform of the last execution if unknown.
 
     Values:
@@ -690,10 +682,9 @@ class Image(_messages.Message):
 
   Fields:
     error: An error explaining why the thumbnail could not be rendered.
-    sourceImage: A reference to the full-size, original image.  This is the
-      same as the tool_outputs entry for the image under its Step.  Always
-      set.
-    stepId: The step to which the image is attached.  Always set.
+    sourceImage: A reference to the full-size, original image. This is the
+      same as the tool_outputs entry for the image under its Step. Always set.
+    stepId: The step to which the image is attached. Always set.
     thumbnail: The thumbnail.
   """
 
@@ -728,7 +719,7 @@ class InconclusiveDetail(_messages.Message):
       of infrastructure failures
     infrastructureFailure: If the test runner could not determine success or
       failure because the test depends on a component other than the system
-      under test which failed.  For example, a mobile test requires
+      under test which failed. For example, a mobile test requires
       provisioning a device where the test executes, and that provisioning can
       fail.
   """
@@ -864,12 +855,12 @@ class ListEnvironmentsResponse(_messages.Message):
   r"""Response message for EnvironmentService.ListEnvironments.
 
   Fields:
-    environments: Environments.  Always set.
-    executionId: A Execution id  Always set.
-    historyId: A History id.  Always set.
+    environments: Environments. Always set.
+    executionId: A Execution id Always set.
+    historyId: A History id. Always set.
     nextPageToken: A continuation token to resume the query at the next item.
       Will only be set if there are more Environments to fetch.
-    projectId: A Project id.  Always set.
+    projectId: A Project id. Always set.
   """
 
   environments = _messages.MessageField('Environment', 1, repeated=True)
@@ -883,7 +874,7 @@ class ListExecutionsResponse(_messages.Message):
   r"""A ListExecutionsResponse object.
 
   Fields:
-    executions: Executions.  Always set.
+    executions: Executions. Always set.
     nextPageToken: A continuation token to resume the query at the next item.
       Will only be set if there are more Executions to fetch.
   """
@@ -898,7 +889,7 @@ class ListHistoriesResponse(_messages.Message):
   Fields:
     histories: Histories.
     nextPageToken: A continuation token to resume the query at the next item.
-      Will only be set if there are more histories to fetch.  Tokens are valid
+      Will only be set if there are more histories to fetch. Tokens are valid
       for up to one hour from the time of the first list request. For
       instance, if you make a list request at 1PM and use the token from this
       first request 10 minutes later, the token from this second response will
@@ -955,7 +946,7 @@ class ListStepAccessibilityClustersResponse(_messages.Message):
       ordered by their highest priority cluster.
     name: A full resource name of the step. For example, projects/my-
       project/histories/bh.1234567890abcdef/executions/
-      1234567890123456789/steps/bs.1234567890abcdef  Always presents.
+      1234567890123456789/steps/bs.1234567890abcdef Always presents.
   """
 
   clusters = _messages.MessageField('SuggestionClusterProto', 1, repeated=True)
@@ -969,12 +960,12 @@ class ListStepThumbnailsResponse(_messages.Message):
     nextPageToken: A continuation token to resume the query at the next item.
       If set, indicates that there are more thumbnails to read, by calling
       list again with this value in the page_token field.
-    thumbnails: A list of image data.  Images are returned in a deterministic
+    thumbnails: A list of image data. Images are returned in a deterministic
       order; they are ordered by these factors, in order of importance: *
       First, by their associated test case. Images without a test case are
       considered greater than images with one. * Second, by their creation
-      time. Images without a creation time are   greater than images with one.
-      * Third, by the order in which they were added to the step (by calls to
+      time. Images without a creation time are greater than images with one. *
+      Third, by the order in which they were added to the step (by calls to
       CreateStep or UpdateStep).
   """
 
@@ -1026,8 +1017,8 @@ class MemoryInfo(_messages.Message):
 
 
 class MergedResult(_messages.Message):
-  r"""Merged test result for environment.  If the environment has only one
-  step (no reruns or shards), then the merged result is the same as the step
+  r"""Merged test result for environment. If the environment has only one step
+  (no reruns or shards), then the merged result is the same as the step
   result. If the environment has multiple shards and/or reruns, then the
   results of shards and reruns that belong to the same environment are merged
   into one environment result.
@@ -1039,14 +1030,14 @@ class MergedResult(_messages.Message):
     outcome: Outcome of the resource
     state: State of the resource
     testSuiteOverviews: The combined and rolled-up result of each test suite
-      that was run as part  of this environment.   Combining:  When the test
-      cases from a suite are run in different steps (sharding),  the results
-      are added back together in one overview. (e.g., if shard1 has  2
-      failures and shard2 has 1 failure than the overview failure_count = 3).
-      Rollup:  When test cases from the same suite are run multiple times
-      (flaky), the  results are combined (e.g., if testcase1.run1 fails,
-      testcase1.run2  passes, and both testcase2.run1 and testcase2.run2 fail
-      then the overview  flaky_count = 1 and failure_count = 1).
+      that was run as part of this environment. Combining: When the test cases
+      from a suite are run in different steps (sharding), the results are
+      added back together in one overview. (e.g., if shard1 has 2 failures and
+      shard2 has 1 failure than the overview failure_count = 3). Rollup: When
+      test cases from the same suite are run multiple times (flaky), the
+      results are combined (e.g., if testcase1.run1 fails, testcase1.run2
+      passes, and both testcase2.run1 and testcase2.run2 fail then the
+      overview flaky_count = 1 and failure_count = 1).
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1196,26 +1187,26 @@ class Outcome(_messages.Message):
   r"""Interprets a result so that humans and machines can act on it.
 
   Enums:
-    SummaryValueValuesEnum: The simplest way to interpret a result.  Required
+    SummaryValueValuesEnum: The simplest way to interpret a result. Required
 
   Fields:
-    failureDetail: More information about a FAILURE outcome.  Returns
+    failureDetail: More information about a FAILURE outcome. Returns
       INVALID_ARGUMENT if this field is set but the summary is not FAILURE.
       Optional
     inconclusiveDetail: More information about an INCONCLUSIVE outcome.
       Returns INVALID_ARGUMENT if this field is set but the summary is not
-      INCONCLUSIVE.  Optional
-    skippedDetail: More information about a SKIPPED outcome.  Returns
+      INCONCLUSIVE. Optional
+    skippedDetail: More information about a SKIPPED outcome. Returns
       INVALID_ARGUMENT if this field is set but the summary is not SKIPPED.
       Optional
-    successDetail: More information about a SUCCESS outcome.  Returns
+    successDetail: More information about a SUCCESS outcome. Returns
       INVALID_ARGUMENT if this field is set but the summary is not SUCCESS.
       Optional
-    summary: The simplest way to interpret a result.  Required
+    summary: The simplest way to interpret a result. Required
   """
 
   class SummaryValueValuesEnum(_messages.Enum):
-    r"""The simplest way to interpret a result.  Required
+    r"""The simplest way to interpret a result. Required
 
     Values:
       unset: Do not use. For proto versioning only.
@@ -1425,11 +1416,11 @@ class ProjectSettings(_messages.Message):
 
   Fields:
     defaultBucket: The name of the Google Cloud Storage bucket to which
-      results are written.  By default, this is unset.  In update request:
+      results are written. By default, this is unset. In update request:
       optional In response: optional
-    name: The name of the project's settings.  Always of the form:
-      projects/{project-id}/settings  In update request: never set In
-      response: always set
+    name: The name of the project's settings. Always of the form:
+      projects/{project-id}/settings In update request: never set In response:
+      always set
   """
 
   defaultBucket = _messages.StringField(1)
@@ -1440,8 +1431,8 @@ class PublishXunitXmlFilesRequest(_messages.Message):
   r"""Request message for StepService.PublishXunitXmlFiles.
 
   Fields:
-    xunitXmlFiles: URI of the Xunit XML files to publish.  The maximum size of
-      the file this reference is pointing to is 50MB.  Required.
+    xunitXmlFiles: URI of the Xunit XML files to publish. The maximum size of
+      the file this reference is pointing to is 50MB. Required.
   """
 
   xunitXmlFiles = _messages.MessageField('FileReference', 1, repeated=True)
@@ -1547,7 +1538,7 @@ class ShardSummary(_messages.Message):
   r"""Result summary for a shard in an environment.
 
   Fields:
-    runs: Summaries of the steps belonging to the shard.  With
+    runs: Summaries of the steps belonging to the shard. With
       flaky_test_attempts enabled from TestExecutionService, more than one run
       (Step) can present. And the runs will be sorted by multistep_number.
     shardResult: Merged result of the shard.
@@ -1589,7 +1580,7 @@ class StackTrace(_messages.Message):
   r"""A stacktrace.
 
   Fields:
-    exception: The stack trace message.  Required
+    exception: The stack trace message. Required
   """
 
   exception = _messages.StringField(1)
@@ -1674,7 +1665,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1683,7 +1674,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1724,114 +1715,114 @@ class Status(_messages.Message):
 class Step(_messages.Message):
   r"""A Step represents a single operation performed as part of Execution. A
   step can be used to represent the execution of a tool ( for example a test
-  runner execution or an execution of a compiler).  Steps can overlap (for
+  runner execution or an execution of a compiler). Steps can overlap (for
   instance two steps might have the same start time if some operations are
-  done in parallel).  Here is an example, let's consider that we have a
+  done in parallel). Here is an example, let's consider that we have a
   continuous build is executing a test runner for each iteration. The workflow
   would look like: - user creates a Execution with id 1 - user creates an
   TestExecutionStep with id 100 for Execution 1 - user update
-  TestExecutionStep with id 100 to add a raw xml log     + the service parses
-  the xml logs and returns a TestExecutionStep with      updated
-  TestResult(s). - user update the status of TestExecutionStep with id 100 to
-  COMPLETE  A Step can be updated until its state is set to COMPLETE at which
-  points it becomes immutable.  Next tag: 27
+  TestExecutionStep with id 100 to add a raw xml log + the service parses the
+  xml logs and returns a TestExecutionStep with updated TestResult(s). - user
+  update the status of TestExecutionStep with id 100 to COMPLETE A Step can be
+  updated until its state is set to COMPLETE at which points it becomes
+  immutable. Next tag: 27
 
   Enums:
     StateValueValuesEnum: The initial state is IN_PROGRESS. The only legal
-      state transitions are * IN_PROGRESS -> COMPLETE  A PRECONDITION_FAILED
-      will be returned if an invalid transition is requested.  It is valid to
+      state transitions are * IN_PROGRESS -> COMPLETE A PRECONDITION_FAILED
+      will be returned if an invalid transition is requested. It is valid to
       create Step with a state set to COMPLETE. The state can only be set to
       COMPLETE once. A PRECONDITION_FAILED will be returned if the state is
-      set to COMPLETE multiple times.  - In response: always set - In
+      set to COMPLETE multiple times. - In response: always set - In
       create/update request: optional
 
   Fields:
-    completionTime: The time when the step status was set to complete.  This
-      value will be set automatically when state transitions to COMPLETE.  -
-      In response: set if the execution state is COMPLETE. - In create/update
+    completionTime: The time when the step status was set to complete. This
+      value will be set automatically when state transitions to COMPLETE. - In
+      response: set if the execution state is COMPLETE. - In create/update
       request: never set
-    creationTime: The time when the step was created.  - In response: always
+    creationTime: The time when the step was created. - In response: always
       set - In create/update request: never set
     description: A description of this tool For example: mvn clean package -D
-      skipTests=true  - In response: present if set by create/update request -
+      skipTests=true - In response: present if set by create/update request -
       In create/update request: optional
     deviceUsageDuration: How much the device resource is used to perform the
-      test.  This is the device usage used for billing purpose, which is
+      test. This is the device usage used for billing purpose, which is
       different from the run_duration, for example, infrastructure failure
-      won't be charged for device usage.  PRECONDITION_FAILED will be returned
+      won't be charged for device usage. PRECONDITION_FAILED will be returned
       if one attempts to set a device_usage on a step which already has this
-      field set.  - In response: present if previously set. - In create
+      field set. - In response: present if previously set. - In create
       request: optional - In update request: optional
     dimensionValue: If the execution containing this step has any
       dimension_definition set, then this field allows the child to specify
-      the values of the dimensions.  The keys must exactly match the
-      dimension_definition of the execution.  For example, if the execution
-      has `dimension_definition = ['attempt', 'device']` then a step must
-      define values for those dimensions, eg. `dimension_value = ['attempt':
-      '1', 'device': 'Nexus 6']`  If a step does not participate in one
-      dimension of the matrix, the value for that dimension should be empty
-      string. For example, if one of the tests is executed by a runner which
-      does not support retries, the step could have `dimension_value =
-      ['attempt': '', 'device': 'Nexus 6']`  If the step does not participate
-      in any dimensions of the matrix, it may leave dimension_value unset.  A
-      PRECONDITION_FAILED will be returned if any of the keys do not exist in
-      the dimension_definition of the execution.  A PRECONDITION_FAILED will
-      be returned if another step in this execution already has the same name
-      and dimension_value, but differs on other data fields, for example, step
-      field is different.  A PRECONDITION_FAILED will be returned if
+      the values of the dimensions. The keys must exactly match the
+      dimension_definition of the execution. For example, if the execution has
+      `dimension_definition = ['attempt', 'device']` then a step must define
+      values for those dimensions, eg. `dimension_value = ['attempt': '1',
+      'device': 'Nexus 6']` If a step does not participate in one dimension of
+      the matrix, the value for that dimension should be empty string. For
+      example, if one of the tests is executed by a runner which does not
+      support retries, the step could have `dimension_value = ['attempt': '',
+      'device': 'Nexus 6']` If the step does not participate in any dimensions
+      of the matrix, it may leave dimension_value unset. A PRECONDITION_FAILED
+      will be returned if any of the keys do not exist in the
+      dimension_definition of the execution. A PRECONDITION_FAILED will be
+      returned if another step in this execution already has the same name and
+      dimension_value, but differs on other data fields, for example, step
+      field is different. A PRECONDITION_FAILED will be returned if
       dimension_value is set, and there is a dimension_definition in the
-      execution which is not specified as one of the keys.  - In response:
+      execution which is not specified as one of the keys. - In response:
       present if set by create - In create request: optional - In update
       request: never set
     hasImages: Whether any of the outputs of this step are images whose
-      thumbnails can be fetched with ListThumbnails.  - In response: always
-      set - In create/update request: never set
+      thumbnails can be fetched with ListThumbnails. - In response: always set
+      - In create/update request: never set
     labels: Arbitrary user-supplied key/value pairs that are associated with
-      the step.  Users are responsible for managing the key namespace such
-      that keys don't accidentally collide.  An INVALID_ARGUMENT will be
-      returned if the number of labels exceeds 100 or if the length of any of
-      the keys or values exceeds 100 characters.  - In response: always set -
-      In create request: optional - In update request: optional; any new
-      key/value pair will be added to the   map, and any new value for an
-      existing key will update that key's value
+      the step. Users are responsible for managing the key namespace such that
+      keys don't accidentally collide. An INVALID_ARGUMENT will be returned if
+      the number of labels exceeds 100 or if the length of any of the keys or
+      values exceeds 100 characters. - In response: always set - In create
+      request: optional - In update request: optional; any new key/value pair
+      will be added to the map, and any new value for an existing key will
+      update that key's value
     multiStep: Details when multiple steps are run with the same configuration
       as a group. These details can be used identify which group this step is
       part of. It also identifies the groups 'primary step' which indexes all
-      the group members.  - In response: present if previously set. - In
-      create request: optional, set iff this step was performed more than
-      once. - In update request: optional
+      the group members. - In response: present if previously set. - In create
+      request: optional, set iff this step was performed more than once. - In
+      update request: optional
     name: A short human-readable name to display in the UI. Maximum of 100
-      characters. For example: Clean build  A PRECONDITION_FAILED will be
+      characters. For example: Clean build A PRECONDITION_FAILED will be
       returned upon creating a new step if it shares its name and
       dimension_value with an existing step. If two steps represent a similar
       action, but have different dimension values, they should share the same
       name. For instance, if the same set of tests is run on two different
-      platforms, the two steps should have the same name.  - In response:
+      platforms, the two steps should have the same name. - In response:
       always set - In create request: always set - In update request: never
       set
     outcome: Classification of the result, for example into SUCCESS or FAILURE
       - In response: present if set by create/update request - In
       create/update request: optional
-    runDuration: How long it took for this step to run.  If unset, this is set
+    runDuration: How long it took for this step to run. If unset, this is set
       to the difference between creation_time and completion_time when the
       step is set to the COMPLETE state. In some cases, it is appropriate to
       set this value separately: For instance, if a step is created, but the
       operation it represents is queued for a few minutes before it executes,
       it would be appropriate not to include the time spent queued in its
-      run_duration.  PRECONDITION_FAILED will be returned if one attempts to
-      set a run_duration on a step which already has this field set.  - In
+      run_duration. PRECONDITION_FAILED will be returned if one attempts to
+      set a run_duration on a step which already has this field set. - In
       response: present if previously set; always present on COMPLETE step -
       In create request: optional - In update request: optional
     state: The initial state is IN_PROGRESS. The only legal state transitions
-      are * IN_PROGRESS -> COMPLETE  A PRECONDITION_FAILED will be returned if
-      an invalid transition is requested.  It is valid to create Step with a
+      are * IN_PROGRESS -> COMPLETE A PRECONDITION_FAILED will be returned if
+      an invalid transition is requested. It is valid to create Step with a
       state set to COMPLETE. The state can only be set to COMPLETE once. A
       PRECONDITION_FAILED will be returned if the state is set to COMPLETE
-      multiple times.  - In response: always set - In create/update request:
+      multiple times. - In response: always set - In create/update request:
       optional
-    stepId: A unique identifier within a Execution for this Step.  Returns
-      INVALID_ARGUMENT if this field is set or overwritten by the caller.  -
-      In response: always set - In create/update request: never set
+    stepId: A unique identifier within a Execution for this Step. Returns
+      INVALID_ARGUMENT if this field is set or overwritten by the caller. - In
+      response: always set - In create/update request: never set
     testExecutionStep: An execution of a test runner.
     toolExecutionStep: An execution of a tool (used for steps we don't
       explicitly support).
@@ -1839,11 +1830,11 @@ class Step(_messages.Message):
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The initial state is IN_PROGRESS. The only legal state transitions are
-    * IN_PROGRESS -> COMPLETE  A PRECONDITION_FAILED will be returned if an
-    invalid transition is requested.  It is valid to create Step with a state
+    * IN_PROGRESS -> COMPLETE A PRECONDITION_FAILED will be returned if an
+    invalid transition is requested. It is valid to create Step with a state
     set to COMPLETE. The state can only be set to COMPLETE once. A
     PRECONDITION_FAILED will be returned if the state is set to COMPLETE
-    multiple times.  - In response: always set - In create/update request:
+    multiple times. - In response: always set - In create/update request:
     optional
 
     Values:
@@ -1917,7 +1908,7 @@ class SuccessDetail(_messages.Message):
 
 
 class SuggestionClusterProto(_messages.Message):
-  r"""A set of similar suggestions that we suspect are closely related.  This
+  r"""A set of similar suggestions that we suspect are closely related. This
   proto and most of the nested protos are branched from
   foxandcrown.prelaunchreport.service.SuggestionClusterProto, replacing PLR's
   dependencies with FTL's.
@@ -2020,35 +2011,35 @@ class TestCase(_messages.Message):
   r"""A TestCase object.
 
   Enums:
-    StatusValueValuesEnum: The status of the test case.  Required.
+    StatusValueValuesEnum: The status of the test case. Required.
 
   Fields:
-    elapsedTime: The elapsed run time of the test case.  Required.
+    elapsedTime: The elapsed run time of the test case. Required.
     endTime: The end time of the test case.
-    skippedMessage: Why the test case was skipped.  Present only for skipped
+    skippedMessage: Why the test case was skipped. Present only for skipped
       test case
     stackTraces: The stack trace details if the test case failed or
-      encountered an error.  The maximum size of the stack traces is 100KiB,
-      beyond which the stack track will be truncated.  Zero if the test case
+      encountered an error. The maximum size of the stack traces is 100KiB,
+      beyond which the stack track will be truncated. Zero if the test case
       passed.
     startTime: The start time of the test case.
-    status: The status of the test case.  Required.
+    status: The status of the test case. Required.
     testCaseId: A unique identifier within a Step for this Test Case.
     testCaseReference: Test case reference, e.g. name, class name and test
-      suite name.  Required.
+      suite name. Required.
     toolOutputs: References to opaque files of any format output by the tool
-      execution.  @OutputOnly
+      execution. @OutputOnly
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""The status of the test case.  Required.
+    r"""The status of the test case. Required.
 
     Values:
       passed: Test passed.
       failed: Test failed.
       error: Test encountered an error
       skipped: Test skipped
-      flaky: Test flaked.  Present only for rollup test cases; test cases from
+      flaky: Test flaked. Present only for rollup test cases; test cases from
         steps that were run with the same configuration had both failure and
         success outcomes.
     """
@@ -2070,13 +2061,13 @@ class TestCase(_messages.Message):
 
 
 class TestCaseReference(_messages.Message):
-  r"""A reference to a test case.  Test case references are canonically
-  ordered lexicographically by these three factors: * First, by
-  test_suite_name. * Second, by class_name. * Third, by name.
+  r"""A reference to a test case. Test case references are canonically ordered
+  lexicographically by these three factors: * First, by test_suite_name. *
+  Second, by class_name. * Third, by name.
 
   Fields:
     className: The name of the class.
-    name: The name of the test case.  Required.
+    name: The name of the test case. Required.
     testSuiteName: The name of the test suite to which this test case belongs.
   """
 
@@ -2086,28 +2077,28 @@ class TestCaseReference(_messages.Message):
 
 
 class TestExecutionStep(_messages.Message):
-  r"""A step that represents running tests.  It accepts ant-junit xml files
+  r"""A step that represents running tests. It accepts ant-junit xml files
   which will be parsed into structured test results by the service. Xml file
   paths are updated in order to append more files, however they can't be
-  deleted.  Users can also add test results manually by using the test_result
+  deleted. Users can also add test results manually by using the test_result
   field.
 
   Fields:
-    testIssues: Issues observed during the test execution.  For example, if
-      the mobile app under test crashed during the test, the error message and
-      the stack trace content can be recorded here to assist debugging.  - In
+    testIssues: Issues observed during the test execution. For example, if the
+      mobile app under test crashed during the test, the error message and the
+      stack trace content can be recorded here to assist debugging. - In
       response: present if set by create or update - In create/update request:
       optional
     testSuiteOverviews: List of test suite overview contents. This could be
       parsed from xUnit XML log by server, or uploaded directly by user. This
       references should only be called when test suites are fully parsed or
-      uploaded.  The maximum allowed number of test suite overviews per step
-      is 1000.  - In response: always set - In create request: optional - In
+      uploaded. The maximum allowed number of test suite overviews per step is
+      1000. - In response: always set - In create request: optional - In
       update request: never (use publishXunitXmlFiles custom method instead)
-    testTiming: The timing break down of the test execution.  - In response:
+    testTiming: The timing break down of the test execution. - In response:
       present if set by create or update - In create/update request: optional
-    toolExecution: Represents the execution of the test runner.  The exit code
-      of this tool will be used to determine if the test passed.  - In
+    toolExecution: Represents the execution of the test runner. The exit code
+      of this tool will be used to determine if the test passed. - In
       response: always set - In create/update request: optional
   """
 
@@ -2256,33 +2247,33 @@ class TestIssue(_messages.Message):
 
 class TestSuiteOverview(_messages.Message):
   r"""A summary of a test suite result either parsed from XML or uploaded
-  directly by a user.  Note: the API related comments are for StepService
-  only. This message is also being used in ExecutionService in a read only
-  mode for the corresponding step.
+  directly by a user. Note: the API related comments are for StepService only.
+  This message is also being used in ExecutionService in a read only mode for
+  the corresponding step.
 
   Fields:
     elapsedTime: Elapsed time of test suite.
     errorCount: Number of test cases in error, typically set by the service by
-      parsing the xml_source.  - In create/response: always set - In update
+      parsing the xml_source. - In create/response: always set - In update
       request: never
     failureCount: Number of failed test cases, typically set by the service by
-      parsing the xml_source. May also be set by the user.  - In
+      parsing the xml_source. May also be set by the user. - In
       create/response: always set - In update request: never
     flakyCount: Number of flaky test cases, set by the service by rolling up
-      flaky test attempts.  Present only for rollup test suite overview at
+      flaky test attempts. Present only for rollup test suite overview at
       environment level. A step cannot have flaky test cases.
-    name: The name of the test suite.  - In create/response: always set - In
+    name: The name of the test suite. - In create/response: always set - In
       update request: never
     skippedCount: Number of test cases not run, typically set by the service
-      by parsing the xml_source.  - In create/response: always set - In update
+      by parsing the xml_source. - In create/response: always set - In update
       request: never
     totalCount: Number of test cases, typically set by the service by parsing
-      the xml_source.  - In create/response: always set - In update request:
+      the xml_source. - In create/response: always set - In update request:
       never
     xmlSource: If this test suite was parsed from XML, this is the URI where
-      the original XML file is stored.  Note: Multiple test suites can share
-      the same xml_source  Returns INVALID_ARGUMENT if the uri format is not
-      supported.  - In create/response: optional - In update request: never
+      the original XML file is stored. Note: Multiple test suites can share
+      the same xml_source Returns INVALID_ARGUMENT if the uri format is not
+      supported. - In create/response: optional - In update request: never
   """
 
   elapsedTime = _messages.MessageField('Duration', 1)
@@ -2299,7 +2290,7 @@ class TestTiming(_messages.Message):
   r"""Testing timing break down to know phases.
 
   Fields:
-    testProcessDuration: How long it took to run the test process.  - In
+    testProcessDuration: How long it took to run the test process. - In
       response: present if previously set. - In create/update request:
       optional
   """
@@ -2311,12 +2302,12 @@ class Thumbnail(_messages.Message):
   r"""A single thumbnail, with its size and format.
 
   Fields:
-    contentType: The thumbnail's content type, i.e. "image/png".  Always set.
-    data: The thumbnail file itself.  That is, the bytes here are precisely
-      the bytes that make up the thumbnail file; they can be served as an
-      image as-is (with the appropriate content type.)  Always set.
-    heightPx: The height of the thumbnail, in pixels.  Always set.
-    widthPx: The width of the thumbnail, in pixels.  Always set.
+    contentType: The thumbnail's content type, i.e. "image/png". Always set.
+    data: The thumbnail file itself. That is, the bytes here are precisely the
+      bytes that make up the thumbnail file; they can be served as an image
+      as-is (with the appropriate content type.) Always set.
+    heightPx: The height of the thumbnail, in pixels. Always set.
+    widthPx: The width of the thumbnail, in pixels. Always set.
   """
 
   contentType = _messages.StringField(1)
@@ -2330,10 +2321,10 @@ class Timestamp(_messages.Message):
   local calendar, encoded as a count of seconds and fractions of seconds at
   nanosecond resolution. The count is relative to an epoch at UTC midnight on
   January 1, 1970, in the proleptic Gregorian calendar which extends the
-  Gregorian calendar backwards to year one.  All minutes are 60 seconds long.
+  Gregorian calendar backwards to year one. All minutes are 60 seconds long.
   Leap seconds are "smeared" so that no leap second table is needed for
   interpretation, using a [24-hour linear
-  smear](https://developers.google.com/time/smear).  The range is from
+  smear](https://developers.google.com/time/smear). The range is from
   0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By restricting to
   that range, we ensure that we can convert to and from [RFC
   3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
@@ -2358,26 +2349,26 @@ class ToolExecution(_messages.Message):
 
   Fields:
     commandLineArguments: The full tokenized command line including the
-      program name (equivalent to argv in a C program).  - In response:
-      present if set by create request - In create request: optional - In
-      update request: never set
+      program name (equivalent to argv in a C program). - In response: present
+      if set by create request - In create request: optional - In update
+      request: never set
     exitCode: Tool execution exit code. This field will be set once the tool
-      has exited.  - In response: present if set by create/update request - In
+      has exited. - In response: present if set by create/update request - In
       create request: optional - In update request: optional, a
-      FAILED_PRECONDITION error will be   returned if an exit_code is already
+      FAILED_PRECONDITION error will be returned if an exit_code is already
       set.
     toolLogs: References to any plain text logs output the tool execution.
       This field can be set before the tool has exited in order to be able to
-      have access to a live view of the logs while the tool is running.  The
-      maximum allowed number of tool logs per step is 1000.  - In response:
+      have access to a live view of the logs while the tool is running. The
+      maximum allowed number of tool logs per step is 1000. - In response:
       present if set by create/update request - In create request: optional -
       In update request: optional, any value provided will be appended to the
       existing list
     toolOutputs: References to opaque files of any format output by the tool
-      execution.  The maximum allowed number of tool outputs per step is 1000.
+      execution. The maximum allowed number of tool outputs per step is 1000.
       - In response: present if set by create/update request - In create
       request: optional - In update request: optional, any value provided will
-      be appended to the   existing list
+      be appended to the existing list
   """
 
   commandLineArguments = _messages.StringField(1, repeated=True)
@@ -2391,7 +2382,7 @@ class ToolExecutionStep(_messages.Message):
   For example: running cp to copy artifacts from one location to another.
 
   Fields:
-    toolExecution: A Tool execution.  - In response: present if set by
+    toolExecution: A Tool execution. - In response: present if set by
       create/update request - In create/update request: optional
   """
 
@@ -2403,7 +2394,7 @@ class ToolExitCode(_messages.Message):
 
   Fields:
     number: Tool execution exit code. A value of 0 means that the execution
-      was successful.  - In response: always set - In create/update request:
+      was successful. - In response: always set - In create/update request:
       always set
   """
 
@@ -2414,11 +2405,11 @@ class ToolOutputReference(_messages.Message):
   r"""A reference to a ToolExecution output file.
 
   Fields:
-    creationTime: The creation time of the file.  - In response: present if
-      set by create/update request - In create/update request: optional
-    output: A FileReference to an output file.  - In response: always set - In
+    creationTime: The creation time of the file. - In response: present if set
+      by create/update request - In create/update request: optional
+    output: A FileReference to an output file. - In response: always set - In
       create/update request: always set
-    testCase: The test case to which this output file belongs.  - In response:
+    testCase: The test case to which this output file belongs. - In response:
       present if set by create/update request - In create/update request:
       optional
   """
@@ -2432,7 +2423,7 @@ class ToolresultsProjectsGetSettingsRequest(_messages.Message):
   r"""A ToolresultsProjectsGetSettingsRequest object.
 
   Fields:
-    projectId: A Project id.  Required.
+    projectId: A Project id. Required.
   """
 
   projectId = _messages.StringField(1, required=True)
@@ -2443,9 +2434,9 @@ class ToolresultsProjectsHistoriesCreateRequest(_messages.Message):
 
   Fields:
     history: A History resource to be passed as the request body.
-    projectId: A Project id.  Required.
+    projectId: A Project id. Required.
     requestId: A unique request ID for server to detect duplicated requests.
-      For example, a UUID.  Optional, but strongly recommended.
+      For example, a UUID. Optional, but strongly recommended.
   """
 
   history = _messages.MessageField('History', 1)
@@ -2457,10 +2448,10 @@ class ToolresultsProjectsHistoriesExecutionsClustersGetRequest(_messages.Message
   r"""A ToolresultsProjectsHistoriesExecutionsClustersGetRequest object.
 
   Fields:
-    clusterId: A Cluster id  Required.
-    executionId: An Execution id.  Required.
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
+    clusterId: A Cluster id Required.
+    executionId: An Execution id. Required.
+    historyId: A History id. Required.
+    projectId: A Project id. Required.
   """
 
   clusterId = _messages.StringField(1, required=True)
@@ -2473,9 +2464,9 @@ class ToolresultsProjectsHistoriesExecutionsClustersListRequest(_messages.Messag
   r"""A ToolresultsProjectsHistoriesExecutionsClustersListRequest object.
 
   Fields:
-    executionId: An Execution id.  Required.
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
+    executionId: An Execution id. Required.
+    historyId: A History id. Required.
+    projectId: A Project id. Required.
   """
 
   executionId = _messages.StringField(1, required=True)
@@ -2488,10 +2479,10 @@ class ToolresultsProjectsHistoriesExecutionsCreateRequest(_messages.Message):
 
   Fields:
     execution: A Execution resource to be passed as the request body.
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
+    historyId: A History id. Required.
+    projectId: A Project id. Required.
     requestId: A unique request ID for server to detect duplicated requests.
-      For example, a UUID.  Optional, but strongly recommended.
+      For example, a UUID. Optional, but strongly recommended.
   """
 
   execution = _messages.MessageField('Execution', 1)
@@ -2522,7 +2513,7 @@ class ToolresultsProjectsHistoriesExecutionsEnvironmentsListRequest(_messages.Me
   Fields:
     executionId: Required. An Execution id.
     historyId: Required. A History id.
-    pageSize: The maximum number of Environments to fetch.  Default value: 25.
+    pageSize: The maximum number of Environments to fetch. Default value: 25.
       The server will use this default if the field is not set or has a value
       of 0.
     pageToken: A continuation token to resume the query at the next item.
@@ -2540,9 +2531,9 @@ class ToolresultsProjectsHistoriesExecutionsGetRequest(_messages.Message):
   r"""A ToolresultsProjectsHistoriesExecutionsGetRequest object.
 
   Fields:
-    executionId: An Execution id.  Required.
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
+    executionId: An Execution id. Required.
+    historyId: A History id. Required.
+    projectId: A Project id. Required.
   """
 
   executionId = _messages.StringField(1, required=True)
@@ -2554,13 +2545,13 @@ class ToolresultsProjectsHistoriesExecutionsListRequest(_messages.Message):
   r"""A ToolresultsProjectsHistoriesExecutionsListRequest object.
 
   Fields:
-    historyId: A History id.  Required.
-    pageSize: The maximum number of Executions to fetch.  Default value: 25.
+    historyId: A History id. Required.
+    pageSize: The maximum number of Executions to fetch. Default value: 25.
       The server will use this default if the field is not set or has a value
-      of 0.  Optional.
+      of 0. Optional.
     pageToken: A continuation token to resume the query at the next item.
       Optional.
-    projectId: A Project id.  Required.
+    projectId: A Project id. Required.
   """
 
   historyId = _messages.StringField(1, required=True)
@@ -2578,7 +2569,7 @@ class ToolresultsProjectsHistoriesExecutionsPatchRequest(_messages.Message):
     historyId: Required.
     projectId: A Project id. Required.
     requestId: A unique request ID for server to detect duplicated requests.
-      For example, a UUID.  Optional, but strongly recommended.
+      For example, a UUID. Optional, but strongly recommended.
   """
 
   execution = _messages.MessageField('Execution', 1)
@@ -2598,10 +2589,10 @@ class ToolresultsProjectsHistoriesExecutionsStepsAccessibilityClustersRequest(_m
       a delimiter. Language must be lowercase, Language Script - Capitalized,
       Region - UPPERCASE. See
       http://www.unicode.org/reports/tr35/#Unicode_locale_identifier for
-      details.  Required.
+      details. Required.
     name: A full resource name of the step. For example, projects/my-
       project/histories/bh.1234567890abcdef/executions/
-      1234567890123456789/steps/bs.1234567890abcdef  Required.
+      1234567890123456789/steps/bs.1234567890abcdef Required.
   """
 
   locale = _messages.StringField(1)
@@ -2616,7 +2607,7 @@ class ToolresultsProjectsHistoriesExecutionsStepsCreateRequest(_messages.Message
     historyId: Required. A History id.
     projectId: Required. A Project id.
     requestId: A unique request ID for server to detect duplicated requests.
-      For example, a UUID.  Optional, but strongly recommended.
+      For example, a UUID. Optional, but strongly recommended.
     step: A Step resource to be passed as the request body.
   """
 
@@ -2649,10 +2640,10 @@ class ToolresultsProjectsHistoriesExecutionsStepsGetRequest(_messages.Message):
   r"""A ToolresultsProjectsHistoriesExecutionsStepsGetRequest object.
 
   Fields:
-    executionId: A Execution id.  Required.
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
-    stepId: A Step id.  Required.
+    executionId: A Execution id. Required.
+    historyId: A History id. Required.
+    projectId: A Project id. Required.
+    stepId: A Step id. Required.
   """
 
   executionId = _messages.StringField(1, required=True)
@@ -2665,14 +2656,14 @@ class ToolresultsProjectsHistoriesExecutionsStepsListRequest(_messages.Message):
   r"""A ToolresultsProjectsHistoriesExecutionsStepsListRequest object.
 
   Fields:
-    executionId: A Execution id.  Required.
-    historyId: A History id.  Required.
-    pageSize: The maximum number of Steps to fetch.  Default value: 25. The
+    executionId: A Execution id. Required.
+    historyId: A History id. Required.
+    pageSize: The maximum number of Steps to fetch. Default value: 25. The
       server will use this default if the field is not set or has a value of
-      0.  Optional.
+      0. Optional.
     pageToken: A continuation token to resume the query at the next item.
       Optional.
-    projectId: A Project id.  Required.
+    projectId: A Project id. Required.
   """
 
   executionId = _messages.StringField(1, required=True)
@@ -2686,13 +2677,13 @@ class ToolresultsProjectsHistoriesExecutionsStepsPatchRequest(_messages.Message)
   r"""A ToolresultsProjectsHistoriesExecutionsStepsPatchRequest object.
 
   Fields:
-    executionId: A Execution id.  Required.
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
+    executionId: A Execution id. Required.
+    historyId: A History id. Required.
+    projectId: A Project id. Required.
     requestId: A unique request ID for server to detect duplicated requests.
-      For example, a UUID.  Optional, but strongly recommended.
+      For example, a UUID. Optional, but strongly recommended.
     step: A Step resource to be passed as the request body.
-    stepId: A Step id.  Required.
+    stepId: A Step id. Required.
   """
 
   executionId = _messages.StringField(1, required=True)
@@ -2815,9 +2806,9 @@ class ToolresultsProjectsHistoriesExecutionsStepsPublishXunitXmlFilesRequest(_me
   object.
 
   Fields:
-    executionId: A Execution id.  Required.
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
+    executionId: A Execution id. Required.
+    historyId: A History id. Required.
+    projectId: A Project id. Required.
     publishXunitXmlFilesRequest: A PublishXunitXmlFilesRequest resource to be
       passed as the request body.
     stepId: A Step id. Note: This step must include a TestExecutionStep.
@@ -2835,12 +2826,12 @@ class ToolresultsProjectsHistoriesExecutionsStepsTestCasesGetRequest(_messages.M
   r"""A ToolresultsProjectsHistoriesExecutionsStepsTestCasesGetRequest object.
 
   Fields:
-    executionId: A Execution id  Required.
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
+    executionId: A Execution id Required.
+    historyId: A History id. Required.
+    projectId: A Project id. Required.
     stepId: A Step id. Note: This step must include a TestExecutionStep.
       Required.
-    testCaseId: A Test Case id.  Required.
+    testCaseId: A Test Case id. Required.
   """
 
   executionId = _messages.StringField(1, required=True)
@@ -2855,14 +2846,14 @@ class ToolresultsProjectsHistoriesExecutionsStepsTestCasesListRequest(_messages.
   object.
 
   Fields:
-    executionId: A Execution id  Required.
-    historyId: A History id.  Required.
-    pageSize: The maximum number of TestCases to fetch.  Default value: 100.
+    executionId: A Execution id Required.
+    historyId: A History id. Required.
+    pageSize: The maximum number of TestCases to fetch. Default value: 100.
       The server will use this default if the field is not set or has a value
-      of 0.  Optional.
+      of 0. Optional.
     pageToken: A continuation token to resume the query at the next item.
       Optional.
-    projectId: A Project id.  Required.
+    projectId: A Project id. Required.
     stepId: A Step id. Note: This step must include a TestExecutionStep.
       Required.
   """
@@ -2880,15 +2871,15 @@ class ToolresultsProjectsHistoriesExecutionsStepsThumbnailsListRequest(_messages
   object.
 
   Fields:
-    executionId: An Execution id.  Required.
-    historyId: A History id.  Required.
-    pageSize: The maximum number of thumbnails to fetch.  Default value: 50.
+    executionId: An Execution id. Required.
+    historyId: A History id. Required.
+    pageSize: The maximum number of thumbnails to fetch. Default value: 50.
       The server will use this default if the field is not set or has a value
-      of 0.  Optional.
+      of 0. Optional.
     pageToken: A continuation token to resume the query at the next item.
       Optional.
-    projectId: A Project id.  Required.
-    stepId: A Step id.  Required.
+    projectId: A Project id. Required.
+    stepId: A Step id. Required.
   """
 
   executionId = _messages.StringField(1, required=True)
@@ -2903,8 +2894,8 @@ class ToolresultsProjectsHistoriesGetRequest(_messages.Message):
   r"""A ToolresultsProjectsHistoriesGetRequest object.
 
   Fields:
-    historyId: A History id.  Required.
-    projectId: A Project id.  Required.
+    historyId: A History id. Required.
+    projectId: A Project id. Required.
   """
 
   historyId = _messages.StringField(1, required=True)
@@ -2915,14 +2906,13 @@ class ToolresultsProjectsHistoriesListRequest(_messages.Message):
   r"""A ToolresultsProjectsHistoriesListRequest object.
 
   Fields:
-    filterByName: If set, only return histories with the given name.
-      Optional.
-    pageSize: The maximum number of Histories to fetch.  Default value: 20.
-      The server will use this default if the field is not set or has a value
-      of 0. Any value greater than 100 will be treated as 100.  Optional.
+    filterByName: If set, only return histories with the given name. Optional.
+    pageSize: The maximum number of Histories to fetch. Default value: 20. The
+      server will use this default if the field is not set or has a value of
+      0. Any value greater than 100 will be treated as 100. Optional.
     pageToken: A continuation token to resume the query at the next item.
       Optional.
-    projectId: A Project id.  Required.
+    projectId: A Project id. Required.
   """
 
   filterByName = _messages.StringField(1)
@@ -2935,7 +2925,7 @@ class ToolresultsProjectsInitializeSettingsRequest(_messages.Message):
   r"""A ToolresultsProjectsInitializeSettingsRequest object.
 
   Fields:
-    projectId: A Project id.  Required.
+    projectId: A Project id. Required.
   """
 
   projectId = _messages.StringField(1, required=True)

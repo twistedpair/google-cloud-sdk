@@ -91,15 +91,7 @@ class TestingV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Cancels unfinished test executions in a test matrix.
-This call returns immediately and cancellation proceeds asynchronously.
-If the matrix is already final, this operation will have no effect.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to read project
-- INVALID_ARGUMENT - if the request is malformed
-- NOT_FOUND - if the Test Matrix does not exist
+      r"""Cancels unfinished test executions in a test matrix. This call returns immediately and cancellation proceeds asynchronously. If the matrix is already final, this operation will have no effect. May return any of the following canonical error codes: - PERMISSION_DENIED - if the user is not authorized to read project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the Test Matrix does not exist.
 
       Args:
         request: (TestingProjectsTestMatricesCancelRequest) input message
@@ -125,15 +117,7 @@ May return any of the following canonical error codes:
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates and runs a matrix of tests according to the given specifications.
-Unsupported environments will be returned in the state UNSUPPORTED.
-Matrices are limited to at most 200 supported executions.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to write to project
-- INVALID_ARGUMENT - if the request is malformed or if the matrix expands
-                     to more than 200 supported executions
+      r"""Creates and runs a matrix of tests according to the given specifications. Unsupported environments will be returned in the state UNSUPPORTED. Matrices are limited to at most 200 supported executions. May return any of the following canonical error codes: - PERMISSION_DENIED - if the user is not authorized to write to project - INVALID_ARGUMENT - if the request is malformed or if the matrix expands to more than 200 supported executions.
 
       Args:
         request: (TestingProjectsTestMatricesCreateRequest) input message
@@ -159,13 +143,7 @@ May return any of the following canonical error codes:
     )
 
     def Get(self, request, global_params=None):
-      r"""Checks the status of a test matrix.
-
-May return any of the following canonical error codes:
-
-- PERMISSION_DENIED - if the user is not authorized to read project
-- INVALID_ARGUMENT - if the request is malformed
-- NOT_FOUND - if the Test Matrix does not exist
+      r"""Checks the status of a test matrix. May return any of the following canonical error codes: - PERMISSION_DENIED - if the user is not authorized to read project - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the Test Matrix does not exist.
 
       Args:
         request: (TestingProjectsTestMatricesGetRequest) input message
@@ -211,13 +189,7 @@ May return any of the following canonical error codes:
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the catalog of supported test environments.
-
-May return any of the following canonical error codes:
-
-- INVALID_ARGUMENT - if the request is malformed
-- NOT_FOUND - if the environment type does not exist
-- INTERNAL - if an internal error occurred
+      r"""Gets the catalog of supported test environments. May return any of the following canonical error codes: - INVALID_ARGUMENT - if the request is malformed - NOT_FOUND - if the environment type does not exist - INTERNAL - if an internal error occurred.
 
       Args:
         request: (TestingTestEnvironmentCatalogGetRequest) input message

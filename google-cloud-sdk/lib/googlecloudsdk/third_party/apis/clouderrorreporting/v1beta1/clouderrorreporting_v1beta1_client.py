@@ -82,15 +82,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
     )
 
     def Report(self, request, global_params=None):
-      r"""Report an individual error event.
-
-This endpoint accepts **either** an OAuth token,
-**or** an [API key](https://support.google.com/cloud/answer/6158862)
-for authentication. To use an API key, append it to the URL as the value of
-a `key` parameter. For example:
-
-`POST
-https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?key=123ABC456`
+      r"""Report an individual error event. This endpoint accepts **either** an OAuth token, **or** an [API key](https://support.google.com/cloud/answer/6158862) for authentication. To use an API key, append it to the URL as the value of a `key` parameter. For example: `POST https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?key=123ABC456`.
 
       Args:
         request: (ClouderrorreportingProjectsEventsReportRequest) input message
@@ -191,8 +183,7 @@ https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?k
     )
 
     def Update(self, request, global_params=None):
-      r"""Replace the data for the specified group.
-Fails if the group does not exist.
+      r"""Replace the data for the specified group. Fails if the group does not exist.
 
       Args:
         request: (ErrorGroup) input message

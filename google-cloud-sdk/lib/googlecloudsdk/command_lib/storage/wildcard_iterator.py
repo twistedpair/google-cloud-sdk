@@ -24,7 +24,8 @@ import collections
 import fnmatch
 import re
 
-from googlecloudsdk.api_lib.storage import gcs_api
+from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
@@ -79,7 +80,7 @@ class CloudWildcardIterator(WildcardIterator):
     super(CloudWildcardIterator, self).__init__()
     self._url = url
     self._all_versions = all_versions
-    self._client = gcs_api.GcsApi()
+    self._client = api_factory.get_api(cloud_api.ProviderPrefix(url.scheme))
 
   def __iter__(self):
     if self._url.is_provider():
@@ -284,5 +285,3 @@ def _split_on_wildcard(string):
   prefix = string[:first_wildcard_idx]
   wildcard_str = string[first_wildcard_idx:]
   return prefix, wildcard_str
-
-

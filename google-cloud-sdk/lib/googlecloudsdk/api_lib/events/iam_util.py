@@ -33,7 +33,9 @@ from googlecloudsdk.core.console import console_io
 # permissions.
 _OWNER_ROLE = 'roles/owner'
 
-DEFAULT_EVENTS_SERVICE_ACCOUNT = 'cloud-run-events'
+EVENTS_CONTROL_PLANE_SERVICE_ACCOUNT = 'cloud-run-events'
+EVENTS_BROKER_SERVICE_ACCOUNT = 'cloud-run-events-broker'
+EVENTS_SOURCES_SERVICE_ACCOUNT = 'cloud-run-events-sources'
 
 
 def CreateServiceAccountKey(service_account_ref):
@@ -117,54 +119,71 @@ def _ProjectAndAccountNameToEmail(project, account_name):
   return '{}@{}.iam.gserviceaccount.com'.format(account_name, project)
 
 
-def GetOrCreateEventingServiceAccountWithPrompt():
-  """Returns or creates a default eventing service account."""
+def GetOrCreateServiceAccountWithPrompt(account_name, display_name,
+                                        description):
+  """Returns or creates specified service account.
+
+  Args:
+    account_name: Name of the service account (portion before @)
+    display_name: The display name to use when creating the account
+    description: The description to use when creating the account
+  """
 
   project_ref = projects_util.ParseProject(properties.VALUES.core.project.Get())
-  account = _GetServiceAccount(DEFAULT_EVENTS_SERVICE_ACCOUNT)
-  if account is None:
-    if console_io.CanPrompt():
-      message = '\nThis will create service account [{}]'.format(
-          _ProjectAndAccountNameToEmail(
-              project_ref.Name(), DEFAULT_EVENTS_SERVICE_ACCOUNT))
-      console_io.PromptContinue(message=message, cancel_on_no=True)
-    account = _CreateServiceAccount(
-        DEFAULT_EVENTS_SERVICE_ACCOUNT, 'Cloud Run Events for Anthos',
-        'Cloud Run Events on-cluster infrastructure')
-  return account.email
+  sa_email = _ProjectAndAccountNameToEmail(project_ref.Name(), account_name)
+  account = _GetServiceAccount(account_name)
+  if account is not None:
+    return account.email
+
+  if console_io.CanPrompt():
+    message = 'This will create service account [{}]'.format(sa_email)
+    console_io.PromptContinue(message=message, cancel_on_no=True)
+
+  return _CreateServiceAccount(account_name, display_name, description).email
 
 
-def BindMissingRolesWithPrompt(service_account_ref, required_roles):
-  """Binds any required project roles to the provided service account.
+def PrintOrBindMissingRolesWithPrompt(service_account_ref, recommended_roles,
+                                      bind):
+  """Binds any recommended project roles to the provided service account.
 
-  If the service account has the owner role, no roles will be bound.
+  If the service account has the owner role, no roles will be bound. If the bind
+  argument is False, this function will only print out the missing recommended
+  roles.
 
-  This will promt the user should any required roles be missing.
+  This will prompt the user should any roles be missing before binding.
 
   Args:
     service_account_ref: The service account to add roles to.
-    required_roles: The roles which will be added if they are missing.
+    recommended_roles: The roles which will be added if they are missing.
+    bind: A boolean indicating if the roles should be bound or not.
   """
-  roles = _GetProjectRolesForServiceAccount(service_account_ref)
-  if _OWNER_ROLE in roles:
+  existing_roles = _GetProjectRolesForServiceAccount(service_account_ref)
+  if _OWNER_ROLE in existing_roles:
     return
 
   # This prevents us from binding both roles to the same service account.
   # Events init requires admin, while broker create requires editor.
-  if 'roles/pubsub.admin' in roles or 'roles/editor' in roles:
-    roles.add('roles/pubsub.editor')
+  if 'roles/pubsub.admin' in existing_roles or 'roles/editor' in existing_roles:
+    existing_roles.add('roles/pubsub.editor')
 
-  missing_roles = set(required_roles) - roles
+  missing_roles = set(recommended_roles) - existing_roles
   if not missing_roles:
     return
 
   formatted_roles = '\n'.join(
-      ['- {}'.format(r) for r in sorted(missing_roles)])
-  if console_io.CanPrompt():
-    message = (
-        '\nThis will bind the following project roles to the service '
-        'account [{}]:\n{}'.format(service_account_ref.Name(), formatted_roles))
-    console_io.PromptContinue(message=message, cancel_on_no=True)
-  _BindProjectRolesForServiceAccount(service_account_ref, missing_roles)
-  log.status.Print('Roles successfully bound.')
+      ['- {}'.format(role) for role in sorted(missing_roles)])
+
+  log.status.Print(
+      'Service account [{}] is missing the following recommended roles:\n'
+      '{}'.format(service_account_ref.Name(), formatted_roles))
+
+  if bind and console_io.CanPrompt():
+    bind = console_io.PromptContinue(
+        prompt_string='\nWould you like to bind these roles?',
+        cancel_on_no=False)
+  if bind:
+    _BindProjectRolesForServiceAccount(service_account_ref, missing_roles)
+    log.status.Print('Roles successfully bound.')
+  else:
+    log.warning('Manual binding of above roles may be necessary.')
 

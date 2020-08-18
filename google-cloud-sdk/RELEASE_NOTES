@@ -6,6 +6,82 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 306.0.0 (2020-08-18)
+
+### BigQuery
+
+* Fixed issue where `ls --reservation` command randomly failed with internal error.
+* Added `add-iam-policy-binding` and `remove-iam-policy-binding` commands, with support for modifying IAM policies for tables and views.
+
+### Cloud Dataproc
+
+*   Added `--dataproc-metastore` flag to `gcloud beta dataproc clusters create`
+    to allow clusters to be created with a Dataproc Metastore service.
+*   Added `--dataproc-metastore` flag to `gcloud beta dataproc
+    workflow-templates set-managed-cluster` to allow managed clusters to be
+    created with a Dataproc Metastore service.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.11.7
+  * Includes latest features and improvements from production.
+
+### Cloud Key Management Service
+
+*   Added `gcloud beta kms keys versions get-certificate-chain` to retrieve
+    HSM attestation certificate chains.
+
+### Cloud Pub/Sub
+
+* Promoted `gcloud pubsub topics detach-subscription` to GA.
+
+### Cloud Resource Manager
+
+* Fixed issue where `gcloud resource-manager org-policies <allow|deny>` gave an error when a restore default policy exists.
+
+### Cloud Security Command Center
+
+* Promoted `gcloud scc notifications` command group to beta and GA.
+
+### Cloud TPU
+
+* Added `--use-service-networking` flag to `gcloud beta compute tpus create`.
+
+### Compute Engine
+
+* Added `gcloud beta compute os-config os-upgrade` to enable major OS version updates on support distributions.
+* Promoted `--condition` flag to GA for
+  * `gcloud compute instances add-iam-policy-binding`
+  * `gcloud compute instances remove-iam-policy-binding`.
+* Promoted Regional Network Endpoint Groups to GA.
+* Promoted Hybrid Network Endpoint Groups to GA.
+* Promoted `gcloud compute commitments create-license` to beta and GA.
+* Promoted the following commands to GA:
+  * `gcloud compute instance-groups managed instance-configs create`
+  * `gcloud compute instance-groups managed instance-configs update`
+  * `gcloud compute instance-groups managed instance-configs list`
+  * `gcloud compute instance-groups managed instance-configs delete`
+* Promoted `--stateful-disk` and `--stateful-metadata` for `gcloud compute instance-groups managed create-instance` to GA.
+* Added `--network` flag to `gcloud beta compute target-instances create`.
+
+### Game Servers
+
+* Promoted `gcloud game servers` to GA.
+
+### Notebooks
+
+* Added `n1-standard-1` as the default for notebook instances.
+* Added `deeplearning-platform` as the default for notebook instance project and environment project.
+
+### Secret Manager
+
+* Updated `gcloud secrets versions access` command to redact the output from logs produced by the gcloud command-line tool. For more information, see <https://cloud.google.com/secret-manager/docs/creating-and-accessing-secrets#secretmanager-access-secret-version-cli>.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 305.0.0 (2020-08-11)
 
 ### Artifact Registry

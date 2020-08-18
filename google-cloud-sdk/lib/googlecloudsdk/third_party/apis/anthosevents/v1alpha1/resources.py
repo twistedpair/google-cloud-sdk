@@ -17,13 +17,20 @@
 import enum
 
 
-BASE_URL = 'https://anthosevents.googleapis.com/apis/addons.sigs.k8s.io/v1alpha1/'
+BASE_URL = 'https://anthosevents.googleapis.com/apis/operator.run.cloud.google.com/v1alpha1/'
 DOCS_URL = ''
 
 
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  NAMESPACES = (
+      'namespaces',
+      'namespaces/{namespacesId}',
+      {},
+      ['namespacesId'],
+      True
+  )
   NAMESPACES_CLOUDRUNS = (
       'namespaces.cloudruns',
       '{+name}',
@@ -32,13 +39,6 @@ class Collections(enum.Enum):
               'namespaces/{namespacesId}/cloudruns/{cloudrunsId}',
       },
       ['name'],
-      True
-  )
-  NAMESPACES = (
-      'namespaces',
-      'namespaces/{namespacesId}',
-      {},
-      ['namespacesId'],
       True
   )
 

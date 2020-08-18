@@ -162,15 +162,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a job.
-
-If successful, the updated Job is returned. If the job does
-not exist, `NOT_FOUND` is returned.
-
-If UpdateJob does not successfully return, it is possible for the
-job to be in an Job.State.UPDATE_FAILED state. A job in this state may
-not be executed. If this happens, retry the UpdateJob request
-until a successful response is received.
+      r"""Updates a job. If successful, the updated Job is returned. If the job does not exist, `NOT_FOUND` is returned. If UpdateJob does not successfully return, it is possible for the job to be in an Job.State.UPDATE_FAILED state. A job in this state may not be executed. If this happens, retry the UpdateJob request until a successful response is received.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsPatchRequest) input message
@@ -197,13 +189,7 @@ until a successful response is received.
     )
 
     def Pause(self, request, global_params=None):
-      r"""Pauses a job.
-
-If a job is paused then the system will stop executing the job
-until it is re-enabled via CloudScheduler.ResumeJob. The
-state of the job is stored in Job.state; if paused it
-will be set to Job.State.PAUSED. A job must be in Job.State.ENABLED
-to be paused.
+      r"""Pauses a job. If a job is paused then the system will stop executing the job until it is re-enabled via CloudScheduler.ResumeJob. The state of the job is stored in Job.state; if paused it will be set to Job.State.PAUSED. A job must be in Job.State.ENABLED to be paused.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsPauseRequest) input message
@@ -230,12 +216,7 @@ to be paused.
     )
 
     def Resume(self, request, global_params=None):
-      r"""Resume a job.
-
-This method reenables a job after it has been Job.State.PAUSED. The
-state of a job is stored in Job.state; after calling this method it
-will be set to Job.State.ENABLED. A job must be in
-Job.State.PAUSED to be resumed.
+      r"""Resume a job. This method reenables a job after it has been Job.State.PAUSED. The state of a job is stored in Job.state; after calling this method it will be set to Job.State.ENABLED. A job must be in Job.State.PAUSED to be resumed.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsResumeRequest) input message
@@ -262,10 +243,7 @@ Job.State.PAUSED to be resumed.
     )
 
     def Run(self, request, global_params=None):
-      r"""Forces a job to run now.
-
-When this method is called, Cloud Scheduler will dispatch the job, even
-if the job is already running.
+      r"""Forces a job to run now. When this method is called, Cloud Scheduler will dispatch the job, even if the job is already running.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsRunRequest) input message

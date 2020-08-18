@@ -54,10 +54,7 @@ class CloudshellV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Adds a public SSH key to an environment, allowing clients with the.
-corresponding private key to connect to that environment via SSH. If a key
-with the same format and content already exists, this will return the
-existing key.
+      r"""Adds a public SSH key to an environment, allowing clients with the corresponding private key to connect to that environment via SSH. If a key with the same format and content already exists, this will return the existing key.
 
       Args:
         request: (CloudshellUsersEnvironmentsPublicKeysCreateRequest) input message
@@ -84,8 +81,7 @@ existing key.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Removes a public SSH key from an environment. Clients will no longer be.
-able to connect to the environment using the corresponding private key.
+      r"""Removes a public SSH key from an environment. Clients will no longer be able to connect to the environment using the corresponding private key.
 
       Args:
         request: (CloudshellUsersEnvironmentsPublicKeysDeleteRequest) input message
@@ -122,10 +118,7 @@ able to connect to the environment using the corresponding private key.
           }
 
     def Authorize(self, request, global_params=None):
-      r"""Sends OAuth credentials to a running environment on behalf of a user. When.
-this completes, the environment will be authorized to run various Google
-Cloud command line tools without requiring the user to manually
-authenticate.
+      r"""Sends OAuth credentials to a running environment on behalf of a user. When this completes, the environment will be authorized to run various Google Cloud command line tools without requiring the user to manually authenticate.
 
       Args:
         request: (CloudshellUsersEnvironmentsAuthorizeRequest) input message
@@ -206,12 +199,7 @@ authenticate.
     )
 
     def Start(self, request, global_params=None):
-      r"""Starts an existing environment, allowing clients to connect to it. The.
-returned operation will contain an instance of StartEnvironmentMetadata in
-its metadata field. Users can wait for the environment to start by polling
-this operation via GetOperation. Once the environment has finished starting
-and is ready to accept connections, the operation will contain a
-StartEnvironmentResponse in its response field.
+      r"""Starts an existing environment, allowing clients to connect to it. The returned operation will contain an instance of StartEnvironmentMetadata in its metadata field. Users can wait for the environment to start by polling this operation via GetOperation. Once the environment has finished starting and is ready to accept connections, the operation will contain a StartEnvironmentResponse in its response field.
 
       Args:
         request: (CloudshellUsersEnvironmentsStartRequest) input message

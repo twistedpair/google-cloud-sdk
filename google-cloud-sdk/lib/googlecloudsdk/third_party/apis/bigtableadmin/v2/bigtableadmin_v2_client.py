@@ -61,16 +61,7 @@ class BigtableadminV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (BigtableadminOperationsProjectsOperationsListRequest) input message
@@ -117,16 +108,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (BigtableadminOperationsCancelRequest) input message
@@ -153,10 +135,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (BigtableadminOperationsDeleteRequest) input message
@@ -183,9 +162,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (BigtableadminOperationsGetRequest) input message
@@ -367,14 +344,7 @@ service.
           }
 
     def Create(self, request, global_params=None):
-      r"""Starts creating a new Cloud Bigtable Backup.  The returned backup.
-long-running operation can be used to
-track creation of the backup. The
-metadata field type is
-CreateBackupMetadata. The
-response field type is
-Backup, if successful. Cancelling the returned operation will stop the
-creation and delete the backup.
+      r"""Starts creating a new Cloud Bigtable Backup. The returned backup long-running operation can be used to track creation of the backup. The metadata field type is CreateBackupMetadata. The response field type is Backup, if successful. Cancelling the returned operation will stop the creation and delete the backup.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersBackupsCreateRequest) input message
@@ -455,9 +425,7 @@ creation and delete the backup.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a Table resource.
-Returns an empty policy if the resource exists but does not have a policy
-set.
+      r"""Gets the access control policy for a Table resource. Returns an empty policy if the resource exists but does not have a policy set.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersBackupsGetIamPolicyRequest) input message
@@ -484,8 +452,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Cloud Bigtable backups. Returns both completed and pending.
-backups.
+      r"""Lists Cloud Bigtable backups. Returns both completed and pending backups.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersBackupsListRequest) input message
@@ -539,8 +506,7 @@ backups.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a Table resource.
-Replaces any existing policy.
+      r"""Sets the access control policy on a Table resource. Replaces any existing policy.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersBackupsSetIamPolicyRequest) input message
@@ -749,9 +715,7 @@ Replaces any existing policy.
           }
 
     def CheckConsistency(self, request, global_params=None):
-      r"""Checks replication consistency based on a consistency token, that is, if.
-replication has caught up based on the conditions specified in the token
-and the check request.
+      r"""Checks replication consistency based on a consistency token, that is, if replication has caught up based on the conditions specified in the token and the check request.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesCheckConsistencyRequest) input message
@@ -778,9 +742,7 @@ and the check request.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new table in the specified instance.
-The table can be created with a full set of initial column families,
-specified in the request.
+      r"""Creates a new table in the specified instance. The table can be created with a full set of initial column families, specified in the request.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesCreateRequest) input message
@@ -834,9 +796,7 @@ specified in the request.
     )
 
     def DropRowRange(self, request, global_params=None):
-      r"""Permanently drop/delete a row range from a specified table. The request can.
-specify whether to delete all rows in a table, or only those that match a
-particular prefix.
+      r"""Permanently drop/delete a row range from a specified table. The request can specify whether to delete all rows in a table, or only those that match a particular prefix.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesDropRowRangeRequest) input message
@@ -863,10 +823,7 @@ particular prefix.
     )
 
     def GenerateConsistencyToken(self, request, global_params=None):
-      r"""Generates a consistency token for a Table, which can be used in.
-CheckConsistency to check whether mutations to the table that finished
-before this call started have been replicated. The tokens will be available
-for 90 days.
+      r"""Generates a consistency token for a Table, which can be used in CheckConsistency to check whether mutations to the table that finished before this call started have been replicated. The tokens will be available for 90 days.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesGenerateConsistencyTokenRequest) input message
@@ -920,9 +877,7 @@ for 90 days.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a Table resource.
-Returns an empty policy if the resource exists but does not have a policy
-set.
+      r"""Gets the access control policy for a Table resource. Returns an empty policy if the resource exists but does not have a policy set.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesGetIamPolicyRequest) input message
@@ -976,10 +931,7 @@ set.
     )
 
     def ModifyColumnFamilies(self, request, global_params=None):
-      r"""Performs a series of column family modifications on the specified table.
-Either all or none of the modifications will occur before this method
-returns, but data requests received prior to that point may see a table
-where only some modifications have taken effect.
+      r"""Performs a series of column family modifications on the specified table. Either all or none of the modifications will occur before this method returns, but data requests received prior to that point may see a table where only some modifications have taken effect.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest) input message
@@ -1006,14 +958,7 @@ where only some modifications have taken effect.
     )
 
     def Restore(self, request, global_params=None):
-      r"""Create a new table by restoring from a completed backup. The new table.
-must be in the same instance as the instance containing the backup.  The
-returned table long-running operation can
-be used to track the progress of the operation, and to cancel it.  The
-metadata field type is
-RestoreTableMetadata.  The
-response type is
-Table, if successful.
+      r"""Create a new table by restoring from a completed backup. The new table must be in the same instance as the instance containing the backup. The returned table long-running operation can be used to track the progress of the operation, and to cancel it. The metadata field type is RestoreTableMetadata. The response type is Table, if successful.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesRestoreRequest) input message
@@ -1040,8 +985,7 @@ Table, if successful.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a Table resource.
-Replaces any existing policy.
+      r"""Sets the access control policy on a Table resource. Replaces any existing policy.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesSetIamPolicyRequest) input message
@@ -1186,8 +1130,7 @@ Replaces any existing policy.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for an instance resource. Returns an empty.
-policy if an instance exists but does not have a policy set.
+      r"""Gets the access control policy for an instance resource. Returns an empty policy if an instance exists but does not have a policy set.
 
       Args:
         request: (BigtableadminProjectsInstancesGetIamPolicyRequest) input message
@@ -1241,8 +1184,7 @@ policy if an instance exists but does not have a policy set.
     )
 
     def PartialUpdateInstance(self, request, global_params=None):
-      r"""Partially updates an instance within a project. This method can modify all.
-fields of an Instance and is the preferred way to update an Instance.
+      r"""Partially updates an instance within a project. This method can modify all fields of an Instance and is the preferred way to update an Instance.
 
       Args:
         request: (BigtableadminProjectsInstancesPartialUpdateInstanceRequest) input message
@@ -1269,8 +1211,7 @@ fields of an Instance and is the preferred way to update an Instance.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on an instance resource. Replaces any.
-existing policy.
+      r"""Sets the access control policy on an instance resource. Replaces any existing policy.
 
       Args:
         request: (BigtableadminProjectsInstancesSetIamPolicyRequest) input message
@@ -1324,9 +1265,7 @@ existing policy.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an instance within a project. This method updates only the display.
-name and type for an Instance. To update other Instance properties, such as
-labels, use PartialUpdateInstance.
+      r"""Updates an instance within a project. This method updates only the display name and type for an Instance. To update other Instance properties, such as labels, use PartialUpdateInstance.
 
       Args:
         request: (Instance) input message

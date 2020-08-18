@@ -82,17 +82,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -101,29 +101,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -149,12 +149,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -267,20 +267,15 @@ class RecognitionConfig(_messages.Message):
     model: Which model to select for the given request. Select the model best
       suited to your domain to get best results. If a model is not explicitly
       specified, then we auto-select a model based on the parameters in the
-      RecognitionConfig. <table>   <tr>     <td><b>Model</b></td>
-      <td><b>Description</b></td>   </tr>   <tr>
-      <td><code>command_and_search</code></td>     <td>Best for short queries
-      such as voice commands or voice search.</td>   </tr>   <tr>
-      <td><code>phone_call</code></td>     <td>Best for audio that originated
-      from a phone call (typically     recorded at an 8khz sampling
-      rate).</td>   </tr>   <tr>     <td><code>video</code></td>     <td>Best
-      for audio that originated from from video or includes multiple
-      speakers. Ideally the audio is recorded at a 16khz or greater
-      sampling rate. This is a premium model that costs more than the
-      standard rate.</td>   </tr>   <tr>     <td><code>default</code></td>
-      <td>Best for audio that is not one of the specific audio models.
-      For example, long-form audio. Ideally the audio is high-fidelity,
-      recorded at a 16khz or greater sampling rate.</td>   </tr> </table>
+      RecognitionConfig. *Model* *Description* command_and_search Best for
+      short queries such as voice commands or voice search. phone_call Best
+      for audio that originated from a phone call (typically recorded at an
+      8khz sampling rate). video Best for audio that originated from from
+      video or includes multiple speakers. Ideally the audio is recorded at a
+      16khz or greater sampling rate. This is a premium model that costs more
+      than the standard rate. default Best for audio that is not one of the
+      specific audio models. For example, long-form audio. Ideally the audio
+      is high-fidelity, recorded at a 16khz or greater sampling rate.
     profanityFilter: If set to `true`, the server will attempt to filter out
       profanities, replacing all but the initial character in each filtered
       word with asterisks, e.g. "f***". If set to `false` or omitted,
@@ -299,7 +294,7 @@ class RecognitionConfig(_messages.Message):
     useEnhanced: Set to true to use an enhanced model for speech recognition.
       If `use_enhanced` is set to true and the `model` field is not set, then
       an appropriate enhanced model is chosen if an enhanced model exists for
-      the audio.  If `use_enhanced` is true and an enhanced version of the
+      the audio. If `use_enhanced` is true and an enhanced version of the
       specified model does not exist, then the speech is recognized using the
       standard version of the specified model.
   """
@@ -383,18 +378,18 @@ class RecognitionMetadata(_messages.Message):
       court hearings from 2012".
     industryNaicsCodeOfAudio: The industry vertical to which this speech
       recognition request most closely applies. This is most indicative of the
-      topics contained in the audio.  Use the 6-digit NAICS code to identify
+      topics contained in the audio. Use the 6-digit NAICS code to identify
       the industry vertical - see https://www.naics.com/search/.
     interactionType: The use case most closely describing the audio content to
       be recognized.
     microphoneDistance: The audio type that most closely describes the audio
       being recognized.
     originalMediaType: The original media the speech was recorded on.
-    originalMimeType: Mime type of the original audio file.  For example
+    originalMimeType: Mime type of the original audio file. For example
       `audio/m4a`, `audio/x-alaw-basic`, `audio/mp3`, `audio/3gpp`. A list of
       possible audio mime types is maintained at
       http://www.iana.org/assignments/media-types/media-types.xhtml#audio
-    recordingDeviceName: The device used to make the recording.  Examples
+    recordingDeviceName: The device used to make the recording. Examples
       'Nexus 5X' or 'Polycom SoundStation IP 6000' or 'POTS' or 'VoIP' or
       'Cardioid Microphone'.
     recordingDeviceType: The type of device the speech was recorded with.
@@ -553,7 +548,7 @@ class SpeechContext(_messages.Message):
       example, if specific commands are typically spoken by the user. This can
       also be used to add additional words to the vocabulary of the
       recognizer. See [usage limits](https://cloud.google.com/speech-to-
-      text/quotas#content).  List items can also be set to classes for groups
+      text/quotas#content). List items can also be set to classes for groups
       of words that represent common concepts that occur in natural language.
       For example, rather than providing phrase hints for every month of the
       year, using the $MONTH class improves the likelihood of correctly
@@ -722,7 +717,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -731,7 +726,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

@@ -86,12 +86,7 @@ class FirestoreV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the field configuration and metadata for this database.
-
-Currently, FirestoreAdmin.ListFields only supports listing fields
-that have been explicitly overridden. To issue this query, call
-FirestoreAdmin.ListFields with the filter set to
-`indexConfig.usesAncestorConfig:false`.
+      r"""Lists the field configuration and metadata for this database. Currently, FirestoreAdmin.ListFields only supports listing fields that have been explicitly overridden. To issue this query, call FirestoreAdmin.ListFields with the filter set to `indexConfig.usesAncestorConfig:false`.
 
       Args:
         request: (FirestoreProjectsDatabasesCollectionGroupsFieldsListRequest) input message
@@ -118,19 +113,7 @@ FirestoreAdmin.ListFields with the filter set to
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a field configuration. Currently, field updates apply only to.
-single field index configuration. However, calls to
-FirestoreAdmin.UpdateField should provide a field mask to avoid
-changing any configuration that the caller isn't aware of. The field mask
-should be specified as: `{ paths: "index_config" }`.
-
-This call returns a google.longrunning.Operation which may be used to
-track the status of the field update. The metadata for
-the operation will be the type FieldOperationMetadata.
-
-To configure the default field settings for the database, use
-the special `Field` with resource name:
-`projects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*`.
+      r"""Updates a field configuration. Currently, field updates apply only to single field index configuration. However, calls to FirestoreAdmin.UpdateField should provide a field mask to avoid changing any configuration that the caller isn't aware of. The field mask should be specified as: `{ paths: "index_config" }`. This call returns a google.longrunning.Operation which may be used to track the status of the field update. The metadata for the operation will be the type FieldOperationMetadata. To configure the default field settings for the database, use the special `Field` with resource name: `projects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*`.
 
       Args:
         request: (FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest) input message
@@ -167,9 +150,7 @@ the special `Field` with resource name:
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a composite index. This returns a google.longrunning.Operation.
-which may be used to track the status of the creation. The metadata for
-the operation will be the type IndexOperationMetadata.
+      r"""Creates a composite index. This returns a google.longrunning.Operation which may be used to track the status of the creation. The metadata for the operation will be the type IndexOperationMetadata.
 
       Args:
         request: (FirestoreProjectsDatabasesCollectionGroupsIndexesCreateRequest) input message
@@ -297,10 +278,7 @@ the operation will be the type IndexOperationMetadata.
           }
 
     def BatchGet(self, request, global_params=None):
-      r"""Gets multiple documents.
-
-Documents returned by this method are not guaranteed to be returned in the
-same order that they were requested.
+      r"""Gets multiple documents. Documents returned by this method are not guaranteed to be returned in the same order that they were requested.
 
       Args:
         request: (FirestoreProjectsDatabasesDocumentsBatchGetRequest) input message
@@ -327,15 +305,7 @@ same order that they were requested.
     )
 
     def BatchWrite(self, request, global_params=None):
-      r"""Applies a batch of write operations.
-
-The BatchWrite method does not apply the write operations atomically
-and can apply them out of order. Method does not allow more than one write
-per document. Each write succeeds or fails independently. See the
-BatchWriteResponse for the success status of each write.
-
-If you require an atomically applied set of writes, use
-Commit instead.
+      r"""Applies a batch of write operations. The BatchWrite method does not apply the write operations atomically and can apply them out of order. Method does not allow more than one write per document. Each write succeeds or fails independently. See the BatchWriteResponse for the success status of each write. If you require an atomically applied set of writes, use Commit instead.
 
       Args:
         request: (FirestoreProjectsDatabasesDocumentsBatchWriteRequest) input message
@@ -578,9 +548,7 @@ Commit instead.
     )
 
     def PartitionQuery(self, request, global_params=None):
-      r"""Partitions a query by returning partition cursors that can be used to run.
-the query in parallel. The returned partition cursors are split points that
-can be used by RunQuery as starting/end points for the query results.
+      r"""Partitions a query by returning partition cursors that can be used to run the query in parallel. The returned partition cursors are split points that can be used by RunQuery as starting/end points for the query results.
 
       Args:
         request: (FirestoreProjectsDatabasesDocumentsPartitionQueryRequest) input message
@@ -725,16 +693,7 @@ can be used by RunQuery as starting/end points for the query results.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (FirestoreProjectsDatabasesOperationsCancelRequest) input message
@@ -761,10 +720,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is.
-no longer interested in the operation result. It does not cancel the
-operation. If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
 
       Args:
         request: (FirestoreProjectsDatabasesOperationsDeleteRequest) input message
@@ -791,9 +747,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (FirestoreProjectsDatabasesOperationsGetRequest) input message
@@ -820,16 +774,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the.
-server doesn't support this method, it returns `UNIMPLEMENTED`.
-
-NOTE: the `name` binding allows API services to override the binding
-to use different resource name schemes, such as `users/*/operations`. To
-override the binding, API services can add a binding such as
-`"/v1/{name=users/*}/operations"` to their service configuration.
-For backwards compatibility, the default name includes the operations
-collection id, however overriding users must ensure the name binding
-is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (FirestoreProjectsDatabasesOperationsListRequest) input message
@@ -866,14 +811,7 @@ is the parent resource, without the operations collection id.
           }
 
     def ExportDocuments(self, request, global_params=None):
-      r"""Exports a copy of all or a subset of documents from Google Cloud Firestore.
-to another storage system, such as Google Cloud Storage. Recent updates to
-documents may not be reflected in the export. The export occurs in the
-background and its progress can be monitored and managed via the
-Operation resource that is created. The output of an export may only be
-used once the associated operation is done. If an export operation is
-cancelled before completion it may leave partial data behind in Google
-Cloud Storage.
+      r"""Exports a copy of all or a subset of documents from Google Cloud Firestore to another storage system, such as Google Cloud Storage. Recent updates to documents may not be reflected in the export. The export occurs in the background and its progress can be monitored and managed via the Operation resource that is created. The output of an export may only be used once the associated operation is done. If an export operation is cancelled before completion it may leave partial data behind in Google Cloud Storage.
 
       Args:
         request: (FirestoreProjectsDatabasesExportDocumentsRequest) input message
@@ -900,11 +838,7 @@ Cloud Storage.
     )
 
     def ImportDocuments(self, request, global_params=None):
-      r"""Imports documents into Google Cloud Firestore. Existing documents with the.
-same name are overwritten. The import occurs in the background and its
-progress can be monitored and managed via the Operation resource that is
-created. If an ImportDocuments operation is cancelled, it is possible
-that a subset of the data has already been imported to Cloud Firestore.
+      r"""Imports documents into Google Cloud Firestore. Existing documents with the same name are overwritten. The import occurs in the background and its progress can be monitored and managed via the Operation resource that is created. If an ImportDocuments operation is cancelled, it is possible that a subset of the data has already been imported to Cloud Firestore.
 
       Args:
         request: (FirestoreProjectsDatabasesImportDocumentsRequest) input message

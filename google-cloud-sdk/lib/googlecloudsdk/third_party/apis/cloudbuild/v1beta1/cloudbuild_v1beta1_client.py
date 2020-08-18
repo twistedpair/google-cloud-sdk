@@ -55,16 +55,7 @@ class CloudbuildV1beta1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
 
       Args:
         request: (CloudbuildProjectsLocationsOperationsCancelRequest) input message
@@ -91,9 +82,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (CloudbuildProjectsLocationsOperationsGetRequest) input message
@@ -130,10 +119,7 @@ service.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a `WorkerPool` to run the builds, and returns the new worker pool.
-
-NOTE: As of now, this method returns an `Operation` that is always
-complete.
+      r"""Creates a `WorkerPool` to run the builds, and returns the new worker pool. NOTE: As of now, this method returns an `Operation` that is always complete.
 
       Args:
         request: (CloudbuildProjectsLocationsWorkerPoolsCreateRequest) input message
@@ -160,10 +146,7 @@ complete.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a `WorkerPool`.
-
-NOTE: As of now, this method returns an `Operation` that is always
-complete.
+      r"""Deletes a `WorkerPool`. NOTE: As of now, this method returns an `Operation` that is always complete.
 
       Args:
         request: (CloudbuildProjectsLocationsWorkerPoolsDeleteRequest) input message
@@ -244,10 +227,7 @@ complete.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a `WorkerPool`.
-
-NOTE: As of now, this method returns an `Operation` that is always
-complete.
+      r"""Updates a `WorkerPool`. NOTE: As of now, this method returns an `Operation` that is always complete.
 
       Args:
         request: (CloudbuildProjectsLocationsWorkerPoolsPatchRequest) input message

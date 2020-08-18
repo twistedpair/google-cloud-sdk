@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
+from googlecloudsdk.api_lib.accesscontextmanager import acm_printer
 from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
@@ -43,6 +44,17 @@ class ParseError(exceptions.Error):
   def __init__(self, path, reason):
     super(ParseError,
           self).__init__('Issue parsing file [{}]: {}'.format(path, reason))
+
+
+class InvalidMessageParseError(ParseError):
+
+  def __init__(self, path, reason, message_class):
+    valid_fields = [f.name for f in message_class.all_fields()]
+    super(InvalidMessageParseError, self).__init__(
+        path, ('The YAML-compliant file of messages provided contains errors: '
+               '{}\n\n'
+               'The objects in this file can contain the fields'
+               ' [{}].').format(reason, ', '.join(valid_fields)))
 
 
 class InvalidFormatError(ParseError):
@@ -292,6 +304,13 @@ def AddPerimeterUpdateArgs(parser, version=None, track=None):
   _AddRestrictedServices(parser)
   _AddLevelsUpdate(parser)
   _AddVpcRestrictionArgs(parser)
+  AddUpdateDirectionalPoliciesGroupArgs(parser, version)
+
+
+def AddUpdateDirectionalPoliciesGroupArgs(parser, version=None):
+  if version == 'v1alpha':
+    _AddUpdateIngressPoliciesGroupArgs(parser, version)
+    _AddUpdateEgressPoliciesGroupArgs(parser, version)
 
 
 def AddPerimeterUpdateDryRunConfigArgs(parser):
@@ -382,6 +401,74 @@ def _AddVpcAccessibleServicesArgs(parser, list_help, enable_help):
       help=enable_help)
 
 
+def _AddUpdateIngressPoliciesGroupArgs(parser, api_version):
+  """Add args for set/clear ingress-policies."""
+  group_help = ('These flags modify the enforced IngressPolicies of this '
+                'ServicePerimeter.')
+  group = parser.add_mutually_exclusive_group(group_help)
+  set_ingress_policies_help_text = (
+      'Path to a file containing a list of Ingress Policies.\n\nThis file '
+      'contains a list of YAML-compliant objects representing Ingress Policies'
+      ' described in the API reference.\n\nFor more information, '
+      'see:\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1alpha/accessPolicies.servicePerimeters'
+  )
+  set_ingress_policies_arg = base.Argument(
+      '--set-ingress-policies',
+      metavar='YAML_FILE',
+      help=set_ingress_policies_help_text,
+      type=ParseIngressPolicies(api_version))
+  clear_ingress_policies_help_text = (
+      'Empties existing enforced Ingress Policies.')
+  clear_ingress_policies_arg = base.Argument(
+      '--clear-ingress-policies',
+      help=clear_ingress_policies_help_text,
+      action='store_true')
+  set_ingress_policies_arg.AddToParser(group)
+  clear_ingress_policies_arg.AddToParser(group)
+
+
+def _AddUpdateEgressPoliciesGroupArgs(parser, api_version):
+  """Add args for set/clear egress policies."""
+  group_help = ('These flags modify the enforced EgressPolicies of this '
+                'ServicePerimeter.')
+  group = parser.add_mutually_exclusive_group(group_help)
+  set_egress_policies_help_text = (
+      'Path to a file containing a list of Egress Policies.\n\nThis file '
+      'contains a list of YAML-compliant objects representing Egress Policies '
+      'described in the API reference.\n\nFor more information, '
+      'see:\nhttps://cloud.google.com/access-context-manager/docs/reference/rest/v1alpha/accessPolicies.servicePerimeters'
+  )
+  set_egress_policies_arg = base.Argument(
+      '--set-egress-policies',
+      metavar='YAML_FILE',
+      help=set_egress_policies_help_text,
+      type=ParseEgressPolicies(api_version))
+  clear_egress_policies_help_text = (
+      'Empties existing enforced Egress Policies.')
+  clear_egress_policies_arg = base.Argument(
+      '--clear-egress-policies',
+      help=clear_egress_policies_help_text,
+      action='store_true')
+  set_egress_policies_arg.AddToParser(group)
+  clear_egress_policies_arg.AddToParser(group)
+
+
+def ParseUpdateDirectionalPoliciesArgs(args, version, arg_name):
+  """Return values for clear_/set_ ingress/egress-policies command line args."""
+  if version == 'v1alpha':
+    underscored_name = arg_name.replace('-', '_')
+    clear = getattr(args, 'clear_' + underscored_name)
+    set_ = getattr(args, 'set_' + underscored_name, None)
+
+    if clear:
+      return []
+    elif set_ is not None:
+      return set_
+    else:
+      return None
+  return None
+
+
 def ParseVpcRestriction(args, perimeter_result, version, dry_run=False):
   """Parse service restriction related arguments."""
   if _IsServiceFilterUpdateSpecified(args):
@@ -457,6 +544,52 @@ def ParseLevels(args, perimeter_result, policy_id, dry_run=False):
 
   level_ids = repeated.ParsePrimitiveArgs(args, 'access_levels', GetLevelIds)
   return ExpandLevelNamesIfNecessary(level_ids, policy_id)
+
+
+def ParseIngressPolicies(api_version):
+
+  def ParseVersionedIngressPolicies(path):
+    return ParseAccessContextManagerMessages(
+        path,
+        util.GetMessages(version=api_version).IngressPolicy)
+
+  return ParseVersionedIngressPolicies
+
+
+def ParseEgressPolicies(api_version):
+
+  def ParseVersionedEgressPoliciesAlpha(path):
+    return ParseAccessContextManagerMessages(
+        path,
+        util.GetMessages(version=api_version).EgressPolicy)
+
+  return ParseVersionedEgressPoliciesAlpha
+
+
+def ParseAccessContextManagerMessages(path, message_class):
+  """Parse a YAML representation of a list of messages.
+
+  Args:
+    path: str, path to file containing Egress Policies
+    message_class: obj, message type to parse the contents of the yaml file to
+
+  Returns:
+    list of message objects.
+
+  Raises:
+    ParseError: if the file could not be read into the proper object
+  """
+
+  data = yaml.load_path(path)
+  if not data:
+    raise ParseError(path, 'File is empty')
+  try:
+    messages = [encoding.DictToMessage(c, message_class) for c in data]
+  except Exception as err:
+    raise InvalidMessageParseError(path, six.text_type(err), message_class)
+
+  _ValidateAllFieldsRecognized(path, messages)
+  return messages
 
 
 def ParseServicePerimetersAlpha(path):
@@ -618,3 +751,30 @@ def GenerateDryRunConfigDiff(perimeter, api_version):
             'allowedServices',
             line_prefix='  '))
   return '\n'.join(output)
+
+
+def PrintDirectionalPoliciesDryRunConfigDiff(perimeter, api_version):
+  """Generates the diff of enforced and dry-run directional policies strings."""
+  if api_version != 'v1alpha':
+    return
+  if perimeter.spec is None and perimeter.useExplicitDryRunSpec:
+    return
+  if perimeter.status is None and perimeter.spec is None:
+    return
+  print('IngressPolicies:')
+  if (perimeter.status is None or perimeter.status.ingressPolicies == []) and (
+      perimeter.spec is None or perimeter.spec.ingressPolicies == []):
+    print('   NONE')
+  else:
+    acm_printer.Print(
+        perimeter,
+        'diff[format=yaml](status.ingressPolicies, spec.ingressPolicies)')
+
+  print('EgressPolicies:')
+  if (perimeter.status is None or perimeter.status.egressPolicies == []) and (
+      perimeter.spec is None or perimeter.spec.egressPolicies == []):
+    print('   NONE')
+  else:
+    acm_printer.Print(
+        perimeter,
+        'diff[format=yaml](status.egressPolicies, spec.egressPolicies)')

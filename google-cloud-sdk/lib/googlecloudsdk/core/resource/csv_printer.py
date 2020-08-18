@@ -32,6 +32,9 @@ class CsvPrinter(resource_printer_base.ResourcePrinter):
   [Comma Separated Values](http://www.ietf.org/rfc/rfc4180.txt) with no keys.
   This format requires a projection to define the values to be printed.
 
+  To use *\n* or *\t* as an attribute value please escape the *\* with your
+  shell's escape sequence, example *separator="\\n"* for bash.
+
   Printer attributes:
     delimiter="string": The string printed between list value items,
       default ";".
@@ -130,6 +133,9 @@ class ValuePrinter(CsvPrinter):
   CSV with no heading and <TAB> separator instead of <COMMA>. Used to retrieve
   individual resource values. This format requires a projection to define the
   value(s) to be printed.
+
+  To use *\n* or *\t* as an attribute value please escape the *\* with your
+  shell's escape sequence, example *separator="\\n"* for bash.
 
   Printer attributes:
     delimiter="string": The string printed between list value items,

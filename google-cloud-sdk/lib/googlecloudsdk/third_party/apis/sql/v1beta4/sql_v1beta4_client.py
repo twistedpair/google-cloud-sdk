@@ -113,8 +113,7 @@ class SqlV1beta4(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new backup run on demand. This method is applicable only to.
-Second Generation instances.
+      r"""Creates a new backup run on demand. This method is applicable only to Second Generation instances.
 
       Args:
         request: (SqlBackupRunsInsertRequest) input message
@@ -140,8 +139,7 @@ Second Generation instances.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all backup runs associated with a given instance and configuration in.
-the reverse chronological order of the backup initiation time.
+      r"""Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the backup initiation time.
 
       Args:
         request: (SqlBackupRunsListRequest) input message
@@ -203,8 +201,7 @@ the reverse chronological order of the backup initiation time.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a resource containing information about a database inside a Cloud.
-SQL instance.
+      r"""Retrieves a resource containing information about a database inside a Cloud SQL instance.
 
       Args:
         request: (SqlDatabasesGetRequest) input message
@@ -230,8 +227,7 @@ SQL instance.
     )
 
     def Insert(self, request, global_params=None):
-      r"""Inserts a resource containing information about a database inside a Cloud.
-SQL instance.
+      r"""Inserts a resource containing information about a database inside a Cloud SQL instance.
 
       Args:
         request: (Database) input message
@@ -283,8 +279,7 @@ SQL instance.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Partially updates a resource containing information about a database inside.
-a Cloud SQL instance. This method supports patch semantics.
+      r"""Partially updates a resource containing information about a database inside a Cloud SQL instance. This method supports patch semantics.
 
       Args:
         request: (SqlDatabasesPatchRequest) input message
@@ -310,8 +305,7 @@ a Cloud SQL instance. This method supports patch semantics.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a resource containing information about a database inside a Cloud.
-SQL instance.
+      r"""Updates a resource containing information about a database inside a Cloud SQL instance.
 
       Args:
         request: (SqlDatabasesUpdateRequest) input message
@@ -383,11 +377,7 @@ SQL instance.
           }
 
     def AddServerCa(self, request, global_params=None):
-      r"""Add a new trusted Certificate Authority (CA) version for the specified.
-instance. Required to prepare for a certificate rotation. If a CA version
-was previously added but never used in a certificate rotation, this
-operation replaces that version. There cannot be more than one CA version
-waiting to be rotated in.
+      r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in.
 
       Args:
         request: (SqlInstancesAddServerCaRequest) input message
@@ -413,8 +403,7 @@ waiting to be rotated in.
     )
 
     def Clone(self, request, global_params=None):
-      r"""Creates a Cloud SQL instance as a clone of the source instance. Using this.
-operation might cause your instance to restart.
+      r"""Creates a Cloud SQL instance as a clone of the source instance. Using this operation might cause your instance to restart.
 
       Args:
         request: (SqlInstancesCloneRequest) input message
@@ -466,8 +455,7 @@ operation might cause your instance to restart.
     )
 
     def DemoteMaster(self, request, global_params=None):
-      r"""Demotes the stand-alone instance to be a Cloud SQL read replica for an.
-external database server.
+      r"""Demotes the stand-alone instance to be a Cloud SQL read replica for an external database server.
 
       Args:
         request: (SqlInstancesDemoteMasterRequest) input message
@@ -493,8 +481,7 @@ external database server.
     )
 
     def Export(self, request, global_params=None):
-      r"""Exports data from a Cloud SQL instance to a Cloud Storage bucket as a SQL.
-dump or CSV file.
+      r"""Exports data from a Cloud SQL instance to a Cloud Storage bucket as a SQL dump or CSV file.
 
       Args:
         request: (SqlInstancesExportRequest) input message
@@ -520,8 +507,7 @@ dump or CSV file.
     )
 
     def Failover(self, request, global_params=None):
-      r"""Failover the instance to its failover replica instance. Using this.
-operation might cause your instance to restart.
+      r"""Failover the instance to its failover replica instance. Using this operation might cause your instance to restart.
 
       Args:
         request: (SqlInstancesFailoverRequest) input message
@@ -573,8 +559,7 @@ operation might cause your instance to restart.
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports data into a Cloud SQL instance from a SQL dump  or CSV file in.
-Cloud Storage.
+      r"""Imports data into a Cloud SQL instance from a SQL dump or CSV file in Cloud Storage.
 
       Args:
         request: (SqlInstancesImportRequest) input message
@@ -652,11 +637,7 @@ Cloud Storage.
     )
 
     def ListServerCas(self, request, global_params=None):
-      r"""Lists all of the trusted Certificate Authorities (CAs) for the specified.
-instance. There can be up to three CAs listed: the CA that was used to sign
-the certificate that is currently in use, a CA that has been added but not
-yet used to sign a certificate, and a CA used to sign a certificate that
-has previously rotated out.
+      r"""Lists all of the trusted Certificate Authorities (CAs) for the specified instance. There can be up to three CAs listed: the CA that was used to sign the certificate that is currently in use, a CA that has been added but not yet used to sign a certificate, and a CA used to sign a certificate that has previously rotated out.
 
       Args:
         request: (SqlInstancesListServerCasRequest) input message
@@ -682,8 +663,7 @@ has previously rotated out.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates settings of a Cloud SQL instance.
-This method supports patch semantics.
+      r"""Updates settings of a Cloud SQL instance. This method supports patch semantics.
 
       Args:
         request: (SqlInstancesPatchRequest) input message
@@ -709,8 +689,7 @@ This method supports patch semantics.
     )
 
     def PromoteReplica(self, request, global_params=None):
-      r"""Promotes the read replica instance to be a stand-alone Cloud SQL instance.
-Using this operation might cause your instance to restart.
+      r"""Promotes the read replica instance to be a stand-alone Cloud SQL instance. Using this operation might cause your instance to restart.
 
       Args:
         request: (SqlInstancesPromoteReplicaRequest) input message
@@ -736,8 +715,7 @@ Using this operation might cause your instance to restart.
     )
 
     def ResetSslConfig(self, request, global_params=None):
-      r"""Deletes all client certificates and generates a new server SSL certificate.
-for the instance.
+      r"""Deletes all client certificates and generates a new server SSL certificate for the instance.
 
       Args:
         request: (SqlInstancesResetSslConfigRequest) input message
@@ -789,8 +767,7 @@ for the instance.
     )
 
     def RestoreBackup(self, request, global_params=None):
-      r"""Restores a backup of a Cloud SQL instance. Using this operation might cause.
-your instance to restart.
+      r"""Restores a backup of a Cloud SQL instance. Using this operation might cause your instance to restart.
 
       Args:
         request: (SqlInstancesRestoreBackupRequest) input message
@@ -816,8 +793,7 @@ your instance to restart.
     )
 
     def RotateServerCa(self, request, global_params=None):
-      r"""Rotates the server certificate to one signed by the Certificate Authority.
-(CA) version previously added with the addServerCA method.
+      r"""Rotates the server certificate to one signed by the Certificate Authority (CA) version previously added with the addServerCA method.
 
       Args:
         request: (SqlInstancesRotateServerCaRequest) input message
@@ -921,8 +897,7 @@ your instance to restart.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates settings of a Cloud SQL instance. Using this operation might cause.
-your instance to restart.
+      r"""Updates settings of a Cloud SQL instance. Using this operation might cause your instance to restart.
 
       Args:
         request: (SqlInstancesUpdateRequest) input message
@@ -984,8 +959,7 @@ your instance to restart.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all instance operations that have been performed on the given Cloud.
-SQL instance in the reverse chronological order of the start time.
+      r"""Lists all instance operations that have been performed on the given Cloud SQL instance in the reverse chronological order of the start time.
 
       Args:
         request: (SqlOperationsListRequest) input message
@@ -1119,10 +1093,7 @@ SQL instance in the reverse chronological order of the start time.
           }
 
     def CreateEphemeral(self, request, global_params=None):
-      r"""Generates a short-lived X509 certificate containing the provided public key.
-and signed by a private key specific to the target instance. Users may use
-the certificate to authenticate as themselves when connecting to the
-database.
+      r"""Generates a short-lived X509 certificate containing the provided public key and signed by a private key specific to the target instance. Users may use the certificate to authenticate as themselves when connecting to the database.
 
       Args:
         request: (SqlSslCertsCreateEphemeralRequest) input message
@@ -1148,8 +1119,7 @@ database.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the SSL certificate. For First Generation instances, the.
-certificate remains valid until the instance is restarted.
+      r"""Deletes the SSL certificate. For First Generation instances, the certificate remains valid until the instance is restarted.
 
       Args:
         request: (SqlSslCertsDeleteRequest) input message
@@ -1175,9 +1145,7 @@ certificate remains valid until the instance is restarted.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a particular SSL certificate.  Does not include the private key.
-(required for usage).  The private key must be saved from the response to
-initial creation.
+      r"""Retrieves a particular SSL certificate. Does not include the private key (required for usage). The private key must be saved from the response to initial creation.
 
       Args:
         request: (SqlSslCertsGetRequest) input message
@@ -1203,9 +1171,7 @@ initial creation.
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an SSL certificate and returns it along with the private key and.
-server certificate authority.  The new certificate will not be usable until
-the instance is restarted.
+      r"""Creates an SSL certificate and returns it along with the private key and server certificate authority. The new certificate will not be usable until the instance is restarted.
 
       Args:
         request: (SqlSslCertsInsertRequest) input message
@@ -1267,9 +1233,7 @@ the instance is restarted.
           }
 
     def List(self, request, global_params=None):
-      r"""Lists all available machine types (tiers) for Cloud SQL, for example,.
-db-n1-standard-1. For related information, see <a
-href="/sql/pricing">Pricing</a>.
+      r"""Lists all available machine types (tiers) for Cloud SQL, for example, db-n1-standard-1. For related information, see Pricing.
 
       Args:
         request: (SqlTiersListRequest) input message

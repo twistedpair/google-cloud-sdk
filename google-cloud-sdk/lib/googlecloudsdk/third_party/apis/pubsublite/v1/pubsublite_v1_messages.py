@@ -72,9 +72,9 @@ class DeliveryConfig(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -175,7 +175,7 @@ class PubsubliteAdminProjectsLocationsSubscriptionsCreateRequest(_messages.Messa
       Structured like `projects/{project_number}/locations/{location}`.
     subscription: A Subscription resource to be passed as the request body.
     subscriptionId: Required. The ID to use for the subscription, which will
-      become the final component of the subscription's name.  This value is
+      become the final component of the subscription's name. This value is
       structured like: `my-sub-name`.
   """
 
@@ -213,8 +213,8 @@ class PubsubliteAdminProjectsLocationsSubscriptionsListRequest(_messages.Message
       return fewer than this value. If unset or zero, all subscriptions for
       the parent will be returned.
     pageToken: A page token, received from a previous `ListSubscriptions`
-      call. Provide this to retrieve the subsequent page.  When paginating,
-      all other parameters provided to `ListSubscriptions` must match the call
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListSubscriptions` must match the call
       that provided the page token.
     parent: Required. The parent whose subscriptions are to be listed.
       Structured like `projects/{project_number}/locations/{location}`.
@@ -248,8 +248,8 @@ class PubsubliteAdminProjectsLocationsTopicsCreateRequest(_messages.Message):
       Structured like `projects/{project_number}/locations/{location}`.
     topic: A Topic resource to be passed as the request body.
     topicId: Required. The ID to use for the topic, which will become the
-      final component of the topic's name.  This value is structured like:
-      `my-topic-name`.
+      final component of the topic's name. This value is structured like: `my-
+      topic-name`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -295,9 +295,9 @@ class PubsubliteAdminProjectsLocationsTopicsListRequest(_messages.Message):
       fewer than this value. If unset or zero, all topics for the parent will
       be returned.
     pageToken: A page token, received from a previous `ListTopics` call.
-      Provide this to retrieve the subsequent page.  When paginating, all
-      other parameters provided to `ListTopics` must match the call that
-      provided the page token.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListTopics` must match the call that provided
+      the page token.
     parent: Required. The parent whose topics are to be listed. Structured
       like `projects/{project_number}/locations/{location}`.
   """
@@ -331,8 +331,8 @@ class PubsubliteAdminProjectsLocationsTopicsSubscriptionsListRequest(_messages.M
       return fewer than this value. If unset or zero, all subscriptions for
       the given topic will be returned.
     pageToken: A page token, received from a previous `ListTopicSubscriptions`
-      call. Provide this to retrieve the subsequent page.  When paginating,
-      all other parameters provided to `ListTopicSubscriptions` must match the
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListTopicSubscriptions` must match the
       call that provided the page token.
   """
 
@@ -350,9 +350,9 @@ class PubsubliteCursorProjectsLocationsSubscriptionsCursorsListRequest(_messages
       fewer than this value. If unset or zero, all cursors for the parent will
       be returned.
     pageToken: A page token, received from a previous `ListPartitionCursors`
-      call. Provide this to retrieve the subsequent page.  When paginating,
-      all other parameters provided to `ListPartitionCursors` must match the
-      call that provided the page token.
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListPartitionCursors` must match the call
+      that provided the page token.
     parent: Required. The subscription for which to retrieve cursors.
       Structured like `projects/{project_number}/locations/{location}/subscrip
       tions/{subscription_id}`.

@@ -296,16 +296,16 @@ class Context(_messages.Message):
       environment variables, which are a process-level concept.
     ConnectionsValue: Optional. A mapping from connection ID to Connections to
       make available to the workflow. Each map entry's key should match the
-      `id` field of the  // value.
+      `id` field of the // value.
     EnvVariablesValue: Optional. Environment variables to provide to the
-      processes executing the workflow.  Environment variable names must match
+      processes executing the workflow. Environment variable names must match
       the regular expression "a-zA-Z_*". They cannot specify Apache Airflow
       configuration overrides (they cannot match the regular expression
       `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`)
     LabelsValue: Optional. User-defined labels for this context. There can be
       no more than 64 labels entries. Entries of the labels map are UTF8
-      strings that comply with the following restrictions:  * Keys must
-      conform to regexp: \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
+      strings that comply with the following restrictions: * Keys must conform
+      to regexp: \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
     PoolsValue: Optional. A mapping from pool ID to Pools to make available to
@@ -320,16 +320,16 @@ class Context(_messages.Message):
       environment variables, which are a process-level concept.
     connections: Optional. A mapping from connection ID to Connections to make
       available to the workflow. Each map entry's key should match the `id`
-      field of the  // value.
+      field of the // value.
     createTime: Output only. The time the context was created.
     envVariables: Optional. Environment variables to provide to the processes
-      executing the workflow.  Environment variable names must match the
+      executing the workflow. Environment variable names must match the
       regular expression "a-zA-Z_*". They cannot specify Apache Airflow
       configuration overrides (they cannot match the regular expression
       `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`)
     labels: Optional. User-defined labels for this context. There can be no
       more than 64 labels entries. Entries of the labels map are UTF8 strings
-      that comply with the following restrictions:  * Keys must conform to
+      that comply with the following restrictions: * Keys must conform to
       regexp: \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
@@ -399,7 +399,7 @@ class Context(_messages.Message):
   class ConnectionsValue(_messages.Message):
     r"""Optional. A mapping from connection ID to Connections to make
     available to the workflow. Each map entry's key should match the `id`
-    field of the  // value.
+    field of the // value.
 
     Messages:
       AdditionalProperty: An additional property for a ConnectionsValue
@@ -425,9 +425,9 @@ class Context(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvVariablesValue(_messages.Message):
     r"""Optional. Environment variables to provide to the processes executing
-    the workflow.  Environment variable names must match the regular
-    expression "a-zA-Z_*". They cannot specify Apache Airflow configuration
-    overrides (they cannot match the regular expression
+    the workflow. Environment variable names must match the regular expression
+    "a-zA-Z_*". They cannot specify Apache Airflow configuration overrides
+    (they cannot match the regular expression
     `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`)
 
     Messages:
@@ -455,7 +455,7 @@ class Context(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""Optional. User-defined labels for this context. There can be no more
     than 64 labels entries. Entries of the labels map are UTF8 strings that
-    comply with the following restrictions:  * Keys must conform to regexp:
+    comply with the following restrictions: * Keys must conform to regexp:
     \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
     [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
     constrained to be <= 128 bytes in size.
@@ -560,17 +560,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -579,29 +579,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -627,12 +627,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -742,7 +742,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -751,7 +751,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -799,9 +799,9 @@ class Workflow(_messages.Message):
     LabelsValue: Optional. User-defined labels for this workflow. Workflow
       runs instantiated from this workflow will inherit these labels. The
       labels map can contain no more than 64 entries. Entries of the labels
-      map are UTF8 strings that comply with the following restrictions:  *
-      Keys must conform to regexp: \p{Ll}\p{Lo}{0,62} * Values must conform to
-      regexp:  [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are
+      map are UTF8 strings that comply with the following restrictions: * Keys
+      must conform to regexp: \p{Ll}\p{Lo}{0,62} * Values must conform to
+      regexp: [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are
       additionally constrained to be <= 128 bytes in size.
 
   Fields:
@@ -819,7 +819,7 @@ class Workflow(_messages.Message):
     labels: Optional. User-defined labels for this workflow. Workflow runs
       instantiated from this workflow will inherit these labels. The labels
       map can contain no more than 64 entries. Entries of the labels map are
-      UTF8 strings that comply with the following restrictions:  * Keys must
+      UTF8 strings that comply with the following restrictions: * Keys must
       conform to regexp: \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
@@ -851,7 +851,7 @@ class Workflow(_messages.Message):
     r"""Optional. User-defined labels for this workflow. Workflow runs
     instantiated from this workflow will inherit these labels. The labels map
     can contain no more than 64 entries. Entries of the labels map are UTF8
-    strings that comply with the following restrictions:  * Keys must conform
+    strings that comply with the following restrictions: * Keys must conform
     to regexp: \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
     [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
     constrained to be <= 128 bytes in size.
@@ -900,7 +900,7 @@ class WorkflowRun(_messages.Message):
       initial label entries for a workflow run are inherited from the workflow
       from which it was instantiated. There can be no more than 64 labels
       entries. Entries of the labels map are UTF8 strings that comply with the
-      following restrictions:  * Keys must conform to regexp:
+      following restrictions: * Keys must conform to regexp:
       \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
@@ -915,7 +915,7 @@ class WorkflowRun(_messages.Message):
       label entries for a workflow run are inherited from the workflow from
       which it was instantiated. There can be no more than 64 labels entries.
       Entries of the labels map are UTF8 strings that comply with the
-      following restrictions:  * Keys must conform to regexp:
+      following restrictions: * Keys must conform to regexp:
       \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
@@ -946,9 +946,9 @@ class WorkflowRun(_messages.Message):
     entries for a workflow run are inherited from the workflow from which it
     was instantiated. There can be no more than 64 labels entries. Entries of
     the labels map are UTF8 strings that comply with the following
-    restrictions:  * Keys must conform to regexp: \p{Ll}\p{Lo}{0,62} * Values
-    must conform to regexp:  [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and
-    values are additionally constrained to be <= 128 bytes in size.
+    restrictions: * Keys must conform to regexp: \p{Ll}\p{Lo}{0,62} * Values
+    must conform to regexp: [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values
+    are additionally constrained to be <= 128 bytes in size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

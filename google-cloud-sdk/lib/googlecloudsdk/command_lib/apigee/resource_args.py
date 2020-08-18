@@ -33,25 +33,27 @@ _EntityNames = collections.namedtuple(
 _ENTITY_TUPLES = [
     _EntityNames("organization", "organizations", "organization",
                  r"^[a-z][-a-z0-9]{0,30}[a-z0-9]$",
-                 "The organization for the {resource}."),
+                 "Apigee organization containing the {resource}. If "
+                 "unspecified, the Cloud Platform project's associated "
+                 "organization will be used."),
     _EntityNames("api", "apis", "API proxy", r"^[\s\w.-]{1,255}$",
-                 "The API proxy for the {resource}."),
+                 "API proxy for the {resource}."),
     _EntityNames("environment", "environments", "environment",
                  r"^[a-z][-a-z0-9]{0,30}[a-z0-9]$",
-                 "The deployment environment of the {resource}."),
+                 "Deployment environment of the {resource}."),
     _EntityNames("revision", "revisions", "revision", None,
-                 "The appropriate revision of the {resource}."),
+                 "Revision of the {resource}."),
     _EntityNames("deployment", "deployments", "deployment", None,
-                 "The relevant deployment of the {resource}."),
+                 "Relevant deployment of the {resource}."),
     _EntityNames("operation", "operations", "operation", None,
-                 "The operation operating on the {resource}."),
+                 "Operation operating on the {resource}."),
     _EntityNames("product", "apiproducts", "API product",
                  r"^[A-Za-z0-9._$ %-]+$",
-                 "The relevant product for the {resource}."),
+                 "Relevant product for the {resource}."),
     _EntityNames("developer", "developers", "developer", None,
-                 "The developer of the {resource}."),
+                 "Developer of the {resource}."),
     _EntityNames("app", "apps", "application", None,
-                 "The relevant application for the {resource}."),
+                 "Relevant application for the {resource}."),
 ]
 ENTITIES = {item.singular: item for item in _ENTITY_TUPLES}
 

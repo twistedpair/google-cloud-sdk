@@ -35,6 +35,7 @@ VPC_ACCESS_ANNOTATION = 'run.googleapis.com/vpc-access-connector'
 EGRESS_SETTINGS_ANNOTATION = 'run.googleapis.com/vpc-access-egress'
 MIN_SCALE_ANNOTATION = 'autoscaling.knative.dev/minScale'
 MAX_SCALE_ANNOTATION = 'autoscaling.knative.dev/maxScale'
+LAUNCH_STAGE_ANNOTATION = 'run.googleapis.com/launch-stage'
 
 
 class Revision(k8s_object.KubernetesObject):

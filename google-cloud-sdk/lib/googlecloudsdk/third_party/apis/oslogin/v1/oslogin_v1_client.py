@@ -145,8 +145,7 @@ class OsloginV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an SSH public key and returns the profile information. This method.
-supports patch semantics.
+      r"""Updates an SSH public key and returns the profile information. This method supports patch semantics.
 
       Args:
         request: (OsloginUsersSshPublicKeysPatchRequest) input message
@@ -183,8 +182,7 @@ supports patch semantics.
           }
 
     def GetLoginProfile(self, request, global_params=None):
-      r"""Retrieves the profile information used for logging in to a virtual machine.
-on Google Compute Engine.
+      r"""Retrieves the profile information used for logging in to a virtual machine on Google Compute Engine.
 
       Args:
         request: (OsloginUsersGetLoginProfileRequest) input message
@@ -211,9 +209,7 @@ on Google Compute Engine.
     )
 
     def ImportSshPublicKey(self, request, global_params=None):
-      r"""Adds an SSH public key and returns the profile information. Default POSIX.
-account information is set when no username and UID exist as part of the
-login profile.
+      r"""Adds an SSH public key and returns the profile information. Default POSIX account information is set when no username and UID exist as part of the login profile.
 
       Args:
         request: (OsloginUsersImportSshPublicKeyRequest) input message

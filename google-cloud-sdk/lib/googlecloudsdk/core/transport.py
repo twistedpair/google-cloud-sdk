@@ -154,18 +154,6 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
   def DecodeResponse(self, response, response_encoding):
     """Decodes the response body according to response_encoding."""
 
-  @abc.abstractmethod
-  def AttachCredentials(self, http_client, orig_request):
-    """Attaches credentials to the wrapped http_client.request.
-
-    apitools needs this attribute to do credential refreshes during batch API
-    requests by calling `http.request.credentials.refresh(http)`.
-
-    Args:
-      http_client: The http client with a wrapped request method.
-      orig_request: The original unwrapped request method.
-    """
-
   def WrapWithDefaults(self, http_client, response_encoding):
     """Wraps request with user-agent, and trace reporting.
 
@@ -204,8 +192,8 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
       redact_token = properties.VALUES.core.log_http_redact_token.GetBool()
       handlers.append(Handler(LogRequest(redact_token), LogResponse()))
 
-    return self.WrapRequest(
-        http_client, handlers, response_encoding=response_encoding)
+    self.WrapRequest(http_client, handlers, response_encoding=response_encoding)
+    return http_client
 
   def WrapRequest(self,
                   http_client,
@@ -224,9 +212,6 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
       exc_type: The type of exception that should be caught and given to the
         handler. It could be a tuple to catch more than one exception type.
       response_encoding: str, the encoding to use to decode the response.
-
-    Returns:
-      The wrapped http client.
     """
     orig_request = http_client.request
 
@@ -268,11 +253,6 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
       return response
 
     http_client.request = WrappedRequest
-
-    # Attach credentials on the request to do credential refreshes
-    # during apitools batch API requests.
-    self.AttachCredentials(http_client, orig_request)
-    return http_client
 
 
 class Handler(object):

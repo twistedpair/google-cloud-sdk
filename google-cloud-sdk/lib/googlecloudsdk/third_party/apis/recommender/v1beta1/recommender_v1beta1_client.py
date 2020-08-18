@@ -57,8 +57,7 @@ class RecommenderV1beta1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the requested insight. Requires the recommender.*.get IAM permission.
-for the specified insight type.
+      r"""Gets the requested insight. Requires the recommender.*.get IAM permission for the specified insight type.
 
       Args:
         request: (RecommenderProjectsLocationsInsightTypesInsightsGetRequest) input message
@@ -85,8 +84,7 @@ for the specified insight type.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM.
-permission for the specified insight type.
+      r"""Lists insights for a Cloud project. Requires the recommender.*.list IAM permission for the specified insight type.
 
       Args:
         request: (RecommenderProjectsLocationsInsightTypesInsightsListRequest) input message
@@ -113,12 +111,7 @@ permission for the specified insight type.
     )
 
     def MarkAccepted(self, request, global_params=None):
-      r"""Marks the Insight State as Accepted. Users can use this method to.
-indicate to the Recommender API that they have applied some action based
-on the insight. This stops the insight content from being updated.
-
-MarkInsightAccepted can be applied to insights in ACTIVE state. Requires
-the recommender.*.update IAM permission for the specified insight.
+      r"""Marks the Insight State as Accepted. Users can use this method to indicate to the Recommender API that they have applied some action based on the insight. This stops the insight content from being updated. MarkInsightAccepted can be applied to insights in ACTIVE state. Requires the recommender.*.update IAM permission for the specified insight.
 
       Args:
         request: (RecommenderProjectsLocationsInsightTypesInsightsMarkAcceptedRequest) input message
@@ -165,8 +158,7 @@ the recommender.*.update IAM permission for the specified insight.
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the requested recommendation. Requires the recommender.*.get.
-IAM permission for the specified recommender.
+      r"""Gets the requested recommendation. Requires the recommender.*.get IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsGetRequest) input message
@@ -193,8 +185,7 @@ IAM permission for the specified recommender.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list.
-IAM permission for the specified recommender.
+      r"""Lists recommendations for a Cloud project. Requires the recommender.*.list IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsListRequest) input message
@@ -221,16 +212,7 @@ IAM permission for the specified recommender.
     )
 
     def MarkClaimed(self, request, global_params=None):
-      r"""Marks the Recommendation State as Claimed. Users can use this method to.
-indicate to the Recommender API that they are starting to apply the
-recommendation themselves. This stops the recommendation content from being
-updated. Associated insights are frozen and placed in the ACCEPTED state.
-
-MarkRecommendationClaimed can be applied to recommendations in CLAIMED or
-ACTIVE state.
-
-Requires the recommender.*.update IAM permission for the specified
-recommender.
+      r"""Marks the Recommendation State as Claimed. Users can use this method to indicate to the Recommender API that they are starting to apply the recommendation themselves. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationClaimed can be applied to recommendations in CLAIMED or ACTIVE state. Requires the recommender.*.update IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest) input message
@@ -257,17 +239,7 @@ recommender.
     )
 
     def MarkFailed(self, request, global_params=None):
-      r"""Marks the Recommendation State as Failed. Users can use this method to.
-indicate to the Recommender API that they have applied the recommendation
-themselves, and the operation failed. This stops the recommendation content
-from being updated. Associated insights are frozen and placed in the
-ACCEPTED state.
-
-MarkRecommendationFailed can be applied to recommendations in ACTIVE,
-CLAIMED, SUCCEEDED, or FAILED state.
-
-Requires the recommender.*.update IAM permission for the specified
-recommender.
+      r"""Marks the Recommendation State as Failed. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation failed. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationFailed can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. Requires the recommender.*.update IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest) input message
@@ -294,17 +266,7 @@ recommender.
     )
 
     def MarkSucceeded(self, request, global_params=None):
-      r"""Marks the Recommendation State as Succeeded. Users can use this method to.
-indicate to the Recommender API that they have applied the recommendation
-themselves, and the operation was successful. This stops the recommendation
-content from being updated. Associated insights are frozen and placed in
-the ACCEPTED state.
-
-MarkRecommendationSucceeded can be applied to recommendations in ACTIVE,
-CLAIMED, SUCCEEDED, or FAILED state.
-
-Requires the recommender.*.update IAM permission for the specified
-recommender.
+      r"""Marks the Recommendation State as Succeeded. Users can use this method to indicate to the Recommender API that they have applied the recommendation themselves, and the operation was successful. This stops the recommendation content from being updated. Associated insights are frozen and placed in the ACCEPTED state. MarkRecommendationSucceeded can be applied to recommendations in ACTIVE, CLAIMED, SUCCEEDED, or FAILED state. Requires the recommender.*.update IAM permission for the specified recommender.
 
       Args:
         request: (RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededRequest) input message

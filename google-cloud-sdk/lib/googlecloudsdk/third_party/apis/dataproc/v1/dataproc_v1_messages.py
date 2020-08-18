@@ -113,8 +113,10 @@ class BasicYarnAutoscalingConfig(_messages.Message):
       1 will result in scaling down so that there is no available memory
       remaining after the update (more aggressive scaling). A scale-down
       factor of 0 disables removing workers, which can be beneficial for
-      autoscaling a single job. See How autoscaling works for more
-      information.Bounds: 0.0, 1.0.
+      autoscaling a single job. See How autoscaling works
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/autoscaling#how_autoscaling_works) for more information.Bounds:
+      0.0, 1.0.
     scaleDownMinWorkerFraction: Optional. Minimum scale-down threshold as a
       fraction of total cluster size before scaling occurs. For example, in a
       20-worker cluster, a threshold of 0.1 means the autoscaler must
@@ -126,8 +128,10 @@ class BasicYarnAutoscalingConfig(_messages.Message):
       will result in scaling up so that there is no pending memory remaining
       after the update (more aggressive scaling). A scale-up factor closer to
       0 will result in a smaller magnitude of scaling up (less aggressive
-      scaling). See How autoscaling works for more information.Bounds: 0.0,
-      1.0.
+      scaling). See How autoscaling works
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/autoscaling#how_autoscaling_works) for more information.Bounds:
+      0.0, 1.0.
     scaleUpMinWorkerFraction: Optional. Minimum scale-up threshold as a
       fraction of total cluster size before scaling occurs. For example, in a
       20-worker cluster, a threshold of 0.1 means the autoscaler must
@@ -2223,6 +2227,8 @@ class InstanceGroupConfig(_messages.Message):
       SoftwareConfig.image_version or the system default.
     instanceNames: Output only. The list of instance names. Dataproc derives
       the names from cluster_name, num_instances, and the instance group.
+    instanceReferences: Output only. List of references to Compute Engine
+      instances.
     isPreemptible: Output only. Specifies that this instance group contains
       preemptible instances.
     machineTypeUri: Optional. The Compute Engine machine type used for cluster
@@ -2272,12 +2278,25 @@ class InstanceGroupConfig(_messages.Message):
   diskConfig = _messages.MessageField('DiskConfig', 2)
   imageUri = _messages.StringField(3)
   instanceNames = _messages.StringField(4, repeated=True)
-  isPreemptible = _messages.BooleanField(5)
-  machineTypeUri = _messages.StringField(6)
-  managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 7)
-  minCpuPlatform = _messages.StringField(8)
-  numInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 10)
+  instanceReferences = _messages.MessageField('InstanceReference', 5, repeated=True)
+  isPreemptible = _messages.BooleanField(6)
+  machineTypeUri = _messages.StringField(7)
+  managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 8)
+  minCpuPlatform = _messages.StringField(9)
+  numInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 11)
+
+
+class InstanceReference(_messages.Message):
+  r"""A reference to a Compute Engine instance.
+
+  Fields:
+    instanceId: The unique identifier of the Compute Engine instance.
+    instanceName: The user-friendly name of the Compute Engine instance.
+  """
+
+  instanceId = _messages.StringField(1)
+  instanceName = _messages.StringField(2)
 
 
 class InstantiateWorkflowTemplateRequest(_messages.Message):

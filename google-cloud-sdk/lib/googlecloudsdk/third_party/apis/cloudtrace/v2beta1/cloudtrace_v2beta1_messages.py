@@ -22,7 +22,7 @@ class CloudtraceProjectsTraceSinksCreateRequest(_messages.Message):
 
   Fields:
     parent: Required. The resource in which to create the sink (currently only
-      project sinks are supported):      "projects/[PROJECT_ID]"  Examples:
+      project sinks are supported): "projects/[PROJECT_ID]" Examples:
       `"projects/my-trace-project"`, `"projects/123456789"`.
     traceSink: A TraceSink resource to be passed as the request body.
   """
@@ -37,7 +37,7 @@ class CloudtraceProjectsTraceSinksDeleteRequest(_messages.Message):
   Fields:
     name: Required. The full resource name of the sink to delete, including
       the parent resource and the sink identifier:
-      "projects/[PROJECT_NUMBER]/traceSinks/[SINK_ID]"  Example:
+      "projects/[PROJECT_NUMBER]/traceSinks/[SINK_ID]" Example:
       `"projects/12345/traceSinks/my-sink-id"`.
   """
 
@@ -49,7 +49,7 @@ class CloudtraceProjectsTraceSinksGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the sink:
-      "projects/[PROJECT_NUMBER]/traceSinks/[SINK_ID]"  Example:
+      "projects/[PROJECT_NUMBER]/traceSinks/[SINK_ID]" Example:
       `"projects/12345/traceSinks/my-sink-id"`.
   """
 
@@ -61,13 +61,13 @@ class CloudtraceProjectsTraceSinksListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored.  The presence of
+      request. Non-positive values are ignored. The presence of
       `nextPageToken` in the response indicates that more results might be
       available.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `pageToken` must be the value
-      of `nextPageToken` from the previous response.  The values of other
-      method parameters should be identical to those in the previous call.
+      from the preceding call to this method. `pageToken` must be the value of
+      `nextPageToken` from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
     parent: Required. The parent resource whose sinks are to be listed
       (currently only project parent resources are supported):
       "projects/[PROJECT_ID]"
@@ -84,15 +84,15 @@ class CloudtraceProjectsTraceSinksPatchRequest(_messages.Message):
   Fields:
     name: Required. The full resource name of the sink to update, including
       the parent resource and the sink identifier:
-      "projects/[PROJECT_NUMBER]/traceSinks/[SINK_ID]"  Example:
+      "projects/[PROJECT_NUMBER]/traceSinks/[SINK_ID]" Example:
       `"projects/12345/traceSinks/my-sink-id"`.
     traceSink: A TraceSink resource to be passed as the request body.
     updateMask: Required. Field mask that specifies the fields in `trace_sink`
       that are to be updated. A sink field is overwritten if, and only if, it
-      is in the update mask.  `name` and `writer_identity` fields cannot be
-      updated.  An empty updateMask is considered an error.  For a detailed
+      is in the update mask. `name` and `writer_identity` fields cannot be
+      updated. An empty updateMask is considered an error. For a detailed
       `FieldMask` definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask  Example:
+      buffers/docs/reference/google.protobuf#fieldmask Example:
       `updateMask=output_config`.
   """
 
@@ -104,9 +104,9 @@ class CloudtraceProjectsTraceSinksPatchRequest(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -116,7 +116,7 @@ class ListTraceSinksResponse(_messages.Message):
 
   Fields:
     nextPageToken: If there might be more results than appear in this
-      response, then `nextPageToken` is included.  To get the next set of
+      response, then `nextPageToken` is included. To get the next set of
       results, call the same method again using the value of `nextPageToken`
       as `pageToken`.
     sinks: A list of sinks.
@@ -208,8 +208,8 @@ class TraceSink(_messages.Message):
   Fields:
     name: Required. The canonical sink resource name, unique within the
       project. Must be of the form:
-      project/[PROJECT_NUMBER]/traceSinks/[SINK_ID].  E.g.:
-      `"projects/12345/traceSinks/my-project-trace-sink"`.  Sink identifiers
+      project/[PROJECT_NUMBER]/traceSinks/[SINK_ID]. E.g.:
+      `"projects/12345/traceSinks/my-project-trace-sink"`. Sink identifiers
       are limited to 256 characters and can include only the following
       characters: upper and lower-case alphanumeric characters, underscores,
       hyphens, and periods.
@@ -223,7 +223,7 @@ class TraceSink(_messages.Message):
       tables and write data this account will need the dataEditor role. Read
       more about roles in the [BigQuery
       documentation](https://cloud.google.com/bigquery/docs/access-control).
-      E.g.:     "service-00000001@00000002.iam.gserviceaccount.com"
+      E.g.: "service-00000001@00000002.iam.gserviceaccount.com"
   """
 
   name = _messages.StringField(1)

@@ -92,25 +92,25 @@ class AptSettings(_messages.Message):
 
 class Assignment(_messages.Message):
   r"""An Assignment represents the group or groups of VMs that the policy
-  applies to.  If an Assignment is empty, it applies to all VMs. Otherwise,
-  the targeted VMs must meet ALL criteria specified. So if both labels and
-  zones are specified, the policy will apply to VMs with those labels AND in
-  those zones.
+  applies to. If an Assignment is empty, it applies to all VMs. Otherwise, the
+  targeted VMs must meet ALL criteria specified. So if both labels and zones
+  are specified, the policy will apply to VMs with those labels AND in those
+  zones.
 
   Fields:
     groupLabels: Targets instances matching at least one of these label sets.
       This allows an assignment to target disparate groups, for example
       "env=prod or env=staging".
     instanceNamePrefixes: Targets VMs whose name starts with one of these
-      prefixes.  Like labels, this is another way to group VMs when targeting
-      configs, for example prefix="prod-".  Only supported for project-level
+      prefixes. Like labels, this is another way to group VMs when targeting
+      configs, for example prefix="prod-". Only supported for project-level
       policies.
     instances: Targets any of the instances specified. Instances are specified
       by their URI in the form `zones/[ZONE]/instances/[INSTANCE_NAME]` or `ht
       tps://www.googleapis.com/compute/v1/projects/[PROJECT_ID]/zones/[ZONE]/i
-      nstances/[INSTANCE_NAME]`  Instance targeting is uncommon and is
+      nstances/[INSTANCE_NAME]` Instance targeting is uncommon and is
       supported to facilitate orchestrating changes by instance or to target
-      specific VMs for development and testing.  Only supported for project-
+      specific VMs for development and testing. Only supported for project-
       level policies and must reference instances within this project.
     osArchitectures: Targets VMs with OS Inventory enabled and having one of
       the following OS architectures.
@@ -119,7 +119,7 @@ class Assignment(_messages.Message):
     osVersions: Targets VMs with OS Inventory enabled and having one of the
       following OS versions.
     zones: Targets instances in ANY of these zones. Leave empty to target
-      instances in any zone.  Zonal targeting is uncommon and is supported to
+      instances in any zone. Zonal targeting is uncommon and is supported to
       facilitate orchestrating changes by zone.
   """
 
@@ -180,9 +180,9 @@ class CancelPatchJobRequest(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -304,7 +304,7 @@ class ExecutePatchJobRequest(_messages.Message):
       limited to 1024 characters.
     displayName: Display name for this patch job. This does not have to be
       unique.
-    dryRun: Should this patch be a dry-run only.  Instances will be contacted,
+    dryRun: Should this patch be a dry-run only. Instances will be contacted,
       but they will do nothing.
     duration: Optional. Duration of the patch job. After the duration ends,
       the patch job will time out.
@@ -380,8 +380,8 @@ class File(_messages.Message):
 
   Fields:
     allowInsecure: Defaults to false. When false, files will be subject to
-      validations based on the file type:  Remote: A checksum must be
-      specified. GCS:    An object generation number must be specified.
+      validations based on the file type: Remote: A checksum must be
+      specified. GCS: An object generation number must be specified.
     gcs: A GCS object.
     localPath: A local path to use.
     remote: A generic remote file.
@@ -435,7 +435,7 @@ class FileResource(_messages.Message):
       to the numeric mode used in the linux chmod utility). Each digit
       represents a three bit number with the 4 bit corresponding to the read
       permissions, the 2 bit corresponds to the write bit, and the one bit
-      corresponds to the execute permission. Default behavior is 755.  Below
+      corresponds to the execute permission. Default behavior is 755. Below
       are some examples of permissions and their associated values: read,
       write, and execute: 7 read and execute: 5 read and write: 6 read only: 4
     state: Desired state of the file.
@@ -518,24 +518,24 @@ class GuestPolicy(_messages.Message):
   Fields:
     assignment: Specifies the VMs that are assigned this policy. This allows
       you to target sets or groups of VMs by different parameters such as
-      labels, names, OS, or zones.  Empty assignments will target ALL VMs
-      underneath this policy.   Conflict Management  Policies that exist
-      higher up in the resource hierarchy (closer to the Org) will override
-      those lower down if there is a conflict.  At the same level in the
-      resource hierarchy (ie. within a project), the service will prevent the
-      creation of multiple policies that conflict with each other. If there
-      are multiple policies that specify the same config (eg. package,
-      software recipe, repository, etc.), the service will ensure that no VM
-      could potentially receive instructions from both policies. To create
-      multiple policies that specify different versions of a package or
-      different configs for different Operating Systems, each policy must be
-      mutually exclusive in their targeting according to labels, OS, or other
-      criteria.  Different configs are identified for conflicts in different
-      ways. Packages are identified by their name and the package manager(s)
-      they target. Package repositories are identified by their unique id
-      where applicable. Some package managers don't have a unique identifier
-      for repositories and where that's the case, no uniqueness is validated
-      by the service.  Note that if OS Inventory is disabled, a VM will not be
+      labels, names, OS, or zones. Empty assignments will target ALL VMs
+      underneath this policy. Conflict Management Policies that exist higher
+      up in the resource hierarchy (closer to the Org) will override those
+      lower down if there is a conflict. At the same level in the resource
+      hierarchy (ie. within a project), the service will prevent the creation
+      of multiple policies that conflict with each other. If there are
+      multiple policies that specify the same config (eg. package, software
+      recipe, repository, etc.), the service will ensure that no VM could
+      potentially receive instructions from both policies. To create multiple
+      policies that specify different versions of a package or different
+      configs for different Operating Systems, each policy must be mutually
+      exclusive in their targeting according to labels, OS, or other criteria.
+      Different configs are identified for conflicts in different ways.
+      Packages are identified by their name and the package manager(s) they
+      target. Package repositories are identified by their unique id where
+      applicable. Some package managers don't have a unique identifier for
+      repositories and where that's the case, no uniqueness is validated by
+      the service. Note that if OS Inventory is disabled, a VM will not be
       assigned a policy that targets by OS because the service will see this
       VM's OS as unknown.
     createTime: Output only. Time this GuestPolicy was created.
@@ -624,8 +624,8 @@ class LookupEffectiveGuestPoliciesRequest(_messages.Message):
     instanceIdToken: This is the GCE instance identity token described in
       https://cloud.google.com/compute/docs/instances/verifying-instance-
       identity where the audience is 'osconfig.googleapis.com' and the format
-      is 'full'.  If this is not provided, the request credentials will be
-      used to authorize the request.
+      is 'full'. If this is not provided, the request credentials will be used
+      to authorize the request.
     osArchitecture: Architecture of OS running on the instance. The OS Config
       agent will only provide this field for targeting if OS Inventory is
       enabled for that instance.
@@ -726,7 +726,7 @@ class OsconfigFoldersGuestPoliciesCreateRequest(_messages.Message):
   Fields:
     guestPolicy: A GuestPolicy resource to be passed as the request body.
     guestPolicyId: Required. The logical name of the Guest Policy in the
-      project with the following restrictions:  * Must contain only lowercase
+      project with the following restrictions: * Must contain only lowercase
       letters, numbers, and hyphens. * Must start with a letter. * Must be
       between 1-63 characters. * Must end with a number or a letter. * Must be
       unique within the project.
@@ -796,7 +796,7 @@ class OsconfigOrganizationsGuestPoliciesCreateRequest(_messages.Message):
   Fields:
     guestPolicy: A GuestPolicy resource to be passed as the request body.
     guestPolicyId: Required. The logical name of the Guest Policy in the
-      project with the following restrictions:  * Must contain only lowercase
+      project with the following restrictions: * Must contain only lowercase
       letters, numbers, and hyphens. * Must start with a letter. * Must be
       between 1-63 characters. * Must end with a number or a letter. * Must be
       unique within the project.
@@ -866,7 +866,7 @@ class OsconfigProjectsGuestPoliciesCreateRequest(_messages.Message):
   Fields:
     guestPolicy: A GuestPolicy resource to be passed as the request body.
     guestPolicyId: Required. The logical name of the Guest Policy in the
-      project with the following restrictions:  * Must contain only lowercase
+      project with the following restrictions: * Must contain only lowercase
       letters, numbers, and hyphens. * Must start with a letter. * Must be
       between 1-63 characters. * Must end with a number or a letter. * Must be
       unique within the project.
@@ -1096,14 +1096,14 @@ class OsconfigProjectsZonesInstancesReportPatchJobInstanceDetailsRequest(_messag
 class Package(_messages.Message):
   r"""Package is a reference to the software package to be installed or
   removed. The agent on the VM will use the system package manager to apply
-  the config.   These are the commands that the agent will use to install or
-  remove packages.  Apt install: `apt-get update && apt-get -y install
-  package1 package2 package3` remove: `apt-get -y remove package1 package2
-  package3`  Yum install: `yum -y install package1 package2 package3` remove:
-  `yum -y remove package1 package2 package3`  Zypper install: `zypper install
-  package1 package2 package3` remove: `zypper rm package1 package2`  Googet
-  install: `googet -noconfirm install package1 package2 package3` remove:
-  `googet -noconfirm remove package1 package2 package3`
+  the config. These are the commands that the agent will use to install or
+  remove packages. Apt install: `apt-get update && apt-get -y install package1
+  package2 package3` remove: `apt-get -y remove package1 package2 package3`
+  Yum install: `yum -y install package1 package2 package3` remove: `yum -y
+  remove package1 package2 package3` Zypper install: `zypper install package1
+  package2 package3` remove: `zypper rm package1 package2` Googet install:
+  `googet -noconfirm install package1 package2 package3` remove: `googet
+  -noconfirm remove package1 package2 package3`
 
   Enums:
     DesiredStateValueValuesEnum: Optional. The desired_state the agent should
@@ -1114,7 +1114,7 @@ class Package(_messages.Message):
       the package will not be installed/removed and there is no error. By
       default or when specifying ANY, the agent will attempt to install and
       remove this package using the default package manager. This is helpful
-      when creating a policy that applies to different types of systems.  The
+      when creating a policy that applies to different types of systems. The
       default behavior is ANY.
 
   Fields:
@@ -1125,7 +1125,7 @@ class Package(_messages.Message):
       will not be installed/removed and there is no error. By default or when
       specifying ANY, the agent will attempt to install and remove this
       package using the default package manager. This is helpful when creating
-      a policy that applies to different types of systems.  The default
+      a policy that applies to different types of systems. The default
       behavior is ANY.
     name: The name of the package. A package is uniquely identified for
       conflict validation by checking its name and the manager(s) it targets.
@@ -1155,7 +1155,7 @@ class Package(_messages.Message):
     not be installed/removed and there is no error. By default or when
     specifying ANY, the agent will attempt to install and remove this package
     using the default package manager. This is helpful when creating a policy
-    that applies to different types of systems.  The default behavior is ANY.
+    that applies to different types of systems. The default behavior is ANY.
 
     Values:
       MANAGER_UNSPECIFIED: The default behavior is ANY.
@@ -1489,7 +1489,7 @@ class PatchInstanceFilterGroupLabel(_messages.Message):
 
 class PatchJob(_messages.Message):
   r"""A high level representation of a patch job that is either in progress or
-  has completed.  Instance details are not included in the job. To paginate
+  has completed. Instance details are not included in the job. To paginate
   through instance details, use `ListPatchJobInstanceDetails`.
 
   Enums:
@@ -1686,17 +1686,17 @@ class PatchRollout(_messages.Message):
     disruptionBudget: The maximum number (or percentage) of VMs per zone to
       disrupt at any given moment. The number of VMs calculated from
       multiplying the percentage by the total number of VMs in a zone is
-      rounded up.  During patching, a VM is considered disrupted from the time
+      rounded up. During patching, a VM is considered disrupted from the time
       the agent is notified to begin until patching has completed. This
       disruption time includes the time to complete reboot and any post-patch
-      steps.  A VM contributes to the disruption budget if its patching
+      steps. A VM contributes to the disruption budget if its patching
       operation fails either when applying the patches, running pre or post
       patch steps, or if it fails to respond with a success notification
       before timing out. VMs that are not running or do not have an active
-      agent do not count toward this disruption budget.  For zone-by-zone
+      agent do not count toward this disruption budget. For zone-by-zone
       rollouts, if the disruption budget in a zone is exceeded, the patch job
       stops, because continuing to the next zone requires completion of the
-      patch process in the previous zone.  For example, if the disruption
+      patch process in the previous zone. For example, if the disruption
       budget has a fixed value of `10`, and 8 VMs fail to patch in the current
       zone, the patch job continues to patch 2 VMs at a time until the zone is
       completed. When that zone is completed successfully, patching begins
@@ -1777,7 +1777,7 @@ class RecurringSchedule(_messages.Message):
 
 
 class ReportPatchJobInstanceDetailsRequest(_messages.Message):
-  r"""Deprecated.  Use AgentEndpointProto.ReportTaskExecutionRequest instead.
+  r"""Deprecated. Use AgentEndpointProto.ReportTaskExecutionRequest instead.
 
   Enums:
     StateValueValuesEnum: State of current patch execution on the instance.
@@ -1790,7 +1790,7 @@ class ReportPatchJobInstanceDetailsRequest(_messages.Message):
       audience for this token is `osconfig.googleapis.com` and the format is
       `full`.
     instanceSystemId: Required. The unique, system-generated identifier for
-      the instance.  This is the auto-generated ID assigned to the instance
+      the instance. This is the auto-generated ID assigned to the instance
       upon creation. This is needed here because Compute Engine instance names
       are not tombstoned; it is possible to delete an instance and create a
       new one with the same name; this provides a mechanism for this API to
@@ -2013,45 +2013,43 @@ class SoftwareRecipe(_messages.Message):
   r"""A software recipe is a set of instructions for installing and
   configuring a piece of software. It consists of a set of artifacts that will
   be downloaded and a set of steps that install, configure, and/or update th
-  software.  Recipes supports installing and updating software from artifacts
+  software. Recipes supports installing and updating software from artifacts
   in the following formats: Zip archive, Tar archive, Windows MSI, Debian
-  package, and RPM package.  Additionally it supports executing a script
+  package, and RPM package. Additionally it supports executing a script
   (either defined in a file or directly in this api) in bash, sh, cmd, and
-  powershell.  Updating a Software Recipe  If a recipe is assigned to an
+  powershell. Updating a Software Recipe If a recipe is assigned to an
   instance and there is a recipe with the same name but a lower version
   already installed on the instance and the state of the recipe is
   INSTALLED_KEEP_UPDATED then the recipe will be updated to the new version.
-  Script Working Directories  Each script or exec step will be run in its own
+  Script Working Directories Each script or exec step will be run in its own
   temporary directory which is deleted after completing the step.
 
   Enums:
     DesiredStateValueValuesEnum: Default is INSTALLED. The desired state the
-      agent should maintain for this recipe.  INSTALLED: The software recipe
-      will be installed on the instance but            won't be updated to new
-      versions. INSTALLED_KEEP_UPDATED: The software recipe will be installed
-      on the                         instance. It will also be updated to a
-      higher                         version of the recipe if a higher version
-      is                         assigned to this instance. REMOVE: Remove is
-      unsupported for software recipes and attempts to         create or
-      update a recipe to the REMOVE state will be rejected.
+      agent should maintain for this recipe. INSTALLED: The software recipe
+      will be installed on the instance but won't be updated to new versions.
+      INSTALLED_KEEP_UPDATED: The software recipe will be installed on the
+      instance. It will also be updated to a higher version of the recipe if a
+      higher version is assigned to this instance. REMOVE: Remove is
+      unsupported for software recipes and attempts to create or update a
+      recipe to the REMOVE state will be rejected.
 
   Fields:
     artifacts: Resources available to be used in the steps in the recipe.
     desiredState: Default is INSTALLED. The desired state the agent should
-      maintain for this recipe.  INSTALLED: The software recipe will be
-      installed on the instance but            won't be updated to new
-      versions. INSTALLED_KEEP_UPDATED: The software recipe will be installed
-      on the                         instance. It will also be updated to a
-      higher                         version of the recipe if a higher version
-      is                         assigned to this instance. REMOVE: Remove is
-      unsupported for software recipes and attempts to         create or
-      update a recipe to the REMOVE state will be rejected.
+      maintain for this recipe. INSTALLED: The software recipe will be
+      installed on the instance but won't be updated to new versions.
+      INSTALLED_KEEP_UPDATED: The software recipe will be installed on the
+      instance. It will also be updated to a higher version of the recipe if a
+      higher version is assigned to this instance. REMOVE: Remove is
+      unsupported for software recipes and attempts to create or update a
+      recipe to the REMOVE state will be rejected.
     installSteps: Actions to be taken for installing this recipe. On failure
       it will stop executing steps and not attempt another installation. Any
       steps taken (including partially completed steps) will not be rolled
       back.
     name: Unique identifier for the recipe. Only one recipe with a given name
-      will be installed on an instance.  Names are also used to identify
+      will be installed on an instance. Names are also used to identify
       resource to determine whether guest policies conflict. This means that
       requests to create multiple recipes with the same name and version that
       could possibly have conflicting assignments will be rejected.
@@ -2065,14 +2063,12 @@ class SoftwareRecipe(_messages.Message):
 
   class DesiredStateValueValuesEnum(_messages.Enum):
     r"""Default is INSTALLED. The desired state the agent should maintain for
-    this recipe.  INSTALLED: The software recipe will be installed on the
-    instance but            won't be updated to new versions.
-    INSTALLED_KEEP_UPDATED: The software recipe will be installed on the
-    instance. It will also be updated to a higher
-    version of the recipe if a higher version is
-    assigned to this instance. REMOVE: Remove is unsupported for software
-    recipes and attempts to         create or update a recipe to the REMOVE
-    state will be rejected.
+    this recipe. INSTALLED: The software recipe will be installed on the
+    instance but won't be updated to new versions. INSTALLED_KEEP_UPDATED: The
+    software recipe will be installed on the instance. It will also be updated
+    to a higher version of the recipe if a higher version is assigned to this
+    instance. REMOVE: Remove is unsupported for software recipes and attempts
+    to create or update a recipe to the REMOVE state will be rejected.
 
     Values:
       DESIRED_STATE_UNSPECIFIED: The default is to ensure the package is
@@ -2101,9 +2097,9 @@ class SoftwareRecipeArtifact(_messages.Message):
 
   Fields:
     allowInsecure: Defaults to false. When false, recipes will be subject to
-      validations based on the artifact type:  Remote: A checksum must be
-      specified, and only protocols with         transport-layer security will
-      be permitted. GCS:    An object generation number must be specified.
+      validations based on the artifact type: Remote: A checksum must be
+      specified, and only protocols with transport-layer security will be
+      permitted. GCS: An object generation number must be specified.
     gcs: A GCS artifact.
     id: Id of the artifact, which the installation and update steps of this
       recipe can reference. Artifacts in a recipe cannot have the same id.
@@ -2183,7 +2179,7 @@ class SoftwareRecipeStepCopyFile(_messages.Message):
       to the numeric mode used in the linux chmod utility). Each digit
       represents a three bit number with the 4 bit corresponding to the read
       permissions, the 2 bit corresponds to the write bit, and the one bit
-      corresponds to the execute permission. Default behavior is 755.  Below
+      corresponds to the execute permission. Default behavior is 755. Below
       are some examples of permissions and their associated values: read,
       write, and execute: 7 read and execute: 5 read and write: 6 read only: 4
   """
@@ -2520,16 +2516,37 @@ class WindowsUpdateSettings(_messages.Message):
     r"""ClassificationsValueListEntryValuesEnum enum type.
 
     Values:
-      CLASSIFICATION_UNSPECIFIED: <no description>
-      CRITICAL: <no description>
-      SECURITY: <no description>
-      DEFINITION: <no description>
-      DRIVER: <no description>
-      FEATURE_PACK: <no description>
-      SERVICE_PACK: <no description>
-      TOOL: <no description>
-      UPDATE_ROLLUP: <no description>
-      UPDATE: <no description>
+      CLASSIFICATION_UNSPECIFIED: Invalid. If classifications are included,
+        they must be specified.
+      CRITICAL: "A widely released fix for a specific problem that addresses a
+        critical, non-security-related bug." [1]
+      SECURITY: "A widely released fix for a product-specific, security-
+        related vulnerability. Security vulnerabilities are rated by their
+        severity. The severity rating is indicated in the Microsoft security
+        bulletin as critical, important, moderate, or low." [1]
+      DEFINITION: "A widely released and frequent software update that
+        contains additions to a product's definition database. Definition
+        databases are often used to detect objects that have specific
+        attributes, such as malicious code, phishing websites, or junk mail."
+        [1]
+      DRIVER: "Software that controls the input and output of a device." [1]
+      FEATURE_PACK: "New product functionality that is first distributed
+        outside the context of a product release and that is typically
+        included in the next full product release." [1]
+      SERVICE_PACK: "A tested, cumulative set of all hotfixes, security
+        updates, critical updates, and updates. Additionally, service packs
+        may contain additional fixes for problems that are found internally
+        since the release of the product. Service packs my also contain a
+        limited number of customer-requested design changes or features." [1]
+      TOOL: "A utility or feature that helps complete a task or set of tasks."
+        [1]
+      UPDATE_ROLLUP: "A tested, cumulative set of hotfixes, security updates,
+        critical updates, and updates that are packaged together for easy
+        deployment. A rollup generally targets a specific area, such as
+        security, or a component of a product, such as Internet Information
+        Services (IIS)." [1]
+      UPDATE: "A widely released fix for a specific problem. An update
+        addresses a noncritical, non-security-related bug." [1]
     """
     CLASSIFICATION_UNSPECIFIED = 0
     CRITICAL = 1
@@ -2569,7 +2586,7 @@ class YumRepository(_messages.Message):
 
 class YumSettings(_messages.Message):
   r"""Yum patching will be performed by executing `yum update`. Additional
-  options can be set to control how this is executed.  Note that not all
+  options can be set to control how this is executed. Note that not all
   settings are supported on all platforms.
 
   Fields:
@@ -2619,9 +2636,9 @@ class ZypperSettings(_messages.Message):
       categories include security, recommended, and feature.
     excludes: List of patches to exclude from update.
     exclusivePatches: An exclusive list of patches to be updated. These are
-      the only patches that will be installed using 'zypper patch
-      patch:<patch_name>' command. This field must not be used with any other
-      patch configuration fields.
+      the only patches that will be installed using 'zypper patch patch:'
+      command. This field must not be used with any other patch configuration
+      fields.
     severities: Optional. Install only patches with these severities. Common
       severities include critical, important, moderate, and low.
     withOptional: Optional. Adds the `--with-optional` flag to `zypper patch`.

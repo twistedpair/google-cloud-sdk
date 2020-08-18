@@ -56,9 +56,7 @@ class ContaineranalysisV1beta1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists occurrences referencing the specified note. Provider projects can use.
-this method to get all occurrences across consumer projects referencing the
-specified note.
+      r"""Lists occurrences referencing the specified note. Provider projects can use this method to get all occurrences across consumer projects referencing the specified note.
 
       Args:
         request: (ContaineranalysisProjectsNotesOccurrencesListRequest) input message
@@ -203,14 +201,7 @@ specified note.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a note or an occurrence resource.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a note or occurrence, respectively.
-
-The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for
-notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for
-occurrences.
+      r"""Gets the access control policy for a note or an occurrence resource. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or occurrence, respectively. The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
 
       Args:
         request: (ContaineranalysisProjectsNotesGetIamPolicyRequest) input message
@@ -291,14 +282,7 @@ occurrences.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified note or occurrence.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a note or an occurrence, respectively.
-
-The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for
-notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for
-occurrences.
+      r"""Sets the access control policy on the specified note or occurrence. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or an occurrence, respectively. The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
 
       Args:
         request: (ContaineranalysisProjectsNotesSetIamPolicyRequest) input message
@@ -325,13 +309,7 @@ occurrences.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the permissions that a caller has on the specified note or.
-occurrence. Requires list permission on the project (for example,
-`containeranalysis.notes.list`).
-
-The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for
-notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for
-occurrences.
+      r"""Returns the permissions that a caller has on the specified note or occurrence. Requires list permission on the project (for example, `containeranalysis.notes.list`). The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
 
       Args:
         request: (ContaineranalysisProjectsNotesTestIamPermissionsRequest) input message
@@ -422,9 +400,7 @@ occurrences.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified occurrence. For example, use this method to delete an.
-occurrence when the occurrence is no longer applicable for the given
-resource.
+      r"""Deletes the specified occurrence. For example, use this method to delete an occurrence when the occurrence is no longer applicable for the given resource.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesDeleteRequest) input message
@@ -478,14 +454,7 @@ resource.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a note or an occurrence resource.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a note or occurrence, respectively.
-
-The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for
-notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for
-occurrences.
+      r"""Gets the access control policy for a note or an occurrence resource. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or occurrence, respectively. The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesGetIamPolicyRequest) input message
@@ -512,8 +481,7 @@ occurrences.
     )
 
     def GetNotes(self, request, global_params=None):
-      r"""Gets the note attached to the specified occurrence. Consumer projects can.
-use this method to get a note that belongs to a provider project.
+      r"""Gets the note attached to the specified occurrence. Consumer projects can use this method to get a note that belongs to a provider project.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesGetNotesRequest) input message
@@ -621,14 +589,7 @@ use this method to get a note that belongs to a provider project.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified note or occurrence.
-Requires `containeranalysis.notes.setIamPolicy` or
-`containeranalysis.occurrences.setIamPolicy` permission if the resource is
-a note or an occurrence, respectively.
-
-The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for
-notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for
-occurrences.
+      r"""Sets the access control policy on the specified note or occurrence. Requires `containeranalysis.notes.setIamPolicy` or `containeranalysis.occurrences.setIamPolicy` permission if the resource is a note or an occurrence, respectively. The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesSetIamPolicyRequest) input message
@@ -655,13 +616,7 @@ occurrences.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the permissions that a caller has on the specified note or.
-occurrence. Requires list permission on the project (for example,
-`containeranalysis.notes.list`).
-
-The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for
-notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for
-occurrences.
+      r"""Returns the permissions that a caller has on the specified note or occurrence. Requires list permission on the project (for example, `containeranalysis.notes.list`). The resource takes the format `projects/[PROJECT_ID]/notes/[NOTE_ID]` for notes and `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]` for occurrences.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest) input message

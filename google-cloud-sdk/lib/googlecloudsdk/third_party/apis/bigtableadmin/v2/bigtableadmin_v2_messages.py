@@ -44,23 +44,19 @@ class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices",           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE"             },             {
-  "log_type": "ADMIN_READ"             }           ]         },         {
-  "service": "sampleservice.googleapis.com",           "audit_log_configs": [
-  {               "log_type": "DATA_READ"             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:aliya@example.com"               ]             }           ]         }
-  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
-  and aliya@example.com from DATA_WRITE logging.
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -74,12 +70,11 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE"         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  jose@example.com from DATA_READ logging.
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -130,10 +125,10 @@ class Backup(_messages.Message):
       backup.
     name: A globally unique identifier for the backup which cannot be changed.
       Values are of the form
-      `projects/{project}/instances/{instance}/clusters/{cluster}/
-      backups/_a-zA-Z0-9*` The final segment of the name must be between 1 and
-      50 characters in length.  The backup is stored in the cluster identified
-      by the prefix of the backup name of the form
+      `projects/{project}/instances/{instance}/clusters/{cluster}/ backups/_a-
+      zA-Z0-9*` The final segment of the name must be between 1 and 50
+      characters in length. The backup is stored in the cluster identified by
+      the prefix of the backup name of the form
       `projects/{project}/instances/{instance}/clusters/{cluster}`.
     sizeBytes: Output only. Size of the backup in bytes.
     sourceTable: Required. Immutable. Name of the table from which this backup
@@ -142,7 +137,7 @@ class Backup(_messages.Message):
       `projects/{project}/instances/{instance}/tables/{source_table}`.
     startTime: Output only. `start_time` is the time that the backup was
       started (i.e. approximately the time the CreateBackup request is
-      received).  The row data in this backup will be no older than this
+      received). The row data in this backup will be no older than this
       timestamp.
     state: Output only. The current state of the backup.
   """
@@ -286,10 +281,10 @@ class BigtableadminProjectsInstancesAppProfilesListRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesAppProfilesListRequest object.
 
   Fields:
-    pageSize: Maximum number of results per page.  A page_size of zero lets
-      the server choose the number of items to return. A page_size which is
+    pageSize: Maximum number of results per page. A page_size of zero lets the
+      server choose the number of items to return. A page_size which is
       strictly positive will return at most that many items. A negative
-      page_size will cause an error.  Following the first request, subsequent
+      page_size will cause an error. Following the first request, subsequent
       paginated calls are not required to pass a page_size. If a page_size is
       set in subsequent calls, it must match the page_size given in the first
       request.
@@ -395,42 +390,41 @@ class BigtableadminProjectsInstancesClustersBackupsListRequest(_messages.Message
       the value that you want to use for filtering. The value must be a
       string, a number, or a boolean. The comparison operator must be <, >,
       <=, >=, !=, =, or :. Colon ':' represents a HAS operator which is
-      roughly synonymous with equality. Filter rules are case insensitive.
-      The fields eligible for filtering are:   * `name`   * `source_table`   *
-      `state`   * `start_time` (and values are of the format YYYY-MM-
-      DDTHH:MM:SSZ)   * `end_time` (and values are of the format YYYY-MM-
-      DDTHH:MM:SSZ)   * `expire_time` (and values are of the format YYYY-MM-
-      DDTHH:MM:SSZ)   * `size_bytes`  To filter on multiple expressions,
-      provide each separate expression within parentheses. By default, each
-      expression is an AND expression. However, you can include AND, OR, and
-      NOT expressions explicitly.  Some examples of using filters are:    *
-      `name:"exact"` --> The backup's name is the string "exact".   *
-      `name:howl` --> The backup's name contains the string "howl".   *
-      `source_table:prod`          --> The source_table's name contains the
-      string "prod".   * `state:CREATING` --> The backup is pending creation.
-      * `state:READY` --> The backup is fully created and ready for use.   *
-      `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`          -->
-      The backup name contains the string "howl" and start_time
-      of the backup is before 2018-03-28T14:50:00Z.   * `size_bytes >
-      10000000000` --> The backup's size is greater than 10GB
+      roughly synonymous with equality. Filter rules are case insensitive. The
+      fields eligible for filtering are: * `name` * `source_table` * `state` *
+      `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ) *
+      `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ) *
+      `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ) *
+      `size_bytes` To filter on multiple expressions, provide each separate
+      expression within parentheses. By default, each expression is an AND
+      expression. However, you can include AND, OR, and NOT expressions
+      explicitly. Some examples of using filters are: * `name:"exact"` --> The
+      backup's name is the string "exact". * `name:howl` --> The backup's name
+      contains the string "howl". * `source_table:prod` --> The source_table's
+      name contains the string "prod". * `state:CREATING` --> The backup is
+      pending creation. * `state:READY` --> The backup is fully created and
+      ready for use. * `(name:howl) AND (start_time <
+      \"2018-03-28T14:50:00Z\")` --> The backup name contains the string
+      "howl" and start_time of the backup is before 2018-03-28T14:50:00Z. *
+      `size_bytes > 10000000000` --> The backup's size is greater than 10GB
     orderBy: An expression for specifying the sort order of the results of the
       request. The string value should specify one or more fields in Backup.
-      The full syntax is described at https://aip.dev/132#ordering.  Fields
-      supported are:    * name    * source_table    * expire_time    *
-      start_time    * end_time    * size_bytes    * state  For example,
-      "start_time". The default sorting order is ascending. To specify
-      descending order for the field, a suffix " desc" should be appended to
-      the field name. For example, "start_time desc". Redundant space
-      characters in the syntax are insigificant.  If order_by is empty,
-      results will be sorted by `start_time` in descending order starting from
-      the most recently created backup.
+      The full syntax is described at https://aip.dev/132#ordering. Fields
+      supported are: * name * source_table * expire_time * start_time *
+      end_time * size_bytes * state For example, "start_time". The default
+      sorting order is ascending. To specify descending order for the field, a
+      suffix " desc" should be appended to the field name. For example,
+      "start_time desc". Redundant space characters in the syntax are
+      insigificant. If order_by is empty, results will be sorted by
+      `start_time` in descending order starting from the most recently created
+      backup.
     pageSize: Number of backups to be returned in the response. If 0 or less,
       defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListBackupsResponse to the same `parent` and with the
       same `filter`.
-    parent: Required. The cluster to list backups from.  Values are of the
-      form `projects/{project}/instances/{instance}/clusters/{cluster}`. Use
+    parent: Required. The cluster to list backups from. Values are of the form
+      `projects/{project}/instances/{instance}/clusters/{cluster}`. Use
       `{cluster} = '-'` to list backups for all clusters in an instance, e.g.,
       `projects/{project}/instances/{instance}/clusters/-`.
   """
@@ -449,10 +443,10 @@ class BigtableadminProjectsInstancesClustersBackupsPatchRequest(_messages.Messag
     backup: A Backup resource to be passed as the request body.
     name: A globally unique identifier for the backup which cannot be changed.
       Values are of the form
-      `projects/{project}/instances/{instance}/clusters/{cluster}/
-      backups/_a-zA-Z0-9*` The final segment of the name must be between 1 and
-      50 characters in length.  The backup is stored in the cluster identified
-      by the prefix of the backup name of the form
+      `projects/{project}/instances/{instance}/clusters/{cluster}/ backups/_a-
+      zA-Z0-9*` The final segment of the name must be between 1 and 50
+      characters in length. The backup is stored in the cluster identified by
+      the prefix of the backup name of the form
       `projects/{project}/instances/{instance}/clusters/{cluster}`.
     updateMask: Required. A mask specifying which fields (e.g. `expire_time`)
       in the Backup resource should be updated. This mask is relative to the
@@ -741,12 +735,16 @@ class BigtableadminProjectsInstancesTablesGetRequest(_messages.Message):
     `SCHEMA_VIEW` if unspecified.
 
     Values:
-      VIEW_UNSPECIFIED: <no description>
-      NAME_ONLY: <no description>
-      SCHEMA_VIEW: <no description>
-      REPLICATION_VIEW: <no description>
-      ENCRYPTION_VIEW: <no description>
-      FULL: <no description>
+      VIEW_UNSPECIFIED: Uses the default view for each method as documented in
+        its request.
+      NAME_ONLY: Only populates `name`.
+      SCHEMA_VIEW: Only populates `name` and fields related to the table's
+        schema.
+      REPLICATION_VIEW: Only populates `name` and fields related to the
+        table's replication state.
+      ENCRYPTION_VIEW: Only populates 'name' and fields related to the table's
+        encryption state.
+      FULL: Populates all fields.
     """
     VIEW_UNSPECIFIED = 0
     NAME_ONLY = 1
@@ -768,10 +766,10 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
       supported.
 
   Fields:
-    pageSize: Maximum number of results per page.  A page_size of zero lets
-      the server choose the number of items to return. A page_size which is
+    pageSize: Maximum number of results per page. A page_size of zero lets the
+      server choose the number of items to return. A page_size which is
       strictly positive will return at most that many items. A negative
-      page_size will cause an error.  Following the first request, subsequent
+      page_size will cause an error. Following the first request, subsequent
       paginated calls are not required to pass a page_size. If a page_size is
       set in subsequent calls, it must match the page_size given in the first
       request.
@@ -788,12 +786,16 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
     view (default) and REPLICATION_VIEW are supported.
 
     Values:
-      VIEW_UNSPECIFIED: <no description>
-      NAME_ONLY: <no description>
-      SCHEMA_VIEW: <no description>
-      REPLICATION_VIEW: <no description>
-      ENCRYPTION_VIEW: <no description>
-      FULL: <no description>
+      VIEW_UNSPECIFIED: Uses the default view for each method as documented in
+        its request.
+      NAME_ONLY: Only populates `name`.
+      SCHEMA_VIEW: Only populates `name` and fields related to the table's
+        schema.
+      REPLICATION_VIEW: Only populates `name` and fields related to the
+        table's replication state.
+      ENCRYPTION_VIEW: Only populates 'name' and fields related to the table's
+        encryption state.
+      FULL: Populates all fields.
     """
     VIEW_UNSPECIFIED = 0
     NAME_ONLY = 1
@@ -830,7 +832,7 @@ class BigtableadminProjectsInstancesTablesRestoreRequest(_messages.Message):
   Fields:
     parent: Required. The name of the instance in which to create the restored
       table. This instance must be the parent of the source backup. Values are
-      of the form `projects/<project>/instances/<instance>`.
+      of the form `projects//instances/`.
     restoreTableRequest: A RestoreTableRequest resource to be passed as the
       request body.
   """
@@ -914,9 +916,9 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding.  If the
+    condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
-      request.  If the condition evaluates to `false`, then this binding does
+      request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
       might grant the same role to one or more of the members in this binding.
       To learn which resources support conditions in their IAM policies, see
@@ -924,35 +926,35 @@ class Binding(_messages.Message):
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -1114,7 +1116,7 @@ class ColumnFamily(_messages.Message):
 
   Fields:
     gcRule: Garbage collection rule specified as a protobuf. Must serialize to
-      at most 500 bytes.  NOTE: Garbage collection executes opportunistically
+      at most 500 bytes. NOTE: Garbage collection executes opportunistically
       in the background, and so it's possible for reads to return a cell even
       if it matches the active GC expression for its family.
   """
@@ -1145,10 +1147,10 @@ class CreateClusterMetadata(_messages.Message):
   Messages:
     TablesValue: Keys: the full `name` of each table that existed in the
       instance when CreateCluster was first called, i.e.
-      `projects/<project>/instances/<instance>/tables/<table>`. Any table
-      added to the instance by a later API call will be created in the new
-      cluster by that API call, not this one.  Values: information on how much
-      of a table's data has been copied to the newly-created cluster so far.
+      `projects//instances//tables/`. Any table added to the instance by a
+      later API call will be created in the new cluster by that API call, not
+      this one. Values: information on how much of a table's data has been
+      copied to the newly-created cluster so far.
 
   Fields:
     finishTime: The time at which the operation failed or was completed
@@ -1158,20 +1160,19 @@ class CreateClusterMetadata(_messages.Message):
     requestTime: The time at which the original request was received.
     tables: Keys: the full `name` of each table that existed in the instance
       when CreateCluster was first called, i.e.
-      `projects/<project>/instances/<instance>/tables/<table>`. Any table
-      added to the instance by a later API call will be created in the new
-      cluster by that API call, not this one.  Values: information on how much
-      of a table's data has been copied to the newly-created cluster so far.
+      `projects//instances//tables/`. Any table added to the instance by a
+      later API call will be created in the new cluster by that API call, not
+      this one. Values: information on how much of a table's data has been
+      copied to the newly-created cluster so far.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TablesValue(_messages.Message):
     r"""Keys: the full `name` of each table that existed in the instance when
-    CreateCluster was first called, i.e.
-    `projects/<project>/instances/<instance>/tables/<table>`. Any table added
-    to the instance by a later API call will be created in the new cluster by
-    that API call, not this one.  Values: information on how much of a table's
-    data has been copied to the newly-created cluster so far.
+    CreateCluster was first called, i.e. `projects//instances//tables/`. Any
+    table added to the instance by a later API call will be created in the new
+    cluster by that API call, not this one. Values: information on how much of
+    a table's data has been copied to the newly-created cluster so far.
 
     Messages:
       AdditionalProperty: An additional property for a TablesValue object.
@@ -1302,14 +1303,13 @@ class CreateTableRequest(_messages.Message):
       initially split the table into several tablets (tablets are similar to
       HBase regions). Given two split keys, `s1` and `s2`, three tablets will
       be created, spanning the key ranges: `[, s1), [s1, s2), [s2, )`.
-      Example:  * Row keys := `["a", "apple", "custom", "customer_1",
-      "customer_2",`                `"other", "zz"]` * initial_split_keys :=
-      `["apple", "customer_1", "customer_2", "other"]` * Key assignment:     -
-      Tablet 1 `[, apple)                => {"a"}.`     - Tablet 2 `[apple,
-      customer_1)      => {"apple", "custom"}.`     - Tablet 3 `[customer_1,
-      customer_2) => {"customer_1"}.`     - Tablet 4 `[customer_2, other)
-      => {"customer_2"}.`     - Tablet 5 `[other, )                =>
-      {"other", "zz"}.`
+      Example: * Row keys := `["a", "apple", "custom", "customer_1",
+      "customer_2",` `"other", "zz"]` * initial_split_keys := `["apple",
+      "customer_1", "customer_2", "other"]` * Key assignment: - Tablet 1 `[,
+      apple) => {"a"}.` - Tablet 2 `[apple, customer_1) => {"apple",
+      "custom"}.` - Tablet 3 `[customer_1, customer_2) => {"customer_1"}.` -
+      Tablet 4 `[customer_2, other) => {"customer_2"}.` - Tablet 5 `[other, )
+      => {"other", "zz"}.`
     table: Required. The Table to create.
     tableId: Required. The name by which the new table should be referred to
       within the parent instance, e.g., `foobar` rather than
@@ -1339,9 +1339,9 @@ class DropRowRangeRequest(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -1354,12 +1354,12 @@ class EncryptionConfig(_messages.Message):
 
   Fields:
     kmsKeyName: Describes the KMS encryption key that will be used to protect
-      the destination Bigtable cluster. The requirements for this key are:  1)
+      the destination Bigtable cluster. The requirements for this key are: 1)
       The Cloud Bigtable service account associated with the project that
       contains this cluster will need to be granted an enc/dec role on the
-      encryption key.  2) The regionality of the key must match the location
-      of the cluster.  3) All clusters within an instance must use the same
-      KMS key. The key cannot be changed after cluster creation, but it may be
+      encryption key. 2) The regionality of the key must match the location of
+      the cluster. 3) All clusters within an instance must use the same KMS
+      key. The key cannot be changed after cluster creation, but it may be
       rotated.
   """
 
@@ -1412,20 +1412,20 @@ class EncryptionInfo(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -1521,10 +1521,10 @@ class GetPolicyOptions(_messages.Message):
 
   Fields:
     requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.  To learn
+      bindings may specify any valid value or leave the field unset. To learn
       which resources support conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -1546,10 +1546,10 @@ class Instance(_messages.Message):
     LabelsValue: Required. Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. They can be used to
-      filter resources and aggregate metrics.  * Label keys must be between 1
-      and 63 characters long and must conform to   the regular expression:
+      filter resources and aggregate metrics. * Label keys must be between 1
+      and 63 characters long and must conform to the regular expression:
       `\p{Ll}\p{Lo}{0,62}`. * Label values must be between 0 and 63 characters
-      long and must conform to   the regular expression:
+      long and must conform to the regular expression:
       `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
       associated with a given resource. * Keys and values must both be under
       128 bytes.
@@ -1561,10 +1561,10 @@ class Instance(_messages.Message):
     labels: Required. Labels are a flexible and lightweight mechanism for
       organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. They can be used to
-      filter resources and aggregate metrics.  * Label keys must be between 1
-      and 63 characters long and must conform to   the regular expression:
+      filter resources and aggregate metrics. * Label keys must be between 1
+      and 63 characters long and must conform to the regular expression:
       `\p{Ll}\p{Lo}{0,62}`. * Label values must be between 0 and 63 characters
-      long and must conform to   the regular expression:
+      long and must conform to the regular expression:
       `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be
       associated with a given resource. * Keys and values must both be under
       128 bytes.
@@ -1609,10 +1609,10 @@ class Instance(_messages.Message):
     r"""Required. Labels are a flexible and lightweight mechanism for
     organizing cloud resources into groups that reflect a customer's
     organizational needs and deployment strategies. They can be used to filter
-    resources and aggregate metrics.  * Label keys must be between 1 and 63
-    characters long and must conform to   the regular expression:
+    resources and aggregate metrics. * Label keys must be between 1 and 63
+    characters long and must conform to the regular expression:
     `\p{Ll}\p{Lo}{0,62}`. * Label values must be between 0 and 63 characters
-    long and must conform to   the regular expression:
+    long and must conform to the regular expression:
     `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`. * No more than 64 labels can be associated
     with a given resource. * Keys and values must both be under 128 bytes.
 
@@ -1662,7 +1662,7 @@ class ListAppProfilesResponse(_messages.Message):
     failedLocations: Locations from which AppProfile information could not be
       retrieved, due to an outage or some other transient condition.
       AppProfiles from these locations may be missing from `app_profiles`.
-      Values are of the form `projects/<project>/locations/<zone_id>`
+      Values are of the form `projects//locations/`
     nextPageToken: Set if not all app profiles could be returned in a single
       response. Pass this value to `page_token` in another request to get the
       next page of results.
@@ -1695,7 +1695,7 @@ class ListClustersResponse(_messages.Message):
       retrieved, due to an outage or some other transient condition. Clusters
       from these locations may be missing from `clusters`, or may only have
       partial information returned. Values are of the form
-      `projects/<project>/locations/<zone_id>`
+      `projects//locations/`
     nextPageToken: DEPRECATED: This field is unused and ignored.
   """
 
@@ -1713,7 +1713,7 @@ class ListInstancesResponse(_messages.Message):
       whose Clusters are all in one of the failed locations may be missing
       from `instances`, and Instances with at least one Cluster in a failed
       location may only have partial information returned. Values are of the
-      form `projects/<project>/locations/<zone_id>`
+      form `projects//locations/`
     instances: The list of requested instances.
     nextPageToken: DEPRECATED: This field is unused and ignored.
   """
@@ -1892,17 +1892,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1911,29 +1911,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1959,12 +1959,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -2043,37 +2043,33 @@ class PartialUpdateInstanceRequest(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  For some types of
+  be an IAM predefined role or a user-created custom role. For some types of
   Google Cloud resources, a `binding` can also specify a `condition`, which is
   a logical expression that allows access to a resource only if the expression
   evaluates to `true`. A condition can add constraints based on attributes of
   the request, the resource, or both. To learn which resources support
   conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies).  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members": [
-  "user:eve@example.com"           ],           "condition": {
-  "title": "expirable access",             "description": "Does not grant
-  access after Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -2088,24 +2084,24 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.  To learn which resources support
+      version or leave the field unset. To learn which resources support
       conditions in their IAM policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
@@ -2185,13 +2181,11 @@ class RestoreTableRequest(_messages.Message):
   r"""The request for RestoreTable.
 
   Fields:
-    backup: Name of the backup from which to restore.  Values are of the form
-      `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<bac
-      kup>`.
+    backup: Name of the backup from which to restore. Values are of the form
+      `projects//instances//clusters//backups/`.
     tableId: Required. The id of the table to create and restore to. This
       table must not already exist. The `table_id` appended to `parent` forms
-      the full table name of the form
-      `projects/<project>/instances/<instance>/tables/<table_id>`.
+      the full table name of the form `projects//instances//tables/`.
   """
 
   backup = _messages.StringField(1)
@@ -2208,7 +2202,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used:  `paths: "bindings, etag"`
+      provided, the following default mask is used: `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -2309,7 +2303,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -2318,7 +2312,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

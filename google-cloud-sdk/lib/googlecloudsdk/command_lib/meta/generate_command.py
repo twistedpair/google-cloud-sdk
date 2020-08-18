@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 
 import os.path
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -51,30 +52,21 @@ def WriteAllYaml(collection_name, output_dir):
     output_dir: path to the directory where generated YAML files will be
       written.
   """
-  collection_info = resources.REGISTRY.GetCollectionInfo(collection_name)
-  collection_dict = {}
-  collection_dict['collection_name'] = collection_name
-  collection_dict['api_name'] = collection_info.api_name
-  flat_paths = collection_info.flat_paths
-  collection_dict['use_relative_name'] = 'false' if not flat_paths else 'true'
-  collection_dict['api_version'] = collection_info.api_version
-  collection_dict['release_tracks'] = _GetReleaseTracks(
-      collection_info.api_version)
-  collection_dict['singular_name'] = _MakeSingular(
-      collection_info.name.split('.')[-1])
-  collection_dict['flags'] = ' '.join([
-      '--' + param + '=my-' + param
-      for param in collection_info.params
-      if (param not in (collection_dict['singular_name'], 'project'))
-  ])
+  collection_dict = _MakeCollectionDict(collection_name)
+  api_message_module = apis.GetMessagesModule(collection_dict['api_name'],
+                                              collection_dict['api_version'])
+  api_dict = _MakeApiDict()
+  collection_dict.update(api_dict)
   for command_template in os.listdir(
       os.path.join(os.path.dirname(__file__), 'command_templates')):
-    should_write_test = WriteYaml(command_template, collection_dict, output_dir)
+    should_write_test = WriteYaml(command_template, collection_dict, output_dir,
+                                  api_message_module)
     if should_write_test:
       WriteScenarioTest(command_template, collection_dict, output_dir)
 
 
-def WriteYaml(command_tpl_name, collection_dict, output_dir):
+def WriteYaml(command_tpl_name, collection_dict, output_dir,
+              api_message_module):
   """Writes command's YAML file; returns True if file written, else False.
 
   Args:
@@ -83,12 +75,27 @@ def WriteYaml(command_tpl_name, collection_dict, output_dir):
     output_dir: path to directory in which to write YAML file. If command YAML
     file already exists in this location, the user will be prompted to
     choose to override it or not.
+    api_message_module: the API's message module, used to check if command
+    type is supported by API
   Returns:
     True if declarative file is written, False if user chooses not to
-    override an existing file and no new file is written.
+    override an existing file OR API does not support command type, and no
+    new file is written.
   """
+  command_name = command_tpl_name[:-len(TEMPLATE_SUFFIX)]
+  command_name_capitalized = ''.join(
+      [word.capitalize() for word in command_name.split('_')])
+  if command_name == 'describe':
+    command_name_capitalized = 'GetRequest'
+  singular_name = collection_dict['singular_name'].capitalize()
+  command_supported = False
+  for message_type in dir(api_message_module):
+    if (command_name_capitalized in message_type) and (
+        singular_name in message_type):
+      # Note: this is an indication, not a guarantee command will be supported
+      command_supported = True
   command_yaml_tpl = _TemplateFileForCommandPath(command_tpl_name)
-  command_filename = command_tpl_name[:-len(TEMPLATE_SUFFIX)]+ '.yaml'
+  command_filename = command_name + '.yaml'
   full_command_path = os.path.join(output_dir, command_filename)
   file_already_exists = os.path.exists(full_command_path)
   overwrite = False
@@ -100,7 +107,7 @@ def WriteYaml(command_tpl_name, collection_dict, output_dir):
         'overwrite the old file. The scenario test skeleton file for this'
         'command will only be generated if you continue'.format(
             command_filename=command_filename))
-  if not file_already_exists or overwrite:
+  if (not file_already_exists or overwrite) and command_supported:
     with files.FileWriter(full_command_path) as f:
       ctx = runtime.Context(f, **collection_dict)
       command_yaml_tpl.render_context(ctx)
@@ -167,3 +174,36 @@ def _GetReleaseTracks(api_version):
     return '[ALPHA, BETA]'
   else:
     return '[ALPHA, BETA, GA]'
+
+
+def _MakeCollectionDict(collection_name):
+  """Returns a dictionary of collection attributes from Registry.
+
+  Args:
+    collection_name: Name of collection to create dictionary about.
+  """
+  collection_info = resources.REGISTRY.GetCollectionInfo(collection_name)
+  collection_dict = {}
+  collection_dict['collection_name'] = collection_name
+  collection_dict['api_name'] = collection_info.api_name
+  flat_paths = collection_info.flat_paths
+  collection_dict['use_relative_name'] = 'false' if not flat_paths else 'true'
+  collection_dict['api_version'] = collection_info.api_version
+  collection_dict['release_tracks'] = _GetReleaseTracks(
+      collection_info.api_version)
+  collection_dict['singular_name'] = _MakeSingular(
+      collection_info.name.split('.')[-1])
+  collection_dict['flags'] = ' '.join([
+      '--' + param + '=my-' + param
+      for param in collection_info.params
+      if (param not in (collection_dict['singular_name'], 'project'))
+  ])
+  return collection_dict
+
+
+def _MakeApiDict():
+  """Returns a dictionary of API attributes from its messages module.
+
+  """
+  api_dict = {}
+  return api_dict

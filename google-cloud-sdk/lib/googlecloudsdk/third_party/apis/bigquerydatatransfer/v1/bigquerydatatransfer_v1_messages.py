@@ -145,17 +145,16 @@ class BigquerydatatransferProjectsLocationsTransferConfigsCreateRequest(_message
       transfer configuration. This is required if new credentials are needed,
       as indicated by `CheckValidCreds`. In order to obtain
       authorization_code, please make a request to https://www.gstatic.com/big
-      querydatatransfer/oauthz/auth?client_id=<datatransferapiclientid>&scope=
-      <data_source_scopes>&redirect_uri=<redirect_uri>  * client_id should be
-      OAuth client_id of BigQuery DTS API for the given   data source returned
-      by ListDataSources method. * data_source_scopes are the scopes returned
-      by ListDataSources method. * redirect_uri is an optional parameter. If
-      not specified, then   authorization code is posted to the opener of
-      authorization flow window.   Otherwise it will be sent to the redirect
-      uri. A special value of   urn:ietf:wg:oauth:2.0:oob means that
-      authorization code should be   returned in the title bar of the browser,
-      with the page text prompting   the user to copy the code and paste it in
-      the application.
+      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri= *
+      client_id should be OAuth client_id of BigQuery DTS API for the given
+      data source returned by ListDataSources method. * data_source_scopes are
+      the scopes returned by ListDataSources method. * redirect_uri is an
+      optional parameter. If not specified, then authorization code is posted
+      to the opener of authorization flow window. Otherwise it will be sent to
+      the redirect uri. A special value of urn:ietf:wg:oauth:2.0:oob means
+      that authorization code should be returned in the title bar of the
+      browser, with the page text prompting the user to copy the code and
+      paste it in the application.
     parent: Required. The BigQuery project id where the transfer configuration
       should be created. Must be in the format
       projects/{project_id}/locations/{location_id} or projects/{project_id}.
@@ -240,17 +239,16 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
       transfer configuration. If it is provided, the transfer configuration
       will be associated with the authorizing user. In order to obtain
       authorization_code, please make a request to https://www.gstatic.com/big
-      querydatatransfer/oauthz/auth?client_id=<datatransferapiclientid>&scope=
-      <data_source_scopes>&redirect_uri=<redirect_uri>  * client_id should be
-      OAuth client_id of BigQuery DTS API for the given   data source returned
-      by ListDataSources method. * data_source_scopes are the scopes returned
-      by ListDataSources method. * redirect_uri is an optional parameter. If
-      not specified, then   authorization code is posted to the opener of
-      authorization flow window.   Otherwise it will be sent to the redirect
-      uri. A special value of   urn:ietf:wg:oauth:2.0:oob means that
-      authorization code should be   returned in the title bar of the browser,
-      with the page text prompting   the user to copy the code and paste it in
-      the application.
+      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri= *
+      client_id should be OAuth client_id of BigQuery DTS API for the given
+      data source returned by ListDataSources method. * data_source_scopes are
+      the scopes returned by ListDataSources method. * redirect_uri is an
+      optional parameter. If not specified, then authorization code is posted
+      to the opener of authorization flow window. Otherwise it will be sent to
+      the redirect uri. A special value of urn:ietf:wg:oauth:2.0:oob means
+      that authorization code should be returned in the title bar of the
+      browser, with the page text prompting the user to copy the code and
+      paste it in the application.
     name: The resource name of the transfer config. Transfer config names have
       the form of
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
@@ -342,8 +340,8 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsListRequest(_messa
     r"""Indicates how run attempts are to be pulled.
 
     Values:
-      RUN_ATTEMPT_UNSPECIFIED: <no description>
-      LATEST: <no description>
+      RUN_ATTEMPT_UNSPECIFIED: All runs should be returned.
+      LATEST: Only latest run per day should be returned.
     """
     RUN_ATTEMPT_UNSPECIFIED = 0
     LATEST = 1
@@ -352,12 +350,13 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsListRequest(_messa
     r"""When specified, only transfer runs with requested states are returned.
 
     Values:
-      TRANSFER_STATE_UNSPECIFIED: <no description>
-      PENDING: <no description>
-      RUNNING: <no description>
-      SUCCEEDED: <no description>
-      FAILED: <no description>
-      CANCELLED: <no description>
+      TRANSFER_STATE_UNSPECIFIED: State placeholder.
+      PENDING: Data transfer is scheduled and is waiting to be picked up by
+        data transfer backend.
+      RUNNING: Data transfer is in progress.
+      SUCCEEDED: Data transfer completed successfully.
+      FAILED: Data transfer failed.
+      CANCELLED: Data transfer is cancelled.
     """
     TRANSFER_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -401,10 +400,10 @@ class BigquerydatatransferProjectsLocationsTransferConfigsRunsTransferLogsListRe
     messages are returned.
 
     Values:
-      MESSAGE_SEVERITY_UNSPECIFIED: <no description>
-      INFO: <no description>
-      WARNING: <no description>
-      ERROR: <no description>
+      MESSAGE_SEVERITY_UNSPECIFIED: No severity specified.
+      INFO: Informational message.
+      WARNING: Warning message.
+      ERROR: Error message.
     """
     MESSAGE_SEVERITY_UNSPECIFIED = 0
     INFO = 1
@@ -459,17 +458,16 @@ class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message
       transfer configuration. This is required if new credentials are needed,
       as indicated by `CheckValidCreds`. In order to obtain
       authorization_code, please make a request to https://www.gstatic.com/big
-      querydatatransfer/oauthz/auth?client_id=<datatransferapiclientid>&scope=
-      <data_source_scopes>&redirect_uri=<redirect_uri>  * client_id should be
-      OAuth client_id of BigQuery DTS API for the given   data source returned
-      by ListDataSources method. * data_source_scopes are the scopes returned
-      by ListDataSources method. * redirect_uri is an optional parameter. If
-      not specified, then   authorization code is posted to the opener of
-      authorization flow window.   Otherwise it will be sent to the redirect
-      uri. A special value of   urn:ietf:wg:oauth:2.0:oob means that
-      authorization code should be   returned in the title bar of the browser,
-      with the page text prompting   the user to copy the code and paste it in
-      the application.
+      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri= *
+      client_id should be OAuth client_id of BigQuery DTS API for the given
+      data source returned by ListDataSources method. * data_source_scopes are
+      the scopes returned by ListDataSources method. * redirect_uri is an
+      optional parameter. If not specified, then authorization code is posted
+      to the opener of authorization flow window. Otherwise it will be sent to
+      the redirect uri. A special value of urn:ietf:wg:oauth:2.0:oob means
+      that authorization code should be returned in the title bar of the
+      browser, with the page text prompting the user to copy the code and
+      paste it in the application.
     parent: Required. The BigQuery project id where the transfer configuration
       should be created. Must be in the format
       projects/{project_id}/locations/{location_id} or projects/{project_id}.
@@ -551,17 +549,16 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
       transfer configuration. If it is provided, the transfer configuration
       will be associated with the authorizing user. In order to obtain
       authorization_code, please make a request to https://www.gstatic.com/big
-      querydatatransfer/oauthz/auth?client_id=<datatransferapiclientid>&scope=
-      <data_source_scopes>&redirect_uri=<redirect_uri>  * client_id should be
-      OAuth client_id of BigQuery DTS API for the given   data source returned
-      by ListDataSources method. * data_source_scopes are the scopes returned
-      by ListDataSources method. * redirect_uri is an optional parameter. If
-      not specified, then   authorization code is posted to the opener of
-      authorization flow window.   Otherwise it will be sent to the redirect
-      uri. A special value of   urn:ietf:wg:oauth:2.0:oob means that
-      authorization code should be   returned in the title bar of the browser,
-      with the page text prompting   the user to copy the code and paste it in
-      the application.
+      querydatatransfer/oauthz/auth?client_id=&scope=&redirect_uri= *
+      client_id should be OAuth client_id of BigQuery DTS API for the given
+      data source returned by ListDataSources method. * data_source_scopes are
+      the scopes returned by ListDataSources method. * redirect_uri is an
+      optional parameter. If not specified, then authorization code is posted
+      to the opener of authorization flow window. Otherwise it will be sent to
+      the redirect uri. A special value of urn:ietf:wg:oauth:2.0:oob means
+      that authorization code should be returned in the title bar of the
+      browser, with the page text prompting the user to copy the code and
+      paste it in the application.
     name: The resource name of the transfer config. Transfer config names have
       the form of
       `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
@@ -650,8 +647,8 @@ class BigquerydatatransferProjectsTransferConfigsRunsListRequest(_messages.Messa
     r"""Indicates how run attempts are to be pulled.
 
     Values:
-      RUN_ATTEMPT_UNSPECIFIED: <no description>
-      LATEST: <no description>
+      RUN_ATTEMPT_UNSPECIFIED: All runs should be returned.
+      LATEST: Only latest run per day should be returned.
     """
     RUN_ATTEMPT_UNSPECIFIED = 0
     LATEST = 1
@@ -660,12 +657,13 @@ class BigquerydatatransferProjectsTransferConfigsRunsListRequest(_messages.Messa
     r"""When specified, only transfer runs with requested states are returned.
 
     Values:
-      TRANSFER_STATE_UNSPECIFIED: <no description>
-      PENDING: <no description>
-      RUNNING: <no description>
-      SUCCEEDED: <no description>
-      FAILED: <no description>
-      CANCELLED: <no description>
+      TRANSFER_STATE_UNSPECIFIED: State placeholder.
+      PENDING: Data transfer is scheduled and is waiting to be picked up by
+        data transfer backend.
+      RUNNING: Data transfer is in progress.
+      SUCCEEDED: Data transfer completed successfully.
+      FAILED: Data transfer failed.
+      CANCELLED: Data transfer is cancelled.
     """
     TRANSFER_STATE_UNSPECIFIED = 0
     PENDING = 1
@@ -709,10 +707,10 @@ class BigquerydatatransferProjectsTransferConfigsRunsTransferLogsListRequest(_me
     messages are returned.
 
     Values:
-      MESSAGE_SEVERITY_UNSPECIFIED: <no description>
-      INFO: <no description>
-      WARNING: <no description>
-      ERROR: <no description>
+      MESSAGE_SEVERITY_UNSPECIFIED: No severity specified.
+      INFO: Informational message.
+      WARNING: Warning message.
+      ERROR: Error message.
     """
     MESSAGE_SEVERITY_UNSPECIFIED = 0
     INFO = 1
@@ -986,9 +984,9 @@ class EmailPreferences(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -1285,7 +1283,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1294,7 +1292,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1371,7 +1369,7 @@ class TransferConfig(_messages.Message):
       refresh the data. For example, if `data_refresh_window_days = 10`, then
       every day BigQuery reingests data for [today-10, today-1], rather than
       ingesting data for just [today-1]. Only valid if the data source
-      supports the feature. Set the value to  0 to use the default value.
+      supports the feature. Set the value to 0 to use the default value.
     dataSourceId: Data source id. Cannot be changed once data transfer is
       created.
     datasetRegion: Output only. Region in which BigQuery dataset is located.

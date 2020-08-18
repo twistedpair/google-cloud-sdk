@@ -162,6 +162,33 @@ class RedisV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetAuthString(self, request, global_params=None):
+      r"""Gets the AUTH string for a Redis instance. If AUTH is not enabled for the instance the response will be empty. See go/cloud-redis-auth-design for more details. This information is not included in the details returned to GetInstance.
+
+      Args:
+        request: (RedisProjectsLocationsInstancesGetAuthStringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceAuthString) The response message.
+      """
+      config = self.GetMethodConfig('GetAuthString')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAuthString.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/authString',
+        http_method='GET',
+        method_id='redis.projects.locations.instances.getAuthString',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}/authString',
+        request_field='',
+        request_type_name='RedisProjectsLocationsInstancesGetAuthStringRequest',
+        response_type_name='InstanceAuthString',
+        supports_download=False,
+    )
+
     def Import(self, request, global_params=None):
       r"""Import a Redis RDB snapshot file from Cloud Storage into a Redis instance. Redis may stop serving during this operation. Instance state will be IMPORTING for entire operation. When complete, the instance will contain only data from the imported file. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation.
 
@@ -240,6 +267,33 @@ class RedisV1alpha1(base_api.BaseApiClient):
         request_field='instance',
         request_type_name='RedisProjectsLocationsInstancesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ReportInstanceHealth(self, request, global_params=None):
+      r"""Gets health report for an instance.
+
+      Args:
+        request: (RedisProjectsLocationsInstancesReportInstanceHealthRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReportInstanceHealthResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReportInstanceHealth')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReportInstanceHealth.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:reportInstanceHealth',
+        http_method='GET',
+        method_id='redis.projects.locations.instances.reportInstanceHealth',
+        ordered_params=['instance'],
+        path_params=['instance'],
+        query_params=['reportTime', 'window'],
+        relative_path='v1alpha1/{+instance}:reportInstanceHealth',
+        request_field='',
+        request_type_name='RedisProjectsLocationsInstancesReportInstanceHealthRequest',
+        response_type_name='ReportInstanceHealthResponse',
         supports_download=False,
     )
 

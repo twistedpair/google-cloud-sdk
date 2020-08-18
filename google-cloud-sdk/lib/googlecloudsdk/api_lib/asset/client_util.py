@@ -41,7 +41,6 @@ DEFAULT_API_VERSION = 'v1'
 V1P1BETA1_API_VERSION = 'v1p1beta1'
 V1P4ALPHA1_API_VERSION = 'v1p4alpha1'
 V1P4BETA1_API_VERSION = 'v1p4beta1'
-V1P5ALPHA1_API_VERSION = 'v1p5alpha1'
 V1P5BETA1_API_VERSION = 'v1p5beta1'
 _HEADERS = {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -214,11 +213,13 @@ def MakeAnalyzeIamPolicyHttpRequests(args, api_version=V1P4ALPHA1_API_VERSION):
 
   if api_version == V1P4ALPHA1_API_VERSION:
     folder = None
+    project = None
   else:
     folder = args.folder
+    project = args.project
 
   parent = asset_utils.GetParentNameForAnalyzeIamPolicy(args.organization,
-                                                        folder)
+                                                        project, folder)
   endpoint = apis.GetEffectiveApiEndpoint(API_NAME, api_version)
   url = '{0}{1}/{2}:{3}'.format(endpoint, api_version, parent,
                                 'analyzeIamPolicy')

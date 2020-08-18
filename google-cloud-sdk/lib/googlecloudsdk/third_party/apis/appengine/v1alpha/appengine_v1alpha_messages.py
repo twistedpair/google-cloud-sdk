@@ -55,8 +55,10 @@ class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
     r"""Controls the set of fields returned in the GET response.
 
     Values:
-      BASIC_CERTIFICATE: <no description>
-      FULL_CERTIFICATE: <no description>
+      BASIC_CERTIFICATE: Basic certificate information, including applicable
+        domains and expiration date.
+      FULL_CERTIFICATE: The information from BASIC_CERTIFICATE, plus detailed
+        information on the domain mappings that have this certificate mapped.
     """
     BASIC_CERTIFICATE = 0
     FULL_CERTIFICATE = 1
@@ -83,8 +85,10 @@ class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
     r"""Controls the set of fields returned in the LIST response.
 
     Values:
-      BASIC_CERTIFICATE: <no description>
-      FULL_CERTIFICATE: <no description>
+      BASIC_CERTIFICATE: Basic certificate information, including applicable
+        domains and expiration date.
+      FULL_CERTIFICATE: The information from BASIC_CERTIFICATE, plus detailed
+        information on the domain mappings that have this certificate mapped.
     """
     BASIC_CERTIFICATE = 0
     FULL_CERTIFICATE = 1
@@ -152,9 +156,15 @@ class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
     this domain. By default, overrides are rejected.
 
     Values:
-      UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY: <no description>
-      STRICT: <no description>
-      OVERRIDE: <no description>
+      UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY: Strategy unspecified. Defaults to
+        STRICT.
+      STRICT: Overrides not allowed. If a mapping already exists for the
+        specified domain, the request will return an ALREADY_EXISTS (409).
+      OVERRIDE: Overrides allowed. If a mapping already exists for the
+        specified domain, the request will overwrite it. Note that this might
+        stop another Google product from serving. For example, if the domain
+        is mapped to another App Engine application, that app will no longer
+        serve from that domain.
     """
     UNSPECIFIED_DOMAIN_OVERRIDE_STRATEGY = 0
     STRICT = 1
@@ -351,13 +361,11 @@ class CertificateRawData(_messages.Message):
   Fields:
     privateKey: Unencrypted PEM encoded RSA private key. This field is set
       once on certificate creation and then encrypted. The key size must be
-      2048 bits or fewer. Must include the header and footer. Example: <pre>
-      -----BEGIN RSA PRIVATE KEY----- <unencrypted_key_value> -----END RSA
-      PRIVATE KEY----- </pre> @InputOnly
+      2048 bits or fewer. Must include the header and footer. Example:
+      -----BEGIN RSA PRIVATE KEY----- -----END RSA PRIVATE KEY----- @InputOnly
     publicCertificate: PEM encoded x.509 public key certificate. This field is
       set once on certificate creation. Must include the header and footer.
-      Example: <pre> -----BEGIN CERTIFICATE----- <certificate_value> -----END
-      CERTIFICATE----- </pre>
+      Example: -----BEGIN CERTIFICATE----- -----END CERTIFICATE-----
   """
 
   privateKey = _messages.StringField(1)
@@ -424,7 +432,7 @@ class DomainMapping(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo {   rpc
+  or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
   representation for Empty is empty JSON object {}.
   """

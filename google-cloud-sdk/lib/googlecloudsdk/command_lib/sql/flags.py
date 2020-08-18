@@ -332,8 +332,9 @@ def AddEnableBinLog(parser, show_negated_in_help=False):
   parser.add_argument(
       '--enable-bin-log',
       required=False,
-      help=('Specified if binary log should be enabled. If backup '
-            'configuration is disabled, binary log must be disabled as well.'),
+      help=('Allows for data recovery from a specific point in time, down to a '
+            'fraction of a second. Must have automatic backups enabled to use. '
+            'Make sure storage can support at least 7 days of logs.'),
       **kwargs)
 
 
@@ -342,9 +343,10 @@ def AddEnablePointInTimeRecovery(parser, show_negated_in_help=False):
   parser.add_argument(
       '--enable-point-in-time-recovery',
       required=False,
-      help=('Specifies if point-in-time recovery (using write-ahead log '
-            'archiving) should be enabled. If backup configuration is '
-            'disabled, point-in-time recovery must be disabled as well.'),
+      help=('Allows for data recovery from a specific point in time, down to a '
+            'fraction of a second, via write-ahead logs. Must have automatic '
+            'backups enabled to use. Make sure storage can support at least 7 '
+            'days of logs.'),
       **kwargs)
 
 

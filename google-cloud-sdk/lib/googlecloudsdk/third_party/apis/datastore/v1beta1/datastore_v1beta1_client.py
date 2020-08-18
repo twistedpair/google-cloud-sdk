@@ -52,14 +52,7 @@ class DatastoreV1beta1(base_api.BaseApiClient):
           }
 
     def Export(self, request, global_params=None):
-      r"""Exports a copy of all or a subset of entities from Google Cloud Datastore.
-to another storage system, such as Google Cloud Storage. Recent updates to
-entities may not be reflected in the export. The export occurs in the
-background and its progress can be monitored and managed via the
-Operation resource that is created. The output of an export may only be
-used once the associated operation is done. If an export operation is
-cancelled before completion it may leave partial data behind in Google
-Cloud Storage.
+      r"""Exports a copy of all or a subset of entities from Google Cloud Datastore to another storage system, such as Google Cloud Storage. Recent updates to entities may not be reflected in the export. The export occurs in the background and its progress can be monitored and managed via the Operation resource that is created. The output of an export may only be used once the associated operation is done. If an export operation is cancelled before completion it may leave partial data behind in Google Cloud Storage.
 
       Args:
         request: (DatastoreProjectsExportRequest) input message
@@ -85,11 +78,7 @@ Cloud Storage.
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports entities into Google Cloud Datastore. Existing entities with the.
-same key are overwritten. The import occurs in the background and its
-progress can be monitored and managed via the Operation resource that is
-created. If an ImportEntities operation is cancelled, it is possible
-that a subset of the data has already been imported to Cloud Datastore.
+      r"""Imports entities into Google Cloud Datastore. Existing entities with the same key are overwritten. The import occurs in the background and its progress can be monitored and managed via the Operation resource that is created. If an ImportEntities operation is cancelled, it is possible that a subset of the data has already been imported to Cloud Datastore.
 
       Args:
         request: (DatastoreProjectsImportRequest) input message

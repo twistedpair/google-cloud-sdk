@@ -3,7 +3,7 @@
   "discoveryVersion": "v1",
   "id": "eventarc:v1beta1",
   "name": "eventarc",
-  "canonicalName": "eventarc",
+  "canonicalName": "Eventarc",
   "version": "v1beta1",
   "revision": "0",
   "title": "Eventarc API",

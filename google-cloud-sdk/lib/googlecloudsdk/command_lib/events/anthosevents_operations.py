@@ -55,10 +55,15 @@ _CORE_CLIENT_VERSION = 'v1'
 _ANTHOS_EVENTS_CLIENT_NAME = 'anthosevents'
 _ANTHOS_EVENTS_CLIENT_VERSION = 'v1beta1'
 
+_CLOUD_RUN_EVENTS_NAMESPACE = 'cloud-run-events'
+_DEFAULT_SOURCES_KEY = 'google-cloud-sources-key'
+SOURCES_KEY = 'google-cloud-key'
+
 _CLUSTER_INITIALIZED_ANNOTATION = 'events.cloud.google.com/initialized'
 _CONTROL_PLANE_NAMESPACE = 'cloud-run-events'
 _CONFIG_GCP_AUTH_NAME = 'config-gcp-auth'
 _CONFIGMAP_COLLECTION = 'anthosevents.api.v1.namespaces.configmaps'
+_SECRET_COLLECTION = 'anthosevents.api.v1.namespaces.secrets'
 
 
 def Connect(conn_info):
@@ -503,6 +508,57 @@ class AnthosEventsOperations(object):
           # The mocked test client does not have an additional_http_headers attr
           pass
     return response
+
+  def CreateOrReplaceSourcesSecret(self, namespace_ref):
+    """Create or replace the namespaces' sources secret.
+
+    Retrieves default sources secret 'google-cloud-sources-key' from
+    cloud-run-events and copies into secret 'google-cloud-key' into target
+    namespace.
+
+    Args:
+      namespace_ref: googolecloudsdk.core.resources.Resource, namespace resource
+
+    Returns:
+      None
+    """
+    messages = self._core_client.MESSAGES_MODULE
+    default_secret_full_name = 'namespaces/{}/secrets/{}'.format(
+        _CLOUD_RUN_EVENTS_NAMESPACE, _DEFAULT_SOURCES_KEY)
+    secret_ref = resources.REGISTRY.Parse(
+        SOURCES_KEY,
+        params={'namespacesId': namespace_ref.Name()},
+        collection=_SECRET_COLLECTION,
+        api_version='v1')
+
+    # Retrieve default sources secret.
+    try:
+      request = messages.AnthoseventsApiV1NamespacesSecretsGetRequest(
+          name=default_secret_full_name)
+      response = self._core_client.api_v1_namespaces_secrets.Get(request)
+    except api_exceptions.HttpNotFoundError:
+      raise exceptions.SecretNotFound(
+          'Secret [{}] not found in namespace [{}].'.format(
+              _DEFAULT_SOURCES_KEY, _CLOUD_RUN_EVENTS_NAMESPACE))
+
+    existing_secret_obj = secret.Secret(response, messages)
+
+    secret_obj = secret.Secret.New(self._core_client,
+                                   secret_ref.Parent().Name())
+    secret_obj.name = secret_ref.Name()
+    secret_obj.data['key.json'] = existing_secret_obj.data['key.json']
+
+    try:
+      # Create secret or replace if already exists.
+      request = messages.AnthoseventsApiV1NamespacesSecretsCreateRequest(
+          secret=secret_obj.Message(),
+          parent=secret_ref.Parent().RelativeName())
+      self._core_client.api_v1_namespaces_secrets.Create(request)
+    except api_exceptions.HttpConflictError:
+      request = messages.AnthoseventsApiV1NamespacesSecretsReplaceSecretRequest(
+          secret=secret_obj.Message(), name=secret_ref.RelativeName())
+      response = self._core_client.api_v1_namespaces_secrets.ReplaceSecret(
+          request)
 
   def CreateOrReplaceServiceAccountSecret(self, secret_ref,
                                           service_account_ref):

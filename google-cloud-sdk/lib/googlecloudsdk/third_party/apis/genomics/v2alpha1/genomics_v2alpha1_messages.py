@@ -19,7 +19,7 @@ class Accelerator(_messages.Message):
 
   Fields:
     count: How many accelerators of this type to attach.
-    type: The accelerator type string (for example, "nvidia-tesla-k80").  Only
+    type: The accelerator type string (for example, "nvidia-tesla-k80"). Only
       NVIDIA GPU accelerators are currently supported. If an NVIDIA GPU is
       attached, the required runtime libraries will be made available to all
       containers under `/usr/local/nvidia`. The driver version to install must
@@ -42,12 +42,12 @@ class Action(_messages.Message):
     EnvironmentValue: The environment to pass into the container. This
       environment is merged with values specified in the
       google.genomics.v2alpha1.Pipeline message, overwriting any duplicate
-      values.  In addition to the values passed here, a few other values are
+      values. In addition to the values passed here, a few other values are
       automatically injected into the environment. These cannot be hidden or
-      overwritten.  `GOOGLE_PIPELINE_FAILED` will be set to "1" if the
-      pipeline failed because an action has exited with a non-zero status (and
-      did not have the `IGNORE_EXIT_STATUS` flag set). This can be used to
-      determine if additional debug or logging actions should execute.
+      overwritten. `GOOGLE_PIPELINE_FAILED` will be set to "1" if the pipeline
+      failed because an action has exited with a non-zero status (and did not
+      have the `IGNORE_EXIT_STATUS` flag set). This can be used to determine
+      if additional debug or logging actions should execute.
       `GOOGLE_LAST_EXIT_STATUS` will be set to the exit status of the last
       non-background action that executed. This can be used by workflow engine
       authors to determine whether an individual action has succeeded or
@@ -59,7 +59,7 @@ class Action(_messages.Message):
       otherwise ignored.
     PortMappingsValue: A map of containers to host port mappings for this
       container. If the container already specifies exposed ports, use the
-      `PUBLISH_EXPOSED_PORTS` flag instead.  The host port number must be less
+      `PUBLISH_EXPOSED_PORTS` flag instead. The host port number must be less
       than 65536. If it is zero, an unused random port is assigned. To
       determine the resulting port number, consult the `ContainerStartedEvent`
       in the operation metadata.
@@ -71,14 +71,14 @@ class Action(_messages.Message):
       inside the container.
     credentials: If the specified image is hosted on a private registry other
       than Google Container Registry, the credentials required to pull the
-      image must be specified here as an encrypted secret.  The secret must
+      image must be specified here as an encrypted secret. The secret must
       decrypt to a JSON-encoded dictionary containing both `username` and
       `password` keys.
     entrypoint: If specified, overrides the `ENTRYPOINT` specified in the
       container.
     environment: The environment to pass into the container. This environment
       is merged with values specified in the google.genomics.v2alpha1.Pipeline
-      message, overwriting any duplicate values.  In addition to the values
+      message, overwriting any duplicate values. In addition to the values
       passed here, a few other values are automatically injected into the
       environment. These cannot be hidden or overwritten.
       `GOOGLE_PIPELINE_FAILED` will be set to "1" if the pipeline failed
@@ -94,11 +94,11 @@ class Action(_messages.Message):
       all images referenced by actions in the pipeline are pulled before the
       first action runs. If multiple actions reference the same image, it is
       only pulled once, ensuring that the same image is used for all actions
-      in a single pipeline.  The image URI can be either a complete host and
+      in a single pipeline. The image URI can be either a complete host and
       image specification (e.g., quay.io/biocontainers/samtools), a library
       and image name (e.g., google/cloud-sdk) or a bare image name ('bash') to
-      pull from the default library.  No schema is required in any of these
-      cases.  If the specified image is not public, the service account
+      pull from the default library. No schema is required in any of these
+      cases. If the specified image is not public, the service account
       specified for the Virtual Machine must have access to pull the images
       from GCR, or appropriate credentials must be specified in the
       google.genomics.v2alpha1.Action.credentials field.
@@ -107,27 +107,25 @@ class Action(_messages.Message):
       indicate what sort of action they perform, such as localization or
       debugging). They are returned in the operation metadata, but are
       otherwise ignored.
-    mounts: A list of mounts to make available to the action.  In addition to
+    mounts: A list of mounts to make available to the action. In addition to
       the values specified here, every action has a special virtual disk
       mounted under `/google` that contains log files and other operational
-      components.  <ul>   <li><code>/google/logs</code> All logs written
-      during the pipeline   execution.</li>
-      <li><code>/google/logs/output</code> The combined standard output and
-      standard error of all actions run as part of the pipeline
-      execution.</li>   <li><code>/google/logs/action/*/stdout</code> The
-      complete contents of   each individual action's standard output.</li>
-      <li><code>/google/logs/action/*/stderr</code> The complete contents of
-      each individual action's standard error output.</li> </ul>
+      components. - /google/logs All logs written during the pipeline
+      execution. - /google/logs/output The combined standard output and
+      standard error of all actions run as part of the pipeline execution. -
+      /google/logs/action/*/stdout The complete contents of each individual
+      action's standard output. - /google/logs/action/*/stderr The complete
+      contents of each individual action's standard error output.
     name: An optional name for the container. The container hostname will be
       set to this name, making it useful for inter-container communication.
       The name must contain only upper and lowercase alphanumeric characters
       and hypens and cannot start with a hyphen.
     pidNamespace: An optional identifier for a PID namespace to run the action
       inside. Multiple actions should use the same string to share a
-      namespace.  If unspecified, a separate isolated namespace is used.
+      namespace. If unspecified, a separate isolated namespace is used.
     portMappings: A map of containers to host port mappings for this
       container. If the container already specifies exposed ports, use the
-      `PUBLISH_EXPOSED_PORTS` flag instead.  The host port number must be less
+      `PUBLISH_EXPOSED_PORTS` flag instead. The host port number must be less
       than 65536. If it is zero, an unused random port is assigned. To
       determine the resulting port number, consult the `ContainerStartedEvent`
       in the operation metadata.
@@ -142,14 +140,37 @@ class Action(_messages.Message):
     r"""FlagsValueListEntryValuesEnum enum type.
 
     Values:
-      FLAG_UNSPECIFIED: <no description>
-      IGNORE_EXIT_STATUS: <no description>
-      RUN_IN_BACKGROUND: <no description>
-      ALWAYS_RUN: <no description>
-      ENABLE_FUSE: <no description>
-      PUBLISH_EXPOSED_PORTS: <no description>
-      DISABLE_IMAGE_PREFETCH: <no description>
-      DISABLE_STANDARD_ERROR_CAPTURE: <no description>
+      FLAG_UNSPECIFIED: Unspecified flag.
+      IGNORE_EXIT_STATUS: Normally, a non-zero exit status causes the pipeline
+        to fail. This flag allows execution of other actions to continue
+        instead.
+      RUN_IN_BACKGROUND: This flag allows an action to continue running in the
+        background while executing subsequent actions. This is useful to
+        provide services to other actions (or to provide debugging support
+        tools like SSH servers).
+      ALWAYS_RUN: By default, after an action fails, no further actions are
+        run. This flag indicates that this action must be run even if the
+        pipeline has already failed. This is useful for actions that copy
+        output files off of the VM or for debugging. Note that no actions will
+        be run if image prefetching fails.
+      ENABLE_FUSE: Enable access to the FUSE device for this action.
+        Filesystems can then be mounted into disks shared with other actions.
+        The other actions do not need the `ENABLE_FUSE` flag to access the
+        mounted filesystem. This has the effect of causing the container to be
+        executed with `CAP_SYS_ADMIN` and exposes `/dev/fuse` to the
+        container, so use it only for containers you trust.
+      PUBLISH_EXPOSED_PORTS: Exposes all ports specified by `EXPOSE`
+        statements in the container. To discover the host side port numbers,
+        consult the `ACTION_STARTED` event in the operation metadata.
+      DISABLE_IMAGE_PREFETCH: All container images are typically downloaded
+        before any actions are executed. This helps prevent typos in URIs or
+        issues like lack of disk space from wasting large amounts of compute
+        resources. If set, this flag prevents the worker from downloading the
+        image until just before the action is executed.
+      DISABLE_STANDARD_ERROR_CAPTURE: A small portion of the container's
+        standard error stream is typically captured and returned inside the
+        `ContainerStoppedEvent`. Setting this flag disables this
+        functionality.
     """
     FLAG_UNSPECIFIED = 0
     IGNORE_EXIT_STATUS = 1
@@ -164,9 +185,9 @@ class Action(_messages.Message):
   class EnvironmentValue(_messages.Message):
     r"""The environment to pass into the container. This environment is merged
     with values specified in the google.genomics.v2alpha1.Pipeline message,
-    overwriting any duplicate values.  In addition to the values passed here,
-    a few other values are automatically injected into the environment. These
-    cannot be hidden or overwritten.  `GOOGLE_PIPELINE_FAILED` will be set to
+    overwriting any duplicate values. In addition to the values passed here, a
+    few other values are automatically injected into the environment. These
+    cannot be hidden or overwritten. `GOOGLE_PIPELINE_FAILED` will be set to
     "1" if the pipeline failed because an action has exited with a non-zero
     status (and did not have the `IGNORE_EXIT_STATUS` flag set). This can be
     used to determine if additional debug or logging actions should execute.
@@ -226,9 +247,9 @@ class Action(_messages.Message):
   class PortMappingsValue(_messages.Message):
     r"""A map of containers to host port mappings for this container. If the
     container already specifies exposed ports, use the `PUBLISH_EXPOSED_PORTS`
-    flag instead.  The host port number must be less than 65536. If it is
-    zero, an unused random port is assigned. To determine the resulting port
-    number, consult the `ContainerStartedEvent` in the operation metadata.
+    flag instead. The host port number must be less than 65536. If it is zero,
+    an unused random port is assigned. To determine the resulting port number,
+    consult the `ContainerStartedEvent` in the operation metadata.
 
     Messages:
       AdditionalProperty: An additional property for a PortMappingsValue
@@ -280,6 +301,7 @@ class CheckInRequest(_messages.Message):
     event: A workflow specific event occurred.
     events: A list of timestamped events.
     result: The operation has finished with the given result.
+    sosReport: An SOS report for an unexpected VM failure.
     workerStatus: Data about the status of the worker VM.
   """
 
@@ -312,7 +334,8 @@ class CheckInRequest(_messages.Message):
   event = _messages.MessageField('EventValue', 2)
   events = _messages.MessageField('TimestampedEvent', 3, repeated=True)
   result = _messages.MessageField('Status', 4)
-  workerStatus = _messages.MessageField('WorkerStatus', 5)
+  sosReport = _messages.BytesField(5)
+  workerStatus = _messages.MessageField('WorkerStatus', 6)
 
 
 class CheckInResponse(_messages.Message):
@@ -323,7 +346,7 @@ class CheckInResponse(_messages.Message):
       worker.
 
   Fields:
-    deadline: The deadline by which the worker must request an extension.  The
+    deadline: The deadline by which the worker must request an extension. The
       backend will allow for network transmission time and other delays, but
       the worker must attempt to transmit the extension request no later than
       the deadline.
@@ -451,7 +474,7 @@ class ContainerStoppedEvent(_messages.Message):
     stderr: The tail end of any content written to standard error by the
       container. If the content emits large amounts of debugging noise or
       contains sensitive information, you can prevent the content from being
-      printed by setting the `DISABLE_STANDARD_ERROR_CAPTURE` flag.  Note that
+      printed by setting the `DISABLE_STANDARD_ERROR_CAPTURE` flag. Note that
       only a small amount of the end of the stream is captured here. The
       entire stream is stored in the `/google/logs` directory mounted into
       each action, and can be copied off the machine as described elsewhere.
@@ -481,7 +504,7 @@ class DelayedEvent(_messages.Message):
 
 
 class Disk(_messages.Message):
-  r"""Carries information about a disk that can be attached to a VM.  See
+  r"""Carries information about a disk that can be attached to a VM. See
   https://cloud.google.com/compute/docs/disks/performance for more information
   about disk type, size, and performance considerations.
 
@@ -490,7 +513,7 @@ class Disk(_messages.Message):
       actions. The name must contain only upper and lowercase alphanumeric
       characters and hypens and cannot start with a hyphen.
     sizeGb: The size, in GB, of the disk to attach. If the size is not
-      specified, a default is chosen to ensure reasonable I/O performance.  If
+      specified, a default is chosen to ensure reasonable I/O performance. If
       the disk type is specified as `local-ssd`, multiple local drives are
       automatically combined to provide the requested size. Note, however,
       that each physical SSD is 375GB in size, and no more than 8 drives can
@@ -521,9 +544,9 @@ class DiskStatus(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -589,32 +612,32 @@ class FailedEvent(_messages.Message):
     r"""The Google standard error code that best describes this failure.
 
     Values:
-      OK: Not an error; returned on success  HTTP Mapping: 200 OK
-      CANCELLED: The operation was cancelled, typically by the caller.  HTTP
+      OK: Not an error; returned on success HTTP Mapping: 200 OK
+      CANCELLED: The operation was cancelled, typically by the caller. HTTP
         Mapping: 499 Client Closed Request
-      UNKNOWN: Unknown error.  For example, this error may be returned when a
+      UNKNOWN: Unknown error. For example, this error may be returned when a
         `Status` value received from another address space belongs to an error
-        space that is not known in this address space.  Also errors raised by
+        space that is not known in this address space. Also errors raised by
         APIs that do not return enough error information may be converted to
-        this error.  HTTP Mapping: 500 Internal Server Error
-      INVALID_ARGUMENT: The client specified an invalid argument.  Note that
-        this differs from `FAILED_PRECONDITION`.  `INVALID_ARGUMENT` indicates
+        this error. HTTP Mapping: 500 Internal Server Error
+      INVALID_ARGUMENT: The client specified an invalid argument. Note that
+        this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates
         arguments that are problematic regardless of the state of the system
-        (e.g., a malformed file name).  HTTP Mapping: 400 Bad Request
+        (e.g., a malformed file name). HTTP Mapping: 400 Bad Request
       DEADLINE_EXCEEDED: The deadline expired before the operation could
         complete. For operations that change the state of the system, this
         error may be returned even if the operation has completed
-        successfully.  For example, a successful response from a server could
-        have been delayed long enough for the deadline to expire.  HTTP
+        successfully. For example, a successful response from a server could
+        have been delayed long enough for the deadline to expire. HTTP
         Mapping: 504 Gateway Timeout
       NOT_FOUND: Some requested entity (e.g., file or directory) was not
-        found.  Note to server developers: if a request is denied for an
-        entire class of users, such as gradual feature rollout or undocumented
+        found. Note to server developers: if a request is denied for an entire
+        class of users, such as gradual feature rollout or undocumented
         allowlist, `NOT_FOUND` may be used. If a request is denied for some
         users within a class of users, such as user-based access control,
-        `PERMISSION_DENIED` must be used.  HTTP Mapping: 404 Not Found
+        `PERMISSION_DENIED` must be used. HTTP Mapping: 404 Not Found
       ALREADY_EXISTS: The entity that a client attempted to create (e.g., file
-        or directory) already exists.  HTTP Mapping: 409 Conflict
+        or directory) already exists. HTTP Mapping: 409 Conflict
       PERMISSION_DENIED: The caller does not have permission to execute the
         specified operation. `PERMISSION_DENIED` must not be used for
         rejections caused by exhausting some resource (use
@@ -622,55 +645,55 @@ class FailedEvent(_messages.Message):
         must not be used if the caller can not be identified (use
         `UNAUTHENTICATED` instead for those errors). This error code does not
         imply the request is valid or the requested entity exists or satisfies
-        other pre-conditions.  HTTP Mapping: 403 Forbidden
+        other pre-conditions. HTTP Mapping: 403 Forbidden
       UNAUTHENTICATED: The request does not have valid authentication
-        credentials for the operation.  HTTP Mapping: 401 Unauthorized
+        credentials for the operation. HTTP Mapping: 401 Unauthorized
       RESOURCE_EXHAUSTED: Some resource has been exhausted, perhaps a per-user
-        quota, or perhaps the entire file system is out of space.  HTTP
+        quota, or perhaps the entire file system is out of space. HTTP
         Mapping: 429 Too Many Requests
       FAILED_PRECONDITION: The operation was rejected because the system is
-        not in a state required for the operation's execution.  For example,
+        not in a state required for the operation's execution. For example,
         the directory to be deleted is non-empty, an rmdir operation is
-        applied to a non-directory, etc.  Service implementors can use the
+        applied to a non-directory, etc. Service implementors can use the
         following guidelines to decide between `FAILED_PRECONDITION`,
-        `ABORTED`, and `UNAVAILABLE`:  (a) Use `UNAVAILABLE` if the client can
-        retry just the failing call.  (b) Use `ABORTED` if the client should
-        retry at a higher level      (e.g., when a client-specified test-and-
-        set fails, indicating the      client should restart a read-modify-
-        write sequence).  (c) Use `FAILED_PRECONDITION` if the client should
-        not retry until      the system state has been explicitly fixed.
-        E.g., if an "rmdir"      fails because the directory is non-empty,
-        `FAILED_PRECONDITION`      should be returned since the client should
-        not retry unless      the files are deleted from the directory.  HTTP
-        Mapping: 400 Bad Request
+        `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
+        retry just the failing call. (b) Use `ABORTED` if the client should
+        retry at a higher level (e.g., when a client-specified test-and-set
+        fails, indicating the client should restart a read-modify-write
+        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. E.g., if an
+        "rmdir" fails because the directory is non-empty,
+        `FAILED_PRECONDITION` should be returned since the client should not
+        retry unless the files are deleted from the directory. HTTP Mapping:
+        400 Bad Request
       ABORTED: The operation was aborted, typically due to a concurrency issue
-        such as a sequencer check failure or transaction abort.  See the
+        such as a sequencer check failure or transaction abort. See the
         guidelines above for deciding between `FAILED_PRECONDITION`,
-        `ABORTED`, and `UNAVAILABLE`.  HTTP Mapping: 409 Conflict
-      OUT_OF_RANGE: The operation was attempted past the valid range.  E.g.,
-        seeking or reading past end-of-file.  Unlike `INVALID_ARGUMENT`, this
+        `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict
+      OUT_OF_RANGE: The operation was attempted past the valid range. E.g.,
+        seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this
         error indicates a problem that may be fixed if the system state
         changes. For example, a 32-bit file system will generate
         `INVALID_ARGUMENT` if asked to read at an offset that is not in the
         range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read
-        from an offset past the current file size.  There is a fair bit of
-        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`.  We
-        recommend using `OUT_OF_RANGE` (the more specific error) when it
-        applies so that callers who are iterating through a space can easily
-        look for an `OUT_OF_RANGE` error to detect when they are done.  HTTP
-        Mapping: 400 Bad Request
+        from an offset past the current file size. There is a fair bit of
+        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend
+        using `OUT_OF_RANGE` (the more specific error) when it applies so that
+        callers who are iterating through a space can easily look for an
+        `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400
+        Bad Request
       UNIMPLEMENTED: The operation is not implemented or is not
-        supported/enabled in this service.  HTTP Mapping: 501 Not Implemented
-      INTERNAL: Internal errors.  This means that some invariants expected by
-        the underlying system have been broken.  This error code is reserved
-        for serious errors.  HTTP Mapping: 500 Internal Server Error
-      UNAVAILABLE: The service is currently unavailable.  This is most likely
-        a transient condition, which can be corrected by retrying with a
+        supported/enabled in this service. HTTP Mapping: 501 Not Implemented
+      INTERNAL: Internal errors. This means that some invariants expected by
+        the underlying system have been broken. This error code is reserved
+        for serious errors. HTTP Mapping: 500 Internal Server Error
+      UNAVAILABLE: The service is currently unavailable. This is most likely a
+        transient condition, which can be corrected by retrying with a
         backoff. Note that it is not always safe to retry non-idempotent
-        operations.  See the guidelines above for deciding between
-        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`.  HTTP Mapping:
-        503 Service Unavailable
-      DATA_LOSS: Unrecoverable data loss or corruption.  HTTP Mapping: 500
+        operations. See the guidelines above for deciding between
+        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 503
+        Service Unavailable
+      DATA_LOSS: Unrecoverable data loss or corruption. HTTP Mapping: 500
         Internal Server Error
     """
     OK = 0
@@ -723,26 +746,24 @@ class GenomicsProjectsOperationsListRequest(_messages.Message):
 
   Fields:
     filter: A string for filtering Operations. In v2alpha1, the following
-      filter fields are supported&#58;  * createTime&#58; The time this job
-      was created * events&#58; The set of event (names) that have occurred
-      while running   the pipeline.  The &#58; operator can be used to
-      determine if a   particular event has occurred. * error&#58; If the
-      pipeline is running, this value is NULL.  Once the   pipeline finishes,
-      the value is the standard Google error code. * labels.key or labels."key
-      with space" where key is a label key. * done&#58; If the pipeline is
-      running, this value is false. Once the   pipeline finishes, the value is
-      true.  In v1 and v1alpha2, the following filter fields are
-      supported&#58;  * projectId&#58; Required. Corresponds to
-      OperationMetadata.projectId. * createTime&#58; The time this job was
+      filter fields are supported: * createTime: The time this job was created
+      * events: The set of event (names) that have occurred while running the
+      pipeline. The : operator can be used to determine if a particular event
+      has occurred. * error: If the pipeline is running, this value is NULL.
+      Once the pipeline finishes, the value is the standard Google error code.
+      * labels.key or labels."key with space" where key is a label key. *
+      done: If the pipeline is running, this value is false. Once the pipeline
+      finishes, the value is true. In v1 and v1alpha2, the following filter
+      fields are supported: * projectId: Required. Corresponds to
+      OperationMetadata.projectId. * createTime: The time this job was
       created, in seconds from the
       [epoch](http://en.wikipedia.org/wiki/Unix_time). Can use `>=` and/or
-      `<=`   operators. * status&#58; Can be `RUNNING`, `SUCCESS`, `FAILURE`,
-      or `CANCELED`. Only   one status may be specified. * labels.key where
-      key is a label key.  Examples&#58;  * `projectId = my-project AND
-      createTime >= 1432140000` * `projectId = my-project AND createTime >=
-      1432140000 AND createTime <= 1432150000 AND status = RUNNING` *
-      `projectId = my-project AND labels.color = *` * `projectId = my-project
-      AND labels.color = red`
+      `<=` operators. * status: Can be `RUNNING`, `SUCCESS`, `FAILURE`, or
+      `CANCELED`. Only one status may be specified. * labels.key where key is
+      a label key. Examples: * `projectId = my-project AND createTime >=
+      1432140000` * `projectId = my-project AND createTime >= 1432140000 AND
+      createTime <= 1432150000 AND status = RUNNING` * `projectId = my-project
+      AND labels.color = *` * `projectId = my-project AND labels.color = red`
     name: The name of the operation's parent resource.
     pageSize: The maximum number of results to return. The maximum value is
       256.
@@ -874,14 +895,14 @@ class Network(_messages.Message):
       If unspecified, the global default network is used.
     subnetwork: If the specified network is configured for custom subnet
       creation, the name of the subnetwork to attach the instance to must be
-      specified here.  The value is prefixed with `regions/*/subnetworks/`
+      specified here. The value is prefixed with `regions/*/subnetworks/`
       unless it contains a `/`, in which case it is assumed to be a fully
-      specified subnetwork resource URL.  If the `*` character appears in the
+      specified subnetwork resource URL. If the `*` character appears in the
       value, it is replaced with the region that the virtual machine has been
       allocated in.
     usePrivateAddress: If set to true, do not attach a public IP address to
       the VM. Note that without a public IP address, additional configuration
-      is required to allow the VM to access Google services.  See
+      is required to allow the VM to access Google services. See
       https://cloud.google.com/vpc/docs/configure-private-google-access for
       more information.
   """
@@ -909,7 +930,7 @@ class Operation(_messages.Message):
     metadata: An OperationMetadata or Metadata object. This will always be
       returned with the Operation.
     name: The server-assigned name, which is only unique within the same
-      service that originally returns it. For example&#58;
+      service that originally returns it. For example:
       `operations/CJHU7Oi_ChDrveSpBRjfuL-qzoWAgEw`
     response: An Empty object.
   """
@@ -1127,11 +1148,11 @@ class Pipeline(_messages.Message):
       also specify additional environment variables but cannot delete an entry
       from this map (though they can overwrite it with a different value).
     resources: The resources required for execution.
-    timeout: The maximum amount of time to give the pipeline to complete.
-      This includes the time spent waiting for a worker to be allocated.  If
-      the pipeline fails to complete before the timeout, it will be cancelled
-      and the error code will be set to DEADLINE_EXCEEDED.  If unspecified, it
-      will default to 7 days.
+    timeout: The maximum amount of time to give the pipeline to complete. This
+      includes the time spent waiting for a worker to be allocated. If the
+      pipeline fails to complete before the timeout, it will be cancelled and
+      the error code will be set to DEADLINE_EXCEEDED. If unspecified, it will
+      default to 7 days.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1188,7 +1209,7 @@ class PullStoppedEvent(_messages.Message):
 
 
 class Resources(_messages.Message):
-  r"""The system resources for the pipeline run.  At least one zone or region
+  r"""The system resources for the pipeline run. At least one zone or region
   must be specified or the pipeline run will fail.
 
   Fields:
@@ -1214,14 +1235,14 @@ class RunPipelineRequest(_messages.Message):
   Messages:
     LabelsValue: User-defined labels to associate with the returned operation.
       These labels are not propagated to any Google Cloud Platform resources
-      used by the operation, and can be modified at any time.  To associate
+      used by the operation, and can be modified at any time. To associate
       labels with resources created while executing the operation, see the
       appropriate resource message (for example, `VirtualMachine`).
 
   Fields:
     labels: User-defined labels to associate with the returned operation.
       These labels are not propagated to any Google Cloud Platform resources
-      used by the operation, and can be modified at any time.  To associate
+      used by the operation, and can be modified at any time. To associate
       labels with resources created while executing the operation, see the
       appropriate resource message (for example, `VirtualMachine`).
     pipeline: Required. The description of the pipeline to run.
@@ -1231,7 +1252,7 @@ class RunPipelineRequest(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""User-defined labels to associate with the returned operation. These
     labels are not propagated to any Google Cloud Platform resources used by
-    the operation, and can be modified at any time.  To associate labels with
+    the operation, and can be modified at any time. To associate labels with
     resources created while executing the operation, see the appropriate
     resource message (for example, `VirtualMachine`).
 
@@ -1376,7 +1397,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1385,7 +1406,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1486,8 +1507,8 @@ class VirtualMachine(_messages.Message):
     LabelsValue: Optional set of labels to apply to the VM and any attached
       disk resources. These labels must adhere to the [name and value
       restrictions](https://cloud.google.com/compute/docs/labeling-resources)
-      on VM labels imposed by Compute Engine.  Labels keys with the prefix
-      'google-' are reserved for use by Google.  Labels applied at creation
+      on VM labels imposed by Compute Engine. Labels keys with the prefix
+      'google-' are reserved for use by Google. Labels applied at creation
       time to the VM. Applied on a best-effort basis to attached disk
       resources shortly after VM creation.
 
@@ -1497,14 +1518,14 @@ class VirtualMachine(_messages.Message):
       large enough to accommodate all of the Docker images from each action in
       the pipeline at the same time. If not specified, a small but reasonable
       default value is used.
-    bootImage: The host operating system image to use.  Currently, only
-      Container-Optimized OS images can be used.  The default value is
+    bootImage: The host operating system image to use. Currently, only
+      Container-Optimized OS images can be used. The default value is
       `projects/cos-cloud/global/images/family/cos-stable`, which selects the
-      latest stable release of Container-Optimized OS.  This option is
-      provided to allow testing against the beta release of the operating
-      system to ensure that the new version does not interact negatively with
-      production pipelines.  To test a pipeline against the beta release of
-      Container-Optimized OS, use the value `projects/cos-
+      latest stable release of Container-Optimized OS. This option is provided
+      to allow testing against the beta release of the operating system to
+      ensure that the new version does not interact negatively with production
+      pipelines. To test a pipeline against the beta release of Container-
+      Optimized OS, use the value `projects/cos-
       cloud/global/images/family/cos-beta`.
     cpuPlatform: The CPU platform to request. An instance based on a newer
       platform can be allocated, but never one with fewer capabilities. The
@@ -1528,8 +1549,8 @@ class VirtualMachine(_messages.Message):
     labels: Optional set of labels to apply to the VM and any attached disk
       resources. These labels must adhere to the [name and value
       restrictions](https://cloud.google.com/compute/docs/labeling-resources)
-      on VM labels imposed by Compute Engine.  Labels keys with the prefix
-      'google-' are reserved for use by Google.  Labels applied at creation
+      on VM labels imposed by Compute Engine. Labels keys with the prefix
+      'google-' are reserved for use by Google. Labels applied at creation
       time to the VM. Applied on a best-effort basis to attached disk
       resources shortly after VM creation.
     machineType: Required. The machine type of the virtual machine to create.
@@ -1556,10 +1577,10 @@ class VirtualMachine(_messages.Message):
     r"""Optional set of labels to apply to the VM and any attached disk
     resources. These labels must adhere to the [name and value
     restrictions](https://cloud.google.com/compute/docs/labeling-resources) on
-    VM labels imposed by Compute Engine.  Labels keys with the prefix
-    'google-' are reserved for use by Google.  Labels applied at creation time
-    to the VM. Applied on a best-effort basis to attached disk resources
-    shortly after VM creation.
+    VM labels imposed by Compute Engine. Labels keys with the prefix 'google-'
+    are reserved for use by Google. Labels applied at creation time to the VM.
+    Applied on a best-effort basis to attached disk resources shortly after VM
+    creation.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

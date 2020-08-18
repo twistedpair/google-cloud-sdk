@@ -2021,6 +2021,7 @@ class GceClusterConfig(_messages.Message):
       information).A full URL, partial URI, or short name are valid. Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/regions/glob
       al/default projects/[project_id]/regions/global/default default
+    nodeGroupAffinity: Optional. Node Group Affinity for sole-tenant clusters.
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
       reservation.
     serviceAccount: Optional. The Dataproc service account
@@ -2093,12 +2094,13 @@ class GceClusterConfig(_messages.Message):
   internalIpOnly = _messages.BooleanField(1)
   metadata = _messages.MessageField('MetadataValue', 2)
   networkUri = _messages.StringField(3)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 4)
-  serviceAccount = _messages.StringField(5)
-  serviceAccountScopes = _messages.StringField(6, repeated=True)
-  subnetworkUri = _messages.StringField(7)
-  tags = _messages.StringField(8, repeated=True)
-  zoneUri = _messages.StringField(9)
+  nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 4)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 5)
+  serviceAccount = _messages.StringField(6)
+  serviceAccountScopes = _messages.StringField(7, repeated=True)
+  subnetworkUri = _messages.StringField(8)
+  tags = _messages.StringField(9, repeated=True)
+  zoneUri = _messages.StringField(10)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -2369,6 +2371,8 @@ class InstanceGroupConfig(_messages.Message):
       SoftwareConfig.image_version or the system default.
     instanceNames: Output only. The list of instance names. Dataproc derives
       the names from cluster_name, num_instances, and the instance group.
+    instanceReferences: Output only. List of references to Compute Engine
+      instances.
     isPreemptible: Output only. Specifies that this instance group contains
       preemptible instances.
     machineTypeUri: Optional. The Compute Engine machine type used for cluster
@@ -2418,12 +2422,25 @@ class InstanceGroupConfig(_messages.Message):
   diskConfig = _messages.MessageField('DiskConfig', 2)
   imageUri = _messages.StringField(3)
   instanceNames = _messages.StringField(4, repeated=True)
-  isPreemptible = _messages.BooleanField(5)
-  machineTypeUri = _messages.StringField(6)
-  managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 7)
-  minCpuPlatform = _messages.StringField(8)
-  numInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 10)
+  instanceReferences = _messages.MessageField('InstanceReference', 5, repeated=True)
+  isPreemptible = _messages.BooleanField(6)
+  machineTypeUri = _messages.StringField(7)
+  managedGroupConfig = _messages.MessageField('ManagedGroupConfig', 8)
+  minCpuPlatform = _messages.StringField(9)
+  numInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  preemptibility = _messages.EnumField('PreemptibilityValueValuesEnum', 11)
+
+
+class InstanceReference(_messages.Message):
+  r"""A reference to a Compute Engine instance.
+
+  Fields:
+    instanceId: The unique identifier of the Compute Engine instance.
+    instanceName: The user-friendly name of the Compute Engine instance.
+  """
+
+  instanceId = _messages.StringField(1)
+  instanceName = _messages.StringField(2)
 
 
 class InstantiateWorkflowTemplateRequest(_messages.Message):
@@ -3053,6 +3070,18 @@ class NamespacedGkeDeploymentTarget(_messages.Message):
 
   clusterNamespace = _messages.StringField(1)
   targetGkeCluster = _messages.StringField(2)
+
+
+class NodeGroupAffinity(_messages.Message):
+  r"""Node Group Affinity for clusters using sole-tenant node groups.
+
+  Fields:
+    nodeGroupUri: Optional. The name of a single node group
+      (https://cloud.google.com/compute/docs/reference/rest/v1/nodeGroups) a
+      cluster will be created on.
+  """
+
+  nodeGroupUri = _messages.StringField(1)
 
 
 class NodeInitializationAction(_messages.Message):

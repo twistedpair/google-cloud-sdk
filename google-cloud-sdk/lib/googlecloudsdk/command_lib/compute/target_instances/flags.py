@@ -56,7 +56,9 @@ NETWORK_ARG = compute_flags.ResourceArgument(
     global_collection='compute.networks',
     short_help='Network that this target instance applies to.',
     detailed_help="""\
-        Network that this target instance applies to.
+        Network that this target instance applies to. This is only necessary if
+        the corresponding instance has multiple network interfaces.
+        If not specified, the default network interface will be used.
         """)
 
 

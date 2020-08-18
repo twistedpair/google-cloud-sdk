@@ -218,8 +218,7 @@ class ContainerV1(base_api.BaseApiClient):
     )
 
     def Rollback(self, request, global_params=None):
-      r"""Rolls back a previously Aborted or Failed NodePool upgrade.
-This makes no changes if the last upgrade successfully completed.
+      r"""Rolls back a previously Aborted or Failed NodePool upgrade. This makes no changes if the last upgrade successfully completed.
 
       Args:
         request: (RollbackNodePoolUpgradeRequest) input message
@@ -364,13 +363,7 @@ This makes no changes if the last upgrade successfully completed.
           }
 
     def GetOpenid_configuration(self, request, global_params=None):
-      r"""Gets the OIDC discovery document for the cluster.
-See the
-[OpenID Connect Discovery 1.0
-specification](https://openid.net/specs/openid-connect-discovery-1_0.html)
-for details.
-This API is not yet intended for general use, and is not available for all
-clusters.
+      r"""Gets the OIDC discovery document for the cluster. See the [OpenID Connect Discovery 1.0 specification](https://openid.net/specs/openid-connect-discovery-1_0.html) for details. This API is not yet intended for general use, and is not available for all clusters.
 
       Args:
         request: (ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest) input message
@@ -434,20 +427,7 @@ clusters.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a cluster, consisting of the specified number and type of Google.
-Compute Engine instances.
-
-By default, the cluster is created in the project's
-[default
-network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks).
-
-One firewall is added for the cluster. After cluster creation,
-the Kubelet creates routes for each node to allow the containers
-on that node to communicate with all other instances in the
-cluster.
-
-Finally, an entry is added to the project's global metadata indicating
-which CIDR range the cluster is using.
+      r"""Creates a cluster, consisting of the specified number and type of Google Compute Engine instances. By default, the cluster is created in the project's [default network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks). One firewall is added for the cluster. After cluster creation, the Kubelet creates routes for each node to allow the containers on that node to communicate with all other instances in the cluster. Finally, an entry is added to the project's global metadata indicating which CIDR range the cluster is using.
 
       Args:
         request: (CreateClusterRequest) input message
@@ -474,15 +454,7 @@ which CIDR range the cluster is using.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the cluster, including the Kubernetes endpoint and all worker.
-nodes.
-
-Firewalls and routes that were configured during cluster creation
-are also deleted.
-
-Other Google Compute Engine resources that might be in use by the cluster,
-such as load balancer resources, are not deleted if they weren't present
-when the cluster was initially created.
+      r"""Deletes the cluster, including the Kubernetes endpoint and all worker nodes. Firewalls and routes that were configured during cluster creation are also deleted. Other Google Compute Engine resources that might be in use by the cluster, such as load balancer resources, are not deleted if they weren't present when the cluster was initially created.
 
       Args:
         request: (ContainerProjectsLocationsClustersDeleteRequest) input message
@@ -536,10 +508,7 @@ when the cluster was initially created.
     )
 
     def GetJwks(self, request, global_params=None):
-      r"""Gets the public component of the cluster signing keys in.
-JSON Web Key format.
-This API is not yet intended for general use, and is not available for all
-clusters.
+      r"""Gets the public component of the cluster signing keys in JSON Web Key format. This API is not yet intended for general use, and is not available for all clusters.
 
       Args:
         request: (ContainerProjectsLocationsClustersGetJwksRequest) input message
@@ -566,8 +535,7 @@ clusters.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all clusters owned by a project in either the specified zone or all.
-zones.
+      r"""Lists all clusters owned by a project in either the specified zone or all zones.
 
       Args:
         request: (ContainerProjectsLocationsClustersListRequest) input message
@@ -648,10 +616,7 @@ zones.
     )
 
     def SetLocations(self, request, global_params=None):
-      r"""Sets the locations for a specific cluster.
-Deprecated. Use
-[projects.locations.clusters.update](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters/update)
-instead.
+      r"""Sets the locations for a specific cluster. Deprecated. Use [projects.locations.clusters.update](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters/update) instead.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -732,9 +697,7 @@ instead.
     )
 
     def SetMasterAuth(self, request, global_params=None):
-      r"""Sets master auth materials. Currently supports changing the admin password.
-or a specific cluster, either via password generation or explicitly setting
-the password.
+      r"""Sets master auth materials. Currently supports changing the admin password or a specific cluster, either via password generation or explicitly setting the password.
 
       Args:
         request: (SetMasterAuthRequest) input message
@@ -1191,8 +1154,7 @@ the password.
     )
 
     def Rollback(self, request, global_params=None):
-      r"""Rolls back a previously Aborted or Failed NodePool upgrade.
-This makes no changes if the last upgrade successfully completed.
+      r"""Rolls back a previously Aborted or Failed NodePool upgrade. This makes no changes if the last upgrade successfully completed.
 
       Args:
         request: (RollbackNodePoolUpgradeRequest) input message
@@ -1358,20 +1320,7 @@ This makes no changes if the last upgrade successfully completed.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a cluster, consisting of the specified number and type of Google.
-Compute Engine instances.
-
-By default, the cluster is created in the project's
-[default
-network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks).
-
-One firewall is added for the cluster. After cluster creation,
-the Kubelet creates routes for each node to allow the containers
-on that node to communicate with all other instances in the
-cluster.
-
-Finally, an entry is added to the project's global metadata indicating
-which CIDR range the cluster is using.
+      r"""Creates a cluster, consisting of the specified number and type of Google Compute Engine instances. By default, the cluster is created in the project's [default network](https://cloud.google.com/compute/docs/networks-and-firewalls#networks). One firewall is added for the cluster. After cluster creation, the Kubelet creates routes for each node to allow the containers on that node to communicate with all other instances in the cluster. Finally, an entry is added to the project's global metadata indicating which CIDR range the cluster is using.
 
       Args:
         request: (CreateClusterRequest) input message
@@ -1397,15 +1346,7 @@ which CIDR range the cluster is using.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the cluster, including the Kubernetes endpoint and all worker.
-nodes.
-
-Firewalls and routes that were configured during cluster creation
-are also deleted.
-
-Other Google Compute Engine resources that might be in use by the cluster,
-such as load balancer resources, are not deleted if they weren't present
-when the cluster was initially created.
+      r"""Deletes the cluster, including the Kubernetes endpoint and all worker nodes. Firewalls and routes that were configured during cluster creation are also deleted. Other Google Compute Engine resources that might be in use by the cluster, such as load balancer resources, are not deleted if they weren't present when the cluster was initially created.
 
       Args:
         request: (ContainerProjectsZonesClustersDeleteRequest) input message
@@ -1483,8 +1424,7 @@ when the cluster was initially created.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all clusters owned by a project in either the specified zone or all.
-zones.
+      r"""Lists all clusters owned by a project in either the specified zone or all zones.
 
       Args:
         request: (ContainerProjectsZonesClustersListRequest) input message
@@ -1510,10 +1450,7 @@ zones.
     )
 
     def Locations(self, request, global_params=None):
-      r"""Sets the locations for a specific cluster.
-Deprecated. Use
-[projects.locations.clusters.update](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters/update)
-instead.
+      r"""Sets the locations for a specific cluster. Deprecated. Use [projects.locations.clusters.update](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters/update) instead.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -1669,9 +1606,7 @@ instead.
     )
 
     def SetMasterAuth(self, request, global_params=None):
-      r"""Sets master auth materials. Currently supports changing the admin password.
-or a specific cluster, either via password generation or explicitly setting
-the password.
+      r"""Sets master auth materials. Currently supports changing the admin password or a specific cluster, either via password generation or explicitly setting the password.
 
       Args:
         request: (SetMasterAuthRequest) input message

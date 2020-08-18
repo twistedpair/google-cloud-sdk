@@ -148,8 +148,6 @@ apis:
       discovery_doc: cloudasset_v1p4alpha1.json
     v1p4beta1:
       discovery_doc: cloudasset_v1p4beta1.json
-    v1p5alpha1:
-      discovery_doc: cloudasset_v1p5alpha1.json
     v1p5beta1:
       discovery_doc: cloudasset_v1p5beta1.json
   cloudbilling:
@@ -215,7 +213,6 @@ apis:
   cloudidentity:
     v1alpha1:
       discovery_doc: cloudidentity_v1alpha1.json
-      resources:
     v1beta1:
       discovery_doc: cloudidentity_v1beta1.json
       default: true

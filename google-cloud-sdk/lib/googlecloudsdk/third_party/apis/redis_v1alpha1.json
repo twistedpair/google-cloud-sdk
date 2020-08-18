@@ -374,6 +374,227 @@
             "DIRECT_PEERING",
             "PRIVATE_SERVICE_ACCESS"
           ]
+        },
+        "authEnabled": {
+          "description": "Optional. Indicates whether OSS Redis AUTH is enabled for the instance. If set to \"true\" AUTH will be enabled on the instance. Default value is \"false\" meaning AUTH is disabled.",
+          "type": "boolean"
+        },
+        "tlsMode": {
+          "description": "The TLS mode of Redis instance. If not provided, default one will be used. Current default: DISABLED.",
+          "enumDescriptions": [
+            "Not set.",
+            "TLS is disabled for instance.",
+            "Basic TLS mode with server authentication"
+          ],
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "TLS is disabled for instance.",
+            "Basic TLS mode with server authentication"
+          ],
+          "enum": [
+            "TLS_MODE_UNSPECIFIED",
+            "DISABLED",
+            "BASIC_TLS"
+          ]
+        },
+        "serverCaCerts": {
+          "description": "Output only. List of server CA certificates for the instance. The visibility of this data will be controlled by a GetInstanceRequest.view field once CCFE support partial view of GetInstance. https:\/\/google.aip.dev\/157.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "TlsCertificate"
+          }
+        }
+      }
+    },
+    "TlsCertificate": {
+      "id": "TlsCertificate",
+      "description": "TlsCertificate Resource",
+      "type": "object",
+      "properties": {
+        "serialNumber": {
+          "description": "Serial number, as extracted from the certificate.",
+          "type": "string"
+        },
+        "cert": {
+          "description": "PEM representation.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the certificate was created in [RFC 3339](https:\/\/tools.ietf.org\/html\/rfc3339) format, for example `2020-05-18T00:00:00.094Z`.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "expireTime": {
+          "description": "Output only. The time when the certificate expires in [RFC 3339](https:\/\/tools.ietf.org\/html\/rfc3339) format, for example `2020-05-18T00:00:00.094Z`.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "sha1Fingerprint": {
+          "description": "Sha1 Fingerprint of the certificate.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Status of current TLS Cert",
+          "enumDescriptions": [
+            "Not set.",
+            "Current certificate is active",
+            "certificate is just phased out",
+            "new certificate to rotate to."
+          ],
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "Current certificate is active",
+            "certificate is just phased out",
+            "new certificate to rotate to."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "PHASED_OUT",
+            "NEW_TO_ROTATE"
+          ]
+        }
+      }
+    },
+    "InstanceAuthString": {
+      "id": "InstanceAuthString",
+      "description": "Instance AUTH string details.",
+      "type": "object",
+      "properties": {
+        "authString": {
+          "description": "AUTH string set on the instance.",
+          "type": "string"
+        }
+      }
+    },
+    "ReportInstanceHealthResponse": {
+      "id": "ReportInstanceHealthResponse",
+      "description": "Response for ReportInstanceHealth.",
+      "type": "object",
+      "properties": {
+        "overallState": {
+          "description": "Health state of overall health of this instance. Such as unhealthy\/warning\/healthy",
+          "enumDescriptions": [
+            "Invalid",
+            "Unknown. May indicate exceptions.",
+            "Healthy",
+            "Warning",
+            "Unhealthy"
+          ],
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid",
+            "Unknown. May indicate exceptions.",
+            "Healthy",
+            "Warning",
+            "Unhealthy"
+          ],
+          "enum": [
+            "HEALTH_STATE_UNSPECIFIED",
+            "UNKNOWN",
+            "HEALTHY",
+            "WARNING",
+            "UNHEALTHY"
+          ]
+        },
+        "categories": {
+          "description": "Associated categories, such as CPU\/Memory",
+          "type": "array",
+          "items": {
+            "$ref": "CategoryHealth"
+          }
+        }
+      }
+    },
+    "CategoryHealth": {
+      "id": "CategoryHealth",
+      "description": "Category health, such as CPU\/memory",
+      "type": "object",
+      "properties": {
+        "category": {
+          "description": "Name of this category",
+          "type": "string"
+        },
+        "state": {
+          "description": "Health state, such as unhealthy\/warning\/healthy",
+          "enumDescriptions": [
+            "Invalid",
+            "Unknown. May indicate exceptions.",
+            "Healthy",
+            "Warning",
+            "Unhealthy"
+          ],
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid",
+            "Unknown. May indicate exceptions.",
+            "Healthy",
+            "Warning",
+            "Unhealthy"
+          ],
+          "enum": [
+            "HEALTH_STATE_UNSPECIFIED",
+            "UNKNOWN",
+            "HEALTHY",
+            "WARNING",
+            "UNHEALTHY"
+          ]
+        },
+        "metrics": {
+          "description": "Associated metrics",
+          "type": "array",
+          "items": {
+            "$ref": "MetricHealth"
+          }
+        }
+      }
+    },
+    "MetricHealth": {
+      "id": "MetricHealth",
+      "description": "Metric health, such as used_memory_ratio, redis_server_cpu_usage",
+      "type": "object",
+      "properties": {
+        "metric": {
+          "description": "Name of this metric",
+          "type": "string"
+        },
+        "state": {
+          "description": "Health state, such as unhealthy\/warning\/healthy",
+          "enumDescriptions": [
+            "Invalid",
+            "Unknown. May indicate exceptions.",
+            "Healthy",
+            "Warning",
+            "Unhealthy"
+          ],
+          "type": "string",
+          "enumDescriptions": [
+            "Invalid",
+            "Unknown. May indicate exceptions.",
+            "Healthy",
+            "Warning",
+            "Unhealthy"
+          ],
+          "enum": [
+            "HEALTH_STATE_UNSPECIFIED",
+            "UNKNOWN",
+            "HEALTHY",
+            "WARNING",
+            "UNHEALTHY"
+          ]
+        },
+        "reason": {
+          "description": "Reason if the status is not healthy",
+          "type": "string"
+        },
+        "suggestion": {
+          "description": "Actional suggestion if the status is not healthy",
+          "type": "string"
         }
       }
     },
@@ -1083,6 +1304,79 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Gets the details of a specific Redis instance."
+                },
+                "getAuthString": {
+                  "id": "redis.projects.locations.instances.getAuthString",
+                  "path": "v1alpha1/{+name}/authString",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/authString",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Redis instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "InstanceAuthString"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the AUTH string for a Redis instance. If AUTH is not enabled for the instance the response will be empty. See go\/cloud-redis-auth-design for more details. This information is not included in the details returned to GetInstance."
+                },
+                "reportInstanceHealth": {
+                  "id": "redis.projects.locations.instances.reportInstanceHealth",
+                  "path": "v1alpha1/{+instance}:reportInstanceHealth",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:reportInstanceHealth",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "instance": {
+                      "description": "Required. Name of Redis instance for which health report will be retrieved",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "window": {
+                      "description": "Optional. Window associated with the health report. Default: ONE_HOUR",
+                      "location": "query",
+                      "type": "string",
+                      "enumDescriptions": [
+                        "Invalid window",
+                        "1 hour",
+                        "1 day",
+                        "1 week"
+                      ],
+                      "enum": [
+                        "HEALTH_WINDOW_UNSPECIFIED",
+                        "ONE_HOUR",
+                        "ONE_DAY",
+                        "ONE_WEEK"
+                      ]
+                    },
+                    "reportTime": {
+                      "description": "Optional. Timestamp for the health report. Default: latest",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-datetime"
+                    }
+                  },
+                  "parameterOrder": [
+                    "instance"
+                  ],
+                  "response": {
+                    "$ref": "ReportInstanceHealthResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets health report for an instance."
                 },
                 "create": {
                   "id": "redis.projects.locations.instances.create",

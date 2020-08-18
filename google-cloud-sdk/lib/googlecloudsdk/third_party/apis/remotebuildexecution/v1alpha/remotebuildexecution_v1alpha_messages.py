@@ -16,12 +16,12 @@ package = 'remotebuildexecution'
 
 class BuildBazelRemoteExecutionV2Action(_messages.Message):
   r"""An `Action` captures all the information about an execution which is
-  required to reproduce it.  `Action`s are the core component of the
+  required to reproduce it. `Action`s are the core component of the
   [Execution] service. A single `Action` represents a repeatable action that
   can be performed by the execution service. `Action`s can be succinctly
   identified by the digest of their wire format encoding and, once an `Action`
   has been executed, will be cached in the action cache. Future requests can
-  then use the cached result rather than needing to run afresh.  When a server
+  then use the cached result rather than needing to run afresh. When a server
   completes execution of an Action, it MAY choose to cache the result in the
   ActionCache unless `do_not_cache` is `true`. Clients SHOULD expect the
   server to do so. By default, future calls to Execute the same `Action` will
@@ -44,7 +44,7 @@ class BuildBazelRemoteExecutionV2Action(_messages.Message):
       order to ensure that equivalent `Action`s always hash to the same value,
       the supported node properties MUST be lexicographically sorted by name.
       Sorting of strings is done by code point, equivalently, by the UTF-8
-      bytes.  The interpretation of these properties is server-dependent. If a
+      bytes. The interpretation of these properties is server-dependent. If a
       property is not recognized by the server, the server will return an
       `INVALID_ARGUMENT` error.
     timeout: A timeout after which the execution should be killed. If the
@@ -52,7 +52,7 @@ class BuildBazelRemoteExecutionV2Action(_messages.Message):
       should continue as long as the server will let it. The server SHOULD
       impose a timeout if the client does not specify one, however, if the
       client does specify a timeout that is longer than the server's maximum
-      timeout, the server MUST reject the request.  The timeout is a part of
+      timeout, the server MUST reject the request. The timeout is a part of
       the Action message, and therefore two `Actions` with different timeouts
       are different, even if they are otherwise identical. This is because, if
       they were not, running an `Action` with a lower timeout than is required
@@ -83,24 +83,20 @@ class BuildBazelRemoteExecutionV2ActionResult(_messages.Message):
       completed, a single entry will be present in the output list, which will
       contain the digest of a Tree message containing the directory tree, and
       the path equal exactly to the corresponding Action output_directories
-      member.  As an example, suppose the Action had an output directory
+      member. As an example, suppose the Action had an output directory
       `a/b/dir` and the execution produced the following contents in
       `a/b/dir`: a file named `bar` and a directory named `foo` with an
       executable file named `baz`. Then, output_directory will contain (hashes
-      shortened for readability):  ```json // OutputDirectory proto: {   path:
-      "a/b/dir"   tree_digest: {     hash: "4a73bc9d03...",     size: 55   } }
-      // Tree proto with hash "4a73bc9d03..." and size 55: {   root: {
-      files: [       {         name: "bar",         digest: {           hash:
-      "4a73bc9d03...",           size: 65534         }       }     ],
-      directories: [       {         name: "foo",         digest: {
-      hash: "4cf2eda940...",           size: 43         }       }     ]   }
-      children : {     // (Directory proto with hash "4cf2eda940..." and size
-      43)     files: [       {         name: "baz",         digest: {
-      hash: "b2c941073e...",           size: 1294,         },
-      is_executable: true       }     ]   } } ``` If an output of the same
-      name as listed in `output_files` of the Command was found in
-      `output_directories`, but was not a directory, the server will return a
-      FAILED_PRECONDITION.
+      shortened for readability): ```json // OutputDirectory proto: { path:
+      "a/b/dir" tree_digest: { hash: "4a73bc9d03...", size: 55 } } // Tree
+      proto with hash "4a73bc9d03..." and size 55: { root: { files: [ { name:
+      "bar", digest: { hash: "4a73bc9d03...", size: 65534 } } ], directories:
+      [ { name: "foo", digest: { hash: "4cf2eda940...", size: 43 } } ] }
+      children : { // (Directory proto with hash "4cf2eda940..." and size 43)
+      files: [ { name: "baz", digest: { hash: "b2c941073e...", size: 1294, },
+      is_executable: true } ] } } ``` If an output of the same name as listed
+      in `output_files` of the Command was found in `output_directories`, but
+      was not a directory, the server will return a FAILED_PRECONDITION.
     outputDirectorySymlinks: The output directories of the action that are
       symbolic links to other directories. Those may be links to other output
       directories, or input directories, or even absolute paths outside of the
@@ -109,12 +105,12 @@ class BuildBazelRemoteExecutionV2ActionResult(_messages.Message):
       in the `output_directories` field of the Action, if the directory
       existed after the action completed, a single entry will be present
       either in this field, or in the `output_directories` field, if the
-      directory was not a symbolic link.  If an output of the same name was
+      directory was not a symbolic link. If an output of the same name was
       found, but was a symbolic link to a file instead of a directory, the
       server will return a FAILED_PRECONDITION. If the action does not produce
       the requested output, then that output will be omitted from the list.
       The server is free to arrange the output list as desired; clients MUST
-      NOT assume that the output list is sorted.  DEPRECATED as of v2.1.
+      NOT assume that the output list is sorted. DEPRECATED as of v2.1.
       Servers that wish to be compatible with v2.0 API should still populate
       this field in addition to `output_symlinks`.
     outputFileSymlinks: The output files of the action that are symbolic links
@@ -124,13 +120,13 @@ class BuildBazelRemoteExecutionV2ActionResult(_messages.Message):
       file requested in the `output_files` or `output_paths` field of the
       Action, if the corresponding file existed after the action completed, a
       single entry will be present either in this field, or in the
-      `output_files` field, if the file was not a symbolic link.  If an output
+      `output_files` field, if the file was not a symbolic link. If an output
       symbolic link of the same name as listed in `output_files` of the
       Command was found, but its target type was not a regular file, the
       server will return a FAILED_PRECONDITION. If the action does not produce
       the requested output, then that output will be omitted from the list.
       The server is free to arrange the output list as desired; clients MUST
-      NOT assume that the output list is sorted.  DEPRECATED as of v2.1.
+      NOT assume that the output list is sorted. DEPRECATED as of v2.1.
       Servers that wish to be compatible with v2.0 API should still populate
       this field in addition to `output_symlinks`.
     outputFiles: The output files of the action. For each output file
@@ -138,7 +134,7 @@ class BuildBazelRemoteExecutionV2ActionResult(_messages.Message):
       if the corresponding file existed after the action completed, a single
       entry will be present either in this field, or the
       `output_file_symlinks` field if the file was a symbolic link to another
-      file (`output_symlinks` field after v2.1).  If an output listed in
+      file (`output_symlinks` field after v2.1). If an output listed in
       `output_files` was found, but was a directory rather than a regular
       file, the server will return a FAILED_PRECONDITION. If the action does
       not produce the requested output, then that output will be omitted from
@@ -152,7 +148,7 @@ class BuildBazelRemoteExecutionV2ActionResult(_messages.Message):
       directory, if the server supports SymlinkAbsolutePathStrategy.ALLOWED. A
       single entry for each output requested in `output_paths` field of the
       Action, if the corresponding path existed after the action completed and
-      was a symbolic link.  If the action does not produce a requested output,
+      was a symbolic link. If the action does not produce a requested output,
       then that output will be omitted from the list. The server is free to
       arrange the output list as desired; clients MUST NOT assume that the
       output list is sorted.
@@ -187,7 +183,7 @@ class BuildBazelRemoteExecutionV2ActionResult(_messages.Message):
 
 class BuildBazelRemoteExecutionV2Command(_messages.Message):
   r"""A `Command` is the actual command executed by a worker running an Action
-  and specifications of its environment.  Except as otherwise required, the
+  and specifications of its environment. Except as otherwise required, the
   environment (such as which system libraries or binaries are available, and
   what filesystems are mounted where) is defined by and specific to the
   implementation of the remote execution API.
@@ -200,7 +196,7 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
     environmentVariables: The environment variables to set when running the
       program. The worker may provide its own default environment variables;
       these defaults can be overridden using this field. Additional variables
-      can also be specified.  In order to ensure that equivalent Commands
+      can also be specified. In order to ensure that equivalent Commands
       always hash to the same value, the environment variables MUST be
       lexicographically sorted by name. Sorting of strings is done by code
       point, equivalently, by the UTF-8 bytes.
@@ -209,38 +205,38 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
       returned (an entire directory structure will be returned as a Tree
       message digest, see OutputDirectory), as well as files listed in
       `output_files`. Other files or directories that may be created during
-      command execution are discarded.  The paths are relative to the working
+      command execution are discarded. The paths are relative to the working
       directory of the action execution. The paths are specified using a
       single forward slash (`/`) as a path separator, even if the execution
       platform natively uses a different separator. The path MUST NOT include
       a trailing slash, nor a leading slash, being a relative path. The
       special value of empty string is allowed, although not recommended, and
       can be used to capture the entire working directory tree, including
-      inputs.  In order to ensure consistent hashing of the same Action, the
+      inputs. In order to ensure consistent hashing of the same Action, the
       output paths MUST be sorted lexicographically by code point (or,
-      equivalently, by UTF-8 bytes).  An output directory cannot be duplicated
+      equivalently, by UTF-8 bytes). An output directory cannot be duplicated
       or have the same path as any of the listed output files. An output
       directory is allowed to be a parent of another output directory.
       Directories leading up to the output directories (but not the output
       directories themselves) are created by the worker prior to execution,
-      even if they are not explicitly part of the input root.  DEPRECATED
-      since 2.1: Use `output_paths` instead.
+      even if they are not explicitly part of the input root. DEPRECATED since
+      2.1: Use `output_paths` instead.
     outputFiles: A list of the output files that the client expects to
       retrieve from the action. Only the listed files, as well as directories
       listed in `output_directories`, will be returned to the client as
       output. Other files or directories that may be created during command
-      execution are discarded.  The paths are relative to the working
-      directory of the action execution. The paths are specified using a
-      single forward slash (`/`) as a path separator, even if the execution
-      platform natively uses a different separator. The path MUST NOT include
-      a trailing slash, nor a leading slash, being a relative path.  In order
-      to ensure consistent hashing of the same Action, the output paths MUST
-      be sorted lexicographically by code point (or, equivalently, by UTF-8
-      bytes).  An output file cannot be duplicated, be a parent of another
-      output file, or have the same path as any of the listed output
-      directories.  Directories leading up to the output files are created by
-      the worker prior to execution, even if they are not explicitly part of
-      the input root.  DEPRECATED since v2.1: Use `output_paths` instead.
+      execution are discarded. The paths are relative to the working directory
+      of the action execution. The paths are specified using a single forward
+      slash (`/`) as a path separator, even if the execution platform natively
+      uses a different separator. The path MUST NOT include a trailing slash,
+      nor a leading slash, being a relative path. In order to ensure
+      consistent hashing of the same Action, the output paths MUST be sorted
+      lexicographically by code point (or, equivalently, by UTF-8 bytes). An
+      output file cannot be duplicated, be a parent of another output file, or
+      have the same path as any of the listed output directories. Directories
+      leading up to the output files are created by the worker prior to
+      execution, even if they are not explicitly part of the input root.
+      DEPRECATED since v2.1: Use `output_paths` instead.
     outputPaths: A list of the output paths that the client expects to
       retrieve from the action. Only the listed paths will be returned to the
       client as output. The type of the output (file or directory) is not
@@ -249,16 +245,16 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
       typed field. If the path is a directory, the entire directory structure
       will be returned as a Tree message digest, see OutputDirectory) Other
       files or directories that may be created during command execution are
-      discarded.  The paths are relative to the working directory of the
-      action execution. The paths are specified using a single forward slash
-      (`/`) as a path separator, even if the execution platform natively uses
-      a different separator. The path MUST NOT include a trailing slash, nor a
-      leading slash, being a relative path.  In order to ensure consistent
+      discarded. The paths are relative to the working directory of the action
+      execution. The paths are specified using a single forward slash (`/`) as
+      a path separator, even if the execution platform natively uses a
+      different separator. The path MUST NOT include a trailing slash, nor a
+      leading slash, being a relative path. In order to ensure consistent
       hashing of the same Action, the output paths MUST be deduplicated and
       sorted lexicographically by code point (or, equivalently, by UTF-8
-      bytes).  Directories leading up to the output paths are created by the
+      bytes). Directories leading up to the output paths are created by the
       worker prior to execution, even if they are not explicitly part of the
-      input root.  New in v2.1: this field supersedes the DEPRECATED
+      input root. New in v2.1: this field supersedes the DEPRECATED
       `output_files` and `output_directories` fields. If `output_paths` is
       used, `output_files` and `output_directories` will be ignored!
     platform: The platform requirements for the execution environment. The
@@ -295,10 +291,10 @@ class BuildBazelRemoteExecutionV2CommandEnvironmentVariable(_messages.Message):
 
 class BuildBazelRemoteExecutionV2Digest(_messages.Message):
   r"""A content digest. A digest for a given blob consists of the size of the
-  blob and its hash. The hash algorithm to use is defined by the server.  The
+  blob and its hash. The hash algorithm to use is defined by the server. The
   size is considered to be an integral part of the digest and cannot be
   separated. That is, even if the `hash` field is correctly specified but
-  `size_bytes` is not, the server MUST reject the request.  The reason for
+  `size_bytes` is not, the server MUST reject the request. The reason for
   including the size in the digest is as follows: in a great many cases, the
   server needs to know the size of the blob it is about to work with prior to
   starting an operation with it, such as flattening Merkle tree structures or
@@ -308,11 +304,11 @@ class BuildBazelRemoteExecutionV2Digest(_messages.Message):
   storing the size along with the digest in every message where digests are
   embedded). This does mean that the API leaks some implementation details of
   (what we consider to be) a reasonable server implementation, but we consider
-  this to be a worthwhile tradeoff.  When a `Digest` is used to refer to a
+  this to be a worthwhile tradeoff. When a `Digest` is used to refer to a
   proto message, it always refers to the message in binary encoded form. To
   ensure consistent hashing, clients and servers MUST ensure that they
   serialize messages according to the following rules, even if there are
-  alternate valid encodings for the same message:  * Fields are serialized in
+  alternate valid encodings for the same message: * Fields are serialized in
   tag order. * There are no unknown fields. * There are no duplicate fields. *
   Fields are serialized according to the default semantics for their type.
   Most protocol buffer implementations will always follow these rules when
@@ -334,32 +330,29 @@ class BuildBazelRemoteExecutionV2Directory(_messages.Message):
   zero or more children FileNodes, DirectoryNodes and SymlinkNodes. Each
   `Node` contains its name in the directory, either the digest of its content
   (either a file blob or a `Directory` proto) or a symlink target, as well as
-  possibly some metadata about the file or directory.  In order to ensure that
+  possibly some metadata about the file or directory. In order to ensure that
   two equivalent directory trees hash to the same value, the following
-  restrictions MUST be obeyed when constructing a a `Directory`:  * Every
-  child in the directory must have a path of exactly one segment.   Multiple
-  levels of directory hierarchy may not be collapsed. * Each child in the
-  directory must have a unique path segment (file name).   Note that while the
-  API itself is case-sensitive, the environment where   the Action is executed
-  may or may not be case-sensitive. That is, it is   legal to call the API
-  with a Directory that has both "Foo" and "foo" as   children, but the Action
-  may be rejected by the remote system upon   execution. * The files,
-  directories and symlinks in the directory must each be sorted   in
-  lexicographical order by path. The path strings must be sorted by code
-  point, equivalently, by UTF-8 bytes. * The NodeProperties of files,
-  directories, and symlinks must be sorted in lexicographical order by
-  property name.  A `Directory` that obeys the restrictions is said to be in
-  canonical form.  As an example, the following could be used for a file named
-  `bar` and a directory named `foo` with an executable file named `baz`
-  (hashes shortened for readability):  ```json // (Directory proto) {   files:
-  [     {       name: "bar",       digest: {         hash: "4a73bc9d03...",
-  size: 65534       },       node_properties: [         {           "name":
-  "MTime",           "value": "2017-01-15T01:30:15.01Z"         }       ]
-  }   ],   directories: [     {       name: "foo",       digest: {
-  hash: "4cf2eda940...",         size: 43       }     }   ] }  // (Directory
-  proto with hash "4cf2eda940..." and size 43) {   files: [     {       name:
-  "baz",       digest: {         hash: "b2c941073e...",         size: 1294,
-  },       is_executable: true     }   ] } ```
+  restrictions MUST be obeyed when constructing a a `Directory`: * Every child
+  in the directory must have a path of exactly one segment. Multiple levels of
+  directory hierarchy may not be collapsed. * Each child in the directory must
+  have a unique path segment (file name). Note that while the API itself is
+  case-sensitive, the environment where the Action is executed may or may not
+  be case-sensitive. That is, it is legal to call the API with a Directory
+  that has both "Foo" and "foo" as children, but the Action may be rejected by
+  the remote system upon execution. * The files, directories and symlinks in
+  the directory must each be sorted in lexicographical order by path. The path
+  strings must be sorted by code point, equivalently, by UTF-8 bytes. * The
+  NodeProperties of files, directories, and symlinks must be sorted in
+  lexicographical order by property name. A `Directory` that obeys the
+  restrictions is said to be in canonical form. As an example, the following
+  could be used for a file named `bar` and a directory named `foo` with an
+  executable file named `baz` (hashes shortened for readability): ```json //
+  (Directory proto) { files: [ { name: "bar", digest: { hash: "4a73bc9d03...",
+  size: 65534 }, node_properties: [ { "name": "MTime", "value":
+  "2017-01-15T01:30:15.01Z" } ] } ], directories: [ { name: "foo", digest: {
+  hash: "4cf2eda940...", size: 43 } } ] } // (Directory proto with hash
+  "4cf2eda940..." and size 43) { files: [ { name: "baz", digest: { hash:
+  "b2c941073e...", size: 1294, }, is_executable: true } ] } ```
 
   Fields:
     directories: The subdirectories in the directory.
@@ -457,7 +450,7 @@ class BuildBazelRemoteExecutionV2ExecuteResponse(_messages.Message):
       action did not finish execution. For example, if the operation times out
       during execution, the status will have a `DEADLINE_EXCEEDED` code.
       Servers MUST use this field for errors in execution, rather than the
-      error field on the `Operation` object.  If the status code is other than
+      error field on the `Operation` object. If the status code is other than
       `OK`, then the result MUST NOT be cached. For an error status, the
       `result` field is optional; the server may populate the output-,
       stdout-, and stderr-related fields if it has any information available,
@@ -626,7 +619,7 @@ class BuildBazelRemoteExecutionV2OutputFile(_messages.Message):
 
 class BuildBazelRemoteExecutionV2OutputSymlink(_messages.Message):
   r"""An `OutputSymlink` is similar to a Symlink, but it is used as an output
-  in an `ActionResult`.  `OutputSymlink` is binary-compatible with
+  in an `ActionResult`. `OutputSymlink` is binary-compatible with
   `SymlinkNode`.
 
   Fields:
@@ -670,12 +663,12 @@ class BuildBazelRemoteExecutionV2PlatformProperty(_messages.Message):
   specifying the property `name`s that it accepts. If an unknown `name` is
   provided in the requirements for an Action, the server SHOULD reject the
   execution request. If permitted by the server, the same `name` may occur
-  multiple times.  The server is also responsible for specifying the
+  multiple times. The server is also responsible for specifying the
   interpretation of property `value`s. For instance, a property describing how
   much RAM must be available may be interpreted as allowing a worker with 16GB
   to fulfill a request for 8GB, while a property describing the OS environment
   on which the action must be performed may require an exact match with the
-  worker's OS.  The server MAY use the `value` of one or more properties to
+  worker's OS. The server MAY use the `value` of one or more properties to
   determine how it sets up the execution environment, such as by making
   specific system files available to the worker.
 
@@ -692,7 +685,7 @@ class BuildBazelRemoteExecutionV2RequestMetadata(_messages.Message):
   r"""An optional Metadata to attach to any RPC request to tell the server
   about an external context of the request. The server may use this for
   logging or other purposes. To use it, the client attaches the header to the
-  call using the canonical proto serialization:  * name:
+  call using the canonical proto serialization: * name:
   `build.bazel.remote.execution.v2.requestmetadata-bin` * contents: the base64
   encoded binary `RequestMetadata` message. Note: the gRPC library serializes
   binary headers encoded in base 64 by default
@@ -1063,10 +1056,10 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
     containerImageSources: Which container image sources are allowed.
       Currently only RBE-supported registry (gcr.io) is allowed. One can allow
       all repositories under a project or one specific repository only. E.g.
-      container_image_sources {   policy: RESTRICTED   allowed_values: [
-      "gcr.io/project-foo",     "gcr.io/project-bar/repo-baz",   ] }  will
-      allow any repositories under "gcr.io/project-foo" plus the repository
-      "gcr.io/project-bar/repo-baz".  Default (UNSPECIFIED) is equivalent to
+      container_image_sources { policy: RESTRICTED allowed_values: [
+      "gcr.io/project-foo", "gcr.io/project-bar/repo-baz", ] } will allow any
+      repositories under "gcr.io/project-foo" plus the repository
+      "gcr.io/project-bar/repo-baz". Default (UNSPECIFIED) is equivalent to
       any source is allowed.
     dockerAddCapabilities: Whether dockerAddCapabilities can be used or what
       capabilities are allowed.
@@ -1127,8 +1120,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature(_messag
         FORBIDDEN, unless otherwise documented on a specific Feature.
       ALLOWED: Feature is explicitly allowed.
       FORBIDDEN: Feature is forbidden. Requests attempting to leverage it will
-        get an FailedPrecondition error, with a message like:   "Feature
-        forbidden by FeaturePolicy: Feature <X> on instance <Y>"
+        get an FailedPrecondition error, with a message like: "Feature
+        forbidden by FeaturePolicy: Feature on instance "
       RESTRICTED: Only the values specified in the `allowed_values` are
         allowed.
     """
@@ -1246,13 +1239,13 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsRequest(_mess
       insensitive. The comparison operator must be either `:`, `=`, `!=`, `>`,
       `>=`, `<=` or `<`. The `:` operator can be used with string fields to
       match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test  whether a key has
-      been defined.  You can also filter on nested fields.  To filter on
-      multiple expressions, you can separate expression using `AND` and `OR`
-      operators, using parentheses to specify precedence. If neither operator
-      is specified, `AND` is assumed.  Examples:  Include only pools with more
-      than 100 reserved workers: `(worker_count > 100) (worker_config.reserved
-      = true)`  Include only pools with a certain label or machines of the
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. You can also filter on nested fields. To filter on multiple
+      expressions, you can separate expression using `AND` and `OR` operators,
+      using parentheses to specify precedence. If neither operator is
+      specified, `AND` is assumed. Examples: Include only pools with more than
+      100 reserved workers: `(worker_count > 100) (worker_config.reserved =
+      true)` Include only pools with a certain label or machines of the
       n1-standard family: `worker_config.labels.key1 : * OR
       worker_config.machine_type: n1-standard`
     parent: Resource name of the instance. Format:
@@ -1272,6 +1265,18 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsResponse(_mes
   """
 
   workerPools = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 1, repeated=True)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaSoleTenancyConfig(_messages.Message):
+  r"""SoleTenancyConfig specifies information required to host a pool on STNs.
+
+  Fields:
+    nodeType: The sole-tenant node type to host the pool's workers on.
+    nodesZone: Zone in which STNs are reserved.
+  """
+
+  nodeType = _messages.StringField(1)
+  nodesZone = _messages.StringField(2)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateInstanceRequest(_messages.Message):
@@ -1317,8 +1322,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest(_mes
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Message):
-  r"""Defines the configuration to be used for a creating workers in the
-  worker pool.
+  r"""Defines the configuration to be used for creating workers in the worker
+  pool.
 
   Messages:
     LabelsValue: Labels associated with the workers. Label keys and values can
@@ -1348,15 +1353,15 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
     minCpuPlatform: Minimum CPU platform to use when creating the worker. See
       [CPU Platforms](https://cloud.google.com/compute/docs/cpu-platforms).
     networkAccess: Determines the type of network access granted to workers.
-      Possible values:  - "public": Workers can connect to the public
-      internet. - "private": Workers can only connect to Google APIs and
-      services. - "restricted-private": Workers can only connect to Google
-      APIs that are   reachable through `restricted.googleapis.com`
-      (`199.36.153.4/30`).
+      Possible values: - "public": Workers can connect to the public internet.
+      - "private": Workers can only connect to Google APIs and services. -
+      "restricted-private": Workers can only connect to Google APIs that are
+      reachable through `restricted.googleapis.com` (`199.36.153.4/30`).
     reserved: Determines whether the worker is reserved (equivalent to a
       Compute Engine on-demand VM and therefore won't be preempted). See
       [Preemptible VMs](https://cloud.google.com/preemptible-vms/) for more
       details.
+    soleTenancy: Sole-tenant node information for pools hosted on STNs.
     vmImage: The name of the image used by each VM.
   """
 
@@ -1397,7 +1402,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
   minCpuPlatform = _messages.StringField(7)
   networkAccess = _messages.StringField(8)
   reserved = _messages.BooleanField(9)
-  vmImage = _messages.StringField(10)
+  soleTenancy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSoleTenancyConfig', 10)
+  vmImage = _messages.StringField(11)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):
@@ -1458,9 +1464,9 @@ class GoogleDevtoolsRemoteworkersV1test2AdminTemp(_messages.Message):
   "Temp" because we do not yet know the best way to represent admin tasks;
   it's possible that this will be entirely replaced in later versions of this
   API. If this message proves to be sufficient, it will be renamed in the
-  alpha or beta release of this API.  This message (suitably marshalled into a
+  alpha or beta release of this API. This message (suitably marshalled into a
   protobuf.Any) can be used as the inline_assignment field in a lease; the
-  lease assignment field should simply be `"admin"` in these cases.  This
+  lease assignment field should simply be `"admin"` in these cases. This
   message is heavily based on Swarming administration tasks from the LUCI
   project (http://github.com/luci/luci-py/appengine/swarming).
 
@@ -1519,9 +1525,9 @@ class GoogleDevtoolsRemoteworkersV1test2CommandOutputs(_messages.Message):
       a successful (zero) is unlikely to be correct unless the status code is
       OK.
     outputs: The output files. The blob referenced by the digest should
-      contain one of the following (implementation-dependent):    * A
-      marshalled DirectoryMetadata of the returned filesystem    * A LUCI-
-      style .isolated file
+      contain one of the following (implementation-dependent): * A marshalled
+      DirectoryMetadata of the returned filesystem * A LUCI-style .isolated
+      file
   """
 
   exitCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1564,9 +1570,9 @@ class GoogleDevtoolsRemoteworkersV1test2CommandResult(_messages.Message):
       *not* considered an error for the bot to provide the server with a field
       that it doesn't know about.
     outputs: The output files. The blob referenced by the digest should
-      contain one of the following (implementation-dependent):    * A
-      marshalled DirectoryMetadata of the returned filesystem    * A LUCI-
-      style .isolated file
+      contain one of the following (implementation-dependent): * A marshalled
+      DirectoryMetadata of the returned filesystem * A LUCI-style .isolated
+      file
     overhead: The amount of time *not* spent executing the command (ie
       uploading/downloading files).
     status: An overall status for the command. For example, if the command
@@ -1628,25 +1634,25 @@ class GoogleDevtoolsRemoteworkersV1test2CommandTaskInputs(_messages.Message):
   r"""Describes the inputs to a shell-style task.
 
   Fields:
-    arguments: The command itself to run (e.g., argv).  This field should be
+    arguments: The command itself to run (e.g., argv). This field should be
       passed directly to the underlying operating system, and so it must be
       sensible to that operating system. For example, on Windows, the first
       argument might be "C:\Windows\System32\ping.exe" - that is, using drive
       letters and backslashes. A command for a *nix system, on the other hand,
-      would use forward slashes.  All other fields in the RWAPI must
+      would use forward slashes. All other fields in the RWAPI must
       consistently use forward slashes, since those fields may be interpretted
       by both the service and the bot.
     environmentVariables: All environment variables required by the task.
     files: The input filesystem to be set up prior to the task beginning. The
       contents should be a repeated set of FileMetadata messages though other
       formats are allowed if better for the implementation (eg, a LUCI-style
-      .isolated file).  This field is repeated since implementations might
-      want to cache the metadata, in which case it may be useful to break up
+      .isolated file). This field is repeated since implementations might want
+      to cache the metadata, in which case it may be useful to break up
       portions of the filesystem that change frequently (eg, specific input
       files) from those that don't (eg, standard header files).
     inlineBlobs: Inline contents for blobs expected to be needed by the bot to
       execute the task. For example, contents of entries in `files` or blobs
-      that are indirectly referenced by an entry there.  The bot should check
+      that are indirectly referenced by an entry there. The bot should check
       against this list before downloading required task inputs to reduce the
       number of communications between itself and the remote CAS server.
     workingDirectory: Directory from which a command is executed. It is a
@@ -1729,9 +1735,9 @@ class GoogleDevtoolsRemoteworkersV1test2Digest(_messages.Message):
   service that can serve blobs of content, identified by a hash and size known
   as a "digest." The method by which these blobs may be retrieved is not
   specified here, but a model implementation is in the Remote Execution API's
-  "ContentAddressibleStorage" interface.  In the context of the RWAPI, a
-  Digest will virtually always refer to the contents of a file or a directory.
-  The latter is represented by the byte-encoded Directory message.
+  "ContentAddressibleStorage" interface. In the context of the RWAPI, a Digest
+  will virtually always refer to the contents of a file or a directory. The
+  latter is represented by the byte-encoded Directory message.
 
   Fields:
     hash: A string-encoded hash (eg "1a2b3c", not the byte array [0x1a, 0x2b,
@@ -1803,17 +1809,17 @@ class GoogleLongrunningOperation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1822,29 +1828,29 @@ class GoogleLongrunningOperation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1870,12 +1876,12 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1910,7 +1916,7 @@ class GoogleRpcStatus(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1919,7 +1925,7 @@ class GoogleRpcStatus(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -2053,13 +2059,13 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest(_messages.Mess
       insensitive. The comparison operator must be either `:`, `=`, `!=`, `>`,
       `>=`, `<=` or `<`. The `:` operator can be used with string fields to
       match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test  whether a key has
-      been defined.  You can also filter on nested fields.  To filter on
-      multiple expressions, you can separate expression using `AND` and `OR`
-      operators, using parentheses to specify precedence. If neither operator
-      is specified, `AND` is assumed.  Examples:  Include only pools with more
-      than 100 reserved workers: `(worker_count > 100) (worker_config.reserved
-      = true)`  Include only pools with a certain label or machines of the
+      operator. The `:*` comparison can be used to test whether a key has been
+      defined. You can also filter on nested fields. To filter on multiple
+      expressions, you can separate expression using `AND` and `OR` operators,
+      using parentheses to specify precedence. If neither operator is
+      specified, `AND` is assumed. Examples: Include only pools with more than
+      100 reserved workers: `(worker_count > 100) (worker_config.reserved =
+      true)` Include only pools with a certain label or machines of the
       n1-standard family: `worker_config.labels.key1 : * OR
       worker_config.machine_type: n1-standard`
     parent: Resource name of the instance. Format:

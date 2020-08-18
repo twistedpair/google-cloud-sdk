@@ -57,10 +57,7 @@ class AccessapprovalV1(base_api.BaseApiClient):
           }
 
     def Approve(self, request, global_params=None):
-      r"""Approves a request and returns the updated ApprovalRequest.
-
-Returns NOT_FOUND if the request does not exist. Returns
-FAILED_PRECONDITION if the request exists but is not in a pending state.
+      r"""Approves a request and returns the updated ApprovalRequest. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
 
       Args:
         request: (AccessapprovalFoldersApprovalRequestsApproveRequest) input message
@@ -87,16 +84,7 @@ FAILED_PRECONDITION if the request exists but is not in a pending state.
     )
 
     def Dismiss(self, request, global_params=None):
-      r"""Dismisses a request. Returns the updated ApprovalRequest.
-
-NOTE: This does not deny access to the resource if another request has been
-made and approved. It is equivalent in effect to ignoring the request
-altogether.
-
-Returns NOT_FOUND if the request does not exist.
-
-Returns FAILED_PRECONDITION if the request exists but is not in a pending
-state.
+      r"""Dismisses a request. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It is equivalent in effect to ignoring the request altogether. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
 
       Args:
         request: (AccessapprovalFoldersApprovalRequestsDismissRequest) input message
@@ -150,9 +138,7 @@ state.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists approval requests associated with a project, folder, or organization.
-Approval requests can be filtered by state (pending, active, dismissed).
-The order is reverse chronological.
+      r"""Lists approval requests associated with a project, folder, or organization. Approval requests can be filtered by state (pending, active, dismissed). The order is reverse chronological.
 
       Args:
         request: (AccessapprovalFoldersApprovalRequestsListRequest) input message
@@ -189,12 +175,7 @@ The order is reverse chronological.
           }
 
     def DeleteAccessApprovalSettings(self, request, global_params=None):
-      r"""Deletes the settings associated with a project, folder, or organization.
-This will have the effect of disabling Access Approval for the project,
-folder, or organization, but only if all ancestors also have Access
-Approval disabled. If Access Approval is enabled at a higher level of the
-hierarchy, then Access Approval will still be enabled at this level as
-the settings are inherited.
+      r"""Deletes the settings associated with a project, folder, or organization. This will have the effect of disabling Access Approval for the project, folder, or organization, but only if all ancestors also have Access Approval disabled. If Access Approval is enabled at a higher level of the hierarchy, then Access Approval will still be enabled at this level as the settings are inherited.
 
       Args:
         request: (AccessapprovalFoldersDeleteAccessApprovalSettingsRequest) input message
@@ -248,8 +229,7 @@ the settings are inherited.
     )
 
     def UpdateAccessApprovalSettings(self, request, global_params=None):
-      r"""Updates the settings associated with a project, folder, or organization.
-Settings to update are determined by the value of field_mask.
+      r"""Updates the settings associated with a project, folder, or organization. Settings to update are determined by the value of field_mask.
 
       Args:
         request: (AccessapprovalFoldersUpdateAccessApprovalSettingsRequest) input message
@@ -286,10 +266,7 @@ Settings to update are determined by the value of field_mask.
           }
 
     def Approve(self, request, global_params=None):
-      r"""Approves a request and returns the updated ApprovalRequest.
-
-Returns NOT_FOUND if the request does not exist. Returns
-FAILED_PRECONDITION if the request exists but is not in a pending state.
+      r"""Approves a request and returns the updated ApprovalRequest. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
 
       Args:
         request: (AccessapprovalOrganizationsApprovalRequestsApproveRequest) input message
@@ -316,16 +293,7 @@ FAILED_PRECONDITION if the request exists but is not in a pending state.
     )
 
     def Dismiss(self, request, global_params=None):
-      r"""Dismisses a request. Returns the updated ApprovalRequest.
-
-NOTE: This does not deny access to the resource if another request has been
-made and approved. It is equivalent in effect to ignoring the request
-altogether.
-
-Returns NOT_FOUND if the request does not exist.
-
-Returns FAILED_PRECONDITION if the request exists but is not in a pending
-state.
+      r"""Dismisses a request. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It is equivalent in effect to ignoring the request altogether. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
 
       Args:
         request: (AccessapprovalOrganizationsApprovalRequestsDismissRequest) input message
@@ -379,9 +347,7 @@ state.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists approval requests associated with a project, folder, or organization.
-Approval requests can be filtered by state (pending, active, dismissed).
-The order is reverse chronological.
+      r"""Lists approval requests associated with a project, folder, or organization. Approval requests can be filtered by state (pending, active, dismissed). The order is reverse chronological.
 
       Args:
         request: (AccessapprovalOrganizationsApprovalRequestsListRequest) input message
@@ -418,12 +384,7 @@ The order is reverse chronological.
           }
 
     def DeleteAccessApprovalSettings(self, request, global_params=None):
-      r"""Deletes the settings associated with a project, folder, or organization.
-This will have the effect of disabling Access Approval for the project,
-folder, or organization, but only if all ancestors also have Access
-Approval disabled. If Access Approval is enabled at a higher level of the
-hierarchy, then Access Approval will still be enabled at this level as
-the settings are inherited.
+      r"""Deletes the settings associated with a project, folder, or organization. This will have the effect of disabling Access Approval for the project, folder, or organization, but only if all ancestors also have Access Approval disabled. If Access Approval is enabled at a higher level of the hierarchy, then Access Approval will still be enabled at this level as the settings are inherited.
 
       Args:
         request: (AccessapprovalOrganizationsDeleteAccessApprovalSettingsRequest) input message
@@ -477,8 +438,7 @@ the settings are inherited.
     )
 
     def UpdateAccessApprovalSettings(self, request, global_params=None):
-      r"""Updates the settings associated with a project, folder, or organization.
-Settings to update are determined by the value of field_mask.
+      r"""Updates the settings associated with a project, folder, or organization. Settings to update are determined by the value of field_mask.
 
       Args:
         request: (AccessapprovalOrganizationsUpdateAccessApprovalSettingsRequest) input message
@@ -515,10 +475,7 @@ Settings to update are determined by the value of field_mask.
           }
 
     def Approve(self, request, global_params=None):
-      r"""Approves a request and returns the updated ApprovalRequest.
-
-Returns NOT_FOUND if the request does not exist. Returns
-FAILED_PRECONDITION if the request exists but is not in a pending state.
+      r"""Approves a request and returns the updated ApprovalRequest. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
 
       Args:
         request: (AccessapprovalProjectsApprovalRequestsApproveRequest) input message
@@ -545,16 +502,7 @@ FAILED_PRECONDITION if the request exists but is not in a pending state.
     )
 
     def Dismiss(self, request, global_params=None):
-      r"""Dismisses a request. Returns the updated ApprovalRequest.
-
-NOTE: This does not deny access to the resource if another request has been
-made and approved. It is equivalent in effect to ignoring the request
-altogether.
-
-Returns NOT_FOUND if the request does not exist.
-
-Returns FAILED_PRECONDITION if the request exists but is not in a pending
-state.
+      r"""Dismisses a request. Returns the updated ApprovalRequest. NOTE: This does not deny access to the resource if another request has been made and approved. It is equivalent in effect to ignoring the request altogether. Returns NOT_FOUND if the request does not exist. Returns FAILED_PRECONDITION if the request exists but is not in a pending state.
 
       Args:
         request: (AccessapprovalProjectsApprovalRequestsDismissRequest) input message
@@ -608,9 +556,7 @@ state.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists approval requests associated with a project, folder, or organization.
-Approval requests can be filtered by state (pending, active, dismissed).
-The order is reverse chronological.
+      r"""Lists approval requests associated with a project, folder, or organization. Approval requests can be filtered by state (pending, active, dismissed). The order is reverse chronological.
 
       Args:
         request: (AccessapprovalProjectsApprovalRequestsListRequest) input message
@@ -647,12 +593,7 @@ The order is reverse chronological.
           }
 
     def DeleteAccessApprovalSettings(self, request, global_params=None):
-      r"""Deletes the settings associated with a project, folder, or organization.
-This will have the effect of disabling Access Approval for the project,
-folder, or organization, but only if all ancestors also have Access
-Approval disabled. If Access Approval is enabled at a higher level of the
-hierarchy, then Access Approval will still be enabled at this level as
-the settings are inherited.
+      r"""Deletes the settings associated with a project, folder, or organization. This will have the effect of disabling Access Approval for the project, folder, or organization, but only if all ancestors also have Access Approval disabled. If Access Approval is enabled at a higher level of the hierarchy, then Access Approval will still be enabled at this level as the settings are inherited.
 
       Args:
         request: (AccessapprovalProjectsDeleteAccessApprovalSettingsRequest) input message
@@ -706,8 +647,7 @@ the settings are inherited.
     )
 
     def UpdateAccessApprovalSettings(self, request, global_params=None):
-      r"""Updates the settings associated with a project, folder, or organization.
-Settings to update are determined by the value of field_mask.
+      r"""Updates the settings associated with a project, folder, or organization. Settings to update are determined by the value of field_mask.
 
       Args:
         request: (AccessapprovalProjectsUpdateAccessApprovalSettingsRequest) input message

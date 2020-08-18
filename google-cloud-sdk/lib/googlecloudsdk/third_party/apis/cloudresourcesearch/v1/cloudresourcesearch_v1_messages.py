@@ -19,33 +19,33 @@ class CloudresourcesearchResourcesSearchRequest(_messages.Message):
 
   Fields:
     orderBy: Optional. A comma-separated list of string-valued fields for
-      sorting the results.  If this field is omitted, then the order of
-      results is not defined. You can use fields from the resource schemas as
-      well as the built-in fields `resourceName` and `resourceType`. Field
-      values are ordered by their UTF-8 encodings.  Fields are sorted in
-      ascending order by default. To sort a field in descending order, append
-      `" desc"` to the field name. For example, the `order_by` value
-      `"resource_type desc,resource_name"` sorts results by resource type in
-      descending order; resources with the same type are returned in ascending
-      order of their names.
+      sorting the results. If this field is omitted, then the order of results
+      is not defined. You can use fields from the resource schemas as well as
+      the built-in fields `resourceName` and `resourceType`. Field values are
+      ordered by their UTF-8 encodings. Fields are sorted in ascending order
+      by default. To sort a field in descending order, append `" desc"` to the
+      field name. For example, the `order_by` value `"resource_type
+      desc,resource_name"` sorts results by resource type in descending order;
+      resources with the same type are returned in ascending order of their
+      names.
     pageSize: Optional. The maximum number of resources to return from this
-      request.  The presence of `next_page_token` in the response indicates
-      that more resources are available.  The default value of `page_size` is
+      request. The presence of `next_page_token` in the response indicates
+      that more resources are available. The default value of `page_size` is
       20 and the maximum value is 1000.
     pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method.  `page_token` must be the value
-      of `next_page_token` from the previous response.  The values of other
+      from the preceding call to this method. `page_token` must be the value
+      of `next_page_token` from the previous response. The values of other
       method parameters, including the query and sort order, must be identical
       to those in the previous call.
     query: Optional. The query string. If the query is missing or empty, all
-      accessible resources are returned.  Any field in a supported resource
+      accessible resources are returned. Any field in a supported resource
       type's schema may be specified in the query. Additionally, every
       resource has a `@type` field whose value is the resource's type URL. See
-      `SearchResult.resource_type` for more information.  Example: The
+      `SearchResult.resource_type` for more information. Example: The
       following query searches for accessible Compute Engine VM instances
       (`@type:Instance`) that have an `env` label value of `prod` and that
-      have a machine type that starts with `"n1-stand"`:      @type:Instance
-      labels.env:prod machineType:n1-stand*  For more information, see [Search
+      have a machine type that starts with `"n1-stand"`: @type:Instance
+      labels.env:prod machineType:n1-stand* For more information, see [Search
       Queries](/resource-search/docs/search-queries) and [Resource
       Types](/resource-search/docs/reference/Resource.Types).
   """
@@ -61,10 +61,10 @@ class SearchResponse(_messages.Message):
 
   Fields:
     matchedCount: The approximate total number of resources that match the
-      query.  It will never be less than the number of resources returned so
+      query. It will never be less than the number of resources returned so
       far, but it can change as additional pages of results are returned.
     nextPageToken: If there are more results than those appearing in this
-      response, then `next_page_token` is included.  To get the next set of
+      response, then `next_page_token` is included. To get the next set of
       results, call this method again using the value of `next_page_token` as
       `page_token`.
     results: A list of resources that match the search query.

@@ -18,9 +18,9 @@ package = 'firestore'
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -66,19 +66,19 @@ class FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest(_messages.Mes
     googleFirestoreAdminV1beta2Field: A GoogleFirestoreAdminV1beta2Field
       resource to be passed as the request body.
     name: A field name of the form `projects/{project_id}/databases/{database_
-      id}/collectionGroups/{collection_id}/fields/{field_path}`  A field path
+      id}/collectionGroups/{collection_id}/fields/{field_path}` A field path
       may be a simple field name, e.g. `address` or a path to fields within
       map_value , e.g. `address.city`, or a special field path. The only valid
-      special field is `*`, which represents any field.  Field paths may be
+      special field is `*`, which represents any field. Field paths may be
       quoted using ` (backtick). The only character that needs to be escaped
       within a quoted field path is the backtick character itself, escaped
       using a backslash. Special characters in field paths that must be quoted
       include: `*`, `.`, ``` (backtick), `[`, `]`, as well as any ascii
-      symbolic characters.  Examples: (Note: Comments here are written in
-      markdown syntax, so there is an  additional layer of backticks to
+      symbolic characters. Examples: (Note: Comments here are written in
+      markdown syntax, so there is an additional layer of backticks to
       represent a code block) `\`address.city\`` represents a field named
       `address.city`, not the map key `city` in the field `address`. `\`*\``
-      represents a field named `*`, not any field.  A special `Field` contains
+      represents a field named `*`, not any field. A special `Field` contains
       the default indexing settings for all fields. This field's resource name
       is: `projects/{project_id}/databases/{database_id}/collectionGroups/__de
       fault__/fields/*` Indexes defined on this `Field` will be applied to all
@@ -261,7 +261,7 @@ class GoogleFirestoreAdminV1beta2ExportDocumentsResponse(_messages.Message):
 
 
 class GoogleFirestoreAdminV1beta2Field(_messages.Message):
-  r"""Represents a single field in the database.  Fields are grouped by their
+  r"""Represents a single field in the database. Fields are grouped by their
   "Collection Group", which represent all collections in the database with the
   same id.
 
@@ -271,19 +271,19 @@ class GoogleFirestoreAdminV1beta2Field(_messages.Message):
       `ancestor_field`. To explicitly remove all indexes for this field,
       specify an index config with an empty list of indexes.
     name: A field name of the form `projects/{project_id}/databases/{database_
-      id}/collectionGroups/{collection_id}/fields/{field_path}`  A field path
+      id}/collectionGroups/{collection_id}/fields/{field_path}` A field path
       may be a simple field name, e.g. `address` or a path to fields within
       map_value , e.g. `address.city`, or a special field path. The only valid
-      special field is `*`, which represents any field.  Field paths may be
+      special field is `*`, which represents any field. Field paths may be
       quoted using ` (backtick). The only character that needs to be escaped
       within a quoted field path is the backtick character itself, escaped
       using a backslash. Special characters in field paths that must be quoted
       include: `*`, `.`, ``` (backtick), `[`, `]`, as well as any ascii
-      symbolic characters.  Examples: (Note: Comments here are written in
-      markdown syntax, so there is an  additional layer of backticks to
+      symbolic characters. Examples: (Note: Comments here are written in
+      markdown syntax, so there is an additional layer of backticks to
       represent a code block) `\`address.city\`` represents a field named
       `address.city`, not the map key `city` in the field `address`. `\`*\``
-      represents a field named `*`, not any field.  A special `Field` contains
+      represents a field named `*`, not any field. A special `Field` contains
       the default indexing settings for all fields. This field's resource name
       is: `projects/{project_id}/databases/{database_id}/collectionGroups/__de
       fault__/fields/*` Indexes defined on this `Field` will be applied to all
@@ -429,13 +429,13 @@ class GoogleFirestoreAdminV1beta2Index(_messages.Message):
     StateValueValuesEnum: Output only. The serving state of the index.
 
   Fields:
-    fields: The fields supported by this index.  For composite indexes, this
-      is always 2 or more fields. The last field entry is always for the field
+    fields: The fields supported by this index. For composite indexes, this is
+      always 2 or more fields. The last field entry is always for the field
       path `__name__`. If, on creation, `__name__` was not specified as the
       last field, it will be added automatically with the same direction as
       that of the last field defined. If the final field in a composite index
       is not directional, the `__name__` will be ordered ASCENDING (unless
-      explicitly specified).  For single field indexes, this will always be
+      explicitly specified). For single field indexes, this will always be
       exactly one entry with a field path equal to the field path of the
       associated field.
     name: Output only. A server defined name for this index. The form of this
@@ -444,7 +444,7 @@ class GoogleFirestoreAdminV1beta2Index(_messages.Message):
       ` For single field indexes, this field will be empty.
     queryScope: Indexes with a collection query scope specified allow queries
       against a collection that is the child of a specific document, specified
-      at query time, and that has the same collection id.  Indexes with a
+      at query time, and that has the same collection id. Indexes with a
       collection group query scope specified allow queries against all
       collections descended from a specific document, specified at query time,
       and that have the same collection id as this index.
@@ -454,10 +454,10 @@ class GoogleFirestoreAdminV1beta2Index(_messages.Message):
   class QueryScopeValueValuesEnum(_messages.Enum):
     r"""Indexes with a collection query scope specified allow queries against
     a collection that is the child of a specific document, specified at query
-    time, and that has the same collection id.  Indexes with a collection
-    group query scope specified allow queries against all collections
-    descended from a specific document, specified at query time, and that have
-    the same collection id as this index.
+    time, and that has the same collection id. Indexes with a collection group
+    query scope specified allow queries against all collections descended from
+    a specific document, specified at query time, and that have the same
+    collection id as this index.
 
     Values:
       QUERY_SCOPE_UNSPECIFIED: The query scope is unspecified. Not a valid
@@ -699,17 +699,17 @@ class GoogleLongrunningOperation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -718,29 +718,29 @@ class GoogleLongrunningOperation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -766,12 +766,12 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -869,7 +869,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -878,7 +878,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

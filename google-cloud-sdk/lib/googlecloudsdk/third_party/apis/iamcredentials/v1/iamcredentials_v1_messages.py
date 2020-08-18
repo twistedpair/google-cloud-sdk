@@ -22,8 +22,8 @@ class GenerateAccessTokenRequest(_messages.Message):
       `roles/iam.serviceAccountTokenCreator` role on its next service account
       in the chain. The last service account in the chain must be granted the
       `roles/iam.serviceAccountTokenCreator` role on the service account that
-      is specified in the `name` field of the request.  The delegates must
-      have the following format:
+      is specified in the `name` field of the request. The delegates must have
+      the following format:
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
@@ -65,8 +65,8 @@ class GenerateIdTokenRequest(_messages.Message):
       `roles/iam.serviceAccountTokenCreator` role on its next service account
       in the chain. The last service account in the chain must be granted the
       `roles/iam.serviceAccountTokenCreator` role on the service account that
-      is specified in the `name` field of the request.  The delegates must
-      have the following format:
+      is specified in the `name` field of the request. The delegates must have
+      the following format:
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
@@ -167,8 +167,8 @@ class SignBlobRequest(_messages.Message):
       `roles/iam.serviceAccountTokenCreator` role on its next service account
       in the chain. The last service account in the chain must be granted the
       `roles/iam.serviceAccountTokenCreator` role on the service account that
-      is specified in the `name` field of the request.  The delegates must
-      have the following format:
+      is specified in the `name` field of the request. The delegates must have
+      the following format:
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
@@ -186,14 +186,14 @@ class SignBlobResponse(_messages.Message):
     keyId: The ID of the key used to sign the blob. The key used for signing
       will remain valid for at least 12 hours after the blob is signed. To
       verify the signature, you can retrieve the public key in several formats
-      from the following endpoints:  - RSA public key wrapped in an X.509 v3
+      from the following endpoints: - RSA public key wrapped in an X.509 v3
       certificate: `https://www.googleapis.com/service_accounts/v1/metadata/x5
       09/{ACCOUNT_EMAIL}` - Raw key in JSON format: `https://www.googleapis.co
       m/service_accounts/v1/metadata/raw/{ACCOUNT_EMAIL}` - JSON Web Key
       (JWK): `https://www.googleapis.com/service_accounts/v1/metadata/jwk/{ACC
       OUNT_EMAIL}`
     signedBlob: The signature for the blob. Does not include the original
-      blob.  After the key pair referenced by the `key_id` response field
+      blob. After the key pair referenced by the `key_id` response field
       expires, Google no longer exposes the public key that can be used to
       verify the blob. As a result, the receiver can no longer verify the
       signature.
@@ -212,14 +212,14 @@ class SignJwtRequest(_messages.Message):
       `roles/iam.serviceAccountTokenCreator` role on its next service account
       in the chain. The last service account in the chain must be granted the
       `roles/iam.serviceAccountTokenCreator` role on the service account that
-      is specified in the `name` field of the request.  The delegates must
-      have the following format:
+      is specified in the `name` field of the request. The delegates must have
+      the following format:
       `projects/-/serviceAccounts/{ACCOUNT_EMAIL_OR_UNIQUEID}`. The `-`
       wildcard character is required; replacing it with a project ID is
       invalid.
     payload: Required. The JWT payload to sign. Must be a serialized JSON
       object that contains a JWT Claims Set. For example: `{"sub":
-      "user@example.com", "iat": 313435}`  If the JWT Claims Set contains an
+      "user@example.com", "iat": 313435}` If the JWT Claims Set contains an
       expiration time (`exp`) claim, it must be an integer timestamp that is
       not in the past and no more than 12 hours in the future.
   """
@@ -235,7 +235,7 @@ class SignJwtResponse(_messages.Message):
     keyId: The ID of the key used to sign the JWT. The key used for signing
       will remain valid for at least 12 hours after the JWT is signed. To
       verify the signature, you can retrieve the public key in several formats
-      from the following endpoints:  - RSA public key wrapped in an X.509 v3
+      from the following endpoints: - RSA public key wrapped in an X.509 v3
       certificate: `https://www.googleapis.com/service_accounts/v1/metadata/x5
       09/{ACCOUNT_EMAIL}` - Raw key in JSON format: `https://www.googleapis.co
       m/service_accounts/v1/metadata/raw/{ACCOUNT_EMAIL}` - JSON Web Key
@@ -243,7 +243,7 @@ class SignJwtResponse(_messages.Message):
       OUNT_EMAIL}`
     signedJwt: The signed JWT. Contains the automatically generated header;
       the client-supplied payload; and the signature, which is generated using
-      the key referenced by the `kid` field in the header.  After the key pair
+      the key referenced by the `kid` field in the header. After the key pair
       referenced by the `key_id` response field expires, Google no longer
       exposes the public key that can be used to verify the JWT. As a result,
       the receiver can no longer verify the signature.

@@ -52,10 +52,7 @@ class IapV1beta1(base_api.BaseApiClient):
           }
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for an Identity-Aware Proxy protected.
-resource.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
+      r"""Gets the access control policy for an Identity-Aware Proxy protected resource. More information about managing access via IAP can be found at: https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api.
 
       Args:
         request: (IapGetIamPolicyRequest) input message
@@ -82,10 +79,7 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for an Identity-Aware Proxy protected.
-resource. Replaces any existing policy.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
+      r"""Sets the access control policy for an Identity-Aware Proxy protected resource. Replaces any existing policy. More information about managing access via IAP can be found at: https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api.
 
       Args:
         request: (IapSetIamPolicyRequest) input message
@@ -112,12 +106,7 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the Identity-Aware Proxy protected.
-resource. If the resource does not exist or the caller does not have
-Identity-Aware Proxy permissions a [google.rpc.Code.PERMISSION_DENIED]
-will be returned.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
+      r"""Returns permissions that a caller has on the Identity-Aware Proxy protected resource. If the resource does not exist or the caller does not have Identity-Aware Proxy permissions a [google.rpc.Code.PERMISSION_DENIED] will be returned. More information about managing access via IAP can be found at: https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api.
 
       Args:
         request: (IapTestIamPermissionsRequest) input message

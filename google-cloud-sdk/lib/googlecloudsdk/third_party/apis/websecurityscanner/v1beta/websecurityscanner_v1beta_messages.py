@@ -63,9 +63,9 @@ class CustomAccount(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -370,9 +370,10 @@ class ScanConfig(_messages.Message):
     r"""TargetPlatformsValueListEntryValuesEnum enum type.
 
     Values:
-      TARGET_PLATFORM_UNSPECIFIED: <no description>
-      APP_ENGINE: <no description>
-      COMPUTE: <no description>
+      TARGET_PLATFORM_UNSPECIFIED: The target platform is unknown. Requests
+        with this enum value will be rejected with INVALID_ARGUMENT error.
+      APP_ENGINE: Google App Engine service.
+      COMPUTE: Google Compute Engine service.
     """
     TARGET_PLATFORM_UNSPECIFIED = 0
     APP_ENGINE = 1
@@ -981,8 +982,7 @@ class WebsecurityscannerProjectsScanConfigsScanRunsFindingsListRequest(_messages
 
   Fields:
     filter: Required. The filter expression. The expression must be in the
-      format: <field> <operator> <value>. Supported field: 'finding_type'.
-      Supported operator: '='.
+      format: . Supported field: 'finding_type'. Supported operator: '='.
     pageSize: The maximum number of Findings to return, can be limited by
       server. If not specified or not positive, the implementation will select
       a reasonable value.

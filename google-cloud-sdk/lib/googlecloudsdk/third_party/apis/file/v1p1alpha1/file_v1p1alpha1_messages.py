@@ -165,8 +165,8 @@ class FileProjectsLocationsBackupsCreateRequest(_messages.Message):
       lowercase letter followed by up to 62 lowercase letters, numbers, or
       hyphens, and cannot end with a hyphen.
     parent: Required. The backup's project and location, in the format
-      projects/{project_id}/locations/{location}. In Cloud Filestore, backup
-      locations map to GCP regions, for example **us-west1**.
+      projects/{project_number}/locations/{location}. In Cloud Filestore,
+      backup locations map to GCP regions, for example **us-west1**.
   """
 
   backup = _messages.MessageField('Backup', 1)
@@ -179,7 +179,7 @@ class FileProjectsLocationsBackupsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The backup resource name, in the format
-      projects/{project_id}/locations/{location}/backups/{backup_id}
+      projects/{project_number}/locations/{location}/backups/{backup_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -190,7 +190,7 @@ class FileProjectsLocationsBackupsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The backup resource name, in the format
-      projects/{project_id}/locations/{location}/backups/{backup_id}.
+      projects/{project_number}/locations/{location}/backups/{backup_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -207,10 +207,11 @@ class FileProjectsLocationsBackupsListRequest(_messages.Message):
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
     parent: Required. The project and location for which to retrieve backup
-      information, in the format projects/{project_id}/locations/{location}.
-      In Cloud Filestore, backup locations map to GCP regions, for example
-      **us-west1**. To retrieve backup information for all locations, use "-"
-      for the {location} value.
+      information, in the format
+      projects/{project_number}/locations/{location}. In Cloud Filestore,
+      backup locations map to GCP regions, for example **us-west1**. To
+      retrieve backup information for all locations, use "-" for the
+      {location} value.
   """
 
   filter = _messages.StringField(1)
@@ -256,7 +257,7 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
       with a lowercase letter followed by up to 62 lowercase letters, numbers,
       or hyphens, and cannot end with a hyphen.
     parent: Required. The instance's project and location, in the format
-      projects/{project_id}/locations/{location}. In Cloud Filestore,
+      projects/{project_number}/locations/{location}. In Cloud Filestore,
       locations map to GCP zones, for example **us-west1-b**.
   """
 
@@ -270,7 +271,7 @@ class FileProjectsLocationsInstancesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The instance resource name, in the format
-      projects/{project_id}/locations/{location}/instances/{instance_id}
+      projects/{project_number}/locations/{location}/instances/{instance_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -281,7 +282,7 @@ class FileProjectsLocationsInstancesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The instance resource name, in the format
-      projects/{project_id}/locations/{location}/instances/{instance_id}.
+      projects/{project_number}/locations/{location}/instances/{instance_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -298,10 +299,11 @@ class FileProjectsLocationsInstancesListRequest(_messages.Message):
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
     parent: Required. The project and location for which to retrieve instance
-      information, in the format projects/{project_id}/locations/{location}.
-      In Cloud Filestore, locations map to GCP zones, for example **us-
-      west1-b**. To retrieve instance information for all locations, use "-"
-      for the {location} value.
+      information, in the format
+      projects/{project_number}/locations/{location}. In Cloud Filestore,
+      locations map to GCP zones, for example **us-west1-b**. To retrieve
+      instance information for all locations, use "-" for the {location}
+      value.
   """
 
   filter = _messages.StringField(1)
@@ -317,7 +319,8 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     name: Output only. The resource name of the instance, in the format
-      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+      projects/{project_number}/locations/{location_id}/instances/{instance_id
+      }.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
       only include these fields: * "description" * "file_shares" * "labels"
@@ -415,9 +418,9 @@ class FileProjectsLocationsSnapshotsCreateRequest(_messages.Message):
 
   Fields:
     parent: Required. The snapshot's project and location, in the format
-      projects/{project_id}/locations/{location}. In Cloud Filestore, snapshot
-      locations map to GCP zones, for example **us-west1-b**, for local
-      snapshots and to GCP regions, for example **us-west1**, otherwise.
+      projects/{project_number}/locations/{location}. In Cloud Filestore,
+      snapshot locations map to GCP zones, for example **us-west1-b**, for
+      local snapshots and to GCP regions, for example **us-west1**, otherwise.
     snapshot: A Snapshot resource to be passed as the request body.
     snapshotId: Required. The ID to use for the snapshot. The ID must be
       unique within the specified project and location. This value must start
@@ -435,7 +438,7 @@ class FileProjectsLocationsSnapshotsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The snapshot resource name, in the format
-      projects/{project_id}/locations/{location}/snapshots/{snapshot_id}
+      projects/{project_number}/locations/{location}/snapshots/{snapshot_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -446,7 +449,7 @@ class FileProjectsLocationsSnapshotsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The snapshot resource name, in the format
-      projects/{project_id}/locations/{location}/snapshots/{snapshot_id}.
+      projects/{project_number}/locations/{location}/snapshots/{snapshot_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -463,11 +466,12 @@ class FileProjectsLocationsSnapshotsListRequest(_messages.Message):
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
     parent: Required. The project and location for which to retrieve snapshot
-      information, in the format projects/{project_id}/locations/{location}.
-      In Cloud Filestore, snapshot locations map to GCP zones, for example
-      **us-west1-b**, for local snapshots and to GCP regions, for example
-      **us-west1**, otherwise. To retrieve snapshot information for all
-      locations, use "-" for the {location} value.
+      information, in the format
+      projects/{project_number}/locations/{location}. In Cloud Filestore,
+      snapshot locations map to GCP zones, for example **us-west1-b**, for
+      local snapshots and to GCP regions, for example **us-west1**, otherwise.
+      To retrieve snapshot information for all locations, use "-" for the
+      {location} value.
   """
 
   filter = _messages.StringField(1)
@@ -937,7 +941,8 @@ class Instance(_messages.Message):
       single file share is supported.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the instance, in the format
-      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+      projects/{project_number}/locations/{location_id}/instances/{instance_id
+      }.
     networks: VPC networks to which the instance is connected. For this
       version, only a single network is supported.
     state: Output only. The instance state.

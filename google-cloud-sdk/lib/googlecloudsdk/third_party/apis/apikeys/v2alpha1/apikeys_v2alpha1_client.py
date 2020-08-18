@@ -55,9 +55,7 @@ class ApikeysV2alpha1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (ApikeysOperationsGetRequest) input message
@@ -175,8 +173,7 @@ service.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the metadata for an API key. Key string will not be set in the.
-response.
+      r"""Gets the metadata for an API key. Key string will not be set in the response.
 
       Args:
         request: (ApikeysProjectsKeysGetRequest) input message
@@ -230,8 +227,7 @@ response.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the API keys owned by a project. Key string of ApiKey will not be.
-set.
+      r"""Lists the API keys owned by a project. Key string of ApiKey will not be set.
 
       Args:
         request: (ApikeysProjectsKeysListRequest) input message
@@ -258,9 +254,7 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the modifiable fields of an API key.
-Key string will not be set in the ApiKey response of the long running
-operation.
+      r"""Patches the modifiable fields of an API key. Key string will not be set in the ApiKey response of the long running operation.
 
       Args:
         request: (ApikeysProjectsKeysPatchRequest) input message
@@ -334,8 +328,7 @@ operation.
           }
 
     def GetKeyStringName(self, request, global_params=None):
-      r"""Get parent and name of the Api Key which has the key string.
-Permission `apikeys.keys.getKeyStringName` is required on the parent.
+      r"""Get parent and name of the Api Key which has the key string. Permission `apikeys.keys.getKeyStringName` is required on the parent.
 
       Args:
         request: (ApikeysGetKeyStringNameRequest) input message

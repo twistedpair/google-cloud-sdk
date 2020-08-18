@@ -39,8 +39,138 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.customers_userInvitations = self.CustomersUserInvitationsService(self)
+    self.customers = self.CustomersService(self)
     self.groups_memberships = self.GroupsMembershipsService(self)
     self.groups = self.GroupsService(self)
+
+  class CustomersUserInvitationsService(base_api.BaseApiService):
+    """Service class for the customers_userInvitations resource."""
+
+    _NAME = 'customers_userInvitations'
+
+    def __init__(self, client):
+      super(CloudidentityV1alpha1.CustomersUserInvitationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a UserInvitation sent.
+
+      Args:
+        request: (CloudidentityCustomersUserInvitationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/customers/{customersId}/userInvitations/{userInvitationsId}:cancel',
+        http_method='POST',
+        method_id='cloudidentity.customers.userInvitations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:cancel',
+        request_field='cancelUserInvitationRequest',
+        request_type_name='CloudidentityCustomersUserInvitationsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieve a `UserInvitation` resource.
+
+      Args:
+        request: (CloudidentityCustomersUserInvitationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserInvitation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/customers/{customersId}/userInvitations/{userInvitationsId}',
+        http_method='GET',
+        method_id='cloudidentity.customers.userInvitations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='CloudidentityCustomersUserInvitationsGetRequest',
+        response_type_name='UserInvitation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of UserInvitations.
+
+      Args:
+        request: (CloudidentityCustomersUserInvitationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUserInvitationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/customers/{customersId}/userInvitations',
+        http_method='GET',
+        method_id='cloudidentity.customers.userInvitations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/userInvitations',
+        request_field='',
+        request_type_name='CloudidentityCustomersUserInvitationsListRequest',
+        response_type_name='ListUserInvitationsResponse',
+        supports_download=False,
+    )
+
+    def Send(self, request, global_params=None):
+      r"""Send UserInvitation to email. if the UserInvitation does not exist for this request, and it is a valid request, a UserInvitation will be created in this request.
+
+      Args:
+        request: (CloudidentityCustomersUserInvitationsSendRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Send')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Send.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/customers/{customersId}/userInvitations/{userInvitationsId}:send',
+        http_method='POST',
+        method_id='cloudidentity.customers.userInvitations.send',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:send',
+        request_field='sendUserInvitationRequest',
+        request_type_name='CloudidentityCustomersUserInvitationsSendRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class CustomersService(base_api.BaseApiService):
+    """Service class for the customers resource."""
+
+    _NAME = 'customers'
+
+    def __init__(self, client):
+      super(CloudidentityV1alpha1.CustomersService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class GroupsMembershipsService(base_api.BaseApiService):
     """Service class for the groups_memberships resource."""
@@ -161,9 +291,7 @@ class CloudidentityV1alpha1(base_api.BaseApiClient):
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up the [resource.
-name](https://cloud.google.com/apis/design/resource_names) of a
-`Membership` by its `EntityKey`.
+      r"""Looks up the [resource name](https://cloud.google.com/apis/design/resource_names) of a `Membership` by its `EntityKey`.
 
       Args:
         request: (CloudidentityGroupsMembershipsLookupRequest) input message
@@ -360,9 +488,7 @@ name](https://cloud.google.com/apis/design/resource_names) of a
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up the [resource.
-name](https://cloud.google.com/apis/design/resource_names) of a `Group` by
-its `EntityKey`.
+      r"""Looks up the [resource name](https://cloud.google.com/apis/design/resource_names) of a `Group` by its `EntityKey`.
 
       Args:
         request: (CloudidentityGroupsLookupRequest) input message

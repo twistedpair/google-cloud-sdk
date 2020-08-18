@@ -239,9 +239,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     )
 
     def CancelWipe(self, request, global_params=None):
-      r"""Cancels an unfinished user account wipe.
-This operation can be used to cancel device wipe in the gap between the
-wipe operation returning success and the device being wiped.
+      r"""Cancels an unfinished user account wipe. This operation can be used to cancel device wipe in the gap between the wipe operation returning success and the device being wiped.
 
       Args:
         request: (CloudidentityDevicesDeviceUsersCancelWipeRequest) input message
@@ -268,8 +266,7 @@ wipe operation returning success and the device being wiped.
     )
 
     def CollectBugReport(self, request, global_params=None):
-      r"""Collects bug report on the specified device, which can be later downloaded.
-from [Admin Console](https://admin.google.com).
+      r"""Collects bug report on the specified device, which can be later downloaded from [Admin Console](https://admin.google.com).
 
       Args:
         request: (CloudidentityDevicesDeviceUsersCollectBugReportRequest) input message
@@ -296,8 +293,7 @@ from [Admin Console](https://admin.google.com).
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified DeviceUser. This also revokes the user's access to.
-device data.
+      r"""Deletes the specified DeviceUser. This also revokes the user's access to device data.
 
       Args:
         request: (CloudidentityDevicesDeviceUsersDeleteRequest) input message
@@ -378,22 +374,7 @@ device data.
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up resource names of the DeviceUsers associated with the.
-caller's credentials, as well as the properties provided in the request.
-
-This method must be called with end-user credentials with the scope:
-https://www.googleapis.com/auth/cloud-identity.devices.lookup
-
-If multiple properties are provided, only DeviceUsers having all of these
-properties are considered as matches - i.e. the query behaves like an AND.
-
-Different platforms require different amounts of information from the
-caller to ensure that the DeviceUser is uniquely identified.
-
-- iOS: No properties need to be passed, the caller's credentials are
-sufficient to identify the corresponding DeviceUser.
-- Android: Specifying the 'android_id' field is required.
-- Desktop: Specifying the 'raw_resource_id' field is required.
+      r"""Looks up resource names of the DeviceUsers associated with the caller's credentials, as well as the properties provided in the request. This method must be called with end-user credentials with the scope: https://www.googleapis.com/auth/cloud-identity.devices.lookup If multiple properties are provided, only DeviceUsers having all of these properties are considered as matches - i.e. the query behaves like an AND. Different platforms require different amounts of information from the caller to ensure that the DeviceUser is uniquely identified. - iOS: No properties need to be passed, the caller's credentials are sufficient to identify the corresponding DeviceUser. - Android: Specifying the 'android_id' field is required. - Desktop: Specifying the 'raw_resource_id' field is required.
 
       Args:
         request: (CloudidentityDevicesDeviceUsersLookupRequest) input message
@@ -501,8 +482,7 @@ sufficient to identify the corresponding DeviceUser.
     )
 
     def Unenroll(self, request, global_params=None):
-      r"""Unenrolls the user from Advanced Windows Management without affecting.
-their user account.
+      r"""Unenrolls the user from Advanced Windows Management without affecting their user account.
 
       Args:
         request: (CloudidentityDevicesDeviceUsersUnenrollRequest) input message
@@ -566,9 +546,7 @@ their user account.
           }
 
     def CancelWipe(self, request, global_params=None):
-      r"""Cancels an unfinished device wipe.
-This operation can be used to cancel device wipe in the gap between the
-wipe operation returning success and the device being wiped.
+      r"""Cancels an unfinished device wipe. This operation can be used to cancel device wipe in the gap between the wipe operation returning success and the device being wiped.
 
       Args:
         request: (CloudidentityDevicesCancelWipeRequest) input message
@@ -750,33 +728,6 @@ wipe operation returning success and the device being wiped.
         relative_path='v1beta1/{+name}:lock',
         request_field='lockDeviceRequest',
         request_type_name='CloudidentityDevicesLockRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the specified device.
-
-      Args:
-        request: (CloudidentityDevicesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/devices/{devicesId}',
-        http_method='PATCH',
-        method_id='cloudidentity.devices.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['customer', 'name1', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='device',
-        request_type_name='CloudidentityDevicesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -1062,9 +1013,7 @@ wipe operation returning success and the device being wiped.
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up the [resource.
-name](https://cloud.google.com/apis/design/resource_names) of a
-`Membership` by its `EntityKey`.
+      r"""Looks up the [resource name](https://cloud.google.com/apis/design/resource_names) of a `Membership` by its `EntityKey`.
 
       Args:
         request: (CloudidentityGroupsMembershipsLookupRequest) input message
@@ -1315,9 +1264,7 @@ name](https://cloud.google.com/apis/design/resource_names) of a
     )
 
     def Lookup(self, request, global_params=None):
-      r"""Looks up the [resource.
-name](https://cloud.google.com/apis/design/resource_names) of a `Group` by
-its `EntityKey`.
+      r"""Looks up the [resource name](https://cloud.google.com/apis/design/resource_names) of a `Group` by its `EntityKey`.
 
       Args:
         request: (CloudidentityGroupsLookupRequest) input message

@@ -672,8 +672,7 @@ class OsconfigV1alpha2(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Cancel a patch job. The patch job must be active. Canceled patch jobs.
-cannot be restarted.
+      r"""Cancel a patch job. The patch job must be active. Canceled patch jobs cannot be restarted.
 
       Args:
         request: (OsconfigProjectsPatchJobsCancelRequest) input message
@@ -727,8 +726,7 @@ cannot be restarted.
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the patch job. This can be used to track the progress of an.
-ongoing patch job or review the details of completed jobs.
+      r"""Get the patch job. This can be used to track the progress of an ongoing patch job or review the details of completed jobs.
 
       Args:
         request: (OsconfigProjectsPatchJobsGetRequest) input message
@@ -792,10 +790,7 @@ ongoing patch job or review the details of completed jobs.
           }
 
     def LookupGuestPolicies(self, request, global_params=None):
-      r"""Lookup the guest policies that are assigned to a GCE VM instance. This.
-lookup will merge all policies that are assigned to the instance. This is
-usually called by the agent running on the instance, but it can also be
-called by users to see what configs are assigned to this instance.
+      r"""Lookup the guest policies that are assigned to a GCE VM instance. This lookup will merge all policies that are assigned to the instance. This is usually called by the agent running on the instance, but it can also be called by users to see what configs are assigned to this instance.
 
       Args:
         request: (OsconfigProjectsZonesInstancesLookupGuestPoliciesRequest) input message
@@ -822,17 +817,7 @@ called by users to see what configs are assigned to this instance.
     )
 
     def ReportPatchJobInstanceDetails(self, request, global_params=None):
-      r"""Deprecated:  Should use AgentEndpoint API going forward.  Will be removed.
-in v1beta.
-
-Endpoint used by the agent to report back its state during a patch
-job. This endpoint will also return the patch job's state and
-configurations that the agent needs to know in order to run or stop
-patching.
-
-This endpoint is only used by the agent. Using it in other ways may
-affect the state of the active patch job and prevent the patches from
-being correctly applied to this instance.
+      r"""Deprecated: Should use AgentEndpoint API going forward. Will be removed in v1beta. Endpoint used by the agent to report back its state during a patch job. This endpoint will also return the patch job's state and configurations that the agent needs to know in order to run or stop patching. This endpoint is only used by the agent. Using it in other ways may affect the state of the active patch job and prevent the patches from being correctly applied to this instance.
 
       Args:
         request: (OsconfigProjectsZonesInstancesReportPatchJobInstanceDetailsRequest) input message

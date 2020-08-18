@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://krmapihosting.googleapis.com/v1alpha1/'
-DOCS_URL = ''
+DOCS_URL = 'https://cloud.google.com/'
 
 
 class Collections(enum.Enum):

@@ -40,6 +40,7 @@ class ProviderPrefix(enum.Enum):
   S3 = 's3'
 
 
+DEFAULT_PROVIDER = ProviderPrefix.GCS
 NUM_ITEMS_PER_LIST_PAGE = 1000
 
 
@@ -63,6 +64,42 @@ class CloudApi(object):
   a separate instance of the Cloud API should be instantiated per-thread.
   """
 
+  def CreateBucket(self, metadata, fields_scope=None):
+    """Creates a new bucket with the specified metadata.
+
+    Args:
+      metadata (apitools.messages.Bucket): Object defining new bucket metadata.
+      fields_scope (FieldsScope): Determines the fields and projection
+          parameters of API call.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+      ValueError: Invalid fields_scope.
+
+    Returns:
+      apitools.messages.Bucket object describing new bucket metadata.
+    """
+    raise NotImplementedError('CreateBucket must be overridden.')
+
+  def DeleteBucket(self,
+                   bucket_name,
+                   request_config=None):
+    """Deletes a bucket.
+
+    Args:
+      bucket_name (str): Name of the bucket to delete.
+      request_config (RequestConfig): Object containing general API function
+          arguments. Subclasses for specific cloud providers are available.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+    """
+    raise NotImplementedError('DeleteBucket must be overridden.')
+
   def GetBucket(self, bucket_name, fields_scope=None):
     """Gets Bucket metadata.
 
@@ -72,7 +109,7 @@ class CloudApi(object):
           parameters of API call.
 
     Return:
-      Apitools messages bucket object.
+      resource_reference.BucketResource containing the bucket metadata.
 
     Raises:
       CloudApiError: API returned an error.
@@ -116,7 +153,7 @@ class CloudApi(object):
           parameters of API call.
 
     Yields:
-      Iterator over CsObjectOrPrefix wrapper class.
+      Iterator over resource_reference.ObjectResource objects.
 
     Raises:
       NotImplementedError: This function was not implemented by a class using
@@ -144,7 +181,7 @@ class CloudApi(object):
           parameters of API call.
 
     Returns:
-      Apitools messages object.
+      resource_reference.ObjectResource with object metadata.
 
     Raises:
       CloudApiError: API returned an error.
@@ -175,7 +212,7 @@ class CloudApi(object):
           arguments. Subclasses for specific cloud providers are available.
 
     Returns:
-      Apitools messages Object containing updated metadata.
+      resource_reference.ObjectResource with patched object metadata.
 
     Raises:
       CloudApiError: API returned an error.
@@ -206,7 +243,7 @@ class CloudApi(object):
           arguments. Subclasses for specific cloud providers are available.
 
     Returns:
-      Apitools messages object for newly created destination object.
+      resource_reference.ObjectResource with new object's metadata.
 
     Raises:
       CloudApiError: API returned an error.
@@ -289,7 +326,7 @@ class CloudApi(object):
           arguments. Subclasses for specific cloud providers are available.
 
     Returns:
-      Apitools messages object for newly created destination object.
+      resource_reference.ObjectResource with uploaded object's metadata.
 
     Raises:
       CloudApiError: API returned an error.

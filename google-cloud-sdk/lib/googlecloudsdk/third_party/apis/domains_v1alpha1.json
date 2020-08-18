@@ -1539,34 +1539,6 @@
                   "id": "domains.projects.locations.registrations.detach",
                   "path": "v1alpha1/{+name}:detach",
                   "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:detach",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. A name of the Registration to detach. Must be in the format `projects\/*\/locations\/*\/registrations\/*`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registrations\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "DetachRegistrationRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Detach a Registration from Cloud Domains management, leaving it registered at Google Domains registrar."
-                },
-                "detach": {
-                  "id": "domains.projects.locations.registrations.detach",
-                  "path": "v1alpha1/{+name}:detach",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:detach",
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {

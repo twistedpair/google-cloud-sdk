@@ -358,8 +358,7 @@ class OsconfigV1beta(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Cancel a patch job. The patch job must be active. Canceled patch jobs.
-cannot be restarted.
+      r"""Cancel a patch job. The patch job must be active. Canceled patch jobs cannot be restarted.
 
       Args:
         request: (OsconfigProjectsPatchJobsCancelRequest) input message
@@ -413,8 +412,7 @@ cannot be restarted.
     )
 
     def Get(self, request, global_params=None):
-      r"""Get the patch job. This can be used to track the progress of an.
-ongoing patch job or review the details of completed jobs.
+      r"""Get the patch job. This can be used to track the progress of an ongoing patch job or review the details of completed jobs.
 
       Args:
         request: (OsconfigProjectsPatchJobsGetRequest) input message
@@ -478,8 +476,7 @@ ongoing patch job or review the details of completed jobs.
           }
 
     def LookupEffectiveGuestPolicy(self, request, global_params=None):
-      r"""Lookup the effective guest policy that applies to a VM instance. This.
-lookup merges all policies that are assigned to the instance ancestry.
+      r"""Lookup the effective guest policy that applies to a VM instance. This lookup merges all policies that are assigned to the instance ancestry.
 
       Args:
         request: (OsconfigProjectsZonesInstancesLookupEffectiveGuestPolicyRequest) input message

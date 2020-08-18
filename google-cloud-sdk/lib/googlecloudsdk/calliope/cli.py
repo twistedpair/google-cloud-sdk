@@ -1030,8 +1030,12 @@ class CLI(object):
       exc or a core.exceptions variant that does not produce a stack trace.
     """
     error_extra_info = {'error_code': getattr(exc, 'exit_code', 1)}
-    if isinstance(exc, exceptions.HttpException):
-      error_extra_info['http_status_code'] = exc.payload.status_code
+
+    # Returns exc.payload.status if available. Otherwise, None.
+    http_status_code = getattr(getattr(exc, 'payload', None),
+                               'status_code', None)
+    if http_status_code is not None:
+      error_extra_info['http_status_code'] = http_status_code
 
     metrics.Commands(
         command_path_string, config.CLOUD_SDK_VERSION, specified_arg_names,

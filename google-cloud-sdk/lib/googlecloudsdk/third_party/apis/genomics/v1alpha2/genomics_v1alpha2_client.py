@@ -53,15 +53,7 @@ class GenomicsV1alpha2(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.
-The server makes a best effort to cancel the operation, but success is not
-guaranteed. Clients may use Operations.GetOperation
-or Operations.ListOperations
-to check whether the cancellation succeeded or the operation completed
-despite cancellation.
-Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
-
-* `genomics.operations.cancel`
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation. Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission: * `genomics.operations.cancel`.
 
       Args:
         request: (GenomicsOperationsCancelRequest) input message
@@ -88,12 +80,7 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.
-Clients can use this method to poll the operation result at intervals as
-recommended by the API service.
-Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
-
-* `genomics.operations.get`
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service. Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission: * `genomics.operations.get`.
 
       Args:
         request: (GenomicsOperationsGetRequest) input message
@@ -120,10 +107,7 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request.
-Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
-
-* `genomics.operations.list`
+      r"""Lists operations that match the specified filter in the request. Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission: * `genomics.operations.list`.
 
       Args:
         request: (GenomicsOperationsListRequest) input message
@@ -160,12 +144,7 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a pipeline that can be run later. Create takes a Pipeline that.
-has all fields other than `pipelineId` populated, and then returns
-the same pipeline with `pipelineId` populated. This id can be used
-to run the pipeline.
-
-Caller must have WRITE permission to the project.
+      r"""Creates a pipeline that can be run later. Create takes a Pipeline that has all fields other than `pipelineId` populated, and then returns the same pipeline with `pipelineId` populated. This id can be used to run the pipeline. Caller must have WRITE permission to the project.
 
       Args:
         request: (Pipeline) input message
@@ -191,9 +170,7 @@ Caller must have WRITE permission to the project.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a pipeline based on ID.
-
-Caller must have WRITE permission to the project.
+      r"""Deletes a pipeline based on ID. Caller must have WRITE permission to the project.
 
       Args:
         request: (GenomicsPipelinesDeleteRequest) input message
@@ -219,9 +196,7 @@ Caller must have WRITE permission to the project.
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a pipeline based on ID.
-
-Caller must have READ permission to the project.
+      r"""Retrieves a pipeline based on ID. Caller must have READ permission to the project.
 
       Args:
         request: (GenomicsPipelinesGetRequest) input message
@@ -247,8 +222,7 @@ Caller must have READ permission to the project.
     )
 
     def GetControllerConfig(self, request, global_params=None):
-      r"""Gets controller configuration information. Should only be called.
-by VMs created by the Pipelines Service and not by end users.
+      r"""Gets controller configuration information. Should only be called by VMs created by the Pipelines Service and not by end users.
 
       Args:
         request: (GenomicsPipelinesGetControllerConfigRequest) input message
@@ -274,9 +248,7 @@ by VMs created by the Pipelines Service and not by end users.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists pipelines.
-
-Caller must have READ permission to the project.
+      r"""Lists pipelines. Caller must have READ permission to the project.
 
       Args:
         request: (GenomicsPipelinesListRequest) input message
@@ -302,15 +274,7 @@ Caller must have READ permission to the project.
     )
 
     def Run(self, request, global_params=None):
-      r"""Runs a pipeline. If `pipelineId` is specified in the request, then.
-run a saved pipeline. If `ephemeralPipeline` is specified, then run
-that pipeline once without saving a copy.
-
-The caller must have READ permission to the project where the pipeline
-is stored and WRITE permission to the project where the pipeline will be
-run, as VMs will be created and storage will be used.
-
-If a pipeline operation is still running after 6 days, it will be canceled.
+      r"""Runs a pipeline. If `pipelineId` is specified in the request, then run a saved pipeline. If `ephemeralPipeline` is specified, then run that pipeline once without saving a copy. The caller must have READ permission to the project where the pipeline is stored and WRITE permission to the project where the pipeline will be run, as VMs will be created and storage will be used. If a pipeline operation is still running after 6 days, it will be canceled.
 
       Args:
         request: (RunPipelineRequest) input message
@@ -336,9 +300,7 @@ If a pipeline operation is still running after 6 days, it will be canceled.
     )
 
     def SetOperationStatus(self, request, global_params=None):
-      r"""Sets status of a given operation. Any new timestamps (as determined by.
-description) are appended to TimestampEvents. Should only be called by VMs
-created by the Pipelines Service and not by end users.
+      r"""Sets status of a given operation. Any new timestamps (as determined by description) are appended to TimestampEvents. Should only be called by VMs created by the Pipelines Service and not by end users.
 
       Args:
         request: (SetOperationStatusRequest) input message

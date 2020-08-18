@@ -563,10 +563,10 @@ def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
   parser.add_argument(
       '--dataproc-metastore',
-      hidden=True,
       help="""\
-        Specify the project relative name of a Dataproc Metastore service to be
-        used as an external metastore.
+        Specify the name of a Dataproc Metastore service to be used as an
+        external metastore in the format:
+        "projects/{project-id}/locations/{region}/services/{service-name}".
         """)
 
 

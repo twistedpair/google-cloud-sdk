@@ -60,17 +60,22 @@ def _GetErrorDetailsSummary(error_info):
       Apigee Management API.
   """
   try:
-    if (error_info["status"] == "FAILED_PRECONDITION" and
-        "details" in error_info):
-      # Error response might have info on exactly what preconditions failed.
+    if "details" in error_info:
+      # Error response might have info on exactly what preconditions failed or
+      # what about the arguments was invalid.
       violations = []
       for item in error_info["details"]:
-        precondition_type = "type.googleapis.com/google.rpc.PreconditionFailure"
-        if item["@type"] == precondition_type and "violations" in item:
+        # Include only those details whose format is known.
+        detail_types = (
+            "type.googleapis.com/google.rpc.QuotaFailure",
+            "type.googleapis.com/google.rpc.PreconditionFailure",
+            "type.googleapis.com/edge.configstore.bundle.BadBundle",
+            )
+        if item["@type"] in detail_types and "violations" in item:
           violations += item["violations"]
       descriptions = [violation["description"] for violation in violations]
       if descriptions:
-        return "\n" + yaml.dump(descriptions)
+        return error_info["message"] + "\n" + yaml.dump(descriptions)
 
     # Almost always seems to be included.
     return error_info["message"]

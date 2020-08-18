@@ -130,11 +130,11 @@
     },
     "GoogleCloudResourcesettingsV1alpha1Setting": {
       "id": "GoogleCloudResourcesettingsV1alpha1Setting",
-      "description": "The schema for setting values. At a given Cloud resource, a setting can\nparent at most one setting value.",
+      "description": "The schema for setting values. At a given Cloud resource, a setting can parent at most one setting value.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the setting. Must be in one of the following forms:\n\n* `projects\/{project_number}\/settings\/{setting_name}`\n* `folders\/{folder_id}\/settings\/{setting_name}`\n* `organizations\/{organization_id}\/settings\/{setting_name}`\n\nFor example, \"\/projects\/123\/settings\/gcp-enableMyFeature\"",
+          "description": "The resource name of the setting. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}` * `folders\/{folder_id}\/settings\/{setting_name}` * `organizations\/{organization_id}\/settings\/{setting_name}` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\"",
           "type": "string"
         },
         "displayName": {
@@ -146,7 +146,7 @@
           "type": "string"
         },
         "readOnly": {
-          "description": "A flag indicating that values of this setting cannot be modified (see\ndocumentation of the specific setting for updates and reasons); however, it\nmay be deleted using\nDeleteSettingValue if\nDeleteSettingValueRequest.ignore_read_only is set to true. Using this\nflag is considered an acknowledgement that the setting value cannot be\nrecreated. See DeleteSettingValueRequest.ignore_read_only for more\ndetails.",
+          "description": "A flag indicating that values of this setting cannot be modified (see documentation of the specific setting for updates and reasons); however, it may be deleted using DeleteSettingValue if DeleteSettingValueRequest.ignore_read_only is set to true. Using this flag is considered an acknowledgement that the setting value cannot be recreated. See DeleteSettingValueRequest.ignore_read_only for more details.",
           "type": "boolean"
         },
         "dataType": {
@@ -158,6 +158,12 @@
             "A string set setting."
           ],
           "type": "string",
+          "enumDescriptions": [
+            "Unspecified data type.",
+            "A boolean setting.",
+            "A string setting.",
+            "A string set setting."
+          ],
           "enum": [
             "DATA_TYPE_UNSPECIFIED",
             "BOOLEAN",
@@ -166,7 +172,7 @@
           ]
         },
         "defaultValue": {
-          "description": "The value received by\nLookupEffectiveSettingValue\nif no setting value is explicitly set.\n\nNote: not all settings have a default value.",
+          "description": "The value received by LookupEffectiveSettingValue if no setting value is explicitly set. Note: not all settings have a default value.",
           "$ref": "GoogleCloudResourcesettingsV1alpha1Value"
         }
       }
@@ -192,7 +198,7 @@
     },
     "GoogleCloudResourcesettingsV1alpha1ValueStringSet": {
       "id": "GoogleCloudResourcesettingsV1alpha1ValueStringSet",
-      "description": "A string set value that can hold a set of strings. The maximum length of\neach string is 60 characters and there can be a maximum of 50 strings in\nthe string set.",
+      "description": "A string set value that can hold a set of strings. The maximum length of each string is 60 characters and there can be a maximum of 50 strings in the string set.",
       "type": "object",
       "properties": {
         "values": {
@@ -224,27 +230,27 @@
     },
     "GoogleCloudResourcesettingsV1alpha1SettingValue": {
       "id": "GoogleCloudResourcesettingsV1alpha1SettingValue",
-      "description": "The instantiation of a setting. Every setting value is parented by its\ncorresponding setting.",
+      "description": "The instantiation of a setting. Every setting value is parented by its corresponding setting.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the setting value. Must be in one of the following\nforms:\n\n* `projects\/{project_number}\/settings\/{setting_name}\/value`\n* `folders\/{folder_id}\/settings\/{setting_name}\/value`\n* `organizations\/{organization_id}\/settings\/{setting_name}\/value`\n\nFor example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+          "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
           "type": "string"
         },
         "value": {
-          "description": "The value of the setting. The data type of Value must always be\nconsistent with the data type defined by the parent setting.",
+          "description": "The value of the setting. The data type of Value must always be consistent with the data type defined by the parent setting.",
           "$ref": "GoogleCloudResourcesettingsV1alpha1Value"
         },
         "etag": {
-          "description": "A fingerprint used for optimistic concurrency. See\nUpdateSettingValue for more\ndetails.",
+          "description": "A fingerprint used for optimistic concurrency. See UpdateSettingValue for more details.",
           "type": "string"
         },
         "readOnly": {
-          "description": "Output only. A flag indicating that this setting value cannot be modified;\nhowever, it may be deleted using\nDeleteSettingValue if\nDeleteSettingValueRequest.ignore_read_only is set to true. Using this\nflag is considered an acknowledgement that the setting value cannot be\nrecreated. This flag is inherited from its parent setting and is for\nconvenience purposes. See Setting.read_only for more details.",
+          "description": "Output only. A flag indicating that this setting value cannot be modified; however, it may be deleted using DeleteSettingValue if DeleteSettingValueRequest.ignore_read_only is set to true. Using this flag is considered an acknowledgement that the setting value cannot be recreated. This flag is inherited from its parent setting and is for convenience purposes. See Setting.read_only for more details.",
           "type": "boolean"
         },
         "updateTime": {
-          "description": "Output only. The timestamp indicating when the setting value was last\nupdated.",
+          "description": "Output only. The timestamp indicating when the setting value was last updated.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -252,7 +258,7 @@
     },
     "GoogleProtobufEmpty": {
       "id": "GoogleProtobufEmpty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
       }
@@ -270,7 +276,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the\nfollowing forms:\n\n* `projects\/{project_number}`\n* `projects\/{project_id}`\n* `folders\/{folder_id}`\n* `organizations\/{organization_id}`",
+                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -306,7 +312,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the\nfollowing forms:\n\n* `projects\/{project_number}`\n* `projects\/{project_id}`\n* `folders\/{folder_id}`\n* `organizations\/{organization_id}`",
+                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -333,7 +339,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Searches for all setting values that exist on the resource `parent`. The\nsetting values are not limited to those of a particular setting."
+              "description": "Searches for all setting values that exist on the resource `parent`. The setting values are not limited to those of a particular setting."
             },
             "getValue": {
               "id": "resourcesettings.organizations.settings.getValue",
@@ -342,7 +348,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to get. See SettingValue for naming\nrequirements.",
+                  "description": "The name of the setting value to get. See SettingValue for naming requirements.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -358,7 +364,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a setting value.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting value does not exist."
+              "description": "Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist."
             },
             "lookupEffectiveValue": {
               "id": "resourcesettings.organizations.settings.lookupEffectiveValue",
@@ -367,7 +373,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The setting for which an effective value will be evaluated. See Setting\nfor naming requirements.",
+                  "description": "The setting for which an effective value will be evaluated. See Setting for naming requirements.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+$",
@@ -383,7 +389,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Computes the effective setting value of a setting at the Cloud resource\n`parent`. The effective setting value is the calculated setting value at a\nCloud resource and evaluates to one of the following options in the given\norder (the next option is used if the previous one does not exist):\n\n1. the setting value on the given resource\n2. the setting value on the given resource's nearest ancestor\n3. the setting's default value\n4. an empty setting value, defined as a `SettingValue` with all fields\nunset\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting does not exist."
+              "description": "Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
             },
             "updateValue": {
               "id": "resourcesettings.organizations.settings.updateValue",
@@ -392,7 +398,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the setting value. Must be in one of the following\nforms:\n\n* `projects\/{project_number}\/settings\/{setting_name}\/value`\n* `folders\/{folder_id}\/settings\/{setting_name}\/value`\n* `organizations\/{organization_id}\/settings\/{setting_name}\/value`\n\nFor example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                  "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -411,7 +417,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a setting value.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting or the setting value does not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only.\nReturns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag\nsupplied in the request does not match the persisted etag of the setting\nvalue.\n\nNote: the supplied setting value will perform a full overwrite of all\nfields."
+              "description": "Updates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. Note: the supplied setting value will perform a full overwrite of all fields."
             },
             "deleteValue": {
               "id": "resourcesettings.organizations.settings.deleteValue",
@@ -420,14 +426,14 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to delete. See SettingValue for naming\nrequirements.",
+                  "description": "The name of the setting value to delete. See SettingValue for naming requirements.",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 },
                 "ignoreReadOnly": {
-                  "description": "A flag that allows the deletion of the value of a `read_only` setting.\nWARNING: use at your own risk. Deleting the value of a read only setting is\nan irreversible action (i.e., it cannot be created again).",
+                  "description": "A flag that allows the deletion of the value of a `read_only` setting. WARNING: use at your own risk. Deleting the value of a read only setting is an irreversible action (i.e., it cannot be created again).",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -441,7 +447,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a setting value. If the setting value does not exist, the operation\nis a no-op.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting or the setting value does not exist. The setting value will not\nexist if a prior call to `DeleteSetting` for the setting value already\nreturned a success code.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only."
+              "description": "Deletes a setting value. If the setting value does not exist, the operation is a no-op. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. The setting value will not exist if a prior call to `DeleteSetting` for the setting value already returned a success code. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only."
             }
           }
           ,
@@ -455,7 +461,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the setting value. Must be in one of the following\nforms:\n\n* `projects\/{project_number}\/settings\/{setting_name}\/value`\n* `folders\/{folder_id}\/settings\/{setting_name}\/value`\n* `organizations\/{organization_id}\/settings\/{setting_name}\/value`\n\nFor example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                      "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -474,7 +480,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a setting value.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting does not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the\nsetting value already exists on the given Cloud resource.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only."
+                  "description": "Creates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the setting value already exists on the given Cloud resource. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only."
                 }
               }
             }
@@ -493,7 +499,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the\nfollowing forms:\n\n* `projects\/{project_number}`\n* `projects\/{project_id}`\n* `folders\/{folder_id}`\n* `organizations\/{organization_id}`",
+                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+$",
@@ -529,7 +535,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the\nfollowing forms:\n\n* `projects\/{project_number}`\n* `projects\/{project_id}`\n* `folders\/{folder_id}`\n* `organizations\/{organization_id}`",
+                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+$",
@@ -556,7 +562,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Searches for all setting values that exist on the resource `parent`. The\nsetting values are not limited to those of a particular setting."
+              "description": "Searches for all setting values that exist on the resource `parent`. The setting values are not limited to those of a particular setting."
             },
             "getValue": {
               "id": "resourcesettings.folders.settings.getValue",
@@ -565,7 +571,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to get. See SettingValue for naming\nrequirements.",
+                  "description": "The name of the setting value to get. See SettingValue for naming requirements.",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -581,7 +587,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a setting value.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting value does not exist."
+              "description": "Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist."
             },
             "lookupEffectiveValue": {
               "id": "resourcesettings.folders.settings.lookupEffectiveValue",
@@ -590,7 +596,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The setting for which an effective value will be evaluated. See Setting\nfor naming requirements.",
+                  "description": "The setting for which an effective value will be evaluated. See Setting for naming requirements.",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+\/settings\/[^\/]+$",
@@ -606,7 +612,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Computes the effective setting value of a setting at the Cloud resource\n`parent`. The effective setting value is the calculated setting value at a\nCloud resource and evaluates to one of the following options in the given\norder (the next option is used if the previous one does not exist):\n\n1. the setting value on the given resource\n2. the setting value on the given resource's nearest ancestor\n3. the setting's default value\n4. an empty setting value, defined as a `SettingValue` with all fields\nunset\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting does not exist."
+              "description": "Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
             },
             "updateValue": {
               "id": "resourcesettings.folders.settings.updateValue",
@@ -615,7 +621,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the setting value. Must be in one of the following\nforms:\n\n* `projects\/{project_number}\/settings\/{setting_name}\/value`\n* `folders\/{folder_id}\/settings\/{setting_name}\/value`\n* `organizations\/{organization_id}\/settings\/{setting_name}\/value`\n\nFor example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                  "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -634,7 +640,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a setting value.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting or the setting value does not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only.\nReturns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag\nsupplied in the request does not match the persisted etag of the setting\nvalue.\n\nNote: the supplied setting value will perform a full overwrite of all\nfields."
+              "description": "Updates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. Note: the supplied setting value will perform a full overwrite of all fields."
             },
             "deleteValue": {
               "id": "resourcesettings.folders.settings.deleteValue",
@@ -643,14 +649,14 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to delete. See SettingValue for naming\nrequirements.",
+                  "description": "The name of the setting value to delete. See SettingValue for naming requirements.",
                   "location": "path",
                   "required": true,
                   "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 },
                 "ignoreReadOnly": {
-                  "description": "A flag that allows the deletion of the value of a `read_only` setting.\nWARNING: use at your own risk. Deleting the value of a read only setting is\nan irreversible action (i.e., it cannot be created again).",
+                  "description": "A flag that allows the deletion of the value of a `read_only` setting. WARNING: use at your own risk. Deleting the value of a read only setting is an irreversible action (i.e., it cannot be created again).",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -664,7 +670,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a setting value. If the setting value does not exist, the operation\nis a no-op.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting or the setting value does not exist. The setting value will not\nexist if a prior call to `DeleteSetting` for the setting value already\nreturned a success code.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only."
+              "description": "Deletes a setting value. If the setting value does not exist, the operation is a no-op. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. The setting value will not exist if a prior call to `DeleteSetting` for the setting value already returned a success code. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only."
             }
           }
           ,
@@ -678,7 +684,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the setting value. Must be in one of the following\nforms:\n\n* `projects\/{project_number}\/settings\/{setting_name}\/value`\n* `folders\/{folder_id}\/settings\/{setting_name}\/value`\n* `organizations\/{organization_id}\/settings\/{setting_name}\/value`\n\nFor example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                      "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^folders\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -697,7 +703,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a setting value.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting does not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the\nsetting value already exists on the given Cloud resource.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only."
+                  "description": "Creates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the setting value already exists on the given Cloud resource. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only."
                 }
               }
             }
@@ -716,7 +722,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the\nfollowing forms:\n\n* `projects\/{project_number}`\n* `projects\/{project_id}`\n* `folders\/{folder_id}`\n* `organizations\/{organization_id}`",
+                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -752,7 +758,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The Cloud resource that parents the setting. Must be in one of the\nfollowing forms:\n\n* `projects\/{project_number}`\n* `projects\/{project_id}`\n* `folders\/{folder_id}`\n* `organizations\/{organization_id}`",
+                  "description": "The Cloud resource that parents the setting. Must be in one of the following forms: * `projects\/{project_number}` * `projects\/{project_id}` * `folders\/{folder_id}` * `organizations\/{organization_id}`",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -779,7 +785,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Searches for all setting values that exist on the resource `parent`. The\nsetting values are not limited to those of a particular setting."
+              "description": "Searches for all setting values that exist on the resource `parent`. The setting values are not limited to those of a particular setting."
             },
             "getValue": {
               "id": "resourcesettings.projects.settings.getValue",
@@ -788,7 +794,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to get. See SettingValue for naming\nrequirements.",
+                  "description": "The name of the setting value to get. See SettingValue for naming requirements.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -804,7 +810,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a setting value.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting value does not exist."
+              "description": "Gets a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting value does not exist."
             },
             "lookupEffectiveValue": {
               "id": "resourcesettings.projects.settings.lookupEffectiveValue",
@@ -813,7 +819,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The setting for which an effective value will be evaluated. See Setting\nfor naming requirements.",
+                  "description": "The setting for which an effective value will be evaluated. See Setting for naming requirements.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/settings\/[^\/]+$",
@@ -829,7 +835,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Computes the effective setting value of a setting at the Cloud resource\n`parent`. The effective setting value is the calculated setting value at a\nCloud resource and evaluates to one of the following options in the given\norder (the next option is used if the previous one does not exist):\n\n1. the setting value on the given resource\n2. the setting value on the given resource's nearest ancestor\n3. the setting's default value\n4. an empty setting value, defined as a `SettingValue` with all fields\nunset\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting does not exist."
+              "description": "Computes the effective setting value of a setting at the Cloud resource `parent`. The effective setting value is the calculated setting value at a Cloud resource and evaluates to one of the following options in the given order (the next option is used if the previous one does not exist): 1. the setting value on the given resource 2. the setting value on the given resource's nearest ancestor 3. the setting's default value 4. an empty setting value, defined as a `SettingValue` with all fields unset Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist."
             },
             "updateValue": {
               "id": "resourcesettings.projects.settings.updateValue",
@@ -838,7 +844,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The resource name of the setting value. Must be in one of the following\nforms:\n\n* `projects\/{project_number}\/settings\/{setting_name}\/value`\n* `folders\/{folder_id}\/settings\/{setting_name}\/value`\n* `organizations\/{organization_id}\/settings\/{setting_name}\/value`\n\nFor example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                  "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -857,7 +863,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a setting value.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting or the setting value does not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only.\nReturns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag\nsupplied in the request does not match the persisted etag of the setting\nvalue.\n\nNote: the supplied setting value will perform a full overwrite of all\nfields."
+              "description": "Updates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the setting value. Note: the supplied setting value will perform a full overwrite of all fields."
             },
             "deleteValue": {
               "id": "resourcesettings.projects.settings.deleteValue",
@@ -866,14 +872,14 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "The name of the setting value to delete. See SettingValue for naming\nrequirements.",
+                  "description": "The name of the setting value to delete. See SettingValue for naming requirements.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
                   "type": "string"
                 },
                 "ignoreReadOnly": {
-                  "description": "A flag that allows the deletion of the value of a `read_only` setting.\nWARNING: use at your own risk. Deleting the value of a read only setting is\nan irreversible action (i.e., it cannot be created again).",
+                  "description": "A flag that allows the deletion of the value of a `read_only` setting. WARNING: use at your own risk. Deleting the value of a read only setting is an irreversible action (i.e., it cannot be created again).",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -887,7 +893,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a setting value. If the setting value does not exist, the operation\nis a no-op.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting or the setting value does not exist. The setting value will not\nexist if a prior call to `DeleteSetting` for the setting value already\nreturned a success code.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only."
+              "description": "Deletes a setting value. If the setting value does not exist, the operation is a no-op. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting or the setting value does not exist. The setting value will not exist if a prior call to `DeleteSetting` for the setting value already returned a success code. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only."
             }
           }
           ,
@@ -901,7 +907,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the setting value. Must be in one of the following\nforms:\n\n* `projects\/{project_number}\/settings\/{setting_name}\/value`\n* `folders\/{folder_id}\/settings\/{setting_name}\/value`\n* `organizations\/{organization_id}\/settings\/{setting_name}\/value`\n\nFor example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
+                      "description": "The resource name of the setting value. Must be in one of the following forms: * `projects\/{project_number}\/settings\/{setting_name}\/value` * `folders\/{folder_id}\/settings\/{setting_name}\/value` * `organizations\/{organization_id}\/settings\/{setting_name}\/value` For example, \"\/projects\/123\/settings\/gcp-enableMyFeature\/value\"",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/settings\/[^\/]+\/value$",
@@ -920,7 +926,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a setting value.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting does not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the\nsetting value already exists on the given Cloud resource.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only."
+                  "description": "Creates a setting value. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the setting does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the setting value already exists on the given Cloud resource. Returns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if the setting is flagged as read only."
                 }
               }
             }
