@@ -433,6 +433,23 @@ def AddUpdateArgs(parser):
   Args:
     parser: A given parser.
   """
+  parser.add_argument(
+      '--etag',
+      metavar='ETAG',
+      type=str,
+      help="""\
+      Etag of the policy.
+
+      ``etag'' is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other.
+      It is strongly suggested that systems make use of the ``etag'' in the
+      read-modify-write cycle to perform policy updates in order to avoid
+      race conditions: an ``etag'' is returned in the response of a ``describe''
+      command, and systems are expected to put that ``etag'' in the request to
+      an ``update'' command to ensure that their change will
+      be applied to the same version of the policy.
+      """,
+  )
   group_labels_args = parser.add_mutually_exclusive_group()
   _AddGroupLabelsArgument(group_labels_args)
   group_labels_args.add_argument(

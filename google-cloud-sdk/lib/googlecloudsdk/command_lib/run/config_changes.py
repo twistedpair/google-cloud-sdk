@@ -512,6 +512,9 @@ class ServiceAccountChanges(ConfigChanger):
     return resource
 
 
+_MAX_RESOURCE_NAME_LENGTH = 63
+
+
 class RevisionNameChanges(ConfigChanger):
   """Represents the user intent to change revision name."""
 
@@ -521,7 +524,9 @@ class RevisionNameChanges(ConfigChanger):
 
   def Adjust(self, resource):
     """Mutates the given config's revision name to match what's desired."""
-    resource.template.name = '{}-{}'.format(resource.name,
+    max_prefix_length = (
+        _MAX_RESOURCE_NAME_LENGTH - len(self._revision_suffix) - 1)
+    resource.template.name = '{}-{}'.format(resource.name[:max_prefix_length],
                                             self._revision_suffix)
     return resource
 

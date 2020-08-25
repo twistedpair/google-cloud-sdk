@@ -424,9 +424,12 @@ class ConfigSync(_messages.Message):
 
   Fields:
     git: Git repo configuration for the cluster.
+    sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
+      or "unstructured" mode.
   """
 
   git = _messages.MessageField('GitConfig', 1)
+  sourceFormat = _messages.StringField(2)
 
 
 class ConfigSyncDeploymentState(_messages.Message):
@@ -1041,6 +1044,8 @@ class GitConfig(_messages.Message):
   r"""Git repo configuration for a single cluster.
 
   Fields:
+    httpsProxy: URL for the HTTPS proxy to be used when communicating with the
+      Git repo.
     policyDir: The path within the Git repository that represents the top
       level of the repo to sync. Default: the root directory of the
       repository.
@@ -1051,12 +1056,13 @@ class GitConfig(_messages.Message):
     syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
   """
 
-  policyDir = _messages.StringField(1)
-  secretType = _messages.StringField(2)
-  syncBranch = _messages.StringField(3)
-  syncRepo = _messages.StringField(4)
-  syncRev = _messages.StringField(5)
-  syncWaitSecs = _messages.IntegerField(6)
+  httpsProxy = _messages.StringField(1)
+  policyDir = _messages.StringField(2)
+  secretType = _messages.StringField(3)
+  syncBranch = _messages.StringField(4)
+  syncRepo = _messages.StringField(5)
+  syncRev = _messages.StringField(6)
+  syncWaitSecs = _messages.IntegerField(7)
 
 
 class GkehubProjectsLocationsFeaturesGetIamPolicyRequest(_messages.Message):

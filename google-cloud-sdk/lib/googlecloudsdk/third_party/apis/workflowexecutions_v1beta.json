@@ -152,13 +152,6 @@
         },
         "state": {
           "description": "Output only. Current state of the execution.",
-          "enumDescriptions": [
-            "Invalid state.",
-            "The execution is in progress.",
-            "The execution finished successfully.",
-            "The execution failed with an error.",
-            "The execution was stopped intentionally."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

@@ -22,6 +22,8 @@ from __future__ import unicode_literals
 import abc
 import collections
 import fnmatch
+import glob
+import os
 import re
 
 from googlecloudsdk.api_lib.storage import api_factory
@@ -46,9 +48,10 @@ def get_wildcard_iterator(url_str, all_versions=False):
     A WildcardIterator object.
   """
   url = storage_url.storage_url_from_string(url_str)
-  # TODO(b/160593328) Add support for FileUrl.
   if isinstance(url, storage_url.CloudUrl):
     return CloudWildcardIterator(url, all_versions)
+  elif isinstance(url, storage_url.FileUrl):
+    return FileWildcardIterator(url)
   else:
     raise errors.InvalidUrlError('Unknown url type %s.' % url)
 
@@ -64,6 +67,35 @@ class WildcardIterator(six.with_metaclass(abc.ABCMeta)):
   def __repr__(self):
     """Returns string representation of WildcardIterator."""
     return 'WildcardIterator(%s)' % self.wildcard_url.url_string
+
+
+class FileWildcardIterator(WildcardIterator):
+  """Class to iterate over files and directories."""
+
+  def __init__(self, url):
+    """Initialize FileWildcardIterator instance.
+
+    Args:
+      url (FileUrl): A FileUrl instance representing a file path.
+    """
+    super().__init__()
+    self._path = url.object_name
+
+  def __iter__(self):
+    recursion_needed = '**' in self._path
+    for index, path in enumerate(glob.iglob(self._path,
+                                            recursive=recursion_needed)):
+      # For pattern like foo/bar/**, glob returns first path as 'foo/bar/'.
+      # This gets returned even when foo/bar does not exist.
+      # Hence, ignore the first path if the request endswith '**'.
+      if index == 0 and self._path.endswith('**') and path.endswith(os.sep):
+        continue
+
+      file_url = storage_url.FileUrl(path)
+      if os.path.isdir(path):
+        yield resource_reference.FileDirectoryResource(file_url)
+      else:
+        yield resource_reference.FileObjectResource(file_url)
 
 
 class CloudWildcardIterator(WildcardIterator):
@@ -180,8 +212,7 @@ class CloudWildcardIterator(WildcardIterator):
     if _contains_wildcard(self._url.bucket_name):
       return self._expand_bucket_wildcards(self._url.bucket_name)
     elif self._url.is_bucket():
-      # TODO(b/161224037) get_bucket has not been implemented yet.
-      return  [self._client.get_bucket(self._url)]
+      return  [self._client.GetBucket(self._url.bucket_name)]
     else:
       return [resource_reference.BucketResource(
           storage_url=self._url, metadata_object=None)]

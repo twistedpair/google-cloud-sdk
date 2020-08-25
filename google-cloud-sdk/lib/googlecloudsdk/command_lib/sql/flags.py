@@ -274,6 +274,7 @@ def AddDatabaseVersion(parser, restrict_choices=True):
   choices = [
       'MYSQL_5_6',
       'MYSQL_5_7',
+      'MYSQL_8_0',
       'POSTGRES_9_6',
       'POSTGRES_10',
       'POSTGRES_11',

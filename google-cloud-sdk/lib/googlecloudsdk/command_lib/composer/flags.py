@@ -532,6 +532,27 @@ CLOUD_SQL_IPV4_CIDR_FLAG = base.Argument(
     """)
 
 
+def GetAndValidateKmsEncryptionKey(args):
+  """Validates the KMS key name.
+
+  Args:
+    args: list of all the arguments
+
+  Returns:
+    string, a fully qualified KMS resource name
+
+  Raises:
+    exceptions.InvalidArgumentException: key name not fully specified
+  """
+  kms_ref = args.CONCEPTS.kms_key.Parse()
+  if kms_ref:
+    return kms_ref.RelativeName()
+  for keyword in ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']:
+    if getattr(args, keyword.replace('-', '_'), None):
+      raise exceptions.InvalidArgumentException(
+          '--kms-key', 'Encryption key not fully specified.')
+
+
 def AddImportSourceFlag(parser, folder):
   """Adds a --source flag for a storage import command to a parser.
 

@@ -162,6 +162,28 @@ class CloudApi(object):
     """
     raise NotImplementedError('ListObjects must be overridden.')
 
+  def DeleteObject(self,
+                   bucket_name,
+                   object_name,
+                   generation=None,
+                   request_config=None):
+    """Deletes an object.
+
+    Args:
+      bucket_name (str): Name of the containing bucket.
+      object_name (str): Name of the object to delete.
+      generation (int): Generation (or version) of the object to delete.
+          If None, deletes the live object.
+      request_config (RequestConfig): Object containing general API function
+          arguments. Subclasses for specific cloud providers are available.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+          this interface.
+    """
+    raise NotImplementedError('DeleteObject must be overridden.')
+
   def GetObjectMetadata(self,
                         bucket_name,
                         object_name,
@@ -176,7 +198,7 @@ class CloudApi(object):
     Args:
       bucket_name (str): Bucket containing the object.
       object_name (str): Object name.
-      generation (long): Generation of the object to retrieve.
+      generation (string): Generation of the object to retrieve.
       fields_scope (FieldsScope): Determines the fields and projection
           parameters of API call.
 
@@ -207,7 +229,7 @@ class CloudApi(object):
           updated.
       fields_scope (FieldsScope): Determines the fields and projection
           parameters of API call.
-      generation (long): Generation (or version) of the object to update.
+      generation (string): Generation (or version) of the object to update.
       request_config (RequestConfig): Object containing general API function
           arguments. Subclasses for specific cloud providers are available.
 
@@ -235,7 +257,8 @@ class CloudApi(object):
           source object. Must include bucket name, object name, and etag.
       destination_object_metadata (apitools.messages.Object): Object metadata
           for new object. Must include bucket and object name.
-      source_object_generation (long): Generation of the source object to copy.
+      source_object_generation (string): Generation of the source object to
+          copy.
       progress_callback (function): Optional callback function for progress
           notifications. Receives calls with arguments (bytes_transferred,
           total_size).
@@ -284,7 +307,7 @@ class CloudApi(object):
           successfully digested on-the-fly.
       download_strategy (DownloadStrategy): Cloud API download strategy to use
           for download.
-      generation (long): Generation of the object to retrieve.
+      generation (string): Generation of the object to retrieve.
       object_size (int): Total size of the object being downloaded.
       progress_callback (function): Optional callback function for progress
           notifications. Receives calls with arguments

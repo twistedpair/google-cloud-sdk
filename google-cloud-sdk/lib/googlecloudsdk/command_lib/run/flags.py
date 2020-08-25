@@ -119,7 +119,6 @@ def AddConfigFlags(parser):
       help='The YAML or JSON file to use as the build configuration file.')
   build_config.add_argument(
       '--pack',
-      hidden=True,
       type=arg_parsers.ArgDict(
           spec={
               'image': str,
@@ -1521,6 +1520,7 @@ def ValidatePlatformIsManaged(unused_ref, unused_args, req):
   return req
 
 
+# TODO(b/165145546): Remove advanced build flags for 'gcloud run deploy'
 def AddBuildTimeoutFlag(parser):
   parser.add_argument(
       '--build-timeout',
@@ -1536,7 +1536,6 @@ def AddSourceFlag(parser):
   """Add deploy source flags, an image or a source for build."""
   parser.add_argument(
       '--source',
-      hidden=True,
       help='The location of the source to build. The location can be a '
       'directory on a local disk or a gzipped archive file (.tar.gz) in '
       'Google Cloud Storage. If the source is a local directory, this '

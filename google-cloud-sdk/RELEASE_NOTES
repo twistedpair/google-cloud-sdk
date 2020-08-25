@@ -6,6 +6,71 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 307.0.0 (2020-08-25)
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.82.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Cloud Dataflow
+
+* Promoted `gcloud dataflow flex-template build` to GA.
+Promoted `gcloud dataflow flex-template run` to GA.
+
+### Cloud Run
+
+* Changed the generation of revision names. If the generated revision name
+  is longer than the knative resource name length limit (63 characters), shorten
+  the part of the service name used as a prefix until the revision name is no
+  longer than the maximum knative resource name.
+
+### Cloud SQL
+
+* Promoted MySQL 8 to GA.
+
+### Cloud Security Command Center
+
+* Promoted `gcloud scc notifications` command group to beta and GA.
+* Promote `gcloud scc [operations|sources|findings]` to beta and GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.53.
+
+### Compute Engine
+
+* Promoted 'SHARED_LOADBALANCER_VIP' option of  `--purpose` flag of `gcloud compute addresses create` to GA.
+* Promoted `--logging-metadata` flag to GA for
+  * `gcloud compute firewall-rules create`
+  * `gcloud compute firewall-rules update`.
+* Promoted `--network`, `--subnetwork`, and `--private-network-ip` flags of
+`gcloud compute instances network-interfaces update` to beta.
+
+### Firebase Test Lab
+
+*   Added `--additional-ipas` flag to `gcloud beta firebase test ios run`. This
+    flag allows you to specify additional iOS apps that should be installed on
+    the device prior to testing.
+
+### Kpt
+
+* Updated kpt from v0.30.1 to v0.33.0.
+* Updated import of cli-utils from v0.15.0 to v0.18.1.
+* Updated import of kyaml from v0.3.1 to v0.6.0.
+* Updated import of cmd/config from v0.3.0 to v0.6.0.
+
+### Kubernetes Engine
+
+* Promoted `--enable-master-global-access` flag of `gcloud container clusters
+  <create|update>` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 306.0.0 (2020-08-18)
 
 ### BigQuery

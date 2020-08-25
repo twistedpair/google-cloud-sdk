@@ -31,6 +31,10 @@ def GetClientInstance(version='v1alpha1', no_http=False):
   return apis.GetClientInstance('apigateway', version, no_http=no_http)
 
 
+def GetMessagesModule(version='v1alpha1'):
+  return apis.GetMessagesModule('apigateway', version)
+
+
 class BaseClient(object):
   """Base for building API Clients."""
 

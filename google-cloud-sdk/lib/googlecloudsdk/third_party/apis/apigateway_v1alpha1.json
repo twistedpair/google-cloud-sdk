@@ -267,14 +267,6 @@
         },
         "state": {
           "description": "Output only. The current state of the Gateway.",
-          "enumDescriptions": [
-            "Gateway does not have a state yet.",
-            "Gateway is being created.",
-            "Gateway is running and ready for requests.",
-            "Gateway creation failed.",
-            "Gateway is being deleted.",
-            "Gateway is being updated."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -369,14 +361,6 @@
         },
         "state": {
           "description": "Output only. State of the API.",
-          "enumDescriptions": [
-            "API does not have a state yet.",
-            "API is being created.",
-            "API is active.",
-            "API creation failed.",
-            "API is being deleted.",
-            "API is being updated."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -482,15 +466,6 @@
         },
         "state": {
           "description": "Output only. State of the API Config.",
-          "enumDescriptions": [
-            "API Config does not have a state yet.",
-            "API Config is being created and deployed to the API Controller.",
-            "API Config is ready for use by Gateways.",
-            "API Config creation failed.",
-            "API Config is being deleted.",
-            "API Config is being updated.",
-            "API Config settings are being activated in downstream systems. API Configs in this state cannot be used by Gateways.."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -782,12 +757,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",

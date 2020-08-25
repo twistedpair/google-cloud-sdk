@@ -152,13 +152,6 @@
         },
         "state": {
           "description": "Output only. Current state of Cloud Workflow Execution.",
-          "enumDescriptions": [
-            "Invalid state.",
-            "The Workflow Execution is in progress.",
-            "The Workflow Execution has finished successfully.",
-            "The Workflow Execution failed with an error.",
-            "The Workflow Execution has been stopped intentionally."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

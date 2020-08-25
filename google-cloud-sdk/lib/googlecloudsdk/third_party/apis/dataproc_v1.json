@@ -483,12 +483,6 @@
       "properties": {
         "consumeReservationType": {
           "description": "Optional. Type of reservation to consume",
-          "enumDescriptions": [
-            "",
-            "Do not consume from any allocated capacity.",
-            "Consume any reservation available.",
-            "Must consume from a specific reservation. Must specify key value fields for specifying the reservations."
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -561,11 +555,6 @@
         },
         "preemptibility": {
           "description": "Optional. Specifies the preemptibility of the instance group.The default value for master and worker groups is NON_PREEMPTIBLE. This default cannot be changed.The default value for secondary instances is PREEMPTIBLE.",
-          "enumDescriptions": [
-            "Preemptibility is unspecified, the system will choose the appropriate setting for each instance group.",
-            "Instances are non-preemptible.This option is allowed for all instance groups and is the only valid value for Master and Worker instance groups.",
-            "Instances are preemptible.This option is allowed only for secondary worker groups."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Preemptibility is unspecified, the system will choose the appropriate setting for each instance group.",
@@ -683,22 +672,6 @@
         },
         "optionalComponents": {
           "description": "Optional. The set of components to activate on the cluster.",
-          "enumDescriptions": [
-            "Unspecified component. Specifying this will cause Cluster creation to fail.",
-            "The Anaconda python distribution.",
-            "Docker",
-            "The Druid query engine.",
-            "Flink",
-            "HBase.",
-            "The Hive Web HCatalog (the REST service for accessing HCatalog).",
-            "The Jupyter Notebook.",
-            "The Kerberos security feature.",
-            "The Presto query engine.",
-            "The Ranger service.",
-            "The Solr service.",
-            "The Zeppelin notebook.",
-            "The Zookeeper service."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -909,17 +882,6 @@
       "properties": {
         "state": {
           "description": "Output only. The cluster's state.",
-          "enumDescriptions": [
-            "The cluster state is unknown.",
-            "The cluster is being created and set up. It is not ready for use.",
-            "The cluster is currently running and healthy. It is ready for use.",
-            "The cluster encountered an error. It is not ready for use.",
-            "The cluster is being deleted. It cannot be used.",
-            "The cluster is being updated. It continues to accept and process jobs.",
-            "The cluster is being stopped. It cannot be used.",
-            "The cluster is currently stopped. It is not ready for use.",
-            "The cluster is being started. It is not ready for use."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -958,11 +920,6 @@
         },
         "substate": {
           "description": "Output only. Additional state information that includes status reported by the agent.",
-          "enumDescriptions": [
-            "The cluster substate is unknown.",
-            "The cluster is known to be in an unhealthy state (for example, critical daemons are not running or HDFS capacity is exhausted).Applies to RUNNING state.",
-            "The agent-reported status is out of date (may occur if Dataproc loses communication with Agent).Applies to RUNNING state."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1603,18 +1560,6 @@
       "properties": {
         "state": {
           "description": "Output only. A state message specifying the overall job state.",
-          "enumDescriptions": [
-            "The job state is unknown.",
-            "The job is pending; it has been submitted, but is not yet running.",
-            "Job has been received by the service and completed initial setup; it will soon be submitted to the cluster.",
-            "The job is running on the cluster.",
-            "A CancelJob request has been received, but is pending.",
-            "Transient in-flight resources have been canceled, and the request to cancel the running job has been issued to the cluster.",
-            "The job cancellation was successful.",
-            "The job has completed successfully.",
-            "The job has completed, but encountered an error.",
-            "Job attempt has failed. The detail field contains failure details for this attempt.Applies to restartable jobs only."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1655,12 +1600,6 @@
         },
         "substate": {
           "description": "Output only. Additional state information, which includes status reported by the agent.",
-          "enumDescriptions": [
-            "The job substate is unknown.",
-            "The Job is submitted to the agent.Applies to RUNNING state.",
-            "The Job has been received and is awaiting execution (it may be waiting for a condition to be met). See the \"details\" field for the reason for the delay.Applies to RUNNING state.",
-            "The agent-reported status is out of date, which may be caused by a loss of communication between the agent and Dataproc. If the agent does not send a timely update, the job will fail.Applies to RUNNING state."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1689,17 +1628,6 @@
         },
         "state": {
           "description": "Required. The application state.",
-          "enumDescriptions": [
-            "Status is unspecified.",
-            "Status is NEW.",
-            "Status is NEW_SAVING.",
-            "Status is SUBMITTED.",
-            "Status is ACCEPTED.",
-            "Status is RUNNING.",
-            "Status is FINISHED.",
-            "Status is FAILED.",
-            "Status is KILLED."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Status is unspecified.",
@@ -2252,12 +2180,6 @@
       "properties": {
         "state": {
           "description": "Output only. A message containing the operation state.",
-          "enumDescriptions": [
-            "Unused.",
-            "The operation has been created.",
-            "The operation is running.",
-            "The operation is done; either cancelled or completed."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -2364,12 +2286,6 @@
         },
         "state": {
           "description": "Output only. The workflow state.",
-          "enumDescriptions": [
-            "Unused.",
-            "The operation has been created.",
-            "The operation is running.",
-            "The operation is done; either cancelled or completed."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -2478,14 +2394,6 @@
         },
         "state": {
           "description": "Output only. The node state.",
-          "enumDescriptions": [
-            "State is unspecified.",
-            "The node is awaiting prerequisite node to finish.",
-            "The node is runnable but not running.",
-            "The node is running.",
-            "The node completed successfully.",
-            "The node failed. A node can be marked FAILED because its ancestor or peer failed."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

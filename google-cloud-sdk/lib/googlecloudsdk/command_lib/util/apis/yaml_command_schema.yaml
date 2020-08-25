@@ -327,6 +327,7 @@ properties:
     - LIST
     - DELETE
     - CREATE
+    - UPDATE
     - WAIT
     - GET_IAM_POLICY
     - SET_IAM_POLICY

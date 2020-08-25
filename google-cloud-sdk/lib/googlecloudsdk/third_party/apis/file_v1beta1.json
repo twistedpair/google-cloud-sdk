@@ -245,15 +245,6 @@
         },
         "state": {
           "description": "Output only. The instance state.",
-          "enumDescriptions": [
-            "State not set.",
-            "The instance is being created.",
-            "The instance is available for use.",
-            "Work is being done on the instance. You can get further details from the `statusMessage` field of the `Instance` resource.",
-            "The instance is shutting down.",
-            "The instance is experiencing an issue and might be unusable. You can get further details from the `statusMessage` field of the `Instance` resource.",
-            "The instance is restoring a snapshot or backup to an existing file share and may be unusable during this time."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -288,14 +279,6 @@
         },
         "tier": {
           "description": "The service tier of the instance.",
-          "enumDescriptions": [
-            "Not set.",
-            "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
-            "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
-            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
-            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
-            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -355,6 +338,10 @@
           "type": "string",
           "format": "int64"
         },
+        "sourceBackup": {
+          "description": "The resource name of the backup, in the format projects\/{project_id}\/locations\/{location_id}\/backups\/{backup_id}, that this file share has been restored from.",
+          "type": "string"
+        },
         "nfsExportOptions": {
           "description": "Nfs Export Options. There is a limit of 10 export options per file share.",
           "type": "array",
@@ -378,11 +365,6 @@
         },
         "accessMode": {
           "description": "Either READ_ONLY, for allowing only read requests on the exported directory, or READ_WRITE, for allowing both read and write requests. The default is READ_WRITE.",
-          "enumDescriptions": [
-            "AccessMode not set.",
-            "The client can only read the file share.",
-            "The client can read and write the file share (default)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "AccessMode not set.",
@@ -397,11 +379,6 @@
         },
         "squashMode": {
           "description": "Either NO_ROOT_SQUASH, for allowing root access on the exported directory, or ROOT_SQUASH, for not allowing root access. The default is NO_ROOT_SQUASH.",
-          "enumDescriptions": [
-            "SquashMode not set.",
-            "The Root user has root access to the file share (default).",
-            "The Root user has squashed access to the anonymous uid\/gid."
-          ],
           "type": "string",
           "enumDescriptions": [
             "SquashMode not set.",
@@ -437,10 +414,6 @@
         },
         "modes": {
           "description": "Internet protocol versions for which the instance has IP addresses assigned. For this version, only MODE_IPV4 is supported.",
-          "enumDescriptions": [
-            "Internet protocol not set.",
-            "Use the IPv4 internet protocol."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -465,6 +438,145 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "RestoreInstanceRequest": {
+      "id": "RestoreInstanceRequest",
+      "description": "RestoreInstanceRequest restores an existing instances's file share from a snapshot or backup.",
+      "type": "object",
+      "properties": {
+        "fileShare": {
+          "description": "Required. Name of the file share in the Cloud Filestore instance that the snapshot is being restored to.",
+          "type": "string"
+        },
+        "sourceSnapshot": {
+          "description": "The resource name of the snapshot, in the format projects\/{project_id}\/locations\/{location_id}\/snapshots\/{snapshot_id}.",
+          "type": "string"
+        },
+        "sourceBackup": {
+          "description": "The resource name of the backup, in the format projects\/{project_id}\/locations\/{location_id}\/backups\/{backup_id}.",
+          "type": "string"
+        }
+      }
+    },
+    "ListBackupsResponse": {
+      "id": "ListBackupsResponse",
+      "description": "ListBackupsResponse is the result of ListBackupsRequest.",
+      "type": "object",
+      "properties": {
+        "backups": {
+          "description": "A list of backups in the project for the specified location. If the {location} value in the request is \"-\", the response contains a list of backups from all locations. If any location is unreachable, the response will only return backups in reachable locations and the \"unreachable\" field will be populated with a list of unreachable locations.",
+          "type": "array",
+          "items": {
+            "$ref": "Backup"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token you can use to retrieve the next page of results. Not returned if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Backup": {
+      "id": "Backup",
+      "description": "A Cloud Filestore backup.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the backup, in the format projects\/{project_id}\/locations\/{location_id}\/backups\/{backup_id}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "description": {
+          "description": "A description of the backup with 2048 characters or less. Requests with longer descriptions will be rejected.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The backup state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State not set.",
+            "Backup is being created.",
+            "Backup has been taken and the operation is being finalized. At this point, changes to the file share will not be reflected in the backup.",
+            "Backup is available for use.",
+            "Backup is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "FINALIZING",
+            "READY",
+            "DELETING"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. The time when the backup was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Resource labels to represent user provided metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "capacityGb": {
+          "description": "Output only. Capacity of the backup. This would be the size of the file share when the backup is restored.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "storageBytes": {
+          "description": "Output only. The size of the storage used by the backup. As backups share storage, this number is expected to change with backup creation\/deletion.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        },
+        "sourceInstance": {
+          "description": "The resource name of the source Cloud Filestore instance, in the format projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}, used to create this backup.",
+          "type": "string"
+        },
+        "sourceFileShare": {
+          "description": "Name of the file share in the source Cloud Filestore instance that the backup is created from.",
+          "type": "string"
+        },
+        "sourceInstanceTier": {
+          "description": "Output only. The service tier of the source Cloud Filestore instance that this backup is created from.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
+            "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
+            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
+            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
+            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
+          ],
+          "enum": [
+            "TIER_UNSPECIFIED",
+            "STANDARD",
+            "PREMIUM",
+            "BASIC_HDD",
+            "BASIC_SSD",
+            "HIGH_SCALE_SSD"
+          ]
+        },
+        "downloadBytes": {
+          "description": "Output only. Amount of bytes that will be downloaded if the backup is restored",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -586,15 +698,6 @@
         },
         "state": {
           "description": "Output only. Current lifecycle state of the resource (e.g. if it's being created or ready to use).",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "Instance is being created.",
-            "Instance has been created and is ready to use.",
-            "Instance is being updated.",
-            "Instance is unheathy and under repair.",
-            "Instance is being deleted.",
-            "Instance encountered an error and is in indeterministic state."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1162,6 +1265,34 @@
                   ],
                   "description": "Updates the settings of a specific instance."
                 },
+                "restore": {
+                  "id": "file.projects.locations.instances.restore",
+                  "path": "v1beta1/{+name}:restore",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:restore",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the instance, in the format projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RestoreInstanceRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Restores an existing instance's file share from a snapshot or backup."
+                },
                 "delete": {
                   "id": "file.projects.locations.instances.delete",
                   "path": "v1beta1/{+name}",
@@ -1186,6 +1317,173 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes an instance."
+                }
+              }
+            },
+            "backups": {
+              "methods": {
+                "list": {
+                  "id": "file.projects.locations.backups.list",
+                  "path": "v1beta1/{+parent}/backups",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/backups",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location for which to retrieve backup information, in the format projects\/{project_id}\/locations\/{location}. In Cloud Filestore, backup locations map to GCP regions, for example **us-west1**. To retrieve backup information for all locations, use \"-\" for the {location} value.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sort results. Supported values are \"name\", \"name desc\" or \"\" (unsorted).",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListBackupsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists all backups in a project for either a specified location or for all locations."
+                },
+                "get": {
+                  "id": "file.projects.locations.backups.get",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The backup resource name, in the format projects\/{project_id}\/locations\/{location}\/backups\/{backup_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Backup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the details of a specific backup."
+                },
+                "create": {
+                  "id": "file.projects.locations.backups.create",
+                  "path": "v1beta1/{+parent}/backups",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/backups",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The backup's project and location, in the format projects\/{project_id}\/locations\/{location}. In Cloud Filestore, backup locations map to GCP regions, for example **us-west1**.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "backupId": {
+                      "description": "Required. The ID to use for the backup. The ID must be unique within the specified project and location. This value must start with a lowercase letter followed by up to 62 lowercase letters, numbers, or hyphens, and cannot end with a hyphen.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Backup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a backup."
+                },
+                "delete": {
+                  "id": "file.projects.locations.backups.delete",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The backup resource name, in the format projects\/{project_id}\/locations\/{location}\/backups\/{backup_id}",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a backup."
+                },
+                "patch": {
+                  "id": "file.projects.locations.backups.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the backup, in the format projects\/{project_id}\/locations\/{location_id}\/backups\/{backup_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/backups\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Backup"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the settings of a specific backup."
                 }
               }
             }

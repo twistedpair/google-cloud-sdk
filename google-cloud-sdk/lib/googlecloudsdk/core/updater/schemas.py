@@ -381,8 +381,8 @@ class ComponentPlatform(object):
     It is a match iff both operating system and architecture match.
 
     Args:
-      platform: platform.Platform, The platform that must be matched.  None will
-        always match.
+      platform: platform.Platform, The platform that must be matched. None will
+        match only platform-independent components.
 
     Returns:
       True if it matches or False if not.

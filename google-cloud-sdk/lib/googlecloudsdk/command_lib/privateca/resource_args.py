@@ -27,6 +27,12 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.privateca import exceptions as privateca_exceptions
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
+
+
+# Flag fallthrough that relies on the privateca/location property.
+LOCATION_PROPERTY_FALLTHROUGH = deps.PropertyFallthrough(
+    properties.VALUES.privateca.location)
 
 
 def ReusableConfigAttributeConfig():
@@ -47,10 +53,11 @@ def CertificateAuthorityAttributeConfig(arg_name='certificate_authority'):
 
 
 def LocationAttributeConfig(arg_name='location', fallthroughs=None):
+  fallthroughs = fallthroughs or [LOCATION_PROPERTY_FALLTHROUGH]
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
       help_text='The location of the {resource}.',
-      fallthroughs=fallthroughs or [])
+      fallthroughs=fallthroughs)
 
 
 def ProjectAttributeConfig(fallthroughs=None):
@@ -71,14 +78,14 @@ def ProjectAttributeConfig(fallthroughs=None):
       fallthroughs=fallthroughs or [])
 
 
-def CreateReusableConfigResourceSpec(location_fallthrough):
+def CreateReusableConfigResourceSpec(location_fallthroughs=None):
   """Create a resource spec for a ReusableConfig.
 
   Defaults to the predefined project for reusable configs.
 
   Args:
-    location_fallthrough: Fallthrough to use for the location of the reusable
-      config, if not explicitly provided.
+    location_fallthroughs: List of fallthroughs to use for the location of the
+      reusable config, if not explicitly provided.
 
   Returns:
     A concepts.ResourceSpec for a reusable config.
@@ -94,7 +101,7 @@ def CreateReusableConfigResourceSpec(location_fallthrough):
       'privateca.projects.locations.reusableConfigs',
       resource_name='reusable config',
       reusableConfigsId=ReusableConfigAttributeConfig(),
-      locationsId=LocationAttributeConfig(fallthroughs=[location_fallthrough]),
+      locationsId=LocationAttributeConfig(fallthroughs=location_fallthroughs),
       projectsId=ProjectAttributeConfig(fallthroughs=[project_fallthrough]))
 
 

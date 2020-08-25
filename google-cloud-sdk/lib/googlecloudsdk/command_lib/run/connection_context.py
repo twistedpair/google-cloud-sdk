@@ -191,8 +191,8 @@ class _GKEConnectionContext(ConnectionInfo):
     # Import http only when needed, as it depends on credential infrastructure
     # which is not needed in all cases.
     assert self.active
-    from googlecloudsdk.core.credentials import http as http_creds  # pylint: disable=g-import-not-at-top
-    http_client = http_creds.Http(
+    from googlecloudsdk.core.credentials import transports  # pylint: disable=g-import-not-at-top
+    http_client = transports.GetApitoolsTransport(
         response_encoding=transport.ENCODING,
         ca_certs=self.ca_certs)
     return http_client
@@ -278,8 +278,8 @@ class _KubeconfigConnectionContext(ConnectionInfo):
       http_client.add_certificate(
           self.client_key, self.client_cert, self.client_cert_domain)
       return http_client
-    from googlecloudsdk.core.credentials import http as http_creds  # pylint: disable=g-import-not-at-top
-    http_client = http_creds.Http(
+    from googlecloudsdk.core.credentials import transports  # pylint: disable=g-import-not-at-top
+    http_client = transports.GetApitoolsTransport(
         response_encoding=transport.ENCODING,
         ca_certs=self.ca_certs)
     return http_client

@@ -542,6 +542,7 @@ def ConvertOpsAgentPolicyToGuestPolicy(messages, ops_agents_policy,
   guest_policy = messages.GuestPolicy(
       description=_CreateDescription(ops_agents_policy.agent_rules,
                                      ops_agents_policy.description),
+      etag=ops_agents_policy.etag,
       assignment=_CreateAssignment(messages,
                                    ops_agents_policy_assignment.group_labels,
                                    ops_agents_policy_assignment.os_types,

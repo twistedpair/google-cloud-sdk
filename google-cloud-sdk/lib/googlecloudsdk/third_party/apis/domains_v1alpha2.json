@@ -215,13 +215,6 @@
         },
         "availability": {
           "description": "Indicates whether the domain is available for registration. This value is accurate when obtained by calling `RetrieveRegisterParameters`, but is approximate when obtained by calling `SearchDomains`.",
-          "enumDescriptions": [
-            "The availability is unspecified.",
-            "The domain is available for registration.",
-            "The domain is not available for registration. Generally this means it is already registered to another party.",
-            "The domain is not currently supported by Cloud Domains, but may be available elsewhere.",
-            "Cloud Domains is unable to determine domain availability, generally due to system maintenance at the domain name registry."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The availability is unspecified.",
@@ -240,12 +233,6 @@
         },
         "supportedPrivacy": {
           "description": "Contact privacy options that the domain supports.",
-          "enumDescriptions": [
-            "The contact privacy settings are undefined.",
-            "All the data from `ContactSettings` is publicly available. When setting this option, you must also provide a `PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field of the request.",
-            "None of the data from `ContactSettings` is publicly available. Instead, proxy contact data is published for your domain. Email sent to the proxy email address is forwarded to the registrant's email address. Cloud Domains provides this privacy proxy service at no additional cost.",
-            "Some data from `ContactSettings` is publicly available. The actual information redacted depends on the domain. For details, see [the registration privacy article](https:\/\/support.google.com\/domains\/answer\/3251242)."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -265,10 +252,6 @@
         },
         "domainNotices": {
           "description": "Notices about special properties of the domain.",
-          "enumDescriptions": [
-            "The notice is undefined.",
-            "Indicates that the domain is preloaded on the HTTP Strict Transport Security list in browsers. Serving a website on such domain requires an SSL certificate. For details, see [how to get an SSL certificate](https:\/\/support.google.com\/domains\/answer\/7638036)."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -331,10 +314,6 @@
         },
         "domainNotices": {
           "description": "The list of domain notices that you acknowledge. Call `RetrieveRegisterParameters` to see the notices that need acknowledgement.",
-          "enumDescriptions": [
-            "The notice is undefined.",
-            "Indicates that the domain is preloaded on the HTTP Strict Transport Security list in browsers. Serving a website on such domain requires an SSL certificate. For details, see [how to get an SSL certificate](https:\/\/support.google.com\/domains\/answer\/7638036)."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -350,10 +329,6 @@
         },
         "contactNotices": {
           "description": "The list of contact notices that the caller acknowledges. The notices required here depend on the values specified in `registration.contact_settings`.",
-          "enumDescriptions": [
-            "The notice is undefined.",
-            "Required when setting the `privacy` field of `ContactSettings` to `PUBLIC_CONTACT_DATA`, which exposes contact data publicly."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -405,14 +380,6 @@
         },
         "state": {
           "description": "Output only. The state of the `Registration`",
-          "enumDescriptions": [
-            "The state is undefined.",
-            "The domain is being registered.",
-            "The domain registration failed. You can delete resources in this state to allow registration to be retried.",
-            "The domain is registered and operational. The domain renews automatically as long as it remains in this state.",
-            "The domain is suspended and inoperative. For more details, see the `issues` field.",
-            "The domain has been exported from Cloud Domains to [Google Domains](https:\/\/domains.google\/). You can no longer update it with this API, and information shown about it may be stale. Without further action, domains in this state expire at their `expire_time`. You can delete the resource after the `expire_time` has passed."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -434,11 +401,6 @@
         },
         "issues": {
           "description": "Output only. The set of issues with the `Registration` that require attention.",
-          "enumDescriptions": [
-            "The issue is undefined.",
-            "Contact the Cloud Support team to resolve a problem with this domain.",
-            "[ICANN](https:\/\/icann.org\/) requires verification of the email address in the `Registration`'s `contact_settings.registrant_contact` field. To verify the email address, follow the instructions in the email the `registrant_contact` receives following registration. If you do not complete email verification within 14 days of registration, the domain is suspended. To resend the verification email, call ConfigureContactSettings and provide the current `registrant_contact.email`."
-          ],
           "readOnly": true,
           "type": "array",
           "items": {
@@ -481,12 +443,6 @@
         },
         "supportedPrivacy": {
           "description": "Output only. Set of options for the `contact_settings.privacy` field that this `Registration` supports.",
-          "enumDescriptions": [
-            "The contact privacy settings are undefined.",
-            "All the data from `ContactSettings` is publicly available. When setting this option, you must also provide a `PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field of the request.",
-            "None of the data from `ContactSettings` is publicly available. Instead, proxy contact data is published for your domain. Email sent to the proxy email address is forwarded to the registrant's email address. Cloud Domains provides this privacy proxy service at no additional cost.",
-            "Some data from `ContactSettings` is publicly available. The actual information redacted depends on the domain. For details, see [the registration privacy article](https:\/\/support.google.com\/domains\/answer\/3251242)."
-          ],
           "readOnly": true,
           "type": "array",
           "items": {
@@ -514,11 +470,6 @@
       "properties": {
         "renewalMethod": {
           "description": "Output only. The renewal method for this `Registration`.",
-          "enumDescriptions": [
-            "The renewal method is undefined.",
-            "The domain is automatically renewed each year . To disable automatic renewals, export the domain by calling `ExportRegistration` .",
-            "The domain must be explicitly renewed each year before its `expire_time`. This option is only available when the `Registration` is in state `EXPORTED`. To manage the domain's current billing and renewal settings, go to [Google Domains](https:\/\/domains.google\/)."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -534,11 +485,6 @@
         },
         "transferLockState": {
           "description": "Controls whether the domain can be transferred to another registrar.",
-          "enumDescriptions": [
-            "The state is unspecified.",
-            "The domain is unlocked and can be transferred to another registrar.",
-            "The domain is locked and cannot be transferred to another registrar."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The state is unspecified.",
@@ -608,21 +554,6 @@
         },
         "algorithm": {
           "description": "The algorithm used to generate the referenced DNSKEY.",
-          "enumDescriptions": [
-            "The algorithm is unspecified.",
-            "DSA\/SHA1. Not recommended for new deployments.",
-            "ECC. Not recommended for new deployments.",
-            "RSA\/SHA-1. Not recommended for new deployments.",
-            "DSA-NSEC3-SHA1. Not recommended for new deployments.",
-            "RSA\/SHA1-NSEC3-SHA1. Not recommended for new deployments.",
-            "RSA\/SHA-256.",
-            "RSA\/SHA-512.",
-            "GOST R 34.10-2001.",
-            "ECDSA Curve P-256 with SHA-256.",
-            "ECDSA Curve P-384 with SHA-384.",
-            "Ed25519.",
-            "Ed448."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The algorithm is unspecified.",
@@ -657,13 +588,6 @@
         },
         "digestType": {
           "description": "The hash function used to generate the digest of the referenced DNSKEY.",
-          "enumDescriptions": [
-            "The DigestType is unspecified.",
-            "SHA-1. Not recommended for new deployments.",
-            "SHA-256.",
-            "GOST R 34.11-94.",
-            "SHA-384."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The DigestType is unspecified.",
@@ -701,11 +625,6 @@
         },
         "dsState": {
           "description": "Required. The state of DS records for this domain. Used to enable or disable automatic DNSSEC.",
-          "enumDescriptions": [
-            "DS state is unspecified.",
-            "DNSSEC is disabled for this domain. No DS records for this domain are published in the parent DNS zone.",
-            "DNSSEC is enabled for this domain. Appropriate DS records for this domain are published in the parent DNS zone. This option is valid only if the DNS zone referenced in the `Registration`'s `dns_provider` field is already DNSSEC-signed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "DS state is unspecified.",
@@ -760,12 +679,6 @@
       "properties": {
         "privacy": {
           "description": "Required. Privacy setting for the contacts associated with the `Registration`.",
-          "enumDescriptions": [
-            "The contact privacy settings are undefined.",
-            "All the data from `ContactSettings` is publicly available. When setting this option, you must also provide a `PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field of the request.",
-            "None of the data from `ContactSettings` is publicly available. Instead, proxy contact data is published for your domain. Email sent to the proxy email address is forwarded to the registrant's email address. Cloud Domains provides this privacy proxy service at no additional cost.",
-            "Some data from `ContactSettings` is publicly available. The actual information redacted depends on the domain. For details, see [the registration privacy article](https:\/\/support.google.com\/domains\/answer\/3251242)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The contact privacy settings are undefined.",
@@ -945,10 +858,6 @@
         },
         "contactNotices": {
           "description": "The list of contact notices that the caller acknowledges. The notices required here depend on the values specified in `contact_settings`.",
-          "enumDescriptions": [
-            "The notice is undefined.",
-            "Required when setting the `privacy` field of `ContactSettings` to `PUBLIC_CONTACT_DATA`, which exposes contact data publicly."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -1178,12 +1087,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -1228,14 +1131,6 @@
         },
         "action": {
           "description": "Required",
-          "enumDescriptions": [
-            "Default no action.",
-            "Matching 'Entries' grant access.",
-            "Matching 'Entries' grant access and the caller promises to log the request per the returned log_configs.",
-            "Matching 'Entries' deny access.",
-            "Matching 'Entries' deny access and the caller promises to log the request per the returned log_configs.",
-            "Matching 'Entries' tell IAM.Check callers to generate logs."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default no action.",
@@ -1291,16 +1186,6 @@
       "properties": {
         "iam": {
           "description": "Trusted attributes supplied by the IAM system.",
-          "enumDescriptions": [
-            "Default non-attribute.",
-            "Either principal or (if present) authority selector.",
-            "The principal (even if an authority selector is present), which must only be used for attribution, not authorization.",
-            "Any of the security realms in the IAMContext (go\/security-realms). When used with IN, the condition indicates \"any of the request's realms match one of the given values; with NOT_IN, \"none of the realms match any of the given values\". Note that a value can be: - 'self' (i.e., allow connections from clients that are in the same security realm) - 'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-region' (i.e., allow connections from clients that are in the same cloud region) - 'guardians' (i.e., allow connections from its guardian realms. See go\/security-realms-glossary#guardian for more information.) - a realm (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups) A match is determined by a realm group membership check performed by a RealmAclRep object (go\/realm-acl-howto). It is not permitted to grant access based on the *absence* of a realm, so realm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
-            "An approver (distinct from the requester) that has authorized this request. When used with IN, the condition indicates that one of the approvers associated with the request matches the specified principal, or is a member of the specified group. Approvers can only grant additional access, and are thus only used in a strictly positive context (e.g. ALLOW\/IN or DENY\/NOT_IN).",
-            "What types of justifications have been supplied with this request. String values should match enum names from security.credentials.JustificationType, e.g. \"MANUAL_STRING\". It is not permitted to grant access based on the *absence* of a justification, so justification conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN). Multiple justifications, e.g., a Buganizer ID and a manually-entered reason, are normal and supported.",
-            "What type of credentials have been supplied with this request. String values should match enum names from security_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access based on the *absence* of a credentials type, so the conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
-            "EXPERIMENTAL -- DO NOT USE. "
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default non-attribute.",
@@ -1325,13 +1210,6 @@
         },
         "sys": {
           "description": "Trusted attributes supplied by any service that owns resources and uses the IAM system for access control.",
-          "enumDescriptions": [
-            "Default non-attribute type",
-            "Region of the resource",
-            "Service name",
-            "Resource name",
-            "IP address of the caller"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default non-attribute type",
@@ -1354,14 +1232,6 @@
         },
         "op": {
           "description": "An operator to apply the subject with.",
-          "enumDescriptions": [
-            "Default no-op.",
-            "DEPRECATED. Use IN instead.",
-            "DEPRECATED. Use NOT_IN instead.",
-            "The condition is true if the subject (or any element of it if it is a set) matches any of the supplied values.",
-            "The condition is true if the subject (or every element of it if it is a set) matches none of the supplied values.",
-            "Subject is discharged"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default no-op.",
@@ -1451,10 +1321,6 @@
       "type": "object",
       "properties": {
         "logMode": {
-          "enumDescriptions": [
-            "Client is not required to write a partial Gin log immediately after the authorization check. If client chooses to write one and it fails, client may either fail open (allow the operation to continue) or fail closed (handle as a DENY outcome).",
-            "The application's operation in the context of which this authorization check is being made may only be performed if it is successfully logged to Gin. For instance, the authorization library may satisfy this obligation by emitting a partial log entry at authorization check time and only returning ALLOW to the application if it succeeds. If a matching Rule has this directive, but the client has not indicated that it will honor such requirements, then the IAM check will result in authorization failure by setting CheckPolicyResponse.success=false."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Client is not required to write a partial Gin log immediately after the authorization check. If client chooses to write one and it fails, client may either fail open (allow the operation to continue) or fail closed (handle as a DENY outcome).",
@@ -1474,11 +1340,6 @@
       "properties": {
         "logName": {
           "description": "The log_name to populate in the Cloud Audit Record.",
-          "enumDescriptions": [
-            "Default. Should not be used.",
-            "Corresponds to \"cloudaudit.googleapis.com\/activity\"",
-            "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default. Should not be used.",
@@ -1504,13 +1365,6 @@
       "properties": {
         "permissionType": {
           "description": "The type of the permission that was checked.",
-          "enumDescriptions": [
-            "Default. Should not be used.",
-            "A read of admin (meta) data.",
-            "A write of admin (meta) data.",
-            "A read of standard data.",
-            "A write of standard data."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default. Should not be used.",

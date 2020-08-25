@@ -308,24 +308,19 @@ class ComponentSnapshot(object):
       for dep_id in dep_ids:
         self.__consumers[dep_id].add(component_id)
 
-  def _ClosureFor(self, ids, dependencies=False, consumers=False,
-                  platform_filter=None):
-    """Calculates a dependency closure for the components with the given ids.
+  def _ClosureFor(self, ids, adjacencies, component_filter):
+    """Calculates a connected closure for the components with the given ids.
 
-    This can calculate a dependency closure, consumer closure, or the union of
-    both depending on the flags.  If both dependencies and consumers are set to
-    True, this is basically calculating the set of components that are connected
-    by dependencies to anything in the starting set.  The given ids, are always
-    included in the output if they are valid components.
+    Performs a breadth first search starting with the given component ids, and
+    returns the set of components reachable via the given adjacency map.
 
     Args:
-      ids: list of str, The component ids to get the dependency closure for.
-      dependencies: bool, True to add dependencies of the given components to
-        the closure.
-      consumers: bool, True to add consumers of the given components to the
+      ids: [str], The component ids to get the closure for.
+      adjacencies: {str: set}, Map of component ids to the set of their
+        adjacent component ids.
+      component_filter: schemas.Component -> bool, A function applied to
+        components that determines whether or not to include them in the
         closure.
-      platform_filter: platforms.Platform, A platform that components must
-        match to be pulled into the dependency closure.
 
     Returns:
       set of str, The set of component ids in the closure.
@@ -336,13 +331,10 @@ class ComponentSnapshot(object):
       current = to_process.popleft()
       if current not in self.components or current in closure:
         continue
-      if not self.components[current].platform.Matches(platform_filter):
+      if not component_filter(self.components[current]):
         continue
       closure.add(current)
-      if dependencies:
-        to_process.extend(self.__dependencies[current])
-      if consumers:
-        to_process.extend(self.__consumers[current])
+      to_process.extend(adjacencies[current])
     return closure
 
   def ComponentFromId(self, component_id):
@@ -393,8 +385,9 @@ class ComponentSnapshot(object):
       set of str, All component ids that are in the dependency closure,
       including the given components.
     """
-    return self._ClosureFor(component_ids, dependencies=True, consumers=False,
-                            platform_filter=platform_filter)
+    component_filter = lambda c: c.platform.Matches(platform_filter)
+    return self._ClosureFor(
+        component_ids, self.__dependencies, component_filter)
 
   def ConsumerClosureForComponents(self, component_ids, platform_filter=None):
     """Gets all the components that depend on any of the given ids.
@@ -409,8 +402,8 @@ class ComponentSnapshot(object):
       set of str, All component ids that are in the consumer closure, including
       the given components.
     """
-    return self._ClosureFor(component_ids, dependencies=False, consumers=True,
-                            platform_filter=platform_filter)
+    component_filter = lambda c: c.platform.Matches(platform_filter)
+    return self._ClosureFor(component_ids, self.__consumers, component_filter)
 
   def ConnectedComponents(self, component_ids, platform_filter=None):
     """Gets all the components that are connected to any of the given ids.
@@ -428,8 +421,39 @@ class ComponentSnapshot(object):
       set of str, All component ids that are connected to the given ids,
       including the given components.
     """
-    return self._ClosureFor(component_ids, dependencies=True, consumers=True,
-                            platform_filter=platform_filter)
+    adjacencies = {
+        c_id: self.__dependencies[c_id] | self.__consumers[c_id]
+        for c_id in self.components}
+    component_filter = lambda c: c.platform.Matches(platform_filter)
+    return self._ClosureFor(component_ids, adjacencies, component_filter)
+
+  def StronglyConnectedComponents(self, component_id):
+    """Gets the components strongly connected to the given component id.
+
+    In other words, this functions returns the strongly connected "component" of
+    the dependency graph for the given component id. In this context the
+    strongly connected "component" is the set of ids whose components are both
+    dependencies and consumers of the given component. In practice this can be
+    used to determine the platform-specific subcomponent ID's for a given
+    component ID, since they will always be mutually dependent.
+
+    Args:
+      component_id: str, The id of the component for which to get the strongly
+        connected components.
+
+    Returns:
+      set of str, The ids of the components that are strongly connected to the
+        component with the given id.
+    """
+    # Unlike the other functions above, we don't filter by platform since we
+    # want all platform-specific subcomponents to match.
+    component_filter = lambda c: True
+    dependency_closure = self._ClosureFor(
+        [component_id], self.__dependencies, component_filter)
+    consumer_closure = self._ClosureFor(
+        [component_id], self.__consumers, component_filter)
+
+    return dependency_closure & consumer_closure
 
   def GetEffectiveComponentSize(self, component_id, platform_filter=None):
     """Computes the effective size of the given component.

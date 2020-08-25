@@ -117,6 +117,7 @@ class OpsAgentPolicy(object):
     def __eq__(self, other):
       return self.__dict__ == other.__dict__
 
+  # TODO(b/164139617): Make all parameters required.
   def __init__(self,
                assignment,
                agent_rules,
@@ -216,13 +217,15 @@ def CreateOpsAgentPolicy(description, agent_rules, group_labels, os_types,
       description)
 
 
-def UpdateOpsAgentsPolicy(ops_agents_policy, description, agent_rules, os_types,
-                          group_labels, zones, instances):
+def UpdateOpsAgentsPolicy(ops_agents_policy, description, etag,
+                          agent_rules, os_types, group_labels,
+                          zones, instances):
   """Merge existing ops agent policy with user updates.
 
   Args:
     ops_agents_policy: OpsAgentPolicy, ops agent policy.
     description: str, ops agent policy description.
+    etag: Optional str, unique tag for policy to prevent race conditions.
     agent_rules: list of dict, fields describing agent rules from the command
       line.
     os_types: dict, VM OS type matchers.
@@ -235,18 +238,25 @@ def UpdateOpsAgentsPolicy(ops_agents_policy, description, agent_rules, os_types,
   """
   updated_description = (
       ops_agents_policy.description if description is None else description)
+  # TODO(b/164141164): Decide what should happen when etag=''.
+  # Unless supplied, keep the etag from the last policy read from the server.
+  # If the etag is stale, the RPC will error out to prevent race conditions.
+  updated_etag = ops_agents_policy.etag if etag is None else etag
   assignment = ops_agents_policy.assignment
-  updated_group_labels = (
-      assignment.group_labels if group_labels is None else group_labels)
-  updated_instances = assignment.instances if instances is None else instances
-  updated_zones = assignment.zones if zones is None else zones
-  updated_os_types = (
-      assignment.os_types if os_types is None else CreateOsTypes(os_types))
+  updated_assignment = OpsAgentPolicy.Assignment(
+      group_labels=(
+          assignment.group_labels if group_labels is None else group_labels),
+      zones=assignment.zones if zones is None else zones,
+      instances=assignment.instances if instances is None else instances,
+      os_types=CreateOsTypes(os_types) or assignment.os_types)
   updated_agent_rules = (
-      ops_agents_policy.agent_rules
-      if agent_rules is None else CreateAgentRules(agent_rules))
+      CreateAgentRules(agent_rules) or ops_agents_policy.agent_rules)
 
   return OpsAgentPolicy(
-      OpsAgentPolicy.Assignment(updated_group_labels, updated_zones,
-                                updated_instances, updated_os_types),
-      updated_agent_rules, updated_description)
+      assignment=updated_assignment,
+      agent_rules=updated_agent_rules,
+      description=updated_description,
+      etag=updated_etag,
+      name=ops_agents_policy.id,
+      update_time=None,
+      create_time=ops_agents_policy.create_time)

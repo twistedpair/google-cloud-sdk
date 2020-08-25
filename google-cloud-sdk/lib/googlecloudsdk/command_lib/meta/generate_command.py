@@ -22,6 +22,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os.path
+import re
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -55,7 +56,7 @@ def WriteAllYaml(collection_name, output_dir):
   collection_dict = _MakeCollectionDict(collection_name)
   api_message_module = apis.GetMessagesModule(collection_dict['api_name'],
                                               collection_dict['api_version'])
-  api_dict = _MakeApiDict()
+  api_dict = _MakeApiDict(api_message_module, collection_dict)
   collection_dict.update(api_dict)
   for command_template in os.listdir(
       os.path.join(os.path.dirname(__file__), 'command_templates')):
@@ -86,13 +87,17 @@ def WriteYaml(command_tpl_name, collection_dict, output_dir,
   command_name_capitalized = ''.join(
       [word.capitalize() for word in command_name.split('_')])
   if command_name == 'describe':
-    command_name_capitalized = 'GetRequest'
-  singular_name = collection_dict['singular_name'].capitalize()
+    command_name_capitalized = 'Get'
+  collection_prefix = ''.join([
+      word.capitalize()
+      for word in collection_dict['collection_name'].split('.')
+  ])
+  expected_message_name = collection_prefix + command_name_capitalized + 'Request'
+  alt_create_message_name = collection_prefix + 'InsertRequest'
   command_supported = False
-  for message_type in dir(api_message_module):
-    if (command_name_capitalized in message_type) and (
-        singular_name in message_type):
-      # Note: this is an indication, not a guarantee command will be supported
+  for message_name in dir(api_message_module):
+    if message_name == expected_message_name or message_name == alt_create_message_name:
+      # Note: APIs with nonstandard naming may not have all commands created
       command_supported = True
   command_yaml_tpl = _TemplateFileForCommandPath(command_tpl_name)
   command_filename = command_name + '.yaml'
@@ -103,15 +108,15 @@ def WriteYaml(command_tpl_name, collection_dict, output_dir,
     overwrite = console_io.PromptContinue(
         default=False,
         throw_if_unattended=True,
-        message='{command_filename} already exists, and continuing will'
-        'overwrite the old file. The scenario test skeleton file for this'
+        message='{command_filename} already exists, and continuing will '
+        'overwrite the old file. The scenario test skeleton file for this '
         'command will only be generated if you continue'.format(
             command_filename=command_filename))
   if (not file_already_exists or overwrite) and command_supported:
     with files.FileWriter(full_command_path) as f:
       ctx = runtime.Context(f, **collection_dict)
       command_yaml_tpl.render_context(ctx)
-    log.status.Print('New file written at ' + output_dir)
+    log.status.Print('New file written at ' + full_command_path)
     return True
   else:
     log.status.Print('No new file written at ' + full_command_path)
@@ -186,24 +191,52 @@ def _MakeCollectionDict(collection_name):
   collection_dict = {}
   collection_dict['collection_name'] = collection_name
   collection_dict['api_name'] = collection_info.api_name
+
+  collection_dict['uppercase_api_name'] = collection_info.api_name.capitalize()
   flat_paths = collection_info.flat_paths
   collection_dict['use_relative_name'] = 'false' if not flat_paths else 'true'
   collection_dict['api_version'] = collection_info.api_version
   collection_dict['release_tracks'] = _GetReleaseTracks(
       collection_info.api_version)
+  collection_dict['plural_resource_name'] = collection_info.name.split('.')[-1]
   collection_dict['singular_name'] = _MakeSingular(
-      collection_info.name.split('.')[-1])
+      collection_dict['plural_resource_name'])
   collection_dict['flags'] = ' '.join([
       '--' + param + '=my-' + param
       for param in collection_info.params
       if (param not in (collection_dict['singular_name'], 'project'))
   ])
+  collection_dict['collection_name'] = collection_name
+  # the following is a best guess at desired parent for list command scope
+  collection_dict[
+      'parent'] = 'location' if 'location' in collection_name else 'project'
   return collection_dict
 
 
-def _MakeApiDict():
+def _MakeApiDict(message_module, collection_dict):
   """Returns a dictionary of API attributes from its messages module.
 
+  Args:
+    message_module: the messages module for the API (default version)
+    collection_dict: a dictionary containing collection info from registry
   """
   api_dict = {}
+  try:
+    resource_message = getattr(message_module,
+                               collection_dict['singular_name'].capitalize())
+    args = [
+        field.__dict__['name']
+        for field in resource_message.all_fields()
+        if field.__dict__['name'] != 'name'
+    ]
+    api_dict['create_args'] = {
+        arg:
+        '-'.join([w.lower() for w in re.findall('^[a-z]*|[A-Z][a-z]*', arg)])
+        for arg in args
+    }  # dict is { camelCaseName: camel-case-name }
+  except AttributeError:
+    api_dict['create_args'] = {}
+    log.status.Print('Cannot find ' +
+                     collection_dict['singular_name'].capitalize() +
+                     ' in message module.')
   return api_dict

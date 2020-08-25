@@ -28,7 +28,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import http as http_core
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import transport
-from googlecloudsdk.core.credentials import http as http_creds
+from googlecloudsdk.core.credentials import transports
 from oauth2client import client
 from google.auth import exceptions as google_auth_exceptions
 
@@ -47,11 +47,11 @@ def GenerateAccessToken(service_account_id, scopes):
       service_account_id, collection='iamcredentials.serviceAccounts',
       params={'projectsId': '-', 'serviceAccountsId': service_account_id})
 
-  # pylint: disable=protected-access
-  http_client = http_creds.Http(
+  http_client = transports.GetApitoolsTransport(
       enable_resource_quota=False,
       response_encoding=transport.ENCODING,
       allow_account_impersonation=False)
+  # pylint: disable=protected-access
   iam_client = apis_internal._GetClientInstance(
       'iamcredentials', 'v1', http_client=http_client)
 
@@ -84,13 +84,14 @@ def GenerateIdToken(service_account_id, audience, include_email=False):
       service_account_id, collection='iamcredentials.serviceAccounts',
       params={'projectsId': '-', 'serviceAccountsId': service_account_id})
 
-  # pylint: disable=protected-access
-  http_client = http_creds.Http(
+  http_client = transports.GetApitoolsTransport(
       enable_resource_quota=False,
       response_encoding=transport.ENCODING,
       allow_account_impersonation=False)
+  # pylint: disable=protected-access
   iam_client = apis_internal._GetClientInstance(
       'iamcredentials', 'v1', http_client=http_client)
+
   response = iam_client.projects_serviceAccounts.GenerateIdToken(
       iam_client.MESSAGES_MODULE
       .IamcredentialsProjectsServiceAccountsGenerateIdTokenRequest(

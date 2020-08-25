@@ -315,32 +315,32 @@ class SearchMachineImagesCompleter(completers.ResourceSearchCompleter):
         **kwargs)
 
 
-class InPlaceSnapshotsCompleter(completers.MultiResourceCompleter):
+class InstantSnapshotsCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
-    super(InPlaceSnapshotsCompleter, self).__init__(
+    super(InstantSnapshotsCompleter, self).__init__(
         completers=[
-            RegionInPlaceSnapshotsCompleter, ZoneInPlaceSnapshotsCompleter
+            RegionInstantSnapshotsCompleter, ZoneInstantSnapshotsCompleter
         ],
         **kwargs)
 
 
-class ZoneInPlaceSnapshotsCompleter(ListCommandCompleter):
+class ZoneInstantSnapshotsCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
-    super(ZoneInPlaceSnapshotsCompleter, self).__init__(
-        collection='compute.zoneInPlaceSnapshots',
-        list_command='alpha compute in-place-snapshots list --uri',
+    super(ZoneInstantSnapshotsCompleter, self).__init__(
+        collection='compute.zoneInstantSnapshots',
+        list_command='alpha compute instant-snapshots list --uri',
         api_version='alpha',
         **kwargs)
 
 
-class RegionInPlaceSnapshotsCompleter(ListCommandCompleter):
+class RegionInstantSnapshotsCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
-    super(RegionInPlaceSnapshotsCompleter, self).__init__(
-        collection='compute.regionInPlaceSnapshots',
-        list_command='alpha compute in-place-snapshots list --uri',
+    super(RegionInstantSnapshotsCompleter, self).__init__(
+        collection='compute.regionInstantSnapshots',
+        list_command='alpha compute instant-snapshots list --uri',
         api_version='alpha',
         **kwargs)
 

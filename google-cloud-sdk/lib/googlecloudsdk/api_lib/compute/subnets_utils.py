@@ -81,10 +81,13 @@ def MakeSubnetworkUpdateRequest(
                                  'SetPrivateIpGoogleAccess',
                                  google_access_request)])
   elif add_secondary_ranges is not None:
-    subnetwork = client.MakeRequests(
-        [(client.apitools_client.subnetworks,
-          'Get', client.messages.ComputeSubnetworksGetRequest(
-              **subnet_ref.AsDict()))])[0]
+    subnetwork = client.messages.Subnetwork()
+    original_subnetwork = client.MakeRequests([
+        (client.apitools_client.subnetworks, 'Get',
+         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
+    ])[0]
+    subnetwork.secondaryIpRanges = original_subnetwork.secondaryIpRanges
+    subnetwork.fingerprint = original_subnetwork.fingerprint
 
     for secondary_range in add_secondary_ranges:
       for range_name, ip_cidr_range in sorted(six.iteritems(secondary_range)):
@@ -95,10 +98,13 @@ def MakeSubnetworkUpdateRequest(
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif remove_secondary_ranges is not None:
-    subnetwork = client.MakeRequests(
-        [(client.apitools_client.subnetworks,
-          'Get', client.messages.ComputeSubnetworksGetRequest(
-              **subnet_ref.AsDict()))])[0]
+    subnetwork = client.messages.Subnetwork()
+    original_subnetwork = client.MakeRequests([
+        (client.apitools_client.subnetworks, 'Get',
+         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
+    ])[0]
+    subnetwork.secondaryIpRanges = original_subnetwork.secondaryIpRanges
+    subnetwork.fingerprint = original_subnetwork.fingerprint
 
     for name in remove_secondary_ranges[0]:
       if name not in [r.rangeName for r in subnetwork.secondaryIpRanges]:
@@ -107,7 +113,7 @@ def MakeSubnetworkUpdateRequest(
             'present ranges are {}.'.format(
                 name, [r.rangeName for r in subnetwork.secondaryIpRanges]))
     subnetwork.secondaryIpRanges = [
-        r for r in subnetwork.secondaryIpRanges
+        r for r in original_subnetwork.secondaryIpRanges
         if r.rangeName not in remove_secondary_ranges[0]
     ]
 
@@ -148,10 +154,12 @@ def MakeSubnetworkUpdateRequest(
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif private_ipv6_google_access_type is not None:
-    subnetwork = client.MakeRequests([
+    subnetwork = client.messages.Subnetwork()
+    original_subnetwork = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
          client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
     ])[0]
+    subnetwork.fingerprint = original_subnetwork.fingerprint
 
     subnetwork.privateIpv6GoogleAccess = (
         client.messages.Subnetwork.PrivateIpv6GoogleAccessValueValuesEnum(
@@ -160,10 +168,12 @@ def MakeSubnetworkUpdateRequest(
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif set_role_active is not None:
-    subnetwork = client.MakeRequests([
+    subnetwork = client.messages.Subnetwork()
+    original_subnetwork = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
          client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
     ])[0]
+    subnetwork.fingerprint = original_subnetwork.fingerprint
 
     subnetwork.role = client.messages.Subnetwork.RoleValueValuesEnum.ACTIVE
     patch_request = client.messages.ComputeSubnetworksPatchRequest(

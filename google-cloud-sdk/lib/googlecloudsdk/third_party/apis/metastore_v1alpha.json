@@ -322,16 +322,6 @@
         },
         "state": {
           "description": "Output only. The current state of the metastore service.",
-          "enumDescriptions": [
-            "The state of the metastore service is unknown.",
-            "The metastore service is in the process of being created.",
-            "The metastore service is running and ready to serve queries.",
-            "The metastore service is entering suspension. Its query-serving availability may cease unexpectedly.",
-            "The metastore service is suspended and unable to serve queries.",
-            "The metastore service is being updated. It remains usable but cannot accept additional update requests or be deleted at this time.",
-            "The metastore service is undergoing deletion. It cannot be used.",
-            "The metastore service has encountered an error and cannot be used. The metastore service should be deleted."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -367,10 +357,6 @@
         },
         "tier": {
           "description": "The tier of the service.",
-          "enumDescriptions": [
-            "The tier is not set.",
-            "The enterprise tier combines a powerful metastore serving layer with a highly scalable data storage layer."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The tier is not set.",
@@ -451,16 +437,6 @@
         },
         "dayOfWeek": {
           "description": "The day of week, when the window starts.",
-          "enumDescriptions": [
-            "The day of the week is unspecified.",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday"
-          ],
           "type": "string",
           "enumDescriptions": [
             "The day of the week is unspecified.",
@@ -537,13 +513,6 @@
         },
         "state": {
           "description": "Output only. The current state of the metadata import.",
-          "enumDescriptions": [
-            "The state of the metadata import is unknown.",
-            "The metadata import is running.",
-            "The metadata import completed successfully.",
-            "The metadata import is being updated.",
-            "The metadata import failed, and attempted metadata changes were rolled back."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -574,10 +543,6 @@
       "properties": {
         "databaseType": {
           "description": "The type of the database.",
-          "enumDescriptions": [
-            "The type of the source database is unknown.",
-            "The type of the source database is MySQL."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The type of the source database is unknown.",
@@ -715,12 +680,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",

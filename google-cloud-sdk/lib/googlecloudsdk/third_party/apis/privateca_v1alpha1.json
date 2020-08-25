@@ -293,11 +293,6 @@
         },
         "type": {
           "description": "Required. Immutable. The Type of this CertificateAuthority.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Self-signed CA.",
-            "Subordinate CA. Could be issued by a Private CA CertificateAuthority or an unmanaged CA."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -340,13 +335,6 @@
         },
         "state": {
           "description": "Output only. The State for this CertificateAuthority.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Certificates can be issued from this CA. CRLs will be generated for this CA.",
-            "Certificates cannot be issued from this CA. CRLs will still be generated.",
-            "Certificates cannot be issued from this CA. CRLs will not be generated.",
-            "Certificates cannot be issued from this CA. CRLs will not be generated."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -755,11 +743,6 @@
       "properties": {
         "type": {
           "description": "Required. The type of public key.",
-          "enumDescriptions": [
-            "Default unspecified value.",
-            "A PEM-encoded PKCS#1\/RFC 3447 RSAPrivateKey structure.",
-            "A PEM-encoded compressed NIST P-256\/secp256r1\/prime256v1 or P-384 key."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified value.",
@@ -1040,11 +1023,6 @@
         },
         "state": {
           "description": "Output only. The State for this CertificateRevocationList.",
-          "enumDescriptions": [
-            "Not specified.",
-            "The CertificateRevocationList is up to date.",
-            "The CertificateRevocationList is no longer current."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1094,17 +1072,6 @@
         },
         "revocationReason": {
           "description": "The reason the Certificate was revoked.",
-          "enumDescriptions": [
-            "Default unspecified value. This value does indicate that a Certificate has been revoked, but that a reason has not been recorded.",
-            "Key material for this Certificate may have leaked.",
-            "The key material for a certificate authority in the issuing path may have leaked.",
-            "The subject or other attributes in this Certificate have changed.",
-            "This Certificate has been superseded.",
-            "This Certificate or entities in the issuing path have ceased to operate.",
-            "This Certificate should not be considered valid, it is expected that it may become valid in the future.",
-            "This Certificate no longer has permission to assert the listed attributes.",
-            "The authority which determines appropriate attributes for a Certificate may have been compromised."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified value. This value does indicate that a Certificate has been revoked, but that a reason has not been recorded.",
@@ -1230,17 +1197,6 @@
       "properties": {
         "revocationState": {
           "description": "Indicates why a Certificate was revoked.",
-          "enumDescriptions": [
-            "Default unspecified value. This value does indicate that a Certificate has been revoked, but that a reason has not been recorded.",
-            "Key material for this Certificate may have leaked.",
-            "The key material for a certificate authority in the issuing path may have leaked.",
-            "The subject or other attributes in this Certificate have changed.",
-            "This Certificate has been superseded.",
-            "This Certificate or entities in the issuing path have ceased to operate.",
-            "This Certificate should not be considered valid, it is expected that it may become valid in the future.",
-            "This Certificate no longer has permission to assert the listed attributes.",
-            "The authority which determines appropriate attributes for a Certificate may have been compromised."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified value. This value does indicate that a Certificate has been revoked, but that a reason has not been recorded.",
@@ -1421,17 +1377,6 @@
       "properties": {
         "reason": {
           "description": "Required. The RevocationReason for revoking this certificate.",
-          "enumDescriptions": [
-            "Default unspecified value. This value does indicate that a Certificate has been revoked, but that a reason has not been recorded.",
-            "Key material for this Certificate may have leaked.",
-            "The key material for a certificate authority in the issuing path may have leaked.",
-            "The subject or other attributes in this Certificate have changed.",
-            "This Certificate has been superseded.",
-            "This Certificate or entities in the issuing path have ceased to operate.",
-            "This Certificate should not be considered valid, it is expected that it may become valid in the future.",
-            "This Certificate no longer has permission to assert the listed attributes.",
-            "The authority which determines appropriate attributes for a Certificate may have been compromised."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified value. This value does indicate that a Certificate has been revoked, but that a reason has not been recorded.",
@@ -1598,12 +1543,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",

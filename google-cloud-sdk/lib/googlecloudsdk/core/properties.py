@@ -308,6 +308,8 @@ class _Sections(object):
       Cloud SDK.
     notebooks: Section, The section containing notebook properties for the
       Cloud SDK.
+    privateca: Section, The section containing privateca properties for the
+      Cloud SDK.
     proxy: Section, The section containing proxy properties for the Cloud SDK.
     pubsub: Section, The section containing pubsub properties for the Cloud SDK.
     redis: Section, The section containing redis properties for the Cloud SDK.
@@ -368,6 +370,7 @@ class _Sections(object):
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
     self.notebooks = _SectionNotebooks()
+    self.privateca = _SectionPrivateCa()
     self.proxy = _SectionProxy()
     self.pubsub = _SectionPubsub()
     self.redis = _SectionRedis()
@@ -418,6 +421,7 @@ class _Sections(object):
         self.ml_engine,
         self.notebooks,
         self.pubsub,
+        self.privateca,
         self.proxy,
         self.redis,
         self.run,
@@ -1699,6 +1703,18 @@ class _SectionInteractive(_Section):
         help_text='If True, add command line suggestions based on history.')
 
 
+class _SectionPrivateCa(_Section):
+  """Contains the properties for the 'privateca' section."""
+
+  def __init__(self):
+    super(_SectionPrivateCa, self).__init__('privateca')
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Private CA '
+        'resources. When a `--location` flag is required but not provided, the '
+        'command will fall back to this value, if set.')
+
+
 class _SectionProxy(_Section):
   """Contains the properties for the 'proxy' section."""
 
@@ -1793,6 +1809,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudasset = self._Add('cloudasset')
     self.cloudbilling = self._Add('cloudbilling')
     self.cloudbuild = self._Add('cloudbuild')
+    self.cloudcommerceconsumerprocurement = self._Add(
+        'cloudcommerceconsumerprocurement')
     self.clouddebugger = self._Add('clouddebugger')
     self.clouderrorreporting = self._Add('clouderrorreporting')
     self.cloudfunctions = self._Add('cloudfunctions')

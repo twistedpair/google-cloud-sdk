@@ -692,7 +692,10 @@ apis:
       discovery_doc: policytroubleshooter_v2alpha1.json
   privateca:
     v1alpha1:
+      default: true
       discovery_doc: privateca_v1alpha1.json
+    v1beta1:
+      discovery_doc: privateca_v1beta1.json
   pubsub:
     v1:
       discovery_doc: pubsub_v1.json
@@ -827,6 +830,10 @@ apis:
   toolresults:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json
+  transcoder:
+    v1beta1:
+      discovery_doc: transcoder_v1beta1.json
+      default: true
   tpu:
     v1alpha1:
       discovery_doc: tpu_v1alpha1.json

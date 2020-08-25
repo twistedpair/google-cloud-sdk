@@ -1199,7 +1199,6 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):
       only when the conversation reaches `END_SESSION` or `END_PAGE` page. It
       is not supposed to be defined by the user. It's guaranteed that there is
       at most one such message in each response.
-    humanAgentHandoff: Hands off conversation to a human agent.
     liveAgentHandoff: Hands off conversation to a human agent.
     mixedAudio: Output only. An audio response message composed of both the
       synthesized Dialogflow agent responses and responses defined via
@@ -1243,13 +1242,12 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):
 
   conversationSuccess = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageConversationSuccess', 1)
   endInteraction = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageEndInteraction', 2)
-  humanAgentHandoff = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageHumanAgentHandoff', 3)
-  liveAgentHandoff = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageLiveAgentHandoff', 4)
-  mixedAudio = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageMixedAudio', 5)
-  outputAudioText = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageOutputAudioText', 6)
-  payload = _messages.MessageField('PayloadValue', 7)
-  playAudio = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessagePlayAudio', 8)
-  text = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageText', 9)
+  liveAgentHandoff = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageLiveAgentHandoff', 3)
+  mixedAudio = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageMixedAudio', 4)
+  outputAudioText = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageOutputAudioText', 5)
+  payload = _messages.MessageField('PayloadValue', 6)
+  playAudio = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessagePlayAudio', 7)
+  text = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageText', 8)
 
 
 class GoogleCloudDialogflowCxV3beta1ResponseMessageConversationSuccess(_messages.Message):
@@ -1305,52 +1303,6 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessageEndInteraction(_messages.Mess
   the user.
   """
 
-
-
-class GoogleCloudDialogflowCxV3beta1ResponseMessageHumanAgentHandoff(_messages.Message):
-  r"""Indicates that the conversation should be handed off to a human agent.
-  Dialogflow only uses this to determine which conversations were handed off
-  to a human agent for measurement purposes. What else to do with this signal
-  is up to you and your handoff procedures. You may set this, for example: *
-  In the entry_fulfillment of a Page if entering the page indicates something
-  went extremely wrong in the conversation. * In a webhook response when you
-  determine that the customer issue can only be handled by a human.
-
-  Messages:
-    MetadataValue: Custom metadata for your handoff procedure. Dialogflow
-      doesn't impose any structure on this.
-
-  Fields:
-    metadata: Custom metadata for your handoff procedure. Dialogflow doesn't
-      impose any structure on this.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""Custom metadata for your handoff procedure. Dialogflow doesn't impose
-    any structure on this.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  metadata = _messages.MessageField('MetadataValue', 1)
 
 
 class GoogleCloudDialogflowCxV3beta1ResponseMessageLiveAgentHandoff(_messages.Message):

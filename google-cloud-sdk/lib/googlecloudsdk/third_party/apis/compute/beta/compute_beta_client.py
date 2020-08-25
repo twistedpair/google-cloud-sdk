@@ -5793,6 +5793,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetName(self, request, global_params=None):
+      r"""Sets name of an instance.
+
+      Args:
+        request: (ComputeInstancesSetNameRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetName')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetName.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.setName',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/setName',
+        request_field='instancesSetNameRequest',
+        request_type_name='ComputeInstancesSetNameRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetScheduling(self, request, global_params=None):
       r"""Sets an instance's scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a `TERMINATED` state. See Instance Life Cycle for more information on the possible instance states.
 

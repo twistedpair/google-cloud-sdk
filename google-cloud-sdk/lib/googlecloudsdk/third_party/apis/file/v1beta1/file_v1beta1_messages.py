@@ -14,6 +14,121 @@ from apitools.base.py import extra_types
 package = 'file'
 
 
+class Backup(_messages.Message):
+  r"""A Cloud Filestore backup.
+
+  Enums:
+    SourceInstanceTierValueValuesEnum: Output only. The service tier of the
+      source Cloud Filestore instance that this backup is created from.
+    StateValueValuesEnum: Output only. The backup state.
+
+  Messages:
+    LabelsValue: Resource labels to represent user provided metadata.
+
+  Fields:
+    capacityGb: Output only. Capacity of the backup. This would be the size of
+      the file share when the backup is restored.
+    createTime: Output only. The time when the backup was created.
+    description: A description of the backup with 2048 characters or less.
+      Requests with longer descriptions will be rejected.
+    downloadBytes: Output only. Amount of bytes that will be downloaded if the
+      backup is restored
+    labels: Resource labels to represent user provided metadata.
+    name: Output only. The resource name of the backup, in the format
+      projects/{project_id}/locations/{location_id}/backups/{backup_id}.
+    sourceFileShare: Name of the file share in the source Cloud Filestore
+      instance that the backup is created from.
+    sourceInstance: The resource name of the source Cloud Filestore instance,
+      in the format
+      projects/{project_id}/locations/{location_id}/instances/{instance_id},
+      used to create this backup.
+    sourceInstanceTier: Output only. The service tier of the source Cloud
+      Filestore instance that this backup is created from.
+    state: Output only. The backup state.
+    storageBytes: Output only. The size of the storage used by the backup. As
+      backups share storage, this number is expected to change with backup
+      creation/deletion.
+  """
+
+  class SourceInstanceTierValueValuesEnum(_messages.Enum):
+    r"""Output only. The service tier of the source Cloud Filestore instance
+    that this backup is created from.
+
+    Values:
+      TIER_UNSPECIFIED: Not set.
+      STANDARD: STANDARD tier. BASIC_HDD is the preferred term for this tier.
+      PREMIUM: PREMIUM tier. BASIC_SSD is the preferred term for this tier.
+      BASIC_HDD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_HDD is an alias for STANDARD Tier, offering economical
+        performance backed by HDD.
+      BASIC_SSD: BASIC instances offer a maximum capacity of 63.9 TB.
+        BASIC_SSD is an alias for PREMIUM Tier, and offers improved
+        performance backed by SSD.
+      HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
+        performance scaling capabilities.
+    """
+    TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    PREMIUM = 2
+    BASIC_HDD = 3
+    BASIC_SSD = 4
+    HIGH_SCALE_SSD = 5
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The backup state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: Backup is being created.
+      FINALIZING: Backup has been taken and the operation is being finalized.
+        At this point, changes to the file share will not be reflected in the
+        backup.
+      READY: Backup is available for use.
+      DELETING: Backup is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    FINALIZING = 2
+    READY = 3
+    DELETING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  capacityGb = _messages.IntegerField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  downloadBytes = _messages.IntegerField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  sourceFileShare = _messages.StringField(7)
+  sourceInstance = _messages.StringField(8)
+  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  storageBytes = _messages.IntegerField(11)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -26,6 +141,87 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class FileProjectsLocationsBackupsCreateRequest(_messages.Message):
+  r"""A FileProjectsLocationsBackupsCreateRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    backupId: Required. The ID to use for the backup. The ID must be unique
+      within the specified project and location. This value must start with a
+      lowercase letter followed by up to 62 lowercase letters, numbers, or
+      hyphens, and cannot end with a hyphen.
+    parent: Required. The backup's project and location, in the format
+      projects/{project_id}/locations/{location}. In Cloud Filestore, backup
+      locations map to GCP regions, for example **us-west1**.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  backupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class FileProjectsLocationsBackupsDeleteRequest(_messages.Message):
+  r"""A FileProjectsLocationsBackupsDeleteRequest object.
+
+  Fields:
+    name: Required. The backup resource name, in the format
+      projects/{project_id}/locations/{location}/backups/{backup_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsBackupsGetRequest(_messages.Message):
+  r"""A FileProjectsLocationsBackupsGetRequest object.
+
+  Fields:
+    name: Required. The backup resource name, in the format
+      projects/{project_id}/locations/{location}/backups/{backup_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsBackupsListRequest(_messages.Message):
+  r"""A FileProjectsLocationsBackupsListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results. Supported values are "name", "name desc" or ""
+      (unsorted).
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value to use if there are additional
+      results to retrieve for this list request.
+    parent: Required. The project and location for which to retrieve backup
+      information, in the format projects/{project_id}/locations/{location}.
+      In Cloud Filestore, backup locations map to GCP regions, for example
+      **us-west1**. To retrieve backup information for all locations, use "-"
+      for the {location} value.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class FileProjectsLocationsBackupsPatchRequest(_messages.Message):
+  r"""A FileProjectsLocationsBackupsPatchRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    name: Output only. The resource name of the backup, in the format
+      projects/{project_id}/locations/{location_id}/backups/{backup_id}.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class FileProjectsLocationsGetRequest(_messages.Message):
@@ -120,6 +316,20 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class FileProjectsLocationsInstancesRestoreRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesRestoreRequest object.
+
+  Fields:
+    name: Required. The resource name of the instance, in the format
+      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+    restoreInstanceRequest: A RestoreInstanceRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restoreInstanceRequest = _messages.MessageField('RestoreInstanceRequest', 2)
+
+
 class FileProjectsLocationsListRequest(_messages.Message):
   r"""A FileProjectsLocationsListRequest object.
 
@@ -197,11 +407,15 @@ class FileShareConfig(_messages.Message):
     name: The name of the file share (must be 16 characters or less).
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.
+    sourceBackup: The resource name of the backup, in the format
+      projects/{project_id}/locations/{location_id}/backups/{backup_id}, that
+      this file share has been restored from.
   """
 
   capacityGb = _messages.IntegerField(1)
   name = _messages.StringField(2)
   nfsExportOptions = _messages.MessageField('NfsExportOptions', 3, repeated=True)
+  sourceBackup = _messages.StringField(4)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
@@ -710,6 +924,26 @@ class Instance(_messages.Message):
   tier = _messages.EnumField('TierValueValuesEnum', 10)
 
 
+class ListBackupsResponse(_messages.Message):
+  r"""ListBackupsResponse is the result of ListBackupsRequest.
+
+  Fields:
+    backups: A list of backups in the project for the specified location. If
+      the {location} value in the request is "-", the response contains a list
+      of backups from all locations. If any location is unreachable, the
+      response will only return backups in reachable locations and the
+      "unreachable" field will be populated with a list of unreachable
+      locations.
+    nextPageToken: The token you can use to retrieve the next page of results.
+      Not returned if there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListInstancesResponse(_messages.Message):
   r"""ListInstancesResponse is the result of ListInstancesRequest.
 
@@ -1079,6 +1313,24 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class RestoreInstanceRequest(_messages.Message):
+  r"""RestoreInstanceRequest restores an existing instances's file share from
+  a snapshot or backup.
+
+  Fields:
+    fileShare: Required. Name of the file share in the Cloud Filestore
+      instance that the snapshot is being restored to.
+    sourceBackup: The resource name of the backup, in the format
+      projects/{project_id}/locations/{location_id}/backups/{backup_id}.
+    sourceSnapshot: The resource name of the snapshot, in the format
+      projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.
+  """
+
+  fileShare = _messages.StringField(1)
+  sourceBackup = _messages.StringField(2)
+  sourceSnapshot = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):

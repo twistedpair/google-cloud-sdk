@@ -1696,6 +1696,16 @@ class APIAdapter(object):
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
           workloadPool=options.workload_pool)
 
+    if options.enable_master_global_access is not None:
+      if not options.enable_private_nodes:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='enable-private-nodes',
+                opt='enable-master-global-access'))
+      cluster.privateClusterConfig.masterGlobalAccessConfig = \
+          self.messages.PrivateClusterMasterGlobalAccessConfig(
+              enabled=options.enable_master_global_access)
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)

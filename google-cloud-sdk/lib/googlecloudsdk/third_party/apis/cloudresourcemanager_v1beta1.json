@@ -128,12 +128,6 @@
         },
         "lifecycleState": {
           "description": "The Project lifecycle state. Read-only.",
-          "enumDescriptions": [
-            "Unspecified state. This is only used\/useful for distinguishing unset values.",
-            "The normal and active state.",
-            "The project has been marked for deletion by the user (by invoking DeleteProject) or by the system (Google Cloud Platform). This can generally be reversed by invoking UndeleteProject.",
-            "This lifecycle state is no longer used and is not returned by the API."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state. This is only used\/useful for distinguishing unset values.",
@@ -373,12 +367,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -492,11 +480,6 @@
         },
         "lifecycleState": {
           "description": "The organization's current lifecycle state. Assigned by the server.",
-          "enumDescriptions": [
-            "Unspecified state. This is only useful for distinguishing unset values.",
-            "The normal and active state.",
-            "The organization has been marked for deletion by the user."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state. This is only useful for distinguishing unset values.",
@@ -553,11 +536,6 @@
         },
         "operationType": {
           "description": "The type of this operation.",
-          "enumDescriptions": [
-            "Operation type not specified.",
-            "A create folder operation.",
-            "A move folder operation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Operation type not specified.",

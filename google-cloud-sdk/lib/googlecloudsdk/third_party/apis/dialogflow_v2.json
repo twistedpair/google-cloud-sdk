@@ -4830,10 +4830,6 @@
             "description": "Properties of the object."
           }
         },
-        "humanAgentHandoff": {
-          "description": "Hands off conversation to a human agent.",
-          "$ref": "GoogleCloudDialogflowCxV3beta1ResponseMessageHumanAgentHandoff"
-        },
         "conversationSuccess": {
           "description": "Indicates that the conversation succeeded.",
           "$ref": "GoogleCloudDialogflowCxV3beta1ResponseMessageConversationSuccess"
@@ -4878,21 +4874,6 @@
           "description": "Output only. Whether the playback of this message can be interrupted by the end user's speech and the client can then starts the next Dialogflow request.",
           "readOnly": true,
           "type": "boolean"
-        }
-      }
-    },
-    "GoogleCloudDialogflowCxV3beta1ResponseMessageHumanAgentHandoff": {
-      "id": "GoogleCloudDialogflowCxV3beta1ResponseMessageHumanAgentHandoff",
-      "description": "Indicates that the conversation should be handed off to a human agent. Dialogflow only uses this to determine which conversations were handed off to a human agent for measurement purposes. What else to do with this signal is up to you and your handoff procedures. You may set this, for example: * In the entry_fulfillment of a Page if entering the page indicates something went extremely wrong in the conversation. * In a webhook response when you determine that the customer issue can only be handled by a human.",
-      "type": "object",
-      "properties": {
-        "metadata": {
-          "description": "Custom metadata for your handoff procedure. Dialogflow doesn't impose any structure on this.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object."
-          }
         }
       }
     },

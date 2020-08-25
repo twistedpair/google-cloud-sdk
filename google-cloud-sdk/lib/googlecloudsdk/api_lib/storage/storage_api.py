@@ -39,7 +39,7 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions as core_exc
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.credentials import transports
 
 import six
 
@@ -241,7 +241,8 @@ class StorageClient(object):
     chunksize = self._GetChunkSize()
     download = transfer.Download.FromFile(
         local_path, chunksize=chunksize, overwrite=overwrite)
-    download.bytes_http = http.Http(response_encoding=None)
+    download.bytes_http = transports.GetApitoolsTransport(
+        response_encoding=None)
     get_req = self.messages.StorageObjectsGetRequest(
         bucket=source_obj_ref.bucket,
         object=source_obj_ref.object)
@@ -289,7 +290,8 @@ class StorageClient(object):
     data = io.BytesIO()
     chunksize = self._GetChunkSize()
     download = transfer.Download.FromStream(data, chunksize=chunksize)
-    download.bytes_http = http.Http(response_encoding=None)
+    download.bytes_http = transports.GetApitoolsTransport(
+        response_encoding=None)
     get_req = self.messages.StorageObjectsGetRequest(
         bucket=object_ref.bucket,
         object=object_ref.object)

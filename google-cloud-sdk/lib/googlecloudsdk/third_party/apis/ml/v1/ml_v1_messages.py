@@ -1515,6 +1515,8 @@ class GoogleCloudMlV1OperationMetadata(_messages.Message):
       UPDATE_MODEL: An operation to update an existing model.
       UPDATE_VERSION: An operation to update an existing version.
       UPDATE_CONFIG: An operation to update project configuration.
+      MIGRATE_TO_UCAIP: An operation to migrate existing model/version to
+        uCAIP.
     """
     OPERATION_TYPE_UNSPECIFIED = 0
     CREATE_VERSION = 1
@@ -1523,6 +1525,7 @@ class GoogleCloudMlV1OperationMetadata(_messages.Message):
     UPDATE_MODEL = 4
     UPDATE_VERSION = 5
     UPDATE_CONFIG = 6
+    MIGRATE_TO_UCAIP = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

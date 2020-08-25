@@ -537,6 +537,13 @@ def AddIosBetaArgs(parser):
   Args:
     parser: An argparse parser used to add args that follow a command.
   """
+  parser.add_argument(
+      '--additional-ipas',
+      type=arg_parsers.ArgList(min_length=1, max_length=100),
+      metavar='IPA',
+      help='List of up to 100 additional IPAs to install, in addition to '
+      'the one being directly tested. The path may be in the local filesystem '
+      'or in Google Cloud Storage using gs:// notation.')
 
   # The following args are specific to iOS game-loop tests.
 

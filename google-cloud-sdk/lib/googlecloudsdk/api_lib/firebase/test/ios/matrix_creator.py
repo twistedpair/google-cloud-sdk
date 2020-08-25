@@ -82,13 +82,20 @@ class MatrixCreator(object):
     path = os.path.join(self._gcs_results_root, os.path.basename(filename))
     return self._messages.FileReference(gcsPath=path)
 
+  def _BuildGenericTestSetup(self):
+    additional_ipas = [
+        self._BuildFileReference(os.path.basename(additional_ipa))
+        for additional_ipa in getattr(self._args, 'additional_ipas', []) or []
+    ]
+    return self._messages.IosTestSetup(
+        networkProfile=getattr(self._args, 'network_profile', None),
+        additionalIpas=additional_ipas)
+
   def _BuildIosXcTestSpec(self):
     """Build a TestSpecification for an IosXcTest."""
-    setup = self._messages.IosTestSetup(
-        networkProfile=getattr(self._args, 'network_profile', None))
     spec = self._messages.TestSpecification(
         disableVideoRecording=not self._args.record_video,
-        iosTestSetup=setup,
+        iosTestSetup=self._BuildGenericTestSetup(),
         testTimeout=matrix_ops.ReformatDuration(self._args.timeout),
         iosXcTest=self._messages.IosXcTest(
             testsZip=self._BuildFileReference(self._args.test),
@@ -101,11 +108,9 @@ class MatrixCreator(object):
 
   def _BuildIosTestLoopTestSpec(self):
     """Build a TestSpecification for an IosXcTest."""
-    setup = self._messages.IosTestSetup(
-        networkProfile=getattr(self._args, 'network_profile', None))
     spec = self._messages.TestSpecification(
         disableVideoRecording=not self._args.record_video,
-        iosTestSetup=setup,
+        iosTestSetup=self._BuildGenericTestSetup(),
         testTimeout=matrix_ops.ReformatDuration(self._args.timeout),
         iosTestLoop=self._messages.IosTestLoop(
             appIpa=self._BuildFileReference(self._args.app),

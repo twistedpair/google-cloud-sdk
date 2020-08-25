@@ -20,10 +20,9 @@ from __future__ import unicode_literals
 
 import contextlib
 import datetime
-import json
-import os
 import threading
 
+from googlecloudsdk.command_lib.code import json_stream
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
 import six
@@ -124,13 +123,7 @@ def ReadEventStream(response):
   Yields:
     Events from the JSON payloads.
   """
-  for line in _ReadStreamingLines(response):
-    try:
-      payload = json.loads(line)
-    except ValueError:
-      # Some of the output will not be json. We don't care about those
-      # lines. Ignore the line if the line is invalid json.
-      continue
+  for payload in json_stream.ReadJsonStream(response.fp, ignore_non_json=True):
     if not isinstance(payload, dict):
       continue
     event = payload['result']['event']
@@ -170,45 +163,3 @@ def _GetEventsUrl(events_port):
 
 def _IsPortEventForService(event, service_name):
   return event.get('portEvent', {}).get('resourceName') == service_name
-
-
-def _ReadStreamingLines(response, chunk_size_bytes=50):
-  """Read lines from a urlopen response.
-
-  The standard http response readline waits until either the buffer is full
-  or the connection closes. The connection to read the event stream
-  stays open forever until the client closes it. As a result, we can get
-  into a state where http readline() never returns because the buffer
-  is not full but the server is waiting for the test to do something
-  to generate more events.
-  This function will not block a buffer not being full. os.read() will
-  return data of any size if a response is received. This allows the test
-  to make progress.
-
-  Args:
-    response: urlopen response.
-    chunk_size_bytes: Size of the chunk to read.
-
-  Yields:
-    Lines as read from the response.
-  """
-  pending = None
-
-  while True:
-    chunk = six.ensure_text(os.read(response.fp.fileno(), chunk_size_bytes))
-    if not chunk:
-      break
-
-    if pending is not None:
-      chunk = pending + chunk
-      pending = None
-
-    lines = chunk.split('\n')
-    if lines and lines[-1]:
-      pending = lines.pop()
-
-    for line in lines:
-      yield line
-
-  if pending:
-    yield pending

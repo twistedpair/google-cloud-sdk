@@ -297,23 +297,6 @@
         },
         "state": {
           "description": "Output only. The current state for the TPU Node.",
-          "enumDescriptions": [
-            "TPU node state is not known\/set.",
-            "TPU node is being created.",
-            "TPU node has been created and is fully usable.",
-            "TPU node is restarting.",
-            "TPU node is undergoing reimaging.",
-            "TPU node is being deleted.",
-            "TPU node is being repaired and may be unusable. Details can be found in the `help_description` field.",
-            "TPU node is stopped.",
-            "TPU node is currently stopping.",
-            "TPU node is currently starting.",
-            "TPU node has been preempted. Only applies to Preemptible TPU Nodes.",
-            "TPU node has been terminated due to maintenance or has reached the end of its life cycle (for preemptible nodes).",
-            "TPU node is currently hiding.",
-            "TPU node has been hidden.",
-            "TPU node is currently unhiding."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -394,13 +377,6 @@
         },
         "health": {
           "description": "The health status of the TPU node.",
-          "enumDescriptions": [
-            "Health status is unknown: not initialized or failed to retrieve.",
-            "The resource is healthy.",
-            "The resource is unresponsive.",
-            "The in-guest ML stack is unhealthy.",
-            "The node is under maintenance\/priority boost caused rescheduling and will resume running once rescheduled."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Health status is unknown: not initialized or failed to retrieve.",
@@ -474,12 +450,6 @@
         },
         "apiVersion": {
           "description": "Output only. The API version that created this Node.",
-          "enumDescriptions": [
-            "API version is unknown.",
-            "TPU API V1Alpha1 version.",
-            "TPU API V1 version.",
-            "TPU API V2Alpha1 version."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -623,14 +593,6 @@
         },
         "symptomType": {
           "description": "Type of the Symptom.",
-          "enumDescriptions": [
-            "Unspecified symptom.",
-            "TPU VM memory is low.",
-            "TPU runtime is out of memory.",
-            "TPU runtime execution has timed out.",
-            "TPU runtime fails to construct a mesh that recognizes each TPU device's neighbors.",
-            "TPU HBM is out of memory."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified symptom.",

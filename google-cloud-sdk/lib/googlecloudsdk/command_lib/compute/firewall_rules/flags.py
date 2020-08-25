@@ -101,9 +101,9 @@ def GetLoggingMetadataArg(messages):
           'INCLUDE_ALL_METADATA': 'include-all',
           'EXCLUDE_ALL_METADATA': 'exclude-all'
       },
-      help_str=('Configures whether metadata fields should be added to the '
-                'reported firewall logs. Can only be specified if '
-                '--enable-logging is true.'))
+      help_str=('Adds or removes metadata fields to or from the reported '
+                'firewall logs. Can only be specified if --enable-logging is '
+                'true.'))
 
 
 def AddLoggingMetadata(parser, messages):

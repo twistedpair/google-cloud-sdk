@@ -376,11 +376,6 @@
         },
         "networkType": {
           "description": "Type of the network where the endpoint is located. Applicable only to source endpoint, as destination network type can be inferred from the source.",
-          "enumDescriptions": [
-            "Default type if unspecified.",
-            "A network hosted within Google Cloud Platform. To receive more detailed output, specify the URI for the source or destination network.",
-            "A network hosted outside of Google Cloud Platform. This can be an on-premises network, or a network hosted by another cloud provider."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default type if unspecified.",
@@ -406,13 +401,6 @@
       "properties": {
         "result": {
           "description": "The overall reachability result of the test.",
-          "enumDescriptions": [
-            "Result is not specified.",
-            "Packet originating from source is expected to reach destination.",
-            "Packet originating from source is expected to be dropped before reaching destination.",
-            "If the source and destination endpoint does not uniquely identify the test location in the network, and the reachability result contains multiple traces with mixed reachable and unreachable states, then this result is returned.",
-            "The reachability could not be determined. Possible reasons are: * Analysis is aborted due to permission error. User does not have read permission to the projects listed in the test. * Analysis is aborted due to internal errors. * Analysis is partially complete based on configurations where the user has permission. The Final state indicates that the packet is forwarded to another network where the user has no permission to access the configurations."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Result is not specified.",
@@ -513,31 +501,6 @@
         },
         "state": {
           "description": "Each step is in one of the pre-defined states.",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "Initial state: packet originating from a Compute Engine instance. An InstanceInfo will be populated with starting instance info.",
-            "Initial state: packet originating from Internet. The endpoint info will be populated.",
-            "Initial state: packet originating from a VPC or on-premises network with internal source IP. If the source is a VPC network visible to the user, a NetworkInfo will be populated with details of the network.",
-            "Initial state: packet originating from a Google Kubernetes Engine cluster master. A GKEMasterInfo will be populated with starting instance info.",
-            "Initial state: packet originating from a Cloud SQL instance. A CloudSQLInstanceInfo will be populated with starting instance info.",
-            "Config checking state: verify ingress firewall rule.",
-            "Config checking state: verify egress firewall rule.",
-            "Config checking state: verify route.",
-            "Config checking state: match forwarding rule.",
-            "Config checking state: packet sent or received under foreign IP address and allowed.",
-            "Forwarding state: arriving at a Compute Engine instance.",
-            "Forwarding state: arriving at a Compute Engine internal load balancer.",
-            "Forwarding state: arriving at a Compute Engine external load balancer.",
-            "Forwarding state: arriving at a Cloud VPN gateway.",
-            "Forwarding state: arriving at a Cloud VPN tunnel.",
-            "Transition state: packet header translated.",
-            "Transition state: original connection is terminated and a new proxied connection is initiated.",
-            "Final state: packet delivered.",
-            "Final state: packet dropped.",
-            "Final state: packet forwarded to a network with an unknown configuration.",
-            "Final state: analysis is aborted.",
-            "Special state: viewer of the test result does not have permission to see the configuration in this step."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -755,15 +718,6 @@
       "properties": {
         "routeType": {
           "description": "Type of route.",
-          "enumDescriptions": [
-            "Unspecified type. Default value.",
-            "Route is a subnet route automatically created by the system.",
-            "Static route created by the user including the default route to the Internet.",
-            "Dynamic route exchanged between BGP peers.",
-            "A subnet route received from peering network.",
-            "A static route received from peering network.",
-            "A dynamic route received from peering network."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified type. Default value.",
@@ -786,19 +740,6 @@
         },
         "nextHopType": {
           "description": "Type of next hop.",
-          "enumDescriptions": [
-            "Unspecified type. Default value.",
-            "Next hop is an IP address.",
-            "Next hop is a Compute Engine instance.",
-            "Next hop is a VPC network gateway.",
-            "Next hop is a peering VPC.",
-            "Next hop is an interconnect.",
-            "Next hop is a VPN tunnel.",
-            "Next hop is a VPN Gateway. This scenario only happens when tracing connectivity from an on-premises network to GCP through a VPN. The analysis simulates a packet departing from the on-premises network through a VPN tunnel and arrives at a Cloud VPN gateway.",
-            "Next hop is an internet gateway.",
-            "Next hop is blackhole; that is, the next hop either does not exist or is not running.",
-            "Next hop is the forwarding rule of an Internal Load Balancer."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified type. Default value.",
@@ -966,12 +907,6 @@
         },
         "routingType": {
           "description": "Type of the routing policy.",
-          "enumDescriptions": [
-            "Unspecified type. Default value.",
-            "Route based VPN.",
-            "Policy based routing.",
-            "Dynamic (BGP) routing."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified type. Default value.",
@@ -995,14 +930,6 @@
       "properties": {
         "target": {
           "description": "Target type where the packet is delivered to.",
-          "enumDescriptions": [
-            "Target not specified.",
-            "Target is a Compute Engine instance.",
-            "Target is the Internet.",
-            "Target is a Google API.",
-            "Target is a Google Kubernetes Engine cluster master.",
-            "Target is a Cloud SQL instance."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Target not specified.",
@@ -1034,15 +961,6 @@
       "properties": {
         "target": {
           "description": "Target type where this packet is forwarded to.",
-          "enumDescriptions": [
-            "Target not specified.",
-            "Forwarded to a VPC peering network.",
-            "Forwarded to a Cloud VPN gateway.",
-            "Forwarded to an Cloud Interconnect connection.",
-            "Forwarded to a Google Kubernetes Engine Container cluster master.",
-            "Forwarded to the next hop of a custom route imported from a peering VPC.",
-            "Forwarded to a Cloud SQL Instance."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Target not specified.",
@@ -1076,19 +994,6 @@
       "properties": {
         "cause": {
           "description": "Causes that the analysis is aborted.",
-          "enumDescriptions": [
-            "Cause is unspecified.",
-            "Aborted due to unknown network. The reachability analysis cannot proceed because the user does not have access to the host project's network configurations, including firewall rules and routes. This happens when the project is a service project and the endpoints being traced are in the host project's network.",
-            "Aborted because the IP address(es) are unknown.",
-            "Aborted because no project information can be derived from the test input.",
-            "Aborted because the user lacks the permission to access all or part of the network configurations required to run the test.",
-            "Aborted because no valid source endpoint is derived from the input test request.",
-            "Aborted because the source and\/or destination endpoint specified in the test are invalid. The possible reasons that an endpoint is invalid include: malformed IP address; nonexistent instance or network URI; IP address not in the range of specified network URI; and instance not owning the network interface in the specified network.",
-            "Aborted because traffic is sent from a public IP to an instance without an external IP.",
-            "Aborted because none of the traces matches destination information specified in the input test request.",
-            "Aborted because the number of steps in the trace exceeding a certain limit which may be caused by routing loop.",
-            "Aborted due to internal server error."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Cause is unspecified.",
@@ -1130,28 +1035,6 @@
       "properties": {
         "cause": {
           "description": "Cause that the packet is dropped.",
-          "enumDescriptions": [
-            "Cause is unspecified.",
-            "Destination external address cannot be resolved to a known target.",
-            "a Compute Engine instance can only send or receive a packet with a foreign IP if ip_forward is enabled.",
-            "Dropped due to a firewall rule unless allowed due to connection tracking.",
-            "Dropped due to no routes.",
-            "Dropped due to invalid route. Route's next hop is a blackhole.",
-            "Packet is sent to a wrong (unintended) network. Example: user traces a packet from VM1:Network1 to VM2:Network2, however, the route configured in Network1 sends the packet destined for VM2's IP addresss to Network3.",
-            "Packet with internal destination address sent to Internet gateway.",
-            "Instance with only an internal IP tries to access Google API and Services, and private Google access is not enabled.",
-            "Instance with only internal IP tries to access external hosts, but Cloud NAT is not enabled in the subnet, unless special configurations on a VM allows this connection. See [Special Configurations for VM instances](https:\/\/cloud.google.com\/vpc\/docs\/special-configurations) for details.",
-            "Destination internal address cannot be resolved to a known target.",
-            "Forwarding rule's protocol and ports do not match the packet header.",
-            "Forwarding rule does not have backends configured.",
-            "Firewalls block the health check probes to the backends and cause the backends to be unavailable for traffic from the load balancer. See [Health check firewall rules](https:\/\/cloud.google.com\/load-balancing\/docs\/ health-checks#firewall_rules) for more details.",
-            "Packet is sent from or to a Compute Engine instance that is not in a running state.",
-            "The type of traffic is blocked and the user cannot configure a firewall rule to enable it. See [Always blocked traffic](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#blockedtraffic) for more details.",
-            "Access to Google Kubernetes Engine cluster master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details.",
-            "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details.",
-            "Packet was dropped inside Google Kubernetes Engine Service.",
-            "Packet was dropped inside Cloud SQL Service."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Cause is unspecified.",
@@ -1167,10 +1050,10 @@
             "Destination internal address cannot be resolved to a known target.",
             "Forwarding rule's protocol and ports do not match the packet header.",
             "Forwarding rule does not have backends configured.",
-            "Firewalls block the health check probes to the backends and cause the backends to be unavailable for traffic from the load balancer. See [Health check firewall rules](https:\/\/cloud.google.com\/load-balancing\/docs\/ health-checks#firewall_rules) for more details.",
+            "Firewalls block the health check probes to the backends and cause the backends to be unavailable for traffic from the load balancer. See [Health check firewall rules](https:\/\/cloud.google.com\/load-balancing\/docs\/health-checks#firewall_rules) for more details.",
             "Packet is sent from or to a Compute Engine instance that is not in a running state.",
             "The type of traffic is blocked and the user cannot configure a firewall rule to enable it. See [Always blocked traffic](https:\/\/cloud.google.com\/vpc\/docs\/firewalls#blockedtraffic) for more details.",
-            "Access to Google Kubernetes Engine cluster master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/ private-clusters#access_to_the_cluster_endpoints) for more details.",
+            "Access to Google Kubernetes Engine cluster master's endpoint is not authorized. See [Access to the cluster endpoints](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/private-clusters#access_to_the_cluster_endpoints) for more details.",
             "Access to the Cloud SQL instance endpoint is not authorized. See [Authorizing with authorized networks](https:\/\/cloud.google.com\/sql\/docs\/mysql\/authorize-networks) for more details.",
             "Packet was dropped inside Google Kubernetes Engine Service.",
             "Packet was dropped inside Cloud SQL Service."
@@ -1211,14 +1094,6 @@
       "properties": {
         "loadBalancerType": {
           "description": "Type of the load balancer.",
-          "enumDescriptions": [
-            "Type is unspecified.",
-            "Internal TCP\/UDP load balancer.",
-            "Network TCP\/UDP load balancer.",
-            "HTTP(S) proxy load balancer.",
-            "TCP proxy load balancer.",
-            "SSL proxy load balancer."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Type is unspecified.",
@@ -1250,11 +1125,6 @@
         },
         "backendType": {
           "description": "Type of load balancer's backend configuration.",
-          "enumDescriptions": [
-            "Type is unspecified.",
-            "Backend Service as the load balancer's backend.",
-            "Target Pool as the load balancer's backend."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Type is unspecified.",
@@ -1288,11 +1158,6 @@
         },
         "healthCheckFirewallState": {
           "description": "State of the health check firewall configuration.",
-          "enumDescriptions": [
-            "State is unspecified. Default state if not populated.",
-            "There are configured firewall rules to allow health check probes to the backend.",
-            "There are firewall rules configured to allow partial health check ranges or block all health check ranges. If a health check probe is sent from denied IP ranges, the health check to the backend will fail. Then, the backend will be marked unhealthy and will not receive traffic sent to the load balancer."
-          ],
           "type": "string",
           "enumDescriptions": [
             "State is unspecified. Default state if not populated.",
@@ -1518,12 +1383,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",

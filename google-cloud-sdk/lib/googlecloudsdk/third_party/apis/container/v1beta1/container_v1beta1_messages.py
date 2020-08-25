@@ -2531,6 +2531,52 @@ class NodeManagement(_messages.Message):
   upgradeOptions = _messages.MessageField('AutoUpgradeOptions', 3)
 
 
+class NodeNetworkConfig(_messages.Message):
+  r"""Parameters for node pool-level network config. Only applicable if
+  `ip_allocation_policy.use_ip_aliases` is true.
+
+  Fields:
+    createPodRange: Input only. [Input only] Whether to create a new range for
+      pod IPs in this node pool. Defaults are provided for `pod_range` and
+      `pod_ipv4_cidr_block` if they are not specified. If neither
+      `create_pod_range` or `pod_range` are specified, the cluster-level
+      default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used.
+    createSubnetwork: Input only. [Input only] Whether to create a new
+      subnetwork for the node pool. Defaults are provided for `subnetwork` and
+      `node_ipv4_cidr_block` if they are not specified. If neither
+      `create_subnetwork` or `subnetwork` are specified, the cluster-level
+      default (`ip_allocation_policy.subnetwork_name`) is used.
+    nodeIpv4CidrBlock: The IP address range for node IPs in this node pool.
+      Only applicable if `create_subnetwork` is true. Set to blank to have a
+      range chosen with the default size. Set to /netmask (e.g. `/14`) to have
+      a range chosen with a specific netmask. Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
+      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
+      range to use.
+    podIpv4CidrBlock: The IP address range for pod IPs in this node pool. Only
+      applicable if `create_pod_range` is true. Set to blank to have a range
+      chosen with the default size. Set to /netmask (e.g. `/14`) to have a
+      range chosen with a specific netmask. Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
+      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
+      range to use.
+    podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
+      is true, this ID is used for the new range.
+    subnetwork: The ID of the [subnetwork](https://cloud.google.com/vpc/docs/v
+      pc#vpc_networks_and_subnets) for this node pool. If `create_subnetwork`
+      is true, this ID is used for the new subnet.
+  """
+
+  createPodRange = _messages.BooleanField(1)
+  createSubnetwork = _messages.BooleanField(2)
+  nodeIpv4CidrBlock = _messages.StringField(3)
+  podIpv4CidrBlock = _messages.StringField(4)
+  podRange = _messages.StringField(5)
+  subnetwork = _messages.StringField(6)
+
+
 class NodePool(_messages.Message):
   r"""NodePool contains the name and configuration for a cluster's node pool.
   Node pools are a set of nodes (i.e. VM's), with a common configuration and
@@ -2564,6 +2610,8 @@ class NodePool(_messages.Message):
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.
     name: The name of the node pool.
+    networkConfig: Networking configuration for this NodePool. If specified,
+      it overrides the cluster-level defaults.
     podIpv4CidrSize: [Output only] The pod CIDR block size per node in this
       node pool.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -2612,12 +2660,13 @@ class NodePool(_messages.Message):
   management = _messages.MessageField('NodeManagement', 7)
   maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 8)
   name = _messages.StringField(9)
-  podIpv4CidrSize = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  statusMessage = _messages.StringField(13)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 14)
-  version = _messages.StringField(15)
+  networkConfig = _messages.MessageField('NodeNetworkConfig', 10)
+  podIpv4CidrSize = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  statusMessage = _messages.StringField(14)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 15)
+  version = _messages.StringField(16)
 
 
 class NodePoolAutoscaling(_messages.Message):

@@ -376,6 +376,11 @@ def ConvertValue(field, value, repeated=None, processor=None, choices=None):
     valid_choices = None
     if choices:
       valid_choices = choices.keys()
+      if field.variant == messages.Variant.ENUM:
+        api_names = field.type.names()
+      else:
+        api_names = []
+      CheckValidEnumNames(api_names, choices.values())
       if arg_repeated:
         value = [_MapChoice(choices, v) for v in value]
       else:
@@ -503,6 +508,19 @@ def ParseExistingMessageIntoMessage(message, existing_message, method):
 
   SetFieldInMessage(message, field_path, existing_message)
   return message
+
+
+def CheckValidEnumNames(api_names, choices_values):
+  """Ensures the api_name given in the spec matches a value from the API."""
+  if api_names:
+    bad_choices = [name for name in choices_values if not (
+        name in api_names or ChoiceToEnumName(
+            six.text_type(name)) in api_names)]
+  else:
+    bad_choices = []
+  if bad_choices:
+    raise arg_parsers.ArgumentTypeError(
+        '{} is/are not valid enum values.'.format(', '.join(bad_choices)))
 
 
 def ChoiceToEnum(choice, enum_type, item_type='choice', valid_choices=None):

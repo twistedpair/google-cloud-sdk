@@ -410,6 +410,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'instanceGroup'],
       True
   )
+  REGIONINSTANTSNAPSHOTS = (
+      'regionInstantSnapshots',
+      'projects/{project}/regions/{region}/instantSnapshots/{instantSnapshot}',
+      {},
+      ['project', 'region', 'instantSnapshot'],
+      True
+  )
   REGIONMACHINETYPES = (
       'regionMachineTypes',
       'projects/{project}/regions/{region}/machineTypes/{machineType}',
@@ -639,6 +646,13 @@ class Collections(enum.Enum):
       'projects/{project}/zones/{zone}/inPlaceSnapshots/{inPlaceSnapshot}',
       {},
       ['project', 'zone', 'inPlaceSnapshot'],
+      True
+  )
+  ZONEINSTANTSNAPSHOTS = (
+      'zoneInstantSnapshots',
+      'projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}',
+      {},
+      ['project', 'zone', 'instantSnapshot'],
       True
   )
   ZONEOPERATIONS = (

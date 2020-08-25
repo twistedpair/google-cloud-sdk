@@ -162,8 +162,8 @@ def _GetClientInstance(api_name,
     # Normal gcloud authentication
     # Import http only when needed, as it depends on credential infrastructure
     # which is not needed in all cases.
-    from googlecloudsdk.core.credentials import http as http_creds
-    http_client = http_creds.Http(
+    from googlecloudsdk.core.credentials import transports
+    http_client = transports.GetApitoolsTransport(
         response_encoding=transport.ENCODING)
 
   client_class = _GetClientClass(api_name, api_version)

@@ -1242,11 +1242,6 @@
         },
         "certificateMode": {
           "description": "The mode of the certificate.",
-          "enumDescriptions": [
-            "",
-            "Do not provision an HTTPS certificate.",
-            "Automatically provisions an HTTPS certificate via GoogleCA or LetsEncrypt."
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -1314,12 +1309,6 @@
         },
         "type": {
           "description": "Resource record type. Example: `AAAA`.",
-          "enumDescriptions": [
-            "An unknown resource record.",
-            "An A resource record. Data is an IPv4 address.",
-            "An AAAA resource record. Data is an IPv6 address.",
-            "A CNAME resource record. Data is a domain name to be aliased."
-          ],
           "type": "string",
           "enumDescriptions": [
             "An unknown resource record.",
@@ -1814,12 +1803,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",

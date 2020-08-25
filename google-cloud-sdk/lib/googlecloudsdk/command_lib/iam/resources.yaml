@@ -8,6 +8,17 @@ project:
     help: The project name.
     property: core/project
 
+location:
+  name: location
+  collection: iam.projects.locations
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: The location name.
+  disable_auto_completers: false
+
 service_account:
   name: serviceAccount
   collection: iam.projects.serviceAccounts
@@ -30,4 +41,37 @@ iam_account:
     attribute_name: iam-account
     help: |
       The name of the IAM ServiceAccount.
+  disable_auto_completers: false
+
+workload_identity_pool:
+  name: WorkloadIdentityPool
+  collection: iam.projects.locations.workloadIdentityPools
+  request_id_field: workloadIdentityPoolId
+  attributes:
+  - *project
+  - *location
+  - &workload_identity_pool
+    parameter_name: workloadIdentityPoolsId
+    attribute_name: workload-identity-pool
+    help: |
+      The ID to use for the pool, which becomes the final component of the resource name. This value
+      should be 4-32 characters, and may contain the characters [a-z0-9-]. The prefix `gcp-` is
+      reserved for use by Google, and may not be specified.
+  disable_auto_completers: false
+
+workload_identity_pool_provider:
+  name: WorkloadIdentityPoolProvider
+  collection: iam.projects.locations.workloadIdentityPools.providers
+  request_id_field: workloadIdentityPoolProviderId
+  attributes:
+  - *project
+  - *location
+  - *workload_identity_pool
+  - &workload_identity_pool_provider
+    parameter_name: providersId
+    attribute_name: provider
+    help: |
+      The ID for the provider, which becomes the final component of the resource name. This value
+      must be 4-32 characters, and may contain the characters [a-z0-9-]. The prefix `gcp-` is
+      reserved for use by Google, and may not be specified.
   disable_auto_completers: false

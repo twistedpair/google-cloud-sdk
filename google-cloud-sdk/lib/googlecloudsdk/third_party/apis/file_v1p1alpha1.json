@@ -245,15 +245,6 @@
         },
         "state": {
           "description": "Output only. The instance state.",
-          "enumDescriptions": [
-            "State not set.",
-            "The instance is being created.",
-            "The instance is available for use.",
-            "Work is being done on the instance. You can get further details from the `statusMessage` field of the `Instance` resource.",
-            "The instance is shutting down.",
-            "The instance is experiencing an issue and might be unusable. You can get further details from the `statusMessage` field of the `Instance` resource.",
-            "The instance is restoring a snapshot or backup to an existing file share and may be unusable during this time."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -288,14 +279,6 @@
         },
         "tier": {
           "description": "The service tier of the instance.",
-          "enumDescriptions": [
-            "Not set.",
-            "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
-            "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
-            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
-            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
-            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -407,11 +390,6 @@
         },
         "accessMode": {
           "description": "Either READ_ONLY, for allowing only read requests on the exported directory, or READ_WRITE, for allowing both read and write requests. The default is READ_WRITE.",
-          "enumDescriptions": [
-            "AccessMode not set.",
-            "The client can only read the file share.",
-            "The client can read and write the file share (default)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "AccessMode not set.",
@@ -426,11 +404,6 @@
         },
         "squashMode": {
           "description": "Either NO_ROOT_SQUASH, for allowing root access on the exported directory, or ROOT_SQUASH, for not allowing root access. The default is NO_ROOT_SQUASH.",
-          "enumDescriptions": [
-            "SquashMode not set.",
-            "The Root user has root access to the file share (default).",
-            "The Root user has squashed access to the anonymous uid\/gid."
-          ],
           "type": "string",
           "enumDescriptions": [
             "SquashMode not set.",
@@ -466,10 +439,6 @@
         },
         "modes": {
           "description": "Internet protocol versions for which the instance has IP addresses assigned. For this version, only MODE_IPV4 is supported.",
-          "enumDescriptions": [
-            "Internet protocol not set.",
-            "Use the IPv4 internet protocol."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -557,13 +526,6 @@
         },
         "state": {
           "description": "Output only. The snapshot state.",
-          "enumDescriptions": [
-            "State not set.",
-            "Point-in-time snapshot is being created.",
-            "Point-in-time snapshot has been taken and the operation is being finalized. At this point, changes to the file share will not be reflected in the snapshot.",
-            "Snapshot is available for use.",
-            "Snapshot is being deleted."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -616,14 +578,6 @@
         },
         "sourceInstanceTier": {
           "description": "Output only. The service tier of the source Cloud Filestore instance that this snapshot is created from.",
-          "enumDescriptions": [
-            "Not set.",
-            "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
-            "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
-            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
-            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
-            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -645,12 +599,6 @@
         },
         "type": {
           "description": "The Type of the Snapshot.",
-          "enumDescriptions": [
-            "Not set, will use the default value of BACKUP.",
-            "Backup snapshots are standalone and replicated regionally. Basic Instances can be created or restored from this snapshot variant (Backup snapshots are not supported for Advanced instances at this time).",
-            "Local snapshots are standalone, zonal resources. Basic Instances can be created or restored from this snapshot variant (Local snapshots are not supported for Advanced instances at this time).",
-            "In place snapshots are part of the Instance storage system and occupy Instance storage space. They are also tied to the Instance lifecycle and are deleted at Instance deletion time. Instances cannot be restored or created from this snapshot variant. In Place snapshots are only supported for Advanced Instances at this time."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set, will use the default value of BACKUP.",
@@ -708,13 +656,6 @@
         },
         "state": {
           "description": "Output only. The backup state.",
-          "enumDescriptions": [
-            "State not set.",
-            "Backup is being created.",
-            "Backup has been taken and the operation is being finalized. At this point, changes to the file share will not be reflected in the backup.",
-            "Backup is available for use.",
-            "Backup is being deleted."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -767,14 +708,6 @@
         },
         "sourceInstanceTier": {
           "description": "Output only. The service tier of the source Cloud Filestore instance that this backup is created from.",
-          "enumDescriptions": [
-            "Not set.",
-            "STANDARD tier. BASIC_HDD is the preferred term for this tier.",
-            "PREMIUM tier. BASIC_SSD is the preferred term for this tier.",
-            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_HDD is an alias for STANDARD Tier, offering economical performance backed by HDD.",
-            "BASIC instances offer a maximum capacity of 63.9 TB. BASIC_SSD is an alias for PREMIUM Tier, and offers improved performance backed by SSD.",
-            "HIGH_SCALE instances offer expanded capacity and performance scaling capabilities."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -920,15 +853,6 @@
         },
         "state": {
           "description": "Output only. Current lifecycle state of the resource (e.g. if it's being created or ready to use).",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "Instance is being created.",
-            "Instance has been created and is ready to use.",
-            "Instance is being updated.",
-            "Instance is unheathy and under repair.",
-            "Instance is being deleted.",
-            "Instance encountered an error and is in indeterministic state."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

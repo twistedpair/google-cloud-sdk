@@ -301,23 +301,6 @@
         },
         "state": {
           "description": "Output only. The current state for the TPU Node.",
-          "enumDescriptions": [
-            "TPU node state is not known\/set.",
-            "TPU node is being created.",
-            "TPU node has been created and is fully usable.",
-            "TPU node is restarting.",
-            "TPU node is undergoing reimaging.",
-            "TPU node is being deleted.",
-            "TPU node is being repaired and may be unusable. Details can be found in the `help_description` field.",
-            "TPU node is stopped.",
-            "TPU node is currently stopping.",
-            "TPU node is currently starting.",
-            "TPU node has been preempted. Only applies to Preemptible TPU Nodes.",
-            "TPU node has been terminated due to maintenance or has reached the end of its life cycle (for preemptible nodes).",
-            "TPU node is currently hiding.",
-            "TPU node has been hidden.",
-            "TPU node is currently unhiding."
-          ],
           "type": "string",
           "enumDescriptions": [
             "TPU node state is not known\/set.",
@@ -391,14 +374,6 @@
         },
         "health": {
           "description": "The health status of the TPU node.",
-          "enumDescriptions": [
-            "Health status is unknown: not initialized or failed to retrieve.",
-            "The resource is healthy.",
-            "The resource is unhealthy.",
-            "The resource is unresponsive.",
-            "The in-guest ML stack is unhealthy.",
-            "The node is under maintenance\/priority boost caused rescheduling and will resume running once rescheduled."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Health status is unknown: not initialized or failed to retrieve.",

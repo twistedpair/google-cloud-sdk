@@ -25,7 +25,7 @@ from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
-from googlecloudsdk.core.credentials import http as http_creds
+from googlecloudsdk.core.credentials import transports
 
 _PROJECT_RESOURCE = 'projects/%s'
 _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
@@ -449,7 +449,7 @@ def _GetClientInstance(version='v1'):
   # has explicitly set the quota project, then respect that.
   enable_resource_quota = (
       properties.VALUES.billing.quota_project.IsExplicitlySet())
-  http_client = http_creds.Http(
+  http_client = transports.GetApitoolsTransport(
       response_encoding=transport.ENCODING,
       enable_resource_quota=enable_resource_quota)
   return apis_internal._GetClientInstance(

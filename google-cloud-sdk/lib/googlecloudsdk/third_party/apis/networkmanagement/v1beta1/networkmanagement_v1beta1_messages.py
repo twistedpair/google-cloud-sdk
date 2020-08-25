@@ -383,7 +383,7 @@ class DropInfo(_messages.Message):
       FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK: Firewalls block
         the health check probes to the backends and cause the backends to be
         unavailable for traffic from the load balancer. See [Health check
-        firewall rules](https://cloud.google.com/load-balancing/docs/ health-
+        firewall rules](https://cloud.google.com/load-balancing/docs/health-
         checks#firewall_rules) for more details.
       INSTANCE_NOT_RUNNING: Packet is sent from or to a Compute Engine
         instance that is not in a running state.
@@ -394,7 +394,7 @@ class DropInfo(_messages.Message):
       GKE_MASTER_UNAUTHORIZED_ACCESS: Access to Google Kubernetes Engine
         cluster master's endpoint is not authorized. See [Access to the
         cluster endpoints](https://cloud.google.com/kubernetes-
-        engine/docs/how-to/ private-clusters#access_to_the_cluster_endpoints)
+        engine/docs/how-to/private-clusters#access_to_the_cluster_endpoints)
         for more details.
       CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS: Access to the Cloud SQL instance
         endpoint is not authorized. See [Authorizing with authorized

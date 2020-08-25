@@ -24,7 +24,8 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 def BillingAccountAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='billing-account', help_text='Billing Account for the {resource}.')
+      name='billing-account',
+      help_text='Cloud Billing account for the Procurement {resource}.')
 
 
 def AccountAttributeConfig():
@@ -40,7 +41,7 @@ def EntitlementAttributeConfig():
 
 def FreeTrialAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='free-trial', help_text='Procurement Free Trial for the {resource}.')
+      name='free-trial', help_text='Procurement free trial for the {resource}.')
 
 
 def OrderAttributeConfig():

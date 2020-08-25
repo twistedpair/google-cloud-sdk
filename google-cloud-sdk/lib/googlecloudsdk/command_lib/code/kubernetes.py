@@ -22,6 +22,7 @@ import subprocess
 
 from googlecloudsdk.command_lib.code import run_subprocess
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.console import console_io
 import six
 
 DEFAULT_CLUSTER_NAME = 'gcloud-local-dev'
@@ -192,6 +193,11 @@ class MinikubeStartError(exceptions.Error):
   """Error if minikube fails to start."""
 
 
+_MINIKUBE_STEP = 'io.k8s.sigs.minikube.step'
+
+_MINIKUBE_DOWNLOAD_PROGRESS = 'io.k8s.sigs.minikube.download.progress'
+
+
 def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
   """Starts a minikube cluster."""
   # pylint: disable=broad-except
@@ -206,6 +212,7 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
           '--interactive=false',
           '--delete-on-failure',
           '--install-addons=false',
+          '--output=json',
       ]
       if vm_driver:
         cmd.append('--vm-driver=' + vm_driver)
@@ -214,9 +221,31 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
       if debug:
         cmd.extend(['--alsologtostderr', '-v8'])
 
-      print("Starting development environment '%s' ..." % cluster_name)
-      run_subprocess.Run(cmd, timeout_sec=150, show_output=debug)
-      print('Development environment created.')
+      start_msg = "Starting development environment '%s' ..." % cluster_name
+
+      with console_io.ProgressBar(start_msg) as progress_bar:
+        for json_obj in run_subprocess.StreamOutputJson(
+            cmd, timeout_sec=150, show_stderr=debug):
+          if json_obj['type'] == _MINIKUBE_STEP:
+            data = json_obj['data']
+
+            if debug and 'message' in data:
+              print('[minikube]', data['message'])
+
+            current_step = int(data['currentstep'])
+            total_steps = int(data['totalsteps'])
+            completion_fraction = current_step / float(total_steps)
+            progress_bar.SetProgress(completion_fraction)
+          elif json_obj['type'] == _MINIKUBE_DOWNLOAD_PROGRESS:
+            data = json_obj['data']
+            current_step = int(data['currentstep'])
+            total_steps = int(data['totalsteps'])
+            download_progress = float(data['progress'])
+
+            completion_fraction = (current_step +
+                                   download_progress) / total_steps
+            progress_bar.SetProgress(completion_fraction)
+
   except Exception as e:
     six.reraise(MinikubeStartError, e)
 

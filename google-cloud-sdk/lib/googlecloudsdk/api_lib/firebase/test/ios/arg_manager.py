@@ -70,6 +70,7 @@ def SharedArgRules():
   return {
       'required': ['type'],
       'optional': [
+          'additional_ipas',
           'async_',
           'client_details',
           'device',

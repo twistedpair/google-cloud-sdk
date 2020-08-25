@@ -285,12 +285,6 @@
         },
         "type": {
           "description": "Required. Instance type.",
-          "enumDescriptions": [
-            "No type specified. The instance creation will fail.",
-            "Basic Data Fusion instance. In Basic type, the user will be able to create data pipelines using point and click UI. However, there are certain limitations, such as fewer number of concurrent pipelines, no support for streaming pipelines, etc.",
-            "Enterprise Data Fusion instance. In Enterprise type, the user will have all features available, such as support for streaming pipelines, higher number of concurrent pipelines, etc.",
-            "Developer Data Fusion instance. In Developer type, the user will have all features available but with restrictive capabilities. This is to help enterprises design and develop their data ingestion and integration pipelines at low cost."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No type specified. The instance creation will fail.",
@@ -349,18 +343,6 @@
         },
         "state": {
           "description": "Output only. The current state of this Data Fusion instance.",
-          "enumDescriptions": [
-            "Instance does not have a state yet",
-            "Instance is being created",
-            "Instance is running and ready for requests",
-            "Instance creation failed",
-            "Instance is being deleted",
-            "Instance is being upgraded",
-            "Instance is being restarted",
-            "Instance is being updated on customer request",
-            "Instance is being auto-updated",
-            "Instance is being auto-upgraded"
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -473,11 +455,6 @@
       "properties": {
         "acceleratorType": {
           "description": "The type of an accelator for a CDF instance.",
-          "enumDescriptions": [
-            "Default value, if unspecified.",
-            "Change Data Capture accelerator for CDF.",
-            "Cloud Healthcare accelerator for CDF. This accelerator is to enable Cloud Healthcare specific CDF plugins developed by Healthcare team."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value, if unspecified.",
@@ -675,12 +652,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",

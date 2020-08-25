@@ -37,8 +37,8 @@ _DETAILED_SOURCE_SNAPSHOT_HELP = """\
       size of the disks.
 """
 
-_DETAILED_SOURCE_IN_PLACE_SNAPSHOT_HELP = """\
-      Source in place snapshot used to create the disks.
+_DETAILED_SOURCE_INSTANT_SNAPSHOT_HELP = """\
+      Source instant snapshot used to create the disks.
 """
 
 _SOURCE_DISK_DETAILED_HELP = """\
@@ -129,16 +129,16 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     short_help='Source snapshot used to create the disks.',
     detailed_help=_DETAILED_SOURCE_SNAPSHOT_HELP,)
 
-SOURCE_IN_PLACE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
-    resource_name='source in place snapshot',
-    completer=compute_completers.InPlaceSnapshotsCompleter,
-    name='--source-in-place-snapshot',
-    zonal_collection='compute.zoneInPlaceSnapshots',
-    regional_collection='compute.regionInPlaceSnapshots',
+SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
+    resource_name='source instant snapshot',
+    completer=compute_completers.InstantSnapshotsCompleter,
+    name='--source-instant-snapshot',
+    zonal_collection='compute.zoneInstantSnapshots',
+    regional_collection='compute.regionInstantSnapshots',
     plural=False,
     required=False,
-    short_help='Source in place snapshot used to create the disks.',
-    detailed_help=_DETAILED_SOURCE_IN_PLACE_SNAPSHOT_HELP,
+    short_help='Source instant snapshot used to create the disks.',
+    detailed_help=_DETAILED_SOURCE_INSTANT_SNAPSHOT_HELP,
     use_existing_default_scope=True)
 
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(

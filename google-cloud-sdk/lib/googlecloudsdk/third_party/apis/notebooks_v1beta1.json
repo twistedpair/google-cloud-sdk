@@ -329,16 +329,6 @@
         },
         "state": {
           "description": "Output only. The state of this instance.",
-          "enumDescriptions": [
-            "State is not specified.",
-            "The control logic is starting the instance.",
-            "The control logic is installing required frameworks and registering the instance with notebook proxy",
-            "The instance is running.",
-            "The control logic is stopping the instance.",
-            "The instance is stopped.",
-            "The instance is deleted.",
-            "The instance is upgrading."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -372,11 +362,6 @@
         },
         "bootDiskType": {
           "description": "Input only. The type of the boot disk attached to this instance, defaults to standard persistent disk (`PD_STANDARD`).",
-          "enumDescriptions": [
-            "Disk type not set.",
-            "Standard persistent disk type.",
-            "SSD persistent disk type."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Disk type not set.",
@@ -396,11 +381,6 @@
         },
         "dataDiskType": {
           "description": "Input only. The type of the data disk attached to this instance, defaults to standard persistent disk (`PD_STANDARD`).",
-          "enumDescriptions": [
-            "Disk type not set.",
-            "Standard persistent disk type.",
-            "SSD persistent disk type."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Disk type not set.",
@@ -424,11 +404,6 @@
         },
         "diskEncryption": {
           "description": "Input only. Disk encryption method used on the boot and data disks, defaults to GMEK.",
-          "enumDescriptions": [
-            "Disk encryption is not specified.",
-            "Use Google managed encryption keys to encrypt the boot disk.",
-            "Use customer managed encryption keys to encrypt the boot disk."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Disk encryption is not specified.",
@@ -530,19 +505,6 @@
       "properties": {
         "type": {
           "description": "Type of this accelerator.",
-          "enumDescriptions": [
-            "Accelerator type is not specified.",
-            "Accelerator type is Nvidia Tesla K80.",
-            "Accelerator type is Nvidia Tesla P100.",
-            "Accelerator type is Nvidia Tesla V100.",
-            "Accelerator type is Nvidia Tesla P4.",
-            "Accelerator type is Nvidia Tesla T4.",
-            "Accelerator type is NVIDIA Tesla T4 Virtual Workstations.",
-            "Accelerator type is NVIDIA Tesla P100 Virtual Workstations.",
-            "Accelerator type is NVIDIA Tesla P4 Virtual Workstations.",
-            "(Coming soon) Accelerator type is TPU V2.",
-            "(Coming soon) Accelerator type is TPU V3."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Accelerator type is not specified.",
@@ -596,19 +558,6 @@
       "properties": {
         "type": {
           "description": "Required. Type of this accelerator.",
-          "enumDescriptions": [
-            "Accelerator type is not specified.",
-            "Accelerator type is Nvidia Tesla K80.",
-            "Accelerator type is Nvidia Tesla P100.",
-            "Accelerator type is Nvidia Tesla V100.",
-            "Accelerator type is Nvidia Tesla P4.",
-            "Accelerator type is Nvidia Tesla T4.",
-            "Accelerator type is NVIDIA Tesla T4 Virtual Workstations.",
-            "Accelerator type is NVIDIA Tesla P100 Virtual Workstations.",
-            "Accelerator type is NVIDIA Tesla P4 Virtual Workstations.",
-            "(Coming soon) Accelerator type is TPU V2.",
-            "(Coming soon) Accelerator type is TPU V3."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Accelerator type is not specified.",

@@ -131,11 +131,6 @@
         },
         "lifecycleState": {
           "description": "The lifecycle state of the folder. Updates to the lifecycle_state must be performed via [DeleteFolder] and [UndeleteFolder].",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "The normal and active state.",
-            "The folder has been marked for deletion by the user."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -377,12 +372,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -481,11 +470,6 @@
         },
         "operationType": {
           "description": "The type of this operation.",
-          "enumDescriptions": [
-            "Operation type not specified.",
-            "A create folder operation.",
-            "A move folder operation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Operation type not specified.",
@@ -515,18 +499,6 @@
       "properties": {
         "errorMessageId": {
           "description": "The type of operation error experienced.",
-          "enumDescriptions": [
-            "The error type was unrecognized or unspecified.",
-            "The attempted action would violate the max folder depth constraint.",
-            "The attempted action would violate the max child folders constraint.",
-            "The attempted action would violate the locally-unique folder display_name constraint.",
-            "The resource being moved has been deleted.",
-            "The resource a folder was being added to has been deleted.",
-            "The attempted action would introduce cycle in resource path.",
-            "The attempted action would move a folder that is already being moved.",
-            "The folder the caller is trying to delete contains active resources.",
-            "The attempted action would violate the max deleted folder depth constraint."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The error type was unrecognized or unspecified.",
@@ -566,11 +538,6 @@
         },
         "operationType": {
           "description": "The type of this operation.",
-          "enumDescriptions": [
-            "Operation type not specified.",
-            "A create folder operation.",
-            "A move folder operation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Operation type not specified.",
@@ -604,11 +571,6 @@
         },
         "operationType": {
           "description": "The type of this operation.",
-          "enumDescriptions": [
-            "Operation type not specified.",
-            "A create folder operation.",
-            "A move folder operation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Operation type not specified.",

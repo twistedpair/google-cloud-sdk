@@ -304,6 +304,16 @@ def AddPrivateIpv6GoogleAccessArg(parser, api_version):
       parser)
 
 
+def AddMaintenanceFreezeDuration(parser):
+  parser.add_argument(
+      '--maintenance-freeze-duration',
+      type=int,
+      hidden=True,
+      help="""
+        Specifies the number of hours after instance creation where the instance
+        won't be scheduled for maintenance""")
+
+
 def GetPrivateIpv6GoogleAccessTypeFlagMapper(messages):
   return arg_utils.ChoiceEnumMapper(
       '--private-ipv6-google-access-type',

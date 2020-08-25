@@ -10723,6 +10723,34 @@ class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesSetNameRequest(_messages.Message):
+  r"""A ComputeInstancesSetNameRequest object.
+
+  Fields:
+    instance: The instance name for this request.
+    instancesSetNameRequest: A InstancesSetNameRequest resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesSetNameRequest = _messages.MessageField('InstancesSetNameRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesSetSchedulingRequest(_messages.Message):
   r"""A ComputeInstancesSetSchedulingRequest object.
 
@@ -31081,6 +31109,20 @@ class InstancesSetMinCpuPlatformRequest(_messages.Message):
   """
 
   minCpuPlatform = _messages.StringField(1)
+
+
+class InstancesSetNameRequest(_messages.Message):
+  r"""A InstancesSetNameRequest object.
+
+  Fields:
+    currentName: The current name of this resource, used to prevent conflicts.
+      Provide the latest name when making a request to change name.
+    name: The name to be applied to the instance. Needs to be RFC 1035
+      compliant.
+  """
+
+  currentName = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class InstancesSetServiceAccountRequest(_messages.Message):

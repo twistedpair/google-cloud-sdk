@@ -1487,6 +1487,14 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.privateca.v1beta1',
+                client_classpath='privateca_v1beta1_client.PrivatecaV1beta1',
+                messages_modulepath='privateca_v1beta1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'pubsub': {
         'v1':
@@ -1859,6 +1867,16 @@ MAP = {
                 client_classpath='tpu_v2alpha1_client.TpuV2alpha1',
                 messages_modulepath='tpu_v2alpha1_messages',
                 default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'transcoder': {
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.transcoder.v1beta1',
+                client_classpath='transcoder_v1beta1_client.TranscoderV1beta1',
+                messages_modulepath='transcoder_v1beta1_messages',
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

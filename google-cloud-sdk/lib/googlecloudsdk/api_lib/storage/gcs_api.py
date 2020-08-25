@@ -36,7 +36,7 @@ from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.credentials import transports
 
 
 DEFAULT_CONTENT_TYPE = 'application/octet-stream'
@@ -268,12 +268,36 @@ class GcsApi(cloud_api.CloudApi):
         break
 
   @cloud_errors.catch_http_error_raise_gcs_api_error()
+  def DeleteObject(self,
+                   bucket_name,
+                   object_name,
+                   generation=None,
+                   request_config=None):
+    """See super class."""
+    if not request_config:
+      request_config = GcsRequestConfig()
+
+    request = self.messages.StorageObjectsDeleteRequest(
+        bucket=bucket_name,
+        object=object_name,
+        generation=generation,
+        ifGenerationMatch=request_config.precondition_generation_match,
+        ifMetagenerationMatch=request_config.precondition_metageneration_match)
+    # Success returns an empty body.
+    # https://cloud.google.com/storage/docs/json_api/v1/objects/delete
+    self.client.objects.Delete(request)
+
+  @cloud_errors.catch_http_error_raise_gcs_api_error()
   def GetObjectMetadata(self,
                         bucket_name,
                         object_name,
                         generation=None,
                         fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
+
+    # S3 requires a string, but GCS uses an int for generation.
+    if generation:
+      generation = int(generation)
 
     global_params, projection = self._GetGlobalParamsAndProjection(
         fields_scope, self.messages.StorageObjectsGetRequest)
@@ -298,6 +322,10 @@ class GcsApi(cloud_api.CloudApi):
                           generation=None,
                           request_config=None):
     """See super class."""
+    # S3 requires a string, but GCS uses an int for generation.
+    if generation:
+      generation = int(generation)
+
     if not request_config:
       request_config = GcsRequestConfig()
 
@@ -342,6 +370,10 @@ class GcsApi(cloud_api.CloudApi):
     _ValidateObjectMetadata(source_object_metadata)
     _ValidateObjectMetadata(destination_object_metadata)
 
+    # S3 requires a string, but GCS uses an int for generation.
+    if source_object_generation:
+      source_object_generation = int(source_object_generation)
+
     object_metadata = self.client.objects.Copy(
         self.messages.StorageObjectsCopyRequest(
             sourceBucket=source_object_metadata.bucket,
@@ -379,7 +411,7 @@ class GcsApi(cloud_api.CloudApi):
       decryption_wrapper (CryptoKeyWrapper):
           utils.encryption_helper.CryptoKeyWrapper that can optionally be added
           to decrypt an encrypted object.
-      generation (long): Generation of the object to retrieve.
+      generation (int): Generation of the object to retrieve.
       serialization_data (str): Implementation-specific JSON string of a dict
           containing serialization information for the download.
       start_byte (int): Starting point for download (for resumable downloads and
@@ -431,6 +463,10 @@ class GcsApi(cloud_api.CloudApi):
                      start_byte=0,
                      end_byte=None):
     """See super class."""
+    # S3 requires a string, but GCS uses an int for generation.
+    if generation:
+      generation = int(generation)
+
     if not serialization_data:
       # New download.
       apitools_download = apitools_transfer.Download.FromStream(
@@ -438,7 +474,8 @@ class GcsApi(cloud_api.CloudApi):
           auto_transfer=False,
           total_size=object_size,
           num_retries=DEFAULT_NUM_RETRIES)
-      apitools_download.bytes_http = http.Http(response_encoding=None)
+      apitools_download.bytes_http = transports.GetApitoolsTransport(
+          response_encoding=None)
     else:
       # TODO(b/161437901): Handle resumed download.
       pass

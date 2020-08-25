@@ -14,21 +14,21 @@
 ## limitations under the License.
 release_tracks: ${release_tracks}
 
-  help_text:
-    brief: Show details about the ${singular_name}.
-    description: Show details about the ${singular_name}.
-    examples: |
-      To show details about a device, run:
+help_text:
+  brief: Show details about the ${singular_name}.
+  description: Show details about the ${singular_name}.
+  examples: |
+    To show details about a device, run:
 
-        $ {command} my-${singular_name} ${flags}
+      $ {command} my-${singular_name} ${flags}
 
-  request:
-    collection: ${collection_name}
-    api_version: ${api_version}
+request:
+  collection: ${collection_name}
+  api_version: ${api_version}
 
-  arguments:
-    resource:
-      help_text: The ${singular_name} you want to describe.
-      # the following should point to the resource argument definition under your
-      # surface's command_lib directory:
-      spec: !REF googlecloudsdk.command_lib.${api_name}.resources:${singular_name}
+arguments:
+  resource:
+    help_text: The ${singular_name} you want to describe.
+    # The following should point to the resource argument definition under your
+    # surface's command_lib directory.:
+    spec: !REF googlecloudsdk.command_lib.${api_name}.resources:${singular_name}

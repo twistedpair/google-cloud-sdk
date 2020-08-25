@@ -289,10 +289,6 @@
         },
         "state": {
           "description": "Output only. State of the workflow deployment.",
-          "enumDescriptions": [
-            "Invalid state.",
-            "The workflow has been deployed successfully and is serving."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

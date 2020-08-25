@@ -39,6 +39,7 @@ def _ParseCAResourceArgs(args):
   """
   kms_key_version_ref = args.CONCEPTS.kms_key_version.Parse()
   # TODO(b/149316889): Use concepts library once attribute fallthroughs work.
+  # TODO(b/164538240): Tie KMS key version locations to the CA location instead.
   ca_ref = resources.REGISTRY.Parse(
       args.CERTIFICATE_AUTHORITY,
       collection='privateca.projects.locations.certificateAuthorities',

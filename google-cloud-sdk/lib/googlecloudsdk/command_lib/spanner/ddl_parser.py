@@ -72,6 +72,8 @@ class DDLParser:
         self.PreservingMode('"', ['"'], ['\\"', '\\\\']),
         # Single single quote.
         self.PreservingMode("'", ["'"], ["\\'", '\\\\']),
+        # Single back quote.
+        self.PreservingMode('`', ['`'], ['\\`', '\\\\']),
     ]
     # A list of statements. A statement is a list of ddl fragments.
     self.statements_ = []

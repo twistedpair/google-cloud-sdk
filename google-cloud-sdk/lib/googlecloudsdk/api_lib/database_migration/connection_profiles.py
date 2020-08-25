@@ -21,14 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.args import labels_util
-from googlecloudsdk.core import resources
-
-
-def GetConnectionProfileURI(resource):
-  connection_profile = resources.REGISTRY.ParseRelativeName(
-      resource.name,
-      collection='datamigration.projects.locations.connectionProfiles')
-  return connection_profile.SelfLink()
 
 
 class ConnectionProfilesClient(object):
@@ -44,20 +36,21 @@ class ConnectionProfilesClient(object):
     self._ValidateSslConfigArgs(args)
 
   def _ValidateSslConfigArgs(self, args):
-    self._ValidateCertificateFormat(args.ca_certificate, 'CA certificate')
-    self._ValidateCertificateFormat(args.certificate, 'client certificate')
-    self._ValidateCertificateFormat(args.private_key, 'private key')
+    self._ValidateCertificateFormat(args, 'ca_certificate')
+    self._ValidateCertificateFormat(args, 'certificate')
+    self._ValidateCertificateFormat(args, 'private_key')
 
-  def _ValidateCertificateFormat(self, certificate, name):
-    if not certificate:
+  def _ValidateCertificateFormat(self, args, field):
+    if not hasattr(args, field) or not args.IsSpecified(field):
       return True
+    certificate = getattr(args, field)
     cert = certificate.strip()
     cert_lines = cert.split('\n')
     if (not cert_lines[0].startswith('-----')
         or not cert_lines[-1].startswith('-----')):
       raise exceptions.InvalidArgumentException(
-          name,
-          'The certificate does not appear to be in PEM format: \n{0}'
+          field,
+          'The certificate does not appear to be in PEM format:\n{0}'
           .format(cert))
 
   def _GetSslConfig(self, args):
@@ -108,35 +101,86 @@ class ConnectionProfilesClient(object):
     self._UpdateSslConfig(connection_profile, args, update_fields)
 
   def _GetProvider(self, cp_type, provider):
-    if not provider:
-      return cp_type.ProviderValueValuesEnum.UNKNOWN
-    if provider == 'CLOUDSQL':
-      return cp_type.ProviderValueValuesEnum.CLOUDSQL
-    if provider == 'RDS':
-      return cp_type.ProviderValueValuesEnum.RDS
-    raise exceptions.InvalidArgumentException(
-        provider,
-        'The connection profile provider {0} is either unknown or not supported yet.'
-        .format(cp_type))
+    if provider is None:
+      return cp_type.ProviderValueValuesEnum.DATABASE_PROVIDER_UNSPECIFIED
+    return cp_type.ProviderValueValuesEnum.lookup_by_name(provider)
+
+  def _GetActivationPolicy(self, cp_type, policy):
+    if policy is None:
+      return cp_type.ActivationPolicyValueValuesEnum.SQL_ACTIVATION_POLICY_UNSPECIFIED
+    return cp_type.ActivationPolicyValueValuesEnum.lookup_by_name(policy)
+
+  def _GetDatabaseVersion(self, cp_type, version):
+    return cp_type.DatabaseVersionValueValuesEnum.lookup_by_name(version)
+
+  def _GetAuthorizedNetworks(self, networks):
+    acl_entry = self.messages.SqlAclEntry
+    return [
+        acl_entry(value=network)
+        for network in networks
+    ]
+
+  def _GetIpConfig(self, args):
+    return self.messages.SqlIpConfig(
+        enableIpv4=args.enable_ip_v4,
+        privateNetwork=args.private_network,
+        requireSsl=args.require_ssl,
+        authorizedNetworks=self._GetAuthorizedNetworks(args.authorized_networks)
+    )
+
+  def _GetDataDiskType(self, cp_type, data_disk_type):
+    if data_disk_type is None:
+      return  cp_type.DataDiskTypeValueValuesEnum.SQL_DATA_DISK_TYPE_UNSPECIFIED
+    return cp_type.DataDiskTypeValueValuesEnum.lookup_by_name(data_disk_type)
+
+  def _GetCloudSqlSettings(self, args):
+    cp_type = self.messages.CloudSqlSettings
+    source_id = args.CONCEPTS.source_id.Parse().RelativeName()
+    user_labels_value = labels_util.ParseCreateArgs(
+        args, cp_type.UserLabelsValue, 'user_labels')
+    database_flags = labels_util.ParseCreateArgs(
+        args, cp_type.DatabaseFlagsValue, 'database_flags')
+    return self.messages.CloudSqlSettings(
+        databaseVersion=self._GetDatabaseVersion(
+            cp_type, args.database_version),
+        userLabels=user_labels_value,
+        tier=args.tier,
+        storageAutoResizeLimit=args.storage_auto_resize_limit,
+        activationPolicy=self._GetActivationPolicy(
+            cp_type, args.activation_policy),
+        ipConfig=self._GetIpConfig(args),
+        autoStorageIncrease=args.auto_storage_increase,
+        databaseFlags=database_flags,
+        dataDiskType=self._GetDataDiskType(cp_type, args.data_disk_type),
+        dataDiskSizeGb=args.data_disk_size,
+        zone=args.zone,
+        sourceId=source_id
+    )
+
+  def _GetCloudSqlConnectionProfile(self, args):
+    settings = self._GetCloudSqlSettings(args)
+    return self.messages.CloudSqlConnectionProfile(settings=settings)
 
   def _GetConnectionProfile(self, cp_type, connection_profile_id, args):
     """Returns a connection profile according to type."""
     connection_profile_type = self.messages.ConnectionProfile
     provider = self._GetProvider(connection_profile_type, args.provider)
+    labels = labels_util.ParseCreateArgs(
+        args, connection_profile_type.LabelsValue)
+    params = {}
     if cp_type == 'MYSQL':
       mysql_connection_profile = self._GetMySqlConnectionProfile(args)
-      return connection_profile_type(
-          name=connection_profile_id,
-          labels={},
-          state=connection_profile_type.StateValueValuesEnum.CREATING,
-          displayName=args.display_name,
-          provider=provider,
-          mysql=mysql_connection_profile)
-    else:
-      raise exceptions.InvalidArgumentException(
-          cp_type,
-          'The connection profile type {0} is either unknown or not supported yet.'
-          .format(cp_type))
+      params['mysql'] = mysql_connection_profile
+    elif cp_type == 'CLOUDSQL':
+      cloudsql_connection_profile = self._GetCloudSqlConnectionProfile(args)
+      params['cloudsql'] = cloudsql_connection_profile
+    return connection_profile_type(
+        name=connection_profile_id,
+        labels=labels,
+        state=connection_profile_type.StateValueValuesEnum.CREATING,
+        displayName=args.display_name,
+        provider=provider,
+        **params)
 
   def _GetExistingConnectionProfile(self, name):
     get_req = self.messages.DatamigrationProjectsLocationsConnectionProfilesGetRequest(
@@ -163,20 +207,14 @@ class ConnectionProfilesClient(object):
     if args.IsSpecified('display_name'):
       connection_profile.displayName = args.display_name
       update_fields.append('displayName')
-    if hasattr(connection_profile, 'mysql'):
+    if connection_profile.mysql is not None:
       self._UpdateMySqlConnectionProfile(connection_profile,
                                          args,
                                          update_fields)
     else:
-      cp_type = ''
-      if hasattr(connection_profile, 'postgresql'):
-        cp_type = 'postgresql'
-      elif hasattr(connection_profile, 'cloudsql'):
-        cp_type = 'cloudsql'
-      raise exceptions.InvalidArgumentException(
-          cp_type,
-          'The connection profile type {0} is either unknown or not supported yet.'
-          .format(cp_type))
+      raise AttributeError(
+          'The connection profile requested does not contain mysql object. '
+          'Currently only mysql connection profile is supported.')
     self._UpdateLabels(connection_profile, args)
     return connection_profile, update_fields
 

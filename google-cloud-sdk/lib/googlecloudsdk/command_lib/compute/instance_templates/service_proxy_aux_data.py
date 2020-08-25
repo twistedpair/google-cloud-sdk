@@ -30,7 +30,13 @@ class TracingState(str, enum.Enum):
 # problem because all commands inside service-proxy-agent-bootstrap.sh
 # are run with sudo anyway.
 startup_script = """#! /bin/bash
+ZONE=$( curl --silent http://metadata.google.internal/computeMetadata/v1/instance/zone -H Metadata-Flavor:Google | cut -d/ -f4 )
 export SERVICE_PROXY_AGENT_DIRECTORY=$(mktemp -d)
-sudo gsutil cp gs://gce-mesh/service-proxy-agent/releases/service-proxy-agent-0.2.tgz ${SERVICE_PROXY_AGENT_DIRECTORY}
+sudo gsutil cp \
+  gs://gce-service-proxy-${ZONE}/service-proxy-agent/releases/service-proxy-agent-0.2.tgz \
+  ${SERVICE_PROXY_AGENT_DIRECTORY} \
+  || sudo gsutil cp \
+    gs://gce-service-proxy/service-proxy-agent/releases/service-proxy-agent-0.2.tgz \
+    ${SERVICE_PROXY_AGENT_DIRECTORY}
 sudo tar -xzf ${SERVICE_PROXY_AGENT_DIRECTORY}/service-proxy-agent-0.2.tgz -C ${SERVICE_PROXY_AGENT_DIRECTORY}
 ${SERVICE_PROXY_AGENT_DIRECTORY}/service-proxy-agent/service-proxy-agent-bootstrap.sh"""

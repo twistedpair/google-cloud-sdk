@@ -309,16 +309,6 @@
         },
         "state": {
           "description": "Output only. The current state of this domain.",
-          "enumDescriptions": [
-            "Not set.",
-            "ManagedIdentities domain is being created.",
-            "ManagedIdentities domain has been created and is fully usable.",
-            "ManagedIdentities domain configuration is being updated.",
-            "ManagedIdentities domain is being deleted.",
-            "ManagedIdentities domain is being repaired and may be unusable. Details can be found in the `status_message` field.",
-            "ManagedIdentities domain is undergoing maintenance.",
-            "ManagedIdentities domain is not serving customer requests."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -365,11 +355,6 @@
         },
         "trustType": {
           "description": "The type of trust represented by the trust resource.",
-          "enumDescriptions": [
-            "Not Set",
-            "The forest trust.",
-            "The external domain trust."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not Set",
@@ -384,12 +369,6 @@
         },
         "trustDirection": {
           "description": "The trust direction decides the current domain is trusted, trusting or both.",
-          "enumDescriptions": [
-            "Not Set",
-            "The inbound direction represents the trusting side.",
-            "The outboud direction represents the trusted side.",
-            "The bidirectional direction represents the trusted \/ trusting side."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not Set",
@@ -431,14 +410,6 @@
         },
         "state": {
           "description": "Output only. The current state of this trust.",
-          "enumDescriptions": [
-            "Not Set",
-            "Domain trust is being created.",
-            "Domain trust is being updated.",
-            "Domain trust is being deleted.",
-            "Domain trust is connected.",
-            "Domain trust is disconnected."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not Set",
@@ -600,12 +571,6 @@
         },
         "state": {
           "description": "Output only. The current state of the managed OU.",
-          "enumDescriptions": [
-            "Not Set",
-            "The sqlIntegration is being created.",
-            "The sqlIntegration is being deleted.",
-            "The sqlIntegration is ready."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -914,15 +879,6 @@
         },
         "state": {
           "description": "Output only. Current lifecycle state of the resource (e.g. if it's being created or ready to use).",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "Instance is being created.",
-            "Instance has been created and is ready to use.",
-            "Instance is being updated.",
-            "Instance is unheathy and under repair.",
-            "Instance is being deleted.",
-            "Instance encountered an error and is in indeterministic state."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

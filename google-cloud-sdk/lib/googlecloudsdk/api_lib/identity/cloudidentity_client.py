@@ -51,6 +51,22 @@ def GetMessages(version):
   return apis.GetMessagesModule(API_NAME, version)
 
 
+def GetGroup(version, group):
+  """Get a Cloud Identity Group.
+
+  Args:
+    version: Release track information.
+    group: Name of group as returned by LookupGroupName()
+      (i.e. 'groups/{group_id}').
+  Returns:
+    Group resource object.
+  """
+  client = GetClient(version)
+  messages = GetMessages(version)
+  return client.groups.Get(
+      messages.CloudidentityGroupsGetRequest(name=group))
+
+
 def LookupGroupName(version, email):
   """Lookup Group Name for a specified group key id.
 

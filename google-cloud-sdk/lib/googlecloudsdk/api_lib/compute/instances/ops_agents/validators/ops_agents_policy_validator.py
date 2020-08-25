@@ -172,6 +172,7 @@ def _ValidateAgentRules(agent_rules):
     * AgentVersionAndEnableAutoupgradeConflictError:
       Agent version is pinned but autoupgrade is enabled.
   """
+  # TODO(b/164155271): Empty agent rules should error out.
   errors = _ValidateAgentTypesUniqueness(agent_rules)
   for agent_rule in agent_rules:
     errors.extend(_ValidateAgentRule(agent_rule))
@@ -310,6 +311,7 @@ def _ValidateOsTypes(os_types):
     * OsTypeNotSupportedError:
       The combination of the OS short name and version is not supported.
   """
+  # TODO(b/164155747): Empty os-types should error out.
   errors = _ValidateOnlyOneOsTypeAllowed(os_types)
   for os_type in os_types:
     errors.extend(_ValidateSupportedOsType(os_type.short_name, os_type.version))

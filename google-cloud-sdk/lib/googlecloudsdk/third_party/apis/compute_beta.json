@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20200812",
+ "revision": "20200814",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -11374,6 +11374,20 @@
     "minCpuPlatform": {
      "type": "string",
      "description": "Minimum cpu/platform this instance should be started at."
+    }
+   }
+  },
+  "InstancesSetNameRequest": {
+   "id": "InstancesSetNameRequest",
+   "type": "object",
+   "properties": {
+    "currentName": {
+     "type": "string",
+     "description": "The current name of this resource, used to prevent conflicts. Provide the latest name when making a request to change name."
+    },
+    "name": {
+     "type": "string",
+     "description": "The name to be applied to the instance. Needs to be RFC 1035 compliant."
     }
    }
   },
@@ -38978,6 +38992,55 @@
      ],
      "request": {
       "$ref": "InstancesSetMinCpuPlatformRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "setName": {
+     "id": "compute.instances.setName",
+     "path": "projects/{project}/zones/{zone}/instances/{instance}/setName",
+     "httpMethod": "POST",
+     "description": "Sets name of an instance.",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "The instance name for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
+     "request": {
+      "$ref": "InstancesSetNameRequest"
      },
      "response": {
       "$ref": "Operation"

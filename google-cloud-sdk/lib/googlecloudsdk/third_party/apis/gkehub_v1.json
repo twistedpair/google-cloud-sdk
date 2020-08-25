@@ -324,14 +324,6 @@
       "properties": {
         "code": {
           "description": "Code indicating the state of the Membership resource.",
-          "enumDescriptions": [
-            "Not set.",
-            "CREATING indicates the cluster is being registered.",
-            "READY indicates the cluster is registered.",
-            "DELETING indicates that the cluster is being unregistered.",
-            "UPDATING indicates the Membership is being updated.",
-            "SERVICE_UPDATING indicates the Membership is being updated by the Hub Service."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -565,12 +557,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
