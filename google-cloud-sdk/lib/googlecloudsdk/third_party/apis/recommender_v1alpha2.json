@@ -176,13 +176,6 @@
         },
         "category": {
           "description": "Category being targeted by the insight.",
-          "enumDescriptions": [
-            "Unspecified category.",
-            "The insight is related to cost.",
-            "The insight is related to security.",
-            "The insight is related to performance.",
-            "This insight is related to manageability."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified category.",
@@ -219,12 +212,6 @@
       "properties": {
         "state": {
           "description": "Insight state.",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "Insight is active. Content for ACTIVE insights can be updated by Google. ACTIVE insights can be marked DISMISSED OR ACCEPTED.",
-            "Some action has been taken based on this insight. Insights become accepted when a recommendation derived from the insight has been marked CLAIMED, SUCCEEDED, or FAILED. ACTIVE insights can also be marked ACCEPTED explicitly. Content for ACCEPTED insights is immutable. ACCEPTED insights can only be marked ACCEPTED (which may update state metadata).",
-            "Insight is dismissed. Content for DISMISSED insights can be updated by Google. DISMISSED insights can be marked as ACTIVE."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -281,11 +268,6 @@
         },
         "recommendationChangeType": {
           "description": "Determines whether dismiss state will apply to associated recommendations.",
-          "enumDescriptions": [
-            "Unspecified change type. Default behavior is DISMISS_RECOMMENDATIONS.",
-            "Dismisses associated recommendations, if any. Changes to associated recommendations requires recommender.*.update permissions for the linked recommendation types, if applicable.",
-            "Makes no changes to the associated recommendations."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified change type. Default behavior is DISMISS_RECOMMENDATIONS.",
@@ -397,13 +379,6 @@
       "properties": {
         "category": {
           "description": "Category that is being targeted.",
-          "enumDescriptions": [
-            "Default unspecified category. Don't use directly.",
-            "Indicates a potential increase or decrease in cost.",
-            "Indicates a potential increase or decrease in security.",
-            "Indicates a potential increase or decrease in performance.",
-            "Indicates a potential increase or decrease in manageability."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified category. Don't use directly.",
@@ -566,14 +541,6 @@
       "properties": {
         "state": {
           "description": "The state of the recommendation, Eg ACTIVE, SUCCEEDED, FAILED.",
-          "enumDescriptions": [
-            "Default state. Don't use directly.",
-            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in dismissed state. Recommendation content can be updated by Google. DISMISSED recommendations can be marked as ACTIVE."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default state. Don't use directly.",

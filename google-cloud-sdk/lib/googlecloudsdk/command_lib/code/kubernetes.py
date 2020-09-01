@@ -197,6 +197,10 @@ _MINIKUBE_STEP = 'io.k8s.sigs.minikube.step'
 
 _MINIKUBE_DOWNLOAD_PROGRESS = 'io.k8s.sigs.minikube.download.progress'
 
+_MINIKUBE_ERROR = 'io.k8s.sigs.minikube.error'
+
+_MINIKUBE_NOT_ENOUGH_CPU_FRAGMENT = 'The minimum allowed is 2 CPUs.'
+
 
 def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
   """Starts a minikube cluster."""
@@ -226,11 +230,10 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
       with console_io.ProgressBar(start_msg) as progress_bar:
         for json_obj in run_subprocess.StreamOutputJson(
             cmd, timeout_sec=150, show_stderr=debug):
+          if debug:
+            print('minikube', json_obj)
           if json_obj['type'] == _MINIKUBE_STEP:
             data = json_obj['data']
-
-            if debug and 'message' in data:
-              print('[minikube]', data['message'])
 
             current_step = int(data['currentstep'])
             total_steps = int(data['totalsteps'])
@@ -245,6 +248,20 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
             completion_fraction = (current_step +
                                    download_progress) / total_steps
             progress_bar.SetProgress(completion_fraction)
+          elif (json_obj['type'] == _MINIKUBE_ERROR and
+                'exitcode' in json_obj['data']):
+            data = json_obj['data']
+            # Using matching of the message to detect the error is brittle.
+            # When the error code gets more specific. Just use the error code.
+            # https://github.com/kubernetes/minikube/issues/9080
+            if (_MINIKUBE_NOT_ENOUGH_CPU_FRAGMENT in data['message'] and
+                data['exitcode'] == '64'):
+              msg = 'Not enough CPUs. Cloud Run Emulator requires 2 CPUs.'
+            elif data['exitcode'] == '69':
+              msg = 'Cannot reach docker daemon.'
+            else:
+              msg = 'Unable to start Cloud Run Emulator.'
+            raise MinikubeStartError(msg)
 
   except Exception as e:
     six.reraise(MinikubeStartError, e)

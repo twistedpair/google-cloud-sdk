@@ -513,15 +513,29 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
     if not file_share:
       raise ValueError('Existing instance does not have file shares configured')
 
+    source_backup = None
+    location = None
+
     # Deduplicate file shares with the same name.
     instance.fileShares = [
         fs for fs in instance.fileShares if fs.name != file_share.get('name')
     ]
+    if 'source-backup' in file_share:
+      project = properties.VALUES.core.project.Get(required=True)
+      location = file_share.get('source-backup-region')
+      if location is None:
+        raise InvalidArgumentError(
+            "If 'source-backup' is specified, 'source-backup-region' must also "
+            "be specified.")
+      source_backup = backup_util.BACKUP_NAME_TEMPLATE.format(
+          project, location, file_share.get('source-backup'))
+
     nfs_export_options = FilestoreClient.MakeNFSExportOptionsMsg(
         self.messages, file_share.get('nfs-export-options', []))
     file_share_config = self.messages.FileShareConfig(
         name=file_share.get('name'),
         capacityGb=utils.BytesToGb(file_share.get('capacity')),
+        sourceBackup=source_backup,
         nfsExportOptions=nfs_export_options)
     instance.fileShares.append(file_share_config)
 

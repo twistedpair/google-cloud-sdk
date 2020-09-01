@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*- #
 # Copyright 2017 Google LLC. All Rights Reserved.
 #
@@ -333,14 +332,15 @@ The default value is 65534.
 
 *source-snapshot-region*::: The region of the source snapshot. If
 unspecified, it is assumed that the Filestore snapshot is local and
-instance-zone will be used."""
+instance-zone will be used.
+"""
   source_backup_help = """\
 
-      *source-backup*::: The name of the backup to restore from.
+*source-backup*::: The name of the backup to restore from.
 
-      *source-backup-region*::: The region of the source backup.
+*source-backup-region*::: The region of the source backup.
+"""
 
-      """
   spec = FILE_SHARE_API_VER[api_version].copy()
   if include_backup_flags:
     spec['source-backup'] = str
@@ -376,7 +376,8 @@ def AddInstanceCreateArgs(parser, api_version):
       api_version,
       include_snapshot_flags=(
           api_version == filestore_client.ALPHA_API_VERSION),
-      include_backup_flags=(api_version == filestore_client.ALPHA_API_VERSION))
+      include_backup_flags=(api_version == filestore_client.ALPHA_API_VERSION or
+                            api_version == filestore_client.BETA_API_VERSION))
 
 
 def AddInstanceUpdateArgs(parser, api_version):

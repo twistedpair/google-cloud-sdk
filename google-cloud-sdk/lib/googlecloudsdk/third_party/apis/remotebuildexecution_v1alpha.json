@@ -206,12 +206,6 @@
         },
         "state": {
           "description": "Output only. State of the instance.",
-          "enumDescriptions": [
-            "Not a valid state, but the default value of the enum.",
-            "The instance is in state `CREATING` once `CreateInstance` is called and before the instance is ready for use.",
-            "The instance is in state `RUNNING` when it is ready for use.",
-            "An `INACTIVE` instance indicates that there is a problem that needs to be fixed. Such instances cannot be used for execution and instances that remain in this state for a significant period of time will be removed permanently."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not a valid state, but the default value of the enum.",
@@ -271,18 +265,16 @@
         },
         "linuxIsolation": {
           "description": "linux_isolation allows overriding the docker runtime used for containers started on Linux.",
-          "enumDescriptions": [
-            "Default value. Will be using Linux default runtime.",
-            "Use gVisor runsc runtime."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. Will be using Linux default runtime.",
-            "Use gVisor runsc runtime."
+            "Use gVisor runsc runtime.",
+            "Use stardard Linux runtime. This has the same behaviour as unspecified, but it can be used to revert back from gVisor."
           ],
           "enum": [
             "LINUX_ISOLATION_UNSPECIFIED",
-            "GVISOR"
+            "GVISOR",
+            "OFF"
           ]
         },
         "dockerChrootPath": {
@@ -298,12 +290,6 @@
       "properties": {
         "policy": {
           "description": "The policy of the feature.",
-          "enumDescriptions": [
-            "Default value, if not explicitly set. Equivalent to FORBIDDEN, unless otherwise documented on a specific Feature.",
-            "Feature is explicitly allowed.",
-            "Feature is forbidden. Requests attempting to leverage it will get an FailedPrecondition error, with a message like: \"Feature forbidden by FeaturePolicy: Feature on instance \"",
-            "Only the values specified in the `allowed_values` are allowed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value, if not explicitly set. Equivalent to FORBIDDEN, unless otherwise documented on a specific Feature.",
@@ -379,14 +365,6 @@
         },
         "state": {
           "description": "Output only. State of the worker pool.",
-          "enumDescriptions": [
-            "Not a valid state, but the default value of the enum.",
-            "The worker pool is in state `CREATING` once `CreateWorkerPool` is called and before all requested workers are ready.",
-            "The worker pool is in state `RUNNING` when all its workers are ready for use.",
-            "The worker pool is in state `UPDATING` once `UpdateWorkerPool` is called and before the new configuration has all the requested workers ready for use, and no older configuration has any workers. At that point the state transitions to `RUNNING`.",
-            "The worker pool is in state `DELETING` once the `Delete` method is called and before the deletion completes.",
-            "The worker pool is in state `INACTIVE` when the instance hosting the worker pool in not running."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not a valid state, but the default value of the enum.",
@@ -949,13 +927,6 @@
       "properties": {
         "stage": {
           "description": "The current stage of execution.",
-          "enumDescriptions": [
-            "Invalid value.",
-            "Checking the result against the cache.",
-            "Currently idle, awaiting a free machine to execute.",
-            "Currently being executed by a worker.",
-            "Finished execution."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid value.",
@@ -1235,46 +1206,6 @@
       "properties": {
         "code": {
           "description": "The status code.",
-          "enumDescriptions": [
-            "The command succeeded.",
-            "The command input was invalid.",
-            "The command had passed its expiry time while it was still running.",
-            "The resources requested by the command were not found.",
-            "The command failed due to permission errors.",
-            "The command failed because of some invariants expected by the underlying system have been broken. This usually indicates a bug wit the system.",
-            "The command was aborted.",
-            "The command failed because the system is not in a state required for the command, e.g. the command inputs cannot be found on the server.",
-            "The bot failed to do the cleanup, e.g. unable to delete the command working directory or the command process.",
-            "The bot failed to download the inputs.",
-            "Unknown error.",
-            "The bot failed to upload the outputs.",
-            "The bot tried to upload files having a total size that is too large.",
-            "The bot failed to login to docker.",
-            "The bot failed to pull docker image.",
-            "The bot failed to check docker images.",
-            "The inputs contain duplicate files.",
-            "The bot doesn't have the permissions to pull docker images.",
-            "The docker image cannot be found.",
-            "Working directory is not found.",
-            "Working directory is not under the base directory",
-            "There are issues with docker service\/runtime.",
-            "The command failed with \"no cuda-capable device is detected\" error.",
-            "The bot encountered errors from remote CAS when downloading blobs.",
-            "The bot encountered errors from remote CAS when uploading blobs.",
-            "The local casproxy is not running.",
-            "The bot couldn't start the container.",
-            "The docker ulimit is not valid.",
-            "The docker runtime is unknown.",
-            "The docker capability is unknown.",
-            "The command failed with unknown docker errors.",
-            "Docker failed to run containers with CreateComputeSystem error.",
-            "Docker failed to run containers with hcsshim::PrepareLayer error.",
-            "Docker incompatible operating system error.",
-            "Docker failed to create OCI runtime because of file not found.",
-            "Docker failed to create OCI runtime because of permission denied.",
-            "Docker failed to create process because of file not found.",
-            "Docker failed to run containers with CreateComputeSystem error that involves an incorrect parameter (more specific version of DOCKER_CREATE_COMPUTE_SYSTEM_ERROR that is user-caused)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The command succeeded.",
@@ -1493,13 +1424,6 @@
       "properties": {
         "command": {
           "description": "The admin action; see `Command` for legal values.",
-          "enumDescriptions": [
-            "Illegal value.",
-            "Download and run a new version of the bot. `arg` will be a resource accessible via `ByteStream.Read` to obtain the new bot code.",
-            "Restart the bot without downloading a new version. `arg` will be a message to log.",
-            "Shut down the bot. `arg` will be a task resource name (similar to those in tasks.proto) that the bot can use to tell the server that it is terminating.",
-            "Restart the host computer. `arg` will be a message to log."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Illegal value.",

@@ -339,7 +339,8 @@
             "The control logic is stopping the instance.",
             "The instance is stopped.",
             "The instance is deleted.",
-            "The instance is upgrading."
+            "The instance is upgrading.",
+            "The instance is being created."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -349,7 +350,8 @@
             "STOPPING",
             "STOPPED",
             "DELETED",
-            "UPGRADING"
+            "UPGRADING",
+            "INITIALIZING"
           ]
         },
         "installGpuDriver": {
@@ -894,6 +896,10 @@
         },
         "apiVersion": {
           "description": "API version used to start the operation.",
+          "type": "string"
+        },
+        "endpoint": {
+          "description": "API endpoint name of this operation.",
           "type": "string"
         }
       }

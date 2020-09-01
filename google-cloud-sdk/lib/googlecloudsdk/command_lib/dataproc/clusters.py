@@ -749,19 +749,23 @@ def GetClusterConfig(args,
       softwareConfig=software_config,
   )
 
-  if args.kerberos_config_file or args.kerberos_root_principal_password_uri:
+  if args.kerberos_config_file or args.enable_kerberos or args.kerberos_root_principal_password_uri:
     cluster_config.securityConfig = dataproc.messages.SecurityConfig()
     if args.kerberos_config_file:
       cluster_config.securityConfig.kerberosConfig = ParseKerberosConfigFile(
           dataproc, args.kerberos_config_file)
     else:
       kerberos_config = dataproc.messages.KerberosConfig()
-      kerberos_config.enableKerberos = True
+      if args.enable_kerberos:
+        kerberos_config.enableKerberos = args.enable_kerberos
+      else:
+        kerberos_config.enableKerberos = True
       if args.kerberos_root_principal_password_uri:
         kerberos_config.rootPrincipalPasswordUri = \
           args.kerberos_root_principal_password_uri
         kerberos_kms_ref = args.CONCEPTS.kerberos_kms_key.Parse()
-        kerberos_config.kmsKeyUri = kerberos_kms_ref.RelativeName()
+        if kerberos_kms_ref:
+          kerberos_config.kmsKeyUri = kerberos_kms_ref.RelativeName()
       cluster_config.securityConfig.kerberosConfig = kerberos_config
 
   if args.autoscaling_policy:
@@ -1075,11 +1079,16 @@ def AddKerberosGroup(parser):
   # Not mutually exclusive
   kerberos_flag_group = kerberos_group.add_argument_group()
   kerberos_flag_group.add_argument(
-      '--kerberos-root-principal-password-uri',
-      required=True,
+      '--enable-kerberos',
+      action='store_true',
       help="""\
-        Google Cloud Storage URI of a KMS encrypted file containing
-        the root principal password. Must be a URL beginning with 'gs://'.
+        Enable Kerberos on the cluster.
+        """)
+  kerberos_flag_group.add_argument(
+      '--kerberos-root-principal-password-uri',
+      help="""\
+        Google Cloud Storage URI of a KMS encrypted file containing the root
+        principal password. Must be a Cloud Storage URL beginning with 'gs://'.
         """)
   # Add kerberos-kms-key args
   kerberos_kms_flag_overrides = \
@@ -1091,7 +1100,6 @@ def AddKerberosGroup(parser):
       kerberos_flag_group,
       'password',
       flag_overrides=kerberos_kms_flag_overrides,
-      required=True,
       name='--kerberos-kms-key')
 
   kerberos_group.add_argument(

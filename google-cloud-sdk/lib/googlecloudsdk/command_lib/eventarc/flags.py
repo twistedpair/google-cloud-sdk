@@ -23,7 +23,6 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
 
 _IAM_API_VERSION = 'v1'
 
@@ -47,30 +46,6 @@ def TriggerAttributeConfig():
 def ServiceAccountAttributeConfig():
   """Builds an AttributeConfig for the service account resource."""
   return concepts.ResourceParameterAttributeConfig(name='service-account')
-
-
-def DestinationRunLocationAttributeConfig():
-  """Builds an AttributeConfig for the Cloud Run location resource."""
-  return concepts.ResourceParameterAttributeConfig(
-      name='destination-run-location',
-      fallthroughs=[
-          # The first fallthrough gets the location from the trigger argument
-          # itself, if it is fully specified by the user.
-          deps.FullySpecifiedAnchorFallthrough(
-              deps.ArgFallthrough('trigger'),
-              resources.REGISTRY.GetCollectionInfo(
-                  'eventarc.projects.locations.triggers'), 'locationsId'),
-          deps.ArgFallthrough('location'),
-          deps.PropertyFallthrough(properties.FromString('eventarc/location'))
-      ],
-      help_text='The location of the destination Cloud Run service. If not '
-      'specified, the trigger\'s location will be used.')
-
-
-def DestinationRunServiceAttributeConfig():
-  """Builds an AttributeConfig for the Cloud Run service resource."""
-  return concepts.ResourceParameterAttributeConfig(
-      name='destination-run-service')
 
 
 def AddLocationResourceArg(parser, group_help_text, required=False):
@@ -118,25 +93,6 @@ def AddServiceAccountResourceArg(parser, required=False):
   concept_parser.AddToParser(parser)
 
 
-def AddDestinationRunServiceResourceArg(parser, required=False):
-  """Adds a resource argument for a destination Cloud Run service."""
-  resource_spec = concepts.ResourceSpec(
-      'run.projects.locations.services',
-      resource_name='destination Cloud Run service',
-      servicesId=DestinationRunServiceAttributeConfig(),
-      locationsId=DestinationRunLocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
-  concept_parser = concept_parsers.ConceptParser.ForResource(
-      '--destination-run-service',
-      resource_spec,
-      'The Cloud Run fully-managed service that receives the events for the '
-      'trigger. The service must be in the same location as the trigger unless '
-      'the trigger\'s location is `global`, in which case the service must be '
-      'in a different location.',
-      required=required)
-  concept_parser.AddToParser(parser)
-
-
 def AddMatchingCriteriaArg(parser, required=False):
   """Adds an argument for the trigger's matching criteria."""
   parser.add_argument(
@@ -153,6 +109,17 @@ def AddMatchingCriteriaArg(parser, required=False):
       metavar='ATTRIBUTE=VALUE')
 
 
+def AddDestinationRunServiceArg(parser, required=False):
+  """Adds an argument for the trigger's destination Cloud Run service."""
+  parser.add_argument(
+      '--destination-run-service',
+      required=required,
+      help='The name of the Cloud Run fully-managed service that receives the '
+      'events for the trigger. The service must be in the same region as the '
+      'trigger unless the trigger\'s location is `global`. The service must be '
+      'in the same project as the trigger.')
+
+
 def AddDestinationRunPathArg(parser, required=False):
   """Adds an argument for the trigger's destination path on the service."""
   parser.add_argument(
@@ -161,3 +128,31 @@ def AddDestinationRunPathArg(parser, required=False):
       help='The relative path on the destination Cloud Run service to which '
       'the events for the trigger should be sent. Examples: "/route", "route", '
       '"route/subroute".')
+
+
+def AddDestinationRunRegionArg(parser, required=False):
+  """Adds an argument for the trigger's destination service's region."""
+  parser.add_argument(
+      '--destination-run-region',
+      required=required,
+      help='The region in which the destination Cloud Run service can be '
+      'found. If not specified, it is assumed that the service is in the same '
+      'region as the trigger.')
+
+
+def AddClearServiceAccountArg(parser):
+  """Adds an argument for clearing the trigger's service account."""
+  parser.add_argument(
+      '--clear-service-account',
+      action='store_true',
+      help='Clear the IAM service account associated with the trigger and use '
+      'the default compute service account instead.')
+
+
+def AddClearDestinationRunPathArg(parser):
+  """Adds an argument for clearing the trigger's destination path."""
+  parser.add_argument(
+      '--clear-destination-run-path',
+      action='store_true',
+      help='Clear the relative path on the destination Cloud Run service to '
+      'which the events for the trigger should be sent.')

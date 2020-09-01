@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_KRMAPIHOSTS = (
+      'projects.locations.krmApiHosts',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/krmApiHosts/'
+              '{krmApiHostsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

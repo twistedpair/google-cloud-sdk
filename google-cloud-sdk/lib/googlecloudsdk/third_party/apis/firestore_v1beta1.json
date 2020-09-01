@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20200814",
+  "revision": "20200822",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -135,12 +135,6 @@
         },
         "state": {
           "description": "The state of the index. Output only.",
-          "enumDescriptions": [
-            "The state is unspecified.",
-            "The index is being created. There is an active long-running operation for the index. The index is updated when writing a document. Some index data may exist.",
-            "The index is ready to be used. The index is updated when writing a document. The index is fully populated from all stored documents it applies to.",
-            "The index was being created, but something went wrong. There is no active long-running operation for the index, and the most recently finished long-running operation failed. The index is not updated when writing a document. Some index data may exist."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The state is unspecified.",
@@ -168,12 +162,6 @@
         },
         "mode": {
           "description": "The field's mode.",
-          "enumDescriptions": [
-            "The mode is unspecified.",
-            "The field's values are indexed so as to support sequencing in ascending order and also query by <, >, <=, >=, and =.",
-            "The field's values are indexed so as to support sequencing in descending order and also query by <, >, <=, >=, and =.",
-            "The field's array values are indexed so as to support membership using ARRAY_CONTAINS queries."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The mode is unspecified.",
@@ -348,9 +336,6 @@
       "properties": {
         "nullValue": {
           "description": "A null value.",
-          "enumDescriptions": [
-            "Null value."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Null value."
@@ -683,10 +668,6 @@
         },
         "setToServerValue": {
           "description": "Sets the field to the given server value.",
-          "enumDescriptions": [
-            "Unspecified. This value must not be used.",
-            "The time at which the server processed the request, with millisecond precision."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
@@ -922,10 +903,6 @@
       "properties": {
         "op": {
           "description": "The operator for combining multiple filters.",
-          "enumDescriptions": [
-            "Unspecified. This value must not be used.",
-            "The results are required to satisfy each of the combined filters."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
@@ -956,17 +933,6 @@
         },
         "op": {
           "description": "The operator to filter by.",
-          "enumDescriptions": [
-            "Unspecified. This value must not be used.",
-            "The given `field` is less than the given `value`. Requires: * That `field` come first in `order_by`.",
-            "The given `field` is less than or equal to the given `value`. Requires: * That `field` come first in `order_by`.",
-            "The given `field` is greater than the given `value`. Requires: * That `field` come first in `order_by`.",
-            "The given `field` is greater than or equal to the given `value`. Requires: * That `field` come first in `order_by`.",
-            "The given `field` is equal to the given `value`.",
-            "The given `field` is an array that contains the given `value`.",
-            "The given `field` is equal to at least one value in the given array. Requires: * That `value` is a non-empty `ArrayValue` with at most 10 values. * No other `IN` or `ARRAY_CONTAINS_ANY`.",
-            "The given `field` is an array that contains any of the values in the given array. Requires: * That `value` is a non-empty `ArrayValue` with at most 10 values. * No other `IN` or `ARRAY_CONTAINS_ANY`."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
@@ -975,9 +941,11 @@
             "The given `field` is greater than the given `value`. Requires: * That `field` come first in `order_by`.",
             "The given `field` is greater than or equal to the given `value`. Requires: * That `field` come first in `order_by`.",
             "The given `field` is equal to the given `value`.",
+            "The given `field` is not equal to the given `value`. Requires: * No other `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`. * That `field` comes first in the `order_by`.",
             "The given `field` is an array that contains the given `value`.",
-            "The given `field` is equal to at least one value in the given array. Requires: * That `value` is a non-empty `ArrayValue` with at most 10 values. * No other `IN` or `ARRAY_CONTAINS_ANY`.",
-            "The given `field` is an array that contains any of the values in the given array. Requires: * That `value` is a non-empty `ArrayValue` with at most 10 values. * No other `IN` or `ARRAY_CONTAINS_ANY`."
+            "The given `field` is equal to at least one value in the given array. Requires: * That `value` is a non-empty `ArrayValue` with at most 10 values. * No other `IN` or `ARRAY_CONTAINS_ANY` or `NOT_IN`.",
+            "The given `field` is an array that contains any of the values in the given array. Requires: * That `value` is a non-empty `ArrayValue` with at most 10 values. * No other `IN` or `ARRAY_CONTAINS_ANY` or `NOT_IN`.",
+            "The value of the `field` is not in the given array. Requires: * That `value` is a non-empty `ArrayValue` with at most 10 values. * No other `IN`, `ARRAY_CONTAINS_ANY`, `NOT_IN`, `NOT_EQUAL`, `IS_NOT_NULL`, or `IS_NOT_NAN`. * That `field` comes first in the `order_by`."
           ],
           "enum": [
             "OPERATOR_UNSPECIFIED",
@@ -986,9 +954,11 @@
             "GREATER_THAN",
             "GREATER_THAN_OR_EQUAL",
             "EQUAL",
+            "NOT_EQUAL",
             "ARRAY_CONTAINS",
             "IN",
-            "ARRAY_CONTAINS_ANY"
+            "ARRAY_CONTAINS_ANY",
+            "NOT_IN"
           ]
         },
         "value": {
@@ -1004,21 +974,20 @@
       "properties": {
         "op": {
           "description": "The unary operator to apply.",
-          "enumDescriptions": [
-            "Unspecified. This value must not be used.",
-            "The given `field` is equal to `NaN`.",
-            "The given `field` is equal to `NULL`."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
             "The given `field` is equal to `NaN`.",
-            "The given `field` is equal to `NULL`."
+            "The given `field` is equal to `NULL`.",
+            "The given `field` is not equal to `NaN`. Requires: * No other `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`. * That `field` comes first in the `order_by`.",
+            "The given `field` is not equal to `NULL`. Requires: * A single `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`. * That `field` comes first in the `order_by`."
           ],
           "enum": [
             "OPERATOR_UNSPECIFIED",
             "IS_NAN",
-            "IS_NULL"
+            "IS_NULL",
+            "IS_NOT_NAN",
+            "IS_NOT_NULL"
           ]
         },
         "field": {
@@ -1038,11 +1007,6 @@
         },
         "direction": {
           "description": "The direction to order by. Defaults to `ASCENDING`.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Ascending.",
-            "Descending."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -1322,13 +1286,6 @@
       "properties": {
         "targetChangeType": {
           "description": "The type of change that occurred.",
-          "enumDescriptions": [
-            "No change has occurred. Used only to send an updated `resume_token`.",
-            "The targets have been added.",
-            "The targets have been removed.",
-            "The targets reflect all changes committed before the targets were added to the stream. This will be sent after or with a `read_time` that is greater than or equal to the time at which the targets were added. Listeners can wait for this change if read-after-write semantics are desired.",
-            "The targets have been reset, and a new initial state for the targets will be returned in subsequent changes. After the initial state is complete, `CURRENT` will be returned even if the target was previously indicated to be `CURRENT`."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No change has occurred. Used only to send an updated `resume_token`.",
@@ -1558,10 +1515,6 @@
         },
         "operationType": {
           "description": "The type of index operation.",
-          "enumDescriptions": [
-            "Unspecified. Never set by server.",
-            "The operation is creating the index. Initiated by a `CreateIndex` call."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. Never set by server.",
@@ -1623,16 +1576,6 @@
         },
         "operationState": {
           "description": "The state of the export operation.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Request is being prepared for processing.",
-            "Request is actively being processed.",
-            "Request is in the process of being cancelled after user called google.longrunning.Operations.CancelOperation on the operation.",
-            "Request has been processed and is in its finalization stage.",
-            "Request has completed successfully.",
-            "Request has finished being processed, but encountered an error.",
-            "Request has finished being cancelled after user called google.longrunning.Operations.CancelOperation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -1693,16 +1636,6 @@
         },
         "operationState": {
           "description": "The state of the import operation.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Request is being prepared for processing.",
-            "Request is actively being processed.",
-            "Request is in the process of being cancelled after user called google.longrunning.Operations.CancelOperation on the operation.",
-            "Request has been processed and is in its finalization stage.",
-            "Request has completed successfully.",
-            "Request has finished being processed, but encountered an error.",
-            "Request has finished being cancelled after user called google.longrunning.Operations.CancelOperation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",

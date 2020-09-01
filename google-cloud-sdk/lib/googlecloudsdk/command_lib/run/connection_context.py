@@ -452,7 +452,8 @@ def _GetApiVersion(product,
 def GetConnectionContext(args,
                          product=flags.Product.RUN,
                          release_track=base.ReleaseTrack.GA,
-                         version_override=None):
+                         version_override=None,
+                         platform=None):
   """Gets the regional, kubeconfig, or GKE connection context.
 
   Args:
@@ -461,6 +462,8 @@ def GetConnectionContext(args,
     release_track: Release track of the command being run.
     version_override: If specified, the given api version will be used no matter
       the other parameters.
+    platform: 'gke', 'kubernetes', or 'managed'. If not specified, the value of
+      the --platform flag will be used instead.
 
   Raises:
     ArgumentError if region or cluster is not specified.
@@ -468,7 +471,9 @@ def GetConnectionContext(args,
   Returns:
     A GKE or regional ConnectionInfo object.
   """
-  if flags.GetPlatform() == flags.PLATFORM_KUBERNETES:
+  if platform is None:
+    platform = flags.GetPlatform()
+  if platform == flags.PLATFORM_KUBERNETES:
     kubeconfig = flags.GetKubeconfig(args)
     api_name = _GetApiName(product, release_track, is_cluster=True)
     api_version = _GetApiVersion(
@@ -479,7 +484,7 @@ def GetConnectionContext(args,
     return _KubeconfigConnectionContext(kubeconfig, api_name, api_version,
                                         args.context)
 
-  if flags.GetPlatform() == flags.PLATFORM_GKE:
+  if platform == flags.PLATFORM_GKE:
     cluster_ref = args.CONCEPTS.cluster.Parse()
     if not cluster_ref:
       raise flags.ArgumentError(
@@ -494,7 +499,7 @@ def GetConnectionContext(args,
         version_override=version_override)
     return _GKEConnectionContext(cluster_ref, api_name, api_version)
 
-  if flags.GetPlatform() == flags.PLATFORM_MANAGED:
+  if platform == flags.PLATFORM_MANAGED:
     region = flags.GetRegion(args, prompt=True)
     if not region:
       raise flags.ArgumentError(

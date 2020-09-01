@@ -469,7 +469,7 @@ class ApigatewayGateway(_messages.Message):
       projects/{project}/locations/global/apis/{api}/configs/{apiConfig}
     createTime: Output only. Created time.
     defaultHostname: Output only. The default API Gateway host name of the
-      form `gateway-{hash}.{region_code}.a.run.app`.
+      form `{gateway_id}-{hash}.{region_code}.gateway.dev`.
     displayName: Optional. Display name.
     labels: Optional. Resource labels to represent user-provided metadata.
       Refer to cloud documentation on labels for more details.

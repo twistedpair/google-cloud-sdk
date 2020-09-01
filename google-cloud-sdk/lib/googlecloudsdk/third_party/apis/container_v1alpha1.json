@@ -853,11 +853,11 @@
       "type": "object",
       "properties": {
         "cpuManagerPolicy": {
-          "description": "Control the CPU management policy on the node. See https:\/\/kubernetes.io\/docs\/tasks\/administer-cluster\/cpu-management-policies\/ The following values are allowed. - \"none\": the default, which represents the existing scheduling behavior. - \"static\": allows pods with certain resource characteristics to be granted increased CPU affinity and exclusivity on the node.",
+          "description": "Control the CPU management policy on the node. See https:\/\/kubernetes.io\/docs\/tasks\/administer-cluster\/cpu-management-policies\/ The following values are allowed. - \"none\": the default, which represents the existing scheduling behavior. - \"static\": allows pods with certain resource characteristics to be granted increased CPU affinity and exclusivity on the node. The default value is 'none' if unspecified.",
           "type": "string"
         },
         "cpuCfsQuota": {
-          "description": "Enable CPU CFS quota enforcement for containers that specify CPU limits. If this option is enabled, kubelet uses CFS quota (https:\/\/www.kernel.org\/doc\/Documentation\/scheduler\/sched-bwc.txt) to enforce container CPU limits. Otherwise, CPU limits will not be enforced at all. Disable this option to mitigate CPU throttling problems while still having your pods to be in Guaranteed QoS class by specifying the CPU limits. The default value is 'true' if unspecified.",
+          "description": "Enable CPU CFS quota enforcement for containers that specify CPU limits. This option is enabled by default which makes kubelet use CFS quota (https:\/\/www.kernel.org\/doc\/Documentation\/scheduler\/sched-bwc.txt) to enforce container CPU limits. Otherwise, CPU limits will not be enforced at all. Disable this option to mitigate CPU throttling problems while still having your pods to be in Guaranteed QoS class by specifying the CPU limits. The default value is 'true' if unspecified.",
           "type": "boolean"
         },
         "cpuCfsQuotaPeriod": {
@@ -1794,6 +1794,23 @@
         },
         "minCpuPlatform": {
           "description": "Minimum CPU platform to be used by this instance. The instance may be scheduled on the specified or newer CPU platform. Applicable values are the friendly names of CPU platforms, such as `minCpuPlatform: \"Intel Haswell\"` or `minCpuPlatform: \"Intel Sandy Bridge\"`. For more information, read [how to specify min CPU platform](https:\/\/cloud.google.com\/compute\/docs\/instances\/specify-min-cpu-platform) To unset the min cpu platform field pass \"automatic\" as field value.",
+          "type": "string"
+        },
+        "diskSizeGb": {
+          "description": "Size of the disk attached to each node, specified in GB. The smallest allowed disk size is 10GB. If unspecified, the default disk size is 100GB.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "diskType": {
+          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd') If unspecified, the default disk type is 'pd-standard'",
+          "type": "string"
+        },
+        "shieldedInstanceConfig": {
+          "description": "Shielded Instance options.",
+          "$ref": "ShieldedInstanceConfig"
+        },
+        "bootDiskKmsKey": {
+          "description": " The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects\/[KEY_PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[RING_NAME]\/cryptoKeys\/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https:\/\/cloud.google.com\/compute\/docs\/disks\/customer-managed-encryption",
           "type": "string"
         }
       }

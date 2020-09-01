@@ -202,12 +202,6 @@
       "properties": {
         "searchResultType": {
           "description": "Type of the search result. This field can be used to determine which Get method to call to fetch the full resource.",
-          "enumDescriptions": [
-            "Default unknown type.",
-            "An Entry.",
-            "A TagTemplate.",
-            "An EntryGroup."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unknown type.",
@@ -323,13 +317,6 @@
         },
         "type": {
           "description": "The type of the entry. Only used for Entries with types in the EntryType enum.",
-          "enumDescriptions": [
-            "Default unknown type.",
-            "Output only. The type of entry that has a GoogleSQL schema, including logical views.",
-            "Output only. The type of models. https:\/\/cloud.google.com\/bigquery-ml\/docs\/bigqueryml-intro",
-            "Output only. An entry type which is used for streaming entries. Example: Pub\/Sub topic.",
-            "An entry type which is a set of files or objects. Example: Cloud Storage fileset."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unknown type.",
@@ -352,11 +339,6 @@
         },
         "integratedSystem": {
           "description": "Output only. This field indicates the entry's source system that Data Catalog integrates with, such as BigQuery or Pub\/Sub.",
-          "enumDescriptions": [
-            "Default unknown system.",
-            "BigQuery.",
-            "Cloud Pub\/Sub."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -456,12 +438,6 @@
       "properties": {
         "tableSourceType": {
           "description": "Output only. The table source type.",
-          "enumDescriptions": [
-            "Default unknown type.",
-            "Table view.",
-            "BigQuery native table.",
-            "BigQuery materialized view."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -653,13 +629,6 @@
       "properties": {
         "primitiveType": {
           "description": "Represents primitive types - string, bool etc.",
-          "enumDescriptions": [
-            "This is the default invalid value for a type.",
-            "A double precision number.",
-            "An UTF-8 string.",
-            "A boolean value.",
-            "A timestamp."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is the default invalid value for a type.",
@@ -978,10 +947,6 @@
         },
         "activatedPolicyTypes": {
           "description": "Optional. A list of policy types that are activated for this taxonomy. If not set, defaults to an empty list.",
-          "enumDescriptions": [
-            "Unspecified policy type.",
-            "Fine grained access control policy, which enables access control on tagged resources."
-          ],
           "type": "array",
           "items": {
             "type": "string",

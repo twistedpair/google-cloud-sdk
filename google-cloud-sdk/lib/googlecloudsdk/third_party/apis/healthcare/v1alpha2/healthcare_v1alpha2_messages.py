@@ -4330,10 +4330,6 @@ class RevokeConsentRequest(_messages.Message):
 
 
 
-class RevokeConsentResponse(_messages.Message):
-  r"""Revokes the current version of the specified Consent."""
-
-
 class SchemaConfig(_messages.Message):
   r"""Configuration for the FHIR BigQuery and Cloud Storage schema. Determines
   how the server generates the schema.
@@ -4557,23 +4553,16 @@ class StorageOptions(_messages.Message):
 
   Enums:
     DefaultBlobStorageClassValueValuesEnum: The default storage class for
-      Blobs stored in this dataset. Applies to DICOM objects only. If you
-      change the storage class after creation, new DICOM objects are in the
-      new storage class. The storage class of existing objects in the dataset
-      is unchanged.
+      Blobs stored in this dataset. Applies to DICOM objects only.
 
   Fields:
     defaultBlobStorageClass: The default storage class for Blobs stored in
-      this dataset. Applies to DICOM objects only. If you change the storage
-      class after creation, new DICOM objects are in the new storage class.
-      The storage class of existing objects in the dataset is unchanged.
+      this dataset. Applies to DICOM objects only.
   """
 
   class DefaultBlobStorageClassValueValuesEnum(_messages.Enum):
     r"""The default storage class for Blobs stored in this dataset. Applies to
-    DICOM objects only. If you change the storage class after creation, new
-    DICOM objects are in the new storage class. The storage class of existing
-    objects in the dataset is unchanged.
+    DICOM objects only.
 
     Values:
       BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the

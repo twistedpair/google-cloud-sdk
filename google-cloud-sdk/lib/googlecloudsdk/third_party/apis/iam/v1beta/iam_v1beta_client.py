@@ -293,7 +293,7 @@ class IamV1beta(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WorkloadIdentityPoolProvider in a WorkloadIdentityPool. The name of deleted provider cannot be reused if it was deleted less than 30 days ago.
+      r"""Creates a new WorkloadIdentityPoolProvider in a WorkloadIdentityPool. You cannot reuse the name of a deleted provider until 30 days after deletion.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsProvidersCreateRequest) input message
@@ -320,7 +320,7 @@ class IamV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a WorkloadIdentityPoolProvider. A deleted provider cannot be used for exchange of third party credentials for Google Cloud Platform credentials. However, deleting does not revoke credentials that have already been issued. This is a soft delete and can be undeleted for 30 days. After 30 days, the delete is permanent. Deleted items cannot be updated. However they can be viewed and listed.
+      r"""Deletes a WorkloadIdentityPoolProvider. Deleting a provider does not revoke credentials that have already been issued; they continue to grant access. You can undelete a provider for 30 days. After 30 days, deletion is permanent. You cannot update deleted providers. However, you can view and list them.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsProvidersDeleteRequest) input message
@@ -347,7 +347,7 @@ class IamV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Reads an individual WorkloadIdentityPoolProvider.
+      r"""Gets an individual WorkloadIdentityPoolProvider.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsProvidersGetRequest) input message
@@ -374,7 +374,7 @@ class IamV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkloadIdentityPoolProviders in a WorkloadIdentityPool. If show_deleted = true, then deleted providers are also listed.
+      r"""Lists all non-deleted WorkloadIdentityPoolProviders in a WorkloadIdentityPool. If `show_deleted` is set to `true`, then deleted providers are also listed.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsProvidersListRequest) input message
@@ -428,7 +428,7 @@ class IamV1beta(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a WorkloadIdentityPoolProvider as long as it was deleted less than 30 days ago.
+      r"""Undeletes a WorkloadIdentityPoolProvider, as long as it was deleted fewer than 30 days ago.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsProvidersUndeleteRequest) input message
@@ -465,7 +465,7 @@ class IamV1beta(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WorkloadIdentityPool. The name of deleted pool cannot be reused if it was deleted less than 30 days ago.
+      r"""Creates a new WorkloadIdentityPool. You cannot reuse the name of a deleted pool until 30 days after deletion.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsCreateRequest) input message
@@ -492,7 +492,7 @@ class IamV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a WorkloadIdentityPool. A deleted WorkloadIdentityPool cannot be used for exchange of third party credentials for Google Cloud Platform credentials. However, deleting does not revoke credentials that have already been issued. This is a soft delete and can be undeleted for 30 days. After 30 days, the delete is permanent. Deleted items cannot be updated. However they can be viewed and listed. Credentials that were issued for a pool will not work while the pool is deleted. Once the pool is undeleted the credentials will work again if they have not expired.
+      r"""Deletes a WorkloadIdentityPool. You cannot use a deleted pool to exchange external credentials for Google Cloud credentials. However, deletion does not revoke credentials that have already been issued. Credentials issued for a deleted pool do not grant access to resources. If the pool is undeleted, and the credentials are not expired, they grant access again. You can undelete a pool for 30 days. After 30 days, deletion is permanent. You cannot update deleted pools. However, you can view and list them.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsDeleteRequest) input message
@@ -519,7 +519,7 @@ class IamV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Reads an individual WorkloadIdentityPool.
+      r"""Gets an individual WorkloadIdentityPool.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsGetRequest) input message
@@ -546,7 +546,7 @@ class IamV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkloadIdentityPools in a project. If show_deleted = true, then deleted pools are also listed.
+      r"""Lists all non-deleted WorkloadIdentityPools in a project. If `show_deleted` is set to `true`, then deleted pools are also listed.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsListRequest) input message
@@ -600,7 +600,7 @@ class IamV1beta(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a WorkloadIdentityPool as long as it was deleted less than 30 days ago.
+      r"""Undeletes a WorkloadIdentityPool, as long as it was deleted fewer than 30 days ago.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsUndeleteRequest) input message

@@ -595,21 +595,6 @@
       "properties": {
         "type": {
           "description": "The feature type.",
-          "enumDescriptions": [
-            "Unspecified feature type.",
-            "Run face detection.",
-            "Run landmark detection.",
-            "Run logo detection.",
-            "Run label detection.",
-            "Run text detection \/ optical character recognition (OCR). Text detection is optimized for areas of text within a larger image; if the image is a document, use `DOCUMENT_TEXT_DETECTION` instead.",
-            "Run dense text document OCR. Takes precedence when both `DOCUMENT_TEXT_DETECTION` and `TEXT_DETECTION` are present.",
-            "Run Safe Search to detect potentially unsafe or undesirable content.",
-            "Compute a set of image properties, such as the image's dominant colors.",
-            "Run crop hints.",
-            "Run web detection.",
-            "Run Product Search.",
-            "Run localizer for object detection."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified feature type.",
@@ -909,14 +894,6 @@
         },
         "joyLikelihood": {
           "description": "Joy likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -937,14 +914,6 @@
         },
         "sorrowLikelihood": {
           "description": "Sorrow likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -965,14 +934,6 @@
         },
         "angerLikelihood": {
           "description": "Anger likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -993,14 +954,6 @@
         },
         "surpriseLikelihood": {
           "description": "Surprise likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -1021,14 +974,6 @@
         },
         "underExposedLikelihood": {
           "description": "Under-exposed likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -1049,14 +994,6 @@
         },
         "blurredLikelihood": {
           "description": "Blurred likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -1077,14 +1014,6 @@
         },
         "headwearLikelihood": {
           "description": "Headwear likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -1112,45 +1041,6 @@
       "properties": {
         "type": {
           "description": "Face landmark type.",
-          "enumDescriptions": [
-            "Unknown face landmark detected. Should not be filled.",
-            "Left eye.",
-            "Right eye.",
-            "Left of left eyebrow.",
-            "Right of left eyebrow.",
-            "Left of right eyebrow.",
-            "Right of right eyebrow.",
-            "Midpoint between eyes.",
-            "Nose tip.",
-            "Upper lip.",
-            "Lower lip.",
-            "Mouth left.",
-            "Mouth right.",
-            "Mouth center.",
-            "Nose, bottom right.",
-            "Nose, bottom left.",
-            "Nose, bottom center.",
-            "Left eye, top boundary.",
-            "Left eye, right corner.",
-            "Left eye, bottom boundary.",
-            "Left eye, left corner.",
-            "Right eye, top boundary.",
-            "Right eye, right corner.",
-            "Right eye, bottom boundary.",
-            "Right eye, left corner.",
-            "Left eyebrow, upper midpoint.",
-            "Right eyebrow, upper midpoint.",
-            "Left ear tragion.",
-            "Right ear tragion.",
-            "Left eye pupil.",
-            "Right eye pupil.",
-            "Forehead glabella.",
-            "Chin gnathion.",
-            "Chin left gonion.",
-            "Chin right gonion.",
-            "Left cheek center.",
-            "Right cheek center."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown face landmark detected. Should not be filled.",
@@ -1462,14 +1352,6 @@
       "properties": {
         "type": {
           "description": "Detected break type.",
-          "enumDescriptions": [
-            "Unknown break label type.",
-            "Regular space.",
-            "Sure space (very wide).",
-            "Line-wrapping break.",
-            "End-line hyphen that is not present in text; does not co-occur with `SPACE`, `LEADER_SPACE`, or `LINE_BREAK`.",
-            "Line break that ends a paragraph."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown break label type.",
@@ -1516,14 +1398,6 @@
         },
         "blockType": {
           "description": "Detected block type (text, image etc) for this block.",
-          "enumDescriptions": [
-            "Unknown block type.",
-            "Regular text block.",
-            "Table block.",
-            "Image block.",
-            "Horizontal\/vertical line box.",
-            "Barcode block."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown block type.",
@@ -1634,14 +1508,6 @@
       "properties": {
         "adult": {
           "description": "Represents the adult content likelihood for the image. Adult content may contain elements such as nudity, pornographic images or cartoons, or sexual activities.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -1662,14 +1528,6 @@
         },
         "spoof": {
           "description": "Spoof likelihood. The likelihood that an modification was made to the image's canonical version to make it appear funny or offensive.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -1690,14 +1548,6 @@
         },
         "medical": {
           "description": "Likelihood that this is a medical image.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -1718,14 +1568,6 @@
         },
         "violence": {
           "description": "Likelihood that this image contains violent content.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -1746,14 +1588,6 @@
         },
         "racy": {
           "description": "Likelihood that the request image contains racy content. Racy content may include (but is not limited to) skimpy or sheer clothing, strategically covered nudity, lewd or provocative poses, or close-ups of sensitive body areas.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -2383,13 +2217,6 @@
       "properties": {
         "state": {
           "description": "The current state of the batch operation.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Request is actively being processed.",
-            "The request is done and at least one item has been successfully processed.",
-            "The request is done and no item has been successfully processed.",
-            "The request is done after the longrunning.Operations.CancelOperation has been called by the user. Any records that were processed before the cancel command are output as specified in the request."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid.",
@@ -2446,13 +2273,6 @@
       "properties": {
         "state": {
           "description": "Current state of the batch operation.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Request is received.",
-            "Request is actively being processed.",
-            "The batch processing is done.",
-            "The batch processing was cancelled."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid.",
@@ -2667,14 +2487,6 @@
         },
         "joyLikelihood": {
           "description": "Joy likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -2695,14 +2507,6 @@
         },
         "sorrowLikelihood": {
           "description": "Sorrow likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -2723,14 +2527,6 @@
         },
         "angerLikelihood": {
           "description": "Anger likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -2751,14 +2547,6 @@
         },
         "surpriseLikelihood": {
           "description": "Surprise likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -2779,14 +2567,6 @@
         },
         "underExposedLikelihood": {
           "description": "Under-exposed likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -2807,14 +2587,6 @@
         },
         "blurredLikelihood": {
           "description": "Blurred likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -2835,14 +2607,6 @@
         },
         "headwearLikelihood": {
           "description": "Headwear likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -2925,45 +2689,6 @@
       "properties": {
         "type": {
           "description": "Face landmark type.",
-          "enumDescriptions": [
-            "Unknown face landmark detected. Should not be filled.",
-            "Left eye.",
-            "Right eye.",
-            "Left of left eyebrow.",
-            "Right of left eyebrow.",
-            "Left of right eyebrow.",
-            "Right of right eyebrow.",
-            "Midpoint between eyes.",
-            "Nose tip.",
-            "Upper lip.",
-            "Lower lip.",
-            "Mouth left.",
-            "Mouth right.",
-            "Mouth center.",
-            "Nose, bottom right.",
-            "Nose, bottom left.",
-            "Nose, bottom center.",
-            "Left eye, top boundary.",
-            "Left eye, right corner.",
-            "Left eye, bottom boundary.",
-            "Left eye, left corner.",
-            "Right eye, top boundary.",
-            "Right eye, right corner.",
-            "Right eye, bottom boundary.",
-            "Right eye, left corner.",
-            "Left eyebrow, upper midpoint.",
-            "Right eyebrow, upper midpoint.",
-            "Left ear tragion.",
-            "Right ear tragion.",
-            "Left eye pupil.",
-            "Right eye pupil.",
-            "Forehead glabella.",
-            "Chin gnathion.",
-            "Chin left gonion.",
-            "Chin right gonion.",
-            "Left cheek center.",
-            "Right cheek center."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown face landmark detected. Should not be filled.",
@@ -3275,14 +3000,6 @@
       "properties": {
         "type": {
           "description": "Detected break type.",
-          "enumDescriptions": [
-            "Unknown break label type.",
-            "Regular space.",
-            "Sure space (very wide).",
-            "Line-wrapping break.",
-            "End-line hyphen that is not present in text; does not co-occur with `SPACE`, `LEADER_SPACE`, or `LINE_BREAK`.",
-            "Line break that ends a paragraph."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown break label type.",
@@ -3329,14 +3046,6 @@
         },
         "blockType": {
           "description": "Detected block type (text, image etc) for this block.",
-          "enumDescriptions": [
-            "Unknown block type.",
-            "Regular text block.",
-            "Table block.",
-            "Image block.",
-            "Horizontal\/vertical line box.",
-            "Barcode block."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown block type.",
@@ -3447,14 +3156,6 @@
       "properties": {
         "adult": {
           "description": "Represents the adult content likelihood for the image. Adult content may contain elements such as nudity, pornographic images or cartoons, or sexual activities.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -3475,14 +3176,6 @@
         },
         "spoof": {
           "description": "Spoof likelihood. The likelihood that an modification was made to the image's canonical version to make it appear funny or offensive.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -3503,14 +3196,6 @@
         },
         "medical": {
           "description": "Likelihood that this is a medical image.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -3531,14 +3216,6 @@
         },
         "violence": {
           "description": "Likelihood that this image contains violent content.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -3559,14 +3236,6 @@
         },
         "racy": {
           "description": "Likelihood that the request image contains racy content. Racy content may include (but is not limited to) skimpy or sheer clothing, strategically covered nudity, lewd or provocative poses, or close-ups of sensitive body areas.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -4017,13 +3686,6 @@
       "properties": {
         "state": {
           "description": "Current state of the batch operation.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Request is received.",
-            "Request is actively being processed.",
-            "The batch processing is done.",
-            "The batch processing was cancelled."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid.",
@@ -4238,14 +3900,6 @@
         },
         "joyLikelihood": {
           "description": "Joy likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -4266,14 +3920,6 @@
         },
         "sorrowLikelihood": {
           "description": "Sorrow likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -4294,14 +3940,6 @@
         },
         "angerLikelihood": {
           "description": "Anger likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -4322,14 +3960,6 @@
         },
         "surpriseLikelihood": {
           "description": "Surprise likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -4350,14 +3980,6 @@
         },
         "underExposedLikelihood": {
           "description": "Under-exposed likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -4378,14 +4000,6 @@
         },
         "blurredLikelihood": {
           "description": "Blurred likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -4406,14 +4020,6 @@
         },
         "headwearLikelihood": {
           "description": "Headwear likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -4496,45 +4102,6 @@
       "properties": {
         "type": {
           "description": "Face landmark type.",
-          "enumDescriptions": [
-            "Unknown face landmark detected. Should not be filled.",
-            "Left eye.",
-            "Right eye.",
-            "Left of left eyebrow.",
-            "Right of left eyebrow.",
-            "Left of right eyebrow.",
-            "Right of right eyebrow.",
-            "Midpoint between eyes.",
-            "Nose tip.",
-            "Upper lip.",
-            "Lower lip.",
-            "Mouth left.",
-            "Mouth right.",
-            "Mouth center.",
-            "Nose, bottom right.",
-            "Nose, bottom left.",
-            "Nose, bottom center.",
-            "Left eye, top boundary.",
-            "Left eye, right corner.",
-            "Left eye, bottom boundary.",
-            "Left eye, left corner.",
-            "Right eye, top boundary.",
-            "Right eye, right corner.",
-            "Right eye, bottom boundary.",
-            "Right eye, left corner.",
-            "Left eyebrow, upper midpoint.",
-            "Right eyebrow, upper midpoint.",
-            "Left ear tragion.",
-            "Right ear tragion.",
-            "Left eye pupil.",
-            "Right eye pupil.",
-            "Forehead glabella.",
-            "Chin gnathion.",
-            "Chin left gonion.",
-            "Chin right gonion.",
-            "Left cheek center.",
-            "Right cheek center."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown face landmark detected. Should not be filled.",
@@ -4846,14 +4413,6 @@
       "properties": {
         "type": {
           "description": "Detected break type.",
-          "enumDescriptions": [
-            "Unknown break label type.",
-            "Regular space.",
-            "Sure space (very wide).",
-            "Line-wrapping break.",
-            "End-line hyphen that is not present in text; does not co-occur with `SPACE`, `LEADER_SPACE`, or `LINE_BREAK`.",
-            "Line break that ends a paragraph."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown break label type.",
@@ -4900,14 +4459,6 @@
         },
         "blockType": {
           "description": "Detected block type (text, image etc) for this block.",
-          "enumDescriptions": [
-            "Unknown block type.",
-            "Regular text block.",
-            "Table block.",
-            "Image block.",
-            "Horizontal\/vertical line box.",
-            "Barcode block."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown block type.",
@@ -5018,14 +4569,6 @@
       "properties": {
         "adult": {
           "description": "Represents the adult content likelihood for the image. Adult content may contain elements such as nudity, pornographic images or cartoons, or sexual activities.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -5046,14 +4589,6 @@
         },
         "spoof": {
           "description": "Spoof likelihood. The likelihood that an modification was made to the image's canonical version to make it appear funny or offensive.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -5074,14 +4609,6 @@
         },
         "medical": {
           "description": "Likelihood that this is a medical image.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -5102,14 +4629,6 @@
         },
         "violence": {
           "description": "Likelihood that this image contains violent content.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -5130,14 +4649,6 @@
         },
         "racy": {
           "description": "Likelihood that the request image contains racy content. Racy content may include (but is not limited to) skimpy or sheer clothing, strategically covered nudity, lewd or provocative poses, or close-ups of sensitive body areas.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -5588,13 +5099,6 @@
       "properties": {
         "state": {
           "description": "Current state of the batch operation.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Request is received.",
-            "Request is actively being processed.",
-            "The batch processing is done.",
-            "The batch processing was cancelled."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid.",
@@ -5630,13 +5134,6 @@
       "properties": {
         "state": {
           "description": "The current state of the batch operation.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Request is actively being processed.",
-            "The request is done and at least one item has been successfully processed.",
-            "The request is done and no item has been successfully processed.",
-            "The request is done after the longrunning.Operations.CancelOperation has been called by the user. Any records that were processed before the cancel command are output as specified in the request."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid.",
@@ -5949,14 +5446,6 @@
         },
         "joyLikelihood": {
           "description": "Joy likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -5977,14 +5466,6 @@
         },
         "sorrowLikelihood": {
           "description": "Sorrow likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6005,14 +5486,6 @@
         },
         "angerLikelihood": {
           "description": "Anger likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6033,14 +5506,6 @@
         },
         "surpriseLikelihood": {
           "description": "Surprise likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6061,14 +5526,6 @@
         },
         "underExposedLikelihood": {
           "description": "Under-exposed likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6089,14 +5546,6 @@
         },
         "blurredLikelihood": {
           "description": "Blurred likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6117,14 +5566,6 @@
         },
         "headwearLikelihood": {
           "description": "Headwear likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6152,45 +5593,6 @@
       "properties": {
         "type": {
           "description": "Face landmark type.",
-          "enumDescriptions": [
-            "Unknown face landmark detected. Should not be filled.",
-            "Left eye.",
-            "Right eye.",
-            "Left of left eyebrow.",
-            "Right of left eyebrow.",
-            "Left of right eyebrow.",
-            "Right of right eyebrow.",
-            "Midpoint between eyes.",
-            "Nose tip.",
-            "Upper lip.",
-            "Lower lip.",
-            "Mouth left.",
-            "Mouth right.",
-            "Mouth center.",
-            "Nose, bottom right.",
-            "Nose, bottom left.",
-            "Nose, bottom center.",
-            "Left eye, top boundary.",
-            "Left eye, right corner.",
-            "Left eye, bottom boundary.",
-            "Left eye, left corner.",
-            "Right eye, top boundary.",
-            "Right eye, right corner.",
-            "Right eye, bottom boundary.",
-            "Right eye, left corner.",
-            "Left eyebrow, upper midpoint.",
-            "Right eyebrow, upper midpoint.",
-            "Left ear tragion.",
-            "Right ear tragion.",
-            "Left eye pupil.",
-            "Right eye pupil.",
-            "Forehead glabella.",
-            "Chin gnathion.",
-            "Chin left gonion.",
-            "Chin right gonion.",
-            "Left cheek center.",
-            "Right cheek center."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown face landmark detected. Should not be filled.",
@@ -6502,14 +5904,6 @@
       "properties": {
         "type": {
           "description": "Detected break type.",
-          "enumDescriptions": [
-            "Unknown break label type.",
-            "Regular space.",
-            "Sure space (very wide).",
-            "Line-wrapping break.",
-            "End-line hyphen that is not present in text; does not co-occur with `SPACE`, `LEADER_SPACE`, or `LINE_BREAK`.",
-            "Line break that ends a paragraph."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown break label type.",
@@ -6556,14 +5950,6 @@
         },
         "blockType": {
           "description": "Detected block type (text, image etc) for this block.",
-          "enumDescriptions": [
-            "Unknown block type.",
-            "Regular text block.",
-            "Table block.",
-            "Image block.",
-            "Horizontal\/vertical line box.",
-            "Barcode block."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown block type.",
@@ -6674,14 +6060,6 @@
       "properties": {
         "adult": {
           "description": "Represents the adult content likelihood for the image. Adult content may contain elements such as nudity, pornographic images or cartoons, or sexual activities.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6702,14 +6080,6 @@
         },
         "spoof": {
           "description": "Spoof likelihood. The likelihood that an modification was made to the image's canonical version to make it appear funny or offensive.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6730,14 +6100,6 @@
         },
         "medical": {
           "description": "Likelihood that this is a medical image.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6758,14 +6120,6 @@
         },
         "violence": {
           "description": "Likelihood that this image contains violent content.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -6786,14 +6140,6 @@
         },
         "racy": {
           "description": "Likelihood that the request image contains racy content. Racy content may include (but is not limited to) skimpy or sheer clothing, strategically covered nudity, lewd or provocative poses, or close-ups of sensitive body areas.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -7244,13 +6590,6 @@
       "properties": {
         "state": {
           "description": "Current state of the batch operation.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Request is received.",
-            "Request is actively being processed.",
-            "The batch processing is done.",
-            "The batch processing was cancelled."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid.",
@@ -7286,13 +6625,6 @@
       "properties": {
         "state": {
           "description": "The current state of the batch operation.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Request is actively being processed.",
-            "The request is done and at least one item has been successfully processed.",
-            "The request is done and no item has been successfully processed.",
-            "The request is done after the longrunning.Operations.CancelOperation has been called by the user. Any records that were processed before the cancel command are output as specified in the request."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid.",
@@ -7605,14 +6937,6 @@
         },
         "joyLikelihood": {
           "description": "Joy likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -7633,14 +6957,6 @@
         },
         "sorrowLikelihood": {
           "description": "Sorrow likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -7661,14 +6977,6 @@
         },
         "angerLikelihood": {
           "description": "Anger likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -7689,14 +6997,6 @@
         },
         "surpriseLikelihood": {
           "description": "Surprise likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -7717,14 +7017,6 @@
         },
         "underExposedLikelihood": {
           "description": "Under-exposed likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -7745,14 +7037,6 @@
         },
         "blurredLikelihood": {
           "description": "Blurred likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -7773,14 +7057,6 @@
         },
         "headwearLikelihood": {
           "description": "Headwear likelihood.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -7815,45 +7091,6 @@
       "properties": {
         "type": {
           "description": "Face landmark type.",
-          "enumDescriptions": [
-            "Unknown face landmark detected. Should not be filled.",
-            "Left eye.",
-            "Right eye.",
-            "Left of left eyebrow.",
-            "Right of left eyebrow.",
-            "Left of right eyebrow.",
-            "Right of right eyebrow.",
-            "Midpoint between eyes.",
-            "Nose tip.",
-            "Upper lip.",
-            "Lower lip.",
-            "Mouth left.",
-            "Mouth right.",
-            "Mouth center.",
-            "Nose, bottom right.",
-            "Nose, bottom left.",
-            "Nose, bottom center.",
-            "Left eye, top boundary.",
-            "Left eye, right corner.",
-            "Left eye, bottom boundary.",
-            "Left eye, left corner.",
-            "Right eye, top boundary.",
-            "Right eye, right corner.",
-            "Right eye, bottom boundary.",
-            "Right eye, left corner.",
-            "Left eyebrow, upper midpoint.",
-            "Right eyebrow, upper midpoint.",
-            "Left ear tragion.",
-            "Right ear tragion.",
-            "Left eye pupil.",
-            "Right eye pupil.",
-            "Forehead glabella.",
-            "Chin gnathion.",
-            "Chin left gonion.",
-            "Chin right gonion.",
-            "Left cheek center.",
-            "Right cheek center."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown face landmark detected. Should not be filled.",
@@ -8200,14 +7437,6 @@
       "properties": {
         "type": {
           "description": "Detected break type.",
-          "enumDescriptions": [
-            "Unknown break label type.",
-            "Regular space.",
-            "Sure space (very wide).",
-            "Line-wrapping break.",
-            "End-line hyphen that is not present in text; does not co-occur with `SPACE`, `LEADER_SPACE`, or `LINE_BREAK`.",
-            "Line break that ends a paragraph."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown break label type.",
@@ -8254,14 +7483,6 @@
         },
         "blockType": {
           "description": "Detected block type (text, image etc) for this block.",
-          "enumDescriptions": [
-            "Unknown block type.",
-            "Regular text block.",
-            "Table block.",
-            "Image block.",
-            "Horizontal\/vertical line box.",
-            "Barcode block."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown block type.",
@@ -8372,14 +7593,6 @@
       "properties": {
         "adult": {
           "description": "Represents the adult content likelihood for the image. Adult content may contain elements such as nudity, pornographic images or cartoons, or sexual activities.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -8400,14 +7613,6 @@
         },
         "spoof": {
           "description": "Spoof likelihood. The likelihood that an modification was made to the image's canonical version to make it appear funny or offensive.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -8428,14 +7633,6 @@
         },
         "medical": {
           "description": "Likelihood that this is a medical image.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -8456,14 +7653,6 @@
         },
         "violence": {
           "description": "Likelihood that this image contains violent content.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -8484,14 +7673,6 @@
         },
         "racy": {
           "description": "Likelihood that the request image contains racy content. Racy content may include (but is not limited to) skimpy or sheer clothing, strategically covered nudity, lewd or provocative poses, or close-ups of sensitive body areas.",
-          "enumDescriptions": [
-            "Unknown likelihood.",
-            "It is very unlikely.",
-            "It is unlikely.",
-            "It is possible.",
-            "It is likely.",
-            "It is very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown likelihood.",
@@ -8942,13 +8123,6 @@
       "properties": {
         "state": {
           "description": "Current state of the batch operation.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Request is received.",
-            "Request is actively being processed.",
-            "The batch processing is done.",
-            "The batch processing was cancelled."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid.",

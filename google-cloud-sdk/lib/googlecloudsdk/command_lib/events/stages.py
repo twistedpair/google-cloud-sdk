@@ -43,6 +43,12 @@ def TriggerStages():
   ]
 
 
+def EventingStages():
+  return [
+      progress_tracker.Stage('Enabling Eventing...'),
+  ]
+
+
 def TriggerSourceDependencies():
   return {
       _TRIGGER_SUBSCRIBED: {SOURCE_READY},

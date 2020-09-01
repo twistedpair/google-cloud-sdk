@@ -796,6 +796,10 @@ class RecognitionConfig(_messages.Message):
         v1p1beta1. Support all standard MP3 bitrates (which range from 32-320
         kbps). When using this encoding, `sample_rate_hertz` has to match the
         sample rate of the file being used.
+      WEBM_OPUS: Opus encoded audio frames in WebM container
+        ([OggOpus](https://wiki.xiph.org/OggOpus)). This is a Beta features
+        and only available in v1p1beta1. `sample_rate_hertz` must be one of
+        8000, 12000, 16000, 24000, or 48000.
     """
     ENCODING_UNSPECIFIED = 0
     LINEAR16 = 1
@@ -806,6 +810,7 @@ class RecognitionConfig(_messages.Message):
     OGG_OPUS = 6
     SPEEX_WITH_HEADER_BYTE = 7
     MP3 = 8
+    WEBM_OPUS = 9
 
   adaptation = _messages.MessageField('SpeechAdaptation', 1)
   alternativeLanguageCodes = _messages.StringField(2, repeated=True)

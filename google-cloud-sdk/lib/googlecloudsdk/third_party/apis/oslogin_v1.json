@@ -191,11 +191,6 @@
         },
         "operatingSystemType": {
           "description": "The operating system type where this account applies.",
-          "enumDescriptions": [
-            "The operating system type associated with the user account information is unspecified.",
-            "Linux user account information.",
-            "Windows user account information."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The operating system type associated with the user account information is unspecified.",

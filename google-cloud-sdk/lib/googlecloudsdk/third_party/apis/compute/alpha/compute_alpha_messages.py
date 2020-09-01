@@ -2621,21 +2621,22 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
     PredictiveMethodValueValuesEnum: Indicates which method of prediction is
       used for CPU utilization metric, if any. Current set of possible values:
       * NONE: No predictions are made based on the scaling metric when
-      calculating the number of VM instances. * STANDARD: Standard predictive
-      autoscaling predicts the future values of the scaling metric and then
-      scales a MIG to ensure that new VM instances are ready in time to cover
-      the predicted peak. New values might be added in the future. Some of the
-      values might not be available in all API versions.
+      calculating the number of VM instances. * OPTIMIZE_AVAILABILITY:
+      Standard predictive autoscaling predicts the future values of the
+      scaling metric and then scales a MIG to ensure that new VM instances are
+      ready in time to cover the predicted peak. New values might be added in
+      the future. Some of the values might not be available in all API
+      versions.
 
   Fields:
     predictiveMethod: Indicates which method of prediction is used for CPU
       utilization metric, if any. Current set of possible values: * NONE: No
       predictions are made based on the scaling metric when calculating the
-      number of VM instances. * STANDARD: Standard predictive autoscaling
-      predicts the future values of the scaling metric and then scales a MIG
-      to ensure that new VM instances are ready in time to cover the predicted
-      peak. New values might be added in the future. Some of the values might
-      not be available in all API versions.
+      number of VM instances. * OPTIMIZE_AVAILABILITY: Standard predictive
+      autoscaling predicts the future values of the scaling metric and then
+      scales a MIG to ensure that new VM instances are ready in time to cover
+      the predicted peak. New values might be added in the future. Some of the
+      values might not be available in all API versions.
     utilizationTarget: The target CPU utilization that the autoscaler should
       maintain. Must be a float value in the range (0, 1]. If not specified,
       the default is 0.6.  If the CPU level is below the target utilization,
@@ -2651,11 +2652,11 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
     r"""Indicates which method of prediction is used for CPU utilization
     metric, if any. Current set of possible values: * NONE: No predictions are
     made based on the scaling metric when calculating the number of VM
-    instances. * STANDARD: Standard predictive autoscaling predicts the future
-    values of the scaling metric and then scales a MIG to ensure that new VM
-    instances are ready in time to cover the predicted peak. New values might
-    be added in the future. Some of the values might not be available in all
-    API versions.
+    instances. * OPTIMIZE_AVAILABILITY: Standard predictive autoscaling
+    predicts the future values of the scaling metric and then scales a MIG to
+    ensure that new VM instances are ready in time to cover the predicted
+    peak. New values might be added in the future. Some of the values might
+    not be available in all API versions.
 
     Values:
       NONE: <no description>
@@ -3100,22 +3101,20 @@ class BackendBucketCdnPolicy(_messages.Message):
       The maximum allowed value is 86400s (1 day).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
-      s-max-age). Setting a TTL of "0" means "always revalidate" and a value
-      of "-1" disables caching for that status code. The value of defaultTTL
-      cannot be set to a value greater than that of maxTTL, but can be equal.
-      When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL will
-      overwrite the TTL set in all responses. The maximum allowed value is
-      31,622,400s (1 year), noting that infrequently accessed objects may be
-      evicted from the cache before the defined TTL.
+      s-max-age). Setting a TTL of "0" means "always revalidate". The value of
+      defaultTTL cannot be set to a value greater than that of maxTTL, but can
+      be equal. When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL
+      will overwrite the TTL set in all responses. The maximum allowed value
+      is 31,622,400s (1 year), noting that infrequently accessed objects may
+      be evicted from the cache before the defined TTL.
     maxTtl: Specifies the maximum allowed TTL for cached content served by
       this origin. Cache directives that attempt to set a max-age or s-maxage
       higher than this, or an Expires header more than maxTTL seconds in the
       future will be capped at the value of maxTTL, as if it were the value of
       an s-maxage Cache-Control directive. Setting a TTL of "0" means "always
-      revalidate" and a value of "-1" disables caching for that status code.
-      The maximum allowed value is 31,622,400s (1 year), noting that
-      infrequently accessed objects may be evicted from the cache before the
-      defined TTL.
+      revalidate". The maximum allowed value is 31,622,400s (1 year), noting
+      that infrequently accessed objects may be evicted from the cache before
+      the defined TTL.
     negativeCaching: Negative caching allows per-status code TTLs to be set,
       in order to apply fine-grained caching for common errors or redirects.
       This can reduce the load on your origin and improve end-user experience
@@ -3123,8 +3122,9 @@ class BackendBucketCdnPolicy(_messages.Message):
       following default TTLs to these status codes: HTTP 300 (Multiple
       Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410
       (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
-      Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults
-      can be overridden in negative_caching_policy
+      Found), 414 (URI Too Long), 421 (Misdirected Request), 501 (Not
+      Implemented): 60s These defaults can be overridden in
+      negative_caching_policy
     negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
@@ -3142,7 +3142,7 @@ class BackendBucketCdnPolicy(_messages.Message):
       directive. Stale responses that exceed the TTL configured here will not
       be served. The default limit (max-stale) is 86400s (1 day), which will
       allow stale content to be served up to this limit beyond the max-age (or
-      s-max-age) of a cached response. The maximum allowed value is 604800(1
+      s-max-age) of a cached response. The maximum allowed value is 604800 (1
       week). Set this to zero (0) to disable serve-while-stale.
     signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
       signed URL request will be considered fresh. After this time period, the
@@ -3201,13 +3201,12 @@ class BackendBucketCdnPolicyNegativeCachingPolicy(_messages.Message):
 
   Fields:
     code: The HTTP status code to define a TTL against. Only HTTP status codes
-      300, 301, 308, 404, 405, 410, 414, 451 and 501 are can be specified as
-      values, and you cannot specify a status code more than once.
+      300, 301, 308, 404, 405, 410, 414, 421, 451 and 501 are can be specified
+      as values, and you cannot specify a status code more than once.
     ttl: The TTL (in seconds) to cache responses with the corresponding status
-      code for. A TTL of "0" means "always revalidate" and a value of "-1"
-      disables caching for that status code. The maximum allowed value is
-      1800s (30 minutes), noting that infrequently accessed objects may be
-      evicted from the cache before the defined TTL.
+      code for. The maximum allowed value is 1800s (30 minutes), noting that
+      infrequently accessed objects may be evicted from the cache before the
+      defined TTL.
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3908,22 +3907,20 @@ class BackendServiceCdnPolicy(_messages.Message):
       The maximum allowed value is 86400s (1 day).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
-      s-max-age). Setting a TTL of "0" means "always revalidate" and a value
-      of "-1" disables caching for that status code. The value of defaultTTL
-      cannot be set to a value greater than that of maxTTL, but can be equal.
-      When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL will
-      overwrite the TTL set in all responses. The maximum allowed value is
-      31,622,400s (1 year), noting that infrequently accessed objects may be
-      evicted from the cache before the defined TTL.
+      s-max-age). Setting a TTL of "0" means "always revalidate". The value of
+      defaultTTL cannot be set to a value greater than that of maxTTL, but can
+      be equal. When the cacheMode is set to FORCE_CACHE_ALL, the defaultTTL
+      will overwrite the TTL set in all responses. The maximum allowed value
+      is 31,622,400s (1 year), noting that infrequently accessed objects may
+      be evicted from the cache before the defined TTL.
     maxTtl: Specifies the maximum allowed TTL for cached content served by
       this origin. Cache directives that attempt to set a max-age or s-maxage
       higher than this, or an Expires header more than maxTTL seconds in the
       future will be capped at the value of maxTTL, as if it were the value of
       an s-maxage Cache-Control directive. Setting a TTL of "0" means "always
-      revalidate" and a value of "-1" disables caching for that status code.
-      The maximum allowed value is 31,622,400s (1 year), noting that
-      infrequently accessed objects may be evicted from the cache before the
-      defined TTL.
+      revalidate". The maximum allowed value is 31,622,400s (1 year), noting
+      that infrequently accessed objects may be evicted from the cache before
+      the defined TTL.
     negativeCaching: Negative caching allows per-status code TTLs to be set,
       in order to apply fine-grained caching for common errors or redirects.
       This can reduce the load on your origin and improve end-user experience
@@ -3931,8 +3928,9 @@ class BackendServiceCdnPolicy(_messages.Message):
       following default TTLs to these status codes: HTTP 300 (Multiple
       Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410
       (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
-      Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults
-      can be overridden in negative_caching_policy
+      Found), 414 (URI Too Long), 421 (Misdirected Request), 501 (Not
+      Implemented): 60s These defaults can be overridden in
+      negative_caching_policy
     negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
@@ -3950,7 +3948,7 @@ class BackendServiceCdnPolicy(_messages.Message):
       directive. Stale responses that exceed the TTL configured here will not
       be served. The default limit (max-stale) is 86400s (1 day), which will
       allow stale content to be served up to this limit beyond the max-age (or
-      s-max-age) of a cached response. The maximum allowed value is 604800(1
+      s-max-age) of a cached response. The maximum allowed value is 604800 (1
       week). Set this to zero (0) to disable serve-while-stale.
     signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
       signed URL request will be considered fresh. After this time period, the
@@ -4010,13 +4008,12 @@ class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
 
   Fields:
     code: The HTTP status code to define a TTL against. Only HTTP status codes
-      300, 301, 308, 404, 405, 410, 414, 451 and 501 are can be specified as
-      values, and you cannot specify a status code more than once.
+      300, 301, 308, 404, 405, 410, 414, 421, 451 and 501 are can be specified
+      as values, and you cannot specify a status code more than once.
     ttl: The TTL (in seconds) to cache responses with the corresponding status
-      code for. A TTL of "0" means "always revalidate" and a value of "-1"
-      disables caching for that status code. The maximum allowed value is
-      1800s (30 minutes), noting that infrequently accessed objects may be
-      evicted from the cache before the defined TTL.
+      code for. The maximum allowed value is 1800s (30 minutes), noting that
+      infrequently accessed objects may be evicted from the cache before the
+      defined TTL.
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -6926,7 +6923,7 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
 
   Fields:
     disk: Name of the persistent disk to snapshot.
-    guestFlush: [Input Only] Specifies to create an application consistent
+    guestFlush: [Input Only] Whether to attempt an application consistent
       snapshot by informing the OS to prepare for the snapshot process.
       Currently only supported on Windows instances using the Volume Shadow
       Copy Service (VSS).
@@ -10966,7 +10963,8 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
   Fields:
     attachedDisk: A AttachedDisk resource to be passed as the request body.
     forceAttach: Whether to force attach the regional disk even if it's
-      currently attached to another instance.
+      currently attached to another instance. If you try to force attach a
+      zonal disk to an instance, you will receive an error.
     instance: The instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -26028,8 +26026,7 @@ class Disk(_messages.Message):
       Only applicable for regional resources.
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations.
-    satisfiesPhysicalZoneSeparation: [Output Only] Specifies whether this disk
-      satisfies zone separation.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource's
@@ -26220,7 +26217,7 @@ class Disk(_messages.Message):
   region = _messages.StringField(20)
   replicaZones = _messages.StringField(21, repeated=True)
   resourcePolicies = _messages.StringField(22, repeated=True)
-  satisfiesPhysicalZoneSeparation = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(23)
   selfLink = _messages.StringField(24)
   selfLinkWithId = _messages.StringField(25)
   sizeGb = _messages.IntegerField(26)
@@ -30685,7 +30682,7 @@ class HostRule(_messages.Message):
     hosts: The list of host patterns to match. They must be valid hostnames
       with optional port numbers in the format host:port. * matches any string
       of ([a-z0-9-.]*). In that case, * must be the first character and must
-      be followed in the pattern by either - or ..  * based matching is not
+      be followed in the pattern by either - or .. * based matching is not
       supported when the URL map is bound to target gRPC proxy that has
       validateForProxyless field set to true.
     pathMatcher: The name of the PathMatcher to use to match the path portion
@@ -30800,7 +30797,14 @@ class HttpHeaderMatch(_messages.Message):
     headerName: The name of the HTTP header to match. For matching against the
       HTTP request's authority, use a headerMatch with the header name
       ":authority". For matching a request's method, use the headerName
-      ":method".
+      ":method". When the URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true, only non-binary user-specified
+      custom metadata and the `content-type` header are supported. The
+      following transport-level headers cannot be used in header matching
+      rules: `:authority`, `:method`, `:path`, `:scheme`, `user-agent`,
+      `accept-encoding`, `content-encoding`, `grpc-accept-encoding`, `grpc-
+      encoding`, `grpc-previous-rpc-attempts`, `grpc-tags-bin`, `grpc-timeout`
+      and `grpc-trace-bin.
     invertMatch: If set to false, the headerMatch is considered a match if the
       match criteria above are met. If set to true, the headerMatch is
       considered a match if the match criteria above are NOT met. The default
@@ -31190,7 +31194,7 @@ class HttpRouteAction(_messages.Message):
   Fields:
     corsPolicy: The specification for allowing client side cross-origin
       requests. Please see W3C Recommendation for Cross Origin Resource
-      Sharing
+      Sharing  Not supported when the URL map is bound to target gRPC proxy.
     faultInjectionPolicy: The specification for fault injection introduced
       into traffic to test the resiliency of clients to backend service
       failure. As part of fault injection, when clients send requests to a
@@ -31199,29 +31203,38 @@ class HttpRouteAction(_messages.Message):
       service. Similarly requests from clients can be aborted by the
       Loadbalancer for a percentage of requests. timeout and retry_policy will
       be ignored by clients that are configured with a fault_injection_policy.
+      Not supported when the URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     requestMirrorPolicy: Specifies the policy on how requests intended for the
       route's backends are shadowed to a separate mirrored backend service.
       Loadbalancer does not wait for responses from the shadow service. Prior
       to sending traffic to the shadow service, the host / authority header is
-      suffixed with -shadow.
-    retryPolicy: Specifies the retry policy associated with this route.
+      suffixed with -shadow. Not supported when the URL map is bound to target
+      gRPC proxy that has validateForProxyless field set to true.
+    retryPolicy: Specifies the retry policy associated with this route. Not
+      supported when the URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     timeout: Specifies the timeout for the selected route. Timeout is computed
       from the time the request has been fully processed (i.e. end-of-stream)
       up until the response has been completely processed. Timeout includes
       all retries. If not specified, will use the largest timeout among all
-      backend services associated with the route.
+      backend services associated with the route. Not supported when the URL
+      map is bound to target gRPC proxy that has validateForProxyless field
+      set to true.
     urlRewrite: The spec to modify the URL of the request, prior to forwarding
       the request to the matched service. urlRewrite is the only action
-      supported in UrlMaps for external HTTP(S) load balancers.
+      supported in UrlMaps for external HTTP(S) load balancers. Not supported
+      when the URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     weightedBackendServices: A list of weighted backend services to send
       traffic to when a route match occurs. The weights determine the fraction
       of traffic that flows to their corresponding backend service. If all
       traffic needs to go to a single backend service, there must be one
-      weightedBackendService with weight set to a non 0 number. Once a
+      weightedBackendService with weight set to a non-zero number. Once a
       backendService is identified and before forwarding the request to the
-      backend service, advanced routing actions like Url rewrites and header
-      transformations are applied depending on additional settings specified
-      in this HttpRouteAction.
+      backend service, advanced routing actions such as URL rewrites and
+      header transformations are applied depending on additional settings
+      specified in this HttpRouteAction.
   """
 
   corsPolicy = _messages.MessageField('CorsPolicy', 1)
@@ -31246,18 +31259,23 @@ class HttpRouteRule(_messages.Message):
       pathMatchers[].headerAction and after pathMatchers[].routeRules[].routeA
       ction.weightedBackendService.backendServiceWeightAction[].headerAction
       Note that headerAction is not supported for Loadbalancers that have
-      their loadBalancingScheme set to EXTERNAL.
+      their loadBalancingScheme set to EXTERNAL. Not supported when the URL
+      map is bound to target gRPC proxy that has validateForProxyless field
+      set to true.
     httpFilterConfigs: Outbound route specific configuration for
       networkservices.HttpFilter resources enabled by Traffic Director.
       httpFilterConfigs only applies for Loadbalancers with
       loadBalancingScheme set to INTERNAL_SELF_MANAGED. See ForwardingRule for
-      more details.
+      more details. Not supported when the URL map is bound to target gRPC
+      proxy that has validateForProxyless field set to true.
     httpFilterMetadata: Outbound route specific metadata supplied to
       networkservices.HttpFilter resources enabled by Traffic Director.
       httpFilterMetadata only applies for Loadbalancers with
       loadBalancingScheme set to INTERNAL_SELF_MANAGED. See ForwardingRule for
       more details. The only configTypeUrl supported is
-      type.googleapis.com/google.protobuf.Struct
+      type.googleapis.com/google.protobuf.Struct  Not supported when the URL
+      map is bound to target gRPC proxy that has validateForProxyless field
+      set to true.
     matchRules: The list of criteria for matching attributes of a request to
       this routeRule. This list has OR semantics: the request matches this
       routeRule when any of the matchRules are satisfied. However predicates
@@ -31294,7 +31312,8 @@ class HttpRouteRule(_messages.Message):
       urlRedirect, service or routeAction.weightedBackendService must be set.
     urlRedirect: When this rule is matched, the request is redirected to a URL
       specified by urlRedirect. If urlRedirect is specified, service or
-      routeAction must not be set.
+      routeAction must not be set. Not supported when the URL map is bound to
+      target gRPC proxy.
   """
 
   description = _messages.StringField(1)
@@ -31323,7 +31342,8 @@ class HttpRouteRuleMatch(_messages.Message):
       must match corresponding headers in the request.
     ignoreCase: Specifies that prefixMatch and fullPathMatch matches are case
       sensitive. The default value is false. ignoreCase must not be used with
-      regexMatch.
+      regexMatch. Not supported when the URL map is bound to target gRPC
+      proxy.
     metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
       routing configuration to a limited set of xDS compliant clients. In
       their xDS requests to Loadbalancer, xDS clients present node metadata.
@@ -31338,13 +31358,16 @@ class HttpRouteRuleMatch(_messages.Message):
       specified here will be applied after those specified in ForwardingRule
       that refers to the UrlMap this HttpRouteRuleMatch belongs to.
       metadataFilters only applies to Loadbalancers that have their
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED. Not supported when the
+      URL map is bound to target gRPC proxy that has validateForProxyless
+      field set to true.
     prefixMatch: For satisfying the matchRule condition, the request's path
       must begin with the specified prefixMatch. prefixMatch must begin with a
       /. The value must be between 1 and 1024 characters. Only one of
       prefixMatch, fullPathMatch or regexMatch must be specified.
     queryParameterMatches: Specifies a list of query parameter match criteria,
       all of which must match corresponding query parameters in the request.
+      Not supported when the URL map is bound to target gRPC proxy.
     regexMatch: For satisfying the matchRule condition, the path of the
       request must satisfy the regular expression specified in regexMatch
       after removing any query parameters and anchor supplied with the
@@ -32182,8 +32205,8 @@ class Instance(_messages.Message):
   Machine Instances. (== resource_for {$api_version}.instances ==)
 
   Enums:
-    PostKeyRevocationActionTypeValueValuesEnum: Specifies whether this
-      instance will be shut down on key revocation.
+    PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
+      the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for the VM. If not specified, use  INHERIT_FROM_SUBNETWORK as
       default.
@@ -32288,8 +32311,7 @@ class Instance(_messages.Message):
       These specify how interfaces are configured to interact with other
       network services, such as connecting to the internet. Multiple
       interfaces are supported per instance.
-    postKeyRevocationActionType: Specifies whether this instance will be shut
-      down on key revocation.
+    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     preservedStateSizeGb: Total amount of preserved state for SUSPENDED
       instances. Read-only in the api.
     privateIpv6GoogleAccess: The private IPv6 google access type for the VM.
@@ -32297,8 +32319,7 @@ class Instance(_messages.Message):
     reservationAffinity: Specifies the reservations that this instance can
       consume from.
     resourcePolicies: Resource policies applied to this instance.
-    satisfiesPhysicalZoneSeparation: [Output Only] Specifies whether this
-      instance satisfies zone separation.
+    satisfiesPzs: [Output Only] Reserved for future use.
     scheduling: Sets the scheduling options for this instance.
     secureLabels: Secure labels to apply to this instance. These can be later
       modified by the update method. Maximum number of secure labels allowed
@@ -32340,16 +32361,16 @@ class Instance(_messages.Message):
   """
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""Specifies whether this instance will be shut down on key revocation.
+    r"""PostKeyRevocationActionType of the instance.
 
     Values:
       NOOP: <no description>
+      POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: <no description>
       SHUTDOWN: <no description>
-      UNSPECIFIED: <no description>
     """
     NOOP = 0
-    SHUTDOWN = 1
-    UNSPECIFIED = 2
+    POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 1
+    SHUTDOWN = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for the VM. If not specified, use
@@ -32448,7 +32469,7 @@ class Instance(_messages.Message):
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 29)
   reservationAffinity = _messages.MessageField('ReservationAffinity', 30)
   resourcePolicies = _messages.StringField(31, repeated=True)
-  satisfiesPhysicalZoneSeparation = _messages.BooleanField(32)
+  satisfiesPzs = _messages.BooleanField(32)
   scheduling = _messages.MessageField('Scheduling', 33)
   secureLabels = _messages.StringField(34, repeated=True)
   selfLink = _messages.StringField(35)
@@ -34934,8 +34955,8 @@ class InstanceProperties(_messages.Message):
   r"""InstanceProperties message type.
 
   Enums:
-    PostKeyRevocationActionTypeValueValuesEnum: Specifies whether instances
-      will be shut down on key revocation.
+    PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
+      the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for VMs. If not specified, use  INHERIT_FROM_SUBNETWORK as default.
 
@@ -34976,8 +34997,7 @@ class InstanceProperties(_messages.Message):
       information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
-    postKeyRevocationActionType: Specifies whether instances will be shut down
-      on key revocation.
+    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
       not specified, use  INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that instances can consume
@@ -35000,16 +35020,16 @@ class InstanceProperties(_messages.Message):
   """
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""Specifies whether instances will be shut down on key revocation.
+    r"""PostKeyRevocationActionType of the instance.
 
     Values:
       NOOP: <no description>
+      POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: <no description>
       SHUTDOWN: <no description>
-      UNSPECIFIED: <no description>
     """
     NOOP = 0
-    SHUTDOWN = 1
-    UNSPECIFIED = 2
+    POST_KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 1
+    SHUTDOWN = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for VMs. If not specified, use
@@ -35620,7 +35640,7 @@ class InstantSnapshot(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     diskSizeGb: [Output Only] Size of the source disk, specified in GB.
-    guestFlush: Specifies to create an application consistent instant snapshot
+    guestFlush: Whether to attempt an application consistent instant snapshot
       by informing the OS to prepare for the snapshot process. Currently only
       supported on Windows instances using the Volume Shadow Copy Service
       (VSS).
@@ -38397,7 +38417,7 @@ class MachineImage(_messages.Message):
       image in RFC3339 text format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    guestFlush: [Input Only] Specifies to create an application consistent
+    guestFlush: [Input Only] Whether to attempt an application consistent
       machine image by informing the OS to prepare for the snapshot process.
       Currently only supported on Windows instances using the Volume Shadow
       Copy Service (VSS).
@@ -40520,6 +40540,11 @@ class NetworkInterface(_messages.Message):
     networkIP: An IPv4 internal IP address to assign to the instance for this
       network interface. If not specified by the user, an unused internal IP
       is assigned by the system.
+    queueCount: The networking queue count for the network interface. Both Rx
+      and Tx queues will be set to this number. If it's not specified by the
+      user, a default number of queues will be assigned. For Virtio-net, each
+      interface will get (min(#vCPU, 32) / #vNIC) queues. For gVNIC, each
+      interface will get (min(#vCPU / 2, 16) / #vNIC) qeueus.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not specify this field. If the
       network is in auto subnet mode, specifying the subnetwork is optional.
@@ -40538,7 +40563,8 @@ class NetworkInterface(_messages.Message):
   name = _messages.StringField(6)
   network = _messages.StringField(7)
   networkIP = _messages.StringField(8)
-  subnetwork = _messages.StringField(9)
+  queueCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(10)
 
 
 class NetworkList(_messages.Message):
@@ -41312,8 +41338,7 @@ class NodeGroupNode(_messages.Message):
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
-    satisfiesPhysicalZoneSeparation: [Output Only] Specifies whether this node
-      satisfies zone separation.
+    satisfiesPzs: [Output Only] Reserved for future use.
     serverBinding: Binding properties for the physical server.
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
@@ -41353,7 +41378,7 @@ class NodeGroupNode(_messages.Message):
   instances = _messages.StringField(4, repeated=True)
   name = _messages.StringField(5)
   nodeType = _messages.StringField(6)
-  satisfiesPhysicalZoneSeparation = _messages.BooleanField(7)
+  satisfiesPzs = _messages.BooleanField(7)
   serverBinding = _messages.MessageField('ServerBinding', 8)
   serverId = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
@@ -44218,9 +44243,7 @@ class PathMatcher(_messages.Message):
       any  weightedBackendServices. Only one of defaultRouteAction or
       defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
       balancers support only the urlRewrite action within a pathMatcher's
-      defaultRouteAction.  Not supported when the backend service is
-      referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+      defaultRouteAction.
     defaultService: The full or partial URL to the BackendService resource.
       This will be used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -44237,14 +44260,12 @@ class PathMatcher(_messages.Message):
       defaultRouteAction.weightedBackendService must be set. Authorization
       requires one or more of the following Google IAM permissions on the
       specified resource default_service:   - compute.backendBuckets.use  -
-      compute.backendServices.use    pathMatchers[].defaultService is the only
-      option available when the URL map is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+      compute.backendServices.use
     defaultUrlRedirect: When none of the specified pathRules or routeRules
       match, the request is redirected to a URL specified by
       defaultUrlRedirect. If defaultUrlRedirect is specified, defaultService
-      or defaultRouteAction must not be set.  Not supported when the backend
-      service is referenced by a URL map that is bound to target gRPC proxy.
+      or defaultRouteAction must not be set. Not supported when the URL map is
+      bound to target gRPC proxy.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     headerAction: Specifies changes to request and response headers that need
@@ -44252,9 +44273,8 @@ class PathMatcher(_messages.Message):
       here are applied after the matching HttpRouteRule HeaderAction and
       before the HeaderAction in the UrlMap  Note that headerAction is not
       supported for Loadbalancers that have their loadBalancingScheme set to
-      EXTERNAL.  Not supported when the backend service is referenced by a URL
-      map that is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
+      EXTERNAL. Not supported when the URL map is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
     name: The name to which this PathMatcher is referred by the HostRule.
     pathRules: The list of path rules. Use this list instead of routeRules
       when routing based on simple path matching is all that's required. The
@@ -44262,16 +44282,12 @@ class PathMatcher(_messages.Message):
       always done on the longest-path-first basis. For example: a pathRule
       with a path /a/b/c/* will match before /a/b/* irrespective of the order
       in which those paths appear in this list. Within a given pathMatcher,
-      only one of pathRules or routeRules must be set.  Not supported when the
-      backend service is referenced by a URL map that is bound to target gRPC
-      proxy that has validateForProxyless field set to true.
+      only one of pathRules or routeRules must be set.
     routeRules: The list of HTTP route rules. Use this list instead of
       pathRules when advanced route matching and routing actions are desired.
       routeRules are evaluated in order of priority, from the lowest to
       highest number. Within a given pathMatcher, you can set only one of
-      pathRules or routeRules.  Not supported when the backend service is
-      referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+      pathRules or routeRules.
   """
 
   defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)
@@ -44311,7 +44327,8 @@ class PathRule(_messages.Message):
       urlRedirect, service or routeAction.weightedBackendService must be set.
     urlRedirect: When a path pattern is matched, the request is redirected to
       a URL specified by urlRedirect. If urlRedirect is specified, service or
-      routeAction must not be set.
+      routeAction must not be set. Not supported when the URL map is bound to
+      target gRPC proxy.
   """
 
   paths = _messages.StringField(1, repeated=True)
@@ -45941,8 +45958,7 @@ class Region(_messages.Message):
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
     status: [Output Only] Status of the region, either UP or DOWN.
-    supportsPhysicalZoneSeparation: [Output Only] Specifies whether this
-      region supports physical zone separation.
+    supportsPzs: [Output Only] Reserved for future use.
     zones: [Output Only] A list of zones available in this region, in the form
       of resource URLs.
   """
@@ -45967,7 +45983,7 @@ class Region(_messages.Message):
   selfLink = _messages.StringField(8)
   selfLinkWithId = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
-  supportsPhysicalZoneSeparation = _messages.BooleanField(11)
+  supportsPzs = _messages.BooleanField(11)
   zones = _messages.StringField(12, repeated=True)
 
 
@@ -50536,12 +50552,10 @@ class ScalingScheduleStatus(_messages.Message):
       ACTIVE: <no description>
       DISABLED: <no description>
       OBSOLETE: <no description>
-      PENDING: <no description>
     """
     ACTIVE = 0
     DISABLED = 1
     OBSOLETE = 2
-    PENDING = 3
 
   lastStartTime = _messages.StringField(1)
   nextStartTime = _messages.StringField(2)
@@ -50549,7 +50563,7 @@ class ScalingScheduleStatus(_messages.Message):
 
 
 class Scheduling(_messages.Message):
-  r"""Sets the scheduling options for an Instance. NextID: 12
+  r"""Sets the scheduling options for an Instance. NextID: 13
 
   Enums:
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -51379,9 +51393,9 @@ class ServiceAttachment(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    natIpCidrRanges: An array of IP CIDR ranges where each range is the url of
-      the address resource which represents the range provided by the service
-      producer to use for NAT in this service attachment.
+    natSubnets: An array of URLs where each entry is the URL of a subnet
+      provided by the service producer to use for NAT in this service
+      attachment.
     producerForwardingRule: The URL of a forwarding rule with
       loadBalancingScheme INTERNAL* that is serving the endpoint identified by
       this service attachment.
@@ -51409,7 +51423,7 @@ class ServiceAttachment(_messages.Message):
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default='compute#serviceAttachment')
   name = _messages.StringField(7)
-  natIpCidrRanges = _messages.StringField(8, repeated=True)
+  natSubnets = _messages.StringField(8, repeated=True)
   producerForwardingRule = _messages.StringField(9)
   region = _messages.StringField(10)
   selfLink = _messages.StringField(11)
@@ -51760,8 +51774,7 @@ class Snapshot(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    satisfiesPhysicalZoneSeparation: [Output Only] Specifies whether this
-      snapshot satisfies zone separation.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource's
       resource id.
@@ -51774,7 +51787,7 @@ class Snapshot(_messages.Message):
       you do not provide an encryption key when creating the snapshot, then
       the snapshot will be encrypted using an automatically generated key and
       you do not need to provide a key to use the snapshot later.
-    sourceDisk: [Output Only] The source disk used to create this snapshot.
+    sourceDisk: The source disk used to create this snapshot.
     sourceDiskEncryptionKey: The customer-supplied encryption key of the
       source disk. Required if the source disk is protected by a customer-
       supplied encryption key.
@@ -51864,7 +51877,7 @@ class Snapshot(_messages.Message):
   licenseCodes = _messages.IntegerField(12, repeated=True)
   licenses = _messages.StringField(13, repeated=True)
   name = _messages.StringField(14)
-  satisfiesPhysicalZoneSeparation = _messages.BooleanField(15)
+  satisfiesPzs = _messages.BooleanField(15)
   selfLink = _messages.StringField(16)
   selfLinkWithId = _messages.StringField(17)
   snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
@@ -53430,11 +53443,13 @@ class Subnetwork(_messages.Message):
       INTERNAL_HTTPS_LOAD_BALANCER: <no description>
       PRIVATE: <no description>
       PRIVATE_RFC_1918: <no description>
+      PRIVATE_SERVICE_CONNECT: <no description>
     """
     AGGREGATE = 0
     INTERNAL_HTTPS_LOAD_BALANCER = 1
     PRIVATE = 2
     PRIVATE_RFC_1918 = 3
+    PRIVATE_SERVICE_CONNECT = 4
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
@@ -54469,7 +54484,7 @@ class TargetHttpProxy(_messages.Message):
       TargetHttpProxy; otherwise, the request will fail with error 412
       conditionNotMet. To see the latest fingerprint, make a get() request to
       retrieve the TargetHttpProxy.
-    httpFilters: Urls to networkservices.HttpFilter resources enabled for xDS
+    httpFilters: URLs to networkservices.HttpFilter resources enabled for xDS
       clients using this configuration. For example, https://networkservices.g
       oogleapis.com/v1alpha1/projects/project/locations/locationhttpFilters/ht
       tpFilter Only filters that handle outbound connection and stream events
@@ -57418,10 +57433,11 @@ class TestFailure(_messages.Message):
   r"""A TestFailure object.
 
   Fields:
-    actualService: A string attribute.
-    expectedService: A string attribute.
-    host: A string attribute.
-    path: A string attribute.
+    actualService: BackendService or BackendBucket returned by load balancer.
+    expectedService: Expected BackendService or BackendBucket resource the
+      given URL should be mapped to.
+    host: Host portion of the URL.
+    path: Path portion including query parameters in the URL.
   """
 
   actualService = _messages.StringField(1)
@@ -57634,9 +57650,8 @@ class UrlMap(_messages.Message):
       weightedBackendServices. Only one of defaultRouteAction or
       defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
       balancers support only the urlRewrite action within defaultRouteAction.
-      defaultRouteAction has no effect when the backend service is referenced
-      by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+      defaultRouteAction has no effect when the URL map is bound to target
+      gRPC proxy that has validateForProxyless field set to true.
     defaultService: The full or partial URL of the defaultService resource to
       which traffic is directed if none of the hostRules match. If
       defaultRouteAction is additionally specified, advanced routing actions
@@ -57645,15 +57660,14 @@ class UrlMap(_messages.Message):
       cannot contain any weightedBackendServices. Conversely, if routeAction
       specifies any weightedBackendServices, service must not be specified.
       Only one of defaultService, defaultUrlRedirect  or
-      defaultRouteAction.weightedBackendService must be set.  defaultService
-      has no effect when the backend service is referenced by a URL map that
-      is bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+      defaultRouteAction.weightedBackendService must be set. defaultService
+      has no effect when the URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     defaultUrlRedirect: When none of the specified hostRules match, the
       request is redirected to a URL specified by defaultUrlRedirect. If
       defaultUrlRedirect is specified, defaultService or defaultRouteAction
-      must not be set.  Not supported when the backend service is referenced
-      by a URL map that is bound to target gRPC proxy.
+      must not be set. Not supported when the URL map is bound to target gRPC
+      proxy.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
@@ -57665,8 +57679,9 @@ class UrlMap(_messages.Message):
     headerAction: Specifies changes to request and response headers that need
       to take effect for the selected backendService. The headerAction
       specified here take effect after headerAction specified under
-      pathMatcher.  Not supported when the backend service is referenced by a
-      URL map that is bound to target gRPC proxy that has validateForProxyless
+      pathMatcher. Note that headerAction is not supported for Loadbalancers
+      that have their loadBalancingScheme set to EXTERNAL. Not supported when
+      the URL map is bound to target gRPC proxy that has validateForProxyless
       field set to true.
     hostRules: The list of HostRules to use against the URL.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -57688,9 +57703,9 @@ class UrlMap(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     tests: The list of expected URL mapping tests. Request to update this
       UrlMap will succeed only if all of the test cases pass. You can specify
-      a maximum of 100 tests per UrlMap.  Not supported when the backend
-      service is referenced by a URL map that is bound to target gRPC proxy
-      that has validateForProxyless field set to true.
+      a maximum of 100 tests per UrlMap. Not supported when the URL map is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -59863,7 +59878,10 @@ class WeightedBackendService(_messages.Message):
     headerAction: Specifies changes to request and response headers that need
       to take effect for the selected backendService. headerAction specified
       here take effect before headerAction in the enclosing HttpRouteRule,
-      PathMatcher and UrlMap.
+      PathMatcher and UrlMap. Note that headerAction is not supported for
+      Loadbalancers that have their loadBalancingScheme set to EXTERNAL. Not
+      supported when the URL map is bound to target gRPC proxy that has
+      validateForProxyless field set to true.
     weight: Specifies the fraction of traffic sent to backendService, computed
       as weight / (sum of all weightedBackendService weights in routeAction) .
       The selection of a backend service is determined only for new traffic.
@@ -60058,8 +60076,7 @@ class Zone(_messages.Message):
       zone.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] Status of the zone, either UP or DOWN.
-    supportsPhysicalZoneSeparation: [Output Only] Specifies whether this zone
-      supports physical zone separation.
+    supportsPzs: [Output Only] Reserved for future use.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -60082,7 +60099,7 @@ class Zone(_messages.Message):
   region = _messages.StringField(8)
   selfLink = _messages.StringField(9)
   status = _messages.EnumField('StatusValueValuesEnum', 10)
-  supportsPhysicalZoneSeparation = _messages.BooleanField(11)
+  supportsPzs = _messages.BooleanField(11)
 
 
 class ZoneList(_messages.Message):

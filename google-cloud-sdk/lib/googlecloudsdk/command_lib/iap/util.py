@@ -120,14 +120,12 @@ def AddOauthClientArgs(parser):
 
 
 def AddAddIamPolicyBindingArgs(parser):
-  # TODO(b/123070972) Add completers
   iam_util.AddArgsForAddIamPolicyBinding(
       parser,
       add_condition=True)
 
 
 def AddRemoveIamPolicyBindingArgs(parser):
-  # TODO(b/123070972) Add completers
   iam_util.AddArgsForRemoveIamPolicyBinding(
       parser,
       add_condition=True)

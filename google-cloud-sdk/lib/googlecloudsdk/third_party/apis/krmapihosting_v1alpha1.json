@@ -301,6 +301,144 @@
         }
       }
     },
+    "ListKrmApiHostsResponse": {
+      "id": "ListKrmApiHostsResponse",
+      "description": "A ListKrmApiHostsResponse represents a List response for a set of KrmApiHosts in the service.",
+      "type": "object",
+      "properties": {
+        "krmApiHosts": {
+          "description": "The list of KrmApiHosts contained within the parent.",
+          "type": "array",
+          "items": {
+            "$ref": "KrmApiHost"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the 'ListApiEndpoints' method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "KrmApiHost": {
+      "id": "KrmApiHost",
+      "description": "A KrmApiHost represents a GKE cluster which is pre-installed with KRM resources of services currently supported by the KRM API Hosting API.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of this KrmApiHost resource in the format: 'projects\/{project_id}\/locations\/{location}\/krmApiHosts\/{krm_api_host_id}'.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels are used for additional information for a KrmApiHost.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "bundlesConfig": {
+          "description": "Configuration for the bundles that are enabled on the KrmApiHost.",
+          "$ref": "BundlesConfig"
+        },
+        "endpoint": {
+          "description": "Output only. IP address of the KRM endpoint on the KrmApiHost.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "manBlock": {
+          "description": "Master Authorized Network. Allows access to the k8s master from this block.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Existing VPC Network to put the GKE cluster and nodes in.",
+          "type": "string"
+        },
+        "usePrivateEndpoint": {
+          "description": "Only allow access to the master's private endpoint IP.",
+          "type": "boolean"
+        },
+        "masterIpv4CidrBlock": {
+          "description": "The \/28 network that the masters will use.",
+          "type": "string"
+        },
+        "gitEndpoint": {
+          "description": "The URL of the Git repository to use as the source of truth.",
+          "type": "string"
+        },
+        "gitBranch": {
+          "description": "The branch of the repository to sync from.",
+          "type": "string"
+        },
+        "gitSecretType": {
+          "description": "The type of secret configured for access to the Git repository. One of ssh, cookiefile, token, gcenode, or none.",
+          "type": "string"
+        },
+        "gitPolicyDir": {
+          "description": "The path within the Git repository that represents the top level of the repo to sync. Default: the root directory of the repository.",
+          "type": "string"
+        },
+        "clusterCidrBlock": {
+          "description": "The IP address range for the cluster pod IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "servicesCidrBlock": {
+          "description": "The IP address range for the cluster service IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "clusterNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for pod IP addresses. Alternatively, cluster_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "servicesNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        }
+      }
+    },
+    "BundlesConfig": {
+      "id": "BundlesConfig",
+      "description": "Configuration for the bundles that can be enabled on the KrmApiHost.",
+      "type": "object",
+      "properties": {
+        "anthosSseConfig": {
+          "description": "Configuration for the Anthos SSE bundle.",
+          "$ref": "AnthosSseConfig"
+        },
+        "yakimaConfig": {
+          "description": "Configuration for the Yakima bundle.",
+          "$ref": "YakimaConfig"
+        }
+      }
+    },
+    "AnthosSseConfig": {
+      "id": "AnthosSseConfig",
+      "description": "Configuration options for the Anthos SSE bundle.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the Anthos SSE bundle is enabled on the KrmApiHost.",
+          "type": "boolean"
+        }
+      }
+    },
+    "YakimaConfig": {
+      "id": "YakimaConfig",
+      "description": "Configuration options for the Yakima bundle.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the Yakima bundle is enabled on the KrmApiHost.",
+          "type": "boolean"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -932,18 +1070,200 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single AnthosApiEndpoint."
+                }
+              }
+            },
+            "krmApiHosts": {
+              "methods": {
+                "list": {
+                  "id": "krmapihosting.projects.locations.krmApiHosts.list",
+                  "path": "v1alpha1/{+parent}/krmApiHosts",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/krmApiHosts",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent in whose context the KrmApiHosts are listed. The parent value is in the format: 'projects\/{project_id}\/locations\/{location}'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "When requesting a 'page' of resources, 'page_size' specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Token returned by previous call to 'ListKrmApiHosts' which specifies the position in the list from where to continue listing the resources.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Lists the KrmApiHosts that match the filter expression. A filter expression filters the resources listed in the response. The expression must be of the form '{field} {operator} {value}' where operators: '<', '>', '<=', '>=', '!=', '=', ':' are supported (colon ':' represents a HAS operator which is roughly synonymous with equality). {field} can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects\/foo-proj\/locations\/us-central1\/krmApiHosts\/bar - Filter by labels: - Resources that have a key called 'foo' labels.foo:* - Resources that have a key called 'foo' whose value is 'bar' labels.foo = bar - Filter by state: - Members in CREATING state. state = CREATING",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Field to use to sort the list.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListKrmApiHostsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists KrmApiHosts in a given project and location."
+                },
+                "get": {
+                  "id": "krmapihosting.projects.locations.krmApiHosts.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/krmApiHosts/{krmApiHostsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of this service resource in the format: 'projects\/{project_id}\/locations\/{location}\/krmApiHosts\/{krm_api_host_id}'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/krmApiHosts\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "KrmApiHost"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single KrmApiHost."
+                },
+                "create": {
+                  "id": "krmapihosting.projects.locations.krmApiHosts.create",
+                  "path": "v1alpha1/{+parent}/krmApiHosts",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/krmApiHosts",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent in whose context the KrmApiHost is created. The parent value is in the format: 'projects\/{project_id}\/locations\/{location}'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "krmApiHostId": {
+                      "description": "Required. Client chosen ID for the KrmApiHost.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A unique ID to identify requests. This is unique such that if the request is re-tried, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "KrmApiHost"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new KrmApiHost in a given project and location."
+                },
+                "patch": {
+                  "id": "krmapihosting.projects.locations.krmApiHosts.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/krmApiHosts/{krmApiHostsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The name of this KrmApiHost resource in the format: 'projects\/{project_id}\/locations\/{location}\/krmApiHosts\/{krm_api_host_id}'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/krmApiHosts\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the KrmApiHost resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. A unique ID to identify requests. This is unique such that if the request is re-tried, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "KrmApiHost"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single KrmApiHost."
+                },
+                "delete": {
+                  "id": "krmapihosting.projects.locations.krmApiHosts.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/krmApiHosts/{krmApiHostsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of this service resource in the format: 'projects\/{project_id}\/locations\/{location}\/krmApiHosts\/{krm_api_host_id}'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/krmApiHosts\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A unique ID to identify requests. This is unique such that if the request is re-tried, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single KrmApiHost."
                 },
                 "setIamPolicy": {
-                  "id": "krmapihosting.projects.locations.anthosApiEndpoints.setIamPolicy",
+                  "id": "krmapihosting.projects.locations.krmApiHosts.setIamPolicy",
                   "path": "v1alpha1/{+resource}:setIamPolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/anthosApiEndpoints/{anthosApiEndpointsId}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/krmApiHosts/{krmApiHostsId}:setIamPolicy",
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/anthosApiEndpoints\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/krmApiHosts\/[^\/]+$",
                       "type": "string"
                     }
                   },
@@ -962,16 +1282,16 @@
                   "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
                 },
                 "getIamPolicy": {
-                  "id": "krmapihosting.projects.locations.anthosApiEndpoints.getIamPolicy",
+                  "id": "krmapihosting.projects.locations.krmApiHosts.getIamPolicy",
                   "path": "v1alpha1/{+resource}:getIamPolicy",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/anthosApiEndpoints/{anthosApiEndpointsId}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/krmApiHosts/{krmApiHostsId}:getIamPolicy",
                   "httpMethod": "GET",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/anthosApiEndpoints\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/krmApiHosts\/[^\/]+$",
                       "type": "string"
                     },
                     "options.requestedPolicyVersion": {
@@ -993,16 +1313,16 @@
                   "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
                 },
                 "testIamPermissions": {
-                  "id": "krmapihosting.projects.locations.anthosApiEndpoints.testIamPermissions",
+                  "id": "krmapihosting.projects.locations.krmApiHosts.testIamPermissions",
                   "path": "v1alpha1/{+resource}:testIamPermissions",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/anthosApiEndpoints/{anthosApiEndpointsId}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/krmApiHosts/{krmApiHostsId}:testIamPermissions",
                   "httpMethod": "POST",
                   "parameters": {
                     "resource": {
                       "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
                       "location": "path",
                       "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/anthosApiEndpoints\/[^\/]+$",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/krmApiHosts\/[^\/]+$",
                       "type": "string"
                     }
                   },

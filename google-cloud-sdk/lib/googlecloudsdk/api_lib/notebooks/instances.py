@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from enum import Enum
+import enum
 from googlecloudsdk.api_lib.notebooks import environments as env_util
 from googlecloudsdk.api_lib.notebooks import util
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -260,6 +260,20 @@ def CreateSetMachineTypeRequest(args):
       name=instance, setInstanceMachineTypeRequest=set_machine_request)
 
 
+def CreateInstanceIsUpgradeableRequest(args):
+  instance = GetInstanceResource(args).RelativeName()
+  return util.GetMessages(
+  ).NotebooksProjectsLocationsInstancesIsUpgradeableRequest(
+      notebookInstance=instance)
+
+
+def CreateInstanceUpgradeRequest(args):
+  instance = GetInstanceResource(args).RelativeName()
+  upgrade_request = util.GetMessages().UpgradeInstanceRequest()
+  return util.GetMessages().NotebooksProjectsLocationsInstancesUpgradeRequest(
+      name=instance, upgradeInstanceRequest=upgrade_request)
+
+
 def GetInstanceResource(args):
   return args.CONCEPTS.instance.Parse()
 
@@ -270,9 +284,10 @@ def GetInstanceURI(resource):
   return instance.SelfLink()
 
 
-class OperationType(Enum):
+class OperationType(enum.Enum):
   CREATE = (log.CreatedResource, 'created')
   UPDATE = (log.UpdatedResource, 'updated')
+  UPGRADE = (log.UpdatedResource, 'upgraded')
   DELETE = (log.DeletedResource, 'deleted')
   RESET = (log.ResetResource, 'reset')
 

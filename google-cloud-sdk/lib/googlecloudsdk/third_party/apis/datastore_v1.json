@@ -284,11 +284,6 @@
         },
         "ancestor": {
           "description": "Required. The index's ancestor mode. Must not be ANCESTOR_MODE_UNSPECIFIED.",
-          "enumDescriptions": [
-            "The ancestor mode is unspecified.",
-            "Do not include the entity's ancestors in the index.",
-            "Include all the entity's ancestors in the index."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The ancestor mode is unspecified.",
@@ -310,13 +305,6 @@
         },
         "state": {
           "description": "Output only. The state of the index.",
-          "enumDescriptions": [
-            "The state is unspecified.",
-            "The index is being created, and cannot be used by queries. There is an active long-running operation for the index. The index is updated when writing an entity. Some index data may exist.",
-            "The index is ready to be used. The index is updated when writing an entity. The index is fully populated from all stored entities it applies to.",
-            "The index is being deleted, and cannot be used by queries. There is an active long-running operation for the index. The index is not updated when writing an entity. Some index data may exist.",
-            "The index was being created or deleted, but something went wrong. The index cannot by used by queries. There is no active long-running operation for the index, and the most recently finished long-running operation failed. The index is not updated when writing an entity. Some index data may exist."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -347,11 +335,6 @@
         },
         "direction": {
           "description": "Required. The indexed property's direction. Must not be DIRECTION_UNSPECIFIED.",
-          "enumDescriptions": [
-            "The direction is unspecified.",
-            "The property's values are indexed so as to support sequencing in ascending order and also query by <, >, <=, >=, and =.",
-            "The property's values are indexed so as to support sequencing in descending order and also query by <, >, <=, >=, and =."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The direction is unspecified.",
@@ -409,11 +392,6 @@
       "properties": {
         "readConsistency": {
           "description": "The non-transactional read consistency to use. Cannot be set to `STRONG` for global queries.",
-          "enumDescriptions": [
-            "Unspecified. This value must not be used.",
-            "Strong consistency.",
-            "Eventual consistency."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
@@ -560,9 +538,6 @@
       "properties": {
         "nullValue": {
           "description": "A null value.",
-          "enumDescriptions": [
-            "Null value."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Null value."
@@ -794,10 +769,6 @@
       "properties": {
         "op": {
           "description": "The operator for combining multiple filters.",
-          "enumDescriptions": [
-            "Unspecified. This value must not be used.",
-            "The results are required to satisfy each of the combined filters."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
@@ -828,15 +799,6 @@
         },
         "op": {
           "description": "The operator to filter by.",
-          "enumDescriptions": [
-            "Unspecified. This value must not be used.",
-            "Less than.",
-            "Less than or equal.",
-            "Greater than.",
-            "Greater than or equal.",
-            "Equal.",
-            "Has ancestor."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
@@ -874,11 +836,6 @@
         },
         "direction": {
           "description": "The direction to order by. Defaults to `ASCENDING`.",
-          "enumDescriptions": [
-            "Unspecified. This value must not be used.",
-            "Ascending.",
-            "Descending."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
@@ -970,12 +927,6 @@
         },
         "entityResultType": {
           "description": "The result type for every entity in `entity_results`.",
-          "enumDescriptions": [
-            "Unspecified. This value is never used.",
-            "The key and properties.",
-            "A projected subset of properties. The entity may have no key.",
-            "Only the key."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value is never used.",
@@ -1004,13 +955,6 @@
         },
         "moreResults": {
           "description": "The state of the query after the current batch.",
-          "enumDescriptions": [
-            "Unspecified. This value is never used.",
-            "There may be additional batches to fetch from this query.",
-            "The query is finished, but there may be more results after the limit.",
-            "The query is finished, but there may be more results after the end cursor.",
-            "The query is finished, and there are no more results."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value is never used.",
@@ -1098,11 +1042,6 @@
       "properties": {
         "mode": {
           "description": "The type of commit to perform. Defaults to `TRANSACTIONAL`.",
-          "enumDescriptions": [
-            "Unspecified. This value must not be used.",
-            "Transactional: The mutations are either all applied, or none are applied. Learn about transactions [here](https:\/\/cloud.google.com\/datastore\/docs\/concepts\/transactions).",
-            "Non-transactional: The mutations may not apply as all or none."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
@@ -1312,11 +1251,6 @@
         },
         "operationType": {
           "description": "The type of the operation. Can be used as a filter in ListOperationsRequest.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "ExportEntities.",
-            "ImportEntities."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -1338,16 +1272,6 @@
         },
         "state": {
           "description": "The current state of the Operation.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Request is being prepared for processing.",
-            "Request is actively being processed.",
-            "Request is in the process of being cancelled after user called google.longrunning.Operations.CancelOperation on the operation.",
-            "Request has been processed and is in its finalization stage.",
-            "Request has completed successfully.",
-            "Request has finished being processed, but encountered an error.",
-            "Request has finished being cancelled after user called google.longrunning.Operations.CancelOperation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -1492,13 +1416,6 @@
         },
         "operationType": {
           "description": "The type of the operation. Can be used as a filter in ListOperationsRequest.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "ExportEntities.",
-            "ImportEntities.",
-            "CreateIndex.",
-            "DeleteIndex."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -1524,16 +1441,6 @@
         },
         "state": {
           "description": "The current state of the Operation.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Request is being prepared for processing.",
-            "Request is actively being processed.",
-            "Request is in the process of being cancelled after user called google.longrunning.Operations.CancelOperation on the operation.",
-            "Request has been processed and is in its finalization stage.",
-            "Request has completed successfully.",
-            "Request has finished being processed, but encountered an error.",
-            "Request has finished being cancelled after user called google.longrunning.Operations.CancelOperation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",

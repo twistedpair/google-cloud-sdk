@@ -42,7 +42,8 @@ def Http(timeout='unset', response_encoding=None, ca_certs=None):
   Args:
     timeout: double, The timeout in seconds to pass to httplib2.  This is the
         socket level timeout.  If timeout is None, timeout is infinite.  If
-        default argument 'unset' is given, a sensible default is selected.
+        default argument 'unset' is given, a sensible default is selected using
+        transport.GetDefaultTimeout().
     response_encoding: str, the encoding to use to decode the response.
     ca_certs: str, absolute filename of a ca_certs file that overrides the
         default. The gcloud config property for ca_certs, in turn, overrides

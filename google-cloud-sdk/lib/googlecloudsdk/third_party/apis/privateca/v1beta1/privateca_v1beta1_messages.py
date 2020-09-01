@@ -35,9 +35,6 @@ class ActivateCertificateAuthorityRequest(_messages.Message):
   Fields:
     pemCaCertificate: Required. The signed CA certificate issued from
       FetchCertificateAuthorityCsrResponse.pem_csr.
-    pemCaCertificateChain: Required. Must include the issuer of
-      'pem_ca_certificate', and any further issuers until the self-signed CA.
-      Expected to be in issuer-to-root order according to RFC 5246.
     requestId: Optional. An ID to identify requests. Specify a unique request
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
@@ -49,11 +46,13 @@ class ActivateCertificateAuthorityRequest(_messages.Message):
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
+    subordinateConfig: Required. Must include information about the issuer of
+      'pem_ca_certificate', and any further issuers until the self-signed CA.
   """
 
   pemCaCertificate = _messages.StringField(1)
-  pemCaCertificateChain = _messages.StringField(2, repeated=True)
-  requestId = _messages.StringField(3)
+  requestId = _messages.StringField(2)
+  subordinateConfig = _messages.MessageField('SubordinateConfig', 3)
 
 
 class AllowedConfigList(_messages.Message):
@@ -327,8 +326,9 @@ class CertificateAuthority(_messages.Message):
   Fields:
     accessUrls: Output only. URLs for accessing content published by this CA,
       such as the CA certificate and CRLs.
-    caCertificateDescription: Output only. A structured description of this
-      CertificateAuthority's CA cert.
+    caCertificateDescriptions: Output only. A structured description of this
+      CertificateAuthority's CA certificate and its issuers. Ordered as self-
+      to-root.
     certificatePolicy: Optional. The CertificateAuthorityPolicy to enforce
       when issuing Certificates from this CertificateAuthority.
     config: Required. Immutable. The config used to create a self-signed X.509
@@ -355,12 +355,16 @@ class CertificateAuthority(_messages.Message):
       certificate.
     name: Output only. The resource name for this CertificateAuthority in the
       format `projects/*/locations/*/certificateAuthorities/*`.
-    pemCertificate: Output only. This CertificateAuthority's CA certificate.
-    pemIssuerCertChain: Optional. This CertificateAuthority's issuer chain. If
-      self-signed, will be the same as 'pem_cert'. This may be updated (e.g.,
-      if an issuer's cert was replaced). Expected to be in issuer-to-root
-      order according to RFC 5246.
+    pemCaCertificates: Output only. This CertificateAuthority's certificate
+      chain, including the current CertificateAuthority's certificate. Ordered
+      such that the root issuer is the final element (consistent with RFC
+      5246). For a self-signed CA, this will only list the current
+      CertificateAuthority's certificate.
     state: Output only. The State for this CertificateAuthority.
+    subordinateConfig: Optional. If this is a subordinate
+      CertificateAuthority, this field will be set with the subordinate
+      configuration, which describes its issuers. This may be updated, but
+      this CertificateAuthority must continue to validate.
     tier: Required. Immutable. The Tier of this CertificateAuthority.
     type: Required. Immutable. The Type of this CertificateAuthority.
     updateTime: Output only. The time at which this CertificateAuthority was
@@ -437,7 +441,7 @@ class CertificateAuthority(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accessUrls = _messages.MessageField('AccessUrls', 1)
-  caCertificateDescription = _messages.MessageField('CertificateDescription', 2)
+  caCertificateDescriptions = _messages.MessageField('CertificateDescription', 2, repeated=True)
   certificatePolicy = _messages.MessageField('CertificateAuthorityPolicy', 3)
   config = _messages.MessageField('CertificateConfig', 4)
   createTime = _messages.StringField(5)
@@ -448,9 +452,9 @@ class CertificateAuthority(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 10)
   lifetime = _messages.StringField(11)
   name = _messages.StringField(12)
-  pemCertificate = _messages.StringField(13)
-  pemIssuerCertChain = _messages.StringField(14, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
+  pemCaCertificates = _messages.StringField(13, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  subordinateConfig = _messages.MessageField('SubordinateConfig', 15)
   tier = _messages.EnumField('TierValueValuesEnum', 16)
   type = _messages.EnumField('TypeValueValuesEnum', 17)
   updateTime = _messages.StringField(18)
@@ -469,6 +473,8 @@ class CertificateAuthorityPolicy(_messages.Message):
     allowedConfigList: Optional. All Certificates issued by the
       CertificateAuthority must match at least one listed
       ReusableConfigWrapper in the list.
+    allowedIssuanceModes: Optional. If specified, then only methods allowed in
+      the IssuanceModes may be used to issue Certificates.
     allowedLocationsAndOrganizations: Optional. If any Subject is specified
       here, then all Certificates issued by the CertificateAuthority must
       match at least one listed Subject. If a Subject has an empty field, any
@@ -488,10 +494,11 @@ class CertificateAuthorityPolicy(_messages.Message):
 
   allowedCommonNames = _messages.StringField(1, repeated=True)
   allowedConfigList = _messages.MessageField('AllowedConfigList', 2)
-  allowedLocationsAndOrganizations = _messages.MessageField('Subject', 3, repeated=True)
-  allowedSans = _messages.MessageField('AllowedSubjectAltNames', 4)
-  maximumLifetime = _messages.StringField(5)
-  overwriteConfigValues = _messages.MessageField('ReusableConfigWrapper', 6)
+  allowedIssuanceModes = _messages.MessageField('IssuanceModes', 3)
+  allowedLocationsAndOrganizations = _messages.MessageField('Subject', 4, repeated=True)
+  allowedSans = _messages.MessageField('AllowedSubjectAltNames', 5)
+  maximumLifetime = _messages.StringField(6)
+  overwriteConfigValues = _messages.MessageField('ReusableConfigWrapper', 7)
 
 
 class CertificateConfig(_messages.Message):
@@ -759,6 +766,21 @@ class FetchCertificateAuthorityCsrResponse(_messages.Message):
   """
 
   pemCsr = _messages.StringField(1)
+
+
+class IssuanceModes(_messages.Message):
+  r"""IssuanceModes specifies the allowed ways in which Certificates may be
+  requested from this CertificateAuthority.
+
+  Fields:
+    allowConfigBasedIssuance: Required. When true, allows callers to create
+      Certificates by specifying a CertificateConfig.
+    allowCsrBasedIssuance: Required. When true, allows callers to create
+      Certificates by specifying a CSR.
+  """
+
+  allowConfigBasedIssuance = _messages.BooleanField(1)
+  allowCsrBasedIssuance = _messages.BooleanField(2)
 
 
 class IssuingOptions(_messages.Message):
@@ -2551,6 +2573,37 @@ class SubjectDescription(_messages.Message):
   notBeforeTime = _messages.StringField(5)
   subject = _messages.MessageField('Subject', 6)
   subjectAltName = _messages.MessageField('SubjectAltNames', 7)
+
+
+class SubordinateConfig(_messages.Message):
+  r"""Describes a subordinate CA's issuers. This is either a resource path to
+  a known issuing CertificateAuthority, or a PEM issuer certificate chain.
+
+  Fields:
+    certificateAuthority: Required. This can refer to a CertificateAuthority
+      in the same project that was used to create a subordinate
+      CertificateAuthority. This field is used for information and usability
+      purposes only. The resource name is in the format
+      `projects/*/locations/*/certificateAuthorities/*`.
+    pemIssuerChain: Required. Contains the PEM certificate chain for the
+      issuers of this CertificateAuthority, but not pem certificate for this
+      CA itself.
+  """
+
+  certificateAuthority = _messages.StringField(1)
+  pemIssuerChain = _messages.MessageField('SubordinateConfigChain', 2)
+
+
+class SubordinateConfigChain(_messages.Message):
+  r"""This message describes a subordinate CA's issuer certificate chain. This
+  wrapper exists for compatibility reasons.
+
+  Fields:
+    pemCertificates: Required. Expected to be in leaf-to-root order according
+      to RFC 5246.
+  """
+
+  pemCertificates = _messages.StringField(1, repeated=True)
 
 
 class TestIamPermissionsRequest(_messages.Message):

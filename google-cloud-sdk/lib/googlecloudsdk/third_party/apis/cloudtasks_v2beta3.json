@@ -203,12 +203,6 @@
         },
         "state": {
           "description": "Output only. The state of the queue. `state` can only be changed by called PauseQueue, ResumeQueue, or uploading [queue.yaml\/xml](https:\/\/cloud.google.com\/appengine\/docs\/python\/config\/queueref). UpdateQueue cannot be used to change `state`.",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "The queue is running. Tasks can be dispatched. If the queue was created using Cloud Tasks and the queue has had no activity (method calls or task dispatches) for 30 days, the queue may take a few minutes to re-activate. Some method calls may return NOT_FOUND and tasks may not be dispatched for a few minutes until the queue has been re-activated.",
-            "Tasks are paused by the user. If the queue is paused then Cloud Tasks will stop delivering tasks from it, but more tasks can still be added to it by the user.",
-            "The queue is disabled. A queue becomes `DISABLED` when [queue.yaml](https:\/\/cloud.google.com\/appengine\/docs\/python\/config\/queueref) or [queue.xml](https:\/\/cloud.google.com\/appengine\/docs\/standard\/java\/config\/queueref) is uploaded which does not contain the queue. You cannot directly disable a queue. When a queue is disabled, tasks can still be added to a queue but the tasks are not dispatched. To permanently delete this queue and all of its tasks, call DeleteQueue."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -234,11 +228,6 @@
         },
         "type": {
           "description": "Immutable. The type of a queue (push or pull). `Queue.type` is an immutable property of the queue that is set at the queue creation time. When left unspecified, the default value of `PUSH` is selected.",
-          "enumDescriptions": [
-            "Default value.",
-            "A pull queue.",
-            "A push queue."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value.",
@@ -582,11 +571,6 @@
         },
         "view": {
           "description": "Output only. The view specifies which subset of the Task has been returned.",
-          "enumDescriptions": [
-            "Unspecified. Defaults to BASIC.",
-            "The basic view omits fields which can be large or can contain sensitive data. This view does not include the body in AppEngineHttpRequest. Bodies are desirable to return only when needed, because they can be large and because of the sensitivity of the data that you choose to store in it.",
-            "All information is returned. Authorization for FULL requires `cloudtasks.tasks.fullView` [Google IAM](https:\/\/cloud.google.com\/iam\/) permission on the Queue resource."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. Defaults to BASIC.",
@@ -608,16 +592,6 @@
       "properties": {
         "httpMethod": {
           "description": "The HTTP method to use for the request. The default is POST. The app's request handler for the task's target URL must be able to handle HTTP requests with this http_method, otherwise the task attempt fails with error code 405 (Method Not Allowed). See [Writing a push task request handler](https:\/\/cloud.google.com\/appengine\/docs\/java\/taskqueue\/push\/creating-handlers#writing_a_push_task_request_handler) and the App Engine documentation for your runtime on [How Requests are Handled](https:\/\/cloud.google.com\/appengine\/docs\/standard\/python3\/how-requests-are-handled).",
-          "enumDescriptions": [
-            "HTTP method unspecified",
-            "HTTP POST",
-            "HTTP GET",
-            "HTTP HEAD",
-            "HTTP PUT",
-            "HTTP DELETE",
-            "HTTP PATCH",
-            "HTTP OPTIONS"
-          ],
           "type": "string",
           "enumDescriptions": [
             "HTTP method unspecified",
@@ -673,16 +647,6 @@
         },
         "httpMethod": {
           "description": "The HTTP method to use for the request. The default is POST.",
-          "enumDescriptions": [
-            "HTTP method unspecified",
-            "HTTP POST",
-            "HTTP GET",
-            "HTTP HEAD",
-            "HTTP PUT",
-            "HTTP DELETE",
-            "HTTP PATCH",
-            "HTTP OPTIONS"
-          ],
           "type": "string",
           "enumDescriptions": [
             "HTTP method unspecified",
@@ -821,11 +785,6 @@
         },
         "responseView": {
           "description": "The response_view specifies which subset of the Task will be returned. By default response_view is BASIC; not all information is retrieved by default because some data, such as payloads, might be desirable to return only when needed because of its large size or because of the sensitivity of data that it contains. Authorization for FULL requires `cloudtasks.tasks.fullView` [Google IAM](https:\/\/cloud.google.com\/iam\/) permission on the Task resource.",
-          "enumDescriptions": [
-            "Unspecified. Defaults to BASIC.",
-            "The basic view omits fields which can be large or can contain sensitive data. This view does not include the body in AppEngineHttpRequest. Bodies are desirable to return only when needed, because they can be large and because of the sensitivity of the data that you choose to store in it.",
-            "All information is returned. Authorization for FULL requires `cloudtasks.tasks.fullView` [Google IAM](https:\/\/cloud.google.com\/iam\/) permission on the Queue resource."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. Defaults to BASIC.",
@@ -847,11 +806,6 @@
       "properties": {
         "responseView": {
           "description": "The response_view specifies which subset of the Task will be returned. By default response_view is BASIC; not all information is retrieved by default because some data, such as payloads, might be desirable to return only when needed because of its large size or because of the sensitivity of data that it contains. Authorization for FULL requires `cloudtasks.tasks.fullView` [Google IAM](https:\/\/cloud.google.com\/iam\/) permission on the Task resource.",
-          "enumDescriptions": [
-            "Unspecified. Defaults to BASIC.",
-            "The basic view omits fields which can be large or can contain sensitive data. This view does not include the body in AppEngineHttpRequest. Bodies are desirable to return only when needed, because they can be large and because of the sensitivity of the data that you choose to store in it.",
-            "All information is returned. Authorization for FULL requires `cloudtasks.tasks.fullView` [Google IAM](https:\/\/cloud.google.com\/iam\/) permission on the Queue resource."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. Defaults to BASIC.",

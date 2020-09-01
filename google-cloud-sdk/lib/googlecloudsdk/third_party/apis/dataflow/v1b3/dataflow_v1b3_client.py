@@ -943,7 +943,7 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id='dataflow.projects.locations.jobs.getExecutionDetails',
         ordered_params=['projectId', 'location', 'jobId'],
         path_params=['jobId', 'location', 'projectId'],
-        query_params=[],
+        query_params=['pageSize', 'pageToken'],
         relative_path='v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}/executionDetails',
         request_field='',
         request_type_name='DataflowProjectsLocationsJobsGetExecutionDetailsRequest',

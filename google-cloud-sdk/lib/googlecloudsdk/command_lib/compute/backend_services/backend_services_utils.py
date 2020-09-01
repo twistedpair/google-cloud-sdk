@@ -273,6 +273,18 @@ def HasCacheKeyPolicyArgsForCreate(args):
           args.IsSpecified('cache_key_query_string_blacklist'))
 
 
+def HasSubsettingArgs(args):
+  """Returns true if request requires a Subsetting message.
+
+  Args:
+    args: The arguments passed to the gcloud command.
+
+  Returns:
+    True if request requires a Subsetting message.
+  """
+  return args.IsSpecified('subsetting_policy')
+
+
 def HasCacheKeyPolicyArgsForUpdate(args):
   """Returns true if update request requires a CacheKeyPolicy message.
 
@@ -314,6 +326,24 @@ def GetCacheKeyPolicy(client, args, backend_service):
   ValidateCacheKeyPolicyArgs(args)
   UpdateCacheKeyPolicy(args, cache_key_policy)
   return cache_key_policy
+
+
+def ApplySubsettingArgs(client, args, backend_service):
+  """Applies the Subsetting argument(s) to the specified backend service.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object.
+  """
+  subsetting_args = {}
+  add_subsetting = HasSubsettingArgs(args)
+  if add_subsetting:
+    subsetting_args[
+        'policy'] = client.messages.Subsetting.PolicyValueValuesEnum(
+            args.subsetting_policy)
+  if subsetting_args:
+    backend_service.subsetting = client.messages.Subsetting(**subsetting_args)
 
 
 def ApplyCdnPolicyArgs(client,

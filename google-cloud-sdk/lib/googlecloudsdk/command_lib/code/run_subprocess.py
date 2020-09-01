@@ -174,7 +174,7 @@ def StreamOutputJson(cmd, timeout_sec, show_stderr=True):
       stdout=subprocess.PIPE,
       stderr=None if show_stderr else subprocess.PIPE)
   with _TimeoutThread(p.kill, timeout_sec):
-    for obj in json_stream.ReadJsonStream(p.stdout, ignore_non_json=False):
+    for obj in json_stream.ReadJsonStream(p.stdout):
       yield obj
     p.wait()
   if p.returncode != 0:

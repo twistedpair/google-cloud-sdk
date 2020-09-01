@@ -133,13 +133,6 @@
       "properties": {
         "category": {
           "description": "Category in which these types of suggestions should appear. Always set.",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -183,12 +176,6 @@
         },
         "priority": {
           "description": "Relative importance of a suggestion. Always set.",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -303,12 +290,6 @@
         },
         "state": {
           "description": "The initial state is IN_PROGRESS. The only legal state transitions are * IN_PROGRESS -> COMPLETE A PRECONDITION_FAILED will be returned if an invalid transition is requested. It is valid to create Step with a state set to COMPLETE. The state can only be set to COMPLETE once. A PRECONDITION_FAILED will be returned if the state is set to COMPLETE multiple times. - In response: always set - In create\/update request: optional",
-          "enumDescriptions": [
-            "Should never be in this state. Exists for proto deserialization backward compatibility.",
-            "The Execution\/Step is created, ready to run, but not running yet. If an Execution\/Step is created without initial state, it is assumed that the Execution\/Step is in PENDING state.",
-            "The Execution\/Step is in progress.",
-            "The finalized, immutable state. Steps\/Executions in this state cannot be modified."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Should never be in this state. Exists for proto deserialization backward compatibility.",
@@ -578,13 +559,6 @@
         },
         "severity": {
           "description": "Severity of issue. Required.",
-          "enumDescriptions": [
-            "Default unspecified severity. Do not use. For versioning only.",
-            "Non critical issue, providing users with some info about the test run.",
-            "Non critical issue, providing users with some hints on improving their testing experience, e.g., suggesting to use Game Loops.",
-            "Potentially critical issue.",
-            "Critical issue."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified severity. Do not use. For versioning only.",
@@ -603,37 +577,6 @@
         },
         "type": {
           "description": "Type of issue. Required.",
-          "enumDescriptions": [
-            "Default unspecified type. Do not use. For versioning only.",
-            "Issue is a fatal exception.",
-            "Issue is a native crash.",
-            "Issue is an ANR crash.",
-            "Issue is an unused robo directive.",
-            "Issue is a suggestion to use orchestrator.",
-            "Issue with finding a launcher activity",
-            "Issue with resolving a user-provided intent to start an activity",
-            "A Robo script was not fully executed.",
-            "A Robo script was fully and successfully executed.",
-            "The APK failed to install.",
-            "The app-under-test has deep links, but none were provided to Robo.",
-            "App accessed a non-sdk Api.",
-            "App accessed a non-sdk Api (new detailed report)",
-            "Robo crawl encountered at least one screen with elements that are not Android UI widgets.",
-            "Robo crawl encountered at least one probable login screen.",
-            "Robo signed in with Google.",
-            "iOS App crashed with an exception.",
-            "iOS App crashed without an exception (e.g. killed).",
-            "Robo crawl involved performing some monkey actions.",
-            "Robo crawl used a Robo directive.",
-            "Robo crawl used a Robo directive to ignore an UI element.",
-            "Robo did not crawl some potentially important parts of the app.",
-            "Robo crawl involved some in-app purchases.",
-            "Crash dialog was detected during the test execution",
-            "UI element depth is greater than the threshold",
-            "Blank screen is found in the Robo crawl",
-            "Overlapping UI elements are found in the Robo crawl",
-            "An uncaught Unity exception was detected (these don't crash apps)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified type. Do not use. For versioning only.",
@@ -700,11 +643,6 @@
         },
         "category": {
           "description": "Category of issue. Required.",
-          "enumDescriptions": [
-            "Default unspecified category. Do not use. For versioning only.",
-            "Issue is not specific to a particular test kind (e.g., a native crash).",
-            "Issue is specific to Robo run."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified category. Do not use. For versioning only.",
@@ -775,14 +713,6 @@
       "properties": {
         "summary": {
           "description": "The simplest way to interpret a result. Required",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "The test matrix run was successful, for instance: - All the test cases passed. - Robo did not detect a crash of the application under test.",
-            "A run failed, for instance: - One or more test case failed. - A test timed out. - The application under test crashed.",
-            "Something unexpected happened. The run should still be considered unsuccessful but this is likely a transient problem and re-running the test might be successful.",
-            "All tests were skipped, for instance: - All device configurations were incompatible.",
-            "A group of steps that were run with the same configuration had both failure and success outcomes."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -857,6 +787,10 @@
         },
         "failedRoboscript": {
           "description": "If the Roboscript failed to complete successfully, e.g., because a Roboscript action or assertion failed or a Roboscript action could not be matched during the entire crawl.",
+          "type": "boolean"
+        },
+        "deviceOutOfMemory": {
+          "description": "If the device ran out of memory during a test, causing the test to crash.",
           "type": "boolean"
         }
       }
@@ -950,14 +884,6 @@
       "properties": {
         "rollUp": {
           "description": "Rollup test status of multiple steps that were run with the same configuration as a group.",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "The test matrix run was successful, for instance: - All the test cases passed. - Robo did not detect a crash of the application under test.",
-            "A run failed, for instance: - One or more test case failed. - A test timed out. - The application under test crashed.",
-            "Something unexpected happened. The run should still be considered unsuccessful but this is likely a transient problem and re-running the test might be successful.",
-            "All tests were skipped, for instance: - All device configurations were incompatible.",
-            "A group of steps that were run with the same configuration had both failure and success outcomes."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -994,14 +920,6 @@
           "type": "string"
         },
         "outcomeSummary": {
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "The test matrix run was successful, for instance: - All the test cases passed. - Robo did not detect a crash of the application under test.",
-            "A run failed, for instance: - One or more test case failed. - A test timed out. - The application under test crashed.",
-            "Something unexpected happened. The run should still be considered unsuccessful but this is likely a transient problem and re-running the test might be successful.",
-            "All tests were skipped, for instance: - All device configurations were incompatible.",
-            "A group of steps that were run with the same configuration had both failure and success outcomes."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -1092,13 +1010,6 @@
         },
         "status": {
           "description": "The status of the test case. Required.",
-          "enumDescriptions": [
-            "Test passed.",
-            "Test failed.",
-            "Test encountered an error",
-            "Test skipped",
-            "Test flaked. Present only for rollup test cases; test cases from steps that were run with the same configuration had both failure and success outcomes."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Test passed.",
@@ -1254,12 +1165,6 @@
         },
         "state": {
           "description": "The initial state is IN_PROGRESS. The only legal state transitions is from IN_PROGRESS to COMPLETE. A PRECONDITION_FAILED will be returned if an invalid transition is requested. The state can only be set to COMPLETE once. A FAILED_PRECONDITION will be returned if the state is set to COMPLETE multiple times. If the state is set to COMPLETE, all the in-progress steps within the execution will be set as COMPLETE. If the outcome of the step is not set, the outcome will be set to INCONCLUSIVE. - In response always set - In create\/update request: optional",
-          "enumDescriptions": [
-            "Should never be in this state. Exists for proto deserialization backward compatibility.",
-            "The Execution\/Step is created, ready to run, but not running yet. If an Execution\/Step is created without initial state, it is assumed that the Execution\/Step is in PENDING state.",
-            "The Execution\/Step is in progress.",
-            "The finalized, immutable state. Steps\/Executions in this state cannot be modified."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Should never be in this state. Exists for proto deserialization backward compatibility.",
@@ -1686,12 +1591,6 @@
       "properties": {
         "state": {
           "description": "State of the resource",
-          "enumDescriptions": [
-            "Should never be in this state. Exists for proto deserialization backward compatibility.",
-            "The Execution\/Step is created, ready to run, but not running yet. If an Execution\/Step is created without initial state, it is assumed that the Execution\/Step is in PENDING state.",
-            "The Execution\/Step is in progress.",
-            "The finalized, immutable state. Steps\/Executions in this state cannot be modified."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Should never be in this state. Exists for proto deserialization backward compatibility.",
@@ -1783,11 +1682,6 @@
         },
         "testPlatform": {
           "description": "The platform of the test history. - In response: always set. Returns the platform of the last execution if unknown.",
-          "enumDescriptions": [
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -1843,13 +1737,6 @@
         },
         "perfMetrics": {
           "description": "Set of resource collected",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -2069,13 +1956,6 @@
       "type": "object",
       "properties": {
         "perfMetricType": {
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -2093,14 +1973,6 @@
           ]
         },
         "perfUnit": {
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -2120,21 +1992,6 @@
           ]
         },
         "sampleSeriesLabel": {
-          "enumDescriptions": [
-            "",
-            "Memory sample series",
-            "",
-            "",
-            "",
-            "CPU sample series",
-            "",
-            "",
-            "Network sample series",
-            "",
-            "",
-            "",
-            "Graphics sample series"
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -2468,15 +2325,6 @@
         },
         "list": {
           "description": "Which list this API appears on",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",

@@ -6,6 +6,76 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 308.0.0 (2020-09-01)
+
+### BigQuery
+
+* Added 'creationTime', 'updateTime' columns for creating reservation.
+* Added 'ignore_idle_slots' flag for managing reservations idle slots behavior.
+* Supported table snapshot and restoration operation.
+* Added manual instruction for Azure connection setup.
+* Removed requirements of specifying destination table and target dataset if the scheduling query using DML or DDL with command `bq query --schedule`.
+
+### Cloud Data Catalog
+
+*   Implemented the following commands for `gcloud data-catalog taxonomies` and `gcloud data-catalog taxonomies policy-tags` in beta.
+    *   list
+    *   describe
+    *   get-iam-policy
+    *   set-iam-policy
+    *   add-iam-policy-bindings
+    *   remove-iam-policy-bindings
+*   Implemented `export` command for `gcloud data-catalog taxonomies` in beta.
+*   Implemented `import` command for `gcloud data-catalog taxonomies` in beta.
+
+### Cloud Dataproc
+
+* Added `--enable-kerberos` flag to `gcloud dataproc clusters create` and
+`gcloud dataproc workflow-templates set-managed-cluster` to allow users to
+enable Kerberos directly without specifying `--kerberos-root-principal-password-uri`
+or `--kerberos-kms-key-uri`.
+
+### Cloud Firestore
+
+* Promoted `gcloud filestore backups` to beta.
+* Added `gcloud beta filestore instances restore` to enable restoring a Cloud
+  Filestore instance from a backup.
+* Promoted  `--source-backup` and `--source-backup-region` flags to beta to
+  specify backup details; these flags should be used in conjunction with
+  `--file-share` flag.
+
+### Cloud Healthcare
+
+* Promoted `gcloud healthcare hl7v2-stores import` to beta.
+
+### Cloud Run
+
+* Fixed issue when updating labels on a cluster with private visibility failed.
+* Added service endpoint visibility to `gcloud run services describe` output
+  for services deployed with `--platform=gke` or `--platform=kubernetes`.
+  Cluster-local services show `Ingress: internal`. Services that are not
+  cluster-local show `Ingress: all`. Use `--connectivity` flag of
+  `gcloud run deploy` or `gcloud run services update` to update service endpoint
+  visibility.
+
+### Cloud Shell
+
+* Promoted `gcloud cloud-shell` command group to beta.
+
+### Compute Engine
+
+* Promoted `compute instances get-screenshot` to GA.
+
+### Notebooks
+
+* Added `gcloud beta notebooks instances upgrade` to upgrade Notebooks instance.
+* Added `gcloud beta notebooks instances is-upgradeable` to verify if Notebooks instance can be upgraded to a newer image.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 307.0.0 (2020-08-25)
 
 ### App Engine

@@ -223,6 +223,20 @@ def AddLoadBalancingScheme(parser, include_l7_ilb=False):
       """)
 
 
+def AddSubsettingPolicy(parser):
+  parser.add_argument(
+      '--subsetting-policy',
+      choices=['NONE', 'CONSISTENT_HASH_SUBSETTING'],
+      type=lambda x: x.replace('-', '_').upper(),
+      default='NONE',
+      help="""\
+      Enum that specifies the algorithm used.
+      Default value is NONE which implies no subsetting is enabled.
+      For Layer 4 Internal Load Balancing,
+      only the algorithm CONSISTENT_HASH_SUBSETTING can be specified.
+      """)
+
+
 def AddConnectionDrainingTimeout(parser):
   parser.add_argument(
       '--connection-draining-timeout',

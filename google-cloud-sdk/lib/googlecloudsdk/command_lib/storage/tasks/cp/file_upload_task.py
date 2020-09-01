@@ -24,32 +24,40 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
-from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core.util import files
 
 
 class FileUploadTask(task.Task):
-  """Represents a command operation triggering a file upload.
+  """Represents a command operation triggering a file upload."""
 
-  Attributes:
-    source_local_path (str): The local filesystem path of the source file to
-        upload.
-    destination_object_reference (resource_reference.ObjectReference): Must
-        contain the full object path. Directories will not be accepted.Existing
-        objects at the this location will be overwritten.
-  """
+  def __init__(self, source_resource, destination_resource):
+    """Initializes task.
 
-  def __init__(self, source_local_path, destination_object_reference):
+    Args:
+      source_resource (resource_reference.FileObjectResource): Must contain
+          local filesystem path to upload object. Does not need to contain
+          metadata.
+      destination_resource (resource_reference.ObjectResource): Must contain
+          the full object path. Directories will not be accepted. Existing
+          objects at the this location will be overwritten.
+    """
     super(FileUploadTask, self).__init__()
-    self.upload_stream = files.FileReader(source_local_path)
-
-    cloud_url = storage_url.CloudUrl.from_url_string(
-        destination_object_reference.storage_url.url_string)
-    self.provider = cloud_url.scheme
-    self.object_metadata = destination_object_reference.metadata_object
+    self._source_resource = source_resource
+    self._destination_resource = destination_resource
 
   def execute(self, callback=None):
-    # TODO(b/162069479): Support all of UploadObject's parameters.
-    api_factory.get_api(self.provider).UploadObject(self.upload_stream,
-                                                    self.object_metadata)
+    upload_stream = files.BinaryFileReader(
+        self._source_resource.storage_url.object_name)
+    provider = cloud_api.ProviderPrefix(
+        self._destination_resource.storage_url.scheme)
+    # TODO(b/166278596) Get an object message if the destination is an
+    #   UnknownResource.
+    object_metadata = self._destination_resource.metadata_object
+
+    try:
+      # TODO(b/162069479): Support all of UploadObject's parameters.
+      api_factory.get_api(provider).UploadObject(upload_stream, object_metadata)
+    finally:
+      upload_stream.close()

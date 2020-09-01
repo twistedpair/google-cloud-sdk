@@ -147,13 +147,6 @@
         },
         "state": {
           "description": "Output only. The current state of the job.",
-          "enumDescriptions": [
-            "The processing state is not specified.",
-            "The job is enqueued and will be picked up for processing soon.",
-            "The job is being processed.",
-            "The job has been completed successfully.",
-            "The job has failed. For additional information, see `failure_reason` and `failure_details`"
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -810,11 +803,6 @@
         },
         "type": {
           "description": "Required. Type of the manifest, can be \"HLS\" or \"DASH\".",
-          "enumDescriptions": [
-            "The manifest type is not specified.",
-            "Create `\"HLS\"` manifest. The corresponding file extension is `\".m3u8\"`.",
-            "Create `\"DASH\"` manifest. The corresponding file extension is `\".mpd\"`."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The manifest type is not specified.",
@@ -1022,11 +1010,6 @@
       "properties": {
         "fadeType": {
           "description": "Required. Type of fade animation: `FADE_IN` or `FADE_OUT`.",
-          "enumDescriptions": [
-            "The fade type is not specified.",
-            "Fade the overlay object into view.",
-            "Fade the overlay object out of view."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The fade type is not specified.",
@@ -1193,7 +1176,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent location to create and process this job. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. The parent location to create and process this job. Format: `projects\/{project}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1221,7 +1204,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. Format: `projects\/{project}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1257,7 +1240,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the job to retrieve. Format: projects\/{project}\/locations\/{location}\/jobs\/{job}",
+                      "description": "Required. The name of the job to retrieve. Format: `projects\/{project}\/locations\/{location}\/jobs\/{job}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
@@ -1282,7 +1265,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the job to delete. Fromat: projects\/{project}\/locations\/{location}\/jobs\/{job}",
+                      "description": "Required. The name of the job to delete. Format: `projects\/{project}\/locations\/{location}\/jobs\/{job}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
@@ -1311,14 +1294,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent location to create this job template. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. The parent location to create this job template. Format: `projects\/{project}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
                     },
                     "jobTemplateId": {
-                      "description": "Required. The ID to use for the job template, which will become the final component of the job template's resource name. This value should be 4-63 characters, and valid characters are \/[a-zA-Z0-9_-_]\/.",
+                      "description": "Required. The ID to use for the job template, which will become the final component of the job template's resource name. This value should be 4-63 characters, and valid characters are `\/[a-zA-Z0-9_-_]\/`.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1344,7 +1327,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent location from which to retrieve the collection of job templates. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. The parent location from which to retrieve the collection of job templates. Format: `projects\/{project}\/locations\/{location}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1380,7 +1363,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the job template to retrieve. Format: projects\/{project}\/locations\/{location}\/jobTemplates\/{job_template}",
+                      "description": "Required. The name of the job template to retrieve. Format: `projects\/{project}\/locations\/{location}\/jobTemplates\/{job_template}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTemplates\/[^\/]+$",
@@ -1405,7 +1388,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the job template to delete. projects\/{project}\/locations\/{location}\/jobTemplates\/{job_template}",
+                      "description": "Required. The name of the job template to delete. `projects\/{project}\/locations\/{location}\/jobTemplates\/{job_template}`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobTemplates\/[^\/]+$",

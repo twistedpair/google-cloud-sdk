@@ -189,22 +189,22 @@ class CancelOperationRequest(_messages.Message):
 
 
 class CloudAuditLoggingFeatureSpec(_messages.Message):
-  r"""Spec for Audit Logging Whitelisting.
+  r"""Spec for Audit Logging Allowlisting.
 
   Fields:
-    whitelistedServiceAccounts: Service account that should be whitelisted to
+    allowlistedServiceAccounts: Service account that should be allowlisted to
       send the audit logs; eg cloudauditlogging@gcp-
       project.iam.gserviceaccount.com. These accounts must already exist, but
       do not need to have any permissions granted to them. The customer's
-      entitlements will be checked prior to whitelisting (i.e. the customer
+      entitlements will be checked prior to allowlisting (i.e. the customer
       must be an Anthos customer.)
   """
 
-  whitelistedServiceAccounts = _messages.StringField(1, repeated=True)
+  allowlistedServiceAccounts = _messages.StringField(1, repeated=True)
 
 
 class CloudAuditLoggingFeatureState(_messages.Message):
-  r"""An empty state for Audit Logging Whitelisting. This is required since
+  r"""An empty state for Audit Logging Allowlisting. This is required since
   FeatureStateDetails requires a state.
   """
 
@@ -1036,10 +1036,6 @@ class GatekeeperDeploymentState(_messages.Message):
   gatekeeperControllerManagerState = _messages.EnumField('GatekeeperControllerManagerStateValueValuesEnum', 2)
 
 
-class GatekeeperState(_messages.Message):
-  r"""States for Constraint Templates and Policy Constraints."""
-
-
 class GitConfig(_messages.Message):
   r"""Git repo configuration for a single cluster.
 
@@ -1838,13 +1834,11 @@ class PolicyControllerState(_messages.Message):
 
   Fields:
     deploymentState: The state about the policy controller installation.
-    gatekeeperState: The state of Gatekeeper policies and constraints.
     version: The version of Gatekeeper Policy Controller deployed.
   """
 
   deploymentState = _messages.MessageField('GatekeeperDeploymentState', 1)
-  gatekeeperState = _messages.MessageField('GatekeeperState', 2)
-  version = _messages.MessageField('PolicyControllerVersion', 3)
+  version = _messages.MessageField('PolicyControllerVersion', 2)
 
 
 class PolicyControllerVersion(_messages.Message):

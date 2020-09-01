@@ -37,6 +37,18 @@ import six
 WILDCARD_REGEX = re.compile(r'[*?\[\]]')
 
 
+def contains_wildcard(url_string):
+  """Checks whether url_string contains a wildcard.
+
+  Args:
+    url_string: URL string to check.
+
+  Returns:
+    bool indicator.
+  """
+  return bool(WILDCARD_REGEX.search(url_string))
+
+
 def get_wildcard_iterator(url_str, all_versions=False):
   """Instantiate a WildcardIterator for the given URL string.
 
@@ -122,21 +134,13 @@ class CloudWildcardIterator(WildcardIterator):
       for bucket_resource in self._fetch_buckets():
         if self._url.is_bucket():
           yield bucket_resource
-        else:  # url is an object or prefix
+        else:  # URL is an object or prefix.
           for obj_resource in self._fetch_objects(
               bucket_resource.storage_url.bucket_name):
             yield obj_resource
 
   def _fetch_objects(self, bucket_name):
-    """Fetch all objects for the given bucket."""
-    if _contains_wildcard(self._url.object_name) or self._all_versions:
-      return self._expand_object_wildcards(bucket_name)
-    else:
-      return [self._client.GetObjectMetadata(
-          bucket_name, self._url.object_name, self._url.generation)]
-
-  def _expand_object_wildcards(self, bucket_name):
-    """Expand object names with wildcard.
+    """If wildcard, expand object names.
 
     Recursively expand each folder with wildcard.
 
@@ -173,11 +177,12 @@ class CloudWildcardIterator(WildcardIterator):
 
       for resource in filtered_resources:
         if wildcard_parts.suffix:
-          # Suffix is present, which indicates that we have more wildcards to
-          # expand. Let's say object_name is a/b1c. Then the new string that
-          # we want to expand will be a/b1c/d/e*f/g.txt
-          names_needing_expansion.append(
-              resource.storage_url.object_name  + wildcard_parts.suffix)
+          if isinstance(resource, resource_reference.PrefixResource):
+            # Suffix is present, which indicates that we have more wildcards to
+            # expand. Let's say object_name is a/b1c. Then the new string that
+            # we want to expand will be a/b1c/d/e*f/g.txt
+            names_needing_expansion.append(
+                resource.storage_url.object_name  + wildcard_parts.suffix)
         else:
           yield resource
 
@@ -209,7 +214,7 @@ class CloudWildcardIterator(WildcardIterator):
     Returns:
       An iterable of BucketResource objects.
     """
-    if _contains_wildcard(self._url.bucket_name):
+    if contains_wildcard(self._url.bucket_name):
       return self._expand_bucket_wildcards(self._url.bucket_name)
     elif self._url.is_bucket():
       return  [self._client.GetBucket(self._url.bucket_name)]
@@ -280,18 +285,6 @@ class CloudWildcardParts:
       suffix = None
 
     return cls(prefix, filter_pattern, delimiter, suffix)
-
-
-def _contains_wildcard(url_string):
-  """Checks whether url_string contains a wildcard.
-
-  Args:
-    url_string: URL string to check.
-
-  Returns:
-    bool indicator.
-  """
-  return bool(WILDCARD_REGEX.search(url_string))
 
 
 def _split_on_wildcard(string):

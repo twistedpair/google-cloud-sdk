@@ -125,12 +125,6 @@
         },
         "status": {
           "description": "The status of an operation. Valid values are: *PENDING* *RUNNING* *DONE* *SQL_OPERATION_STATUS_UNSPECIFIED*",
-          "enumDescriptions": [
-            "The state of the operation is unknown.",
-            "The operation has been queued, but has not started yet.",
-            "The operation is running.",
-            "The operation completed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The state of the operation is unknown.",
@@ -170,43 +164,6 @@
         },
         "operationType": {
           "description": "The type of the operation. Valid values are: *CREATE* *DELETE* *UPDATE* *RESTART* *IMPORT* *EXPORT* *BACKUP_VOLUME* *RESTORE_VOLUME* *CREATE_USER* *DELETE_USER* *CREATE_DATABASE* *DELETE_DATABASE*",
-          "enumDescriptions": [
-            "Unknown operation type.",
-            "Imports data into a Cloud SQL instance.",
-            "Exports data from a Cloud SQL instance to a Cloud Storage bucket.",
-            "Creates a new Cloud SQL instance.",
-            "Updates the settings of a Cloud SQL instance.",
-            "Deletes a Cloud SQL instance.",
-            "Restarts the Cloud SQL instance.",
-            "",
-            "",
-            "Performs instance backup.",
-            "Deletes an instance backup.",
-            "Restores an instance backup.",
-            "Injects a privileged user in mysql for MOB instances.",
-            "Clones a Cloud SQL instance.",
-            "Stops replication on a Cloud SQL read replica instance.",
-            "Starts replication on a Cloud SQL read replica instance.",
-            "Promotes a Cloud SQL replica instance.",
-            "Creates a Cloud SQL replica instance.",
-            "Creates a new user in a Cloud SQL instance.",
-            "Deletes a user from a Cloud SQL instance.",
-            "Updates an existing user in a Cloud SQL instance.",
-            "Creates a database in the Cloud SQL instance.",
-            "Deletes a database in the Cloud SQL instance.",
-            "Updates a database in the Cloud SQL instance.",
-            "Performs failover of an HA-enabled Cloud SQL failover replica.",
-            "Deletes the backup taken by a backup run.",
-            "",
-            "Truncates a general or slow log table in MySQL.",
-            "Demotes the stand-alone instance to be a Cloud SQL read replica for an external database server.",
-            "Indicates that the instance is currently in maintenance. Maintenance typically causes the instance to be unavailable for 1-3 minutes.",
-            "This field is deprecated, and will be removed in future version of API.",
-            "",
-            "Creates clone instance.",
-            "Reschedule maintenance to another time.",
-            "Starts external sync of a Cloud SQL EM replica to an external master."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown operation type.",
@@ -365,12 +322,6 @@
         },
         "fileType": {
           "description": "The file type for the specified uri. *SQL*: The file contains SQL statements. *CSV*: The file contains CSV data.",
-          "enumDescriptions": [
-            "Unknown file type.",
-            "File containing SQL statements.",
-            "File in CSV format.",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown file type.",
@@ -491,12 +442,6 @@
         },
         "fileType": {
           "description": "The file type for the specified uri. *SQL*: The file contains SQL statements. *CSV*: The file contains CSV data.",
-          "enumDescriptions": [
-            "Unknown file type.",
-            "File containing SQL statements.",
-            "File in CSV format.",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown file type.",
@@ -528,18 +473,6 @@
         },
         "status": {
           "description": "The status of this run.",
-          "enumDescriptions": [
-            "The status of the run is unknown.",
-            "The backup operation was enqueued.",
-            "The backup is overdue across a given backup window. Indicates a problem. Example: Long-running operation in progress during the whole window.",
-            "The backup is in progress.",
-            "The backup failed.",
-            "The backup was successful.",
-            "The backup was skipped (without problems) for a given backup window. Example: Instance was idle.",
-            "The backup is about to be deleted.",
-            "The backup deletion failed.",
-            "The backup has been deleted."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The status of the run is unknown.",
@@ -592,11 +525,6 @@
         },
         "type": {
           "description": "The type of this run; can be either \"AUTOMATED\" or \"ON_DEMAND\".",
-          "enumDescriptions": [
-            "This is an unknown BackupRun type.",
-            "The backup schedule automatically triggers a backup.",
-            "The user manually triggers a backup."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown BackupRun type.",
@@ -640,11 +568,6 @@
         },
         "backupKind": {
           "description": "Specifies the kind of backup, PHYSICAL or DEFAULT_SNAPSHOT.",
-          "enumDescriptions": [
-            "This is an unknown BackupKind.",
-            "The snapshot based backups",
-            "Physical backups"
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown BackupKind.",
@@ -816,16 +739,6 @@
         },
         "type": {
           "description": "The type of the flag. Flags are typed to being *BOOLEAN*, *STRING*, *INTEGER* or *NONE*. *NONE* is used for flags which do not take a value, such as *skip_grant_tables*.",
-          "enumDescriptions": [
-            "This is an unknown flag type.",
-            "Boolean type flag.",
-            "String type flag.",
-            "Integer type flag.",
-            "Flag type used for a server startup option.",
-            "Type introduced specically for MySQL TimeZone offset. Accept a string value with the format [-12:59, 13:00].",
-            "Float type flag.",
-            "Comma-separated list of the strings in a SqlFlagType enum."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown flag type.",
@@ -850,22 +763,6 @@
         },
         "appliesTo": {
           "description": "The database version this flag applies to. Can be *MYSQL_5_5*, *MYSQL_5_6*, or *MYSQL_5_7*. *MYSQL_5_7* is applicable only to Second Generation instances.",
-          "enumDescriptions": [
-            "This is an unknown database version.",
-            "The database version is MySQL 5.1.",
-            "The database version is MySQL 5.5.",
-            "The database version is MySQL 5.6.",
-            "The database version is MySQL 5.7.",
-            "The database version is PostgreSQL 9.6.",
-            "The database version is PostgreSQL 11.",
-            "The database version is SQL Server 2017 Standard.",
-            "The database version is SQL Server 2017 Enterprise.",
-            "The database version is SQL Server 2017 Express.",
-            "The database version is SQL Server 2017 Web.",
-            "The database version is PostgreSQL 10.",
-            "The database version is PostgreSQL 12.",
-            "The database version is MySQL 8."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -1131,15 +1028,6 @@
         },
         "state": {
           "description": "The current serving state of the Cloud SQL instance. This can be one of the following. *RUNNABLE*: The instance is running, or is ready to run when accessed. *SUSPENDED*: The instance is not available, for example due to problems with billing. *PENDING_CREATE*: The instance is being created. *MAINTENANCE*: The instance is down for maintenance. *FAILED*: The instance creation failed. *UNKNOWN_STATE*: The state of the instance is unknown.",
-          "enumDescriptions": [
-            "The state of the instance is unknown.",
-            "The instance is running.",
-            "The instance is currently offline, but it may run again in the future.",
-            "The instance is being deleted.",
-            "The instance is being created.",
-            "The instance is down for maintenance.",
-            "The instance failed to be created."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The state of the instance is unknown.",
@@ -1162,22 +1050,6 @@
         },
         "databaseVersion": {
           "description": "The database engine type and version. The *databaseVersion* field cannot be changed after instance creation. MySQL instances: *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default). SQL Server instances: *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.",
-          "enumDescriptions": [
-            "This is an unknown database version.",
-            "The database version is MySQL 5.1.",
-            "The database version is MySQL 5.5.",
-            "The database version is MySQL 5.6.",
-            "The database version is MySQL 5.7.",
-            "The database version is PostgreSQL 9.6.",
-            "The database version is PostgreSQL 11.",
-            "The database version is SQL Server 2017 Standard.",
-            "The database version is SQL Server 2017 Enterprise.",
-            "The database version is SQL Server 2017 Express.",
-            "The database version is SQL Server 2017 Web.",
-            "The database version is PostgreSQL 10.",
-            "The database version is PostgreSQL 12.",
-            "The database version is MySQL 8."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown database version.",
@@ -1268,12 +1140,6 @@
         },
         "instanceType": {
           "description": "The instance type. This can be one of the following. *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from a master. *ON_PREMISES_INSTANCE*: An instance running on the customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL instance configured as a read-replica.",
-          "enumDescriptions": [
-            "This is an unknown Cloud SQL instance type.",
-            "A regular Cloud SQL instance.",
-            "An instance running on the customer's premises that is not managed by Cloud SQL.",
-            "A Cloud SQL instance acting as a read-replica."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown Cloud SQL instance type.",
@@ -1310,12 +1176,6 @@
         },
         "backendType": {
           "description": " *SECOND_GEN*: Cloud SQL database instance. *EXTERNAL*: A database server that is not managed by Google. This property is read-only; use the *tier* property in the *settings* object to determine the database type.",
-          "enumDescriptions": [
-            "This is an unknown backend type for instance.",
-            "V1 speckle instance.",
-            "V2 speckle instance.",
-            "On premises instance."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown backend type for instance.",
@@ -1336,13 +1196,6 @@
         },
         "suspensionReason": {
           "description": "If the instance state is SUSPENDED, the reason for the suspension.",
-          "enumDescriptions": [
-            "This is an unknown suspension reason.",
-            "The instance is suspended due to billing issues (for example:, GCP account issue)",
-            "The instance is suspended due to illegal content (for example:, child pornography, copyrighted material, etc.).",
-            "The instance is causing operational issues (for example:, causing the database to crash).",
-            "The KMS key used by the instance is either revoked or denied access to"
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -1430,11 +1283,6 @@
         },
         "availabilityType": {
           "description": "Availability type. Potential values: *ZONAL*: The instance serves data from only one zone. Outages in that zone affect data accessibility. *REGIONAL*: The instance can serve data from more than one zone in a region (it is highly available). For more information, see Overview of the High Availability Configuration.",
-          "enumDescriptions": [
-            "This is an unknown Availability type.",
-            "Zonal available instance.",
-            "Regional available instance."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown Availability type.",
@@ -1449,11 +1297,6 @@
         },
         "pricingPlan": {
           "description": "The pricing plan for this instance. This can be either *PER_USE* or *PACKAGE*. Only *PER_USE* is supported for Second Generation instances.",
-          "enumDescriptions": [
-            "This is an unknown pricing plan for this instance.",
-            "The instance is billed at a monthly flat rate.",
-            "The instance is billed per usage."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown pricing plan for this instance.",
@@ -1468,11 +1311,6 @@
         },
         "replicationType": {
           "description": "The type of replication this instance uses. This can be either *ASYNCHRONOUS* or *SYNCHRONOUS*. (Deprecated_ This property was only applicable to First Generation instances.",
-          "enumDescriptions": [
-            "This is an unknown replication type for a Cloud SQL instance.",
-            "The synchronous replication mode for First Generation instances. It is the default value.",
-            "The asynchronous replication mode for First Generation instances. It provides a slight performance gain, but if an outage occurs while this option is set to asynchronous, you can lose up to a few seconds of updates to your data."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown replication type for a Cloud SQL instance.",
@@ -1492,12 +1330,6 @@
         },
         "activationPolicy": {
           "description": "The activation policy specifies when the instance is activated; it is applicable only when the instance state is RUNNABLE. Valid values: *ALWAYS*: The instance is on, and remains so even in the absence of connection requests. *NEVER*: The instance is off; it is not activated, even if a connection request arrives.",
-          "enumDescriptions": [
-            "Unknown activation plan.",
-            "The instance is always up and running.",
-            "The instance never starts.",
-            "The instance starts upon receiving requests."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown activation plan.",
@@ -1533,12 +1365,6 @@
         },
         "dataDiskType": {
           "description": "The type of data disk: PD_SSD (default) or PD_HDD. Not used for First Generation instances.",
-          "enumDescriptions": [
-            "This is an unknown data disk type.",
-            "An SSD data disk.",
-            "An HDD data disk.",
-            "This field is deprecated and will be removed from a future version of the API."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown data disk type.",
@@ -1685,11 +1511,6 @@
         },
         "updateTrack": {
           "description": "Maintenance timing setting: *canary* (Earlier) or *stable* (Later). Learn more.",
-          "enumDescriptions": [
-            "This is an unknown maintenance timing preference.",
-            "For instance update that requires a restart, this update track indicates your instance prefer to restart for new version early in maintenance window.",
-            "For instance update that requires a restart, this update track indicates your instance prefer to let Cloud SQL choose the timing of restart (within its Maintenance window, if applicable)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown maintenance timing preference.",
@@ -1765,13 +1586,6 @@
       "properties": {
         "type": {
           "description": "The type of this IP address. A *PRIMARY* address is a public address that can accept incoming connections. A *PRIVATE* address is a private address that can accept incoming connections. An *OUTGOING* address is the source address of connections originating from the instance, if supported.",
-          "enumDescriptions": [
-            "This is an unknown IP address type.",
-            "IP address the customer is supposed to connect to. Usually this is the load balancer's IP address",
-            "Source IP address of the connection a read replica establishes to its external master. This IP address can be allowlisted by the customer in case it has a firewall that filters incoming connection to its on premises master.",
-            "Private IP used when using private IPs and network peering.",
-            "V1 IP of a migrated instance. We want the user to decommission this IP as soon as the migration is complete. Note: V1 instances with V1 ip addresses will be counted as PRIMARY."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is an unknown IP address type.",
@@ -2021,10 +1835,6 @@
       "properties": {
         "code": {
           "description": "Code to uniquely identify the warning type.",
-          "enumDescriptions": [
-            "An unknown or unset warning type from Cloud SQL API.",
-            "Warning when one or more regions are not reachable. The returned result set may be incomplete."
-          ],
           "type": "string",
           "enumDescriptions": [
             "An unknown or unset warning type from Cloud SQL API.",
@@ -2177,12 +1987,6 @@
       "properties": {
         "rescheduleType": {
           "description": "Required. The type of the reschedule.",
-          "enumDescriptions": [
-            "",
-            "If the user wants to schedule the maintenance to happen now.",
-            "If the user wants to use the existing maintenance policy to find the next available window.",
-            "If the user wants to reschedule the maintenance to a specific time."
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -2233,27 +2037,6 @@
         },
         "type": {
           "description": "Identifies the specific error that occurred.",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "Unsupported migration type.",
-            "No pglogical extension installed on databases, applicable for postgres.",
-            "pglogical node already exists on databases, applicable for postgres.",
-            "The value of parameter wal_level is not set to logical.",
-            "The value of parameter shared_preload_libraries does not include pglogical.",
-            "The value of parameter max_replication_slots is not sufficient.",
-            "The value of parameter max_wal_senders is not sufficient.",
-            "The value of parameter max_worker_processes is not sufficient.",
-            "Extensions installed are either not supported or having unsupported versions",
-            "The value of parameter rds.logical_replication is not set to 1.",
-            "The master logging setup doesn't allow EM sync.",
-            "The master database parameter setup doesn't allow EM sync.",
-            "The gtid_mode is not supported, applicable for MySQL."
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -2478,11 +2261,6 @@
         },
         "type": {
           "description": "The user type. It determines the method to authenticate the user during login. The default is the database's built-in user type.",
-          "enumDescriptions": [
-            "The database's built-in user type.",
-            "Cloud IAM user.",
-            "Cloud IAM service account."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The database's built-in user type.",

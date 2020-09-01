@@ -322,10 +322,6 @@
         },
         "memcacheVersion": {
           "description": "The major version of Memcached software. If not provided, latest supported version will be used. Currently the latest supported major version is MEMCACHE_1_5. The minor version will be automatically determined by our system based on the latest supported minor version.",
-          "enumDescriptions": [
-            "",
-            "Memcached 1.5 version."
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -362,13 +358,6 @@
         },
         "state": {
           "description": "Output only. The state of this Memcached instance.",
-          "enumDescriptions": [
-            "State not set.",
-            "Memcached instance is being created.",
-            "Memcached instance has been created and ready to be used.",
-            "Memcached instance is being deleted.",
-            "Memcached instance is going through maintenance, e.g. data plane rollout."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -456,13 +445,6 @@
         },
         "state": {
           "description": "Output only. Current state of the Memcached node.",
-          "enumDescriptions": [
-            "Node state is not set.",
-            "Node is being created.",
-            "Node has been created and ready to be used.",
-            "Node is being deleted.",
-            "Node is being updated."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -503,10 +485,6 @@
       "properties": {
         "code": {
           "description": "A code that correspond to one type of user-facing message.",
-          "enumDescriptions": [
-            "Message Code not set.",
-            "Memcached nodes are distributed unevenly."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Message Code not set.",
@@ -651,15 +629,6 @@
         },
         "state": {
           "description": "Output only. Current lifecycle state of the resource (e.g. if it's being created or ready to use).",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "Instance is being created.",
-            "Instance has been created and is ready to use.",
-            "Instance is being updated.",
-            "Instance is unheathy and under repair.",
-            "Instance is being deleted.",
-            "Instance encountered an error and is in indeterministic state."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

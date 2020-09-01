@@ -201,13 +201,6 @@
         },
         "state": {
           "description": "Output only. The current state of the replay. https:\/\/aip.dev\/216",
-          "enumDescriptions": [
-            "Reserved.",
-            "Replay has not started yet.",
-            "Replay is currently running.",
-            "Replay has successfully completed.",
-            "Replay has finished with an error."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -266,10 +259,6 @@
         },
         "logSource": {
           "description": "The logs to use as input for the replay.",
-          "enumDescriptions": [
-            "An unspecified log source. Replay will default to using RECENT_ACCESSES.",
-            "Retrieves the 5000 most recent accesses from the last 90 days from an internal log source. Note that the log freshness (i.e. the date of the newest log entry) may be up to 7 days stale. In other words, an access attempt that only occurred within the past 7 days may not be captured by the replay."
-          ],
           "type": "string",
           "enumDescriptions": [
             "An unspecified log source. Replay will default to using RECENT_ACCESSES.",
@@ -383,12 +372,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -545,15 +528,6 @@
         },
         "accessChange": {
           "description": "A single value interpretation of the difference between baseline and simulated.",
-          "enumDescriptions": [
-            "Reserved",
-            "The two ExplainedAccesses are equal. This includes the case where both baseline and simulated are UNKNOWN, but the unknown information is equivalent.",
-            "The baseline and simulated accesses are both UNKNOWN, but the unknown information differs between them.",
-            "The baseline access state is GRANTED and the simulated access state is NOT_GRANTED",
-            "The baseline access state is NOT_GRANTED and the simulated access state is GRANTED.",
-            "The baseline access state is GRANTED and the simulated access state is UNKNOWN.",
-            "The baseline state is NOT_GRANTED and the simulated state is UNKNOWN."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved",
@@ -583,13 +557,6 @@
       "properties": {
         "accessState": {
           "description": "The overall access state for the included set of policies.",
-          "enumDescriptions": [
-            "Reserved for future use.",
-            "The member has the permission.",
-            "The member does not have the permission.",
-            "The member has the permission only if a condition expression evaluates to `true`.",
-            "The sender of the request does not have access to all of the policies that Policy Troubleshooter needs to evaluate."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved for future use.",
@@ -629,13 +596,6 @@
       "properties": {
         "access": {
           "description": "Indicates whether _this policy_ provides the specified permission to the specified member for the specified resource. This field does _not_ indicate whether the member actually has the permission for the resource. There might be another policy that overrides this policy. To determine whether the member actually has the permission, use the `access` field in the TroubleshootIamPolicyResponse.",
-          "enumDescriptions": [
-            "Reserved for future use.",
-            "The member has the permission.",
-            "The member does not have the permission.",
-            "The member has the permission only if a condition expression evaluates to `true`.",
-            "The sender of the request does not have access to all of the policies that Policy Troubleshooter needs to evaluate."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved for future use.",
@@ -669,11 +629,6 @@
         },
         "relevance": {
           "description": "The relevance of this policy to the overall determination in the TroubleshootIamPolicyResponse. If the sender of the request does not have access to the policy, this field is omitted.",
-          "enumDescriptions": [
-            "Reserved for future use.",
-            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
-            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved for future use.",
@@ -695,13 +650,6 @@
       "properties": {
         "access": {
           "description": "Required. Indicates whether _this binding_ provides the specified permission to the specified member for the specified resource. This field does _not_ indicate whether the member actually has the permission for the resource. There might be another binding that overrides this binding. To determine whether the member actually has the permission, use the `access` field in the TroubleshootIamPolicyResponse.",
-          "enumDescriptions": [
-            "Reserved for future use.",
-            "The member has the permission.",
-            "The member does not have the permission.",
-            "The member has the permission only if a condition expression evaluates to `true`.",
-            "The sender of the request does not have access to all of the policies that Policy Troubleshooter needs to evaluate."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved for future use.",
@@ -724,12 +672,6 @@
         },
         "rolePermission": {
           "description": "Indicates whether the role granted by this binding contains the specified permission.",
-          "enumDescriptions": [
-            "Reserved for future use.",
-            "The permission is included in the role.",
-            "The permission is not included in the role.",
-            "The sender of the request is not allowed to access the binding."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved for future use.",
@@ -746,11 +688,6 @@
         },
         "rolePermissionRelevance": {
           "description": "The relevance of the permission's existence, or nonexistence, in the role to the overall determination for the entire policy.",
-          "enumDescriptions": [
-            "Reserved for future use.",
-            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
-            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved for future use.",
@@ -772,11 +709,6 @@
         },
         "relevance": {
           "description": "The relevance of this binding to the overall determination for the entire policy.",
-          "enumDescriptions": [
-            "Reserved for future use.",
-            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
-            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved for future use.",
@@ -802,13 +734,6 @@
       "properties": {
         "membership": {
           "description": "Indicates whether the binding includes the member.",
-          "enumDescriptions": [
-            "Reserved for future use.",
-            "The binding includes the member. The member can be included directly or indirectly. For example: * A member is included directly if that member is listed in the binding. * A member is included indirectly if that member is in a Google group or G Suite domain that is listed in the binding.",
-            "The binding does not include the member.",
-            "The sender of the request is not allowed to access the binding.",
-            "The member is an unsupported type. Only Google Accounts and service accounts are supported."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved for future use.",
@@ -827,11 +752,6 @@
         },
         "relevance": {
           "description": "The relevance of the member's status to the overall determination for the binding.",
-          "enumDescriptions": [
-            "Reserved for future use.",
-            "The data point has a limited effect on the result. Changing the data point is unlikely to affect the overall determination.",
-            "The data point has a strong effect on the result. Changing the data point is likely to affect the overall determination."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Reserved for future use.",

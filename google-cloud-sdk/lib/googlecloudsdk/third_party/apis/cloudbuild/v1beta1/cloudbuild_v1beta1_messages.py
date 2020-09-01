@@ -1387,15 +1387,23 @@ class WorkerConfig(_messages.Message):
       [Worker pool config file](https://cloud.google.com/cloud-
       build/docs/custom-workers/worker-pool-config-file). If left blank, Cloud
       Build will use `n1-standard-1`.
+    noExternalIp: If true, workers are created without any public address,
+      which prevents network egress to public IPs.
   """
 
   diskSizeGb = _messages.IntegerField(1)
   machineType = _messages.StringField(2)
+  noExternalIp = _messages.BooleanField(3)
 
 
 class WorkerPool(_messages.Message):
-  r"""If your build needs access to resources on a private network, create and
-  use a `WorkerPool` to run your builds. Custom `WorkerPool`s give your builds
+  r"""Configuration for a `WorkerPool` to run the builds. Workers provide a
+  build environment where Cloud Build runs your builds. Cloud Build owns and
+  maintains a pool of workers for general use. By default, when you submit a
+  build, Cloud Build uses one of the workers from this pool. Builds that run
+  in the default worker pool have access to the public internet. If your build
+  needs access to resources on a private network, create and use a
+  `WorkerPool` to run your builds. Custom `WorkerPool`s give your builds
   access to any single VPC network that you administer, including any on-prem
   resources connected to that VPC network. For an overview of custom worker
   pools, see [Custom workers overview](https://cloud.google.com/cloud-
@@ -1420,7 +1428,8 @@ class WorkerPool(_messages.Message):
       `WorkerPool` was received.
     vpcscEnabled: Immutable. If true, the worker pool is created with a VPC-SC
       compatible configuration. Users should set to true if the worker pool
-      project is part of a secured VPC-SC perimeter.
+      project is part of a secured VPC-SC perimeter. DEPRECATED: Use
+      no_public_address in the WorkerConfig instead.
     workerConfig: Worker configuration for the `WorkerPool`.
   """
 

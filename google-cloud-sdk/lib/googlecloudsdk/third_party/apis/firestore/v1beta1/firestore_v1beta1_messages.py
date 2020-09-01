@@ -475,15 +475,23 @@ class FieldFilter(_messages.Message):
       GREATER_THAN_OR_EQUAL: The given `field` is greater than or equal to the
         given `value`. Requires: * That `field` come first in `order_by`.
       EQUAL: The given `field` is equal to the given `value`.
+      NOT_EQUAL: The given `field` is not equal to the given `value`.
+        Requires: * No other `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or
+        `IS_NOT_NAN`. * That `field` comes first in the `order_by`.
       ARRAY_CONTAINS: The given `field` is an array that contains the given
         `value`.
       IN: The given `field` is equal to at least one value in the given array.
         Requires: * That `value` is a non-empty `ArrayValue` with at most 10
-        values. * No other `IN` or `ARRAY_CONTAINS_ANY`.
+        values. * No other `IN` or `ARRAY_CONTAINS_ANY` or `NOT_IN`.
       ARRAY_CONTAINS_ANY: The given `field` is an array that contains any of
         the values in the given array. Requires: * That `value` is a non-empty
         `ArrayValue` with at most 10 values. * No other `IN` or
-        `ARRAY_CONTAINS_ANY`.
+        `ARRAY_CONTAINS_ANY` or `NOT_IN`.
+      NOT_IN: The value of the `field` is not in the given array. Requires: *
+        That `value` is a non-empty `ArrayValue` with at most 10 values. * No
+        other `IN`, `ARRAY_CONTAINS_ANY`, `NOT_IN`, `NOT_EQUAL`,
+        `IS_NOT_NULL`, or `IS_NOT_NAN`. * That `field` comes first in the
+        `order_by`.
     """
     OPERATOR_UNSPECIFIED = 0
     LESS_THAN = 1
@@ -491,9 +499,11 @@ class FieldFilter(_messages.Message):
     GREATER_THAN = 3
     GREATER_THAN_OR_EQUAL = 4
     EQUAL = 5
-    ARRAY_CONTAINS = 6
-    IN = 7
-    ARRAY_CONTAINS_ANY = 8
+    NOT_EQUAL = 6
+    ARRAY_CONTAINS = 7
+    IN = 8
+    ARRAY_CONTAINS_ANY = 9
+    NOT_IN = 10
 
   field = _messages.MessageField('FieldReference', 1)
   op = _messages.EnumField('OpValueValuesEnum', 2)
@@ -1979,10 +1989,18 @@ class UnaryFilter(_messages.Message):
       OPERATOR_UNSPECIFIED: Unspecified. This value must not be used.
       IS_NAN: The given `field` is equal to `NaN`.
       IS_NULL: The given `field` is equal to `NULL`.
+      IS_NOT_NAN: The given `field` is not equal to `NaN`. Requires: * No
+        other `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`. * That
+        `field` comes first in the `order_by`.
+      IS_NOT_NULL: The given `field` is not equal to `NULL`. Requires: * A
+        single `NOT_EQUAL`, `NOT_IN`, `IS_NOT_NULL`, or `IS_NOT_NAN`. * That
+        `field` comes first in the `order_by`.
     """
     OPERATOR_UNSPECIFIED = 0
     IS_NAN = 1
     IS_NULL = 2
+    IS_NOT_NAN = 3
+    IS_NOT_NULL = 4
 
   field = _messages.MessageField('FieldReference', 1)
   op = _messages.EnumField('OpValueValuesEnum', 2)

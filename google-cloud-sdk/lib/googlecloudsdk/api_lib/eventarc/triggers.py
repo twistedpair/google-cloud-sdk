@@ -21,10 +21,48 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 
 _API_NAME = 'eventarc'
 _API_VERSION = 'v1beta1'
+
+
+class NoFieldsSpecifiedError(exceptions.Error):
+  """Error when no fields were specified for a Patch operation."""
+
+
+def BuildUpdateMask(matching_criteria, service_account, destination_run_service,
+                    destination_run_path, destination_run_region):
+  """Builds an update mask for updating a trigger.
+
+  Args:
+    matching_criteria: bool, whether to update the matching criteria.
+    service_account: bool, whether to update the service account.
+    destination_run_service: bool, whether to update the destination service.
+    destination_run_path: bool, whether to update the destination path.
+    destination_run_region: bool, whether to update the destination region.
+
+  Returns:
+    The update mask as a string.
+
+  Raises:
+    NoFieldsSpecifiedError: No fields are being updated.
+  """
+  update_mask = []
+  if destination_run_path:
+    update_mask.append('destination.cloudRunService.path')
+  if destination_run_region:
+    update_mask.append('destination.cloudRunService.region')
+  if destination_run_service:
+    update_mask.append('destination.cloudRunService.service')
+  if matching_criteria:
+    update_mask.append('matchingCriteria')
+  if service_account:
+    update_mask.append('serviceAccount')
+  if not update_mask:
+    raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+  return ','.join(update_mask)
 
 
 def GetTriggerURI(resource):
@@ -43,18 +81,19 @@ class TriggersClient(object):
     self._operation_service = client.projects_locations_operations
 
   def _BuildTriggerMessage(self, trigger_ref, matching_criteria,
-                           service_account_ref, destination_run_service_ref,
-                           destination_run_path):
+                           service_account_ref, destination_run_service,
+                           destination_run_path, destination_run_region):
     """Builds a Trigger message with the given data."""
-    matching_criteria_messages = [
+    matching_criteria_messages = [] if matching_criteria is None else [
         self._messages.MatchingCriteria(attribute=key, value=value)
         for key, value in matching_criteria.items()
     ]
     service_account_name = service_account_ref.RelativeName(
     ) if service_account_ref else None
     service_message = self._messages.CloudRunService(
-        service=destination_run_service_ref.RelativeName(),
-        path=destination_run_path)
+        service=destination_run_service,
+        path=destination_run_path,
+        region=destination_run_region)
     destination_message = self._messages.Destination(
         cloudRunService=service_message)
     return self._messages.Trigger(
@@ -64,23 +103,26 @@ class TriggersClient(object):
         destination=destination_message)
 
   def Create(self, trigger_ref, matching_criteria, service_account_ref,
-             destination_run_service_ref, destination_run_path):
+             destination_run_service, destination_run_path,
+             destination_run_region):
     """Creates a new Trigger.
 
     Args:
       trigger_ref: Resource, the Trigger to create.
       matching_criteria: dict, the Trigger's matching criteria.
       service_account_ref: Resource or None, the Trigger's service account.
-      destination_run_service_ref: Resource, the Trigger's destination service.
-      destination_run_path: str or None, the Trigger's destination path.
+      destination_run_service: str, the Trigger's destination Cloud Run service.
+      destination_run_path: str or None, the path on the destination service.
+      destination_run_region: str or None, the destination service's region.
 
     Returns:
       A long-running operation for create.
     """
     trigger_message = self._BuildTriggerMessage(trigger_ref, matching_criteria,
                                                 service_account_ref,
-                                                destination_run_service_ref,
-                                                destination_run_path)
+                                                destination_run_service,
+                                                destination_run_path,
+                                                destination_run_region)
     create_req = self._messages.EventarcProjectsLocationsTriggersCreateRequest(
         parent=trigger_ref.Parent().RelativeName(),
         trigger=trigger_message,
@@ -134,6 +176,34 @@ class TriggersClient(object):
         batch_size=page_size,
         limit=limit,
         batch_size_attribute='pageSize')
+
+  def Patch(self, trigger_ref, matching_criteria, service_account_ref,
+            destination_run_service, destination_run_path,
+            destination_run_region, update_mask):
+    """Updates a Trigger.
+
+    Args:
+      trigger_ref: Resource, the Trigger to update.
+      matching_criteria: dict or None, the updated matching criteria.
+      service_account_ref: Resource or None, the updated service account.
+      destination_run_service: str or None, the updated destination service.
+      destination_run_path: str or None, the updated destination path.
+      destination_run_region: str or None, the updated destination region.
+      update_mask: str, a comma-separated list of Trigger fields to update.
+
+    Returns:
+      A long-running operation for update.
+    """
+    trigger_message = self._BuildTriggerMessage(trigger_ref, matching_criteria,
+                                                service_account_ref,
+                                                destination_run_service,
+                                                destination_run_path,
+                                                destination_run_region)
+    patch_req = self._messages.EventarcProjectsLocationsTriggersPatchRequest(
+        name=trigger_ref.RelativeName(),
+        trigger=trigger_message,
+        updateMask=update_mask)
+    return self._service.Patch(patch_req)
 
   def WaitFor(self, operation, delete=False):
     """Waits until the given long-running operation is complete.

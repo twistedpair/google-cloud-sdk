@@ -214,13 +214,6 @@
         },
         "regions": {
           "description": "List of regions to create the `WorkerPool`. Regions can't be empty. If Cloud Build adds a new GCP region in the future, the existing `WorkerPool` will not be enabled in the new region automatically; you must add the new region to the `regions` field to enable the `WorkerPool` in that region.",
-          "enumDescriptions": [
-            "no region",
-            "us-central1 region",
-            "us-west1 region",
-            "us-east1 region",
-            "us-east4 region"
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -257,13 +250,6 @@
         },
         "status": {
           "description": "Output only. WorkerPool Status.",
-          "enumDescriptions": [
-            "Status of the `WorkerPool` is unknown.",
-            "`WorkerPool` is being created.",
-            "`WorkerPool` is running.",
-            "`WorkerPool` is being deleted: cancelling builds and draining workers.",
-            "`WorkerPool` is deleted."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Status of the `WorkerPool` is unknown.",
@@ -367,17 +353,6 @@
         },
         "status": {
           "description": "Output only. Status of the build.",
-          "enumDescriptions": [
-            "Status of the build is unknown.",
-            "Build or step is queued; work has not yet begun.",
-            "Build or step is being executed.",
-            "Build or step finished successfully.",
-            "Build or step failed to complete successfully.",
-            "Build or step failed due to an internal cause.",
-            "Build or step took longer than was allowed.",
-            "Build or step was canceled by a user.",
-            "Build was enqueued for longer than the value of `queue_ttl`."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -671,17 +646,6 @@
         },
         "status": {
           "description": "Output only. Status of the build step. At this time, build step status is only updated on build completion; step status is not updated in real-time as the build progresses.",
-          "enumDescriptions": [
-            "Status of the build is unknown.",
-            "Build or step is queued; work has not yet begun.",
-            "Build or step is being executed.",
-            "Build or step finished successfully.",
-            "Build or step failed to complete successfully.",
-            "Build or step failed due to an internal cause.",
-            "Build or step took longer than was allowed.",
-            "Build or step was canceled by a user.",
-            "Build was enqueued for longer than the value of `queue_ttl`."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -888,11 +852,6 @@
       "properties": {
         "type": {
           "description": "The type of hash that was performed.",
-          "enumDescriptions": [
-            "No hash requested.",
-            "Use a sha256 hash.",
-            "Use a md5 hash."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No hash requested.",
@@ -919,11 +878,6 @@
       "properties": {
         "sourceProvenanceHash": {
           "description": "Requested hash for SourceProvenance.",
-          "enumDescriptions": [
-            "No hash requested.",
-            "Use a sha256 hash.",
-            "Use a md5 hash."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -941,10 +895,6 @@
         },
         "requestedVerifyOption": {
           "description": "Requested verifiability options.",
-          "enumDescriptions": [
-            "Not a verifiable build. (default)",
-            "Verified build."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not a verifiable build. (default)",
@@ -957,11 +907,6 @@
         },
         "machineType": {
           "description": "Compute Engine machine type on which to run the build.",
-          "enumDescriptions": [
-            "Standard machine type.",
-            "Highcpu machine with 8 CPUs.",
-            "Highcpu machine with 32 CPUs."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Standard machine type.",
@@ -981,10 +926,6 @@
         },
         "substitutionOption": {
           "description": "Option to specify behavior when there is an error in the substitution checks. NOTE: this is always set to ALLOW_LOOSE for triggered builds and cannot be overridden in the build configuration file.",
-          "enumDescriptions": [
-            "Fails the build if error in substitutions checks, like missing a substitution in the template or in the map.",
-            "Do not fail the build if error in substitutions checks."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Fails the build if error in substitutions checks, like missing a substitution in the template or in the map.",
@@ -1001,11 +942,6 @@
         },
         "logStreamingOption": {
           "description": "Option to define build log streaming behavior to Google Cloud Storage.",
-          "enumDescriptions": [
-            "Service may automatically determine build log streaming behavior.",
-            "Build logs should be streamed to Google Cloud Storage.",
-            "Build logs should not be streamed to Google Cloud Storage; they will be written when the build is completed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Service may automatically determine build log streaming behavior.",
@@ -1024,14 +960,6 @@
         },
         "logging": {
           "description": "Option to specify the logging mode, which determines if and where build logs are stored.",
-          "enumDescriptions": [
-            "The service determines the logging mode. The default is `LEGACY`. Do not rely on the default logging behavior as it may change in the future.",
-            "Cloud Logging and Cloud Storage logging are enabled.",
-            "Only Cloud Storage logging is enabled.",
-            "This option is the same as CLOUD_LOGGING_ONLY.",
-            "Only Cloud Logging is enabled. Note that logs for both the Cloud Console UI and Cloud SDK are based on Cloud Storage logs, so neither will provide logs if this option is chosen.",
-            "Turn off all logging. No build logs will be captured. Next ID: 6"
-          ],
           "type": "string",
           "enumDescriptions": [
             "The service determines the logging mode. The default is `LEGACY`. Do not rely on the default logging behavior as it may change in the future.",

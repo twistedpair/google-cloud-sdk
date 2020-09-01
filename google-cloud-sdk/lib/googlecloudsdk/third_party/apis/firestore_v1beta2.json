@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta2",
-  "revision": "20200814",
+  "revision": "20200821",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -124,11 +124,6 @@
         },
         "queryScope": {
           "description": "Indexes with a collection query scope specified allow queries against a collection that is the child of a specific document, specified at query time, and that has the same collection id. Indexes with a collection group query scope specified allow queries against all collections descended from a specific document, specified at query time, and that have the same collection id as this index.",
-          "enumDescriptions": [
-            "The query scope is unspecified. Not a valid option.",
-            "Indexes with a collection query scope specified allow queries against a collection that is the child of a specific document, specified at query time, and that has the collection id specified by the index.",
-            "Indexes with a collection group query scope specified allow queries against all collections that has the collection id specified by the index."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The query scope is unspecified. Not a valid option.",
@@ -150,12 +145,6 @@
         },
         "state": {
           "description": "Output only. The serving state of the index.",
-          "enumDescriptions": [
-            "The state is unspecified.",
-            "The index is being created. There is an active long-running operation for the index. The index is updated when writing a document. Some index data may exist.",
-            "The index is ready to be used. The index is updated when writing a document. The index is fully populated from all stored documents it applies to.",
-            "The index was being created, but something went wrong. There is no active long-running operation for the index, and the most recently finished long-running operation failed. The index is not updated when writing a document. Some index data may exist. Use the google.longrunning.Operations API to determine why the operation that last attempted to create this index failed, then re-create the index."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The state is unspecified.",
@@ -183,11 +172,6 @@
         },
         "order": {
           "description": "Indicates that this field supports ordering by the specified order or comparing using =, <, <=, >, >=.",
-          "enumDescriptions": [
-            "The ordering is unspecified. Not a valid option.",
-            "The field is ordered by ascending field value.",
-            "The field is ordered by descending field value."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The ordering is unspecified. Not a valid option.",
@@ -202,10 +186,6 @@
         },
         "arrayConfig": {
           "description": "Indicates that this field supports operations on `array_value`s.",
-          "enumDescriptions": [
-            "The index does not support additional array queries.",
-            "The index supports array containment queries."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The index does not support additional array queries.",
@@ -428,16 +408,6 @@
         },
         "state": {
           "description": "The state of the operation.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Request is being prepared for processing.",
-            "Request is actively being processed.",
-            "Request is in the process of being cancelled after user called google.longrunning.Operations.CancelOperation on the operation.",
-            "Request has been processed and is in its finalization stage.",
-            "Request has completed successfully.",
-            "Request has finished being processed, but encountered an error.",
-            "Request has finished being cancelled after user called google.longrunning.Operations.CancelOperation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -477,11 +447,6 @@
       "properties": {
         "changeType": {
           "description": "Specifies how the index is changing.",
-          "enumDescriptions": [
-            "The type of change is not specified or known.",
-            "The single field index is being added.",
-            "The single field index is being removed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The type of change is not specified or known.",
@@ -538,16 +503,6 @@
         },
         "state": {
           "description": "The state of the operation.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Request is being prepared for processing.",
-            "Request is actively being processed.",
-            "Request is in the process of being cancelled after user called google.longrunning.Operations.CancelOperation on the operation.",
-            "Request has been processed and is in its finalization stage.",
-            "Request has completed successfully.",
-            "Request has finished being processed, but encountered an error.",
-            "Request has finished being cancelled after user called google.longrunning.Operations.CancelOperation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -597,16 +552,6 @@
         },
         "operationState": {
           "description": "The state of the export operation.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Request is being prepared for processing.",
-            "Request is actively being processed.",
-            "Request is in the process of being cancelled after user called google.longrunning.Operations.CancelOperation on the operation.",
-            "Request has been processed and is in its finalization stage.",
-            "Request has completed successfully.",
-            "Request has finished being processed, but encountered an error.",
-            "Request has finished being cancelled after user called google.longrunning.Operations.CancelOperation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -667,16 +612,6 @@
         },
         "operationState": {
           "description": "The state of the import operation.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Request is being prepared for processing.",
-            "Request is actively being processed.",
-            "Request is in the process of being cancelled after user called google.longrunning.Operations.CancelOperation on the operation.",
-            "Request has been processed and is in its finalization stage.",
-            "Request has completed successfully.",
-            "Request has finished being processed, but encountered an error.",
-            "Request has finished being cancelled after user called google.longrunning.Operations.CancelOperation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",

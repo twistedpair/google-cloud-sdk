@@ -66,9 +66,7 @@ def Predict(model_or_version_ref, instances, signature_name=None):
     raise InstancesEncodeError('Instances cannot be JSON encoded, probably '
                                'because the input is not utf-8 encoded.')
 
-  # Workaround since current gcloud sdk cannot handle the httpbody properly.
-  # TODO(b/31403673): use MlV1.ProjectsService.Predict once b/31403673
-  # is fixed.
+  # Workaround since gcloud cannot handle HttpBody properly, see b/31403673
   # TODO(b/77278279): Decide whether we should always set this or not.
   encoding = None if six.PY2 else 'utf-8'
   response, response_body = http.Http(response_encoding=encoding).request(
@@ -109,9 +107,7 @@ def Explain(model_or_version_ref, instances):
     raise InstancesEncodeError('Instances cannot be JSON encoded, probably '
                                'because the input is not utf-8 encoded.')
 
-  # Workaround since current gcloud sdk cannot handle the httpbody properly.
-  # TODO(b/31403673): use MlV1.ProjectsService.Predict once b/31403673
-  # is fixed.
+  # Workaround since gcloud cannot handle HttpBody properly, see b/31403673
   # TODO(b/77278279): Decide whether we should always set this or not.
   encoding = None if six.PY2 else 'utf-8'
   response, response_body = http.Http(response_encoding=encoding).request(

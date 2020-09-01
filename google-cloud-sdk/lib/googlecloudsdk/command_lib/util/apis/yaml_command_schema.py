@@ -438,6 +438,7 @@ class Input(object):
 
   def __init__(self, command_type, data):
     self.confirmation_prompt = data.get('confirmation_prompt')
+    self.default_continue = data.get('default_continue', True)
     if not self.confirmation_prompt and command_type is CommandType.DELETE:
       self.confirmation_prompt = (
           'You are about to delete {{{}}} [{{{}}}]'.format(

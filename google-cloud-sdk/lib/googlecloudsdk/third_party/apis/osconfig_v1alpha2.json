@@ -210,12 +210,6 @@
       "properties": {
         "rebootConfig": {
           "description": "Optional. Post-patch reboot settings.",
-          "enumDescriptions": [
-            "The default behavior is DEFAULT.",
-            "The agent will decide if a reboot is necessary by checking well known signals such as registry keys on Windows or `\/var\/run\/reboot-required` on APT based systems. On RPM based systems a set of core system package install times will be compared with system boot time.",
-            "Always reboot the machine after the update has completed.",
-            "Never reboot the machine after the update has completed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The default behavior is DEFAULT.",
@@ -282,11 +276,6 @@
       "properties": {
         "type": {
           "description": "Optional. By changing the type to DIST, the patching will be performed using `apt-get dist-upgrade` instead.",
-          "enumDescriptions": [
-            "By default, upgrade will be performed.",
-            "Runs `apt-get dist-upgrade`.",
-            "Runs `apt-get upgrade`."
-          ],
           "type": "string",
           "enumDescriptions": [
             "By default, upgrade will be performed.",
@@ -401,18 +390,6 @@
       "properties": {
         "classifications": {
           "description": "Only apply updates of these windows update classifications. If empty, all updates will be applied.",
-          "enumDescriptions": [
-            "Invalid. If classifications are included, they must be specified.",
-            "\"A widely released fix for a specific problem that addresses a critical, non-security-related bug.\" [1]",
-            "\"A widely released fix for a product-specific, security-related vulnerability. Security vulnerabilities are rated by their severity. The severity rating is indicated in the Microsoft security bulletin as critical, important, moderate, or low.\" [1]",
-            "\"A widely released and frequent software update that contains additions to a product\u2019s definition database. Definition databases are often used to detect objects that have specific attributes, such as malicious code, phishing websites, or junk mail.\" [1]",
-            "\"Software that controls the input and output of a device.\" [1]",
-            "\"New product functionality that is first distributed outside the context of a product release and that is typically included in the next full product release.\" [1]",
-            "\"A tested, cumulative set of all hotfixes, security updates, critical updates, and updates. Additionally, service packs may contain additional fixes for problems that are found internally since the release of the product. Service packs my also contain a limited number of customer-requested design changes or features.\" [1]",
-            "\"A utility or feature that helps complete a task or set of tasks.\" [1]",
-            "\"A tested, cumulative set of hotfixes, security updates, critical updates, and updates that are packaged together for easy deployment. A rollup generally targets a specific area, such as security, or a component of a product, such as Internet Information Services (IIS).\" [1]",
-            "\"A widely released fix for a specific problem. An update addresses a noncritical, non-security-related bug.\" [1]"
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -496,11 +473,6 @@
         },
         "interpreter": {
           "description": "The script interpreter to use to run the script. If no interpreter is specified the script will be executed directly, which will likely only succeed for scripts with shebang lines. [Wikipedia shebang](https:\/\/en.wikipedia.org\/wiki\/Shebang_(Unix)).",
-          "enumDescriptions": [
-            "Default value.",
-            "Indicates that the script will be run with \/bin\/sh on Linux and cmd on windows.",
-            "Indicates that the file will be run with PowerShell."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value.",
@@ -542,11 +514,6 @@
       "properties": {
         "mode": {
           "description": "Mode of the patch rollout.",
-          "enumDescriptions": [
-            "Mode must be specified.",
-            "Patches are applied one zone at a time. The patch job begins in the region with the lowest number of targeted VMs. Within the region, patching begins in the zone with the lowest number of targeted VMs. If multiple regions (or zones within a region) have the same number of targeted VMs, a tie-breaker is achieved by sorting the regions or zones in alphabetical order.",
-            "Patches are applied to VMs in all zones at the same time."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Mode must be specified.",
@@ -614,16 +581,6 @@
         },
         "state": {
           "description": "Output only. The current state of the PatchJob.",
-          "enumDescriptions": [
-            "State must be specified.",
-            "The patch job was successfully initiated.",
-            "The patch job is looking up instances to run the patch on.",
-            "Instances are being patched.",
-            "Patch job completed successfully.",
-            "Patch job completed but there were errors.",
-            "The patch job was canceled.",
-            "The patch job has timed out."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -814,24 +771,6 @@
         },
         "state": {
           "description": "State of current patch execution on the instance.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "The instance has not been notified yet.",
-            "Instance is inactive and cannot be patched.",
-            "The instance has been notified that it should patch.",
-            "The instance has started the patching process.",
-            "The instance is downloading patches.",
-            "The instance is applying patches.",
-            "The instance is rebooting.",
-            "The instance has completed applying patches.",
-            "The instance has completed applying patches but a reboot is required.",
-            "The instance has failed to apply the patch.",
-            "The instance acked the notification and will start shortly.",
-            "The instance exceeded the time out while applying the patch.",
-            "The instance is running the pre-patch step.",
-            "The instance is running the post-patch step.",
-            "The service could not detect the presence of the agent. Check to ensure that the agent is installed, running, and able to communicate with the service."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -900,11 +839,6 @@
         },
         "patchJobState": {
           "description": "State of the overall patch. If the patch is no longer active, the agent should not begin a new patch step.",
-          "enumDescriptions": [
-            "Unspecified is invalid.",
-            "The patch job is running. Instances continue to run patch job steps.",
-            "The patch job is complete."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified is invalid.",
@@ -956,24 +890,6 @@
         },
         "state": {
           "description": "Current state of instance patch.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "The instance has not been notified yet.",
-            "Instance is inactive and cannot be patched.",
-            "The instance has been notified that it should patch.",
-            "The instance has started the patching process.",
-            "The instance is downloading patches.",
-            "The instance is applying patches.",
-            "The instance is rebooting.",
-            "The instance has completed applying patches.",
-            "The instance has completed applying patches but a reboot is required.",
-            "The instance has failed to apply the patch.",
-            "The instance acked the notification and will start shortly.",
-            "The instance exceeded the time out while applying the patch.",
-            "The instance is running the pre-patch step.",
-            "The instance is running the post-patch step.",
-            "The service could not detect the presence of the agent. Check to ensure that the agent is installed, running, and able to communicate with the service."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -1118,11 +1034,6 @@
         },
         "frequency": {
           "description": "Required. The frequency unit of this recurring schedule.",
-          "enumDescriptions": [
-            "Invalid. A frequency must be specified.",
-            "Indicates that the recurrence frequency should be expressed in terms of weeks.",
-            "Indicates that the recurrence frequency should be expressed in terms of months."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid. A frequency must be specified.",
@@ -1206,16 +1117,6 @@
       "properties": {
         "dayOfWeek": {
           "description": "Required. Day of the week.",
-          "enumDescriptions": [
-            "The day of the week is unspecified.",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday"
-          ],
           "type": "string",
           "enumDescriptions": [
             "The day of the week is unspecified.",
@@ -1268,16 +1169,6 @@
         },
         "dayOfWeek": {
           "description": "Required. A day of the week.",
-          "enumDescriptions": [
-            "The day of the week is unspecified.",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday"
-          ],
           "type": "string",
           "enumDescriptions": [
             "The day of the week is unspecified.",
@@ -1462,12 +1353,6 @@
         },
         "desiredState": {
           "description": "Optional. The desired_state the agent should maintain for this package. The default is to ensure the package is installed.",
-          "enumDescriptions": [
-            "The default is to ensure the package is installed.",
-            "The agent will ensure that the package is installed.",
-            "The agent will ensure that the package is installed and will periodically check for and install any updates.",
-            "The agent will ensure that the package is not installed and uninstall it if detected."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The default is to ensure the package is installed.",
@@ -1484,14 +1369,6 @@
         },
         "manager": {
           "description": "Optional. Type of package manager that can be used to install this package. If a system does not have the package manager, the package will not be installed\/removed and there is no error. By default or when specifying ANY, the agent will attempt to install and remove this package using the default package manager. This is helpful when creating a policy that applies to different types of systems. The default behavior is ANY.",
-          "enumDescriptions": [
-            "The default behavior is ANY.",
-            "Apply this package config using the default system package manager.",
-            "Apply this package config only if Apt is available on the system.",
-            "Apply this package config only if Yum is available on the system.",
-            "Apply this package config only if Zypper is available on the system.",
-            "Apply this package config only if GooGet is available on the system."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The default behavior is ANY.",
@@ -1542,11 +1419,6 @@
       "properties": {
         "archiveType": {
           "description": "Type of archive files in this repository. The default behavior is DEB.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Deb indicates that the archive contains binary files.",
-            "Deb-src indicates that the archive contains source files."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -1683,12 +1555,6 @@
         },
         "desiredState": {
           "description": "Default is INSTALLED. The desired state the agent should maintain for this recipe. INSTALLED: The software recipe will be installed on the instance but won't be updated to new versions. INSTALLED_KEEP_UPDATED: The software recipe will be installed on the instance. It will also be updated to a higher version of the recipe if a higher version is assigned to this instance. REMOVE: Remove is unsupported for software recipes and attempts to create or update a recipe to the REMOVE state will be rejected.",
-          "enumDescriptions": [
-            "The default is to ensure the package is installed.",
-            "The agent will ensure that the package is installed.",
-            "The agent will ensure that the package is installed and will periodically check for and install any updates.",
-            "The agent will ensure that the package is not installed and uninstall it if detected."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The default is to ensure the package is installed.",
@@ -1836,15 +1702,6 @@
         },
         "type": {
           "description": "The type of the archive to extract.",
-          "enumDescriptions": [
-            "Indicates that the archive type isn't specified.",
-            "Indicates that the archive is a tar archive with no encryption.",
-            "Indicates that the archive is a tar archive with gzip encryption.",
-            "Indicates that the archive is a tar archive with bzip encryption.",
-            "Indicates that the archive is a tar archive with lzma encryption.",
-            "Indicates that the archive is a tar archive with xz encryption.",
-            "Indicates that the archive is a zip archive."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Indicates that the archive type isn't specified.",
@@ -1971,11 +1828,6 @@
         },
         "interpreter": {
           "description": "The script interpreter to use to run the script. If no interpreter is specified the script will be executed directly, which will likely only succeed for scripts with shebang lines. [Wikipedia shebang](https:\/\/en.wikipedia.org\/wiki\/Shebang_(Unix)).",
-          "enumDescriptions": [
-            "Default value for ScriptType.",
-            "Indicates that the script will be run with \/bin\/sh on Linux and cmd on windows.",
-            "Indicates that the script will be run with powershell."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value for ScriptType.",
@@ -2169,11 +2021,6 @@
       "properties": {
         "desiredState": {
           "description": "The desired_state the agent should maintain for this package. The default is to ensure the package is installed.",
-          "enumDescriptions": [
-            "Unspecified is invalid.",
-            "Ensure that the package is installed.",
-            "The agent will ensure that the package is not installed and uninstall it if detected."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified is invalid.",
@@ -2346,11 +2193,6 @@
       "properties": {
         "archiveType": {
           "description": "Type of archive files in this repository. The default behavior is DEB.",
-          "enumDescriptions": [
-            "Unspecified is invalid.",
-            "Deb indicates that the archive contains binary files.",
-            "Deb-src indicates that the archive contains source files."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified is invalid.",
@@ -2496,12 +2338,6 @@
         },
         "interpreter": {
           "description": "The script interpreter to use.",
-          "enumDescriptions": [
-            "Defaults to NONE.",
-            "If no interpreter is specified the source will be executed directly, which will likely only succeed for executables and scripts with shebang lines. [Wikipedia shebang](https:\/\/en.wikipedia.org\/wiki\/Shebang_(Unix)).",
-            "Indicates that the script will be run with \/bin\/sh on Linux and cmd.exe on windows.",
-            "Indicates that the script will be run with powershell."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Defaults to NONE.",
@@ -2537,12 +2373,6 @@
         },
         "state": {
           "description": "Desired state of the file.",
-          "enumDescriptions": [
-            "Unspecified is invalid.",
-            "Ensure file at path is present.",
-            "Ensure file at path is absent.",
-            "Ensure the contents of the file at path matches. If the file does not exist it will be created."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified is invalid.",
@@ -2578,15 +2408,6 @@
         },
         "type": {
           "description": "The type of the archive to extract.",
-          "enumDescriptions": [
-            "Unspecified is invalid.",
-            "Indicates that the archive is a tar archive with no encryption.",
-            "Indicates that the archive is a tar archive with gzip encryption.",
-            "Indicates that the archive is a tar archive with bzip encryption.",
-            "Indicates that the archive is a tar archive with lzma encryption.",
-            "Indicates that the archive is a tar archive with xz encryption.",
-            "Indicates that the archive is a zip archive."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified is invalid.",

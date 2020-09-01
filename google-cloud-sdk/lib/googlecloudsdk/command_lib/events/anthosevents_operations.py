@@ -24,6 +24,7 @@ import functools
 import random
 
 from apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.api_lib.events import cloud_run
 from googlecloudsdk.api_lib.events import configmap
 from googlecloudsdk.api_lib.events import custom_resource_definition
 from googlecloudsdk.api_lib.events import iam_util
@@ -51,9 +52,10 @@ _METADATA_LABELS_FIELD = 'metadata.labels'
 
 _SERVICE_ACCOUNT_KEY_COLLECTION = 'iam.projects.serviceAccounts.keys'
 
-_CORE_CLIENT_VERSION = 'v1'
 _ANTHOS_EVENTS_CLIENT_NAME = 'anthosevents'
 _ANTHOS_EVENTS_CLIENT_VERSION = 'v1beta1'
+_CORE_CLIENT_VERSION = 'v1'
+_OPERATOR_CLIENT_VERSION = 'v1alpha1'
 
 _CLOUD_RUN_EVENTS_NAMESPACE = 'cloud-run-events'
 _DEFAULT_SOURCES_KEY = 'google-cloud-sources-key'
@@ -64,6 +66,8 @@ _CONTROL_PLANE_NAMESPACE = 'cloud-run-events'
 _CONFIG_GCP_AUTH_NAME = 'config-gcp-auth'
 _CONFIGMAP_COLLECTION = 'anthosevents.api.v1.namespaces.configmaps'
 _SECRET_COLLECTION = 'anthosevents.api.v1.namespaces.secrets'
+
+_CLOUD_RUN_RELATIVE_NAME = 'namespaces/cloud-run-system/cloudruns/cloud-run'
 
 
 def Connect(conn_info):
@@ -90,16 +94,19 @@ def Connect(conn_info):
 
   # This client is used for working with core resources (e.g. Secrets) in
   # Cloud Run for Anthos.
-  core_client = None
-  if not conn_info.supports_one_platform:
-    core_client = apis_internal._GetClientInstance(
-        _ANTHOS_EVENTS_CLIENT_NAME,
-        _CORE_CLIENT_VERSION,
-        http_client=conn_info.HttpClient())
+  core_client = apis_internal._GetClientInstance(
+      _ANTHOS_EVENTS_CLIENT_NAME,
+      _CORE_CLIENT_VERSION,
+      http_client=conn_info.HttpClient())
+
+  operator_client = apis_internal._GetClientInstance(
+      _ANTHOS_EVENTS_CLIENT_NAME,
+      _OPERATOR_CLIENT_VERSION,
+      http_client=conn_info.HttpClient())
 
   # pylint: enable=protected-access
   return AnthosEventsOperations(client, conn_info.api_version, conn_info.region,
-                                core_client, client)
+                                core_client, client, operator_client)
 
 
 # TODO(b/149793348): Remove this grace period
@@ -130,7 +137,7 @@ class TimeLockedUnfailingConditionPoller(serverless_operations.ConditionPoller):
                grace_period=_POLLING_GRACE_PERIOD):
     super(TimeLockedUnfailingConditionPoller,
           self).__init__(getter, tracker, dependencies)
-    self._grace_period = _POLLING_GRACE_PERIOD
+    self._grace_period = grace_period
     self._start_time = datetime.datetime.now()
 
   def _HasGracePeriodPassed(self):
@@ -201,10 +208,15 @@ class SourceConditionPoller(TimeLockedUnfailingConditionPoller):
   """A ConditionPoller for sources."""
 
 
+class CloudRunConditionPoller(TimeLockedUnfailingConditionPoller):
+  """A ConditionPoller for cloud run resources."""
+
+
 class AnthosEventsOperations(object):
   """Client used by Eventflow to communicate with the actual API."""
 
-  def __init__(self, client, api_version, region, core_client, crd_client):
+  def __init__(self, client, api_version, region, core_client, crd_client,
+               operator_client):
     """Inits EventflowOperations with given API clients.
 
     Args:
@@ -215,12 +227,15 @@ class AnthosEventsOperations(object):
       core_client: The API client for queries against core resources if
         operating against Cloud Run for Anthos, else None.
       crd_client: The API client for querying for CRDs
+      operator_client: The API client for enabling the operator.
     """
 
     self._api_version = api_version
 
     # used for triggers and sources
     self._client = client
+
+    self._operator_client = operator_client
 
     # used for namespaces
     self._core_client = core_client
@@ -666,6 +681,55 @@ class AnthosEventsOperations(object):
         name=ref.RelativeName(),
     )
     self._core_client.api_v1_namespaces_configmaps.ReplaceConfigMap(request)
+
+  def GetCloudRun(self):
+    """Returns operator's cloudrun resource."""
+    messages = self._operator_client.MESSAGES_MODULE
+    request = messages.AnthoseventsNamespacesCloudrunsGetRequest(
+        name=_CLOUD_RUN_RELATIVE_NAME)
+    try:
+      response = self._operator_client.namespaces_cloudruns.Get(request)
+    except api_exceptions.HttpNotFoundError:
+      return None
+    return cloud_run.CloudRun(response, messages)
+
+  def UpdateCloudRunWithEventingEnabled(self):
+    """Updates operator's cloud run resource spec.eventing.enabled to true."""
+    messages = self._operator_client.MESSAGES_MODULE
+    cloud_run_message = messages.CloudRun()
+    arg_utils.SetFieldInMessage(cloud_run_message, 'spec.eventing.enabled',
+                                True)
+
+    # We need to specify a special content-type for k8s to accept our PATCH.
+    # However, this appears to only be settable at the client level, not at
+    # the request level. So we'll update the client for our request, and the
+    # set it back to the old value afterwards.
+
+    old_additional_headers = {}
+    old_additional_headers = self._operator_client.additional_http_headers
+    additional_headers = old_additional_headers.copy()
+    additional_headers['content-type'] = 'application/merge-patch+json'
+    try:
+      self._operator_client.additional_http_headers = additional_headers
+
+      request = messages.AnthoseventsNamespacesCloudrunsPatchRequest(
+          name=_CLOUD_RUN_RELATIVE_NAME, cloudRun=cloud_run_message)
+      response = self._operator_client.namespaces_cloudruns.Patch(request)
+    finally:
+      self._operator_client.additional_http_headers = old_additional_headers
+    return response
+
+  def PollCloudRunResource(self, tracker):
+    """Wait for Cloud Run resource to be Ready."""
+    cloud_run_getter = functools.partial(self.GetCloudRun)
+
+    poller = CloudRunConditionPoller(
+        cloud_run_getter, tracker, grace_period=datetime.timedelta(seconds=180))
+    util.WaitForCondition(
+        poller,
+        exceptions.EventingInstallError(
+            'Eventing failed to install within 180 seconds, please try rerunning the command'
+        ))
 
 
 def _ConfigMapRef(namespace, name):

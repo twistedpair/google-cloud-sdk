@@ -259,12 +259,6 @@
         },
         "state": {
           "description": "The state of the approval.",
-          "enumDescriptions": [
-            "Sentinel value; do not use.",
-            "The approval is pending response from the provider. The approval state can transition to Account.Approval.State.APPROVED or Account.Approval.State.REJECTED.",
-            "The approval has been granted by the provider.",
-            "The approval has been rejected by the provider. A provider may choose to approve a previously rejected approval, so is it possible to transition to Account.Approval.State.APPROVED."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Sentinel value; do not use.",
@@ -540,12 +534,6 @@
         },
         "orderState": {
           "description": "Output only. The state of the order.",
-          "enumDescriptions": [
-            "Sentinel value. Do not use.",
-            "The order is active.",
-            "The order is cancelled.",
-            "The order is being cancelled either by the user or by the system. The order stays in this state, if any product in the order allows use of the underlying resource until the end of the current billing cycle. Once the billing cycle completes, the resource will transition to OrderState.ORDER_STATE_CANCELLED state."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -642,13 +630,6 @@
         },
         "changeType": {
           "description": "Required. Type of the change to make.",
-          "enumDescriptions": [
-            "Sentinel value. Do not use.",
-            "The change is to create a new line item.",
-            "The change is to update an existing line item.",
-            "The change is to cancel an existing line item.",
-            "The change is to revert a cancellation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Sentinel value. Do not use.",
@@ -676,14 +657,6 @@
         },
         "changeState": {
           "description": "Output only. State of the change.",
-          "enumDescriptions": [
-            "Sentinel value. Do not use.",
-            "Change is in this state when a change is initiated and waiting for partner approval.",
-            "Change is in this state, if the change was approved by partner or auto-approved but is pending to be effective.",
-            "Change is in this state, if the change was activated and completed successfully.",
-            "Change is in this state, if the change was rejected by partner.",
-            "Change is in this state, if it was abandoned by user."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -793,13 +766,6 @@
         },
         "changeType": {
           "description": "Required. Type of change to make.",
-          "enumDescriptions": [
-            "Sentinel value. Do not use.",
-            "The change is to create a new line item.",
-            "The change is to update an existing line item.",
-            "The change is to cancel an existing line item.",
-            "The change is to revert a cancellation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Sentinel value. Do not use.",
@@ -833,12 +799,6 @@
         },
         "changeType": {
           "description": "Required. Type of change to make.",
-          "enumDescriptions": [
-            "Sentinel value. Do not use.",
-            "The change is to update an existing order for quote.",
-            "The change is to cancel an existing order for quote.",
-            "The change is to revert a cancellation for an order for quote."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Sentinel value. Do not use.",
@@ -898,12 +858,6 @@
         },
         "state": {
           "description": "Output only. The state of the entitlement.",
-          "enumDescriptions": [
-            "Sentinel value. Do not use.",
-            "Indicates that the entitlement is unavailable and cannot be enabled.",
-            "Indicates that the entitlement is enabled. The procured item is now usable.",
-            "Indicates that the entitlement is disabled. The procured item is not usable."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -970,11 +924,6 @@
         },
         "serviceState": {
           "description": "Current state of the service within project.",
-          "enumDescriptions": [
-            "Sentinel value. Do not use.",
-            "Indicates service is enabled within project.",
-            "Indicates service is disabled within project."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Sentinel value. Do not use.",
@@ -1006,14 +955,6 @@
         },
         "changeState": {
           "description": "Output only. State of the change.",
-          "enumDescriptions": [
-            "Sentinel value. Do not use.",
-            "Change is in this state when a change is initiated and waiting for partner approval.",
-            "Change is in this state, if the change was approved by partner or auto-approved but is pending to be effective.",
-            "Change is in this state, if the change was activated and completed successfully.",
-            "Change is in this state, if the change was rejected by partner.",
-            "Change is in this state, if it was abandoned by user."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

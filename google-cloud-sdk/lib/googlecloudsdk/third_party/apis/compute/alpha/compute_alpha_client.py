@@ -4908,7 +4908,9 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified instance group. Gets a list of available instance groups by making a list() request.
+      r"""Returns the specified zonal instance group. Get a list of available zonal instance groups by making a list() request.
+
+For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
 
       Args:
         request: (ComputeInstanceGroupsGetRequest) input message
@@ -4960,7 +4962,9 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of instance groups that are located in the specified project and zone.
+      r"""Retrieves the list of zonal instance group resources contained within the specified zone.
+
+For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
 
       Args:
         request: (ComputeInstanceGroupsListRequest) input message

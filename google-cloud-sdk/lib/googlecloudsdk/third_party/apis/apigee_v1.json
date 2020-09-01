@@ -516,12 +516,6 @@
         },
         "state": {
           "description": "Current state of the deployment. This field is not populated in List APIs.",
-          "enumDescriptions": [
-            "This value should never be returned.",
-            "The runtime has loaded the deployment.",
-            "The deployment is not fully ready in the runtime.",
-            "There is an error with the deployment that requires intervention."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This value should never be returned.",
@@ -1040,11 +1034,6 @@
         },
         "type": {
           "description": "The type of alias.",
-          "enumDescriptions": [
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -1197,55 +1186,55 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the environment config. Must be of the form 'organizations\/{org}\/environments\/{env}\/configs\/{config_id}",
+          "description": "Name of the environment configuration in the following format: `organizations\/{org}\/environments\/{env}\/configs\/{config}`",
           "type": "string"
         },
         "uid": {
-          "description": "A unique id for the environment config that will only change if the environment is deleted and recreated.",
+          "description": "Unique ID for the environment configuration. The ID will only change if the environment is deleted and recreated.",
           "type": "string"
         },
         "revisionId": {
-          "description": "Revision id that defines the ordering on the environment config. The higher the revision, the more recently the configuration was deployed.",
+          "description": "Revision ID of the environment configuration. The higher the value, the more recently the configuration was deployed.",
           "type": "string",
           "format": "int64"
         },
         "sequenceNumber": {
-          "description": "DEPRECATED: use revision_id",
+          "description": "DEPRECATED: Use revision_id.",
           "type": "string",
           "format": "int64"
         },
         "createTime": {
-          "description": "The time at which this environment config was created.",
+          "description": "Time that the environment configuration was created.",
           "type": "string",
           "format": "google-datetime"
         },
         "provider": {
-          "description": "This field can be used by the control plane to add some context information about itself. This information could help detect the source of the document during diagnostics and debugging.",
+          "description": "Used by the Control plane to add context information to help detect the source of the document during diagnostics and debugging.",
           "type": "string"
         },
         "resources": {
-          "description": "A list of resource versions in the environment.",
+          "description": "List of resource versions in the environment.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1ResourceConfig"
           }
         },
         "targets": {
-          "description": "A list of target servers in the environment. Disabled target servers are not included.",
+          "description": "List of target servers in the environment. Disabled target servers are not displayed.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1TargetServerConfig"
           }
         },
         "deployments": {
-          "description": "A list of deployments in the environment",
+          "description": "List of deployments in the environment.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1DeploymentConfig"
           }
         },
         "flowhooks": {
-          "description": "A list of flow hooks in the environment.",
+          "description": "List of flow hooks in the environment.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1FlowHookConfig"
@@ -1256,32 +1245,32 @@
           "$ref": "GoogleCloudApigeeV1DebugMask"
         },
         "keystores": {
-          "description": "A list of keystores in the environment.",
+          "description": "List of keystores in the environment.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1KeystoreConfig"
           }
         },
         "featureFlags": {
-          "description": "Feature flags inherited from the org and environment parents.",
+          "description": "Feature flags inherited from the organization and environment.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "pubsubTopic": {
-          "description": "Name of the pubsub topic for this environment.",
+          "description": "Name of the PubSub topic for the environment.",
           "type": "string"
         },
         "resourceReferences": {
-          "description": "A list of resource references in the environment.",
+          "description": "List of resource references in the environment.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1ReferenceConfig"
           }
         },
         "dataCollectors": {
-          "description": "The list of Data Collectors used by deployments in the environment.",
+          "description": "List of data collectors used by the deployments in the environment.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1DataCollectorConfig"
@@ -1294,11 +1283,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name. Only environment-scoped resource files are supported. Must be of the form 'organizations\/{org}\/environments\/{env}\/resourcefiles\/{type}\/{file}\/revisions\/{rev}'.",
+          "description": "Resource name in the following format: `organizations\/{org}\/environments\/{env}\/resourcefiles\/{type}\/{file}\/revisions\/{rev}` Only environment-scoped resource files are supported.",
           "type": "string"
         },
         "location": {
-          "description": "The location of the resource as a URI.",
+          "description": "Location of the resource as a URI.",
           "type": "string"
         }
       }
@@ -1308,20 +1297,20 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The target server revision name. Must be of the form 'organizations\/{org}\/environments\/{env}\/targetservers\/{ts_id}\/revisions\/{rev}'.",
+          "description": "Target server revision name in the following format: `organizations\/{org}\/environments\/{env}\/targetservers\/{targetserver}\/revisions\/{rev}`",
           "type": "string"
         },
         "host": {
-          "description": "Target host name.",
+          "description": "Host name of the target server.",
           "type": "string"
         },
         "port": {
-          "description": "Target port.",
+          "description": "Port number for the target server.",
           "type": "integer",
           "format": "int32"
         },
         "tlsInfo": {
-          "description": "TLS settings for the target.",
+          "description": "TLS settings for the target server.",
           "$ref": "GoogleCloudApigeeV1TlsInfoConfig"
         }
       }
@@ -1331,45 +1320,45 @@
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Enables one-way TLS.",
+          "description": "Flag that specifies whether one-way TLS is enabled. Set to `true` to enable one-way TLS.",
           "type": "boolean"
         },
         "clientAuthEnabled": {
-          "description": "Indicates if client auth is enabled for the target. Enables two-way TLS.",
+          "description": "Flag that specifies whether client-side authentication is enabled for the target server. Enables two-way TLS.",
           "type": "boolean"
         },
         "keyAlias": {
-          "description": "The name of the Alias used for client side auth. It must be of the form: organizations\/{org}\/environments\/{env}\/keystores\/{keystore}\/aliases\/{alias}",
+          "description": "Name of the alias used for client-side authentication in the following format: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}\/aliases\/{alias}`",
           "type": "string"
         },
         "keyAliasReference": {
-          "description": "A pair of reference name and alias to use for client side auth.",
+          "description": "Reference name and alias pair to use for client-side authentication.",
           "$ref": "GoogleCloudApigeeV1KeyAliasReference"
         },
         "trustStore": {
-          "description": "The name of the Keystore or keystore reference containing trusted certificates for the server. It must be of either the form organizations\/{org}\/environments\/{env}\/keystores\/{keystore} or organizations\/{org}\/environments\/{env}\/references\/{reference}.",
+          "description": "Name of the keystore or keystore reference containing trusted certificates for the server in the following format: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}` or `organizations\/{org}\/environments\/{env}\/references\/{reference}`",
           "type": "string"
         },
         "ciphers": {
-          "description": "Whitelist of supported ciphers.",
+          "description": "List of ciphers that are granted access.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "protocols": {
-          "description": "Whitelist of supported TLS protocols.",
+          "description": "List of TLS protocols that are granted access.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "commonName": {
-          "description": "Common name to validate the target against.",
+          "description": "Common name to validate the target server against.",
           "$ref": "GoogleCloudApigeeV1CommonNameConfig"
         },
         "ignoreValidationErrors": {
-          "description": "If true, ignore TLS certificate validation errors.",
+          "description": "Flag that specifies whether to ignore TLS certificate validation errors. Set to `true` to ignore errors.",
           "type": "boolean"
         }
       }
@@ -1379,11 +1368,11 @@
       "type": "object",
       "properties": {
         "reference": {
-          "description": "The reference name. Must be of the form: organizations\/{org}\/environments\/{env}\/references\/{ref}.",
+          "description": "Reference name in the following format: `organizations\/{org}\/environments\/{env}\/references\/{reference}`",
           "type": "string"
         },
         "aliasId": {
-          "description": "The alias id. Must exist in the keystore referred to by reference.",
+          "description": "Alias ID. Must exist in the keystore referred to by the reference.",
           "type": "string"
         }
       }
@@ -1405,27 +1394,27 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the API or shared flow revision to be deployed. Must be of the form 'organizations\/{org}\/apis\/{api}\/revisions\/{rev}' or 'organizations\/{org}\/sharedflows\/{sf}\/revisions\/{rev}'.",
+          "description": "Name of the API or shared flow revision to be deployed in the following format: `organizations\/{org}\/apis\/{api}\/revisions\/{rev}` or `organizations\/{org}\/sharedflows\/{sharedflow}\/revisions\/{rev}`",
           "type": "string"
         },
         "uid": {
-          "description": "A unique id that will only change if the deployment is deleted and recreated.",
+          "description": "Unique ID. The ID will only change if the deployment is deleted and recreated.",
           "type": "string"
         },
         "proxyUid": {
-          "description": "The uid of the proxy revision.",
+          "description": "Unique ID of the API proxy revision.",
           "type": "string"
         },
         "location": {
-          "description": "The location of the proxy bundle, as a uri.",
+          "description": "Location of the API proxy bundle as a URI.",
           "type": "string"
         },
         "basePath": {
-          "description": "Base path where the application needs to be hosted. Default value is assumed to be \"\/\".",
+          "description": "Base path where the application will be hosted. Defaults to \"\/\".",
           "type": "string"
         },
         "attributes": {
-          "description": "Additional key-value metadata about the deployment.",
+          "description": "Additional key-value metadata for the deployment.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1438,15 +1427,15 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the flow hook. Must be of the form 'organizations\/{org}\/environments\/{env}\/flowhooks\/{point}'. Known points are PreProxyFlowHook, PostProxyFlowHook, PreTargetFlowHook, and PostTargetFlowHook",
+          "description": "Name of the flow hook in the following format: `organizations\/{org}\/environments\/{env}\/flowhooks\/{point}`. Valid `point` values include: `PreProxyFlowHook`, `PostProxyFlowHook`, `PreTargetFlowHook`, and `PostTargetFlowHook`",
           "type": "string"
         },
         "sharedFlowName": {
-          "description": "The name of the shared flow to invoke. Must be of the form 'organizations\/{org}\/sharedflows\/{sharedflow}'.",
+          "description": "Name of the shared flow to invoke in the following format: `organizations\/{org}\/sharedflows\/{sharedflow}`",
           "type": "string"
         },
         "continueOnError": {
-          "description": "Should the flow abort after an error in the flow hook. Should default to true if unset.",
+          "description": "Flag that specifies whether the flow should abort after an error in the flow hook. Defaults to `true` (continue on error).",
           "type": "boolean"
         }
       }
@@ -1456,7 +1445,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name. Must be of the form: 'organizations\/{org}\/environments\/{env}\/keystores\/{keystore}'.",
+          "description": "Resource name in the following format: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}`",
           "type": "string"
         },
         "aliases": {
@@ -1473,15 +1462,10 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the alias revision included in the keystore. Must be of the form: 'organizations\/{org}\/environments\/{env}\/keystores\/{keystore}\/aliases\/{alias}\/revisions\/{rev}'.",
+          "description": "Name of the alias revision included in the keystore in the following format: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}\/aliases\/{alias}\/revisions\/{rev}`",
           "type": "string"
         },
         "type": {
-          "enumDescriptions": [
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -1495,7 +1479,7 @@
           ]
         },
         "location": {
-          "description": "The location of the alias file, e.g. a GCS URI.",
+          "description": "Location of the alias file. For example, a Google Cloud Storage URI.",
           "type": "string"
         }
       }
@@ -1505,34 +1489,26 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the reference. Must be of the form 'organizations\/{org}\/environments\/{env}\/references\/{ref}'.",
+          "description": "Name of the reference in the following format: `organizations\/{org}\/environments\/{env}\/references\/{reference}`",
           "type": "string"
         },
         "resourceName": {
-          "description": "The name of the referred resource. Only references to keystore resources are supported. Must be of the form 'organizations\/{org}\/environments\/{env}\/keystores\/{ks}'.",
+          "description": "Name of the referenced resource in the following format: `organizations\/{org}\/environments\/{env}\/keystores\/{keystore}` Only references to keystore resources are supported.",
           "type": "string"
         }
       }
     },
     "GoogleCloudApigeeV1DataCollectorConfig": {
       "id": "GoogleCloudApigeeV1DataCollectorConfig",
-      "description": "A DataCollector and its configuration.",
+      "description": "Data collector and its configuration.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the data collector. Must be of the form 'organizations\/{org}\/datacollectors\/{dc}'.",
+          "description": "Name of the data collector in the following format: `organizations\/{org}\/datacollectors\/{datacollector}`",
           "type": "string"
         },
         "type": {
-          "description": "The data type this DataCollector accepts.",
-          "enumDescriptions": [
-            "For future compatibility.",
-            "For integer values.",
-            "For float values.",
-            "For string values.",
-            "For boolean values.",
-            "For datetime values."
-          ],
+          "description": "Data type accepted by the data collector.",
           "type": "string",
           "enumDescriptions": [
             "For future compatibility.",
@@ -1670,12 +1646,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -1821,12 +1791,6 @@
         },
         "type": {
           "description": "Not used by Apigee.",
-          "enumDescriptions": [
-            "Subscription type not specified.",
-            "Subscription to Apigee is free, limited, and used for evaluation purposes only.",
-            "Full subscription to Apigee has been purchased. See [Apigee pricing](https:\/\/cloud.google.com\/apigee\/pricing\/).",
-            "For internal users only."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Subscription type not specified.",
@@ -1851,11 +1815,6 @@
         },
         "runtimeType": {
           "description": "Output only. Runtime type of the Apigee organization based on the Apigee subscription purchased.",
-          "enumDescriptions": [
-            "",
-            "Google-managed Apigee runtime.",
-            "User-managed Apigee hybrid runtime."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1871,11 +1830,6 @@
         },
         "subscriptionType": {
           "description": "Output only. Subscription type of the Apigee organization. Valid values include trial (free, limited, and for evaluation purposes only) or paid (full subscription has been purchased). See [Apigee pricing](https:\/\/cloud.google.com\/apigee\/pricing\/).",
-          "enumDescriptions": [
-            "",
-            "Full subscription to Apigee has been purchased.",
-            "Subscription to Apigee is free, limited, and used for evaluation purposes only."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -2120,25 +2074,6 @@
         },
         "code": {
           "description": "Status code.",
-          "enumDescriptions": [
-            "Not an error; returned on success HTTP Mapping: 200 OK",
-            "The operation was cancelled, typically by the caller. HTTP Mapping: 499 Client Closed Request",
-            "Unknown error. For example, this error may be returned when a `Status` value received from another address space belongs to an error space that is not known in this address space. Also errors raised by APIs that do not return enough error information may be converted to this error. HTTP Mapping: 500 Internal Server Error",
-            "The client specified an invalid argument. Note that this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates arguments that are problematic regardless of the state of the system (e.g., a malformed file name). HTTP Mapping: 400 Bad Request",
-            "The deadline expired before the operation could complete. For operations that change the state of the system, this error may be returned even if the operation has completed successfully. For example, a successful response from a server could have been delayed long enough for the deadline to expire. HTTP Mapping: 504 Gateway Timeout",
-            "Some requested entity (e.g., file or directory) was not found. Note to server developers: if a request is denied for an entire class of users, such as gradual feature rollout or undocumented allowlist, `NOT_FOUND` may be used. If a request is denied for some users within a class of users, such as user-based access control, `PERMISSION_DENIED` must be used. HTTP Mapping: 404 Not Found",
-            "The entity that a client attempted to create (e.g., file or directory) already exists. HTTP Mapping: 409 Conflict",
-            "The caller does not have permission to execute the specified operation. `PERMISSION_DENIED` must not be used for rejections caused by exhausting some resource (use `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED` must not be used if the caller can not be identified (use `UNAUTHENTICATED` instead for those errors). This error code does not imply the request is valid or the requested entity exists or satisfies other pre-conditions. HTTP Mapping: 403 Forbidden",
-            "The request does not have valid authentication credentials for the operation. HTTP Mapping: 401 Unauthorized",
-            "Some resource has been exhausted, perhaps a per-user quota, or perhaps the entire file system is out of space. HTTP Mapping: 429 Too Many Requests",
-            "The operation was rejected because the system is not in a state required for the operation's execution. For example, the directory to be deleted is non-empty, an rmdir operation is applied to a non-directory, etc. Service implementors can use the following guidelines to decide between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can retry just the failing call. (b) Use `ABORTED` if the client should retry at a higher level (e.g., when a client-specified test-and-set fails, indicating the client should restart a read-modify-write sequence). (c) Use `FAILED_PRECONDITION` if the client should not retry until the system state has been explicitly fixed. E.g., if an \"rmdir\" fails because the directory is non-empty, `FAILED_PRECONDITION` should be returned since the client should not retry unless the files are deleted from the directory. HTTP Mapping: 400 Bad Request",
-            "The operation was aborted, typically due to a concurrency issue such as a sequencer check failure or transaction abort. See the guidelines above for deciding between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict",
-            "The operation was attempted past the valid range. E.g., seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this error indicates a problem that may be fixed if the system state changes. For example, a 32-bit file system will generate `INVALID_ARGUMENT` if asked to read at an offset that is not in the range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read from an offset past the current file size. There is a fair bit of overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend using `OUT_OF_RANGE` (the more specific error) when it applies so that callers who are iterating through a space can easily look for an `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400 Bad Request",
-            "The operation is not implemented or is not supported\/enabled in this service. HTTP Mapping: 501 Not Implemented",
-            "Internal errors. This means that some invariants expected by the underlying system have been broken. This error code is reserved for serious errors. HTTP Mapping: 500 Internal Server Error",
-            "The service is currently unavailable. This is most likely a transient condition, which can be corrected by retrying with a backoff. Note that it is not always safe to retry non-idempotent operations. See the guidelines above for deciding between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 503 Service Unavailable",
-            "Unrecoverable data loss or corruption. HTTP Mapping: 500 Internal Server Error"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not an error; returned on success HTTP Mapping: 200 OK",
@@ -3078,6 +3013,83 @@
           "description": "Response only. Modified time of this environment as milliseconds since epoch.",
           "type": "string",
           "format": "int64"
+        },
+        "operationGroup": {
+          "description": "The operation_group enables api product creators to group Apigee proxies or remote services with resources, method types and quotas. The resource refers to the resource URI(excluding the base path). With this grouping, API product creator is able to finetune and give precise control over which REST methods have access to which resources, and how many such calls can be made (via Quota). Note that api_resources cannot be specified at both the API product level as well as within the operation_group. If configured that way, the call will fail. Please refer go\/api-product-with-methods for additional details.",
+          "$ref": "GoogleCloudApigeeV1OperationGroup"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1OperationGroup": {
+      "id": "GoogleCloudApigeeV1OperationGroup",
+      "description": "The OperationGroup contains a list of configuration details associated with Apigee proxies or Remote services. Remote services are non-Apigee Edge proxies. eg, Istio-Envoy.",
+      "type": "object",
+      "properties": {
+        "operationConfigs": {
+          "description": "Required. A list of OperationConfig for either Apigee proxies or other other remote services, that are associated with this API product.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1OperationConfig"
+          }
+        },
+        "operationConfigType": {
+          "description": "Identfies whether the configuration is for Apigee proxy or a remote service. Possible values are \"proxy\" and \"remote_service\". If none specified, the default is \"proxy\". \"proxy\" is used when Apigee proxies are associated with the API product. \"remote_service\" is used when non-Apigee proxy like Envoy is used, and is associated with the API product.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1OperationConfig": {
+      "id": "GoogleCloudApigeeV1OperationConfig",
+      "description": "OperationConfig binds the resources in a proxy or remote service with the allowed REST methods and its associated quota enforcement.",
+      "type": "object",
+      "properties": {
+        "apiSource": {
+          "description": "Required. api_source represents either a proxy or remote service name for which the resources, methods and quota are associated with.",
+          "type": "string"
+        },
+        "resources": {
+          "description": "Required. resources represents a list of REST resource path associated with the proxy\/remote service.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "methods": {
+          "description": "methods refers to the REST verbs as in https:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec9.html. When none specified, all verb types are allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quota": {
+          "description": "Quota parameters to be enforced for the resources, methods, api_source combination. If none specified, quota enforcement will not be done.",
+          "$ref": "GoogleCloudApigeeV1Quota"
+        },
+        "attributes": {
+          "description": "custom attribute associated with the operation.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1Attribute"
+          }
+        }
+      }
+    },
+    "GoogleCloudApigeeV1Quota": {
+      "id": "GoogleCloudApigeeV1Quota",
+      "description": "Quota contains the essential parameters needed that can be applied on a proxy\/remote service, resources and methods combination associated with this API product. While setting of Quota is optional, setting it prevents requests from exceeding the provisioned parameters.",
+      "type": "object",
+      "properties": {
+        "limit": {
+          "description": "Required. Limit represents the upper bound count allowed for the time interval and time unit specified. Requests exceeding this limit will get rejected.",
+          "type": "string"
+        },
+        "interval": {
+          "description": "Required. The time interval over which the number of request messages is calculated.",
+          "type": "string"
+        },
+        "timeUnit": {
+          "description": "The time unit defined for the `interval`. Valid values include minute, hour, day, or month. The default value is empty. If limit and interval are valid, the default value is \"hour\".",
+          "type": "string"
         }
       }
     },
@@ -4035,12 +4047,6 @@
       "type": "object",
       "properties": {
         "operationType": {
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -4060,12 +4066,6 @@
           "type": "string"
         },
         "state": {
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -5269,11 +5269,6 @@
                           "description": "Flag that specifies whether the new deployment replaces other deployed revisions of the API proxy in the environment. Set override to true to replace other deployed revisions. By default, override is false and the deployment is rejected if other revisions of the API proxy are deployed in the environment.",
                           "location": "query",
                           "type": "boolean"
-                        },
-                        "basepath": {
-                          "description": "Base path where the API proxy revision should be deployed. Defaults to '\/' if not provided.",
-                          "location": "query",
-                          "type": "string"
                         },
                         "sequencedRollout": {
                           "description": "If true, a best-effort attempt will be made to roll out the routing rules corresponding to this deployment and the environment changes to add this deployment in a safe order. This reduces the risk of downtime that could be caused by changing the environment group's routing before the new destination for the affected traffic is ready to receive it. This should only be necessary if the new deployment will be capturing traffic from another environment under a shared environment group or if traffic will be rerouted to a different environment due to a basepath removal. The GenerateDeployChangeReport API may be used to examine routing changes before issuing the deployment request, and its response will indicate if a sequenced rollout is recommended for the deployment.",

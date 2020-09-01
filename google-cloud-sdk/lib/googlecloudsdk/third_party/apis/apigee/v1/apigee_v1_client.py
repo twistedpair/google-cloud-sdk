@@ -2630,7 +2630,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.environments.apis.revisions.deploy',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['basepath', 'override', 'sequencedRollout'],
+        query_params=['override', 'sequencedRollout'],
         relative_path='v1/{+name}/deployments',
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest',

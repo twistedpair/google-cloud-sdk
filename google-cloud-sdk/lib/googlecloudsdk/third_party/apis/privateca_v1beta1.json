@@ -876,16 +876,42 @@
           "description": "Required. The signed CA certificate issued from FetchCertificateAuthorityCsrResponse.pem_csr.",
           "type": "string"
         },
-        "pemCaCertificateChain": {
-          "description": "Required. Must include the issuer of 'pem_ca_certificate', and any further issuers until the self-signed CA. Expected to be in issuer-to-root order according to RFC 5246.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "subordinateConfig": {
+          "description": "Required. Must include information about the issuer of 'pem_ca_certificate', and any further issuers until the self-signed CA.",
+          "$ref": "SubordinateConfig"
         },
         "requestId": {
           "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
+        }
+      }
+    },
+    "SubordinateConfig": {
+      "id": "SubordinateConfig",
+      "description": "Describes a subordinate CA's issuers. This is either a resource path to a known issuing CertificateAuthority, or a PEM issuer certificate chain.",
+      "type": "object",
+      "properties": {
+        "certificateAuthority": {
+          "description": "Required. This can refer to a CertificateAuthority in the same project that was used to create a subordinate CertificateAuthority. This field is used for information and usability purposes only. The resource name is in the format `projects\/*\/locations\/*\/certificateAuthorities\/*`.",
+          "type": "string"
+        },
+        "pemIssuerChain": {
+          "description": "Required. Contains the PEM certificate chain for the issuers of this CertificateAuthority, but not pem certificate for this CA itself.",
+          "$ref": "SubordinateConfigChain"
+        }
+      }
+    },
+    "SubordinateConfigChain": {
+      "id": "SubordinateConfigChain",
+      "description": "This message describes a subordinate CA's issuer certificate chain. This wrapper exists for compatibility reasons.",
+      "type": "object",
+      "properties": {
+        "pemCertificates": {
+          "description": "Required. Expected to be in leaf-to-root order according to RFC 5246.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -948,12 +974,9 @@
           "description": "Optional. The IssuingOptions to follow when issuing Certificates from this CertificateAuthority.",
           "$ref": "IssuingOptions"
         },
-        "pemIssuerCertChain": {
-          "description": "Optional. This CertificateAuthority's issuer chain. If self-signed, will be the same as 'pem_cert'. This may be updated (e.g., if an issuer's cert was replaced). Expected to be in issuer-to-root order according to RFC 5246.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "subordinateConfig": {
+          "description": "Optional. If this is a subordinate CertificateAuthority, this field will be set with the subordinate configuration, which describes its issuers. This may be updated, but this CertificateAuthority must continue to validate.",
+          "$ref": "SubordinateConfig"
         },
         "state": {
           "description": "Output only. The State for this CertificateAuthority.",
@@ -974,15 +997,21 @@
             "PENDING_DELETION"
           ]
         },
-        "pemCertificate": {
-          "description": "Output only. This CertificateAuthority's CA certificate.",
+        "pemCaCertificates": {
+          "description": "Output only. This CertificateAuthority's certificate chain, including the current CertificateAuthority's certificate. Ordered such that the root issuer is the final element (consistent with RFC 5246). For a self-signed CA, this will only list the current CertificateAuthority's certificate.",
           "readOnly": true,
-          "type": "string"
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
-        "caCertificateDescription": {
-          "description": "Output only. A structured description of this CertificateAuthority's CA cert.",
+        "caCertificateDescriptions": {
+          "description": "Output only. A structured description of this CertificateAuthority's CA certificate and its issuers. Ordered as self-to-root.",
           "readOnly": true,
-          "$ref": "CertificateDescription"
+          "type": "array",
+          "items": {
+            "$ref": "CertificateDescription"
+          }
         },
         "gcsBucket": {
           "description": "Immutable. The name of a Cloud Storage bucket where this CertificateAuthority will publish content, such as the CA certificate and CRLs. This must be a bucket name, without any prefixes (such as `gs:\/\/`) or suffixes (such as `.googleapis.com`). For example, to use a bucket named `my-bucket`, you would simply specify `my-bucket`. If not specified, a managed bucket will be created.",
@@ -1086,6 +1115,10 @@
           "description": "Optional. The maximum lifetime allowed by the CertificateAuthority. Note that if the any part if the issuing chain expires before a Certificate's requested maximum_lifetime, the effective lifetime will be explicitly truncated.",
           "type": "string",
           "format": "google-duration"
+        },
+        "allowedIssuanceModes": {
+          "description": "Optional. If specified, then only methods allowed in the IssuanceModes may be used to issue Certificates.",
+          "$ref": "IssuanceModes"
         }
       }
     },
@@ -1141,6 +1174,21 @@
         },
         "allowCustomSans": {
           "description": "Optional. Specifies if to allow custom X509Extension values.",
+          "type": "boolean"
+        }
+      }
+    },
+    "IssuanceModes": {
+      "id": "IssuanceModes",
+      "description": "IssuanceModes specifies the allowed ways in which Certificates may be requested from this CertificateAuthority.",
+      "type": "object",
+      "properties": {
+        "allowCsrBasedIssuance": {
+          "description": "Required. When true, allows callers to create Certificates by specifying a CSR.",
+          "type": "boolean"
+        },
+        "allowConfigBasedIssuance": {
+          "description": "Required. When true, allows callers to create Certificates by specifying a CertificateConfig.",
           "type": "boolean"
         }
       }

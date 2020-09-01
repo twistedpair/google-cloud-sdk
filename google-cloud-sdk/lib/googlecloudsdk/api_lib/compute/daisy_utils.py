@@ -36,6 +36,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.cloudbuild import execution
 from googlecloudsdk.command_lib.compute.sole_tenancy import util as sole_tenancy_util
 from googlecloudsdk.command_lib.projects import util as projects_util
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
@@ -519,6 +520,7 @@ def RunImageImport(args,
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
   builder = _IMAGE_IMPORT_BUILDER.format(docker_image_tag)
+  AppendArg(import_args, 'client_version', config.CLOUD_SDK_VERSION)
   return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
                             IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
                             IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
@@ -549,6 +551,7 @@ def RunImageExport(args,
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
   builder = _IMAGE_EXPORT_BUILDER.format(docker_image_tag)
+  AppendArg(export_args, 'client_version', config.CLOUD_SDK_VERSION)
   return RunImageCloudBuild(args, builder, export_args, tags, output_filter,
                             EXPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
                             EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
@@ -757,6 +760,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   if compute_release_track:
     AppendArg(ovf_importer_args, 'release-track', compute_release_track)
   AppendArg(ovf_importer_args, 'hostname', hostname)
+  AppendArg(ovf_importer_args, 'client-version', config.CLOUD_SDK_VERSION)
 
   build_tags = ['gce-daisy', 'gce-ovf-import']
 
@@ -828,6 +832,7 @@ def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
   AppendArg(ovf_importer_args, 'project', args.project)
   if compute_release_track:
     AppendArg(ovf_importer_args, 'release-track', compute_release_track)
+  AppendArg(ovf_importer_args, 'client-version', config.CLOUD_SDK_VERSION)
 
   build_tags = ['gce-daisy', 'gce-ovf-machine-image-import']
 
@@ -880,6 +885,7 @@ def RunOsUpgradeBuild(args, output_filter, instance_uri):
   AppendBoolArg(os_upgrade_args, 'auto-rollback', args.auto_rollback)
   AppendBoolArg(os_upgrade_args, 'use-staging-install-media',
                 args.use_staging_install_media)
+  AppendArg(os_upgrade_args, 'client-version', config.CLOUD_SDK_VERSION)
 
   build_tags = ['gce-os-upgrade']
 

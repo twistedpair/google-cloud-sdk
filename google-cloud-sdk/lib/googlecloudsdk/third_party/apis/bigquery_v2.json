@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20200814",
+ "revision": "20200824",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -1543,6 +1543,10 @@
      "type": "string",
      "description": "[Output-only] Slot-milliseconds for the job.",
      "format": "int64"
+    },
+    "transactionInfoTemplate": {
+     "$ref": "TransactionInfo",
+     "description": "[Output-only] [Alpha] Information of the multi-statement transaction if this job is part of one."
     }
    }
   },
@@ -2809,6 +2813,16 @@
     "type": {
      "type": "string",
      "description": "[Required] The only type supported is DAY, which will generate one partition per day."
+    }
+   }
+  },
+  "TransactionInfo": {
+   "id": "TransactionInfo",
+   "type": "object",
+   "properties": {
+    "transactionId": {
+     "type": "string",
+     "description": "[Output-only] // [Alpha] Id of the transaction."
     }
    }
   },

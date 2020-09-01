@@ -34,11 +34,9 @@ class GcsApiError(CloudApiError, api_exceptions.HttpException):
 class S3ApiError(CloudApiError):
 
   def __init__(self, error, error_format=None):
-    super().__init__('')
+    super().__init__(str(error))
     self.error = error
     self.error_format = error_format
-    # TODO(b/162224304): Convert S3 errors from Boto to a format we can handle.
-    # self.payload = ConvertS3ClientError(error)
 
 
 # Modified version of api_lib.util.exceptions.CatchHTTPErrorRaiseHTTPException

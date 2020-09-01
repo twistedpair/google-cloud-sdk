@@ -152,11 +152,6 @@
         },
         "messageFormat": {
           "description": "The format of the Cloud Pub\/Sub messages.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "The message payload is a serialized protocol buffer of SourceRepoEvent.",
-            "The message payload is a JSON string of SourceRepoEvent."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -468,12 +463,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",

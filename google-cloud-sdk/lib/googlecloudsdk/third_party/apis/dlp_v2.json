@@ -147,14 +147,6 @@
         },
         "minLikelihood": {
           "description": "Only returns findings equal or above this threshold. The default is POSSIBLE. See https:\/\/cloud.google.com\/dlp\/docs\/likelihood to learn more.",
-          "enumDescriptions": [
-            "Default value; same as POSSIBLE.",
-            "Few matching elements.",
-            "",
-            "Some matching elements.",
-            "",
-            "Many matching elements."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value; same as POSSIBLE.",
@@ -194,11 +186,6 @@
         },
         "contentOptions": {
           "description": "List of options defining data content to scan. If empty, text, images, and other content will be included.",
-          "enumDescriptions": [
-            "Includes entire content of a file or a data stream.",
-            "Text content within the data, excluding any metadata.",
-            "Images found in the data."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -285,14 +272,6 @@
         },
         "likelihood": {
           "description": "Likelihood to return for this CustomInfoType. This base value can be altered by a detection rule if the finding meets the criteria specified by the rule. Defaults to `VERY_LIKELY` if not specified.",
-          "enumDescriptions": [
-            "Default value; same as POSSIBLE.",
-            "Few matching elements.",
-            "",
-            "Some matching elements.",
-            "",
-            "Many matching elements."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value; same as POSSIBLE.",
@@ -336,10 +315,6 @@
         },
         "exclusionType": {
           "description": "If set to EXCLUSION_TYPE_EXCLUDE this infoType will not cause a finding to be returned. It still can be used for rules matching.",
-          "enumDescriptions": [
-            "A finding of this custom info type will not be excluded from results.",
-            "A finding of this custom info type will be excluded from final results, but can still affect rule execution."
-          ],
           "type": "string",
           "enumDescriptions": [
             "A finding of this custom info type will not be excluded from results.",
@@ -488,14 +463,6 @@
       "properties": {
         "fixedLikelihood": {
           "description": "Set the likelihood of a finding to a fixed value.",
-          "enumDescriptions": [
-            "Default value; same as POSSIBLE.",
-            "Few matching elements.",
-            "",
-            "Some matching elements.",
-            "",
-            "Many matching elements."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value; same as POSSIBLE.",
@@ -576,12 +543,6 @@
         },
         "matchingType": {
           "description": "How the rule is applied, see MatchingType documentation for details.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Full match. - Dictionary: join of Dictionary results matched complete finding quote - Regex: all regex matches fill a finding quote start to end - Exclude info type: completely inside affecting info types findings",
-            "Partial match. - Dictionary: at least one of the tokens in the finding matches - Regex: substring of the finding matches - Exclude info type: intersects with affecting info types findings",
-            "Inverse match. - Dictionary: no tokens in the finding match the dictionary - Regex: finding doesn't match the regex - Exclude info type: no intersection with affecting info types findings"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Invalid.",
@@ -715,16 +676,6 @@
         },
         "dayOfWeekValue": {
           "description": "day of week",
-          "enumDescriptions": [
-            "The day of the week is unspecified.",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday"
-          ],
           "type": "string",
           "enumDescriptions": [
             "The day of the week is unspecified.",
@@ -805,20 +756,6 @@
       "properties": {
         "type": {
           "description": "The type of data stored in the bytes string. Default will be TEXT_UTF8.",
-          "enumDescriptions": [
-            "Unused",
-            "Any image type.",
-            "jpeg",
-            "bmp",
-            "png",
-            "svg",
-            "plain text",
-            "docx, docm, dotx, dotm",
-            "pdf",
-            "avro",
-            "csv",
-            "tsv"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused",
@@ -904,14 +841,6 @@
         },
         "likelihood": {
           "description": "Confidence of how likely it is that the `info_type` is correct.",
-          "enumDescriptions": [
-            "Default value; same as POSSIBLE.",
-            "Few matching elements.",
-            "",
-            "Some matching elements.",
-            "",
-            "Many matching elements."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value; same as POSSIBLE.",
@@ -1258,10 +1187,6 @@
       "properties": {
         "type": {
           "description": "Type of metadata containing the finding.",
-          "enumDescriptions": [
-            "Unused",
-            "General file metadata provided by Cloud Storage."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused",
@@ -1346,16 +1271,6 @@
         },
         "dayOfWeek": {
           "description": "Day of week",
-          "enumDescriptions": [
-            "The day of the week is unspecified.",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
-            "Sunday"
-          ],
           "type": "string",
           "enumDescriptions": [
             "The day of the week is unspecified.",
@@ -1680,14 +1595,6 @@
         },
         "commonCharactersToIgnore": {
           "description": "Common characters to not transform when masking. Useful to avoid removing punctuation.",
-          "enumDescriptions": [
-            "Unused.",
-            "0-9",
-            "A-Z",
-            "a-z",
-            "US Punctuation, one of !\"#$%&'()*+,-.\/:;<=>?@[\\]^_`{|}~",
-            "Whitespace character, one of [ \\t\\n\\x0B\\f\\r]"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused.",
@@ -1723,13 +1630,6 @@
         },
         "commonAlphabet": {
           "description": "Common alphabets.",
-          "enumDescriptions": [
-            "Unused.",
-            "`[0-9]` (radix of 10)",
-            "`[0-9A-F]` (radix of 16)",
-            "`[0-9A-Z]` (radix of 36)",
-            "`[0-9A-Za-z]` (radix of 62)"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused.",
@@ -1886,15 +1786,6 @@
       "properties": {
         "partToExtract": {
           "description": "The part of the time to keep.",
-          "enumDescriptions": [
-            "Unused",
-            "[0-9999]",
-            "[1-12]",
-            "[1-31]",
-            "[1-7]",
-            "[1-53]",
-            "[0-23]"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused",
@@ -2037,10 +1928,6 @@
       "properties": {
         "logicalOperator": {
           "description": "The operator to apply to the result of conditions. Default and currently only supported value is `AND`.",
-          "enumDescriptions": [
-            "Unused",
-            "Conditional AND"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused",
@@ -2082,16 +1969,6 @@
         },
         "operator": {
           "description": "Required. Operator used to compare the field or infoType to the value.",
-          "enumDescriptions": [
-            "Unused",
-            "Equal. Attempts to match even with incompatible types.",
-            "Not equal to. Attempts to match even with incompatible types.",
-            "Greater than.",
-            "Less than.",
-            "Greater than or equals.",
-            "Less than or equals.",
-            "Exists"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused",
@@ -2248,11 +2125,6 @@
         },
         "code": {
           "description": "Outcome of the transformation.",
-          "enumDescriptions": [
-            "Unused",
-            "Transformation completed without an error.",
-            "Transformation had an error."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused",
@@ -2346,11 +2218,6 @@
         },
         "supportedBy": {
           "description": "Which parts of the API supports this InfoType.",
-          "enumDescriptions": [
-            "Unused.",
-            "Supported by the inspect operations.",
-            "Supported by the risk analysis operations."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -2632,12 +2499,6 @@
         },
         "status": {
           "description": "Required. A status for this trigger.",
-          "enumDescriptions": [
-            "Unused.",
-            "Trigger is healthy.",
-            "Trigger is temporarily paused.",
-            "Trigger is cancelled and can not be resumed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused.",
@@ -2753,17 +2614,6 @@
         },
         "fileTypes": {
           "description": "List of file type groups to include in the scan. If empty, all files are scanned and available data format processors are applied. In addition, the binary content of the selected files is always scanned as well. Images are scanned only as binary if the specified region does not support image inspection and no file_types were specified. Image inspection is restricted to 'global', 'us', 'asia', and 'europe'.",
-          "enumDescriptions": [
-            "Includes all files.",
-            "Includes all file extensions not covered by another entry. Binary scanning attempts to convert the content of the file to utf_8 to scan the file. If you wish to avoid this fall back, specify one or more of the other FileType's in your storage scan.",
-            "Included file extensions: asc, brf, c, cc, cpp, csv, cxx, c++, cs, css, dart, eml, go, h, hh, hpp, hxx, h++, hs, html, htm, shtml, shtm, xhtml, lhs, ini, java, js, json, ocaml, md, mkd, markdown, m, ml, mli, pl, pm, php, phtml, pht, py, pyw, rb, rbw, rs, rc, scala, sh, sql, tex, txt, text, tsv, vcard, vcs, wml, xml, xsl, xsd, yml, yaml.",
-            "Included file extensions: bmp, gif, jpg, jpeg, jpe, png. bytes_limit_per_file has no effect on image files. Image inspection is restricted to 'global', 'us', 'asia', and 'europe'.",
-            "Word files >30 MB will be scanned as binary files. Included file extensions: docx, dotx, docm, dotm",
-            "PDF files >30 MB will be scanned as binary files. Included file extensions: pdf",
-            "Included file extensions: avro",
-            "Included file extensions: csv",
-            "Included file extensions: tsv"
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -2792,11 +2642,6 @@
           }
         },
         "sampleMethod": {
-          "enumDescriptions": [
-            "",
-            "Scan from the top (default).",
-            "For each file larger than bytes_limit_per_file, randomly pick the offset to start scanning. The scanned bytes are contiguous."
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -2883,11 +2728,6 @@
           "format": "int32"
         },
         "sampleMethod": {
-          "enumDescriptions": [
-            "",
-            "Scan from the top (default).",
-            "Randomly pick the row to start scanning. The scanned rows are contiguous."
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -3030,14 +2870,6 @@
         },
         "outputSchema": {
           "description": "Schema used for writing the findings for Inspect jobs. This field is only used for Inspect and must be unspecified for Risk jobs. Columns are derived from the `Finding` object. If appending to an existing table, any columns from the predefined schema that are missing will be added. No columns in the existing table will be deleted. If unspecified, then all available columns will be used for a new table or an (existing) table with no schema, and no changes will be made to an existing table that has a schema. Only for use with external storage.",
-          "enumDescriptions": [
-            "Unused.",
-            "Basic schema including only `info_type`, `quote`, `certainty`, and `timestamp`.",
-            "Schema tailored to findings from scanning Google Cloud Storage.",
-            "Schema tailored to findings from scanning Google Datastore.",
-            "Schema tailored to findings from scanning Google BigQuery.",
-            "Schema containing all columns."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused.",
@@ -3294,11 +3126,6 @@
         },
         "type": {
           "description": "The type of job.",
-          "enumDescriptions": [
-            "Unused",
-            "The job inspected Google Cloud for sensitive data.",
-            "The job executed a Risk Analysis computation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused",
@@ -3313,15 +3140,6 @@
         },
         "state": {
           "description": "State of a job.",
-          "enumDescriptions": [
-            "Unused.",
-            "The job has not yet started.",
-            "The job is currently running. Once a job has finished it will transition to FAILED or DONE.",
-            "The job is no longer running.",
-            "The job was canceled before it could complete.",
-            "The job had an error and did not complete.",
-            "The job is currently accepting findings via hybridInspect. A hybrid job in ACTIVE state may continue to have findings added to it through calling of hybridInspect. After the job has finished no more calls to hybridInspect may be made. ACTIVE jobs can transition to DONE."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused.",
@@ -4348,13 +4166,6 @@
         },
         "state": {
           "description": "Stored info type version state. Read-only, updated by the system during dictionary creation.",
-          "enumDescriptions": [
-            "Unused",
-            "StoredInfoType version is being created.",
-            "StoredInfoType version is ready for use.",
-            "StoredInfoType creation failed. All relevant error messages are returned in the `StoredInfoTypeVersion` message.",
-            "StoredInfoType is no longer valid because artifacts stored in user-controlled storage were modified. To fix an invalid StoredInfoType, use the `UpdateStoredInfoType` method to create a new version."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused",

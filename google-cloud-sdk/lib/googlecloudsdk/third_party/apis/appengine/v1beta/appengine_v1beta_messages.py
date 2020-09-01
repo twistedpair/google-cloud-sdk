@@ -1855,6 +1855,38 @@ class Network(_messages.Message):
   subnetworkName = _messages.StringField(5)
 
 
+class NetworkSettings(_messages.Message):
+  r"""A NetworkSettings resource is a container for ingress settings for a
+  version or service.
+
+  Enums:
+    IngressTrafficAllowedValueValuesEnum: The ingress settings for version or
+      service.
+
+  Fields:
+    ingressTrafficAllowed: The ingress settings for version or service.
+  """
+
+  class IngressTrafficAllowedValueValuesEnum(_messages.Enum):
+    r"""The ingress settings for version or service.
+
+    Values:
+      INGRESS_TRAFFIC_ALLOWED_UNSPECIFIED: Unspecified
+      INGRESS_TRAFFIC_ALLOWED_ALL: Allow HTTP traffic from public and private
+        sources.
+      INGRESS_TRAFFIC_ALLOWED_INTERNAL_ONLY: Allow HTTP traffic from only
+        private VPC sources.
+      INGRESS_TRAFFIC_ALLOWED_INTERNAL_AND_LB: Allow HTTP traffic from private
+        VPC sources and through load balancers.
+    """
+    INGRESS_TRAFFIC_ALLOWED_UNSPECIFIED = 0
+    INGRESS_TRAFFIC_ALLOWED_ALL = 1
+    INGRESS_TRAFFIC_ALLOWED_INTERNAL_ONLY = 2
+    INGRESS_TRAFFIC_ALLOWED_INTERNAL_AND_LB = 3
+
+  ingressTrafficAllowed = _messages.EnumField('IngressTrafficAllowedValueValuesEnum', 1)
+
+
 class NetworkUtilization(_messages.Message):
   r"""Target scaling by network usage. Only applicable in the App Engine
   flexible environment.
@@ -2182,13 +2214,16 @@ class Service(_messages.Message):
       default.@OutputOnly
     name: Full path to the Service resource in the API. Example:
       apps/myapp/services/default.@OutputOnly
+    networkSettings: Ingress settings for this service. Will apply to all
+      versions.
     split: Mapping that defines fractional HTTP traffic diversion to different
       versions within the service.
   """
 
   id = _messages.StringField(1)
   name = _messages.StringField(2)
-  split = _messages.MessageField('TrafficSplit', 3)
+  networkSettings = _messages.MessageField('NetworkSettings', 3)
+  split = _messages.MessageField('TrafficSplit', 4)
 
 
 class SslSettings(_messages.Message):
@@ -2684,6 +2719,8 @@ class Version(_messages.Message):
   Messages:
     BetaSettingsValue: Metadata settings that are supplied to this version to
       enable beta runtime features.
+    BuildEnvVariablesValue: Environment variables available to the build
+      environment.Only returned in GET requests if view=FULL is set.
     EnvVariablesValue: Environment variables available to the application.Only
       returned in GET requests if view=FULL is set.
 
@@ -2699,6 +2736,8 @@ class Version(_messages.Message):
       intermittent or driven by user activity.
     betaSettings: Metadata settings that are supplied to this version to
       enable beta runtime features.
+    buildEnvVariables: Environment variables available to the build
+      environment.Only returned in GET requests if view=FULL is set.
     createTime: Time that this version was created.@OutputOnly
     createdBy: Email address of the user who created this version.@OutputOnly
     defaultExpiration: Duration that static files should be cached by web
@@ -2854,6 +2893,33 @@ class Version(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class BuildEnvVariablesValue(_messages.Message):
+    r"""Environment variables available to the build environment.Only returned
+    in GET requests if view=FULL is set.
+
+    Messages:
+      AdditionalProperty: An additional property for a BuildEnvVariablesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        BuildEnvVariablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BuildEnvVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvVariablesValue(_messages.Message):
     r"""Environment variables available to the application.Only returned in
     GET requests if view=FULL is set.
@@ -2883,39 +2949,40 @@ class Version(_messages.Message):
   automaticScaling = _messages.MessageField('AutomaticScaling', 2)
   basicScaling = _messages.MessageField('BasicScaling', 3)
   betaSettings = _messages.MessageField('BetaSettingsValue', 4)
-  createTime = _messages.StringField(5)
-  createdBy = _messages.StringField(6)
-  defaultExpiration = _messages.StringField(7)
-  deployment = _messages.MessageField('Deployment', 8)
-  diskUsageBytes = _messages.IntegerField(9)
-  endpointsApiService = _messages.MessageField('EndpointsApiService', 10)
-  entrypoint = _messages.MessageField('Entrypoint', 11)
-  env = _messages.StringField(12)
-  envVariables = _messages.MessageField('EnvVariablesValue', 13)
-  errorHandlers = _messages.MessageField('ErrorHandler', 14, repeated=True)
-  handlers = _messages.MessageField('UrlMap', 15, repeated=True)
-  healthCheck = _messages.MessageField('HealthCheck', 16)
-  id = _messages.StringField(17)
-  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 18, repeated=True)
-  instanceClass = _messages.StringField(19)
-  libraries = _messages.MessageField('Library', 20, repeated=True)
-  livenessCheck = _messages.MessageField('LivenessCheck', 21)
-  manualScaling = _messages.MessageField('ManualScaling', 22)
-  name = _messages.StringField(23)
-  network = _messages.MessageField('Network', 24)
-  nobuildFilesRegex = _messages.StringField(25)
-  readinessCheck = _messages.MessageField('ReadinessCheck', 26)
-  resources = _messages.MessageField('Resources', 27)
-  runtime = _messages.StringField(28)
-  runtimeApiVersion = _messages.StringField(29)
-  runtimeChannel = _messages.StringField(30)
-  runtimeMainExecutablePath = _messages.StringField(31)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 32)
-  threadsafe = _messages.BooleanField(33)
-  versionUrl = _messages.StringField(34)
-  vm = _messages.BooleanField(35)
-  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 36)
-  zones = _messages.StringField(37, repeated=True)
+  buildEnvVariables = _messages.MessageField('BuildEnvVariablesValue', 5)
+  createTime = _messages.StringField(6)
+  createdBy = _messages.StringField(7)
+  defaultExpiration = _messages.StringField(8)
+  deployment = _messages.MessageField('Deployment', 9)
+  diskUsageBytes = _messages.IntegerField(10)
+  endpointsApiService = _messages.MessageField('EndpointsApiService', 11)
+  entrypoint = _messages.MessageField('Entrypoint', 12)
+  env = _messages.StringField(13)
+  envVariables = _messages.MessageField('EnvVariablesValue', 14)
+  errorHandlers = _messages.MessageField('ErrorHandler', 15, repeated=True)
+  handlers = _messages.MessageField('UrlMap', 16, repeated=True)
+  healthCheck = _messages.MessageField('HealthCheck', 17)
+  id = _messages.StringField(18)
+  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 19, repeated=True)
+  instanceClass = _messages.StringField(20)
+  libraries = _messages.MessageField('Library', 21, repeated=True)
+  livenessCheck = _messages.MessageField('LivenessCheck', 22)
+  manualScaling = _messages.MessageField('ManualScaling', 23)
+  name = _messages.StringField(24)
+  network = _messages.MessageField('Network', 25)
+  nobuildFilesRegex = _messages.StringField(26)
+  readinessCheck = _messages.MessageField('ReadinessCheck', 27)
+  resources = _messages.MessageField('Resources', 28)
+  runtime = _messages.StringField(29)
+  runtimeApiVersion = _messages.StringField(30)
+  runtimeChannel = _messages.StringField(31)
+  runtimeMainExecutablePath = _messages.StringField(32)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 33)
+  threadsafe = _messages.BooleanField(34)
+  versionUrl = _messages.StringField(35)
+  vm = _messages.BooleanField(36)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 37)
+  zones = _messages.StringField(38, repeated=True)
 
 
 class Volume(_messages.Message):

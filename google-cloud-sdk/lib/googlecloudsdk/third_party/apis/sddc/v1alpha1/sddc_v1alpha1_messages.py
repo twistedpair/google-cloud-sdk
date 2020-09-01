@@ -25,6 +25,75 @@ class AddNodesRequest(_messages.Message):
   nodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class AttributeValue(_messages.Message):
+  r"""The allowed types for [VALUE] in a `[KEY]:[VALUE]` attribute.
+
+  Fields:
+    boolValue: A Boolean value represented by `true` or `false`.
+    intValue: A 64-bit signed integer.
+    stringValue: A string up to 256 bytes long.
+  """
+
+  boolValue = _messages.BooleanField(1)
+  intValue = _messages.IntegerField(2)
+  stringValue = _messages.MessageField('TruncatableString', 3)
+
+
+class Attributes(_messages.Message):
+  r"""A set of attributes, each in the format `[KEY]:[VALUE]`.
+
+  Messages:
+    AttributeMapValue: The set of attributes. Each attribute's key can be up
+      to 128 bytes long. The value can be a string up to 256 bytes, a signed
+      64-bit integer, or the Boolean values `true` and `false`. For example:
+      "/instance_id": "my-instance" "/http/user_agent": ""
+      "/http/request_bytes": 300 "abc.com/myattribute": true
+
+  Fields:
+    attributeMap: The set of attributes. Each attribute's key can be up to 128
+      bytes long. The value can be a string up to 256 bytes, a signed 64-bit
+      integer, or the Boolean values `true` and `false`. For example:
+      "/instance_id": "my-instance" "/http/user_agent": ""
+      "/http/request_bytes": 300 "abc.com/myattribute": true
+    droppedAttributesCount: The number of attributes that were discarded.
+      Attributes can be discarded because their keys are too long or because
+      there are too many attributes. If this value is 0 then all attributes
+      are valid.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributeMapValue(_messages.Message):
+    r"""The set of attributes. Each attribute's key can be up to 128 bytes
+    long. The value can be a string up to 256 bytes, a signed 64-bit integer,
+    or the Boolean values `true` and `false`. For example: "/instance_id":
+    "my-instance" "/http/user_agent": "" "/http/request_bytes": 300
+    "abc.com/myattribute": true
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributeMapValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AttributeMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributeMapValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AttributeValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AttributeValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributeMap = _messages.MessageField('AttributeMapValue', 1)
+  droppedAttributesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -122,6 +191,20 @@ class AuthorizationLoggingOptions(_messages.Message):
   permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
+class BillingView(_messages.Message):
+  r"""Message for reporting billing requests through Eventstream.
+
+  Fields:
+    reportRequests: Billing requests to be reported for
+      cloud.eventstream.v2.ResourceEvent Each request contains billing
+      operations to be reported under a service name. See go/billing-view-
+      construction for documentation on constructing billing view report
+      requests.
+  """
+
+  reportRequests = _messages.MessageField('ReportRequest', 1, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -172,10 +255,6 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
-
-
-class CancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
 
 
 class CloudAuditOptions(_messages.Message):
@@ -697,6 +776,53 @@ class DataAccessOptions(_messages.Message):
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
+class Distribution(_messages.Message):
+  r"""Distribution represents a frequency distribution of double-valued sample
+  points. It contains the size of the population of sample points plus
+  additional optional information: - the arithmetic mean of the samples - the
+  minimum and maximum of the samples - the sum-squared-deviation of the
+  samples, used to compute variance - a histogram of the values of the sample
+  points
+
+  Fields:
+    bucketCounts: The number of samples in each histogram bucket.
+      `bucket_counts` are optional. If present, they must sum to the `count`
+      value. The buckets are defined below in `bucket_option`. There are N
+      buckets. `bucket_counts[0]` is the number of samples in the underflow
+      bucket. `bucket_counts[1]` to `bucket_counts[N-1]` are the numbers of
+      samples in each of the finite buckets. And `bucket_counts[N] is the
+      number of samples in the overflow bucket. See the comments of
+      `bucket_option` below for more details. Any suffix of trailing zeros may
+      be omitted.
+    count: The total number of samples in the distribution. Must be >= 0.
+    exemplars: Example points. Must be in increasing order of `value` field.
+    explicitBuckets: Buckets with arbitrary user-provided width.
+    exponentialBuckets: Buckets with exponentially growing width.
+    linearBuckets: Buckets with constant width.
+    maximum: The maximum of the population of values. Ignored if `count` is
+      zero.
+    mean: The arithmetic mean of the samples in the distribution. If `count`
+      is zero then this field must be zero.
+    minimum: The minimum of the population of values. Ignored if `count` is
+      zero.
+    sumOfSquaredDeviation: The sum of squared deviations from the mean:
+      Sum[i=1..count]((x_i - mean)^2) where each x_i is a sample values. If
+      `count` is zero then this field must be zero, otherwise validation of
+      the request fails.
+  """
+
+  bucketCounts = _messages.IntegerField(1, repeated=True)
+  count = _messages.IntegerField(2)
+  exemplars = _messages.MessageField('Exemplar', 3, repeated=True)
+  explicitBuckets = _messages.MessageField('ExplicitBuckets', 4)
+  exponentialBuckets = _messages.MessageField('ExponentialBuckets', 5)
+  linearBuckets = _messages.MessageField('LinearBuckets', 6)
+  maximum = _messages.FloatField(7)
+  mean = _messages.FloatField(8)
+  minimum = _messages.FloatField(9)
+  sumOfSquaredDeviation = _messages.FloatField(10)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -705,6 +831,99 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Exemplar(_messages.Message):
+  r"""Exemplars are example points that may be used to annotate aggregated
+  distribution values. They are metadata that gives information about a
+  particular value added to a Distribution bucket, such as a trace ID that was
+  active when a value was added. They may contain further information, such as
+  a example values and timestamps, origin, etc.
+
+  Messages:
+    AttachmentsValueListEntry: A AttachmentsValueListEntry object.
+
+  Fields:
+    attachments: Contextual information about the example value. Examples are:
+      Trace: type.googleapis.com/google.monitoring.v3.SpanContext Literal
+      string: type.googleapis.com/google.protobuf.StringValue Labels dropped
+      during aggregation:
+      type.googleapis.com/google.monitoring.v3.DroppedLabels There may be only
+      a single attachment of any given message type in a single exemplar, and
+      this is enforced by the system.
+    timestamp: The observation (sampling) time of the above value.
+    value: Value of the exemplar point. This value determines to which bucket
+      the exemplar belongs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttachmentsValueListEntry(_messages.Message):
+    r"""A AttachmentsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AttachmentsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttachmentsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attachments = _messages.MessageField('AttachmentsValueListEntry', 1, repeated=True)
+  timestamp = _messages.StringField(2)
+  value = _messages.FloatField(3)
+
+
+class ExplicitBuckets(_messages.Message):
+  r"""Describing buckets with arbitrary user-provided width.
+
+  Fields:
+    bounds: 'bound' is a list of strictly increasing boundaries between
+      buckets. Note that a list of length N-1 defines N buckets because of
+      fenceposting. See comments on `bucket_options` for details. The i'th
+      finite bucket covers the interval [bound[i-1], bound[i]) where i ranges
+      from 1 to bound_size() - 1. Note that there are no finite buckets at all
+      if 'bound' only contains a single element; in that special case the
+      single bound defines the boundary between the underflow and overflow
+      buckets. bucket number lower bound upper bound i == 0 (underflow) -inf
+      bound[i] 0 < i < bound_size() bound[i-1] bound[i] i == bound_size()
+      (overflow) bound[i-1] +inf
+  """
+
+  bounds = _messages.FloatField(1, repeated=True)
+
+
+class ExponentialBuckets(_messages.Message):
+  r"""Describing buckets with exponentially growing width.
+
+  Fields:
+    growthFactor: The i'th exponential bucket covers the interval [scale *
+      growth_factor^(i-1), scale * growth_factor^i) where i ranges from 1 to
+      num_finite_buckets inclusive. Must be larger than 1.0.
+    numFiniteBuckets: The number of finite buckets. With the underflow and
+      overflow buckets, the total number of buckets is `num_finite_buckets` +
+      2. See comments on `bucket_options` for details.
+    scale: The i'th exponential bucket covers the interval [scale *
+      growth_factor^(i-1), scale * growth_factor^i) where i ranges from 1 to
+      num_finite_buckets inclusive. Must be > 0.
+  """
+
+  growthFactor = _messages.FloatField(1)
+  numFiniteBuckets = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  scale = _messages.FloatField(3)
 
 
 class Expr(_messages.Message):
@@ -743,158 +962,11 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class IpAddress(_messages.Message):
-  r"""An IpAddress resource in a ClusterGroup.
-
-  Messages:
-    LabelsValue: Labels are a way to attach lightweight metadata to resources
-      for filtering and querying resource data. No more than 64 user labels
-      can be associated with each resource. Label keys and values can be no
-      longer than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-
-  Fields:
-    createTime: Output only. The create time of the resource.
-    externalIp: Output only. The external IP of an workload VM.
-    internalIp: The internal IP of an workload VM.
-    labels: Labels are a way to attach lightweight metadata to resources for
-      filtering and querying resource data. No more than 64 user labels can be
-      associated with each resource. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes, where label keys must start with a
-      letter and international characters are allowed. The empty string is a
-      valid value. Labels are set on creation and updated like any other
-      field. Specifically, to add a new label, you would need to provide all
-      of the existing labels along with the new label. If you only provide a
-      map with the new label, all of the old labels will be removed (probably
-      not what is desired).
-    name: Output only. The resource name of this IpAddress. Resource names are
-      schemeless URI's that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names For example,
-      `projects/my-project/locations/us-central1/clusterGroups/my-
-      group/ipAddresses/my-ip`
-    updateTime: Output only. The update time of the resource.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels are a way to attach lightweight metadata to resources for
-    filtering and querying resource data. No more than 64 user labels can be
-    associated with each resource. Label keys and values can be no longer than
-    63 characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes, where label keys must start with a letter and
-    international characters are allowed. The empty string is a valid value.
-    Labels are set on creation and updated like any other field. Specifically,
-    to add a new label, you would need to provide all of the existing labels
-    along with the new label. If you only provide a map with the new label,
-    all of the old labels will be removed (probably not what is desired).
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  externalIp = _messages.StringField(2)
-  internalIp = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+class GoogleLongrunningCancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
 
 
-class ListClusterGroupBackupsResponse(_messages.Message):
-  r"""A ListClusterGroupBackupsResponse object.
-
-  Fields:
-    clusterGroupBackups: A list of SDDC cluster group backups.
-    nextPageToken: A token, which can be send as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    unreachable: List of Locations that could not be reached.
-  """
-
-  clusterGroupBackups = _messages.MessageField('ClusterGroupBackup', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListClusterGroupsResponse(_messages.Message):
-  r"""A ListClusterGroupsResponse object.
-
-  Fields:
-    clusterGroups: A list of SDDC cluster groups.
-    nextPageToken: A token, which can be send as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    unreachable: List of Locations that could not be reached.
-  """
-
-  clusterGroups = _messages.MessageField('ClusterGroup', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListClustersResponse(_messages.Message):
-  r"""A ListClustersResponse object.
-
-  Fields:
-    clusters: A list of SDDC clusters.
-    nextPageToken: A token, which can be send as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    unreachable: List of Locations that could not be reached.
-  """
-
-  clusters = _messages.MessageField('Cluster', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class ListIpAddressesResponse(_messages.Message):
-  r"""The response of listing IpAddresses in a given ClusterGroup.
-
-  Fields:
-    ipAddresses: A list of IpAddresses.
-    nextPageToken: A token, which can be send as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-  """
-
-  ipAddresses = _messages.MessageField('IpAddress', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class ListLocationsResponse(_messages.Message):
-  r"""The response message for Locations.ListLocations.
-
-  Fields:
-    locations: A list of locations that matches the specified filter in the
-      request.
-    nextPageToken: The standard List next-page token.
-  """
-
-  locations = _messages.MessageField('Location', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class ListOperationsResponse(_messages.Message):
+class GoogleLongrunningListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
   Fields:
@@ -904,164 +976,10 @@ class ListOperationsResponse(_messages.Message):
   """
 
   nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
 
 
-class Location(_messages.Message):
-  r"""A resource that represents Google Cloud Platform location.
-
-  Messages:
-    LabelsValue: Cross-service attributes for the location. For example
-      {"cloud.googleapis.com/region": "us-east1"}
-    MetadataValue: Service-specific metadata. For example the available
-      capacity at the given location.
-
-  Fields:
-    displayName: The friendly name for this location, typically a nearby city
-      name. For example, "Tokyo".
-    labels: Cross-service attributes for the location. For example
-      {"cloud.googleapis.com/region": "us-east1"}
-    locationId: The canonical id for this location. For example: `"us-east1"`.
-    metadata: Service-specific metadata. For example the available capacity at
-      the given location.
-    name: Resource name for the location, which may vary between
-      implementations. For example: `"projects/example-project/locations/us-
-      east1"`
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Cross-service attributes for the location. For example
-    {"cloud.googleapis.com/region": "us-east1"}
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""Service-specific metadata. For example the available capacity at the
-    given location.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  displayName = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  locationId = _messages.StringField(3)
-  metadata = _messages.MessageField('MetadataValue', 4)
-  name = _messages.StringField(5)
-
-
-class LogConfig(_messages.Message):
-  r"""Specifies what kind of log the caller must write
-
-  Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
-  """
-
-  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
-  counter = _messages.MessageField('CounterOptions', 2)
-  dataAccess = _messages.MessageField('DataAccessOptions', 3)
-
-
-class NetworkConfig(_messages.Message):
-  r"""Network configuration in the consumer project with which the peering has
-  to be done.
-
-  Fields:
-    externalIpAccess: controls if vCenter and NSX can be accessed via
-      internet. - FQDNs will resolve to the allocated external IPs for sddc
-      domain but remains mapping to the internal ip within consumer subnets. -
-      NAT will be set up on NSX for external ip ingress traffic. - users need
-      to manually configure NSX firewall to allow HTTPs traffic.
-    managementCidr: Management CIDR used by VMWare management applicances.
-    network: name of the network in the consumer project with which the tenant
-      project will be peered. In the case of shared VPC where the network
-      lives inside another project the network should should be provided in
-      the form of /project/{host_project_id}/global/networks/{network}
-    workloadCidr: Workload CIDR used by VMWare workload VMs.
-  """
-
-  externalIpAccess = _messages.BooleanField(1)
-  managementCidr = _messages.StringField(2)
-  network = _messages.StringField(3)
-  workloadCidr = _messages.StringField(4)
-
-
-class Node(_messages.Message):
-  r"""A node in a cluster.
-
-  Fields:
-    createTime: Output only. Creation time of the node.
-    nodeId: Output only. User-provided id of the node.
-    type: Output only. Type of the node.
-    updateTime: Output only. Update time of the node.
-  """
-
-  createTime = _messages.StringField(1)
-  nodeId = _messages.StringField(2)
-  type = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
-
-
-class Nsx(_messages.Message):
-  r"""Nsx description of a cluster group
-
-  Fields:
-    clientUrl: NSX client URL.
-    externalIp: NSX external address when access is enabled.
-    initialPassword: NSX initial password.
-    initialUsername: NSX initial username.
-    internalIp: NSX internal address.
-    serverExplorerUrl: NSX server explorer URL.
-  """
-
-  clientUrl = _messages.StringField(1)
-  externalIp = _messages.StringField(2)
-  initialPassword = _messages.StringField(3)
-  initialUsername = _messages.StringField(4)
-  internalIp = _messages.StringField(5)
-  serverExplorerUrl = _messages.StringField(6)
-
-
-class Operation(_messages.Message):
+class GoogleLongrunningOperation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
 
@@ -1163,10 +1081,976 @@ class Operation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   done = _messages.BooleanField(1)
-  error = _messages.MessageField('Status', 2)
+  error = _messages.MessageField('GoogleRpcStatus', 2)
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class GoogleRpcStatus(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
+class HttpRequest(_messages.Message):
+  r"""A common proto for logging HTTP requests. Only contains semantics
+  defined by the HTTP specification. Product-specific logging information MUST
+  be defined in a separate message.
+
+  Fields:
+    cacheFillBytes: The number of HTTP response bytes inserted into cache. Set
+      only when a cache fill was attempted.
+    cacheHit: Whether or not an entity was served from cache (with or without
+      validation).
+    cacheLookup: Whether or not a cache lookup was attempted.
+    cacheValidatedWithOriginServer: Whether or not the response was validated
+      with the origin server before being served from cache. This field is
+      only meaningful if `cache_hit` is True.
+    latency: The request processing latency on the server, from the time the
+      request was received until the response was sent.
+    protocol: Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2",
+      "websocket"
+    referer: The referer URL of the request, as defined in [HTTP/1.1 Header
+      Field
+      Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
+    remoteIp: The IP address (IPv4 or IPv6) of the client that issued the HTTP
+      request. Examples: `"192.168.1.1"`, `"FE80::0202:B3FF:FE1E:8329"`.
+    requestMethod: The request method. Examples: `"GET"`, `"HEAD"`, `"PUT"`,
+      `"POST"`.
+    requestSize: The size of the HTTP request message in bytes, including the
+      request headers and the request body.
+    requestUrl: The scheme (http, https), the host name, the path, and the
+      query portion of the URL that was requested. Example:
+      `"http://example.com/some/info?color=red"`.
+    responseSize: The size of the HTTP response message sent back to the
+      client, in bytes, including the response headers and the response body.
+    serverIp: The IP address (IPv4 or IPv6) of the origin server that the
+      request was sent to.
+    status: The response code indicating the status of the response. Examples:
+      200, 404.
+    userAgent: The user agent sent by the client. Example: `"Mozilla/4.0
+      (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)"`.
+  """
+
+  cacheFillBytes = _messages.IntegerField(1)
+  cacheHit = _messages.BooleanField(2)
+  cacheLookup = _messages.BooleanField(3)
+  cacheValidatedWithOriginServer = _messages.BooleanField(4)
+  latency = _messages.StringField(5)
+  protocol = _messages.StringField(6)
+  referer = _messages.StringField(7)
+  remoteIp = _messages.StringField(8)
+  requestMethod = _messages.StringField(9)
+  requestSize = _messages.IntegerField(10)
+  requestUrl = _messages.StringField(11)
+  responseSize = _messages.IntegerField(12)
+  serverIp = _messages.StringField(13)
+  status = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  userAgent = _messages.StringField(15)
+
+
+class IpAddress(_messages.Message):
+  r"""An IpAddress resource in a ClusterGroup.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the resource.
+
+  Messages:
+    LabelsValue: Labels are a way to attach lightweight metadata to resources
+      for filtering and querying resource data. No more than 64 user labels
+      can be associated with each resource. Label keys and values can be no
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+
+  Fields:
+    createTime: Output only. The create time of the resource.
+    externalIp: Output only. The external IP of an workload VM.
+    internalIp: The internal IP of an workload VM.
+    labels: Labels are a way to attach lightweight metadata to resources for
+      filtering and querying resource data. No more than 64 user labels can be
+      associated with each resource. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+    name: Output only. The resource name of this IpAddress. Resource names are
+      schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/clusterGroups/my-
+      group/ipAddresses/my-ip`
+    state: Output only. State of the resource.
+    updateTime: Output only. The update time of the resource.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: The IpAddress is ready.
+      CREATING: The IpAddress is being created.
+      UPDATING: The IpAddress is being updated.
+      DELETING: The IpAddress is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    UPDATING = 3
+    DELETING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are a way to attach lightweight metadata to resources for
+    filtering and querying resource data. No more than 64 user labels can be
+    associated with each resource. Label keys and values can be no longer than
+    63 characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes, where label keys must start with a letter and
+    international characters are allowed. The empty string is a valid value.
+    Labels are set on creation and updated like any other field. Specifically,
+    to add a new label, you would need to provide all of the existing labels
+    along with the new label. If you only provide a map with the new label,
+    all of the old labels will be removed (probably not what is desired).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  externalIp = _messages.StringField(2)
+  internalIp = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class LinearBuckets(_messages.Message):
+  r"""Describing buckets with constant width.
+
+  Fields:
+    numFiniteBuckets: The number of finite buckets. With the underflow and
+      overflow buckets, the total number of buckets is `num_finite_buckets` +
+      2. See comments on `bucket_options` for details.
+    offset: The i'th linear bucket covers the interval [offset + (i-1) *
+      width, offset + i * width) where i ranges from 1 to num_finite_buckets,
+      inclusive.
+    width: The i'th linear bucket covers the interval [offset + (i-1) * width,
+      offset + i * width) where i ranges from 1 to num_finite_buckets,
+      inclusive. Must be strictly positive.
+  """
+
+  numFiniteBuckets = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  offset = _messages.FloatField(2)
+  width = _messages.FloatField(3)
+
+
+class ListClusterGroupBackupsResponse(_messages.Message):
+  r"""A ListClusterGroupBackupsResponse object.
+
+  Fields:
+    clusterGroupBackups: A list of SDDC cluster group backups.
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: List of Locations that could not be reached.
+  """
+
+  clusterGroupBackups = _messages.MessageField('ClusterGroupBackup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListClusterGroupsResponse(_messages.Message):
+  r"""A ListClusterGroupsResponse object.
+
+  Fields:
+    clusterGroups: A list of SDDC cluster groups.
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: List of Locations that could not be reached.
+  """
+
+  clusterGroups = _messages.MessageField('ClusterGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListClustersResponse(_messages.Message):
+  r"""A ListClustersResponse object.
+
+  Fields:
+    clusters: A list of SDDC clusters.
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: List of Locations that could not be reached.
+  """
+
+  clusters = _messages.MessageField('Cluster', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListIpAddressesResponse(_messages.Message):
+  r"""The response of listing IpAddresses in a given ClusterGroup.
+
+  Fields:
+    ipAddresses: A list of IpAddresses.
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  ipAddresses = _messages.MessageField('IpAddress', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListLocationsResponse(_messages.Message):
+  r"""The response message for Locations.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class Location(_messages.Message):
+  r"""A resource that represents Google Cloud Platform location.
+
+  Messages:
+    LabelsValue: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    MetadataValue: Service-specific metadata. For example the available
+      capacity at the given location.
+
+  Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
+    labels: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    locationId: The canonical id for this location. For example: `"us-east1"`.
+    metadata: Service-specific metadata. For example the available capacity at
+      the given location.
+    name: Resource name for the location, which may vary between
+      implementations. For example: `"projects/example-project/locations/us-
+      east1"`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cross-service attributes for the location. For example
+    {"cloud.googleapis.com/region": "us-east1"}
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata. For example the available capacity at the
+    given location.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
+
+
+class LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('CloudAuditOptions', 1)
+  counter = _messages.MessageField('CounterOptions', 2)
+  dataAccess = _messages.MessageField('DataAccessOptions', 3)
+
+
+class LogEntry(_messages.Message):
+  r"""An individual log entry.
+
+  Enums:
+    SeverityValueValuesEnum: The severity of the log entry. The default value
+      is `LogSeverity.DEFAULT`.
+
+  Messages:
+    LabelsValue: A set of user-defined (key, value) data that provides
+      additional information about the log entry.
+    ProtoPayloadValue: The log entry payload, represented as a protocol buffer
+      that is expressed as a JSON object. The only accepted type currently is
+      AuditLog.
+    StructPayloadValue: The log entry payload, represented as a structure that
+      is expressed as a JSON object.
+
+  Fields:
+    httpRequest: Optional. Information about the HTTP request associated with
+      this log entry, if applicable.
+    insertId: A unique ID for the log entry used for deduplication. If
+      omitted, the implementation will generate one based on operation_id.
+    labels: A set of user-defined (key, value) data that provides additional
+      information about the log entry.
+    name: Required. The log to which this log entry belongs. Examples:
+      `"syslog"`, `"book_log"`.
+    operation: Optional. Information about an operation associated with the
+      log entry, if applicable.
+    protoPayload: The log entry payload, represented as a protocol buffer that
+      is expressed as a JSON object. The only accepted type currently is
+      AuditLog.
+    severity: The severity of the log entry. The default value is
+      `LogSeverity.DEFAULT`.
+    sourceLocation: Optional. Source code location information associated with
+      the log entry, if any.
+    structPayload: The log entry payload, represented as a structure that is
+      expressed as a JSON object.
+    textPayload: The log entry payload, represented as a Unicode string
+      (UTF-8).
+    timestamp: The time the event described by the log entry occurred. If
+      omitted, defaults to operation start time.
+    trace: Optional. Resource name of the trace associated with the log entry,
+      if any. If this field contains a relative resource name, you can assume
+      the name is relative to `//tracing.googleapis.com`. Example:
+      `projects/my-projectid/traces/06796866738c859f2f19b7cfb3214824`
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the log entry. The default value is
+    `LogSeverity.DEFAULT`.
+
+    Values:
+      DEFAULT: (0) The log entry has no assigned severity level.
+      DEBUG: (100) Debug or trace information.
+      INFO: (200) Routine information, such as ongoing status or performance.
+      NOTICE: (300) Normal but significant events, such as start up, shut
+        down, or a configuration change.
+      WARNING: (400) Warning events might cause problems.
+      ERROR: (500) Error events are likely to cause problems.
+      CRITICAL: (600) Critical events cause more severe problems or outages.
+      ALERT: (700) A person must take an action immediately.
+      EMERGENCY: (800) One or more systems are unusable.
+    """
+    DEFAULT = 0
+    DEBUG = 1
+    INFO = 2
+    NOTICE = 3
+    WARNING = 4
+    ERROR = 5
+    CRITICAL = 6
+    ALERT = 7
+    EMERGENCY = 8
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""A set of user-defined (key, value) data that provides additional
+    information about the log entry.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ProtoPayloadValue(_messages.Message):
+    r"""The log entry payload, represented as a protocol buffer that is
+    expressed as a JSON object. The only accepted type currently is AuditLog.
+
+    Messages:
+      AdditionalProperty: An additional property for a ProtoPayloadValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ProtoPayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StructPayloadValue(_messages.Message):
+    r"""The log entry payload, represented as a structure that is expressed as
+    a JSON object.
+
+    Messages:
+      AdditionalProperty: An additional property for a StructPayloadValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StructPayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  httpRequest = _messages.MessageField('HttpRequest', 1)
+  insertId = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  operation = _messages.MessageField('LogEntryOperation', 5)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 6)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 7)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 8)
+  structPayload = _messages.MessageField('StructPayloadValue', 9)
+  textPayload = _messages.StringField(10)
+  timestamp = _messages.StringField(11)
+  trace = _messages.StringField(12)
+
+
+class LogEntryOperation(_messages.Message):
+  r"""Additional information about a potentially long-running operation with
+  which a log entry is associated.
+
+  Fields:
+    first: Optional. Set this to True if this is the first log entry in the
+      operation.
+    id: Optional. An arbitrary operation identifier. Log entries with the same
+      identifier are assumed to be part of the same operation.
+    last: Optional. Set this to True if this is the last log entry in the
+      operation.
+    producer: Optional. An arbitrary producer identifier. The combination of
+      `id` and `producer` must be globally unique. Examples for `producer`:
+      `"MyDivision.MyBigCompany.com"`, `"github.com/MyProject/MyApplication"`.
+  """
+
+  first = _messages.BooleanField(1)
+  id = _messages.StringField(2)
+  last = _messages.BooleanField(3)
+  producer = _messages.StringField(4)
+
+
+class LogEntrySourceLocation(_messages.Message):
+  r"""Additional information about the source code location that produced the
+  log entry.
+
+  Fields:
+    file: Optional. Source file name. Depending on the runtime environment,
+      this might be a simple name or a fully-qualified name.
+    function: Optional. Human-readable name of the function or method being
+      invoked, with optional context such as the class or package name. This
+      information may be used in contexts such as the logs viewer, where a
+      file and line number are less meaningful. The format can vary by
+      language. For example: `qual.if.ied.Class.method` (Java),
+      `dir/package.func` (Go), `function` (Python).
+    line: Optional. Line within the source file. 1-based; 0 indicates no line
+      number available.
+  """
+
+  file = _messages.StringField(1)
+  function = _messages.StringField(2)
+  line = _messages.IntegerField(3)
+
+
+class MetricValue(_messages.Message):
+  r"""Represents a single metric value.
+
+  Messages:
+    LabelsValue: The labels describing the metric value. See comments on
+      google.api.servicecontrol.v1.Operation.labels for the overriding
+      relationship. Note that this map must not contain monitored resource
+      labels.
+
+  Fields:
+    boolValue: A boolean value.
+    distributionValue: A distribution value.
+    doubleValue: A double precision floating point value.
+    endTime: The end of the time period over which this metric value's
+      measurement applies.
+    int64Value: A signed 64-bit integer value.
+    labels: The labels describing the metric value. See comments on
+      google.api.servicecontrol.v1.Operation.labels for the overriding
+      relationship. Note that this map must not contain monitored resource
+      labels.
+    moneyValue: A money value.
+    startTime: The start of the time period over which this metric value's
+      measurement applies. The time period has different semantics for
+      different metric types (cumulative, delta, and gauge). See the metric
+      definition documentation in the service configuration for details.
+    stringValue: A text string value.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels describing the metric value. See comments on
+    google.api.servicecontrol.v1.Operation.labels for the overriding
+    relationship. Note that this map must not contain monitored resource
+    labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  boolValue = _messages.BooleanField(1)
+  distributionValue = _messages.MessageField('Distribution', 2)
+  doubleValue = _messages.FloatField(3)
+  endTime = _messages.StringField(4)
+  int64Value = _messages.IntegerField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  moneyValue = _messages.MessageField('Money', 7)
+  startTime = _messages.StringField(8)
+  stringValue = _messages.StringField(9)
+
+
+class MetricValueSet(_messages.Message):
+  r"""Represents a set of metric values in the same metric. Each metric value
+  in the set should have a unique combination of start time, end time, and
+  label values.
+
+  Fields:
+    metricName: The metric name defined in the service configuration.
+    metricValues: The values in this metric.
+  """
+
+  metricName = _messages.StringField(1)
+  metricValues = _messages.MessageField('MetricValue', 2, repeated=True)
+
+
+class Money(_messages.Message):
+  r"""Represents an amount of money with its currency type.
+
+  Fields:
+    currencyCode: The 3-letter currency code defined in ISO 4217.
+    nanos: Number of nano (10^-9) units of the amount. The value must be
+      between -999,999,999 and +999,999,999 inclusive. If `units` is positive,
+      `nanos` must be positive or zero. If `units` is zero, `nanos` can be
+      positive, zero, or negative. If `units` is negative, `nanos` must be
+      negative or zero. For example $-1.75 is represented as `units`=-1 and
+      `nanos`=-750,000,000.
+    units: The whole units of the amount. For example if `currencyCode` is
+      `"USD"`, then 1 unit is one US dollar.
+  """
+
+  currencyCode = _messages.StringField(1)
+  nanos = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  units = _messages.IntegerField(3)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Network configuration in the consumer project with which the peering has
+  to be done.
+
+  Fields:
+    externalIpAccess: controls if vCenter and NSX can be accessed via
+      internet. - FQDNs will resolve to the allocated external IPs for sddc
+      domain but remains mapping to the internal ip within consumer subnets. -
+      NAT will be set up on NSX for external ip ingress traffic. - users need
+      to manually configure NSX firewall to allow HTTPs traffic.
+    managementCidr: Management CIDR used by VMWare management applicances.
+    network: name of the network in the consumer project with which the tenant
+      project will be peered. In the case of shared VPC where the network
+      lives inside another project the network should should be provided in
+      the form of /project/{host_project_id}/global/networks/{network}
+    workloadCidr: Workload CIDR used by VMWare workload VMs.
+  """
+
+  externalIpAccess = _messages.BooleanField(1)
+  managementCidr = _messages.StringField(2)
+  network = _messages.StringField(3)
+  workloadCidr = _messages.StringField(4)
+
+
+class Node(_messages.Message):
+  r"""A node in a cluster.
+
+  Fields:
+    createTime: Output only. Creation time of the node.
+    nodeId: Output only. User-provided id of the node.
+    type: Output only. Type of the node.
+    updateTime: Output only. Update time of the node.
+  """
+
+  createTime = _messages.StringField(1)
+  nodeId = _messages.StringField(2)
+  type = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class Nsx(_messages.Message):
+  r"""Nsx description of a cluster group
+
+  Fields:
+    clientUrl: NSX client URL.
+    externalIp: NSX external address when access is enabled.
+    initialPassword: NSX initial password.
+    initialUsername: NSX initial username.
+    internalIp: NSX internal address.
+    serverExplorerUrl: NSX server explorer URL.
+  """
+
+  clientUrl = _messages.StringField(1)
+  externalIp = _messages.StringField(2)
+  initialPassword = _messages.StringField(3)
+  initialUsername = _messages.StringField(4)
+  internalIp = _messages.StringField(5)
+  serverExplorerUrl = _messages.StringField(6)
+
+
+class Operation(_messages.Message):
+  r"""Represents information regarding an operation.
+
+  Enums:
+    ImportanceValueValuesEnum: DO NOT USE. This is an experimental field.
+
+  Messages:
+    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
+    LabelsValue: Labels describing the operation. Only the following labels
+      are allowed: - Labels describing monitored resources as defined in the
+      service configuration. - Default labels of metric values. When
+      specified, labels defined in the metric value override these default. -
+      The following labels defined by Google Cloud Platform: -
+      `cloud.googleapis.com/location` describing the location where the
+      operation happened, - `servicecontrol.googleapis.com/user_agent`
+      describing the user agent of the API request, -
+      `servicecontrol.googleapis.com/service_agent` describing the service
+      used to handle the API request (e.g. ESP), -
+      `servicecontrol.googleapis.com/platform` describing the platform where
+      the API is served, such as App Engine, Compute Engine, or Kubernetes
+      Engine.
+    UserLabelsValue: User defined labels for the resource that this operation
+      is associated with. Only a combination of 1000 user labels per consumer
+      project are allowed.
+
+  Fields:
+    consumerId: Identity of the consumer who is using the service. This field
+      should be filled in for the operations initiated by a consumer, but not
+      for service-initiated operations that are not related to a specific
+      consumer. - This can be in one of the following formats: -
+      project:PROJECT_ID, - project`_`number:PROJECT_NUMBER, -
+      projects/PROJECT_ID or PROJECT_NUMBER, - folders/FOLDER_NUMBER, -
+      organizations/ORGANIZATION_NUMBER, - api`_`key:API_KEY.
+    endTime: End time of the operation. Required when the operation is used in
+      ServiceController.Report, but optional when the operation is used in
+      ServiceController.Check.
+    extensions: Unimplemented.
+    importance: DO NOT USE. This is an experimental field.
+    labels: Labels describing the operation. Only the following labels are
+      allowed: - Labels describing monitored resources as defined in the
+      service configuration. - Default labels of metric values. When
+      specified, labels defined in the metric value override these default. -
+      The following labels defined by Google Cloud Platform: -
+      `cloud.googleapis.com/location` describing the location where the
+      operation happened, - `servicecontrol.googleapis.com/user_agent`
+      describing the user agent of the API request, -
+      `servicecontrol.googleapis.com/service_agent` describing the service
+      used to handle the API request (e.g. ESP), -
+      `servicecontrol.googleapis.com/platform` describing the platform where
+      the API is served, such as App Engine, Compute Engine, or Kubernetes
+      Engine.
+    logEntries: Represents information to be logged.
+    metricValueSets: Represents information about this operation. Each
+      MetricValueSet corresponds to a metric defined in the service
+      configuration. The data type used in the MetricValueSet must agree with
+      the data type specified in the metric definition. Within a single
+      operation, it is not allowed to have more than one MetricValue instances
+      that have the same metric names and identical label value combinations.
+      If a request has such duplicated MetricValue instances, the entire
+      request is rejected with an invalid argument error.
+    operationId: Identity of the operation. This must be unique within the
+      scope of the service that generated the operation. If the service calls
+      Check() and Report() on the same operation, the two calls should carry
+      the same id. UUID version 4 is recommended, though not required. In
+      scenarios where an operation is computed from existing information and
+      an idempotent id is desirable for deduplication purpose, UUID version 5
+      is recommended. See RFC 4122 for details.
+    operationName: Fully qualified name of the operation. Reserved for future
+      use.
+    quotaProperties: Represents the properties needed for quota check.
+      Applicable only if this operation is for a quota check request. If this
+      is not specified, no quota check will be performed.
+    resources: The resources that are involved in the operation. The maximum
+      supported number of entries in this field is 100.
+    startTime: Required. Start time of the operation.
+    traceSpans: Unimplemented. A list of Cloud Trace spans. The span names
+      shall contain the id of the destination project which can be either the
+      produce or the consumer project.
+    userLabels: User defined labels for the resource that this operation is
+      associated with. Only a combination of 1000 user labels per consumer
+      project are allowed.
+  """
+
+  class ImportanceValueValuesEnum(_messages.Enum):
+    r"""DO NOT USE. This is an experimental field.
+
+    Values:
+      LOW: The API implementation may cache and aggregate the data. The data
+        may be lost when rare and unexpected system failures occur.
+      HIGH: The API implementation doesn't cache and aggregate the data. If
+        the method returns successfully, it's guaranteed that the data has
+        been persisted in durable storage.
+      DEBUG: In addition to the behavior described in HIGH, DEBUG enables
+        additional validation logic that is only useful during the onboarding
+        process. This is only available to Google internal services and the
+        service must be whitelisted by chemist-dev@google.com in order to use
+        this level.
+    """
+    LOW = 0
+    HIGH = 1
+    DEBUG = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValueListEntry(_messages.Message):
+    r"""A ExtensionsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ExtensionsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtensionsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels describing the operation. Only the following labels are
+    allowed: - Labels describing monitored resources as defined in the service
+    configuration. - Default labels of metric values. When specified, labels
+    defined in the metric value override these default. - The following labels
+    defined by Google Cloud Platform: - `cloud.googleapis.com/location`
+    describing the location where the operation happened, -
+    `servicecontrol.googleapis.com/user_agent` describing the user agent of
+    the API request, - `servicecontrol.googleapis.com/service_agent`
+    describing the service used to handle the API request (e.g. ESP), -
+    `servicecontrol.googleapis.com/platform` describing the platform where the
+    API is served, such as App Engine, Compute Engine, or Kubernetes Engine.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserLabelsValue(_messages.Message):
+    r"""User defined labels for the resource that this operation is associated
+    with. Only a combination of 1000 user labels per consumer project are
+    allowed.
+
+    Messages:
+      AdditionalProperty: An additional property for a UserLabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type UserLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  consumerId = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
+  importance = _messages.EnumField('ImportanceValueValuesEnum', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  logEntries = _messages.MessageField('LogEntry', 6, repeated=True)
+  metricValueSets = _messages.MessageField('MetricValueSet', 7, repeated=True)
+  operationId = _messages.StringField(8)
+  operationName = _messages.StringField(9)
+  quotaProperties = _messages.MessageField('QuotaProperties', 10)
+  resources = _messages.MessageField('ResourceInfo', 11, repeated=True)
+  startTime = _messages.StringField(12)
+  traceSpans = _messages.MessageField('TraceSpan', 13, repeated=True)
+  userLabels = _messages.MessageField('UserLabelsValue', 14)
 
 
 class OperationMetadata(_messages.Message):
@@ -1277,6 +2161,39 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class QuotaProperties(_messages.Message):
+  r"""Represents the properties needed for quota operations.
+
+  Enums:
+    QuotaModeValueValuesEnum: Quota mode for this operation.
+
+  Fields:
+    quotaMode: Quota mode for this operation.
+  """
+
+  class QuotaModeValueValuesEnum(_messages.Enum):
+    r"""Quota mode for this operation.
+
+    Values:
+      ACQUIRE: Decreases available quota by the cost specified for the
+        operation. If cost is higher than available quota, operation fails and
+        returns error.
+      ACQUIRE_BEST_EFFORT: Decreases available quota by the cost specified for
+        the operation. If cost is higher than available quota, operation does
+        not fail and available quota goes down to zero but it returns error.
+      CHECK: Does not change any available quota. Only checks if there is
+        enough quota. No lock is placed on the checked tokens neither.
+      RELEASE: Increases available quota by the operation cost specified for
+        the operation.
+    """
+    ACQUIRE = 0
+    ACQUIRE_BEST_EFFORT = 1
+    CHECK = 2
+    RELEASE = 3
+
+  quotaMode = _messages.EnumField('QuotaModeValueValuesEnum', 1)
+
+
 class RemoveNodesRequest(_messages.Message):
   r"""Request for removing nodes from the given cluster until the target count
   is reached.
@@ -1286,6 +2203,32 @@ class RemoveNodesRequest(_messages.Message):
   """
 
   nodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class ReportRequest(_messages.Message):
+  r"""Request message for the Report method.
+
+  Fields:
+    operations: Operations to be reported. Typically the service should report
+      one operation per request. Putting multiple operations into a single
+      request is allowed, but should be used only when multiple operations are
+      natually available at the time of the report. There is no limit on the
+      number of operations in the same ReportRequest, however the
+      ReportRequest size should be no larger than 1MB. See
+      ReportResponse.report_errors for partial failure behavior.
+    serviceConfigId: Specifies which version of service config should be used
+      to process the request. If unspecified or no matching version can be
+      found, the latest one will be used.
+    serviceName: The service name as specified in its service configuration.
+      For example, `"pubsub.googleapis.com"`. See
+      [google.api.Service](https://cloud.google.com/service-
+      management/reference/rpc/google.api#google.api.Service) for the
+      definition of a service name.
+  """
+
+  operations = _messages.MessageField('Operation', 1, repeated=True)
+  serviceConfigId = _messages.StringField(2)
+  serviceName = _messages.StringField(3)
 
 
 class ResetCloudAdminCredentialsRequest(_messages.Message):
@@ -1299,6 +2242,25 @@ class ResetCloudAdminCredentialsRequest(_messages.Message):
 
   resetNsxCloudadmin = _messages.BooleanField(1)
   resetVcenterCloudadmin = _messages.BooleanField(2)
+
+
+class ResourceInfo(_messages.Message):
+  r"""Describes a resource associated with this operation.
+
+  Fields:
+    resourceContainer: The identifier of the parent of this resource instance.
+      Must be in one of the following formats: - "projects/" - "folders/" -
+      "organizations/"
+    resourceLocation: The location of the resource. If not empty, the resource
+      will be checked against location policy. The value must be a valid zone,
+      region or multiregion. For example: "europe-west4" or "northamerica-
+      northeast1-a"
+    resourceName: Name of the resource. This is used for auditing purposes.
+  """
+
+  resourceContainer = _messages.StringField(1)
+  resourceLocation = _messages.StringField(2)
+  resourceName = _messages.StringField(3)
 
 
 class Rule(_messages.Message):
@@ -1791,12 +2753,13 @@ class SddcProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A SddcProjectsLocationsOperationsCancelRequest object.
 
   Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
+    googleLongrunningCancelOperationRequest: A
+      GoogleLongrunningCancelOperationRequest resource to be passed as the
+      request body.
     name: The name of the operation resource to be cancelled.
   """
 
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -1916,57 +2879,6 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
-class Status(_messages.Message):
-  r"""The `Status` type defines a logical error model that is suitable for
-  different programming environments, including REST APIs and RPC APIs. It is
-  used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details. You can
-  find out more about this error model and how to work with it in the [API
-  Design Guide](https://cloud.google.com/apis/design/errors).
-
-  Messages:
-    DetailsValueListEntry: A DetailsValueListEntry object.
-
-  Fields:
-    code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details. There is a
-      common set of message types for APIs to use.
-    message: A developer-facing error message, which should be in English. Any
-      user-facing error message should be localized and sent in the
-      google.rpc.Status.details field, or localized by the client.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DetailsValueListEntry(_messages.Message):
-    r"""A DetailsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a DetailsValueListEntry
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DetailsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
-  message = _messages.StringField(3)
-
-
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for `TestIamPermissions` method.
 
@@ -1989,6 +2901,119 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TraceSpan(_messages.Message):
+  r"""A span represents a single operation within a trace. Spans can be nested
+  to form a trace tree. Often, a trace contains a root span that describes the
+  end-to-end latency, and one or more subspans for its sub-operations. A trace
+  can also contain multiple root spans, or none at all. Spans do not need to
+  be contiguous-there may be gaps or overlaps between spans in a trace.
+
+  Enums:
+    SpanKindValueValuesEnum: Distinguishes between spans generated in a
+      particular context. For example, two spans with the same name may be
+      distinguished using `CLIENT` (caller) and `SERVER` (callee) to identify
+      an RPC call.
+
+  Fields:
+    attributes: A set of attributes on the span. You can have up to 32
+      attributes per span.
+    childSpanCount: An optional number of child spans that were generated
+      while this span was active. If set, allows implementation to detect
+      missing child spans.
+    displayName: A description of the span's operation (up to 128 bytes).
+      Stackdriver Trace displays the description in the Google Cloud Platform
+      Console. For example, the display name can be a qualified method name or
+      a file name and a line number where the operation is called. A best
+      practice is to use the same display name within an application and at
+      the same call point. This makes it easier to correlate spans in
+      different traces.
+    endTime: The end time of the span. On the client side, this is the time
+      kept by the local machine where the span execution ends. On the server
+      side, this is the time when the server application handler stops
+      running.
+    name: The resource name of the span in the following format:
+      projects/[PROJECT_ID]/traces/[TRACE_ID]/spans/SPAN_ID is a unique
+      identifier for a trace within a project; it is a 32-character
+      hexadecimal encoding of a 16-byte array. [SPAN_ID] is a unique
+      identifier for a span within a trace; it is a 16-character hexadecimal
+      encoding of an 8-byte array.
+    parentSpanId: The [SPAN_ID] of this span's parent span. If this is a root
+      span, then this field must be empty.
+    sameProcessAsParentSpan: (Optional) Set this parameter to indicate whether
+      this span is in the same process as its parent. If you do not set this
+      parameter, Stackdriver Trace is unable to take advantage of this helpful
+      information.
+    spanId: The [SPAN_ID] portion of the span's resource name.
+    spanKind: Distinguishes between spans generated in a particular context.
+      For example, two spans with the same name may be distinguished using
+      `CLIENT` (caller) and `SERVER` (callee) to identify an RPC call.
+    startTime: The start time of the span. On the client side, this is the
+      time kept by the local machine where the span execution starts. On the
+      server side, this is the time when the server's application handler
+      starts running.
+    status: An optional final status for this span.
+  """
+
+  class SpanKindValueValuesEnum(_messages.Enum):
+    r"""Distinguishes between spans generated in a particular context. For
+    example, two spans with the same name may be distinguished using `CLIENT`
+    (caller) and `SERVER` (callee) to identify an RPC call.
+
+    Values:
+      SPAN_KIND_UNSPECIFIED: Unspecified. Do NOT use as default.
+        Implementations MAY assume SpanKind.INTERNAL to be default.
+      INTERNAL: Indicates that the span is used internally. Default value.
+      SERVER: Indicates that the span covers server-side handling of an RPC or
+        other remote network request.
+      CLIENT: Indicates that the span covers the client-side wrapper around an
+        RPC or other remote request.
+      PRODUCER: Indicates that the span describes producer sending a message
+        to a broker. Unlike client and server, there is no direct critical
+        path latency relationship between producer and consumer spans (e.g.
+        publishing a message to a pubsub service).
+      CONSUMER: Indicates that the span describes consumer receiving a message
+        from a broker. Unlike client and server, there is no direct critical
+        path latency relationship between producer and consumer spans (e.g.
+        receiving a message from a pubsub service subscription).
+    """
+    SPAN_KIND_UNSPECIFIED = 0
+    INTERNAL = 1
+    SERVER = 2
+    CLIENT = 3
+    PRODUCER = 4
+    CONSUMER = 5
+
+  attributes = _messages.MessageField('Attributes', 1)
+  childSpanCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  displayName = _messages.MessageField('TruncatableString', 3)
+  endTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  parentSpanId = _messages.StringField(6)
+  sameProcessAsParentSpan = _messages.BooleanField(7)
+  spanId = _messages.StringField(8)
+  spanKind = _messages.EnumField('SpanKindValueValuesEnum', 9)
+  startTime = _messages.StringField(10)
+  status = _messages.MessageField('GoogleRpcStatus', 11)
+
+
+class TruncatableString(_messages.Message):
+  r"""Represents a string that might be shortened to a specified length.
+
+  Fields:
+    truncatedByteCount: The number of bytes removed from the original string.
+      If this value is 0, then the string was not shortened.
+    value: The shortened string. For example, if the original string is 500
+      bytes long and the limit of the string is 128 bytes, then `value`
+      contains the first 128 bytes of the 500-byte string. Truncation always
+      happens on a UTF8 character boundary. If there are multi-byte characters
+      in the string, then the length of the shortened string might be less
+      than the size limit.
+  """
+
+  truncatedByteCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  value = _messages.StringField(2)
 
 
 class Vcenter(_messages.Message):

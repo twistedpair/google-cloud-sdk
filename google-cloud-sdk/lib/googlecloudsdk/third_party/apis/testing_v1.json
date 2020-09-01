@@ -148,19 +148,6 @@
         },
         "state": {
           "description": "Output only. Indicates the current progress of the test matrix.",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "The execution or matrix is being validated.",
-            "The execution or matrix is waiting for resources to become available.",
-            "The execution is currently being processed. Can only be set on an execution.",
-            "The execution or matrix has terminated normally. On a matrix this means that the matrix level processing completed normally, but individual executions may be in an ERROR state.",
-            "The execution or matrix has stopped because it encountered an infrastructure failure.",
-            "The execution was not run because it corresponds to a unsupported environment. Can only be set on an execution.",
-            "The execution was not run because the provided inputs are incompatible with the requested environment. Example: requested AndroidVersion is lower than APK's minSdkVersion Can only be set on an execution.",
-            "The execution was not run because the provided inputs are incompatible with the requested architecture. Example: requested device does not support running the native code in the supplied APK Can only be set on an execution.",
-            "The user cancelled the execution. Can only be set on an execution.",
-            "The execution or matrix was not run because the provided inputs are not valid. Examples: input file is not of the expected type, is malformed\/corrupt, or was flagged as malware"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -196,43 +183,6 @@
         },
         "invalidMatrixDetails": {
           "description": "Output only. Describes why the matrix is considered invalid. Only useful for matrices in the INVALID state.",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "The matrix is INVALID, but there are no further details available.",
-            "The input app APK could not be parsed.",
-            "The input test APK could not be parsed.",
-            "The AndroidManifest.xml could not be found.",
-            "The APK manifest does not declare a package name.",
-            "The APK application ID (aka package name) is invalid. See also https:\/\/developer.android.com\/studio\/build\/application-id",
-            "The test package and app package are the same.",
-            "The test apk does not declare an instrumentation.",
-            "The input app apk does not have a signature.",
-            "The test runner class specified by user or in the test APK's manifest file is not compatible with Android Test Orchestrator. Orchestrator is only compatible with AndroidJUnitRunner version 1.0 or higher. Orchestrator can be disabled by using DO_NOT_USE_ORCHESTRATOR OrchestratorOption.",
-            "The test APK does not contain the test runner class specified by user or in the manifest file. This can be caused by either of the following reasons: - the user provided a runner class name that's incorrect, or - the test runner isn't built into the test APK (might be in the app APK instead).",
-            "A main launcher activity could not be found.",
-            "The app declares one or more permissions that are not allowed.",
-            "There is a conflict in the provided robo_directives.",
-            "There is at least one invalid resource name in the provided robo directives",
-            "Invalid definition of action in the robo directives (e.g. a click or ignore action includes an input text field)",
-            "There is no test loop intent filter, or the one that is given is not formatted correctly.",
-            "The request contains a scenario label that was not declared in the manifest.",
-            "There was an error when parsing a label's value.",
-            "The request contains a scenario number that was not declared in the manifest.",
-            "Device administrator applications are not allowed.",
-            "The zipped XCTest was malformed. The zip did not contain a single .xctestrun file and the contents of the DerivedData\/Build\/Products directory.",
-            "The zipped XCTest was built for the iOS simulator rather than for a physical device.",
-            "The .xctestrun file did not specify any test targets.",
-            "One or more of the test targets defined in the .xctestrun file specifies \"UseDestinationArtifacts\", which is disallowed.",
-            "XC tests which run on physical devices must have \"IsAppHostedTestBundle\" == \"true\" in the xctestrun file.",
-            "An Info.plist file in the XCTest zip could not be parsed.",
-            "The APK is marked as \"testOnly\". Deprecated and not currently used.",
-            "The input IPA could not be parsed.",
-            "The application doesn't register the game loop URL scheme.",
-            "The iOS application bundle (.app) couldn't be processed.",
-            "APK contains no code. See also https:\/\/developer.android.com\/guide\/topics\/manifest\/application-element.html#code",
-            "Either the provided input APK path was malformed, the APK file does not exist, or the user does not have permission to access the APK file.",
-            "APK is built for a preview SDK which is unsupported"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -316,13 +266,6 @@
         },
         "outcomeSummary": {
           "description": "Output Only. The overall outcome of the test. Only set when the test matrix state is FINISHED.",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "The test matrix run was successful, for instance: - All the test cases passed. - Robo did not detect a crash of the application under test.",
-            "A run failed, for instance: - One or more test case failed. - A test timed out. - The application under test crashed.",
-            "Something unexpected happened. The run should still be considered unsuccessful but this is likely a transient problem and re-running the test might be successful.",
-            "All tests were skipped, for instance: - All device configurations were incompatible."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -644,11 +587,6 @@
         },
         "orchestratorOption": {
           "description": "The option of whether running each test within its own invocation of instrumentation with Android Test Orchestrator or not. ** Orchestrator is only compatible with AndroidJUnitRunner version 1.0 or higher! ** Orchestrator offers the following benefits: - No shared state - Crashes are isolated - Logs are scoped per test See for more information about Android Test Orchestrator. If not set, the test will be run without the orchestrator.",
-          "enumDescriptions": [
-            "Default value: the server will choose the mode. Currently implies that the test will run without the orchestrator. In the future, all instrumentation tests will be run with the orchestrator. Using the orchestrator is highly encouraged because of all the benefits it offers.",
-            "Run test using orchestrator. ** Only compatible with AndroidJUnitRunner version 1.0 or higher! ** Recommended.",
-            "Run test without using orchestrator."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value: the server will choose the mode. Currently implies that the test will run without the orchestrator. In the future, all instrumentation tests will be run with the orchestrator. Using the orchestrator is highly encouraged because of all the benefits it offers.",
@@ -799,12 +737,6 @@
         },
         "actionType": {
           "description": "Required. The type of action that Robo should perform on the specified element.",
-          "enumDescriptions": [
-            "DO NOT USE. For proto versioning only.",
-            "Direct Robo to click on the specified element. No-op if specified element is not clickable.",
-            "Direct Robo to enter text on the specified element. No-op if specified element is not enabled or does not allow text entry.",
-            "Direct Robo to ignore interactions with a specific element."
-          ],
           "type": "string",
           "enumDescriptions": [
             "DO NOT USE. For proto versioning only.",
@@ -1113,19 +1045,6 @@
         },
         "state": {
           "description": "Output only. Indicates the current progress of the test execution (e.g., FINISHED).",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "The execution or matrix is being validated.",
-            "The execution or matrix is waiting for resources to become available.",
-            "The execution is currently being processed. Can only be set on an execution.",
-            "The execution or matrix has terminated normally. On a matrix this means that the matrix level processing completed normally, but individual executions may be in an ERROR state.",
-            "The execution or matrix has stopped because it encountered an infrastructure failure.",
-            "The execution was not run because it corresponds to a unsupported environment. Can only be set on an execution.",
-            "The execution was not run because the provided inputs are incompatible with the requested environment. Example: requested AndroidVersion is lower than APK's minSdkVersion Can only be set on an execution.",
-            "The execution was not run because the provided inputs are incompatible with the requested architecture. Example: requested device does not support running the native code in the supplied APK Can only be set on an execution.",
-            "The user cancelled the execution. Can only be set on an execution.",
-            "The execution or matrix was not run because the provided inputs are not valid. Examples: input file is not of the expected type, is malformed\/corrupt, or was flagged as malware"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -1321,19 +1240,6 @@
       "properties": {
         "testState": {
           "description": "The current rolled-up state of the test matrix. If this state is already final, then the cancelation request will have no effect.",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "The execution or matrix is being validated.",
-            "The execution or matrix is waiting for resources to become available.",
-            "The execution is currently being processed. Can only be set on an execution.",
-            "The execution or matrix has terminated normally. On a matrix this means that the matrix level processing completed normally, but individual executions may be in an ERROR state.",
-            "The execution or matrix has stopped because it encountered an infrastructure failure.",
-            "The execution was not run because it corresponds to a unsupported environment. Can only be set on an execution.",
-            "The execution was not run because the provided inputs are incompatible with the requested environment. Example: requested AndroidVersion is lower than APK's minSdkVersion Can only be set on an execution.",
-            "The execution was not run because the provided inputs are incompatible with the requested architecture. Example: requested device does not support running the native code in the supplied APK Can only be set on an execution.",
-            "The user cancelled the execution. Can only be set on an execution.",
-            "The execution or matrix was not run because the provided inputs are not valid. Examples: input file is not of the expected type, is malformed\/corrupt, or was flagged as malware"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -1525,12 +1431,6 @@
         },
         "form": {
           "description": "Whether this device is virtual or physical.",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "Android virtual device using Compute Engine native virtualization. Firebase Test Lab only.",
-            "Actual hardware.",
-            "Android virtual device using emulator in nested virtualization. Equivalent to Android Studio."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -1547,12 +1447,6 @@
         },
         "formFactor": {
           "description": "Whether this device is a phone, tablet, wearable, etc.",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "This device has the shape of a phone.",
-            "This device has the shape of a tablet.",
-            "This device has the shape of a watch or other wearable."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -1843,12 +1737,6 @@
         },
         "formFactor": {
           "description": "Whether this device is a phone, tablet, wearable, etc.",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "This device has the shape of a phone.",
-            "This device has the shape of a tablet.",
-            "This device has the shape of a watch or other wearable."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",
@@ -2037,12 +1925,6 @@
         },
         "form": {
           "description": "Whether this block is used by physical or virtual devices",
-          "enumDescriptions": [
-            "Do not use. For proto versioning only.",
-            "Android virtual device using Compute Engine native virtualization. Firebase Test Lab only.",
-            "Actual hardware.",
-            "Android virtual device using emulator in nested virtualization. Equivalent to Android Studio."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use. For proto versioning only.",

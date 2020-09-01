@@ -216,14 +216,6 @@
         },
         "state": {
           "description": "The current state of the environment.",
-          "enumDescriptions": [
-            "The state of the environment is unknown.",
-            "The environment is in the process of being created.",
-            "The environment is currently running and healthy. It is ready for use.",
-            "The environment is being updated. It remains usable but cannot receive additional update requests or be deleted at this time.",
-            "The environment is undergoing deletion. It cannot be used.",
-            "The environment has encountered an error and cannot be used."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The state of the environment is unknown.",
@@ -523,14 +515,6 @@
       "properties": {
         "state": {
           "description": "Output only. The current operation state.",
-          "enumDescriptions": [
-            "Unused.",
-            "The operation has been created but is not yet started.",
-            "The operation is underway.",
-            "The operation completed successfully.",
-            "",
-            "The operation is no longer running but did not succeed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused.",
@@ -551,12 +535,6 @@
         },
         "operationType": {
           "description": "Output only. The type of operation being performed.",
-          "enumDescriptions": [
-            "Unused.",
-            "A resource creation operation.",
-            "A resource deletion operation.",
-            "A resource update operation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unused.",

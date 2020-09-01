@@ -77,3 +77,7 @@ class SourceCreationError(exceptions.Error):
 
 class ServiceAccountMissingRequiredPermissions(exceptions.Error):
   """When a service account does not have the necessary permissions."""
+
+
+class EventingInstallError(exceptions.Error):
+  """When eventing fails to be installed."""

@@ -19,72 +19,51 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import json
-import os
-import sys
 
 import six
 
 
-def ReadJsonStream(file_obj, chunk_size_bytes=50, ignore_non_json=False):
+def ReadJsonStream(file_obj):
   """Read the events from the skaffold event stream.
 
   Args:
     file_obj: A File object.
-    chunk_size_bytes: Size of the chunk to read.
-    ignore_non_json: Ignore data that is not valid json. If False, raise an
-      exception on invalid json.
 
   Yields:
-    Events from the JSON payloads.
+    Event dicts from the JSON payloads.
   """
-  for line in _ReadStreamingLines(file_obj, chunk_size_bytes=chunk_size_bytes):
+  for line in _ReadStreamingLines(file_obj):
     if not line:
       continue
-    try:
-      payload = json.loads(line)
-    except ValueError as e:
-      if ignore_non_json:
-        continue
-      else:
-        six.reraise(type(e), e, sys.exc_info()[2])
-    if not isinstance(payload, dict):
-      continue
-    yield payload
+    yield json.loads(six.ensure_str(line))
 
 
-def _ReadStreamingLines(file_obj, chunk_size_bytes=50):
-  """Read lines from a file object.
+if six.PY3:
 
-  Generally, in file objects, readlines() waits until either the buffer is full
-  or the connection closes. This function returns the line of text as soon
-  as new-line appears in the buffer, regardless if the buffer is full or not.
-  This function serves the same purpose as readlines() except without the
-  blocking.
+  def _ReadStreamingLines(file_obj):
+    return file_obj
 
-  Args:
-    file_obj: A file object.
-    chunk_size_bytes: Size of the chunk to read.
+elif six.PY2:
 
-  Yields:
-    Lines as read from the response.
-  """
-  pending = None
+  def _ReadStreamingLines(file_obj):
+    """Python 2 compatibility with py3's streaming behavior.
 
-  while True:
-    chunk = os.read(file_obj.fileno(), chunk_size_bytes)
-    if not chunk:
-      break
+    If file_obj is an HTTPResponse, iterating over lines blocks until a buffer
+    is full.
 
-    if pending is not None:
-      chunk = pending + chunk
-      pending = None
+    Args:
+      file_obj: A file-like object, including HTTPResponse.
 
-    lines = chunk.split(b'\n')
-    if lines[-1]:
-      pending = lines.pop()
-
-    for line in lines:
-      yield six.ensure_text(line)
-
-  if pending:
-    yield six.ensure_text(pending)
+    Yields:
+      Lines, like iter(file_obj) but without buffering stalls.
+    """
+    while True:
+      line = b''
+      while True:
+        byte = file_obj.read(1)
+        if not byte:
+          return
+        if byte == b'\n':
+          break
+        line += byte
+      yield line

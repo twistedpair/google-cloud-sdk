@@ -553,11 +553,11 @@
     },
     "CloudAuditLoggingFeatureSpec": {
       "id": "CloudAuditLoggingFeatureSpec",
-      "description": "Spec for Audit Logging Whitelisting.",
+      "description": "Spec for Audit Logging Allowlisting.",
       "type": "object",
       "properties": {
-        "whitelistedServiceAccounts": {
-          "description": "Service account that should be whitelisted to send the audit logs; eg cloudauditlogging@gcp-project.iam.gserviceaccount.com. These accounts must already exist, but do not need to have any permissions granted to them. The customer's entitlements will be checked prior to whitelisting (i.e. the customer must be an Anthos customer.)",
+        "allowlistedServiceAccounts": {
+          "description": "Service account that should be allowlisted to send the audit logs; eg cloudauditlogging@gcp-project.iam.gserviceaccount.com. These accounts must already exist, but do not need to have any permissions granted to them. The customer's entitlements will be checked prior to allowlisting (i.e. the customer must be an Anthos customer.)",
           "type": "array",
           "items": {
             "type": "string"
@@ -1129,10 +1129,6 @@
         "deploymentState": {
           "description": "The state about the policy controller installation.",
           "$ref": "GatekeeperDeploymentState"
-        },
-        "gatekeeperState": {
-          "description": "The state of Gatekeeper policies and constraints.",
-          "$ref": "GatekeeperState"
         }
       }
     },
@@ -1186,13 +1182,6 @@
         }
       }
     },
-    "GatekeeperState": {
-      "id": "GatekeeperState",
-      "description": "States for Constraint Templates and Policy Constraints.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "AppDevExperienceFeatureState": {
       "id": "AppDevExperienceFeatureState",
       "description": "State for App Dev Exp Feature.",
@@ -1202,7 +1191,7 @@
     },
     "CloudAuditLoggingFeatureState": {
       "id": "CloudAuditLoggingFeatureState",
-      "description": "An empty state for Audit Logging Whitelisting. This is required since FeatureStateDetails requires a state.",
+      "description": "An empty state for Audit Logging Allowlisting. This is required since FeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
       }

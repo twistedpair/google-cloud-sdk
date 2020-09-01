@@ -71,6 +71,8 @@ apis:
   apigateway:
     v1alpha1:
       discovery_doc: apigateway_v1alpha1.json
+    v1beta:
+      discovery_doc: apigateway_v1beta.json
       default: true
   apigee:
     v1:
@@ -451,11 +453,9 @@ apis:
     v1alpha2:
       discovery_doc: dns_v1alpha2.json
   domains:
-    v1alpha1:
-      discovery_doc: domains_v1alpha1.json
-      default: true
     v1alpha2:
       discovery_doc: domains_v1alpha2.json
+      default: true
   eventarc:
     v1beta1:
       discovery_doc: eventarc_v1beta1.json
@@ -747,6 +747,8 @@ apis:
       discovery_doc: secretmanager_v1.json
       default: true
   securitycenter:
+    v1beta2:
+      discovery_doc: securitycenter_v1beta2.json
     v1:
       discovery_doc: securitycenter_v1.json
       resources:

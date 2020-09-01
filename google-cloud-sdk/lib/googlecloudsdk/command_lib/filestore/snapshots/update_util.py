@@ -21,14 +21,14 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.filestore import filestore_client
 from googlecloudsdk.command_lib.filestore import update_util
+from googlecloudsdk.command_lib.filestore import util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-def UpdateLabels(ref, args, req):
+def UpdateLabels(unused_ref, args, req):
   """Update snapshot labels."""
-  ref = GetResourceRef(args)
-  new_labels = update_util.GetUpdatedLabels(ref, args, req,
+  new_labels = update_util.GetUpdatedLabels(args, req,
                                             update_util.snapshot_feature_name)
   if new_labels:
     req.snapshot.labels = new_labels
@@ -51,10 +51,10 @@ def GetResourceRef(args):
   return ref
 
 
-def GetExistingSnapshot(resource_ref, args, patch_request):
+def GetExistingSnapshot(unused_resource_ref, args, patch_request):
   """Fetch existing Filestore instance to update and add it to Patch request."""
   resource_ref = GetResourceRef(args)
-  api_version = resource_ref.GetCollectionInfo().api_version
+  api_version = util.GetApiVersionFromArgs(args)
   client = filestore_client.FilestoreClient(api_version)
   orig_snapshot = client.GetSnapshot(resource_ref)
   patch_request.snapshot = orig_snapshot
@@ -66,6 +66,6 @@ def FormatSnapshotUpdateResponse(response, args):
   del response
   # Return snapshot describe output.
   resource_ref = GetResourceRef(args)
-  api_version = resource_ref.GetCollectionInfo().api_version
+  api_version = util.GetApiVersionFromArgs(args)
   client = filestore_client.FilestoreClient(api_version)
   return encoding.MessageToDict(client.GetSnapshot(resource_ref))

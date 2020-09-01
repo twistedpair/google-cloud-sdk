@@ -220,13 +220,6 @@
         },
         "state": {
           "description": "Output only. State of the job.",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "The job is executing normally.",
-            "The job is paused by the user. It will not execute. A user can intentionally pause the job using PauseJobRequest.",
-            "The job is disabled by the system due to error. The user cannot directly set a job to be disabled.",
-            "The job state resulting from a failed CloudScheduler.UpdateJob operation. To recover a job from this state, retry CloudScheduler.UpdateJob until a successful response is received."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -298,16 +291,6 @@
       "properties": {
         "httpMethod": {
           "description": "The HTTP method to use for the request. PATCH and OPTIONS are not permitted.",
-          "enumDescriptions": [
-            "HTTP method unspecified. Defaults to POST.",
-            "HTTP POST",
-            "HTTP GET",
-            "HTTP HEAD",
-            "HTTP PUT",
-            "HTTP DELETE",
-            "HTTP PATCH",
-            "HTTP OPTIONS"
-          ],
           "type": "string",
           "enumDescriptions": [
             "HTTP method unspecified. Defaults to POST.",
@@ -386,16 +369,6 @@
         },
         "httpMethod": {
           "description": "Which HTTP method to use for the request.",
-          "enumDescriptions": [
-            "HTTP method unspecified. Defaults to POST.",
-            "HTTP POST",
-            "HTTP GET",
-            "HTTP HEAD",
-            "HTTP PUT",
-            "HTTP DELETE",
-            "HTTP PATCH",
-            "HTTP OPTIONS"
-          ],
           "type": "string",
           "enumDescriptions": [
             "HTTP method unspecified. Defaults to POST.",

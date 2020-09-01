@@ -106,6 +106,16 @@ class AnthosApiEndpoint(_messages.Message):
   usePrivateEndpoint = _messages.BooleanField(15)
 
 
+class AnthosSseConfig(_messages.Message):
+  r"""Configuration options for the Anthos SSE bundle.
+
+  Fields:
+    enabled: Whether the Anthos SSE bundle is enabled on the KrmApiHost.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -221,6 +231,18 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BundlesConfig(_messages.Message):
+  r"""Configuration for the bundles that can be enabled on the KrmApiHost.
+
+  Fields:
+    anthosSseConfig: Configuration for the Anthos SSE bundle.
+    yakimaConfig: Configuration for the Yakima bundle.
+  """
+
+  anthosSseConfig = _messages.MessageField('AnthosSseConfig', 1)
+  yakimaConfig = _messages.MessageField('YakimaConfig', 2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -271,6 +293,96 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class KrmApiHost(_messages.Message):
+  r"""A KrmApiHost represents a GKE cluster which is pre-installed with KRM
+  resources of services currently supported by the KRM API Hosting API.
+
+  Messages:
+    LabelsValue: Labels are used for additional information for a KrmApiHost.
+
+  Fields:
+    bundlesConfig: Configuration for the bundles that are enabled on the
+      KrmApiHost.
+    clusterCidrBlock: The IP address range for the cluster pod IPs. Set to
+      blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    clusterNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for pod IP addresses. Alternatively,
+      cluster_cidr_block can be used to automatically create a GKE-managed
+      one.
+    endpoint: Output only. IP address of the KRM endpoint on the KrmApiHost.
+    gitBranch: The branch of the repository to sync from.
+    gitEndpoint: The URL of the Git repository to use as the source of truth.
+    gitPolicyDir: The path within the Git repository that represents the top
+      level of the repo to sync. Default: the root directory of the
+      repository.
+    gitSecretType: The type of secret configured for access to the Git
+      repository. One of ssh, cookiefile, token, gcenode, or none.
+    labels: Labels are used for additional information for a KrmApiHost.
+    manBlock: Master Authorized Network. Allows access to the k8s master from
+      this block.
+    masterIpv4CidrBlock: The /28 network that the masters will use.
+    name: Output only. The name of this KrmApiHost resource in the format: 'pr
+      ojects/{project_id}/locations/{location}/krmApiHosts/{krm_api_host_id}'.
+    network: Existing VPC Network to put the GKE cluster and nodes in.
+    servicesCidrBlock: The IP address range for the cluster service IPs. Set
+      to blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    servicesNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for service ClusterIPs. Alternatively,
+      services_cidr_block can be used to automatically create a GKE-managed
+      one.
+    usePrivateEndpoint: Only allow access to the master's private endpoint IP.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are used for additional information for a KrmApiHost.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bundlesConfig = _messages.MessageField('BundlesConfig', 1)
+  clusterCidrBlock = _messages.StringField(2)
+  clusterNamedRange = _messages.StringField(3)
+  endpoint = _messages.StringField(4)
+  gitBranch = _messages.StringField(5)
+  gitEndpoint = _messages.StringField(6)
+  gitPolicyDir = _messages.StringField(7)
+  gitSecretType = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  manBlock = _messages.StringField(10)
+  masterIpv4CidrBlock = _messages.StringField(11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  servicesCidrBlock = _messages.StringField(14)
+  servicesNamedRange = _messages.StringField(15)
+  usePrivateEndpoint = _messages.BooleanField(16)
+
+
 class KrmapihostingProjectsLocationsAnthosApiEndpointsCreateRequest(_messages.Message):
   r"""A KrmapihostingProjectsLocationsAnthosApiEndpointsCreateRequest object.
 
@@ -312,28 +424,6 @@ class KrmapihostingProjectsLocationsAnthosApiEndpointsDeleteRequest(_messages.Me
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
-
-
-class KrmapihostingProjectsLocationsAnthosApiEndpointsGetIamPolicyRequest(_messages.Message):
-  r"""A KrmapihostingProjectsLocationsAnthosApiEndpointsGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
 
 
 class KrmapihostingProjectsLocationsAnthosApiEndpointsGetRequest(_messages.Message):
@@ -410,9 +500,151 @@ class KrmapihostingProjectsLocationsAnthosApiEndpointsPatchRequest(_messages.Mes
   updateMask = _messages.StringField(4)
 
 
-class KrmapihostingProjectsLocationsAnthosApiEndpointsSetIamPolicyRequest(_messages.Message):
-  r"""A KrmapihostingProjectsLocationsAnthosApiEndpointsSetIamPolicyRequest
-  object.
+class KrmapihostingProjectsLocationsGetRequest(_messages.Message):
+  r"""A KrmapihostingProjectsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class KrmapihostingProjectsLocationsKrmApiHostsCreateRequest(_messages.Message):
+  r"""A KrmapihostingProjectsLocationsKrmApiHostsCreateRequest object.
+
+  Fields:
+    krmApiHost: A KrmApiHost resource to be passed as the request body.
+    krmApiHostId: Required. Client chosen ID for the KrmApiHost.
+    parent: Required. The parent in whose context the KrmApiHost is created.
+      The parent value is in the format:
+      'projects/{project_id}/locations/{location}'.
+    requestId: Optional. A unique ID to identify requests. This is unique such
+      that if the request is re-tried, the server will know to ignore the
+      request if it has already been completed. The server will guarantee that
+      for at least 60 minutes after the first request. The request ID must be
+      a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  krmApiHost = _messages.MessageField('KrmApiHost', 1)
+  krmApiHostId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class KrmapihostingProjectsLocationsKrmApiHostsDeleteRequest(_messages.Message):
+  r"""A KrmapihostingProjectsLocationsKrmApiHostsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of this service resource in the format: 'projects
+      /{project_id}/locations/{location}/krmApiHosts/{krm_api_host_id}'.
+    requestId: Optional. A unique ID to identify requests. This is unique such
+      that if the request is re-tried, the server will know to ignore the
+      request if it has already been completed. The server will guarantee that
+      for at least 60 minutes after the first request. The request ID must be
+      a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class KrmapihostingProjectsLocationsKrmApiHostsGetIamPolicyRequest(_messages.Message):
+  r"""A KrmapihostingProjectsLocationsKrmApiHostsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class KrmapihostingProjectsLocationsKrmApiHostsGetRequest(_messages.Message):
+  r"""A KrmapihostingProjectsLocationsKrmApiHostsGetRequest object.
+
+  Fields:
+    name: Required. The name of this service resource in the format: 'projects
+      /{project_id}/locations/{location}/krmApiHosts/{krm_api_host_id}'.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class KrmapihostingProjectsLocationsKrmApiHostsListRequest(_messages.Message):
+  r"""A KrmapihostingProjectsLocationsKrmApiHostsListRequest object.
+
+  Fields:
+    filter: Lists the KrmApiHosts that match the filter expression. A filter
+      expression filters the resources listed in the response. The expression
+      must be of the form '{field} {operator} {value}' where operators: '<',
+      '>', '<=', '>=', '!=', '=', ':' are supported (colon ':' represents a
+      HAS operator which is roughly synonymous with equality). {field} can
+      refer to a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: - Filter by name: name =
+      "projects/foo-proj/locations/us-central1/krmApiHosts/bar - Filter by
+      labels: - Resources that have a key called 'foo' labels.foo:* -
+      Resources that have a key called 'foo' whose value is 'bar' labels.foo =
+      bar - Filter by state: - Members in CREATING state. state = CREATING
+    orderBy: Field to use to sort the list.
+    pageSize: When requesting a 'page' of resources, 'page_size' specifies
+      number of resources to return. If unspecified or set to 0, all resources
+      will be returned.
+    pageToken: Token returned by previous call to 'ListKrmApiHosts' which
+      specifies the position in the list from where to continue listing the
+      resources.
+    parent: Required. The parent in whose context the KrmApiHosts are listed.
+      The parent value is in the format:
+      'projects/{project_id}/locations/{location}'.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class KrmapihostingProjectsLocationsKrmApiHostsPatchRequest(_messages.Message):
+  r"""A KrmapihostingProjectsLocationsKrmApiHostsPatchRequest object.
+
+  Fields:
+    krmApiHost: A KrmApiHost resource to be passed as the request body.
+    name: Output only. The name of this KrmApiHost resource in the format: 'pr
+      ojects/{project_id}/locations/{location}/krmApiHosts/{krm_api_host_id}'.
+    requestId: Optional. A unique ID to identify requests. This is unique such
+      that if the request is re-tried, the server will know to ignore the
+      request if it has already been completed. The server will guarantee that
+      for at least 60 minutes after the first request. The request ID must be
+      a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the KrmApiHost resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  krmApiHost = _messages.MessageField('KrmApiHost', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class KrmapihostingProjectsLocationsKrmApiHostsSetIamPolicyRequest(_messages.Message):
+  r"""A KrmapihostingProjectsLocationsKrmApiHostsSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -426,9 +658,8 @@ class KrmapihostingProjectsLocationsAnthosApiEndpointsSetIamPolicyRequest(_messa
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
-class KrmapihostingProjectsLocationsAnthosApiEndpointsTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  KrmapihostingProjectsLocationsAnthosApiEndpointsTestIamPermissionsRequest
+class KrmapihostingProjectsLocationsKrmApiHostsTestIamPermissionsRequest(_messages.Message):
+  r"""A KrmapihostingProjectsLocationsKrmApiHostsTestIamPermissionsRequest
   object.
 
   Fields:
@@ -441,16 +672,6 @@ class KrmapihostingProjectsLocationsAnthosApiEndpointsTestIamPermissionsRequest(
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class KrmapihostingProjectsLocationsGetRequest(_messages.Message):
-  r"""A KrmapihostingProjectsLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class KrmapihostingProjectsLocationsListRequest(_messages.Message):
@@ -532,6 +753,23 @@ class ListAnthosApiEndpointsResponse(_messages.Message):
   """
 
   anthosApiEndpoints = _messages.MessageField('AnthosApiEndpoint', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListKrmApiHostsResponse(_messages.Message):
+  r"""A ListKrmApiHostsResponse represents a List response for a set of
+  KrmApiHosts in the service.
+
+  Fields:
+    krmApiHosts: The list of KrmApiHosts contained within the parent.
+    nextPageToken: A token to request the next page of resources from the
+      'ListApiEndpoints' method. The value of an empty string means that there
+      are no more resources to return.
+    unreachable: Locations that could not be reached.
+  """
+
+  krmApiHosts = _messages.MessageField('KrmApiHost', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -995,6 +1233,16 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class YakimaConfig(_messages.Message):
+  r"""Configuration options for the Yakima bundle.
+
+  Fields:
+    enabled: Whether the Yakima bundle is enabled on the KrmApiHost.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

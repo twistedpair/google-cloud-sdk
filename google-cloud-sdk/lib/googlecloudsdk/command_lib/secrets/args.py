@@ -73,6 +73,56 @@ def AddLocations(parser, resource, positional=False, **kwargs):
       **kwargs)
 
 
+def AddReplicationPolicyFile(parser, positional=False, **kwargs):
+  parser.add_argument(
+      _ArgOrFlag('replication-policy-file', positional),
+      metavar='REPLICATION-POLICY-FILE',
+      help=(
+          'JSON or YAML file to use to read the replication policy. The file '
+          'must conform to '
+          'https://cloud.google.com/secret-manager/docs/reference/rest/v1/projects.secrets#replication.'
+          'Set this to "-" to read from stdin.'),
+      **kwargs)
+
+
+def AddKmsKeyName(parser, positional=False, **kwargs):
+  parser.add_argument(
+      _ArgOrFlag('kms-key-name', positional),
+      metavar='KMS-KEY-NAME',
+      help=('Global KMS key with which to encrypt and decrypt the secret. Only '
+            'valid for secrets with an automatic replication policy.'),
+      **kwargs)
+
+
+def AddSetKmsKeyName(parser, positional=False, **kwargs):
+  parser.add_argument(
+      _ArgOrFlag('set-kms-key', positional),
+      metavar='SET-KMS-KEY',
+      help=(
+          'New KMS key with which to encrypt and decrypt future secret versions.'
+      ),
+      **kwargs)
+
+
+def AddRemoveCmek(parser, positional=False, **kwargs):
+  parser.add_argument(
+      _ArgOrFlag('remove-cmek', positional),
+      action='store_true',
+      help=(
+          'Remove customer managed encryption key so that future versions will '
+          'be encrypted by a Google managed encryption key.'),
+      **kwargs)
+
+
+def AddReplicaLocation(parser, positional=False, **kwargs):
+  parser.add_argument(
+      _ArgOrFlag('location', positional),
+      metavar='REPLICA-LOCATION',
+      help=('Location of replica to update. For secrets with automatic '
+            'replication policies, this can be omitted.'),
+      **kwargs)
+
+
 def AddSecret(parser, purpose, positional=False, **kwargs):
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('secret', positional),
@@ -133,6 +183,7 @@ def GetVersionAttributeConfig():
       help_text='The version of the {resource}.',
       completion_request_params={'fieldMask': 'name'},
       completion_id_field='name')
+
 
 # Resource specs
 

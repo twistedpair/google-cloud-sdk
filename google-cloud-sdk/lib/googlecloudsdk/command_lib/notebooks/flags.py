@@ -424,6 +424,14 @@ def AddStopInstanceFlags(parser):
   AddInstanceResource(parser)
 
 
+def AddIsUpgradeableInstanceFlags(parser):
+  AddInstanceResource(parser, add_async_flag=False)
+
+
+def AddUpgradeInstanceFlags(parser):
+  AddInstanceResource(parser)
+
+
 def AddUpdateInstanceFlags(parser):
   """Adds accelerator, labels and machine type flags to the parser for update."""
   accelerator_choices = [

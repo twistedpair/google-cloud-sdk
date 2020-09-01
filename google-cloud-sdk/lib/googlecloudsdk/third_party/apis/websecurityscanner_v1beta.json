@@ -141,12 +141,6 @@
         },
         "userAgent": {
           "description": "The user agent used during scanning.",
-          "enumDescriptions": [
-            "The user agent is unknown. Service will default to CHROME_LINUX.",
-            "Chrome on Linux. This is the service default if unspecified.",
-            "Chrome on Android.",
-            "Safari on IPhone."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The user agent is unknown. Service will default to CHROME_LINUX.",
@@ -174,11 +168,6 @@
         },
         "targetPlatforms": {
           "description": "Set of Google Cloud platforms targeted by the scan. If empty, APP_ENGINE will be used as a default.",
-          "enumDescriptions": [
-            "The target platform is unknown. Requests with this enum value will be rejected with INVALID_ARGUMENT error.",
-            "Google App Engine service.",
-            "Google Compute Engine service."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -196,11 +185,6 @@
         },
         "exportToSecurityCommandCenter": {
           "description": "Controls export of scan configurations and results to Security Command Center.",
-          "enumDescriptions": [
-            "Use default, which is ENABLED.",
-            "Export results of this scan to Security Command Center.",
-            "Do not export results of this scan to Security Command Center."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Use default, which is ENABLED.",
@@ -219,11 +203,6 @@
         },
         "riskLevel": {
           "description": "The risk level selected for the scan",
-          "enumDescriptions": [
-            "Use default, which is NORMAL.",
-            "Normal scanning (Recommended)",
-            "Lower impact scanning"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Use default, which is NORMAL.",
@@ -349,12 +328,6 @@
         },
         "executionState": {
           "description": "The execution state of the ScanRun.",
-          "enumDescriptions": [
-            "Represents an invalid state caused by internal server error. This value should never be returned.",
-            "The scan is waiting in the queue.",
-            "The scan is in progress.",
-            "The scan is either finished or stopped by user."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Represents an invalid state caused by internal server error. This value should never be returned.",
@@ -371,12 +344,6 @@
         },
         "resultState": {
           "description": "The result state of the ScanRun. This field is only available after the execution state reaches \"FINISHED\".",
-          "enumDescriptions": [
-            "Default value. This value is returned when the ScanRun is not yet finished.",
-            "The scan finished without errors.",
-            "The scan finished with errors.",
-            "The scan was terminated by user."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. This value is returned when the ScanRun is not yet finished.",
@@ -440,15 +407,6 @@
       "properties": {
         "code": {
           "description": "Indicates the error reason code.",
-          "enumDescriptions": [
-            "Default value is never used.",
-            "Indicates that the scan run failed due to an internal server error.",
-            "Indicates a scan configuration error, usually due to outdated ScanConfig settings, such as starting_urls or the DNS configuration.",
-            "Indicates an authentication error, usually due to outdated ScanConfig authentication settings.",
-            "Indicates a scan operation timeout, usually caused by a very large site.",
-            "Indicates that a scan encountered excessive redirects, either to authentication or some other page outside of the scan scope.",
-            "Indicates that a scan encountered numerous errors from the web site pages. When available, most_common_http_error_code field indicates the most common HTTP error code encountered during the scan."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value is never used.",
@@ -487,50 +445,6 @@
       "properties": {
         "code": {
           "description": "Indicates the reason code for a configuration failure.",
-          "enumDescriptions": [
-            "There is no error.",
-            "There is no error.",
-            "Indicates an internal server error. Please DO NOT USE THIS ERROR CODE unless the root cause is truly unknown.",
-            "One of the seed URLs is an App Engine URL but we cannot validate the scan settings due to an App Engine API backend error.",
-            "One of the seed URLs is an App Engine URL but we cannot access the App Engine API to validate scan settings.",
-            "One of the seed URLs is an App Engine URL but the Default Host of the App Engine is not set.",
-            "Google corporate accounts can not be used for scanning.",
-            "The account of the scan creator can not be used for scanning.",
-            "This scan targets Compute Engine, but we cannot validate scan settings due to a Compute Engine API backend error.",
-            "This scan targets Compute Engine, but we cannot access the Compute Engine API to validate the scan settings.",
-            "The Custom Login URL does not belong to the current project.",
-            "The Custom Login URL is malformed (can not be parsed).",
-            "The Custom Login URL is mapped to a non-routable IP address in DNS.",
-            "The Custom Login URL is mapped to an IP address which is not reserved for the current project.",
-            "The Custom Login URL has a non-routable IP address.",
-            "The Custom Login URL has an IP address which is not reserved for the current project.",
-            "Another scan with the same name (case-sensitive) already exists.",
-            "A field is set to an invalid value.",
-            "There was an error trying to authenticate to the scan target.",
-            "Finding type value is not specified in the list findings request.",
-            "Scan targets Compute Engine, yet current project was not whitelisted for Google Compute Engine Scanning Alpha access.",
-            "User tries to update managed scan",
-            "The supplied filter is malformed. For example, it can not be parsed, does not have a filter type in expression, or the same filter type appears more than once.",
-            "The supplied resource name is malformed (can not be parsed).",
-            "The current project is not in an active state.",
-            "A required field is not set.",
-            "Project id, scanconfig id, scanrun id, or finding id are not consistent with each other in resource name.",
-            "The scan being requested to start is already running.",
-            "The scan that was requested to be stopped is not running.",
-            "One of the seed URLs does not belong to the current project.",
-            "One of the seed URLs is malformed (can not be parsed).",
-            "One of the seed URLs is mapped to a non-routable IP address in DNS.",
-            "One of the seed URLs is mapped to an IP address which is not reserved for the current project.",
-            "One of the seed URLs has on-routable IP address.",
-            "One of the seed URLs has an IP address that is not reserved for the current project.",
-            "The Web Security Scanner service account is not configured under the project.",
-            "A project has reached the maximum number of scans.",
-            "Resolving the details of the current project fails.",
-            "One or more blacklist patterns were in the wrong format.",
-            "The supplied filter is not supported.",
-            "The supplied finding type is not supported. For example, we do not provide findings of the given finding type.",
-            "The URL scheme of one or more of the supplied URLs is not supported."
-          ],
           "type": "string",
           "enumDescriptions": [
             "There is no error.",
@@ -634,13 +548,6 @@
       "properties": {
         "code": {
           "description": "Indicates the warning code.",
-          "enumDescriptions": [
-            "Default value is never used.",
-            "Indicates that a scan discovered an unexpectedly low number of URLs. This is sometimes caused by complex navigation features or by using a single URL for numerous pages.",
-            "Indicates that a scan discovered too many URLs to test, or excessive redundant URLs.",
-            "Indicates that too many tests have been generated for the scan. Customer should try reducing the number of starting URLs, increasing the QPS rate, or narrowing down the scope of the scan using the excluded patterns.",
-            "Indicates that a scan is blocked by IAP."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value is never used.",
@@ -768,13 +675,6 @@
         },
         "severity": {
           "description": "The severity level of the reported vulnerability.",
-          "enumDescriptions": [
-            "No severity specified. The default value.",
-            "Critical severity.",
-            "High severity.",
-            "Medium severity.",
-            "Low severity."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No severity specified. The default value.",

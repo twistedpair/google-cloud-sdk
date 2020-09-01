@@ -126,6 +126,8 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -169,9 +171,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CloudAuditOptions(_messages.Message):
@@ -365,8 +368,10 @@ class ConfigureDnsSettingsRequest(_messages.Message):
       a comma-separated list. For example, if only the name servers are being
       updated for an existing Custom DNS configuration, the `update_mask`
       would be `"custom_dns.name_servers"`. When changing the DNS provider
-      from one type to another (e.g. `CustomDns` to `CloudDns`), you must pass
-      `"dns_provider"` as part of the field mask.
+      from one type to another, pass the new provider's field name as part of
+      the field mask. For example, when changing from a Google Domains DNS
+      configuration to a Custom DNS configuration, the `update_mask` would be
+      `"custom_dns"`. //
     validateOnly: Validate the request without actually updating the DNS
       settings.
   """
@@ -736,9 +741,18 @@ class DomainsProjectsLocationsRegistrationsListRequest(_messages.Message):
   r"""A DomainsProjectsLocationsRegistrationsListRequest object.
 
   Fields:
-    filter: [Filter
-      expression](https://cloud.google.com/sdk/gcloud/reference/topic/filters)
-      to restrict the `Registration`s returned.
+    filter: Filter expression to restrict the `Registration`s returned. The
+      expression must specify the field name, a comparison operator, and the
+      value that you want to use for filtering. The value must be a string, a
+      number, a boolean, or an enum value. The comparison operator should be
+      one of =, !=, >, <, >=, <=, or : for prefix or wildcard matches. For
+      example, to filter to a specific domain name, use an expression like
+      `domainName="example.com"`. You can also check for the existence of a
+      field; for example, to find domains using custom DNS settings, use an
+      expression like `dnsSettings.customDns:*`. You can also create compound
+      filters by combining expressions with the `AND` and `OR` operators. For
+      example, to find domains that are suspended or have specific issues
+      flagged, use an expression like `(state=SUSPENDED) OR (issue:*)`.
     pageSize: Maximum number of results to return.
     pageToken: When set to the `next_page_token` from a prior response,
       provides the next page of results.

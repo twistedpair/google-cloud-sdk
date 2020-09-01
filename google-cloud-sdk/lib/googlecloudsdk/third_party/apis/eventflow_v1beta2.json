@@ -268,14 +268,6 @@
       "properties": {
         "type": {
           "description": "Required. What type of condition is this.",
-          "enumDescriptions": [
-            "Never set by the API.",
-            "Whether there is an error caused by the server hosting this API. The reason field will be the error code. The message field will be the error message.",
-            "Whether there is an error caused by how the client calls this API. The reason field will be the error code. The message field will be the error message.",
-            "Whether the flow is deployed to all regions. The reason field will be of the following form: 0of4RegionsDeployed 1of4RegionsDeployed 4of4RegionsDeployed The message field will be a comma-separated list of regions deployed. For example \"us-west1,europe-west1,us-east1,asia-east1\"",
-            "Whether the source is activated. The reason field will be one of: DoesNotNeedActivation AwaitingResponse AcknowledgedActivation ActivationFailed The message field will be the error code and message in case of error.",
-            "Whether the action is activated. The reason field will be one of: DoesNotNeedActivation AwaitingResponse AcknowledgedActivation ActivationFailed The message field will be the error code and message in case of error."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Never set by the API.",
@@ -296,11 +288,6 @@
         },
         "status": {
           "description": "Required. The actual status.",
-          "enumDescriptions": [
-            "Should never be set in the API.",
-            "The condition is active.",
-            "The condition is inactive."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Should never be set in the API.",

@@ -911,8 +911,9 @@ class CommandBuilder(object):
     ref = self.arg_generator.GetRequestResourceRef(args)
     if self.spec.input.confirmation_prompt:
       console_io.PromptContinue(
-          self._Format(self.spec.input.confirmation_prompt, ref,
-                       self._GetDisplayName(ref, args)),
+          message=self._Format(self.spec.input.confirmation_prompt, ref,
+                               self._GetDisplayName(ref, args)),
+          default=self.spec.input.default_continue,
           throw_if_unattended=True, cancel_on_no=True)
 
     if self.spec.request.modify_method_hook:

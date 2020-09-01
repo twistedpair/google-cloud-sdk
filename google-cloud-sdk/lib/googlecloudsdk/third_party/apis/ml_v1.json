@@ -151,16 +151,6 @@
         },
         "state": {
           "description": "Output only. The detailed state of a job.",
-          "enumDescriptions": [
-            "The job state is unspecified.",
-            "The job has been just created and processing has not yet begun.",
-            "The service is preparing to run the job.",
-            "The job is in progress.",
-            "The job completed successfully.",
-            "The job failed. `error_message` should contain the details of the failure.",
-            "The job is being cancelled. `error_message` should describe the reason for the cancellation.",
-            "The job has been cancelled. `error_message` should describe the reason for the cancellation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The job state is unspecified.",
@@ -220,14 +210,6 @@
       "properties": {
         "scaleTier": {
           "description": "Required. Specifies the machine types, the number of replicas for workers and parameter servers.",
-          "enumDescriptions": [
-            "A single worker instance. This tier is suitable for learning how to use Cloud ML, and for experimenting with new models using small datasets.",
-            "Many workers and a few parameter servers.",
-            "A large number of workers with many parameter servers.",
-            "A single worker instance [with a GPU](\/ai-platform\/training\/docs\/using-gpus).",
-            "A single worker instance with a [Cloud TPU](\/ml-engine\/docs\/tensorflow\/using-tpus).",
-            "The CUSTOM tier is not a set tier, but rather enables you to use your own cluster specification. When you use this tier, set values to configure your processing cluster according to these guidelines: * You _must_ set `TrainingInput.masterType` to specify the type of machine to use for your master node. This is the only required setting. * You _may_ set `TrainingInput.workerCount` to specify the number of workers to use. If you specify one or more workers, you _must_ also set `TrainingInput.workerType` to specify the type of machine to use for your worker nodes. * You _may_ set `TrainingInput.parameterServerCount` to specify the number of parameter servers to use. If you specify one or more parameter servers, you _must_ also set `TrainingInput.parameterServerType` to specify the type of machine to use for your parameter servers. Note that all of your workers must use the same machine type, which can be different from your parameter server type and master type. Your parameter servers must likewise use the same machine type, which can be different from your worker type and master type."
-          ],
           "type": "string",
           "enumDescriptions": [
             "A single worker instance. This tier is suitable for learning how to use Cloud ML, and for experimenting with new models using small datasets.",
@@ -402,18 +384,6 @@
         },
         "type": {
           "description": "The type of accelerator to use.",
-          "enumDescriptions": [
-            "Unspecified accelerator type. Default to no GPU.",
-            "Nvidia Tesla K80 GPU.",
-            "Nvidia Tesla P100 GPU.",
-            "Nvidia Tesla V100 GPU.",
-            "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3.",
-            "TPU v2 POD.",
-            "TPU v3 POD."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified accelerator type. Default to no GPU.",
@@ -449,11 +419,6 @@
       "properties": {
         "goal": {
           "description": "Required. The type of goal to use for tuning. Available types are `MAXIMIZE` and `MINIMIZE`. Defaults to `MAXIMIZE`.",
-          "enumDescriptions": [
-            "Goal Type will default to maximize.",
-            "Maximize the goal metric.",
-            "Minimize the goal metric."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Goal Type will default to maximize.",
@@ -502,12 +467,6 @@
         },
         "algorithm": {
           "description": "Optional. The search algorithm specified for the hyperparameter tuning job. Uses the default AI Platform hyperparameter tuning algorithm if unspecified.",
-          "enumDescriptions": [
-            "The default algorithm used by the hyperparameter tuning service. This is a Bayesian optimization algorithm.",
-            "Simple grid search within the feasible space. To use grid search, all parameters must be `INTEGER`, `CATEGORICAL`, or `DISCRETE`.",
-            "Simple random search within the feasible space.",
-            "Population Based Training Algorithm."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The default algorithm used by the hyperparameter tuning service. This is a Bayesian optimization algorithm.",
@@ -535,13 +494,6 @@
         },
         "type": {
           "description": "Required. The type of the parameter.",
-          "enumDescriptions": [
-            "You must specify a valid type. Using this unspecified type will result in an error.",
-            "Type for real-valued parameters.",
-            "Type for integral parameters.",
-            "The parameter is categorical, with a value chosen from the categories field.",
-            "The parameter is real valued, with a fixed set of feasible points. If `type==DISCRETE`, feasible_points must be provided, and {`min_value`, `max_value`} will be ignored."
-          ],
           "type": "string",
           "enumDescriptions": [
             "You must specify a valid type. Using this unspecified type will result in an error.",
@@ -585,12 +537,6 @@
         },
         "scaleType": {
           "description": "Optional. How the parameter should be scaled to the hypercube. Leave unset for categorical parameters. Some kind of scaling is strongly recommended for real or integral parameters (e.g., `UNIT_LINEAR_SCALE`).",
-          "enumDescriptions": [
-            "By default, no scaling is applied.",
-            "Scales the feasible space to (0, 1) linearly.",
-            "Scales the feasible space logarithmically to (0, 1). The entire feasible space must be strictly positive.",
-            "Scales the feasible space \"reverse\" logarithmically to (0, 1). The result is that values close to the top of the feasible space are spread out more than points near the bottom. The entire feasible space must be strictly positive."
-          ],
           "type": "string",
           "enumDescriptions": [
             "By default, no scaling is applied.",
@@ -633,11 +579,6 @@
       "properties": {
         "multiTrialAlgorithm": {
           "description": "Optional. The multi-trial Neural Architecture Search (NAS) algorithm type. Defaults to `NAS_MULTI_TRIAL_ALGORITHM_REINFORCEMENT_LEARNING`.",
-          "enumDescriptions": [
-            "",
-            "The Reinforcement Learning Algorithm for Multi-trial Neural Architecture Search (NAS).",
-            "The Grid Search Algorithm for Multi-trial Neural Architecture Search (NAS)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -678,10 +619,6 @@
       "properties": {
         "oneShotAlgorithm": {
           "description": "Optional. The one-shot Neural Architecture Search (NAS) algorithm type. Defaults to `ONE_SHOT_ALGORITHM_REINFORCEMENT_LEARNING`.",
-          "enumDescriptions": [
-            "",
-            "The Reinforcement Learning Algorithm for one-shot Neural Architecture Search (NAS)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -711,11 +648,12 @@
       "type": "object",
       "properties": {
         "maxRunningTime": {
-          "description": "Optional. The maximum job running time, expressed in seconds. The field can contain up to nine fractional digits, terminated by `s`. If not specified, this field defaults to `604800s` (seven days). If the training job is still running after this duration, AI Platform Training cancels it. For example, if you want to ensure your job runs for no more than 2 hours, set this field to `7200s` (2 hours * 60 minutes \/ hour * 60 seconds \/ minute). If you submit your training job using the `gcloud` tool, you can [provide this field in a `config.yaml` file](\/ai-platform\/training\/docs\/training-jobs#formatting_your_configuration_parameters). For example: ```yaml trainingInput: ... scheduling: maxRunningTime: 7200s ... ```",
+          "description": "Optional. The maximum job running time, expressed in seconds. The field can contain up to nine fractional digits, terminated by `s`. If not specified, this field defaults to `604800s` (seven days). If the training job is still running after this duration, AI Platform Training cancels it. The duration is measured from when the job enters the `RUNNING` state; therefore it does not overlap with the duration limited by Scheduling.max_wait_time. For example, if you want to ensure your job runs for no more than 2 hours, set this field to `7200s` (2 hours * 60 minutes \/ hour * 60 seconds \/ minute). If you submit your training job using the `gcloud` tool, you can [specify this field in a `config.yaml` file](\/ai-platform\/training\/docs\/training-jobs#formatting_your_configuration_parameters). For example: ```yaml trainingInput: scheduling: maxRunningTime: 7200s ```",
           "type": "string",
           "format": "google-duration"
         },
         "maxWaitTime": {
+          "description": "Optional. The maximum job wait time, expressed in seconds. The field can contain up to nine fractional digits, terminated by `s`. If not specified, there is no limit to the wait time. The minimum for this field is `1800s` (30 minutes). If the training job has not entered the `RUNNING` state after this duration, AI Platform Training cancels it. After the job begins running, it can no longer be cancelled due to the maximum wait time. Therefore the duration limited by this field does not overlap with the duration limited by Scheduling.max_running_time. For example, if the job temporarily stops running and retries due to a [VM restart](\/ai-platform\/training\/docs\/overview#restarts), this cannot lead to a maximum wait time cancellation. However, independently of this constraint, AI Platform Training might stop a job if there are too many retries due to exhausted resources in a region. The following example describes how you might use this field: To cancel your job if it doesn't start running within 1 hour, set this field to `3600s` (1 hour * 60 minutes \/ hour * 60 seconds \/ minute). If the job is still in the `QUEUED` or `PREPARING` state after an hour of waiting, AI Platform Training cancels the job. If you submit your training job using the `gcloud` tool, you can [specify this field in a `config.yaml` file](\/ai-platform\/training\/docs\/training-jobs#formatting_your_configuration_parameters). For example: ```yaml trainingInput: scheduling: maxWaitTime: 3600s ```",
           "type": "string",
           "format": "google-duration"
         },
@@ -744,15 +682,6 @@
         },
         "dataFormat": {
           "description": "Required. The format of the input data files.",
-          "enumDescriptions": [
-            "Unspecified format.",
-            "Each line of the file is a JSON dictionary representing one record.",
-            "Deprecated. Use JSON instead.",
-            "The source file is a TFRecord file. Currently available only for input data.",
-            "The source file is a GZIP-compressed TFRecord file. Currently available only for input data.",
-            "Each line of the file is the location of an instance to process. Currently available only for input data.",
-            "Values are comma-separated rows, with keys in a separate file. Currently available only for output data."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified format.",
@@ -775,15 +704,6 @@
         },
         "outputDataFormat": {
           "description": "Optional. Format of the output data files, defaults to JSON.",
-          "enumDescriptions": [
-            "Unspecified format.",
-            "Each line of the file is a JSON dictionary representing one record.",
-            "Deprecated. Use JSON instead.",
-            "The source file is a TFRecord file. Currently available only for input data.",
-            "The source file is a GZIP-compressed TFRecord file. Currently available only for input data.",
-            "Each line of the file is the location of an instance to process. Currently available only for input data.",
-            "Values are comma-separated rows, with keys in a separate file. Currently available only for output data."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified format.",
@@ -855,12 +775,6 @@
         },
         "framework": {
           "description": "Optional. The framework used to train this model. Only needed if model_version is a GCS path. Otherwise the framework specified during version creation will be used.",
-          "enumDescriptions": [
-            "Unspecified framework. Assigns a value based on the file suffix.",
-            "Tensorflow framework.",
-            "Scikit-learn framework.",
-            "XGBoost framework."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified framework. Assigns a value based on the file suffix.",
@@ -904,11 +818,6 @@
         },
         "dataFormat": {
           "description": "Required. The format of the input data.",
-          "enumDescriptions": [
-            "Unspecified format.",
-            "Each line of the file is a JSON dictionary representing one record. Currently available only for input data.",
-            "Values are rows in a BigQuery table given its associated schema. Currently available only for output data."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified format.",
@@ -923,11 +832,6 @@
         },
         "outputDataFormat": {
           "description": "Optional. The format of the output data, defaults to BIGQUERY.",
-          "enumDescriptions": [
-            "Unspecified format.",
-            "Each line of the file is a JSON dictionary representing one record. Currently available only for input data.",
-            "Values are rows in a BigQuery table given its associated schema. Currently available only for output data."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified format.",
@@ -995,12 +899,6 @@
         },
         "framework": {
           "description": "Optional. The framework used to train this model. Only needed if model_version is a GCS path. Otherwise the framework specified during version creation will be used.",
-          "enumDescriptions": [
-            "Unspecified framework. Assigns a value based on the file suffix.",
-            "Tensorflow framework.",
-            "Scikit-learn framework.",
-            "XGBoost framework."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified framework. Assigns a value based on the file suffix.",
@@ -1019,7 +917,7 @@
     },
     "GoogleCloudMlV1__ExplanationConfig": {
       "id": "GoogleCloudMlV1__ExplanationConfig",
-      "description": "Message holding configuration options for explaining model predictions. There are two feature attribution methods supported for TensorFlow models: integrated gradients and sampled Shapley. [Learn more about feature attributions.](\/ai-platform\/prediction\/docs\/ai-explanations\/overview)",
+      "description": "Message holding configuration options for explaining model predictions. There are three feature attribution methods supported for TensorFlow models: integrated gradients, sampled Shapley, and XRAI. [Learn more about feature attributions.](\/ai-platform\/prediction\/docs\/ai-explanations\/overview)",
       "type": "object",
       "properties": {
         "ablationAttribution": {
@@ -1241,16 +1139,6 @@
         },
         "state": {
           "description": "Output only. The detailed state of the trial.",
-          "enumDescriptions": [
-            "The job state is unspecified.",
-            "The job has been just created and processing has not yet begun.",
-            "The service is preparing to run the job.",
-            "The job is in progress.",
-            "The job completed successfully.",
-            "The job failed. `error_message` should contain the details of the failure.",
-            "The job is being cancelled. `error_message` should describe the reason for the cancellation.",
-            "The job has been cancelled. `error_message` should describe the reason for the cancellation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The job state is unspecified.",
@@ -1383,16 +1271,6 @@
         },
         "state": {
           "description": "Output only. The detailed state of the trial.",
-          "enumDescriptions": [
-            "The job state is unspecified.",
-            "The job has been just created and processing has not yet begun.",
-            "The service is preparing to run the job.",
-            "The job is in progress.",
-            "The job completed successfully.",
-            "The job failed. `error_message` should contain the details of the failure.",
-            "The job is being cancelled. `error_message` should describe the reason for the cancellation.",
-            "The job has been cancelled. `error_message` should describe the reason for the cancellation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The job state is unspecified.",
@@ -1550,12 +1428,6 @@
       "type": "object",
       "properties": {
         "type": {
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -1572,18 +1444,6 @@
         },
         "availableAccelerators": {
           "description": "Available accelerators for the capability.",
-          "enumDescriptions": [
-            "Unspecified accelerator type. Default to no GPU.",
-            "Nvidia Tesla K80 GPU.",
-            "Nvidia Tesla P100 GPU.",
-            "Nvidia Tesla V100 GPU.",
-            "Nvidia Tesla P4 GPU.",
-            "Nvidia Tesla T4 GPU.",
-            "TPU v2.",
-            "TPU v3.",
-            "TPU v2 POD.",
-            "TPU v3 POD."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -1807,14 +1667,6 @@
         },
         "state": {
           "description": "Output only. The state of a version.",
-          "enumDescriptions": [
-            "The version state is unspecified.",
-            "The version is ready for prediction.",
-            "The version is being created. New UpdateVersion and DeleteVersion requests will fail if a version is in the CREATING state.",
-            "The version failed to be created, possibly cancelled. `error_message` should contain the details of the failure.",
-            "The version is being deleted. New UpdateVersion and DeleteVersion requests will fail if a version is in the DELETING state.",
-            "The version is being updated. New UpdateVersion and DeleteVersion requests will fail if a version is in the UPDATING state."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The version state is unspecified.",
@@ -1865,12 +1717,6 @@
         },
         "framework": {
           "description": "Optional. The machine learning framework AI Platform uses to train this version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`, `XGBOOST`. If you do not specify a framework, AI Platform will analyze files in the deployment_uri to determine a framework. If you choose `SCIKIT_LEARN` or `XGBOOST`, you must also set the runtime version of the model to 1.4 or greater. Do **not** specify a framework if you're deploying a [custom prediction routine](\/ml-engine\/docs\/tensorflow\/custom-prediction-routines). If you specify a [Compute Engine (N1) machine type](\/ml-engine\/docs\/machine-types-online-prediction) in the `machineType` field, you must specify `TENSORFLOW` for the framework.",
-          "enumDescriptions": [
-            "Unspecified framework. Assigns a value based on the file suffix.",
-            "Tensorflow framework.",
-            "Scikit-learn framework.",
-            "XGBoost framework."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified framework. Assigns a value based on the file suffix.",
@@ -1914,11 +1760,6 @@
         },
         "routes": {
           "$ref": "GoogleCloudMlV1__RouteMap"
-        },
-        "endpoints": {
-          "description": "Optional. Output only. If set by server, the http(s) endpoints returned to user after the public\/private deployment is successful. https:\/\/cloud.google.com\/apis\/design\/design_patterns#output_fields.",
-          "readOnly": true,
-          "$ref": "GoogleCloudMlV1__EndpointMap"
         }
       }
     },
@@ -1953,11 +1794,6 @@
       "properties": {
         "name": {
           "description": "metric name.",
-          "enumDescriptions": [
-            "Unspecified MetricName.",
-            "CPU usage.",
-            "GPU duty cycle."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified MetricName.",
@@ -2082,25 +1918,6 @@
         },
         "health": {
           "description": "HTTP path to send health check requests.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudMlV1__EndpointMap": {
-      "id": "GoogleCloudMlV1__EndpointMap",
-      "description": " EndpointMap is used to provide paths for predict\/explain\/healthcheck to customers. It's an output only field in the version proto which can be only set on the server side. Public endpoints follow the format specified on the user facing doc, and private endpoints are customized for each privately deploymed model\/version.",
-      "type": "object",
-      "properties": {
-        "predict": {
-          "description": "Http(s) path to send prediction requests.",
-          "type": "string"
-        },
-        "explain": {
-          "description": "Optional. Http(s) path to send explain requests.",
-          "type": "string"
-        },
-        "health": {
-          "description": "Http(s) path to send health check requests.",
           "type": "string"
         }
       }
@@ -2242,12 +2059,6 @@
         },
         "state": {
           "description": "Output only. The detailed state of a study.",
-          "enumDescriptions": [
-            "The study state is unspecified.",
-            "The study is active.",
-            "The study is stopped due to an internal error.",
-            "The study is done when the service exhausts the parameter search space or max_trial_count is reached."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -2297,12 +2108,6 @@
         },
         "algorithm": {
           "description": "The search algorithm specified for the study.",
-          "enumDescriptions": [
-            "The default algorithm used by the Cloud AI Platform Optimization service.",
-            "Gaussian Process Bandit.",
-            "Simple grid search within the feasible space. To use grid search, all parameters must be `INTEGER`, `CATEGORICAL`, or `DISCRETE`.",
-            "Simple random search within the feasible space."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The default algorithm used by the Cloud AI Platform Optimization service.",
@@ -2330,11 +2135,6 @@
       "properties": {
         "goal": {
           "description": "Required. The optimization goal of the metric.",
-          "enumDescriptions": [
-            "Goal Type will default to maximize.",
-            "Maximize the goal metric.",
-            "Minimize the goal metric."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Goal Type will default to maximize.",
@@ -2364,13 +2164,6 @@
         },
         "type": {
           "description": "Required. The type of the parameter.",
-          "enumDescriptions": [
-            "You must specify a valid type. Using this unspecified type will result in an error.",
-            "Type for real-valued parameters.",
-            "Type for integral parameters.",
-            "The parameter is categorical, with a value chosen from the categories field.",
-            "The parameter is real valued, with a fixed set of feasible points. If `type==DISCRETE`, feasible_points must be provided, and {`min_value`, `max_value`} will be ignored."
-          ],
           "type": "string",
           "enumDescriptions": [
             "You must specify a valid type. Using this unspecified type will result in an error.",
@@ -2405,12 +2198,6 @@
         },
         "scaleType": {
           "description": "How the parameter should be scaled. Leave unset for categorical parameters.",
-          "enumDescriptions": [
-            "By default, no scaling is applied.",
-            "Scales the feasible space to (0, 1) linearly.",
-            "Scales the feasible space logarithmically to (0, 1). The entire feasible space must be strictly positive.",
-            "Scales the feasible space \"reverse\" logarithmically to (0, 1). The result is that values close to the top of the feasible space are spread out more than points near the bottom. The entire feasible space must be strictly positive."
-          ],
           "type": "string",
           "enumDescriptions": [
             "By default, no scaling is applied.",
@@ -2621,13 +2408,6 @@
         },
         "state": {
           "description": "The detailed state of a trial.",
-          "enumDescriptions": [
-            "The trial state is unspecified.",
-            "Indicates that a specific trial has been requested, but it has not yet been suggested by the service.",
-            "Indicates that the trial has been suggested.",
-            "Indicates that the trial is done, and either has a final_measurement set, or is marked as trial_infeasible.",
-            "Indicates that the trial should stop according to the service."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The trial state is unspecified.",
@@ -2930,12 +2710,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -3013,16 +2787,6 @@
         },
         "operationType": {
           "description": "The operation type.",
-          "enumDescriptions": [
-            "Unspecified operation type.",
-            "An operation to create a new version.",
-            "An operation to delete an existing version.",
-            "An operation to delete an existing model.",
-            "An operation to update an existing model.",
-            "An operation to update an existing version.",
-            "An operation to update project configuration.",
-            "An operation to migrate existing model\/version to uCAIP."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified operation type.",
@@ -3031,8 +2795,7 @@
             "An operation to delete an existing model.",
             "An operation to update an existing model.",
             "An operation to update an existing version.",
-            "An operation to update project configuration.",
-            "An operation to migrate existing model\/version to uCAIP."
+            "An operation to update project configuration."
           ],
           "enum": [
             "OPERATION_TYPE_UNSPECIFIED",
@@ -3041,8 +2804,7 @@
             "DELETE_MODEL",
             "UPDATE_MODEL",
             "UPDATE_VERSION",
-            "UPDATE_CONFIG",
-            "MIGRATE_TO_UCAIP"
+            "UPDATE_CONFIG"
           ]
         },
         "modelName": {
@@ -3106,12 +2868,6 @@
         },
         "studyState": {
           "description": "The state of the study.",
-          "enumDescriptions": [
-            "The study state is unspecified.",
-            "The study is active.",
-            "The study is stopped due to an internal error.",
-            "The study is done when the service exhausts the parameter search space or max_trial_count is reached."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The study state is unspecified.",

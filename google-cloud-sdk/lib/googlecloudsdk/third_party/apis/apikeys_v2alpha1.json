@@ -216,11 +216,6 @@
         },
         "state": {
           "description": "Whether Key is active or deleted.",
-          "enumDescriptions": [
-            "Default value indicates that the field is unset. It should never be used.",
-            "The key is in active state and can be used.",
-            "The key is marked as deleted. Deleted keys can be listed and undeleted within 30 days of deletion."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value indicates that the field is unset. It should never be used.",

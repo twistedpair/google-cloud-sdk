@@ -130,6 +130,7 @@ def AddMutationArgs(parser, required=True):
       required=required,
       type=arg_parsers.ArgList(
           custom_delim_char=';',
+          min_length=1,
           element_type=arg_parsers.ArgDict(
               spec={
                   'type':
@@ -149,7 +150,7 @@ def AddMutationArgs(parser, required=True):
               required_keys=['type']),
       ),
       help="""\
-      A list of agent rules to be enforced by the policy.
+      A non-empty list of agent rules to be enforced by the policy.
 
       This flag must be quoted. Items in the list are separated by ";". Each
       item in the list is a <key, value> map that represents a logging or
@@ -278,6 +279,7 @@ def AddMutationArgs(parser, required=True):
       required=required,
       type=arg_parsers.ArgList(
           custom_delim_char=';',
+          min_length=1,
           element_type=arg_parsers.ArgDict(
               spec={
                   'short-name':
@@ -291,7 +293,8 @@ def AddMutationArgs(parser, required=True):
               required_keys=['short-name', 'version']),
       ),
       help="""\
-      A list of OS types to filter instances that the policy applies to.
+      A non-empty list of OS types to filter instances that the policy applies
+      to.
 
       For Alpha, exactly one OS type needs to be specified. The support for
       multiple OS types will be added later for more flexibility. Each OS type

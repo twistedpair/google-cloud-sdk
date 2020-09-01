@@ -151,12 +151,6 @@
         },
         "dataType": {
           "description": "The data type for this setting.",
-          "enumDescriptions": [
-            "Unspecified data type.",
-            "A boolean setting.",
-            "A string setting.",
-            "A string set setting."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified data type.",

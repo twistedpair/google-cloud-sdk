@@ -538,6 +538,8 @@ class FailureDetail(_messages.Message):
   Fields:
     crashed: If the failure was severe because the system (app) under test
       crashed.
+    deviceOutOfMemory: If the device ran out of memory during a test, causing
+      the test to crash.
     failedRoboscript: If the Roboscript failed to complete successfully, e.g.,
       because a Roboscript action or assertion failed or a Roboscript action
       could not be matched during the entire crawl.
@@ -552,11 +554,12 @@ class FailureDetail(_messages.Message):
   """
 
   crashed = _messages.BooleanField(1)
-  failedRoboscript = _messages.BooleanField(2)
-  notInstalled = _messages.BooleanField(3)
-  otherNativeCrash = _messages.BooleanField(4)
-  timedOut = _messages.BooleanField(5)
-  unableToCrawl = _messages.BooleanField(6)
+  deviceOutOfMemory = _messages.BooleanField(2)
+  failedRoboscript = _messages.BooleanField(3)
+  notInstalled = _messages.BooleanField(4)
+  otherNativeCrash = _messages.BooleanField(5)
+  timedOut = _messages.BooleanField(6)
+  unableToCrawl = _messages.BooleanField(7)
 
 
 class FatalException(_messages.Message):

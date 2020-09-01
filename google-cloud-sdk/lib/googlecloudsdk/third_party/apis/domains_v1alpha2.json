@@ -832,7 +832,7 @@
           "$ref": "DnsSettings"
         },
         "updateMask": {
-          "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the name servers are being updated for an existing Custom DNS configuration, the `update_mask` would be `\"custom_dns.name_servers\"`. When changing the DNS provider from one type to another (e.g. `CustomDns` to `CloudDns`), you must pass `\"dns_provider\"` as part of the field mask.",
+          "description": "Required. The field mask describing which fields to update as a comma-separated list. For example, if only the name servers are being updated for an existing Custom DNS configuration, the `update_mask` would be `\"custom_dns.name_servers\"`. When changing the DNS provider from one type to another, pass the new provider's field name as part of the field mask. For example, when changing from a Google Domains DNS configuration to a Custom DNS configuration, the `update_mask` would be `\"custom_dns\"`. \/\/",
           "type": "string",
           "format": "google-fieldmask"
         },
@@ -1030,6 +1030,10 @@
         "condition": {
           "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
+        },
+        "bindingId": {
+          "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API.",
+          "type": "string"
         }
       }
     },
@@ -1709,7 +1713,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "[Filter expression](https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/topic\/filters) to restrict the `Registration`s returned.",
+                      "description": "Filter expression to restrict the `Registration`s returned. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, a boolean, or an enum value. The comparison operator should be one of =, !=, >, <, >=, <=, or : for prefix or wildcard matches. For example, to filter to a specific domain name, use an expression like `domainName=\"example.com\"`. You can also check for the existence of a field; for example, to find domains using custom DNS settings, use an expression like `dnsSettings.customDns:*`. You can also create compound filters by combining expressions with the `AND` and `OR` operators. For example, to find domains that are suspended or have specific issues flagged, use an expression like `(state=SUSPENDED) OR (issue:*)`.",
                       "location": "query",
                       "type": "string"
                     }

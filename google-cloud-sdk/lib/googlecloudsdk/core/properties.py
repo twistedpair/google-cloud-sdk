@@ -302,6 +302,8 @@ class _Sections(object):
       Cloud SDK.
     memcache: Section, The section containing memcache properties for the Cloud
       SDK.
+    metastore: Section, The section containing metastore properties for the
+      Cloud SDK.
     metrics: Section, The section containing metrics properties for the Cloud
       SDK.
     ml_engine: Section, The section containing ml_engine properties for the
@@ -367,6 +369,7 @@ class _Sections(object):
     self.interactive = _SectionInteractive()
     self.lifesciences = _SectionLifeSciences()
     self.memcache = _SectionMemcache()
+    self.metastore = _SectionMetastore()
     self.metrics = _SectionMetrics()
     self.ml_engine = _SectionMlEngine()
     self.notebooks = _SectionNotebooks()
@@ -417,6 +420,7 @@ class _Sections(object):
         self.interactive,
         self.lifesciences,
         self.memcache,
+        self.metastore,
         self.metrics,
         self.ml_engine,
         self.notebooks,
@@ -1188,7 +1192,8 @@ class _SectionCore(_Section):
         'verbosity',
         help_text='Default logging verbosity for `gcloud` commands.  This is '
         'the equivalent of using the global `--verbosity` flag. Supported '
-        'verbosity levels: `debug`, `info`, `warning`, `error`, and `none`.')
+        'verbosity levels: `debug`, `info`, `warning`, `error`, `critical`, '
+        'and `none`.')
     self.user_output_enabled = self._AddBool(
         'user_output_enabled',
         help_text='True, by default. If False, messages to the user and command'
@@ -1854,6 +1859,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.managedidentities = self._Add('managedidentities')
     self.manager = self._Add('manager')
     self.memcache = self._Add('memcache')
+    self.metastore = self._Add('metastore')
     self.ml = self._Add('ml')
     self.monitoring = self._Add('monitoring')
     self.networkmanagement = self._Add('networkmanagement')
@@ -2020,6 +2026,43 @@ class _SectionMemcache(_Section):
         help_text='Default region to use when working with Cloud Memorystore '
         'for Memcached resources. When a `region` is required but not provided '
         'by a flag, the command will fall back to this value, if set.')
+
+
+class _SectionMetastore(_Section):
+  """Contains the properties for the 'metastore' section."""
+
+  class Tier(enum.Enum):
+    enterprise = 3
+
+  def TierValidator(self, tier):
+    if tier is None:
+      return
+
+    if tier not in [x.name for x in list(_SectionMetastore.Tier)]:
+      raise InvalidValueError(
+          ('tier `{0}` must be one of: [enterprise]'.format(tier)))
+
+  def __init__(self):
+    super(_SectionMetastore, self).__init__('metastore')
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Dataproc '
+        'Metastore. When a `location` is required but not provided by a flag, '
+        'the command will fall back to this value, if set.',
+        hidden=True)
+    self.tier = self._Add(
+        'tier',
+        validator=self.TierValidator,
+        help_text="""\
+        Default tier to use when creating Dataproc Metastore services.
+        When a `tier` is required but not provided by a flag,
+        the command will fall back to this value, if set.
+
+        Valid values are:
+            *   `enterprise` - The enterprise tier combines a powerful metastore
+            serving layer with a highly scalable data storage layer.""",
+        hidden=True,
+        choices=[x.name for x in list(_SectionMetastore.Tier)])
 
 
 class _SectionRedis(_Section):

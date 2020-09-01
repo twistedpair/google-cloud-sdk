@@ -279,12 +279,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -726,10 +720,6 @@
         },
         "schemaType": {
           "description": "Specifies the schema format to export.",
-          "enumDescriptions": [
-            "Same as SIMPLE.",
-            "A flatterned version of Annotation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Same as SIMPLE.",
@@ -874,13 +864,6 @@
         },
         "filterProfile": {
           "description": "Tag filtering profile that determines which tags to keep\/remove.",
-          "enumDescriptions": [
-            "No tag filtration profile provided. Same as KEEP_ALL_PROFILE.",
-            "Keep only tags required to produce valid DICOM.",
-            "Remove tags based on DICOM Standard's Attribute Confidentiality Basic Profile (DICOM Standard Edition 2018e) http:\/\/dicom.nema.org\/medical\/dicom\/2018e\/output\/chtml\/part15\/chapter_E.html.",
-            "Keep all tags.",
-            "Inspects within tag contents and replaces sensitive text. The process can be configured using the TextConfig. Applies to all tags with the following Value Representation names: AE, LO, LT, PN, SH, ST, UC, UT, DA, DT, AS"
-          ],
           "type": "string",
           "enumDescriptions": [
             "No tag filtration profile provided. Same as KEEP_ALL_PROFILE.",
@@ -941,12 +924,6 @@
         },
         "action": {
           "description": "Deidentify action for one field.",
-          "enumDescriptions": [
-            "No action specified.",
-            "Transform the entire field based on transformations specified in TextConfig. When the specified transformation cannot be applied to a field, RedactConfig is used. For example, a Crypto Hash transformation can't be applied to a FHIR Date field.",
-            "Inspect and transform any found PHI. When `AnnotationConfig` is provided, annotations of PHI will be generated, except for Date and Datetime.",
-            "Do not transform."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No action specified.",
@@ -970,12 +947,6 @@
       "properties": {
         "textRedactionMode": {
           "description": "Determines how to redact text from image.",
-          "enumDescriptions": [
-            "No text redaction specified. Same as REDACT_NO_TEXT.",
-            "Redact all text.",
-            "Redact sensitive text.",
-            "Do not redact text."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No text redaction specified. Same as REDACT_NO_TEXT.",
@@ -1433,11 +1404,6 @@
       "properties": {
         "schematizedParsingType": {
           "description": "Determines how messages that fail to parse are handled.",
-          "enumDescriptions": [
-            "Unspecified schematized parsing type, equivalent to `SOFT_FAIL`.",
-            "Messages that fail to parse are still stored and ACKed but a parser error is stored in place of the schematized data.",
-            "Messages that fail to parse are rejected from ingestion\/insertion and return an error code."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified schematized parsing type, equivalent to `SOFT_FAIL`.",
@@ -1470,12 +1436,6 @@
         },
         "unexpectedSegmentHandling": {
           "description": "Determines how unexpected segments (segments not matched to the schema) are handled.",
-          "enumDescriptions": [
-            "Unspecified handling mode, equivalent to FAIL.",
-            "Unexpected segments fail to parse and return an error.",
-            "Unexpected segments do not fail, but are omitted from the output.",
-            "Unexpected segments do not fail, but are parsed in place and added to the current group. If a segment has a type definition, it is used, otherwise it is parsed as VARIES."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified handling mode, equivalent to FAIL.",
@@ -1626,12 +1586,6 @@
         },
         "primitive": {
           "description": "If this is a primitive type then this field is the type of the primitive For example, STRING. Leave unspecified for composite types.",
-          "enumDescriptions": [
-            "Not a primitive.",
-            "String primitive.",
-            "Element that can have unschematized children.",
-            "Like STRING, but all delimiters below this element are ignored."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not a primitive.",
@@ -1936,13 +1890,6 @@
       "properties": {
         "contentStructure": {
           "description": "The content structure in the source location. If not specified, the server treats the input source files as BUNDLE.",
-          "enumDescriptions": [
-            "If the content structure is not specified, the default value `BUNDLE` is used.",
-            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a bundle that contains one or more resources. Set the bundle type to `history` to import resource versions.",
-            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a single resource.",
-            "The entire file is one JSON bundle. The JSON can span multiple lines.",
-            "The entire file is one JSON resource. The JSON can span multiple lines."
-          ],
           "type": "string",
           "enumDescriptions": [
             "If the content structure is not specified, the default value `BUNDLE` is used.",
@@ -2028,11 +1975,6 @@
       "properties": {
         "schemaType": {
           "description": "Specifies the output schema type. Schema type is required.",
-          "enumDescriptions": [
-            "No schema type specified. Same as `LOSSLESS`.",
-            "A data-driven schema generated from the fields present in the FHIR data being exported, with no additional simplification.",
-            "Analytics schema defined by the FHIR community. See https:\/\/github.com\/FHIR\/sql-on-fhir\/blob\/master\/sql-on-fhir.md. BigQuery only allows a maximum of 10,000 columns per table. Due to this limitation, the server will not generate schemas for fields of type `Resource`, which can hold any resource type. The affected fields are `Parameters.parameter.resource`, `Bundle.entry.resource`, and `Bundle.entry.response.outcome`."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No schema type specified. Same as `LOSSLESS`.",
@@ -2086,12 +2028,6 @@
         },
         "version": {
           "description": "The FHIR specification version that this FHIR store supports natively. This field is immutable after store creation. Requests are rejected if they contain FHIR resources of a different version. Version is required for every FHIR store.",
-          "enumDescriptions": [
-            "VERSION_UNSPECIFIED is treated as STU3 to accommodate the existing FHIR stores.",
-            "Draft Standard for Trial Use, [Release 2](https:\/\/www.hl7.org\/fhir\/DSTU2)",
-            "Standard for Trial Use, [Release 3](https:\/\/www.hl7.org\/fhir\/STU3)",
-            "[Release 4](https:\/\/www.hl7.org\/fhir\/R4)"
-          ],
           "type": "string",
           "enumDescriptions": [
             "VERSION_UNSPECIFIED is treated as STU3 to accommodate the existing FHIR stores.",
@@ -3230,7 +3166,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "SearchForStudies returns a list of matching studies. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                      "description": "SearchForStudies returns a list of matching studies. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of SearchForStudies, see [Search transaction](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#search_transaction) in the Cloud Healthcare API conformance statement. For samples that show how to call SearchForStudies, see [Searching for studies, series, instances, and frames](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#searching_for_studies_series_instances_and_frames)."
                     },
                     "searchForSeries": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.searchForSeries",
@@ -3263,7 +3199,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "SearchForSeries returns a list of matching series. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                      "description": "SearchForSeries returns a list of matching series. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of SearchForSeries, see [Search transaction](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#search_transaction) in the Cloud Healthcare API conformance statement. For samples that show how to call SearchForSeries, see [Searching for studies, series, instances, and frames](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#searching_for_studies_series_instances_and_frames)."
                     },
                     "searchForInstances": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.searchForInstances",
@@ -3296,7 +3232,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "SearchForInstances returns a list of matching instances. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                      "description": "SearchForInstances returns a list of matching instances. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of SearchForInstances, see [Search transaction](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#search_transaction) in the Cloud Healthcare API conformance statement. For samples that show how to call SearchForInstances, see [Searching for studies, series, instances, and frames](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#searching_for_studies_series_instances_and_frames)."
                     },
                     "storeInstances": {
                       "id": "healthcare.projects.locations.datasets.dicomStores.storeInstances",
@@ -3332,7 +3268,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "StoreInstances stores DICOM instances associated with study instance unique identifiers (SUID). See [Store Transaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.5)."
+                      "description": "StoreInstances stores DICOM instances associated with study instance unique identifiers (SUID). See [Store Transaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.5). For details on the implementation of StoreInstances, see [Store transaction](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#store_transaction) in the Cloud Healthcare API conformance statement. For samples that show how to call StoreInstances, see [Storing DICOM data](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#storing_dicom_data)."
                     }
                   }
                   ,
@@ -3370,7 +3306,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "RetrieveStudy returns all instances within the given study. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                          "description": "RetrieveStudy returns all instances within the given study. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of RetrieveStudy, see [DICOM study\/series\/instances](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#dicom_studyseriesinstances) in the Cloud Healthcare API conformance statement. For samples that show how to call RetrieveStudy, see [Retrieving DICOM data](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#retrieving_dicom_data)."
                         },
                         "retrieveMetadata": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.studies.retrieveMetadata",
@@ -3403,7 +3339,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "RetrieveStudyMetadata returns instance associated with the given study presented as metadata with the bulk data removed. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                          "description": "RetrieveStudyMetadata returns instance associated with the given study presented as metadata with the bulk data removed. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of RetrieveStudyMetadata, see [Metadata resources](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#metadata_resources) in the Cloud Healthcare API conformance statement. For samples that show how to call RetrieveStudyMetadata, see [Retrieving metadata](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#retrieving_metadata)."
                         },
                         "searchForSeries": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.studies.searchForSeries",
@@ -3436,7 +3372,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "SearchForSeries returns a list of matching series. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                          "description": "SearchForSeries returns a list of matching series. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of SearchForSeries, see [Search transaction](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#search_transaction) in the Cloud Healthcare API conformance statement. For samples that show how to call SearchForSeries, see [Searching for studies, series, instances, and frames](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#searching_for_studies_series_instances_and_frames)."
                         },
                         "searchForInstances": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.studies.searchForInstances",
@@ -3469,7 +3405,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "SearchForInstances returns a list of matching instances. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                          "description": "SearchForInstances returns a list of matching instances. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of SearchForInstances, see [Search transaction](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#search_transaction) in the Cloud Healthcare API conformance statement. For samples that show how to call SearchForInstances, see [Searching for studies, series, instances, and frames](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#searching_for_studies_series_instances_and_frames)."
                         },
                         "delete": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.studies.delete",
@@ -3501,7 +3437,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "DeleteStudy deletes all instances within the given study. Delete requests are equivalent to the GET requests specified in the Retrieve transaction."
+                          "description": "DeleteStudy deletes all instances within the given study. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. For samples that show how to call DeleteStudy, see [Deleting a study, series, or instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#deleting_a_study_series_or_instance)."
                         },
                         "storeInstances": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.studies.storeInstances",
@@ -3537,7 +3473,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "StoreInstances stores DICOM instances associated with study instance unique identifiers (SUID). See [Store Transaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.5)."
+                          "description": "StoreInstances stores DICOM instances associated with study instance unique identifiers (SUID). See [Store Transaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.5). For details on the implementation of StoreInstances, see [Store transaction](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#store_transaction) in the Cloud Healthcare API conformance statement. For samples that show how to call StoreInstances, see [Storing DICOM data](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#storing_dicom_data)."
                         }
                       }
                       ,
@@ -3575,7 +3511,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "RetrieveSeries returns all instances within the given study and series. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                              "description": "RetrieveSeries returns all instances within the given study and series. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of RetrieveSeries, see [DICOM study\/series\/instances](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#dicom_studyseriesinstances) in the Cloud Healthcare API conformance statement. For samples that show how to call RetrieveSeries, see [Retrieving DICOM data](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#retrieving_dicom_data)."
                             },
                             "retrieveMetadata": {
                               "id": "healthcare.projects.locations.datasets.dicomStores.studies.series.retrieveMetadata",
@@ -3608,7 +3544,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "RetrieveSeriesMetadata returns instance associated with the given study and series, presented as metadata with the bulk data removed. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                              "description": "RetrieveSeriesMetadata returns instance associated with the given study and series, presented as metadata with the bulk data removed. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of RetrieveSeriesMetadata, see [Metadata resources](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#metadata_resources) in the Cloud Healthcare API conformance statement. For samples that show how to call RetrieveSeriesMetadata, see [Retrieving metadata](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#retrieving_metadata)."
                             },
                             "searchForInstances": {
                               "id": "healthcare.projects.locations.datasets.dicomStores.studies.series.searchForInstances",
@@ -3641,7 +3577,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "SearchForInstances returns a list of matching instances. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                              "description": "SearchForInstances returns a list of matching instances. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of SearchForInstances, see [Search transaction](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#search_transaction) in the Cloud Healthcare API conformance statement. For samples that show how to call SearchForInstances, see [Searching for studies, series, instances, and frames](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#searching_for_studies_series_instances_and_frames)."
                             },
                             "delete": {
                               "id": "healthcare.projects.locations.datasets.dicomStores.studies.series.delete",
@@ -3674,7 +3610,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "DeleteSeries deletes all instances within the given study and series. Delete requests are equivalent to the GET requests specified in the Retrieve transaction."
+                              "description": "DeleteSeries deletes all instances within the given study and series. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. For samples that show how to call DeleteSeries, see [Deleting a study, series, or instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#deleting_a_study_series_or_instance)."
                             }
                           }
                           ,
@@ -3712,7 +3648,7 @@
                                   "scopes": [
                                     "https://www.googleapis.com/auth/cloud-platform"
                                   ],
-                                  "description": "RetrieveInstance returns instance associated with the given study, series, and SOP Instance UID. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                                  "description": "RetrieveInstance returns instance associated with the given study, series, and SOP Instance UID. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of RetrieveInstance, see [DICOM study\/series\/instances](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#dicom_studyseriesinstances) and [DICOM instances](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#dicom_instances) in the Cloud Healthcare API conformance statement. For samples that show how to call RetrieveInstance, see [Retrieving an instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#retrieving_an_instance)."
                                 },
                                 "retrieveRendered": {
                                   "id": "healthcare.projects.locations.datasets.dicomStores.studies.series.instances.retrieveRendered",
@@ -3745,7 +3681,7 @@
                                   "scopes": [
                                     "https://www.googleapis.com/auth/cloud-platform"
                                   ],
-                                  "description": "RetrieveRenderedInstance returns instance associated with the given study, series, and SOP Instance UID in an acceptable Rendered Media Type. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                                  "description": "RetrieveRenderedInstance returns instance associated with the given study, series, and SOP Instance UID in an acceptable Rendered Media Type. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of RetrieveRenderedInstance, see [Rendered resources](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#rendered_resources) in the Cloud Healthcare API conformance statement. For samples that show how to call RetrieveRenderedInstance, see [Retrieving consumer image formats](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#retrieving_consumer_image_formats)."
                                 },
                                 "retrieveMetadata": {
                                   "id": "healthcare.projects.locations.datasets.dicomStores.studies.series.instances.retrieveMetadata",
@@ -3778,7 +3714,7 @@
                                   "scopes": [
                                     "https://www.googleapis.com/auth/cloud-platform"
                                   ],
-                                  "description": "RetrieveInstanceMetadata returns instance associated with the given study, series, and SOP Instance UID presented as metadata with the bulk data removed. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                                  "description": "RetrieveInstanceMetadata returns instance associated with the given study, series, and SOP Instance UID presented as metadata with the bulk data removed. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of RetrieveInstanceMetadata, see [Metadata resources](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#metadata_resources) in the Cloud Healthcare API conformance statement. For samples that show how to call RetrieveInstanceMetadata, see [Retrieving metadata](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#retrieving_metadata)."
                                 },
                                 "delete": {
                                   "id": "healthcare.projects.locations.datasets.dicomStores.studies.series.instances.delete",
@@ -3811,7 +3747,7 @@
                                   "scopes": [
                                     "https://www.googleapis.com/auth/cloud-platform"
                                   ],
-                                  "description": "DeleteInstance deletes an instance associated with the given study, series, and SOP Instance UID. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. Study and series search results can take a few seconds to be updated after an instance is deleted using DeleteInstance."
+                                  "description": "DeleteInstance deletes an instance associated with the given study, series, and SOP Instance UID. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. Study and series search results can take a few seconds to be updated after an instance is deleted using DeleteInstance. For samples that show how to call DeleteInstance, see [Deleting a study, series, or instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#deleting_a_study_series_or_instance)."
                                 }
                               }
                               ,
@@ -3849,7 +3785,7 @@
                                       "scopes": [
                                         "https://www.googleapis.com/auth/cloud-platform"
                                       ],
-                                      "description": "RetrieveFrames returns instances associated with the given study, series, SOP Instance UID and frame numbers. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                                      "description": "RetrieveFrames returns instances associated with the given study, series, SOP Instance UID and frame numbers. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of RetrieveFrames, see [DICOM frames](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#dicom_frames) in the Cloud Healthcare API conformance statement. For samples that show how to call RetrieveFrames, see [Retrieving DICOM data](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#retrieving_dicom_data)."
                                     },
                                     "retrieveRendered": {
                                       "id": "healthcare.projects.locations.datasets.dicomStores.studies.series.instances.frames.retrieveRendered",
@@ -3882,7 +3818,7 @@
                                       "scopes": [
                                         "https://www.googleapis.com/auth/cloud-platform"
                                       ],
-                                      "description": "RetrieveRenderedFrames returns instances associated with the given study, series, SOP Instance UID and frame numbers in an acceptable Rendered Media Type. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4)."
+                                      "description": "RetrieveRenderedFrames returns instances associated with the given study, series, SOP Instance UID and frame numbers in an acceptable Rendered Media Type. See [RetrieveTransaction](http:\/\/dicom.nema.org\/medical\/dicom\/current\/output\/html\/part18.html#sect_10.4). For details on the implementation of RetrieveRenderedFrames, see [Rendered resources](https:\/\/cloud.google.com\/healthcare\/docs\/dicom#rendered_resources) in the Cloud Healthcare API conformance statement. For samples that show how to call RetrieveRenderedFrames, see [Retrieving consumer image formats](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#retrieving_consumer_image_formats)."
                                     }
                                   }
                                 }

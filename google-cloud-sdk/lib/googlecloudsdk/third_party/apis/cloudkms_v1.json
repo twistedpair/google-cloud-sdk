@@ -194,12 +194,6 @@
         },
         "purpose": {
           "description": "Immutable. The immutable purpose of this CryptoKey.",
-          "enumDescriptions": [
-            "Not specified.",
-            "CryptoKeys with this purpose may be used with Encrypt and Decrypt.",
-            "CryptoKeys with this purpose may be used with AsymmetricSign and GetPublicKey.",
-            "CryptoKeys with this purpose may be used with AsymmetricDecrypt and GetPublicKey."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -255,16 +249,6 @@
         },
         "state": {
           "description": "The current state of the CryptoKeyVersion.",
-          "enumDescriptions": [
-            "Not specified.",
-            "This version is still being generated. It may not be used, enabled, disabled, or destroyed yet. Cloud KMS will automatically mark this version ENABLED as soon as the version is ready.",
-            "This version may be used for cryptographic operations.",
-            "This version may not be used, but the key material is still available, and the version can be placed back into the ENABLED state.",
-            "This version is destroyed, and the key material is no longer stored. A version may not leave this state once entered.",
-            "This version is scheduled for destruction, and will be destroyed soon. Call RestoreCryptoKeyVersion to put it back into the DISABLED state.",
-            "This version is still being imported. It may not be used, enabled, disabled, or destroyed yet. Cloud KMS will automatically mark this version ENABLED as soon as the version is ready.",
-            "This version was not imported successfully. It may not be used, enabled, disabled, or destroyed. The submitted key material has been discarded. Additional details can be found in CryptoKeyVersion.import_failure_reason."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -289,12 +273,6 @@
         },
         "protectionLevel": {
           "description": "Output only. The ProtectionLevel describing how crypto operations are performed with this CryptoKeyVersion.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Crypto operations are performed in software.",
-            "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -312,25 +290,6 @@
         },
         "algorithm": {
           "description": "Output only. The CryptoKeyVersionAlgorithm that this CryptoKeyVersion supports.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Creates symmetric encryption keys.",
-            "RSASSA-PSS 2048 bit key with a SHA256 digest.",
-            "RSASSA-PSS 3072 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA512 digest.",
-            "RSASSA-PKCS1-v1_5 with a 2048 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 3072 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA512 digest.",
-            "RSAES-OAEP 2048 bit key with a SHA256 digest.",
-            "RSAES-OAEP 3072 bit key with a SHA256 digest.",
-            "RSAES-OAEP 4096 bit key with a SHA256 digest.",
-            "RSAES-OAEP 4096 bit key with a SHA512 digest.",
-            "ECDSA on the NIST P-256 curve with a SHA256 digest.",
-            "ECDSA on the NIST P-384 curve with a SHA384 digest.",
-            "Algorithm representing symmetric encryption by an external key manager."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -430,11 +389,6 @@
       "properties": {
         "format": {
           "description": "Output only. The format of the attestation data.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Cavium HSM attestation compressed with gzip. Note that this format is defined by Cavium and subject to change at any time.",
-            "Cavium HSM attestation V2 compressed with gzip. This is a new format introduced in Cavium's version 3.2-08."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -507,12 +461,6 @@
       "properties": {
         "protectionLevel": {
           "description": "ProtectionLevel to use when creating a CryptoKeyVersion based on this template. Immutable. Defaults to SOFTWARE.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Crypto operations are performed in software.",
-            "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -529,25 +477,6 @@
         },
         "algorithm": {
           "description": "Required. Algorithm to use when creating a CryptoKeyVersion based on this template. For backwards compatibility, GOOGLE_SYMMETRIC_ENCRYPTION is implied if both this field is omitted and CryptoKey.purpose is ENCRYPT_DECRYPT.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Creates symmetric encryption keys.",
-            "RSASSA-PSS 2048 bit key with a SHA256 digest.",
-            "RSASSA-PSS 3072 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA512 digest.",
-            "RSASSA-PKCS1-v1_5 with a 2048 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 3072 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA512 digest.",
-            "RSAES-OAEP 2048 bit key with a SHA256 digest.",
-            "RSAES-OAEP 3072 bit key with a SHA256 digest.",
-            "RSAES-OAEP 4096 bit key with a SHA256 digest.",
-            "RSAES-OAEP 4096 bit key with a SHA512 digest.",
-            "ECDSA on the NIST P-256 curve with a SHA256 digest.",
-            "ECDSA on the NIST P-384 curve with a SHA384 digest.",
-            "Algorithm representing symmetric encryption by an external key manager."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -648,11 +577,6 @@
         },
         "importMethod": {
           "description": "Required. Immutable. The wrapping method to be used for incoming key material.",
-          "enumDescriptions": [
-            "Not specified.",
-            "This ImportMethod represents the CKM_RSA_AES_KEY_WRAP key wrapping scheme defined in the PKCS #11 standard. In summary, this involves wrapping the raw key with an ephemeral AES key, and wrapping the ephemeral AES key with a 3072 bit RSA key. For more details, see [RSA AES key wrap mechanism](http:\/\/docs.oasis-open.org\/pkcs11\/pkcs11-curr\/v2.40\/cos01\/pkcs11-curr-v2.40-cos01.html#_Toc408226908).",
-            "This ImportMethod represents the CKM_RSA_AES_KEY_WRAP key wrapping scheme defined in the PKCS #11 standard. In summary, this involves wrapping the raw key with an ephemeral AES key, and wrapping the ephemeral AES key with a 4096 bit RSA key. For more details, see [RSA AES key wrap mechanism](http:\/\/docs.oasis-open.org\/pkcs11\/pkcs11-curr\/v2.40\/cos01\/pkcs11-curr-v2.40-cos01.html#_Toc408226908)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -667,12 +591,6 @@
         },
         "protectionLevel": {
           "description": "Required. Immutable. The protection level of the ImportJob. This must match the protection_level of the version_template on the CryptoKey you attempt to import into.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Crypto operations are performed in software.",
-            "Crypto operations are performed in a Hardware Security Module.",
-            "Crypto operations are performed by an external key manager."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -713,12 +631,6 @@
         },
         "state": {
           "description": "Output only. The current state of the ImportJob, indicating if it can be used.",
-          "enumDescriptions": [
-            "Not specified.",
-            "The wrapping key for this job is still being generated. It may not be used. Cloud KMS will automatically mark this job as ACTIVE as soon as the wrapping key is generated.",
-            "This job may be used in CreateCryptoKey and CreateCryptoKeyVersion requests.",
-            "This job can no longer be used and may not leave this state once entered."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -768,25 +680,6 @@
         },
         "algorithm": {
           "description": "The Algorithm associated with this key.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Creates symmetric encryption keys.",
-            "RSASSA-PSS 2048 bit key with a SHA256 digest.",
-            "RSASSA-PSS 3072 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA512 digest.",
-            "RSASSA-PKCS1-v1_5 with a 2048 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 3072 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA512 digest.",
-            "RSAES-OAEP 2048 bit key with a SHA256 digest.",
-            "RSAES-OAEP 3072 bit key with a SHA256 digest.",
-            "RSAES-OAEP 4096 bit key with a SHA256 digest.",
-            "RSAES-OAEP 4096 bit key with a SHA512 digest.",
-            "ECDSA on the NIST P-256 curve with a SHA256 digest.",
-            "ECDSA on the NIST P-384 curve with a SHA384 digest.",
-            "Algorithm representing symmetric encryption by an external key manager."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -845,25 +738,6 @@
       "properties": {
         "algorithm": {
           "description": "Required. The algorithm of the key being imported. This does not need to match the version_template of the CryptoKey this version imports into.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Creates symmetric encryption keys.",
-            "RSASSA-PSS 2048 bit key with a SHA256 digest.",
-            "RSASSA-PSS 3072 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA512 digest.",
-            "RSASSA-PKCS1-v1_5 with a 2048 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 3072 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA512 digest.",
-            "RSAES-OAEP 2048 bit key with a SHA256 digest.",
-            "RSAES-OAEP 3072 bit key with a SHA256 digest.",
-            "RSAES-OAEP 4096 bit key with a SHA256 digest.",
-            "RSAES-OAEP 4096 bit key with a SHA512 digest.",
-            "ECDSA on the NIST P-256 curve with a SHA256 digest.",
-            "ECDSA on the NIST P-384 curve with a SHA384 digest.",
-            "Algorithm representing symmetric encryption by an external key manager."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -1310,12 +1184,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",

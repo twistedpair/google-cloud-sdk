@@ -722,7 +722,7 @@ def _UpdateEnv(manifest, remove_container_env, container_env_file,
 
   current_env = {}
   for env_val in manifest['spec']['containers'][0].get('env', []):
-    current_env[env_val['name']] = env_val['value']
+    current_env[env_val['name']] = env_val.get('value')
 
   for env in remove_container_env:
     current_env.pop(env, None)

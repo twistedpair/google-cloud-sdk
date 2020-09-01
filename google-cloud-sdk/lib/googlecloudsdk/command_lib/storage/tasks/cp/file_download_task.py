@@ -24,34 +24,41 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
-from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core.util import files
 
 
 class FileDownloadTask(task.Task):
-  """Represents a command operation triggering a file download.
+  """Represents a command operation triggering a file download."""
 
-  Attributes:
-    destination_local_path (str): The local filesystem path to write the file
-        to.
-    source_object_reference (resource_reference.ObjectReference): Must
-        contain the full path of object to download, including bucket.
-        Directories will not be accepted.
-  """
+  def __init__(self, source_resource, destination_resource):
+    """Initializes task.
 
-  def __init__(self, destination_local_path, source_object_reference):
+    Args:
+      source_resource (resource_reference.ObjectResource): Must contain
+          the full path of object to download, including bucket. Directories
+          will not be accepted. Does not need to contain metadata.
+      destination_resource (resource_reference.FileObjectResource): Must contain
+          local filesystem path to upload object. Does not need to contain
+          metadata.
+    """
     super(FileDownloadTask, self).__init__()
-    self.download_stream = files.FileWriter(destination_local_path)
-
-    cloud_url = storage_url.CloudUrl.from_url_string(
-        source_object_reference.storage_url.url_string)
-    self.provider = cloud_url.scheme
-    self.bucket_name = cloud_url.bucket_name
-    self.object_name = cloud_url.object_name
+    self._source_resource = source_resource
+    self._destination_resource = destination_resource
 
   def execute(self, callback=None):
-    # TODO(b/162264437): Support all of DownloadObject's parameters.
-    api_factory.get_api(self.provider).DownloadObject(self.bucket_name,
-                                                      self.object_name,
-                                                      self.download_stream)
+    download_stream = files.BinaryFileWriter(
+        self._destination_resource.storage_url.object_name, create_path=True)
+    provider = cloud_api.ProviderPrefix(
+        self._source_resource.storage_url.scheme)
+    bucket_name = self._source_resource.storage_url.bucket_name
+    object_name = self._source_resource.storage_url.object_name
+
+    try:
+      # TODO(b/162264437): Support all of DownloadObject's parameters.
+      api_factory.get_api(provider).DownloadObject(bucket_name,
+                                                   object_name,
+                                                   download_stream)
+    finally:
+      download_stream.close()

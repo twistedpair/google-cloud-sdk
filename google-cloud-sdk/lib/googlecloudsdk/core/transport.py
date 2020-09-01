@@ -583,4 +583,13 @@ def IsTokenUri(uri):
   metadata_regexp = ('metadata.google.internal/computeMetadata/.*?/instance/'
                      'service-accounts/.*?/token')
 
-  return re.search(metadata_regexp, uri) is not None
+  impersonate_service_account = ('iamcredentials.googleapis.com/v.*?/projects/'
+                                 '-/serviceAccounts/.*?:generateAccessToken')
+
+  if re.search(metadata_regexp, uri) is not None:
+    return True
+
+  if re.search(impersonate_service_account, uri) is not None:
+    return True
+
+  return False

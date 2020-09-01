@@ -964,7 +964,15 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, request_client):
       cred.service_account_email,
       cred._token_uri,  # pylint: disable=protected-access
       config.CLOUDSDK_CLIENT_ID)
-  id_token_cred.refresh(request_client)
+
+  try:
+    id_token_cred.refresh(request_client)
+  except google_auth_exceptions.RefreshError:
+    # ID token refresh does not work in testgaia because the Cloud SDK
+    # client ID (http://shortn/_BVYwsLLdaJ) is not set up to work with this
+    # environment. The running command should not break because of this and
+    # should proceed without a new ID token.
+    return None
 
   return id_token_cred.token
 

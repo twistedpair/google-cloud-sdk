@@ -51,17 +51,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_GLOBAL_DOMAINS_SQLINTEGRATIONS = (
-      'projects.locations.global.domains.sqlIntegrations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/global/domains/{domainsId}/'
-              'sqlIntegrations/{sqlIntegrationsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_GLOBAL_OPERATIONS = (
       'projects.locations.global.operations',
       '{+name}',

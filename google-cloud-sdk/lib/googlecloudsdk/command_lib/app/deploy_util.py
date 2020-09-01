@@ -116,13 +116,6 @@ class InvalidRuntimeNameError(Error):
         'Must match regular expression [{}].'.format(runtime, allowed_regex))
 
 
-# TODO(b/27101941): Remove when commands all rely solely on the property.
-class ServiceManagementOption(enum.Enum):
-  """Enum declaring when to use Service Management for Flexible deployments."""
-  ALWAYS = 1
-  IF_PROPERTY_SET = 2
-
-
 class FlexImageBuildOptions(enum.Enum):
   """Enum declaring different options for building image for flex deploys."""
   ON_CLIENT = 1

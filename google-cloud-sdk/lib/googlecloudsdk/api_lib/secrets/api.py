@@ -25,8 +25,8 @@ from googlecloudsdk.api_lib.util import apis
 
 def GetClient(version=None):
   """Get the default client."""
-  return apis.GetClientInstance('secretmanager',
-                                version or apis.ResolveVersion('secretmanager'))
+  return apis.GetClientInstance('secretmanager', version or
+                                apis.ResolveVersion('secretmanager'))
 
 
 def GetMessages(version=None):
@@ -37,6 +37,31 @@ def GetMessages(version=None):
 
 def _FormatUpdateMask(update_mask):
   return ','.join(update_mask)
+
+
+def _MakeReplicationMessage(messages, policy, locations, keys):
+  """Create a replication message from its components."""
+  replication = messages.Replication(automatic=messages.Automatic())
+  if policy == 'automatic' and keys:
+    replication = messages.Replication(
+        automatic=messages.Automatic(
+            customerManagedEncryption=messages.CustomerManagedEncryption(
+                kmsKeyName=keys[0])))
+  if policy == 'user-managed':
+    replicas = []
+    for i, location in enumerate(locations):
+      if i < len(keys):
+        replicas.append(
+            messages.Replica(
+                location=location,
+                customerManagedEncryption=messages
+                .CustomerManagedEncryption(kmsKeyName=keys[i])))
+      else:
+        replicas.append(messages.Replica(location=locations[i]))
+
+    replication = messages.Replication(
+        userManaged=messages.UserManaged(replicas=replicas))
+  return replication
 
 
 class Client(object):
@@ -80,23 +105,17 @@ class Secrets(Client):
     super(Secrets, self).__init__(client, messages)
     self.service = self.client.projects_secrets
 
-  def Create(self, secret_ref, policy, locations, labels):
+  def Create(self, secret_ref, policy, locations, labels, keys=None):
     """Create a secret."""
-    replication = self.messages.Replication(automatic=self.messages.Automatic())
-    if policy == 'user-managed':
-      replicas = []
-      for location in locations:
-        replicas.append(self.messages.Replica(location=location))
-      replication = self.messages.Replication(
-          userManaged=self.messages.UserManaged(replicas=replicas))
-
+    keys = keys or []
+    replication = _MakeReplicationMessage(self.messages, policy, locations,
+                                          keys)
     return self.service.Create(
         self.messages.SecretmanagerProjectsSecretsCreateRequest(
             parent=secret_ref.Parent().RelativeName(),
             secretId=secret_ref.Name(),
-            secret=self.messages.Secret(
-                labels=labels,
-                replication=replication)))
+            secret=self.messages.Secret(labels=labels,
+                                        replication=replication)))
 
   def Delete(self, secret_ref):
     """Delete a secret."""
@@ -144,6 +163,16 @@ class Secrets(Client):
             name=secret_ref.RelativeName(),
             secret=self.messages.Secret(labels=labels),
             updateMask=_FormatUpdateMask(update_mask)))
+
+  def SetReplication(self, secret_ref, policy, locations, keys):
+    """Set the replication policy on an existing secret.."""
+    replication = _MakeReplicationMessage(self.messages, policy, locations,
+                                          keys)
+    return self.service.Patch(
+        self.messages.SecretmanagerProjectsSecretsPatchRequest(
+            name=secret_ref.RelativeName(),
+            secret=self.messages.Secret(replication=replication),
+            updateMask=_FormatUpdateMask(['replication'])))
 
 
 class SecretsLatest(Client):

@@ -129,13 +129,6 @@
         },
         "state": {
           "description": "Output only. Current execution state of this environment.",
-          "enumDescriptions": [
-            "The environment's states is unknown.",
-            "The environment is not running and can't be connected to. Starting the environment will transition it to the STARTING state.",
-            "The environment is being started but is not yet ready to accept connections.",
-            "The environment is running and ready to accept connections. It will automatically transition back to DISABLED after a period of inactivity or if another environment is started.",
-            "The environment is being deleted and can't be connected to."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The environment's states is unknown.",
@@ -186,11 +179,6 @@
         },
         "size": {
           "description": "Indicates the size of the backing VM running the environment. If set to something other than DEFAULT, it will be reverted to the default VM size after vm_size_expire_time.",
-          "enumDescriptions": [
-            "The VM size is unknown.",
-            "The default VM size.",
-            "The boosted VM size."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The VM size is unknown.",
@@ -221,14 +209,6 @@
         },
         "format": {
           "description": "Required. Format of this key's content.",
-          "enumDescriptions": [
-            "Unknown format. Do not use.",
-            "`ssh-dss` key format (see RFC4253).",
-            "`ssh-rsa` key format (see RFC4253).",
-            "`ecdsa-sha2-nistp256` key format (see RFC5656).",
-            "`ecdsa-sha2-nistp384` key format (see RFC5656).",
-            "`ecdsa-sha2-nistp521` key format (see RFC5656)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown format. Do not use.",
@@ -379,14 +359,6 @@
       "properties": {
         "state": {
           "description": "Current state of the environment being started.",
-          "enumDescriptions": [
-            "The environment's start state is unknown.",
-            "The environment is in the process of being started, but no additional details are available.",
-            "Startup is waiting for the user's disk to be unarchived. This can happen when the user returns to Cloud Shell after not having used it for a while, and suggests that startup will take longer than normal.",
-            "Startup is waiting for a VM to be assigned to the environment. This should normally happen very quickly, but an environment might stay in this state for an extended period of time if the system is experiencing heavy load.",
-            "Startup is waiting for compute resources to be assigned to the environment. This should normally happen very quickly, but an environment might stay in this state for an extended period of time if the system is experiencing heavy load.",
-            "Startup has completed. If the start operation was successful, the user should be able to establish an SSH connection to their environment. Otherwise, the operation will contain details of the failure."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The environment's start state is unknown.",

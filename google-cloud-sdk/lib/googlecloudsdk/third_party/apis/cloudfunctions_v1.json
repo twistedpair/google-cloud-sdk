@@ -250,14 +250,6 @@
         },
         "status": {
           "description": "Output only. Status of the function deployment.",
-          "enumDescriptions": [
-            "Not specified. Invalid state.",
-            "Function has been successfully deployed and is serving.",
-            "Function deployment failed and the function isn\u2019t serving.",
-            "Function is being created or updated.",
-            "Function is being deleted.",
-            "Function deployment failed and the function serving state is undefined. The function should be updated or deleted to move it out of this state."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -347,11 +339,6 @@
         },
         "vpcConnectorEgressSettings": {
           "description": "The egress settings for the connector, controlling what traffic is diverted through it.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Use the VPC Access Connector only for private IP space from RFC1918.",
-            "Force the use of VPC Access Connector for all egress traffic from the function."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -366,12 +353,6 @@
         },
         "ingressSettings": {
           "description": "The ingress settings for the function, controlling what traffic can reach it.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Allow HTTP traffic from public and private sources.",
-            "Allow HTTP traffic from only private VPC sources.",
-            "Allow HTTP traffic from private VPC sources and through GCLB."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -654,12 +635,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -774,12 +749,6 @@
         },
         "type": {
           "description": "Type of operation.",
-          "enumDescriptions": [
-            "Unknown operation type.",
-            "Triggered by CreateFunction call",
-            "Triggered by UpdateFunction call",
-            "Triggered by DeleteFunction call."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown operation type.",

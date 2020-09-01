@@ -54,6 +54,8 @@ class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
 class LabelChanges(ConfigChanger):
   """Represents the user intent to modify metadata labels."""
 
+  LABELS_NOT_ALLOWED_IN_REVISION = ([service.ENDPOINT_VISIBILITY])
+
   def __init__(self, diff, copy_to_revision=True):
     super(LabelChanges, self).__init__()
     self._diff = diff
@@ -74,6 +76,9 @@ class LabelChanges(ConfigChanger):
         # However, we need to preserve the nonce if there is one.
         nonce = resource.template.labels.get(revision.NONCE_LABEL)
         resource.template.metadata.labels = copy.deepcopy(maybe_new_labels)
+        for label_to_remove in self.LABELS_NOT_ALLOWED_IN_REVISION:
+          if label_to_remove in resource.template.labels:
+            del resource.template.labels[label_to_remove]
         if nonce:
           resource.template.labels[revision.NONCE_LABEL] = nonce
     return resource
@@ -107,7 +112,10 @@ class ReplaceServiceChange(ConfigChanger):
 
 
 class EndpointVisibilityChange(LabelChanges):
-  """Represents the user intent to modify the endpoint visibility."""
+  """Represents the user intent to modify the endpoint visibility.
+
+  Only applies to Cloud Run for Anthos.
+  """
 
   def __init__(self, endpoint_visibility):
     """Determine label changes for modifying endpoint visibility.
@@ -125,6 +133,19 @@ class EndpointVisibilityChange(LabelChanges):
     # Don't copy this label to the revision because it's not supported there.
     # See b/154664962.
     super(EndpointVisibilityChange, self).__init__(diff, False)
+
+
+class SetAnnotationChange(ConfigChanger):
+  """Represents the user intent to set an annotation."""
+
+  def __init__(self, key, value):
+    super(SetAnnotationChange, self).__init__()
+    self._key = key
+    self._value = value
+
+  def Adjust(self, resource):
+    resource.annotations[self._key] = self._value
+    return resource
 
 
 class SetTemplateAnnotationChange(ConfigChanger):

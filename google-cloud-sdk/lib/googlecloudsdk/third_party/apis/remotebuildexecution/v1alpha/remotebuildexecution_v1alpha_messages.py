@@ -1085,9 +1085,12 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
       LINUX_ISOLATION_UNSPECIFIED: Default value. Will be using Linux default
         runtime.
       GVISOR: Use gVisor runsc runtime.
+      OFF: Use stardard Linux runtime. This has the same behaviour as
+        unspecified, but it can be used to revert back from gVisor.
     """
     LINUX_ISOLATION_UNSPECIFIED = 0
     GVISOR = 1
+    OFF = 2
 
   containerImageSources = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 1)
   dockerAddCapabilities = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 2)

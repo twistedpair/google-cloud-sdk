@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import base
 
 
-# TODO(b/150467260): Allow passing in decoded format as well.
 def GetAttachmentPointFlag():
   return base.Argument(
       '--attachment-point',

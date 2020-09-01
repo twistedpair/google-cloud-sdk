@@ -140,7 +140,7 @@
           "format": "int64"
         },
         "scale": {
-          "description": "Every partition in the topic is allocated throughput equivalent to `scale` times the standard partition throughput (4 MiB\/s). This is also reflected in the cost of this topic; a topic with `scale` of 2 and count of 10 is charged for 20 partitions. This value must be in the range [1,4].",
+          "description": "DEPRECATED: Use capacity instead which can express a superset of configurations. Every partition in the topic is allocated throughput equivalent to `scale` times the standard partition throughput (4 MiB\/s). This is also reflected in the cost of this topic; a topic with `scale` of 2 and count of 10 is charged for 20 partitions. This value must be in the range [1,4].",
           "type": "integer",
           "format": "int32"
         },
@@ -265,11 +265,6 @@
       "properties": {
         "deliveryRequirement": {
           "description": "The DeliveryRequirement for this subscription.",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "The server does not wait for a published message to be successfully written to storage before delivering it to subscribers.",
-            "The server will not deliver a published message to subscribers until the message has been successfully written to storage. This will result in higher end-to-end latency, but consistent delivery."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. This value is unused.",

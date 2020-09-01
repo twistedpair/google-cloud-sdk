@@ -27,6 +27,12 @@ from googlecloudsdk.api_lib.run import traffic
 ENDPOINT_VISIBILITY = 'serving.knative.dev/visibility'
 CLUSTER_LOCAL = 'cluster-local'
 
+INGRESS_ANNOTATION = 'run.googleapis.com/ingress'
+INGRESS_STATUS_ANNOTATION = 'run.googleapis.com/ingress-status'
+INGRESS_ALL = 'all'
+INGRESS_INTERNAL = 'internal'
+INGRESS_INTERNAL_AND_CLOUD_LOAD_BALANCING = 'internal-and-cloud-load-balancing'
+
 
 class Service(k8s_object.KubernetesObject):
   """Wraps a Serverless Service message, making fields more convenient.

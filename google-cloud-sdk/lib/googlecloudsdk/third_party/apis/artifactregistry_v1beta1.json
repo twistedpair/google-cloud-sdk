@@ -274,13 +274,6 @@
         },
         "format": {
           "description": "The format of packages that are stored in the repository.",
-          "enumDescriptions": [
-            "Unspecified package format.",
-            "Docker package format.",
-            "Maven package format.",
-            "NPM package format.",
-            "APT package format."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified package format.",
@@ -494,10 +487,6 @@
       "properties": {
         "type": {
           "description": "The algorithm used to compute the hash value.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "SHA256 hash."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",

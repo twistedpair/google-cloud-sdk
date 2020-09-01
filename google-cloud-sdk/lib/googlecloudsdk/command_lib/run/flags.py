@@ -28,6 +28,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.container import kubeconfig
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run import revision
+from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.run import traffic
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import exceptions as services_exceptions
@@ -53,6 +54,18 @@ from googlecloudsdk.core.util import files
 _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
     'external': 'Visible from outside the cluster.',
+}
+
+_INGRESS_MODES = {
+    'all': 'Inbound requests from all sources are allowed.',
+    'internal':
+        'For Cloud Run (fully managed), only inbound requests from VPC networks'
+        ' in the same project are allowed. For Cloud Run for Anthos, only '
+        'inbound requests from the same cluster are allowed.',
+    'internal-and-cloud-load-balancing':
+        'Only supported for Cloud Run (fully managed). Only inbound requests'
+        ' from VPC networks in the same project or from Google Cloud Load '
+        'Balancing are allowed.'
 }
 
 PLATFORM_MANAGED = 'managed'
@@ -119,6 +132,7 @@ def AddConfigFlags(parser):
       help='The YAML or JSON file to use as the build configuration file.')
   build_config.add_argument(
       '--pack',
+      hidden=True,
       type=arg_parsers.ArgDict(
           spec={
               'image': str,
@@ -203,14 +217,32 @@ def AddAsyncFlag(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
-def AddEndpointVisibilityEnum(parser):
+def AddEndpointVisibilityEnum(parser, deprecated=False):
   """Add the --connectivity=[external|internal] flag."""
+  action = None
+  if deprecated:
+    action = actions.DeprecationAction(
+        '--connectivity',
+        warn='The {flag_name} flag is deprecated and will be removed in an '
+        'upcoming release. Please use the --ingress flag instead.')
   parser.add_argument(
       '--connectivity',
       choices=_VISIBILITY_MODES,
       help=('Defaults to \'external\'. If \'external\', the service can be '
             'invoked through the internet, in addition to through the cluster '
-            'network.'))
+            'network.'),
+      action=action)
+
+
+def AddIngressFlag(parser):
+  """Adds the --ingress flag."""
+  parser.add_argument(
+      '--ingress',
+      choices=_INGRESS_MODES,
+      help='Set the ingress traffic sources allowed to call the service. For '
+      'Cloud Run (fully managed) the `--[no-]allow-unauthenticated` flag '
+      'separately controls the identities allowed to call the service.',
+      default='all')
 
 
 def AddServiceFlag(parser):
@@ -969,6 +1001,22 @@ def _GetTrafficChanges(args):
                                        remove_tags, clear_other_tags)
 
 
+def _GetIngressChanges(args):
+  """Returns changes to ingress traffic allowed based on the flags."""
+  platform = GetPlatform()
+  if platform == PLATFORM_MANAGED:
+    return config_changes.SetAnnotationChange(service.INGRESS_ANNOTATION,
+                                              args.ingress)
+  elif args.ingress == service.INGRESS_INTERNAL:
+    return config_changes.EndpointVisibilityChange(True)
+  elif args.ingress == service.INGRESS_ALL:
+    return config_changes.EndpointVisibilityChange(False)
+  else:
+    raise serverless_exceptions.ConfigurationError(
+        'Ingress value `{}` is not supported on platform `{}`.'.format(
+            args.ingress, platform))
+
+
 def GetConfigurationChanges(args):
   """Returns a list of changes to Configuration, based on the flags set."""
   changes = []
@@ -1041,6 +1089,8 @@ def GetConfigurationChanges(args):
       changes.append(config_changes.EndpointVisibilityChange(True))
     elif args.connectivity == 'external':
       changes.append(config_changes.EndpointVisibilityChange(False))
+  if FlagIsExplicitlySet(args, 'ingress'):
+    changes.append(_GetIngressChanges(args))
   if 'command' in args and args.command is not None:
     # Allow passing an empty string here to reset the field
     changes.append(config_changes.ContainerCommandChange(args.command))
@@ -1343,6 +1393,12 @@ def VerifyGKEFlags(args, release_track, product):
         'flag can limit which network a service is available on to reduce '
         'access.')
 
+  if (FlagIsExplicitlySet(args, 'connectivity') and
+      FlagIsExplicitlySet(args, 'ingress')):
+    raise serverless_exceptions.ConfigurationError(
+        'Cannot specify both the `--connectivity` and `--ingress` flags.'
+        ' `--connectivity` is deprecated in favor of `--ingress`.')
+
   if FlagIsExplicitlySet(args, 'region'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1400,6 +1456,12 @@ def VerifyKubernetesFlags(args, release_track, product):
         'services allow unauthenticated requests. The `--connectivity` '
         'flag can limit which network a service is available on to reduce '
         'access.')
+
+  if (FlagIsExplicitlySet(args, 'connectivity') and
+      FlagIsExplicitlySet(args, 'ingress')):
+    raise serverless_exceptions.ConfigurationError(
+        'Cannot specify both the `--connectivity` and `--ingress` flags.'
+        ' `--connectivity` is deprecated in favor of `--ingress`.')
 
   if FlagIsExplicitlySet(args, 'region'):
     raise serverless_exceptions.ConfigurationError(

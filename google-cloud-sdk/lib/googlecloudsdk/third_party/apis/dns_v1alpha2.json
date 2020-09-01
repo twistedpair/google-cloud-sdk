@@ -259,10 +259,6 @@
         },
         "visibility": {
           "description": "The zone's visibility: public zones are exposed to the Internet, while private zones are visible only to Virtual Private Cloud resources.",
-          "enumDescriptions": [
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -312,11 +308,6 @@
       "properties": {
         "state": {
           "description": "Specifies whether DNSSEC is enabled, and what mode it is in.",
-          "enumDescriptions": [
-            "DNSSEC is disabled; the zone is not signed.",
-            "DNSSEC is enabled; the zone is signed and fully managed.",
-            "DNSSEC is enabled, but in a \"transfer\" mode."
-          ],
           "type": "string",
           "enumDescriptions": [
             "DNSSEC is disabled; the zone is not signed.",
@@ -338,10 +329,6 @@
         },
         "nonExistence": {
           "description": "Specifies the mechanism for authenticated denial-of-existence responses. Can only be changed while the state is OFF.",
-          "enumDescriptions": [
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -365,10 +352,6 @@
       "properties": {
         "keyType": {
           "description": "Specifies whether this is a key signing key (KSK) or a zone signing key (ZSK). Key signing keys have the Secure Entry Point flag set and, when active, will only be used to sign resource record sets of type DNSKEY. Zone signing keys do not have the Secure Entry Point flag set and will be used to sign all other types of resource record sets.",
-          "enumDescriptions": [
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -381,13 +364,6 @@
         },
         "algorithm": {
           "description": "String mnemonic specifying the DNSSEC algorithm of this key.",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -473,10 +449,6 @@
         },
         "forwardingPath": {
           "description": "Forwarding path for this NameServerTarget. If unset or set to DEFAULT, Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS will always send queries through VPC for this target.",
-          "enumDescriptions": [
-            "Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses forward to the target through the VPC and non-RFC1918 addresses will forward to the target through the Internet",
-            "Cloud DNS will always forward to this target through the VPC."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses forward to the target through the VPC and non-RFC1918 addresses will forward to the target through the Internet",
@@ -610,10 +582,6 @@
         },
         "status": {
           "description": "Status of the operation (output only). A status of \"done\" means that the request to update the authoritative servers has been sent but the servers might not be updated yet.",
-          "enumDescriptions": [
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -671,13 +639,6 @@
         },
         "algorithm": {
           "description": "String mnemonic specifying the DNSSEC algorithm of this key. Immutable after creation time.",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -713,10 +674,6 @@
         },
         "type": {
           "description": "One of \"KEY_SIGNING\" or \"ZONE_SIGNING\". Keys of type KEY_SIGNING have the Secure Entry Point flag set and, when active, will be used to sign only resource record sets of type DNSKEY. Otherwise, the Secure Entry Point flag will be cleared and this key will be used to sign only resource record sets of other types. Immutable after creation time.",
-          "enumDescriptions": [
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -755,11 +712,6 @@
       "properties": {
         "type": {
           "description": "Specifies the algorithm used to calculate this digest.",
-          "enumDescriptions": [
-            "",
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -933,10 +885,6 @@
         },
         "status": {
           "description": "Status of the operation. Can be one of the following: \"PENDING\" or \"DONE\" (output only). A status of \"DONE\" means that the request to update the authoritative servers has been sent, but the servers might not be updated yet.",
-          "enumDescriptions": [
-            "",
-            ""
-          ],
           "type": "string",
           "enumDescriptions": [
             "",
@@ -1130,10 +1078,6 @@
         },
         "forwardingPath": {
           "description": "Forwarding path for this TargetNameServer. If unset or set to DEFAULT, Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses go to the VPC, non-RFC1918 addresses go to the Internet. When set to PRIVATE, Cloud DNS will always send queries through VPC for this target.",
-          "enumDescriptions": [
-            "Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses forward to the target through the VPC and non-RFC1918 addresses will forward to the target through the Internet",
-            "Cloud DNS will always forward to this target through the VPC."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Cloud DNS will make forwarding decision based on address ranges, i.e. RFC1918 addresses forward to the target through the VPC and non-RFC1918 addresses will forward to the target through the Internet",

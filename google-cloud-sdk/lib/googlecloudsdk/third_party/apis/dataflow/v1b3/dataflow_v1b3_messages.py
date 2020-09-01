@@ -1220,12 +1220,20 @@ class DataflowProjectsLocationsJobsGetExecutionDetailsRequest(_messages.Message)
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains the job specified by job_id.
+    pageSize: If specified, determines the maximum number of stages to return.
+      If unspecified, the service may choose an appropriate default, or may
+      return an arbitrarily large number of results.
+    pageToken: If supplied, this should be the value of next_page_token
+      returned by an earlier call. This will cause the next page of results to
+      be returned.
     projectId: A project id.
   """
 
   jobId = _messages.StringField(1, required=True)
   location = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
 
 
 class DataflowProjectsLocationsJobsGetMetricsRequest(_messages.Message):
@@ -2944,10 +2952,14 @@ class JobExecutionDetails(_messages.Message):
   r"""Information about the execution of a job.
 
   Fields:
+    nextPageToken: If present, this response does not contain all requested
+      tasks. To obtain the next page of results, repeat the request with
+      page_token set to this value.
     stages: The stages of the job execution.
   """
 
-  stages = _messages.MessageField('StageSummary', 1, repeated=True)
+  nextPageToken = _messages.StringField(1)
+  stages = _messages.MessageField('StageSummary', 2, repeated=True)
 
 
 class JobExecutionInfo(_messages.Message):

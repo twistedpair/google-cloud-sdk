@@ -20,10 +20,13 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import boto3
+import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.core import exceptions as core_exceptions
 
 
 class S3Api(cloud_api.CloudApi):
@@ -46,9 +49,13 @@ class S3Api(cloud_api.CloudApi):
 
   def ListBuckets(self, fields_scope=None):
     """See super class."""
-    response = self.client.list_buckets()
-    for s3_bucket in response['Buckets']:
-      yield self._TranslateListBucketsResponse(s3_bucket, response['Owner'])
+    try:
+      response = self.client.list_buckets()
+      for s3_bucket in response['Buckets']:
+        yield self._TranslateListBucketsResponse(
+            s3_bucket, response['Owner'])
+    except botocore.exceptions.ClientError as error:
+      core_exceptions.reraise(errors.S3ApiError(error))
 
   def _TranslateListObjectsResponse(self, object_dict, bucket_name):
     object_message = self.messages.Object(
@@ -73,8 +80,11 @@ class S3Api(cloud_api.CloudApi):
                   all_versions=None,
                   fields_scope=None):
     """See super class."""
-    paginator = self.client.get_paginator('list_objects_v2')
-    page_iterator = paginator.paginate(Bucket=bucket_name)
-    for page in page_iterator:
-      for obj in page['Contents']:
-        yield self._TranslateListObjectsResponse(obj, bucket_name)
+    try:
+      paginator = self.client.get_paginator('list_objects_v2')
+      page_iterator = paginator.paginate(Bucket=bucket_name)
+      for page in page_iterator:
+        for obj in page['Contents']:
+          yield self._TranslateListObjectsResponse(obj, bucket_name)
+    except botocore.exceptions.ClientError as error:
+      core_exceptions.reraise(errors.S3ApiError(error))

@@ -1909,6 +1909,8 @@ class JobStatistics(_messages.Message):
     totalBytesProcessed: [Output-only] [Deprecated] Use the bytes processed in
       the query statistics instead.
     totalSlotMs: [Output-only] Slot-milliseconds for the job.
+    transactionInfoTemplate: [Output-only] [Alpha] Information of the multi-
+      statement transaction if this job is part of one.
   """
 
   class ReservationUsageValueListEntry(_messages.Message):
@@ -1940,6 +1942,7 @@ class JobStatistics(_messages.Message):
   startTime = _messages.IntegerField(14)
   totalBytesProcessed = _messages.IntegerField(15)
   totalSlotMs = _messages.IntegerField(16)
+  transactionInfoTemplate = _messages.MessageField('TransactionInfo', 17)
 
 
 class JobStatistics2(_messages.Message):
@@ -3220,6 +3223,16 @@ class TimePartitioning(_messages.Message):
   field = _messages.StringField(2)
   requirePartitionFilter = _messages.BooleanField(3)
   type = _messages.StringField(4)
+
+
+class TransactionInfo(_messages.Message):
+  r"""A TransactionInfo object.
+
+  Fields:
+    transactionId: [Output-only] // [Alpha] Id of the transaction.
+  """
+
+  transactionId = _messages.StringField(1)
 
 
 class UserDefinedFunctionResource(_messages.Message):

@@ -1136,8 +1136,6 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest(_messages.Messag
   r"""A ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest object.
 
   Fields:
-    basepath: Base path where the API proxy revision should be deployed.
-      Defaults to '/' if not provided.
     name: Required. Name of the API proxy revision deployment in the following
       format:
       `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
@@ -1160,10 +1158,9 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest(_messages.Messag
       deployment.
   """
 
-  basepath = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  override = _messages.BooleanField(3)
-  sequencedRollout = _messages.BooleanField(4)
+  name = _messages.StringField(1, required=True)
+  override = _messages.BooleanField(2)
+  sequencedRollout = _messages.BooleanField(3)
 
 
 class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChangeReportRequest(_messages.Message):
@@ -2617,10 +2614,11 @@ class GoogleCloudApigeeV1AliasRevisionConfig(_messages.Message):
     TypeValueValuesEnum:
 
   Fields:
-    location: The location of the alias file, e.g. a GCS URI.
-    name: The name of the alias revision included in the keystore. Must be of
-      the form: 'organizations/{org}/environments/{env}/keystores/{keystore}/a
-      liases/{alias}/revisions/{rev}'.
+    location: Location of the alias file. For example, a Google Cloud Storage
+      URI.
+    name: Name of the alias revision included in the keystore in the following
+      format: `organizations/{org}/environments/{env}/keystores/{keystore}/ali
+      ases/{alias}/revisions/{rev}`
     type: A TypeValueValuesEnum attribute.
   """
 
@@ -2701,6 +2699,15 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
     name: The internal name of the API Product. Characters you can use in the
       name are restricted to: A-Z0-9._\-$ %. *NOTE:* The internal name cannot
       be edited when updating the API product.
+    operationGroup: The operation_group enables api product creators to group
+      Apigee proxies or remote services with resources, method types and
+      quotas. The resource refers to the resource URI(excluding the base
+      path). With this grouping, API product creator is able to finetune and
+      give precise control over which REST methods have access to which
+      resources, and how many such calls can be made (via Quota). Note that
+      api_resources cannot be specified at both the API product level as well
+      as within the operation_group. If configured that way, the call will
+      fail. Please refer go/api-product-with-methods for additional details.
     proxies: A comma-separated list of API proxy names to which this API
       product is bound. By specifying API proxies, you can associate resources
       in the API product with specific API proxies, preventing developers from
@@ -2731,11 +2738,12 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
   environments = _messages.StringField(7, repeated=True)
   lastModifiedAt = _messages.IntegerField(8)
   name = _messages.StringField(9)
-  proxies = _messages.StringField(10, repeated=True)
-  quota = _messages.StringField(11)
-  quotaInterval = _messages.StringField(12)
-  quotaTimeUnit = _messages.StringField(13)
-  scopes = _messages.StringField(14, repeated=True)
+  operationGroup = _messages.MessageField('GoogleCloudApigeeV1OperationGroup', 10)
+  proxies = _messages.StringField(11, repeated=True)
+  quota = _messages.StringField(12)
+  quotaInterval = _messages.StringField(13)
+  quotaTimeUnit = _messages.StringField(14)
+  scopes = _messages.StringField(15, repeated=True)
 
 
 class GoogleCloudApigeeV1ApiProductRef(_messages.Message):
@@ -3149,19 +3157,19 @@ class GoogleCloudApigeeV1CustomReportMetric(_messages.Message):
 
 
 class GoogleCloudApigeeV1DataCollectorConfig(_messages.Message):
-  r"""A DataCollector and its configuration.
+  r"""Data collector and its configuration.
 
   Enums:
-    TypeValueValuesEnum: The data type this DataCollector accepts.
+    TypeValueValuesEnum: Data type accepted by the data collector.
 
   Fields:
-    name: The name of the data collector. Must be of the form
-      'organizations/{org}/datacollectors/{dc}'.
-    type: The data type this DataCollector accepts.
+    name: Name of the data collector in the following format:
+      `organizations/{org}/datacollectors/{datacollector}`
+    type: Data type accepted by the data collector.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The data type this DataCollector accepts.
+    r"""Data type accepted by the data collector.
 
     Values:
       TYPE_UNSPECIFIED: For future compatibility.
@@ -3503,24 +3511,23 @@ class GoogleCloudApigeeV1DeploymentConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1DeploymentConfig object.
 
   Messages:
-    AttributesValue: Additional key-value metadata about the deployment.
+    AttributesValue: Additional key-value metadata for the deployment.
 
   Fields:
-    attributes: Additional key-value metadata about the deployment.
-    basePath: Base path where the application needs to be hosted. Default
-      value is assumed to be "/".
-    location: The location of the proxy bundle, as a uri.
-    name: The name of the API or shared flow revision to be deployed. Must be
-      of the form 'organizations/{org}/apis/{api}/revisions/{rev}' or
-      'organizations/{org}/sharedflows/{sf}/revisions/{rev}'.
-    proxyUid: The uid of the proxy revision.
-    uid: A unique id that will only change if the deployment is deleted and
+    attributes: Additional key-value metadata for the deployment.
+    basePath: Base path where the application will be hosted. Defaults to "/".
+    location: Location of the API proxy bundle as a URI.
+    name: Name of the API or shared flow revision to be deployed in the
+      following format: `organizations/{org}/apis/{api}/revisions/{rev}` or
+      `organizations/{org}/sharedflows/{sharedflow}/revisions/{rev}`
+    proxyUid: Unique ID of the API proxy revision.
+    uid: Unique ID. The ID will only change if the deployment is deleted and
       recreated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    r"""Additional key-value metadata about the deployment.
+    r"""Additional key-value metadata for the deployment.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -3724,40 +3731,38 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1EnvironmentConfig object.
 
   Messages:
-    FeatureFlagsValue: Feature flags inherited from the org and environment
-      parents.
+    FeatureFlagsValue: Feature flags inherited from the organization and
+      environment.
 
   Fields:
-    createTime: The time at which this environment config was created.
-    dataCollectors: The list of Data Collectors used by deployments in the
+    createTime: Time that the environment configuration was created.
+    dataCollectors: List of data collectors used by the deployments in the
       environment.
     debugMask: Debug mask that applies to all deployments in the environment.
-    deployments: A list of deployments in the environment
-    featureFlags: Feature flags inherited from the org and environment
-      parents.
-    flowhooks: A list of flow hooks in the environment.
-    keystores: A list of keystores in the environment.
-    name: The name of the environment config. Must be of the form
-      'organizations/{org}/environments/{env}/configs/{config_id}
-    provider: This field can be used by the control plane to add some context
-      information about itself. This information could help detect the source
-      of the document during diagnostics and debugging.
-    pubsubTopic: Name of the pubsub topic for this environment.
-    resourceReferences: A list of resource references in the environment.
-    resources: A list of resource versions in the environment.
-    revisionId: Revision id that defines the ordering on the environment
-      config. The higher the revision, the more recently the configuration was
-      deployed.
-    sequenceNumber: DEPRECATED: use revision_id
-    targets: A list of target servers in the environment. Disabled target
-      servers are not included.
-    uid: A unique id for the environment config that will only change if the
-      environment is deleted and recreated.
+    deployments: List of deployments in the environment.
+    featureFlags: Feature flags inherited from the organization and
+      environment.
+    flowhooks: List of flow hooks in the environment.
+    keystores: List of keystores in the environment.
+    name: Name of the environment configuration in the following format:
+      `organizations/{org}/environments/{env}/configs/{config}`
+    provider: Used by the Control plane to add context information to help
+      detect the source of the document during diagnostics and debugging.
+    pubsubTopic: Name of the PubSub topic for the environment.
+    resourceReferences: List of resource references in the environment.
+    resources: List of resource versions in the environment.
+    revisionId: Revision ID of the environment configuration. The higher the
+      value, the more recently the configuration was deployed.
+    sequenceNumber: DEPRECATED: Use revision_id.
+    targets: List of target servers in the environment. Disabled target
+      servers are not displayed.
+    uid: Unique ID for the environment configuration. The ID will only change
+      if the environment is deleted and recreated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FeatureFlagsValue(_messages.Message):
-    r"""Feature flags inherited from the org and environment parents.
+    r"""Feature flags inherited from the organization and environment.
 
     Messages:
       AdditionalProperty: An additional property for a FeatureFlagsValue
@@ -3941,14 +3946,14 @@ class GoogleCloudApigeeV1FlowHookConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1FlowHookConfig object.
 
   Fields:
-    continueOnError: Should the flow abort after an error in the flow hook.
-      Should default to true if unset.
-    name: The name of the flow hook. Must be of the form
-      'organizations/{org}/environments/{env}/flowhooks/{point}'. Known points
-      are PreProxyFlowHook, PostProxyFlowHook, PreTargetFlowHook, and
-      PostTargetFlowHook
-    sharedFlowName: The name of the shared flow to invoke. Must be of the form
-      'organizations/{org}/sharedflows/{sharedflow}'.
+    continueOnError: Flag that specifies whether the flow should abort after
+      an error in the flow hook. Defaults to `true` (continue on error).
+    name: Name of the flow hook in the following format:
+      `organizations/{org}/environments/{env}/flowhooks/{point}`. Valid
+      `point` values include: `PreProxyFlowHook`, `PostProxyFlowHook`,
+      `PreTargetFlowHook`, and `PostTargetFlowHook`
+    sharedFlowName: Name of the shared flow to invoke in the following format:
+      `organizations/{org}/sharedflows/{sharedflow}`
   """
 
   continueOnError = _messages.BooleanField(1)
@@ -4077,10 +4082,10 @@ class GoogleCloudApigeeV1KeyAliasReference(_messages.Message):
   r"""A GoogleCloudApigeeV1KeyAliasReference object.
 
   Fields:
-    aliasId: The alias id. Must exist in the keystore referred to by
+    aliasId: Alias ID. Must exist in the keystore referred to by the
       reference.
-    reference: The reference name. Must be of the form:
-      organizations/{org}/environments/{env}/references/{ref}.
+    reference: Reference name in the following format:
+      `organizations/{org}/environments/{env}/references/{reference}`
   """
 
   aliasId = _messages.StringField(1)
@@ -4117,8 +4122,8 @@ class GoogleCloudApigeeV1KeystoreConfig(_messages.Message):
 
   Fields:
     aliases: Aliases in the keystore.
-    name: The resource name. Must be of the form:
-      'organizations/{org}/environments/{env}/keystores/{keystore}'.
+    name: Resource name in the following format:
+      `organizations/{org}/environments/{env}/keystores/{keystore}`
   """
 
   aliases = _messages.MessageField('GoogleCloudApigeeV1AliasRevisionConfig', 1, repeated=True)
@@ -4368,6 +4373,53 @@ class GoogleCloudApigeeV1Metric(_messages.Message):
 
   name = _messages.StringField(1)
   values = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1OperationConfig(_messages.Message):
+  r"""OperationConfig binds the resources in a proxy or remote service with
+  the allowed REST methods and its associated quota enforcement.
+
+  Fields:
+    apiSource: Required. api_source represents either a proxy or remote
+      service name for which the resources, methods and quota are associated
+      with.
+    attributes: custom attribute associated with the operation.
+    methods: methods refers to the REST verbs as in
+      https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html. When none
+      specified, all verb types are allowed.
+    quota: Quota parameters to be enforced for the resources, methods,
+      api_source combination. If none specified, quota enforcement will not be
+      done.
+    resources: Required. resources represents a list of REST resource path
+      associated with the proxy/remote service.
+  """
+
+  apiSource = _messages.StringField(1)
+  attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
+  methods = _messages.StringField(3, repeated=True)
+  quota = _messages.MessageField('GoogleCloudApigeeV1Quota', 4)
+  resources = _messages.StringField(5, repeated=True)
+
+
+class GoogleCloudApigeeV1OperationGroup(_messages.Message):
+  r"""The OperationGroup contains a list of configuration details associated
+  with Apigee proxies or Remote services. Remote services are non-Apigee Edge
+  proxies. eg, Istio-Envoy.
+
+  Fields:
+    operationConfigType: Identfies whether the configuration is for Apigee
+      proxy or a remote service. Possible values are "proxy" and
+      "remote_service". If none specified, the default is "proxy". "proxy" is
+      used when Apigee proxies are associated with the API product.
+      "remote_service" is used when non-Apigee proxy like Envoy is used, and
+      is associated with the API product.
+    operationConfigs: Required. A list of OperationConfig for either Apigee
+      proxies or other other remote services, that are associated with this
+      API product.
+  """
+
+  operationConfigType = _messages.StringField(1)
+  operationConfigs = _messages.MessageField('GoogleCloudApigeeV1OperationConfig', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1OperationMetadata(_messages.Message):
@@ -4765,6 +4817,28 @@ class GoogleCloudApigeeV1QueryMetric(_messages.Message):
   value = _messages.StringField(5)
 
 
+class GoogleCloudApigeeV1Quota(_messages.Message):
+  r"""Quota contains the essential parameters needed that can be applied on a
+  proxy/remote service, resources and methods combination associated with this
+  API product. While setting of Quota is optional, setting it prevents
+  requests from exceeding the provisioned parameters.
+
+  Fields:
+    interval: Required. The time interval over which the number of request
+      messages is calculated.
+    limit: Required. Limit represents the upper bound count allowed for the
+      time interval and time unit specified. Requests exceeding this limit
+      will get rejected.
+    timeUnit: The time unit defined for the `interval`. Valid values include
+      minute, hour, day, or month. The default value is empty. If limit and
+      interval are valid, the default value is "hour".
+  """
+
+  interval = _messages.StringField(1)
+  limit = _messages.StringField(2)
+  timeUnit = _messages.StringField(3)
+
+
 class GoogleCloudApigeeV1Reference(_messages.Message):
   r"""A Reference configuration. References must refer to a keystore that also
   exists in the parent environment.
@@ -4790,11 +4864,11 @@ class GoogleCloudApigeeV1ReferenceConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1ReferenceConfig object.
 
   Fields:
-    name: The name of the reference. Must be of the form
-      'organizations/{org}/environments/{env}/references/{ref}'.
-    resourceName: The name of the referred resource. Only references to
-      keystore resources are supported. Must be of the form
-      'organizations/{org}/environments/{env}/keystores/{ks}'.
+    name: Name of the reference in the following format:
+      `organizations/{org}/environments/{env}/references/{reference}`
+    resourceName: Name of the referenced resource in the following format:
+      `organizations/{org}/environments/{env}/keystores/{keystore}` Only
+      references to keystore resources are supported.
   """
 
   name = _messages.StringField(1)
@@ -4839,10 +4913,10 @@ class GoogleCloudApigeeV1ResourceConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1ResourceConfig object.
 
   Fields:
-    location: The location of the resource as a URI.
-    name: The resource name. Only environment-scoped resource files are
-      supported. Must be of the form 'organizations/{org}/environments/{env}/r
-      esourcefiles/{type}/{file}/revisions/{rev}'.
+    location: Location of the resource as a URI.
+    name: Resource name in the following format: `organizations/{org}/environm
+      ents/{env}/resourcefiles/{type}/{file}/revisions/{rev}` Only
+      environment-scoped resource files are supported.
   """
 
   location = _messages.StringField(1)
@@ -5247,11 +5321,11 @@ class GoogleCloudApigeeV1TargetServerConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1TargetServerConfig object.
 
   Fields:
-    host: Target host name.
-    name: The target server revision name. Must be of the form 'organizations/
-      {org}/environments/{env}/targetservers/{ts_id}/revisions/{rev}'.
-    port: Target port.
-    tlsInfo: TLS settings for the target.
+    host: Host name of the target server.
+    name: Target server revision name in the following format: `organizations/
+      {org}/environments/{env}/targetservers/{targetserver}/revisions/{rev}`
+    port: Port number for the target server.
+    tlsInfo: TLS settings for the target server.
   """
 
   host = _messages.StringField(1)
@@ -5326,22 +5400,24 @@ class GoogleCloudApigeeV1TlsInfoConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1TlsInfoConfig object.
 
   Fields:
-    ciphers: Whitelist of supported ciphers.
-    clientAuthEnabled: Indicates if client auth is enabled for the target.
-      Enables two-way TLS.
-    commonName: Common name to validate the target against.
-    enabled: Enables one-way TLS.
-    ignoreValidationErrors: If true, ignore TLS certificate validation errors.
-    keyAlias: The name of the Alias used for client side auth. It must be of
-      the form: organizations/{org}/environments/{env}/keystores/{keystore}/al
-      iases/{alias}
-    keyAliasReference: A pair of reference name and alias to use for client
-      side auth.
-    protocols: Whitelist of supported TLS protocols.
-    trustStore: The name of the Keystore or keystore reference containing
-      trusted certificates for the server. It must be of either the form
-      organizations/{org}/environments/{env}/keystores/{keystore} or
-      organizations/{org}/environments/{env}/references/{reference}.
+    ciphers: List of ciphers that are granted access.
+    clientAuthEnabled: Flag that specifies whether client-side authentication
+      is enabled for the target server. Enables two-way TLS.
+    commonName: Common name to validate the target server against.
+    enabled: Flag that specifies whether one-way TLS is enabled. Set to `true`
+      to enable one-way TLS.
+    ignoreValidationErrors: Flag that specifies whether to ignore TLS
+      certificate validation errors. Set to `true` to ignore errors.
+    keyAlias: Name of the alias used for client-side authentication in the
+      following format: `organizations/{org}/environments/{env}/keystores/{key
+      store}/aliases/{alias}`
+    keyAliasReference: Reference name and alias pair to use for client-side
+      authentication.
+    protocols: List of TLS protocols that are granted access.
+    trustStore: Name of the keystore or keystore reference containing trusted
+      certificates for the server in the following format:
+      `organizations/{org}/environments/{env}/keystores/{keystore}` or
+      `organizations/{org}/environments/{env}/references/{reference}`
   """
 
   ciphers = _messages.StringField(1, repeated=True)

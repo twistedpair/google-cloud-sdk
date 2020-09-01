@@ -163,14 +163,6 @@ workload_identity_pool_provider:
     arg_name: account-id
     help_text: |-
       The AWS account ID.
-  aws_sts_uri:
-    api_field: googleIamV1betaWorkloadIdentityPoolProvider.aws.stsUri
-    arg_name: sts-uri
-    help_text: |-
-      A list of AWS STS URIs that can be used when exchanging credentials. If not provided, any
-      valid AWS STS URI is allowed. URIs must use the form `https://sts.amazonaws.com` or
-      `https://sts.{region}.amazonaws.com`, where {region} is a valid AWS region. You can specify a
-      maximum of 25 URIs.
   oidc_issuer_uri:
     api_field: googleIamV1betaWorkloadIdentityPoolProvider.oidc.issuerUri
     arg_name: issuer-uri

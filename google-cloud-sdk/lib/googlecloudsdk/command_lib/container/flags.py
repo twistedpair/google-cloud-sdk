@@ -105,6 +105,23 @@ def MungeBasicAuthFlags(args):
     raise util.Error(constants.USERNAME_PASSWORD_ERROR_MSG)
 
 
+def LogBasicAuthDeprecationWarning(args):
+  """Returns a deprecation warning if basic auth fields are modified.
+
+  Args:
+    args: an argparse namespace. All the arguments that were provided to this
+      command invocation.
+  """
+  if hasattr(args, 'username') or hasattr(args, 'password') or hasattr(
+      args, 'enable_basic_auth'):
+    log.warning(
+        'Warning: basic authentication is deprecated, and will be removed in GKE '
+        'control plane versions 1.19 and newer. For a list of recommended '
+        'authentication methods, see: '
+        'https://cloud.google.com/kubernetes-engine/docs/how-to/api-server-authentication'
+    )
+
+
 # TODO(b/28318474): move flags common across commands here.
 def AddImageTypeFlag(parser, target):
   """Adds a --image-type flag to the given parser."""

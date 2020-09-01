@@ -235,11 +235,6 @@
         },
         "state": {
           "description": "The state of the finding.",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "The finding requires attention and has not been addressed yet.",
-            "The finding has been fixed, triaged as a non-issue or otherwise addressed and is no longer active."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -273,7 +268,7 @@
           "$ref": "SecurityMarks"
         },
         "eventTime": {
-          "description": "The time at which the event took place. For example, if the finding represents an open firewall it would capture the time the detector believes the firewall became open. The accuracy is determined by the detector.",
+          "description": "The time at which the event took place, or when an update to the finding occurred. For example, if the finding represents an open firewall it would capture the time the detector believes the firewall became open. The accuracy is determined by the detector. If the finding were to be resolved afterward, this time would reflect when the finding was resolved.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -465,12 +460,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -527,11 +516,6 @@
         },
         "inclusionMode": {
           "description": "The mode to use for filtering asset discovery.",
-          "enumDescriptions": [
-            "Unspecified. Setting the mode with this value will disable inclusion\/exclusion filtering for Asset Discovery.",
-            "Asset Discovery will capture only the resources within the projects specified. All other resources will be ignored.",
-            "Asset Discovery will ignore all resources under the projects specified. All other resources will be retrieved."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified. Setting the mode with this value will disable inclusion\/exclusion filtering for Asset Discovery.",
@@ -728,12 +712,6 @@
         },
         "stateChange": {
           "description": "State change of the asset between the points in time.",
-          "enumDescriptions": [
-            "State change is unused, this is the canonical default for this enum.",
-            "Asset was added between the points in time.",
-            "Asset was removed between the points in time.",
-            "Asset was present at both point(s) in time."
-          ],
           "type": "string",
           "enumDescriptions": [
             "State change is unused, this is the canonical default for this enum.",
@@ -882,13 +860,6 @@
         },
         "stateChange": {
           "description": "State change of the finding between the points in time.",
-          "enumDescriptions": [
-            "State change is unused, this is the canonical default for this enum.",
-            "The finding has changed state in some way between the points in time and existed at both points.",
-            "The finding has not changed state between the points in time and existed at both points.",
-            "The finding was created between the points in time.",
-            "The finding at timestamp does not match the filter specified, but it did at timestamp - compare_duration."
-          ],
           "type": "string",
           "enumDescriptions": [
             "State change is unused, this is the canonical default for this enum.",
@@ -989,11 +960,6 @@
       "properties": {
         "state": {
           "description": "Required. The desired State of the finding.",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "The finding requires attention and has not been addressed yet.",
-            "The finding has been fixed, triaged as a non-issue or otherwise addressed and is no longer active."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -1064,12 +1030,6 @@
       "properties": {
         "state": {
           "description": "The state of an asset discovery run.",
-          "enumDescriptions": [
-            "Asset discovery run state was unspecified.",
-            "Asset discovery run completed successfully.",
-            "Asset discovery run was cancelled with tasks still pending, as another run for the same organization was started with a higher priority.",
-            "Asset discovery run was killed and terminated."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Asset discovery run state was unspecified.",
@@ -1144,12 +1104,6 @@
       "properties": {
         "state": {
           "description": "The state of an asset discovery run.",
-          "enumDescriptions": [
-            "Asset discovery run state was unspecified.",
-            "Asset discovery run completed successfully.",
-            "Asset discovery run was cancelled with tasks still pending, as another run for the same organization was started with a higher priority.",
-            "Asset discovery run was killed and terminated."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Asset discovery run state was unspecified.",
@@ -1213,11 +1167,6 @@
         },
         "state": {
           "description": "The state of the finding.",
-          "enumDescriptions": [
-            "Unspecified state.",
-            "The finding requires attention and has not been addressed yet.",
-            "The finding has been fixed, triaged as a non-issue or otherwise addressed and is no longer active."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified state.",
@@ -1251,7 +1200,7 @@
           "$ref": "GoogleCloudSecuritycenterV1p1beta1SecurityMarks"
         },
         "eventTime": {
-          "description": "The time at which the event took place. For example, if the finding represents an open firewall it would capture the time the detector believes the firewall became open. The accuracy is determined by the detector.",
+          "description": "The time at which the event took place, or when an update to the finding occurred. For example, if the finding represents an open firewall it would capture the time the detector believes the firewall became open. The accuracy is determined by the detector. If the finding were to be resolved afterward, this time would reflect when the finding was resolved.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1262,13 +1211,6 @@
         },
         "severity": {
           "description": "The severity of the finding.",
-          "enumDescriptions": [
-            "No severity specified. The default value.",
-            "Critical severity.",
-            "High severity.",
-            "Medium severity.",
-            "Low severity."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No severity specified. The default value.",
@@ -1312,12 +1254,6 @@
       "properties": {
         "changeType": {
           "description": "Represents if the asset was created\/updated\/deleted.",
-          "enumDescriptions": [
-            "Unspecified or default.",
-            "Newly created Asset",
-            "Asset was updated.",
-            "Asset was deleted."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified or default.",
@@ -1465,12 +1401,6 @@
       "properties": {
         "state": {
           "description": "The state of an asset discovery run.",
-          "enumDescriptions": [
-            "Asset discovery run state was unspecified.",
-            "Asset discovery run completed successfully.",
-            "Asset discovery run was cancelled with tasks still pending, as another run for the same organization was started with a higher priority.",
-            "Asset discovery run was killed and terminated."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Asset discovery run state was unspecified.",

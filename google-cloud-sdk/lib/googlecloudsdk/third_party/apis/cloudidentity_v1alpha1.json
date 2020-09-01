@@ -233,10 +233,6 @@
       "type": "object",
       "properties": {
         "resourceType": {
-          "enumDescriptions": [
-            "Default value (not valid)",
-            "For queries on User"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value (not valid)",
@@ -260,11 +256,6 @@
       "properties": {
         "status": {
           "description": "Status of the dynamic group.",
-          "enumDescriptions": [
-            "Default.",
-            "The dynamic group is up-to-date.",
-            "The dynamic group has just been created and memberships are being updated."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default.",
@@ -433,13 +424,6 @@
         },
         "type": {
           "description": "Output only. The type of the membership.",
-          "enumDescriptions": [
-            "Default. Should not be used.",
-            "Represents user type.",
-            "Represents service account type.",
-            "Represents group type.",
-            "Represents other type."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -593,13 +577,6 @@
         },
         "state": {
           "description": "State of the UserInvitation.",
-          "enumDescriptions": [
-            "The default value. This value is used if the state is omitted.",
-            "Describes that UserInvitation is created and ready for sending an email invitation.",
-            "Describes that user has been invited through email.",
-            "Describes that the invitation has been accepted & user is part of Organization.",
-            "Describes that the invitation is declined."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The default value. This value is used if the state is omitted.",
@@ -722,11 +699,6 @@
         },
         "ownerType": {
           "description": "Output only. Whether the device is owned by the company or an individual",
-          "enumDescriptions": [
-            "Default value. The value is unused.",
-            "Company owns the device.",
-            "Bring Your Own Device (i.e. individual owns the device)"
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -752,16 +724,6 @@
         },
         "deviceType": {
           "description": "Output only. Type of device.",
-          "enumDescriptions": [
-            "Unknown device type",
-            "Device is an Android device",
-            "Device is an iOS device",
-            "Device is a Google Sync device.",
-            "Device is a Windows device.",
-            "Device is a MacOS device.",
-            "Device is a Linux device.",
-            "Device is a ChromeOS device."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -876,12 +838,6 @@
         },
         "encryptionState": {
           "description": "Output only. Device encryption state.",
-          "enumDescriptions": [
-            "Encryption Status is not set.",
-            "Device doesn't support encryption.",
-            "Device is encrypted.",
-            "Device is not encrypted."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -904,15 +860,6 @@
         },
         "managementState": {
           "description": "Output only. Management state of the device",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "Device is approved.",
-            "Device is blocked.",
-            "Device is pending approval.",
-            "The device is not provisioned. Device will start from this state until some action is taken (i.e. a user starts using the device).",
-            "Data and settings on the device are being removed.",
-            "All data and settings on the device are removed."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -936,11 +883,6 @@
         },
         "compromisedState": {
           "description": "Output only. Represents whether the Device is compromised.",
-          "enumDescriptions": [
-            "Default value.",
-            "The device is compromised (currently, this means Android device is rooted).",
-            "The device is safe (currently, this means Android device is unrooted)."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -975,12 +917,6 @@
         },
         "ownershipPrivilege": {
           "description": "Ownership privileges on device.",
-          "enumDescriptions": [
-            "Ownership privilege is not set.",
-            "Active device administrator privileges on the device.",
-            "Profile Owner privileges. The account is in a managed corporate profile.",
-            "Device Owner privileges on the device."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Ownership privilege is not set.",
@@ -1013,15 +949,6 @@
         },
         "managementState": {
           "description": "Output only. Management state of the user on the device.",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "This user's data and profile is being removed from the device.",
-            "This user's data and profile is removed from the device.",
-            "User is approved to access data on the device.",
-            "User is blocked from accessing data on the device.",
-            "User is awaiting approval.",
-            "User is unenrolled from Advanced Windows Management, but the Windows account is still intact."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1067,11 +994,6 @@
         },
         "compromisedState": {
           "description": "Compromised State of the DeviceUser object",
-          "enumDescriptions": [
-            "Compromised state of Device User account is unknown or unspecified.",
-            "Device User Account is compromised.",
-            "Device User Account is not compromised."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Compromised state of Device User account is unknown or unspecified.",
@@ -1086,11 +1008,6 @@
         },
         "passwordState": {
           "description": "Password state of the DeviceUser object",
-          "enumDescriptions": [
-            "Password state not set.",
-            "Password set in object.",
-            "Password not set in object."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Password state not set.",
@@ -1149,14 +1066,6 @@
         },
         "healthScore": {
           "description": "The Health score of the resource",
-          "enumDescriptions": [
-            "Default value",
-            "The object is in very poor health as defined by the caller.",
-            "The object is in poor health as defined by the caller.",
-            "The object health is neither good nor poor, as defined by the caller.",
-            "The object is in good health as defined by the caller.",
-            "The object is in very good health as defined by the caller."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value",
@@ -1181,11 +1090,6 @@
         },
         "managed": {
           "description": "The management state of the resource as specified by the API client.",
-          "enumDescriptions": [
-            "The management state of the resource is unknown or unspecified.",
-            "The resource is managed.",
-            "The resource is not managed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The management state of the resource is unknown or unspecified.",
@@ -1200,11 +1104,6 @@
         },
         "complianceState": {
           "description": "The compliance state of the resource as specified by the API client.",
-          "enumDescriptions": [
-            "The compliance state of the resource is unknown or unspecified.",
-            "Device is compliant with third party policies",
-            "Device is not compliant with third party policies"
-          ],
           "type": "string",
           "enumDescriptions": [
             "The compliance state of the resource is unknown or unspecified.",
@@ -1226,11 +1125,6 @@
         },
         "ownerType": {
           "description": "Output only. The owner of the ClientState",
-          "enumDescriptions": [
-            "Unknown owner type",
-            "Customer is the owner",
-            "Partner is the owner"
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1431,11 +1325,6 @@
         },
         "ownerType": {
           "description": "Output only. Whether the device is owned by the company or an individual",
-          "enumDescriptions": [
-            "Default value. The value is unused.",
-            "Company owns the device.",
-            "Bring Your Own Device (i.e. individual owns the device)"
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1461,16 +1350,6 @@
         },
         "deviceType": {
           "description": "Output only. Type of device.",
-          "enumDescriptions": [
-            "Unknown device type",
-            "Device is an Android device",
-            "Device is an iOS device",
-            "Device is a Google Sync device.",
-            "Device is a Windows device.",
-            "Device is a MacOS device.",
-            "Device is a Linux device.",
-            "Device is a ChromeOS device."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1585,12 +1464,6 @@
         },
         "encryptionState": {
           "description": "Output only. Device encryption state.",
-          "enumDescriptions": [
-            "Encryption Status is not set.",
-            "Device doesn't support encryption.",
-            "Device is encrypted.",
-            "Device is not encrypted."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1613,15 +1486,6 @@
         },
         "managementState": {
           "description": "Output only. Management state of the device",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "Device is approved.",
-            "Device is blocked.",
-            "Device is pending approval.",
-            "The device is not provisioned. Device will start from this state until some action is taken (i.e. a user starts using the device).",
-            "Data and settings on the device are being removed.",
-            "All data and settings on the device are removed."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1645,11 +1509,6 @@
         },
         "compromisedState": {
           "description": "Output only. Represents whether the Device is compromised.",
-          "enumDescriptions": [
-            "Default value.",
-            "The device is compromised (currently, this means Android device is rooted).",
-            "The device is safe (currently, this means Android device is unrooted)."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1684,12 +1543,6 @@
         },
         "ownershipPrivilege": {
           "description": "Ownership privileges on device.",
-          "enumDescriptions": [
-            "Ownership privilege is not set.",
-            "Active device administrator privileges on the device.",
-            "Profile Owner privileges. The account is in a managed corporate profile.",
-            "Device Owner privileges on the device."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Ownership privilege is not set.",
@@ -1722,15 +1575,6 @@
         },
         "managementState": {
           "description": "Output only. Management state of the user on the device.",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "This user's data and profile is being removed from the device.",
-            "This user's data and profile is removed from the device.",
-            "User is approved to access data on the device.",
-            "User is blocked from accessing data on the device.",
-            "User is awaiting approval.",
-            "User is unenrolled from Advanced Windows Management, but the Windows account is still intact."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -1776,11 +1620,6 @@
         },
         "compromisedState": {
           "description": "Compromised State of the DeviceUser object",
-          "enumDescriptions": [
-            "Compromised state of Device User account is unknown or unspecified.",
-            "Device User Account is compromised.",
-            "Device User Account is not compromised."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Compromised state of Device User account is unknown or unspecified.",
@@ -1795,11 +1634,6 @@
         },
         "passwordState": {
           "description": "Password state of the DeviceUser object",
-          "enumDescriptions": [
-            "Password state not set.",
-            "Password set in object.",
-            "Password not set in object."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Password state not set.",
@@ -1858,14 +1692,6 @@
         },
         "healthScore": {
           "description": "The Health score of the resource",
-          "enumDescriptions": [
-            "Default value",
-            "The object is in very poor health as defined by the caller.",
-            "The object is in poor health as defined by the caller.",
-            "The object health is neither good nor poor, as defined by the caller.",
-            "The object is in good health as defined by the caller.",
-            "The object is in very good health as defined by the caller."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value",
@@ -1890,11 +1716,6 @@
         },
         "managed": {
           "description": "The management state of the resource as specified by the API client.",
-          "enumDescriptions": [
-            "The management state of the resource is unknown or unspecified.",
-            "The resource is managed.",
-            "The resource is not managed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The management state of the resource is unknown or unspecified.",
@@ -1909,11 +1730,6 @@
         },
         "complianceState": {
           "description": "The compliance state of the resource as specified by the API client.",
-          "enumDescriptions": [
-            "The compliance state of the resource is unknown or unspecified.",
-            "Device is compliant with third party policies",
-            "Device is not compliant with third party policies"
-          ],
           "type": "string",
           "enumDescriptions": [
             "The compliance state of the resource is unknown or unspecified.",
@@ -1935,11 +1751,6 @@
         },
         "ownerType": {
           "description": "Output only. The owner of the ClientState",
-          "enumDescriptions": [
-            "Unknown owner type",
-            "Customer is the owner",
-            "Partner is the owner"
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

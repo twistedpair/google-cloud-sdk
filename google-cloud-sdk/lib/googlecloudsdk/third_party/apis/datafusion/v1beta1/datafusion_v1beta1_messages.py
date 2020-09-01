@@ -494,6 +494,10 @@ class Instance(_messages.Message):
     availableVersion: Available versions that the instance can be upgraded to
       using UpdateInstanceRequest.
     createTime: Output only. The time the instance was created.
+    dataprocServiceAccount: User-managed service account to set on Dataproc
+      when Cloud Data Fusion creates Dataproc to run data processing
+      pipelines. This allows users to have fine-grained access control on
+      Dataproc's accesses to cloud resources.
     description: A description of this instance.
     displayName: Display name for an instance.
     enableStackdriverLogging: Option to enable Stackdriver Logging.
@@ -631,26 +635,27 @@ class Instance(_messages.Message):
   apiEndpoint = _messages.StringField(2)
   availableVersion = _messages.MessageField('Version', 3, repeated=True)
   createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  displayName = _messages.StringField(6)
-  enableStackdriverLogging = _messages.BooleanField(7)
-  enableStackdriverMonitoring = _messages.BooleanField(8)
-  gcsBucket = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  name = _messages.StringField(11)
-  networkConfig = _messages.MessageField('NetworkConfig', 12)
-  options = _messages.MessageField('OptionsValue', 13)
-  p4ServiceAccount = _messages.StringField(14)
-  privateInstance = _messages.BooleanField(15)
-  serviceAccount = _messages.StringField(16)
-  serviceEndpoint = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  stateMessage = _messages.StringField(19)
-  tenantProjectId = _messages.StringField(20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
-  updateTime = _messages.StringField(22)
-  version = _messages.StringField(23)
-  zone = _messages.StringField(24)
+  dataprocServiceAccount = _messages.StringField(5)
+  description = _messages.StringField(6)
+  displayName = _messages.StringField(7)
+  enableStackdriverLogging = _messages.BooleanField(8)
+  enableStackdriverMonitoring = _messages.BooleanField(9)
+  gcsBucket = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  networkConfig = _messages.MessageField('NetworkConfig', 13)
+  options = _messages.MessageField('OptionsValue', 14)
+  p4ServiceAccount = _messages.StringField(15)
+  privateInstance = _messages.BooleanField(16)
+  serviceAccount = _messages.StringField(17)
+  serviceEndpoint = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  stateMessage = _messages.StringField(20)
+  tenantProjectId = _messages.StringField(21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
+  updateTime = _messages.StringField(23)
+  version = _messages.StringField(24)
+  zone = _messages.StringField(25)
 
 
 class ListAvailableVersionsResponse(_messages.Message):

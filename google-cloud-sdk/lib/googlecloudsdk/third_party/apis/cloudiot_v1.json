@@ -147,13 +147,6 @@
         },
         "logLevel": {
           "description": "**Beta Feature** The default logging verbosity for activity from devices in this registry. The verbosity level can be overridden by Device.log_level.",
-          "enumDescriptions": [
-            "No logging specified. If not specified, logging will be disabled.",
-            "Disables logging.",
-            "Error events will be logged.",
-            "Informational events will be logged, such as connections and disconnections.",
-            "All events will be logged."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No logging specified. If not specified, logging will be disabled.",
@@ -212,11 +205,6 @@
       "properties": {
         "mqttEnabledState": {
           "description": "If enabled, allows connections using the MQTT protocol. Otherwise, MQTT connections to this registry will fail.",
-          "enumDescriptions": [
-            "No MQTT state specified. If not specified, MQTT will be enabled by default.",
-            "Enables a MQTT connection.",
-            "Disables a MQTT connection."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No MQTT state specified. If not specified, MQTT will be enabled by default.",
@@ -238,11 +226,6 @@
       "properties": {
         "httpEnabledState": {
           "description": "If enabled, allows devices to use DeviceService via the HTTP protocol. Otherwise, any requests to DeviceService will fail for this registry.",
-          "enumDescriptions": [
-            "No HTTP state specified. If not specified, DeviceService will be enabled by default.",
-            "Enables DeviceService (HTTP) service for the registry.",
-            "Disables DeviceService (HTTP) service for the registry."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No HTTP state specified. If not specified, DeviceService will be enabled by default.",
@@ -275,10 +258,6 @@
       "properties": {
         "format": {
           "description": "The certificate format.",
-          "enumDescriptions": [
-            "The format has not been specified. This is an invalid default value and must not be used.",
-            "An X.509v3 certificate ([RFC5280](https:\/\/www.ietf.org\/rfc\/rfc5280.txt)), encoded in base64, and wrapped by `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----`."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The format has not been specified. This is an invalid default value and must not be used.",
@@ -430,13 +409,6 @@
         },
         "logLevel": {
           "description": "**Beta Feature** The logging verbosity for device activity. If unspecified, DeviceRegistry.log_level will be used.",
-          "enumDescriptions": [
-            "No logging specified. If not specified, logging will be disabled.",
-            "Disables logging.",
-            "Error events will be logged.",
-            "Informational events will be logged, such as connections and disconnections.",
-            "All events will be logged."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No logging specified. If not specified, logging will be disabled.",
@@ -489,13 +461,6 @@
       "properties": {
         "format": {
           "description": "The format of the key.",
-          "enumDescriptions": [
-            "The format has not been specified. This is an invalid default value and must not be used.",
-            "An RSA public key encoded in base64, and wrapped by `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----`. This can be used to verify `RS256` signatures in JWT tokens ([RFC7518]( https:\/\/www.ietf.org\/rfc\/rfc7518.txt)).",
-            "As RSA_PEM, but wrapped in an X.509v3 certificate ([RFC5280]( https:\/\/www.ietf.org\/rfc\/rfc5280.txt)), encoded in base64, and wrapped by `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----`.",
-            "Public key for the ECDSA algorithm using P-256 and SHA-256, encoded in base64, and wrapped by `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----`. This can be used to verify JWT tokens with the `ES256` algorithm ([RFC7518](https:\/\/www.ietf.org\/rfc\/rfc7518.txt)). This curve is defined in [OpenSSL](https:\/\/www.openssl.org\/) as the `prime256v1` curve.",
-            "As ES256_PEM, but wrapped in an X.509v3 certificate ([RFC5280]( https:\/\/www.ietf.org\/rfc\/rfc5280.txt)), encoded in base64, and wrapped by `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----`."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The format has not been specified. This is an invalid default value and must not be used.",
@@ -596,11 +561,6 @@
       "properties": {
         "gatewayType": {
           "description": "Indicates whether the device is a gateway.",
-          "enumDescriptions": [
-            "If unspecified, the device is considered a non-gateway device.",
-            "The device is a gateway.",
-            "The device is not a gateway."
-          ],
           "type": "string",
           "enumDescriptions": [
             "If unspecified, the device is considered a non-gateway device.",
@@ -615,12 +575,6 @@
         },
         "gatewayAuthMethod": {
           "description": "Indicates how to authorize and\/or authenticate devices to access the gateway.",
-          "enumDescriptions": [
-            "No authentication\/authorization method specified. No devices are allowed to access the gateway.",
-            "The device is authenticated through the gateway association only. Device credentials are ignored even if provided.",
-            "The device is authenticated through its own credentials. Gateway association is not checked.",
-            "The device is authenticated through both device credentials and gateway association. The device must be bound to the gateway and must provide its own credentials."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No authentication\/authorization method specified. No devices are allowed to access the gateway.",

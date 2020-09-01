@@ -845,7 +845,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (RevokeConsentResponse) The response message.
+        (Consent) The response message.
       """
       config = self.GetMethodConfig('Revoke')
       return self._RunMethod(
@@ -861,7 +861,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         relative_path='v1alpha2/{+name}:revoke',
         request_field='revokeConsentRequest',
         request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsRevokeRequest',
-        response_type_name='RevokeConsentResponse',
+        response_type_name='Consent',
         supports_download=False,
     )
 

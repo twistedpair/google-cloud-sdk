@@ -64,7 +64,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupBackupsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -80,7 +80,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/clusterGroupBackups',
         request_field='clusterGroupBackup',
         request_type_name='SddcProjectsLocationsClusterGroupBackupsCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -91,7 +91,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupBackupsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -107,7 +107,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='SddcProjectsLocationsClusterGroupBackupsDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -182,7 +182,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsClustersAddNodesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('AddNodes')
       return self._RunMethod(
@@ -198,7 +198,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+cluster}:addNodes',
         request_field='addNodesRequest',
         request_type_name='SddcProjectsLocationsClusterGroupsClustersAddNodesRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -209,7 +209,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsClustersCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -225,7 +225,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/clusters',
         request_field='cluster',
         request_type_name='SddcProjectsLocationsClusterGroupsClustersCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -236,7 +236,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsClustersDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -252,7 +252,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='SddcProjectsLocationsClusterGroupsClustersDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -317,7 +317,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsClustersPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -333,7 +333,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='cluster',
         request_type_name='SddcProjectsLocationsClusterGroupsClustersPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -344,7 +344,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsClustersRemoveNodesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('RemoveNodes')
       return self._RunMethod(
@@ -360,7 +360,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+cluster}:removeNodes',
         request_field='removeNodesRequest',
         request_type_name='SddcProjectsLocationsClusterGroupsClustersRemoveNodesRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -381,7 +381,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsIpAddressesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -397,7 +397,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/ipAddresses',
         request_field='ipAddress',
         request_type_name='SddcProjectsLocationsClusterGroupsIpAddressesCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -408,7 +408,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsIpAddressesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -424,7 +424,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='SddcProjectsLocationsClusterGroupsIpAddressesDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -499,7 +499,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -515,7 +515,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/clusterGroups',
         request_field='clusterGroup',
         request_type_name='SddcProjectsLocationsClusterGroupsCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -526,7 +526,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -542,7 +542,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='SddcProjectsLocationsClusterGroupsDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -634,7 +634,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -650,7 +650,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='clusterGroup',
         request_type_name='SddcProjectsLocationsClusterGroupsPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -661,7 +661,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsClusterGroupsResetCloudAdminCredentialsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('ResetCloudAdminCredentials')
       return self._RunMethod(
@@ -677,7 +677,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+clusterGroup}:resetCloudAdminCredentials',
         request_field='resetCloudAdminCredentialsRequest',
         request_type_name='SddcProjectsLocationsClusterGroupsResetCloudAdminCredentialsRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -766,7 +766,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha1/{+name}:cancel',
-        request_field='cancelOperationRequest',
+        request_field='googleLongrunningCancelOperationRequest',
         request_type_name='SddcProjectsLocationsOperationsCancelRequest',
         response_type_name='Empty',
         supports_download=False,
@@ -806,7 +806,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsOperationsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -822,7 +822,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='SddcProjectsLocationsOperationsGetRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -833,7 +833,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         request: (SddcProjectsLocationsOperationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListOperationsResponse) The response message.
+        (GoogleLongrunningListOperationsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -849,7 +849,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}/operations',
         request_field='',
         request_type_name='SddcProjectsLocationsOperationsListRequest',
-        response_type_name='ListOperationsResponse',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 

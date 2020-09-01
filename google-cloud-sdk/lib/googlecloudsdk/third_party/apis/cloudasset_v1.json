@@ -191,13 +191,6 @@
         },
         "contentType": {
           "description": "Asset content type. If not specified, no content but the asset name will be returned.",
-          "enumDescriptions": [
-            "Unspecified content type.",
-            "Resource metadata.",
-            "The actual IAM policy set on a resource.",
-            "The Cloud Organization Policy set on an asset.",
-            "The Cloud Access context manager Policy set on an asset."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified content type.",
@@ -302,13 +295,6 @@
         },
         "priorAssetState": {
           "description": "State of prior_asset.",
-          "enumDescriptions": [
-            "prior_asset is not applicable for the current asset.",
-            "prior_asset is populated correctly.",
-            "Failed to set prior_asset.",
-            "Current asset is the first known state.",
-            "prior_asset is a deletion."
-          ],
           "type": "string",
           "enumDescriptions": [
             "prior_asset is not applicable for the current asset.",
@@ -542,12 +528,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -630,11 +610,6 @@
         },
         "allValues": {
           "description": "The policy all_values state.",
-          "enumDescriptions": [
-            "Indicates that allowed_values or denied_values must be set.",
-            "A policy with this set allows all values.",
-            "A policy with this set denies all values."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Indicates that allowed_values or denied_values must be set.",
@@ -739,10 +714,6 @@
         },
         "combiningFunction": {
           "description": "How the `conditions` list should be combined to determine if a request is granted this `AccessLevel`. If AND is used, each `Condition` in `conditions` must be satisfied for the `AccessLevel` to be applied. If OR is used, at least one `Condition` in `conditions` must be satisfied for the `AccessLevel` to be applied. Default behavior is AND.",
-          "enumDescriptions": [
-            "All `Conditions` must be true for the `BasicLevel` to be true.",
-            "If at least one `Condition` is true, then the `BasicLevel` is true."
-          ],
           "type": "string",
           "enumDescriptions": [
             "All `Conditions` must be true for the `BasicLevel` to be true.",
@@ -809,12 +780,6 @@
         },
         "allowedEncryptionStatuses": {
           "description": "Allowed encryptions statuses, an empty list allows all statuses.",
-          "enumDescriptions": [
-            "The encryption status of the device is not specified or not known.",
-            "The device does not support encryption.",
-            "The device supports encryption, but is currently unencrypted.",
-            "The device is encrypted."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -841,12 +806,6 @@
         },
         "allowedDeviceManagementLevels": {
           "description": "Allowed device management levels, an empty list allows all management levels.",
-          "enumDescriptions": [
-            "The device's management level is not specified or not known.",
-            "The device is not managed.",
-            "Basic management is enabled, which is generally limited to monitoring and wiping the corporate account.",
-            "Complete device management. This includes more thorough monitoring and the ability to directly manage the device (such as remote wiping). This can be enabled through the Android Enterprise Platform."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -881,15 +840,6 @@
       "properties": {
         "osType": {
           "description": "Required. The allowed OS type.",
-          "enumDescriptions": [
-            "The operating system of the device is not specified or not known.",
-            "A desktop Mac operating system.",
-            "A desktop Windows operating system.",
-            "A desktop Linux operating system.",
-            "A desktop ChromeOS operating system.",
-            "An Android operating system.",
-            "An iOS operating system."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The operating system of the device is not specified or not known.",
@@ -950,10 +900,6 @@
         },
         "perimeterType": {
           "description": "Perimeter type indicator. A single project is allowed to be a member of single regular perimeter, but multiple service perimeter bridges. A project cannot be a included in a perimeter bridge without being included in regular perimeter. For perimeter bridges, the restricted service list as well as access level lists must be empty.",
-          "enumDescriptions": [
-            "Regular Perimeter.",
-            "Perimeter Bridge."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Regular Perimeter.",
@@ -1068,13 +1014,6 @@
         },
         "contentType": {
           "description": "Asset content type. If not specified, no content but the asset name and type will be returned.",
-          "enumDescriptions": [
-            "Unspecified content type.",
-            "Resource metadata.",
-            "The actual IAM policy set on a resource.",
-            "The Cloud Organization Policy set on an asset.",
-            "The Cloud Access context manager Policy set on an asset."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified content type.",

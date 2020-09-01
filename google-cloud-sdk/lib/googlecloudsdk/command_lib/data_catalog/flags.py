@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2019 Google LLC. All Rights Reserved.
+# Copyright 2020 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,42 +12,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags for data-catalog commands."""
+"""Flags and helpers for the data-catalog related commands."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
-def GetEntryArg():
-  entry_data = yaml_data.ResourceYAMLData.FromPath('data_catalog.entry')
-  resource_spec = concepts.ResourceSpec.FromYaml(entry_data.GetData())
-  presentation_spec = presentation_specs.ResourcePresentationSpec(
-      name='entry', concept_spec=resource_spec, group_help='Entry to update.')
-  return concept_parsers.ConceptParser([presentation_spec])
+def LocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      help_text='Data Catalog region in which to create the {resource}.')
 
 
-def GetLookupEntryArg():
-  """Returns the argument for looking up an entry."""
-  help_text = """\
-The name of the target resource whose entry to update. This can be either the
-Google Cloud Platform resource name or the SQL name of a Google Cloud Platform
-resource. This flag allows one to update the entry corresponding to the lookup
-of the given resource, without needing to specify the entry directly."""
-  return base.Argument(
-      '--lookup-entry',
-      metavar='RESOURCE',
-      help=help_text)
+def GetLocationResourceSpec():
+  return concepts.ResourceSpec(
+      'datacatalog.projects.locations',
+      resource_name='location',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig())
 
 
-def AddEntryUpdateArgs():
-  # Normally these arguments would be added in a mutex group, but the help
-  # text would look confusing in this case since --lookup-entry shows up
-  # under positional arguments despite being a flag.
-  return [GetEntryArg(), GetLookupEntryArg()]
+def AddLocationResourceArg(parser, description):
+  concept_parsers.ConceptParser.ForResource(
+      '--location', GetLocationResourceSpec(), description,
+      required=True).AddToParser(parser)

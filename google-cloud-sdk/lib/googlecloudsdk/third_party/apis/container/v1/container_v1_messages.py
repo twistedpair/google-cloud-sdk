@@ -101,18 +101,43 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   created by NAP.
 
   Fields:
+    bootDiskKmsKey: The Customer Managed Encryption Key used to encrypt the
+      boot disk attached to each node in the node pool. This should be of the
+      form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]
+      /cryptoKeys/[KEY_NAME]. For more information about protecting resources
+      with Cloud KMS Keys please see:
+      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
+    diskSizeGb: Size of the disk attached to each node, specified in GB. The
+      smallest allowed disk size is 10GB. If unspecified, the default disk
+      size is 100GB.
+    diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
+      'pd-ssd') If unspecified, the default disk type is 'pd-standard'
     management: Specifies the node management options for NAP created node-
       pools.
+    minCpuPlatform: Minimum CPU platform to be used for NAP created node
+      pools. The instance may be scheduled on the specified or newer CPU
+      platform. Applicable values are the friendly names of CPU platforms,
+      such as minCpuPlatform: Intel Haswell or minCpuPlatform: Intel Sandy
+      Bridge. For more information, read [how to specify min CPU
+      platform](https://cloud.google.com/compute/docs/instances/specify-min-
+      cpu-platform) To unset the min cpu platform field pass "automatic" as
+      field value.
     oauthScopes: Scopes that are used by NAP when creating node pools.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs.
+    shieldedInstanceConfig: Shielded Instance options.
     upgradeSettings: Specifies the upgrade settings for NAP created node pools
   """
 
-  management = _messages.MessageField('NodeManagement', 1)
-  oauthScopes = _messages.StringField(2, repeated=True)
-  serviceAccount = _messages.StringField(3)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 4)
+  bootDiskKmsKey = _messages.StringField(1)
+  diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  diskType = _messages.StringField(3)
+  management = _messages.MessageField('NodeManagement', 4)
+  minCpuPlatform = _messages.StringField(5)
+  oauthScopes = _messages.StringField(6, repeated=True)
+  serviceAccount = _messages.StringField(7)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 8)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 9)
 
 
 class BigQueryDestination(_messages.Message):

@@ -41,16 +41,16 @@ class PluralityCheckableIterator:
   Both types count when determining the number of items left.
   """
 
-  def __init__(self, iterator):
+  def __init__(self, iterable):
     """Initilizes a PluralityCheckableIterator instance.
 
     Args:
-      iterator: The iterator to be wrapped.
-        PluralityCheckableIterator yields items from this iterator and checks
+      iterable: An iterable to be wrapped.
+        PluralityCheckableIterator yields items from this iterable and checks
         its plurality and emptiness.
     """
 
-    self._iterator = iterator
+    self._iterator = iter(iterable)
     self._buffer = []
 
   def __iter__(self):
@@ -67,13 +67,24 @@ class PluralityCheckableIterator:
     else:
       raise StopIteration
 
+  def is_empty(self):
+    self._populate_buffer()
+    return not self._buffer
+
   def is_plural(self):
     self._populate_buffer(num_elements=2)
     return len(self._buffer) > 1
 
-  def is_empty(self):
-    self._populate_buffer()
-    return not self._buffer
+  def peek(self):
+    """Get first item of iterator without removing it from buffer.
+
+    Returns:
+      First item of iterator or None if empty iterator (or first item is None).
+    """
+    self._populate_buffer(num_elements=1)
+    if self._buffer:
+      return self._buffer[0]
+    return None
 
   def _populate_buffer(self, num_elements=1):
     while len(self._buffer) < num_elements:

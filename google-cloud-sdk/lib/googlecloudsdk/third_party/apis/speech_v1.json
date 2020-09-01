@@ -212,16 +212,6 @@
       "properties": {
         "encoding": {
           "description": "Encoding of audio data sent in all `RecognitionAudio` messages. This field is optional for `FLAC` and `WAV` audio files and required for all other audio formats. For details, see AudioEncoding.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Uncompressed 16-bit signed little-endian samples (Linear PCM).",
-            "`FLAC` (Free Lossless Audio Codec) is the recommended encoding because it is lossless--therefore recognition is not compromised--and requires only about half the bandwidth of `LINEAR16`. `FLAC` stream encoding supports 16-bit and 24-bit samples, however, not all fields in `STREAMINFO` are supported.",
-            "8-bit samples that compand 14-bit audio samples using G.711 PCMU\/mu-law.",
-            "Adaptive Multi-Rate Narrowband codec. `sample_rate_hertz` must be 8000.",
-            "Adaptive Multi-Rate Wideband codec. `sample_rate_hertz` must be 16000.",
-            "Opus encoded audio frames in Ogg container ([OggOpus](https:\/\/wiki.xiph.org\/OggOpus)). `sample_rate_hertz` must be one of 8000, 12000, 16000, 24000, or 48000.",
-            "Although the use of lossy encodings is not recommended, if a very low bitrate encoding is required, `OGG_OPUS` is highly preferred over Speex encoding. The [Speex](https:\/\/speex.org\/) encoding supported by Cloud Speech API has a header byte in each block, as in MIME type `audio\/x-speex-with-header-byte`. It is a variant of the RTP Speex encoding defined in [RFC 5574](https:\/\/tools.ietf.org\/html\/rfc5574). The stream is a sequence of blocks, one block per RTP packet. Each block starts with a byte containing the length of the block, in bytes, followed by one or more frames of Speex data, padded to an integral number of bytes (octets) as specified in RFC 5574. In other words, each RTP header is replaced with a single byte containing the block length. Only Speex wideband is supported. `sample_rate_hertz` must be 16000."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -352,17 +342,6 @@
       "properties": {
         "interactionType": {
           "description": "The use case most closely describing the audio content to be recognized.",
-          "enumDescriptions": [
-            "Use case is either unknown or is something other than one of the other values below.",
-            "Multiple people in a conversation or discussion. For example in a meeting with two or more people actively participating. Typically all the primary people speaking would be in the same room (if not, see PHONE_CALL)",
-            "One or more persons lecturing or presenting to others, mostly uninterrupted.",
-            "A phone-call or video-conference in which two or more people, who are not in the same room, are actively participating.",
-            "A recorded message intended for another person to listen to.",
-            "Professionally produced audio (eg. TV Show, Podcast).",
-            "Transcribe spoken questions and queries into text.",
-            "Transcribe voice commands, such as for controlling a device.",
-            "Transcribe speech to text to create a written document, such as a text-message, email or report."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Use case is either unknown or is something other than one of the other values below.",
@@ -394,12 +373,6 @@
         },
         "microphoneDistance": {
           "description": "The audio type that most closely describes the audio being recognized.",
-          "enumDescriptions": [
-            "Audio type is not known.",
-            "The audio was captured from a closely placed microphone. Eg. phone, dictaphone, or handheld microphone. Generally if there speaker is within 1 meter of the microphone.",
-            "The speaker if within 3 meters of the microphone.",
-            "The speaker is more than 3 meters away from the microphone."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Audio type is not known.",
@@ -416,11 +389,6 @@
         },
         "originalMediaType": {
           "description": "The original media the speech was recorded on.",
-          "enumDescriptions": [
-            "Unknown original media type.",
-            "The speech data is an audio recording.",
-            "The speech data originally recorded on a video."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown original media type.",
@@ -435,15 +403,6 @@
         },
         "recordingDeviceType": {
           "description": "The type of device the speech was recorded with.",
-          "enumDescriptions": [
-            "The recording device is unknown.",
-            "Speech was recorded on a smartphone.",
-            "Speech was recorded using a personal computer or tablet.",
-            "Speech was recorded over a phone line.",
-            "Speech was recorded in a vehicle.",
-            "Speech was recorded outdoors.",
-            "Speech was recorded indoors."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The recording device is unknown.",

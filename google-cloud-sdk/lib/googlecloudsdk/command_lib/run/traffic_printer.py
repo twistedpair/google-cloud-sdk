@@ -38,8 +38,7 @@ def _TransformTrafficPairs(traffic_pairs, service_url):
   """Transforms a List[TrafficTargetPair] into a marker class structure."""
   traffic_section = cp.Section(
       [cp.Table(_TransformTrafficPair(p) for p in traffic_pairs)])
-  return cp.Section([cp.Table([('Traffic:', service_url, traffic_section)])],
-                    max_column_width=60)
+  return cp.Table([('Traffic:', service_url, traffic_section)])
 
 
 def TransformTraffic(service):
@@ -80,4 +79,5 @@ class TrafficPrinter(cp.CustomPrinterBase):
       service_url = record[0].serviceUrl
     else:
       service_url = ''
-    return _TransformTrafficPairs(record, service_url)
+    return cp.Section([_TransformTrafficPairs(record, service_url)],
+                      max_column_width=60)

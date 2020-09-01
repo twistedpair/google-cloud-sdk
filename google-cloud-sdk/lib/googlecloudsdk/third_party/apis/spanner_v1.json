@@ -232,12 +232,6 @@
         },
         "state": {
           "description": "Output only. The current database state.",
-          "enumDescriptions": [
-            "Not specified.",
-            "The database is still being created. Operations on the database may fail with `FAILED_PRECONDITION` in this state.",
-            "The database is fully created and ready for use.",
-            "The database is fully created and ready for use, but is still being optimized for performance and cannot handle full load. In this state, the database still references the backup it was restore from, preventing the backup from being deleted. When optimizations are complete, the full performance of the database will be restored, and the database will transition to `READY` state."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -273,10 +267,6 @@
       "properties": {
         "sourceType": {
           "description": "The type of the restore source.",
-          "enumDescriptions": [
-            "No restore associated.",
-            "A backup was used as the source of the restore."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No restore associated.",
@@ -526,11 +516,6 @@
         },
         "state": {
           "description": "Output only. The current state of the backup.",
-          "enumDescriptions": [
-            "Not specified.",
-            "The pending backup is still being created. Operations on the backup may fail with `FAILED_PRECONDITION` in this state.",
-            "The backup is complete and ready for use."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -673,12 +658,6 @@
         },
         "type": {
           "description": "The type of replica.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Read-write replicas support both reads and writes. These replicas: * Maintain a full copy of your data. * Serve reads. * Can vote whether to commit a write. * Participate in leadership election. * Are eligible to become a leader.",
-            "Read-only replicas only support reads (not writes). Read-only replicas: * Maintain a full copy of your data. * Serve reads. * Do not participate in voting to commit writes. * Are not eligible to become a leader.",
-            "Witness replicas don't support reads but do participate in voting to commit writes. Witness replicas: * Do not maintain a full copy of data. * Do not serve reads. * Vote whether to commit writes. * Participate in leader election but are not eligible to become leader."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -741,11 +720,6 @@
         },
         "state": {
           "description": "Output only. The current instance state. For CreateInstance, the state must be either omitted or set to `CREATING`. For UpdateInstance, the state must be either omitted or set to `READY`.",
-          "enumDescriptions": [
-            "Not specified.",
-            "The instance is still being created. Resources may not be available yet, and operations such as database creation may not work.",
-            "The instance is fully created and ready to do work such as creating databases."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -931,11 +905,6 @@
         },
         "queryMode": {
           "description": "Used to control the amount of debugging information returned in ResultSetStats. If partition_token is set, query_mode can only be set to QueryMode.NORMAL.",
-          "enumDescriptions": [
-            "The default mode. Only the statement results are returned.",
-            "This mode returns only the query plan, without any results or execution statistics information.",
-            "This mode returns both the query plan and the execution statistics along with the results."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The default mode. Only the statement results are returned.",
@@ -1059,19 +1028,6 @@
       "properties": {
         "code": {
           "description": "Required. The TypeCode for this type.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Encoded as JSON `true` or `false`.",
-            "Encoded as `string`, in decimal format.",
-            "Encoded as `number`, or the strings `\"NaN\"`, `\"Infinity\"`, or `\"-Infinity\"`.",
-            "Encoded as `string` in RFC 3339 timestamp format. The time zone must be present, and must be `\"Z\"`. If the schema has the column option `allow_commit_timestamp=true`, the placeholder string `\"spanner.commit_timestamp()\"` can be used to instruct the system to insert the commit timestamp associated with the transaction commit.",
-            "Encoded as `string` in RFC 3339 date format.",
-            "Encoded as `string`.",
-            "Encoded as a base64-encoded `string`, as described in RFC 4648, section 4.",
-            "Encoded as `list`, where the list elements are represented according to array_element_type.",
-            "Encoded as `list`, where list element `i` is represented according to [struct_type.fields[i]][google.spanner.v1.StructType.fields].",
-            "Encoded as `string`, in decimal format or scientific notation format. Decimal format: `[+-]Digits[.[Digits]]` or `+-.Digits` Scientific notation: `[+-]Digits[.[Digits]][ExponentIndicator[+-]Digits]` or `+-.Digits[ExponentIndicator[+-]Digits]` (ExponentIndicator is `\"e\"` or `\"E\"`)"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -1262,11 +1218,6 @@
         },
         "kind": {
           "description": "Used to determine the type of node. May be needed for visualizing different kinds of nodes differently. For example, If the node is a SCALAR node, it will have a condensed representation which can be used to directly embed a description of the node in its parent.",
-          "enumDescriptions": [
-            "Not specified.",
-            "Denotes a Relational operator node in the expression tree. Relational operators represent iterative processing of rows during query execution. For example, a `TableScan` operation that reads rows from a table.",
-            "Denotes a Scalar node in the expression tree. Scalar nodes represent non-iterable entities in the query plan. For example, constants or arithmetic operators appearing inside predicate expressions or references to column names."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",
@@ -1909,10 +1860,6 @@
         },
         "sourceType": {
           "description": "The type of the restore source.",
-          "enumDescriptions": [
-            "No restore associated.",
-            "A backup was used as the source of the restore."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No restore associated.",

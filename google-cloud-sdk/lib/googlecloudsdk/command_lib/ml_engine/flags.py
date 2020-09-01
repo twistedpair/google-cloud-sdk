@@ -295,7 +295,7 @@ arg. The benefit of specifying this field is that AI Platform will validate
 the path for use in training. However, note that your training program will need
 to parse the provided `--job-dir` argument.
 """.format(
-    dir_type=('Google Cloud Storage path' +
+    dir_type=('Cloud Storage path' +
               (' or local_directory' if allow_local else '')))
   if upload_help:
     help_ += """\
@@ -334,7 +334,7 @@ RUNTIME_VERSION = base.Argument(
         'AI Platform runtime version for this job. Must be specified unless '
         '--master-image-uri is specified instead. It is defined in '
         'documentation along with the list of supported versions: '
-        'https://cloud.google.com/ml-engine/docs/tensorflow/runtime-version-list'  # pylint: disable=line-too-long
+        'https://cloud.google.com/ai-platform/prediction/docs/runtime-version-list'  # pylint: disable=line-too-long
     ))
 
 
@@ -380,11 +380,17 @@ def AddKmsKeyFlag(parser, resource):
 
 
 def AddPythonVersionFlag(parser, context):
-  help_str = (
-      'Version of Python used {context}. If not set, the default '
-      'version is 2.7. Python 3.5 is available when `--runtime-version` is '
-      'set to 1.4 and above. Python 2.7 works with all supported runtime '
-      'versions.').format(context=context)
+  help_str = """\
+      Version of Python used {context}. Choices are 3.7, 3.5, and 2.7.
+      However, this value must be compatible with the chosen runtime version
+      for the job.
+
+      Must be used with a compatible runtime version:
+
+      * 3.7 is compatible with runtime versions 1.15 and later.
+      * 3.5 is compatible with runtime versions 1.4 through 1.14.
+      * 2.7 is compatible with runtime versions 1.15 and earlier.
+      """.format(context=context)
   version = base.Argument(
       '--python-version',
       help=help_str)
@@ -429,7 +435,7 @@ SIGNATURE_NAME = base.Argument(
     help="""\
     The name of the signature defined in the SavedModel to use for
     this job. Defaults to DEFAULT_SERVING_SIGNATURE_DEF_KEY in
-    https://www.tensorflow.org/api_docs/python/tf/saved_model/signature_constants,
+    https://www.tensorflow.org/api_docs/python/tf/compat/v1/saved_model/signature_constants,
     which is "serving_default". Only applies to TensorFlow models.
     """)
 
@@ -587,7 +593,7 @@ def AddUserCodeArgs(parser):
       type=arg_parsers.ArgList(),
       metavar='PACKAGE_URI',
       help="""\
-          Comma-separated list of Google Cloud Storage URIs ('gs://...') for
+          Comma-separated list of Cloud Storage URIs ('gs://...') for
           user-supplied Python packages to use.
           """))
   user_code_group.AddToParser(parser)
@@ -777,7 +783,7 @@ def GetMasterImageUri():
       '--master-image-uri',
       required=False,
       help=('Docker image to run on each master worker. '
-            'This image must be in Google Container Registry. Only one of '
+            'This image must be in Container Registry. Only one of '
             '`--master-image-uri` and `--runtime-version` must be specified.'))
 
 
@@ -818,7 +824,7 @@ def GetParameterServerImageUri():
       '--parameter-server-image-uri',
       required=False,
       help=('Docker image to run on each parameter server. '
-            'This image must be in Google Container Registry. If not '
+            'This image must be in Container Registry. If not '
             'specified, the value of `--master-image-uri` is used.'))
 
 
@@ -858,7 +864,7 @@ def GetWorkerImageUri():
       '--worker-image-uri',
       required=False,
       help=('Docker image to run on each worker node. '
-            'This image must be in Google Container Registry. If not '
+            'This image must be in Container Registry. If not '
             'specified, the value of `--master-image-uri` is used.'))
 
 

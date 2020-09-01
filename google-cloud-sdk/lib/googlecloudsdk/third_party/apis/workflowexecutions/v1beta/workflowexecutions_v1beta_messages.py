@@ -31,7 +31,8 @@ class Error(_messages.Message):
 
 
 class Execution(_messages.Message):
-  r"""A running instance of a Workflow.
+  r"""A running instance of a [Workflow](/workflows/docs/reference/rest/v1beta
+  /projects.locations.workflows).
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the execution.
@@ -239,7 +240,7 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest(_message
       Provide this to retrieve the subsequent page. When paginating, all other
       parameters provided to `ListExecutions` must match the call that
       provided the page token.
-    parent: Required. Name of the workflow of which the executions should be
+    parent: Required. Name of the workflow for which the executions should be
       listed. Format:
       projects/{project}/locations/{location}/workflows/{workflow}
     view: Optional. A view defining which fields should be filled in the

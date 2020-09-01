@@ -857,9 +857,9 @@ class TranscoderProjectsLocationsJobTemplatesCreateRequest(_messages.Message):
     jobTemplateId: Required. The ID to use for the job template, which will
       become the final component of the job template's resource name. This
       value should be 4-63 characters, and valid characters are
-      /[a-zA-Z0-9_-_]/.
+      `/[a-zA-Z0-9_-_]/`.
     parent: Required. The parent location to create this job template. Format:
-      projects/{project}/locations/{location}
+      `projects/{project}/locations/{location}`
   """
 
   jobTemplate = _messages.MessageField('JobTemplate', 1)
@@ -872,7 +872,7 @@ class TranscoderProjectsLocationsJobTemplatesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the job template to delete.
-      projects/{project}/locations/{location}/jobTemplates/{job_template}
+      `projects/{project}/locations/{location}/jobTemplates/{job_template}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -883,7 +883,7 @@ class TranscoderProjectsLocationsJobTemplatesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the job template to retrieve. Format:
-      projects/{project}/locations/{location}/jobTemplates/{job_template}
+      `projects/{project}/locations/{location}/jobTemplates/{job_template}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -898,7 +898,7 @@ class TranscoderProjectsLocationsJobTemplatesListRequest(_messages.Message):
       request, if any.
     parent: Required. The parent location from which to retrieve the
       collection of job templates. Format:
-      projects/{project}/locations/{location}
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -912,7 +912,7 @@ class TranscoderProjectsLocationsJobsCreateRequest(_messages.Message):
   Fields:
     job: A Job resource to be passed as the request body.
     parent: Required. The parent location to create and process this job.
-      Format: projects/{project}/locations/{location}
+      Format: `projects/{project}/locations/{location}`
   """
 
   job = _messages.MessageField('Job', 1)
@@ -923,8 +923,8 @@ class TranscoderProjectsLocationsJobsDeleteRequest(_messages.Message):
   r"""A TranscoderProjectsLocationsJobsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the job to delete. Fromat:
-      projects/{project}/locations/{location}/jobs/{job}
+    name: Required. The name of the job to delete. Format:
+      `projects/{project}/locations/{location}/jobs/{job}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -935,7 +935,7 @@ class TranscoderProjectsLocationsJobsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the job to retrieve. Format:
-      projects/{project}/locations/{location}/jobs/{job}
+      `projects/{project}/locations/{location}/jobs/{job}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -948,7 +948,7 @@ class TranscoderProjectsLocationsJobsListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The `next_page_token` value returned from a previous List
       request, if any.
-    parent: Required. Format: projects/{project}/locations/{location}
+    parent: Required. Format: `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

@@ -67,7 +67,6 @@ def EnableApiCall(project, service):
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
 
-  # TODO(b/78464430): use resource argument.
   request = messages.ServiceusageServicesEnableRequest(
       name=_PROJECT_SERVICE_RESOURCE % (project, service))
   try:

@@ -353,7 +353,7 @@ def GetDomainMappingResourceSpec():
 
 def GetNamespaceResourceSpec():
   """Returns a resource spec for the namespace."""
-  # TODO(b/150322097): Remove this when the api has been split.
+  # TODO(b/148817410): Remove this when the api has been split.
   # This try/except block is needed because the v1alpha1 and v1 run apis
   # have different collection names for the namespaces.
   try:

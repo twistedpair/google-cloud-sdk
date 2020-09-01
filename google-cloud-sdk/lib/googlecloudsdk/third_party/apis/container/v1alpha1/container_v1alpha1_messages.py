@@ -124,6 +124,17 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
   created by NAP.
 
   Fields:
+    bootDiskKmsKey:  The Customer Managed Encryption Key used to encrypt the
+      boot disk attached to each node in the node pool. This should be of the
+      form projects/[KEY_PROJECT_ID]/locations/[LOCATION]/keyRings/[RING_NAME]
+      /cryptoKeys/[KEY_NAME]. For more information about protecting resources
+      with Cloud KMS Keys please see:
+      https://cloud.google.com/compute/docs/disks/customer-managed-encryption
+    diskSizeGb: Size of the disk attached to each node, specified in GB. The
+      smallest allowed disk size is 10GB. If unspecified, the default disk
+      size is 100GB.
+    diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
+      'pd-ssd') If unspecified, the default disk type is 'pd-standard'
     management: NodeManagement configuration for this NodePool.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
@@ -148,15 +159,20 @@ class AutoprovisioningNodePoolDefaults(_messages.Message):
       the node VMs. Specify the email address of the Service Account;
       otherwise, if no Service Account is specified, the "default" service
       account is used.
+    shieldedInstanceConfig: Shielded Instance options.
     upgradeSettings: Upgrade settings control disruption and speed of the
       upgrade.
   """
 
-  management = _messages.MessageField('NodeManagement', 1)
-  minCpuPlatform = _messages.StringField(2)
-  oauthScopes = _messages.StringField(3, repeated=True)
-  serviceAccount = _messages.StringField(4)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 5)
+  bootDiskKmsKey = _messages.StringField(1)
+  diskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  diskType = _messages.StringField(3)
+  management = _messages.MessageField('NodeManagement', 4)
+  minCpuPlatform = _messages.StringField(5)
+  oauthScopes = _messages.StringField(6, repeated=True)
+  serviceAccount = _messages.StringField(7)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 8)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 9)
 
 
 class AvailableVersion(_messages.Message):
@@ -2691,12 +2707,12 @@ class NodeKubeletConfig(_messages.Message):
 
   Fields:
     cpuCfsQuota: Enable CPU CFS quota enforcement for containers that specify
-      CPU limits. If this option is enabled, kubelet uses CFS quota
-      (https://www.kernel.org/doc/Documentation/scheduler/sched-bwc.txt) to
-      enforce container CPU limits. Otherwise, CPU limits will not be enforced
-      at all. Disable this option to mitigate CPU throttling problems while
-      still having your pods to be in Guaranteed QoS class by specifying the
-      CPU limits. The default value is 'true' if unspecified.
+      CPU limits. This option is enabled by default which makes kubelet use
+      CFS quota (https://www.kernel.org/doc/Documentation/scheduler/sched-
+      bwc.txt) to enforce container CPU limits. Otherwise, CPU limits will not
+      be enforced at all. Disable this option to mitigate CPU throttling
+      problems while still having your pods to be in Guaranteed QoS class by
+      specifying the CPU limits. The default value is 'true' if unspecified.
     cpuCfsQuotaPeriod: Set the CPU CFS quota period value 'cpu.cfs_period_us'.
       The string must be a sequence of decimal numbers, each with optional
       fraction and a unit suffix, such as "300ms". Valid time units are "ns",
@@ -2707,7 +2723,8 @@ class NodeKubeletConfig(_messages.Message):
       policies/ The following values are allowed. - "none": the default, which
       represents the existing scheduling behavior. - "static": allows pods
       with certain resource characteristics to be granted increased CPU
-      affinity and exclusivity on the node.
+      affinity and exclusivity on the node. The default value is 'none' if
+      unspecified.
   """
 
   cpuCfsQuota = _messages.BooleanField(1)

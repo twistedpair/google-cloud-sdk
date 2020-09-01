@@ -289,12 +289,6 @@
       "properties": {
         "logType": {
           "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default case. Should never be this.",
@@ -428,11 +422,6 @@
         },
         "state": {
           "description": "Output only. LabelKey lifecycle state.",
-          "enumDescriptions": [
-            "Unspecified state. This is only used\/useful for distinguishing unset values.",
-            "The normal and active state.",
-            "The LabelKey has been marked for deletion by the user (by invoking: DeleteLabelKey) or by the system (Google Cloud Platform). This can generally be reversed by invoking: [google.labelmanager.v1alpha1.LabelManager.UndeleteLabelKey]"
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -512,11 +501,6 @@
         },
         "state": {
           "description": "Output only. LabelValue lifecycle state.",
-          "enumDescriptions": [
-            "Unspecified state. This is only used\/useful for distinguishing unset values.",
-            "The normal and active state.",
-            "The LabelValue has been marked for deletion by the user (by invoking: DeleteLabelValue) or by the system (Google Cloud Platform). This can generally be reversed by invoking: [google.labelmanager.v1alpha1.LabelManager.UndeleteLabelValue]"
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

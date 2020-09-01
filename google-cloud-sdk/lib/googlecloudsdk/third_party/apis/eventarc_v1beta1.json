@@ -292,6 +292,10 @@
         "path": {
           "description": "Optional. The relative path on the Cloud Run service the events should be sent to. The value must conform to the definition of URI path segment (section 3.3 of RFC2396). Examples: \"\/route\", \"route\", \"route\/subroute\".",
           "type": "string"
+        },
+        "region": {
+          "description": "Optional. The region the Cloud Run service is deployed in. This field should only be populated if the trigger is created in the \"global\" location. In all other cases, values other than \"\" or region of the trigger to be created in will be considered invalid.",
+          "type": "string"
         }
       }
     },

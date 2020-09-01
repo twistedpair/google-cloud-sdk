@@ -183,42 +183,6 @@
         },
         "type": {
           "description": "The type of connection specified. This refers to the service for which this connection is created.",
-          "enumDescriptions": [
-            "Unspecified connection type.",
-            "Docker connection type.",
-            "File connection type.",
-            "FTP connection type.",
-            "GCP connection type.",
-            "HDFS connection type.",
-            "HTTP connection type.",
-            "Hive CLI connection type.",
-            "Hive Metastore connection type.",
-            "Hive server connection type.",
-            "JDBC connection type.",
-            "Jenkins connection type.",
-            "MySQL connection type.",
-            "Postgres connection type.",
-            "Oracle connection type.",
-            "Vertica connection type.",
-            "Presto connection type.",
-            "Amazon S3 connection type.",
-            "Samba connection type.",
-            "SQLite connection type.",
-            "SSH connection type.",
-            "Cloudant connection type.",
-            "MsSQL connection type.",
-            "Mesos Framework connection type.",
-            "Jira connection type.",
-            "Redis connection type.",
-            "Wasb connection type.",
-            "Databricks connection type.",
-            "AWS connection type.",
-            "EMR connection type.",
-            "Snowflake connection type.",
-            "Segment connection type.",
-            "Azure Data Lake connection type.",
-            "Cassandra connection type."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified connection type.",
@@ -442,12 +406,6 @@
         },
         "state": {
           "description": "Output only. The latest known state of the workflow run.",
-          "enumDescriptions": [
-            "The state of the WorkflowRun is unknown.",
-            "The WorkflowRun is currently running.",
-            "The WorkflowRun succeeded.",
-            "The WorkflowRun failed."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The state of the WorkflowRun is unknown.",
@@ -508,12 +466,6 @@
         },
         "state": {
           "description": "Output only. The current state of the workflow.",
-          "enumDescriptions": [
-            "The state of the workflow is unknown.",
-            "The workflow is being created and cannot execute.",
-            "The workflow is available for execution.",
-            "The workflow is in an error state and cannot execute."
-          ],
           "type": "string",
           "enumDescriptions": [
             "The state of the workflow is unknown.",

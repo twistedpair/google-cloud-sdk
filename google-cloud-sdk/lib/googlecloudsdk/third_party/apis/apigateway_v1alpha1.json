@@ -287,7 +287,7 @@
           ]
         },
         "defaultHostname": {
-          "description": "Output only. The default API Gateway host name of the form `gateway-{hash}.{region_code}.a.run.app`.",
+          "description": "Output only. The default API Gateway host name of the form `{gateway_id}-{hash}.{region_code}.gateway.dev`.",
           "readOnly": true,
           "type": "string"
         }

@@ -245,17 +245,6 @@
         },
         "kind": {
           "description": "Output only. This explicitly denotes which of the occurrence details are specified. This field can be used as a filter in list requests.",
-          "enumDescriptions": [
-            "Unknown.",
-            "The note and occurrence represent a package vulnerability.",
-            "The note and occurrence assert build provenance.",
-            "This represents an image basis relationship.",
-            "This represents a package installed via a package manager.",
-            "The note and occurrence track deployment events.",
-            "The note and occurrence track the initial discovery status of a resource.",
-            "This represents a logical \"role\" that can attest to artifacts.",
-            "This represents an available package upgrade."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown.",
@@ -339,14 +328,6 @@
         },
         "severity": {
           "description": "Output only. The note provider assigned severity of this vulnerability.",
-          "enumDescriptions": [
-            "Unknown.",
-            "Minimal severity.",
-            "Low severity.",
-            "Medium severity.",
-            "High severity.",
-            "Critical severity."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown.",
@@ -394,14 +375,6 @@
         },
         "effectiveSeverity": {
           "description": "The distro assigned severity for this vulnerability when it is available, otherwise this is the note provider assigned severity.",
-          "enumDescriptions": [
-            "Unknown.",
-            "Minimal severity.",
-            "Low severity.",
-            "Medium severity.",
-            "High severity.",
-            "Critical severity."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown.",
@@ -481,12 +454,6 @@
         },
         "kind": {
           "description": "Required. Distinguishes between sentinel MIN\/MAX versions and normal versions.",
-          "enumDescriptions": [
-            "Unknown.",
-            "A standard package version.",
-            "A special version representing negative infinity.",
-            "A special version representing positive infinity."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown.",
@@ -811,12 +778,6 @@
       "properties": {
         "kind": {
           "description": "The alias kind.",
-          "enumDescriptions": [
-            "Unknown.",
-            "Git tag.",
-            "Git branch.",
-            "Used to specify non-standard aliases. For example, if a Git repo has a ref named \"refs\/foo\/bar\"."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown.",
@@ -1012,12 +973,6 @@
         },
         "platform": {
           "description": "Platform hosting this deployment.",
-          "enumDescriptions": [
-            "Unknown.",
-            "Google Container Engine.",
-            "Google App Engine: Flexible Environment.",
-            "Custom user-defined platform."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown.",
@@ -1041,11 +996,6 @@
       "properties": {
         "continuousAnalysis": {
           "description": "Whether the resource is continuously analyzed.",
-          "enumDescriptions": [
-            "Unknown.",
-            "The resource is continuously analyzed.",
-            "The resource is ignored for continuous analysis."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown.",
@@ -1060,14 +1010,6 @@
         },
         "analysisStatus": {
           "description": "The status of discovery for the resource.",
-          "enumDescriptions": [
-            "Unknown.",
-            "Resource is known but no action has been taken yet.",
-            "Resource is being analyzed.",
-            "Analysis has finished successfully.",
-            "Analysis has finished unsuccessfully, the analysis itself is in a bad state.",
-            "The resource is known not to be supported"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unknown.",

@@ -69,21 +69,117 @@ def ParseCommonArgs(parser):
       action='store_true')
 
 
-def PrepareEnvironment(args):
+def PrepareV1Environment(args):
   """Ensures that the user's environment is ready to accept SSH connections."""
 
-  # Load Cloud Shell API
-  client = apis.GetClientInstance('cloudshell', 'v1alpha1')
-  messages = apis.GetMessagesModule('cloudshell', 'v1alpha1')
+  # Load Cloud Shell API.
+  client = apis.GetClientInstance('cloudshell', 'v1')
+  messages = apis.GetMessagesModule('cloudshell', 'v1')
   operations_client = apis.GetClientInstance('cloudshell', 'v1')
 
-  # Ensure we have a key pair on the local machine
+  # Ensure we have a key pair on the local machine.
   ssh_env = ssh.Environment.Current()
   ssh_env.RequireSSH()
   keys = ssh.Keys.FromFilename(filename=args.ssh_key_file)
   keys.EnsureKeysExist(overwrite=args.force_key_file_overwrite)
 
-  # Look up the Cloud Shell environment
+  # Look up the Cloud Shell environment.
+  environment = client.users_environments.Get(
+      messages.CloudshellUsersEnvironmentsGetRequest(
+          name=DEFAULT_ENVIRONMENT_NAME))
+
+  if args.boosted and environment.size != messages.Environment.SizeValueValuesEnum.BOOSTED:
+    boosted_environment = messages.Environment(
+        size=messages.Environment.SizeValueValuesEnum.BOOSTED)
+
+    update_operation = client.users_environments.Patch(
+        messages.CloudshellUsersEnvironmentsPatchRequest(
+            name=DEFAULT_ENVIRONMENT_NAME,
+            updateMask='size',
+            environment=boosted_environment))
+
+    environment = waiter.WaitFor(
+        EnvironmentPoller(client.users_environments,
+                          operations_client.operations),
+        update_operation,
+        'Waiting for your Cloud Shell machine to boost',
+        sleep_ms=500,
+        max_wait_ms=None)
+
+  # If the environment doesn't have the public key, push it.
+  key = keys.GetPublicKey().ToEntry()
+  has_key = False
+  for candidate in environment.publicKeys:
+    if key == candidate:
+      has_key = True
+      break
+  if not has_key:
+    add_public_key_operation = client.users_environments.AddPublicKey(
+        messages.CloudshellUsersEnvironmentsAddPublicKeyRequest(
+            environment=DEFAULT_ENVIRONMENT_NAME,
+            addPublicKeyRequest=messages.AddPublicKeyRequest(key=key),
+        ))
+
+    environment = waiter.WaitFor(
+        EnvironmentPoller(client.users_environments,
+                          operations_client.operations),
+        add_public_key_operation,
+        'Pushing your public key to Cloud Shell',
+        sleep_ms=500,
+        max_wait_ms=None)
+
+  # If the environment isn't running, start it.
+  if environment.state != messages.Environment.StateValueValuesEnum.RUNNING:
+    log.Print('Starting your Cloud Shell machine...')
+
+    access_token = None
+    if args.authorize_session:
+      creds = store.LoadIfEnabled()
+      if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
+      ) < MIN_CREDS_EXPIRY:
+        store.Refresh(creds)
+
+      if creds is not None:
+        access_token = creds.get_access_token().access_token
+
+    start_operation = client.users_environments.Start(
+        messages.CloudshellUsersEnvironmentsStartRequest(
+            name=DEFAULT_ENVIRONMENT_NAME,
+            startEnvironmentRequest=messages.StartEnvironmentRequest(
+                accessToken=access_token)))
+
+    environment = waiter.WaitFor(
+        EnvironmentPoller(client.users_environments,
+                          operations_client.operations),
+        start_operation,
+        'Waiting for your Cloud Shell machine to start',
+        sleep_ms=500,
+        max_wait_ms=None)
+
+  return ConnectionInfo(
+      ssh_env=ssh_env,
+      user=environment.sshUsername,
+      host=environment.sshHost,
+      port=environment.sshPort,
+      key=keys.key_file,
+  )
+
+
+def PrepareEnvironment(args):
+  """Ensures that the user's environment is ready to accept SSH connections."""
+
+  # Load Cloud Shell API.
+  client = apis.GetClientInstance('cloudshell', 'v1alpha1')
+  messages = apis.GetMessagesModule('cloudshell', 'v1alpha1')
+  operations_client = apis.GetClientInstance('cloudshell', 'v1')
+
+  # Ensure we have a key pair on the local machine.
+  ssh_env = ssh.Environment.Current()
+  ssh_env.RequireSSH()
+  keys = ssh.Keys.FromFilename(filename=args.ssh_key_file)
+  keys.EnsureKeysExist(overwrite=args.force_key_file_overwrite)
+
+  # Look up the Cloud Shell environment.
   environment = client.users_environments.Get(
       messages.CloudshellUsersEnvironmentsGetRequest(
           name=DEFAULT_ENVIRONMENT_NAME))
@@ -97,7 +193,7 @@ def PrepareEnvironment(args):
             updateMask='size',
             environment=boosted_environment))
 
-  # If the environment doesn't have the public key, push it
+  # If the environment doesn't have the public key, push it.
   key_parts = keys.GetPublicKey().ToEntry().split(' ')
   key_format = ValidateKeyType(key_parts[0].replace('-', '_').upper(), messages)
   key = messages.PublicKey(
@@ -117,18 +213,19 @@ def PrepareEnvironment(args):
             createPublicKeyRequest=messages.CreatePublicKeyRequest(key=key),
         ))
 
-  # If the environment isn't running, start it
+  # If the environment isn't running, start it.
   if environment.state != messages.Environment.StateValueValuesEnum.RUNNING:
     log.Print('Starting your Cloud Shell machine...')
 
-    creds = store.LoadIfEnabled()
-    if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
-    ) < MIN_CREDS_EXPIRY:
-      store.Refresh(creds)
-
     access_token = None
-    if creds is not None:
-      access_token = creds.get_access_token().access_token
+    if args.authorize_session:
+      creds = store.LoadIfEnabled()
+      if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
+      ) < MIN_CREDS_EXPIRY:
+        store.Refresh(creds)
+
+      if creds is not None:
+        access_token = creds.get_access_token().access_token
 
     start_operation = client.users_environments.Start(
         messages.CloudshellUsersEnvironmentsStartRequest(
@@ -137,8 +234,8 @@ def PrepareEnvironment(args):
                 accessToken=access_token)))
 
     environment = waiter.WaitFor(
-        StartEnvironmentPoller(client.users_environments,
-                               operations_client.operations),
+        EnvironmentPoller(client.users_environments,
+                          operations_client.operations),
         start_operation,
         'Waiting for your Cloud Shell machine to start',
         sleep_ms=500,
@@ -161,13 +258,35 @@ def ValidateKeyType(key_format, messages):
                               'yet.'.format(key_format))
 
 
+def AuthorizeV1Environment():
+  """Pushes gcloud command-line tool credentials to the user's environment."""
+
+  client = apis.GetClientInstance('cloudshell', 'v1')
+  messages = apis.GetMessagesModule('cloudshell', 'v1')
+
+  # Load creds and refresh them if they're about to expire.
+  creds = store.LoadIfEnabled()
+  if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
+  ) < MIN_CREDS_EXPIRY:
+    store.Refresh(creds)
+
+  access_token = None
+  if creds is not None:
+    access_token = creds.get_access_token().access_token
+    client.users_environments.Authorize(
+        messages.CloudshellUsersEnvironmentsAuthorizeRequest(
+            name=DEFAULT_ENVIRONMENT_NAME,
+            authorizeEnvironmentRequest=messages.AuthorizeEnvironmentRequest(
+                accessToken=access_token)))
+
+
 def AuthorizeEnvironment():
-  """Pushes gcloud credentials to the user's environment."""
+  """Pushes gcloud command-line tool credentials to the user's environment."""
 
   client = apis.GetClientInstance('cloudshell', 'v1alpha1')
   messages = apis.GetMessagesModule('cloudshell', 'v1alpha1')
 
-  # Load creds and refresh them if they're about to expire
+  # Load creds and refresh them if they're about to expire.
   creds = store.LoadIfEnabled()
   if creds is not None and creds.token_expiry - creds.token_expiry.utcnow(
   ) < MIN_CREDS_EXPIRY:
@@ -193,8 +312,8 @@ class ConnectionInfo(object):
     self.key = key
 
 
-class StartEnvironmentPoller(waiter.OperationPoller):
-  """Poller for start environment operations."""
+class EnvironmentPoller(waiter.OperationPoller):
+  """Poller for environment operations."""
 
   def __init__(self, environments_service, operations_service):
     self.environments_service = environments_service

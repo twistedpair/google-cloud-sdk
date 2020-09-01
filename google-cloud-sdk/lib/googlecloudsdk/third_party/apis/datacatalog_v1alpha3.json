@@ -529,11 +529,6 @@
       "properties": {
         "scheduledRunOption": {
           "description": "Required. The scheduled run option of the crawler.",
-          "enumDescriptions": [
-            "Unspecified scheduled run option.",
-            "Daily scheduled run option.",
-            "Weekly scheduled run option."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified scheduled run option.",
@@ -583,11 +578,6 @@
           "type": "string"
         },
         "runOption": {
-          "enumDescriptions": [
-            "Unspecified run option.",
-            "Ad-hoc run option.",
-            "Scheduled run option."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified run option.",
@@ -602,13 +592,6 @@
         },
         "state": {
           "description": "Output only. The state of the crawler run.",
-          "enumDescriptions": [
-            "Unspecified crawler run state.",
-            "This crawler run is waiting on resources to be ready.",
-            "This crawler run is running.",
-            "This crawler run failed.",
-            "This crawler run succeeded."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified crawler run state.",

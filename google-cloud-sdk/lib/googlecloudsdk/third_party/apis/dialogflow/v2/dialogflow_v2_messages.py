@@ -1092,6 +1092,17 @@ class GoogleCloudDialogflowCxV3beta1ExportAgentResponse(_messages.Message):
   agentUri = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowCxV3beta1ImportAgentResponse(_messages.Message):
+  r"""The response message for Agents.ImportAgent.
+
+  Fields:
+    agent: The unique identifier of the new agent. Format:
+      `projects//locations//agents/`.
+  """
+
+  agent = _messages.StringField(1)
+
+
 class GoogleCloudDialogflowCxV3beta1PageInfo(_messages.Message):
   r"""Represents page information communicated to and from the webhook.
 
@@ -6536,6 +6547,17 @@ class GoogleCloudDialogflowV3alpha1ExportAgentResponse(_messages.Message):
 
   agentContent = _messages.BytesField(1)
   agentUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV3alpha1ImportAgentResponse(_messages.Message):
+  r"""The response message for Agents.ImportAgent.
+
+  Fields:
+    agent: The unique identifier of the new agent. Format:
+      `projects//locations//agents/`.
+  """
+
+  agent = _messages.StringField(1)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

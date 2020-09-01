@@ -147,11 +147,6 @@
         },
         "constraintDefault": {
           "description": "The evaluation behavior of this constraint in the absense of 'Policy'.",
-          "enumDescriptions": [
-            "This is only used for distinguishing unset values and should never be used.",
-            "Indicate that all values are allowed for list constraints. Indicate that enforcement is off for boolean constraints.",
-            "Indicate that all values are denied for list constraints. Indicate that enforcement is on for boolean constraints."
-          ],
           "type": "string",
           "enumDescriptions": [
             "This is only used for distinguishing unset values and should never be used.",

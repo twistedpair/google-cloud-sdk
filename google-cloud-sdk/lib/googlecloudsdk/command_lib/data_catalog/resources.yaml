@@ -20,6 +20,31 @@ location:
     help: |
       Location of the {resource}.
 
+taxonomy:
+  name: taxonomy
+  collection: datacatalog.projects.locations.taxonomies
+  attributes:
+  - *project
+  - *location
+  - &taxonomy
+    parameter_name: taxonomiesId
+    attribute_name: taxonomy
+    help: |
+      Taxonomy of the {resource}.
+
+policy_tag:
+  name: policy tag
+  collection: datacatalog.projects.locations.taxonomies.policyTags
+  attributes:
+  - *project
+  - *location
+  - *taxonomy
+  - &policy_tag
+    parameter_name: policyTagsId
+    attribute_name: policy_tag
+    help: |
+      Policy tag of the {resource}.
+
 entry_group:
   name: entry group
   collection: datacatalog.projects.locations.entryGroups

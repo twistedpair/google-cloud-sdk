@@ -47,6 +47,9 @@ class Secrets(Logger):
   def Updated(self, secret_ref):
     self._Print('Updated', secret_ref)
 
+  def UpdatedReplication(self, secret_ref):
+    self._Print('Updated replication for', secret_ref)
+
 
 class Versions(Logger):
   """Logger for versions."""

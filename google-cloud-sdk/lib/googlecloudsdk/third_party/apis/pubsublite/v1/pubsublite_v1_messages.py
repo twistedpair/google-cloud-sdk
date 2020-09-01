@@ -143,11 +143,12 @@ class PartitionConfig(_messages.Message):
   Fields:
     capacity: The capacity configuration.
     count: The number of partitions in the topic. Must be at least 1.
-    scale: Every partition in the topic is allocated throughput equivalent to
-      `scale` times the standard partition throughput (4 MiB/s). This is also
-      reflected in the cost of this topic; a topic with `scale` of 2 and count
-      of 10 is charged for 20 partitions. This value must be in the range
-      [1,4].
+    scale: DEPRECATED: Use capacity instead which can express a superset of
+      configurations. Every partition in the topic is allocated throughput
+      equivalent to `scale` times the standard partition throughput (4 MiB/s).
+      This is also reflected in the cost of this topic; a topic with `scale`
+      of 2 and count of 10 is charged for 20 partitions. This value must be in
+      the range [1,4].
   """
 
   capacity = _messages.MessageField('Capacity', 1)

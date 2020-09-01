@@ -265,14 +265,6 @@
         },
         "status": {
           "description": "Output only. Status of the VPC access connector.",
-          "enumDescriptions": [
-            "Invalid state.",
-            "Connector is deployed and ready to receive traffic.",
-            "An Insert operation is in progress.",
-            "A Delete operation is in progress.",
-            "Connector is in a bad state, manual deletion recommended.",
-            "The connector is being updated."
-          ],
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [

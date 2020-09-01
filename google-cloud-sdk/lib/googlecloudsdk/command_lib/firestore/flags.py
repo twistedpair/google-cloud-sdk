@@ -102,7 +102,6 @@ def GetClearExemptionArg():
       help=help_text)
 
 
-# TODO(b/120915050): Remove this and use native argument group in the spec
 def AddFieldUpdateArgs():
   """Python hook to add the argument group for field updates.
 

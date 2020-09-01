@@ -156,6 +156,14 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.apigateway.v1alpha1',
                 client_classpath='apigateway_v1alpha1_client.ApigatewayV1alpha1',
                 messages_modulepath='apigateway_v1alpha1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.apigateway.v1beta',
+                client_classpath='apigateway_v1beta_client.ApigatewayV1beta',
+                messages_modulepath='apigateway_v1beta_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -909,20 +917,12 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'domains': {
-        'v1alpha1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.domains.v1alpha1',
-                client_classpath='domains_v1alpha1_client.DomainsV1alpha1',
-                messages_modulepath='domains_v1alpha1_messages',
-                default_version=True,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
         'v1alpha2':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.domains.v1alpha2',
                 client_classpath='domains_v1alpha2_client.DomainsV1alpha2',
                 messages_modulepath='domains_v1alpha2_messages',
-                default_version=False,
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1669,6 +1669,14 @@ MAP = {
                 client_classpath='securitycenter_v1_client.SecuritycenterV1',
                 messages_modulepath='securitycenter_v1_messages',
                 default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.securitycenter.v1beta2',
+                client_classpath='securitycenter_v1beta2_client.SecuritycenterV1beta2',
+                messages_modulepath='securitycenter_v1beta2_messages',
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

@@ -347,6 +347,7 @@ class Instance(_messages.Message):
       STOPPED: The instance is stopped.
       DELETED: The instance is deleted.
       UPGRADING: The instance is upgrading.
+      INITIALIZING: The instance is being created.
     """
     STATE_UNSPECIFIED = 0
     STARTING = 1
@@ -356,6 +357,7 @@ class Instance(_messages.Message):
     STOPPED = 5
     DELETED = 6
     UPGRADING = 7
+    INITIALIZING = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1088,6 +1090,7 @@ class OperationMetadata(_messages.Message):
     apiVersion: API version used to start the operation.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
+    endpoint: API endpoint name of this operation.
     requestedCancellation: Identifies whether the user has requested
       cancellation of the operation. Operations that have successfully been
       cancelled have Operation.error value with a google.rpc.Status.code of 1,
@@ -1100,10 +1103,11 @@ class OperationMetadata(_messages.Message):
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
+  endpoint = _messages.StringField(4)
+  requestedCancellation = _messages.BooleanField(5)
+  statusMessage = _messages.StringField(6)
+  target = _messages.StringField(7)
+  verb = _messages.StringField(8)
 
 
 class Policy(_messages.Message):

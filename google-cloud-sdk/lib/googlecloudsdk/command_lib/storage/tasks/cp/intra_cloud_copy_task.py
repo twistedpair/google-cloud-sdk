@@ -30,33 +30,36 @@ from googlecloudsdk.command_lib.storage.tasks import task
 
 
 class IntraCloudCopyTask(task.Task):
-  """Represents a command operation copying an object around the cloud.
+  """Represents a command operation copying an object around the cloud."""
 
-  Attributes:
-    source_reference (str): (resource_reference.ObjectReference): Must
-        contain the full object path. Directories will not be accepted.Existing
-        objects at the this location will be overwritten.
-    destination_reference (resource_reference.ObjectReference): Must
-        contain the full object path. Directories will not be accepted.Existing
-        objects at the this location will be overwritten.
-  """
+  def __init__(self, source_resource, destination_resource):
+    """Initializes task.
 
-  def __init__(self, source_reference, destination_reference):
+    Args:
+      source_resource (resource_reference.ObjectResource): Must
+          contain the full object path. Directories will not be accepted.
+          Existing objects at the this location will be overwritten.
+      destination_resource (resource_reference.ObjectResource): Must
+          contain the full object path. Directories will not be accepted.
+          Existing objects at the this location will be overwritten.
+    """
     super(IntraCloudCopyTask, self).__init__()
-    if ((source_reference.storage_url.scheme
-         != destination_reference.storage_url.scheme)
-        or not isinstance(source_reference.storage_url,
+    if ((source_resource.storage_url.scheme
+         != destination_resource.storage_url.scheme)
+        or not isinstance(source_resource.storage_url,
                           storage_url.CloudUrl)):
       raise ValueError('IntraCloudCopyTask takes two URLs from the same cloud'
                        ' provider.')
 
-    self.source_reference = source_reference
-    self.destination_reference = destination_reference
+    self._source_resource = source_resource
+    self._destination_resource = destination_resource
 
   def execute(self, callback=None):
     # TODO(b/161900052): Support all of CopyObject's parameters
     provider = cloud_api.ProviderPrefix(
-        self.source_reference.storage_url.scheme)
+        self._source_resource.storage_url.scheme)
     api_factory.get_api(provider).CopyObject(
-        self.source_reference.metadata_object,
-        self.destination_reference.metadata_object)
+        self._source_resource.metadata_object,
+        # TODO(b/166278596) Get an object message if the destination is an
+        #   UnknownResource.
+        self._destination_resource.metadata_object)

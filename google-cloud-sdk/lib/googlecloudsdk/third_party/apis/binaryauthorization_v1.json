@@ -126,11 +126,6 @@
         },
         "globalPolicyEvaluationMode": {
           "description": "Optional. Controls the evaluation of a Google-maintained global admission policy for common system-level images. Images not covered by the global policy will be subject to the project admission policy. This setting has no effect when specified inside a global admission policy.",
-          "enumDescriptions": [
-            "Not specified: DISABLE is assumed.",
-            "Enables global policy evaluation.",
-            "Disables global policy evaluation."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified: DISABLE is assumed.",
@@ -187,12 +182,6 @@
       "properties": {
         "evaluationMode": {
           "description": "Required. How this admission rule will be evaluated.",
-          "enumDescriptions": [
-            "Do not use.",
-            "This rule allows all all pod creations.",
-            "This rule allows a pod creation if all the attestors listed in 'require_attestations_by' have valid attestations for all of the images in the pod spec.",
-            "This rule denies all pod creations."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use.",
@@ -216,11 +205,6 @@
         },
         "enforcementMode": {
           "description": "Required. The action when a pod creation is denied by the admission rule.",
-          "enumDescriptions": [
-            "Do not use.",
-            "Enforce the admission rule by blocking the pod creation.",
-            "Dryrun mode: Audit logging only. This will allow the pod creation as if the admission request had specified break-glass."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Do not use.",
@@ -317,23 +301,6 @@
         },
         "signatureAlgorithm": {
           "description": "The signature algorithm used to verify a message against a signature using this key. These signature algorithm must match the structure and any object identifiers encoded in `public_key_pem` (i.e. this algorithm must match that of the public key).",
-          "enumDescriptions": [
-            "Not specified.",
-            "RSASSA-PSS 2048 bit key with a SHA256 digest.",
-            "RSASSA-PSS 3072 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA256 digest.",
-            "RSASSA-PSS 4096 bit key with a SHA512 digest.",
-            "RSASSA-PKCS1-v1_5 with a 2048 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 3072 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA256 digest.",
-            "RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA512 digest.",
-            "ECDSA on the NIST P-256 curve with a SHA256 digest.",
-            "ECDSA on the NIST P-256 curve with a SHA256 digest.",
-            "ECDSA on the NIST P-384 curve with a SHA384 digest.",
-            "ECDSA on the NIST P-384 curve with a SHA384 digest.",
-            "ECDSA on the NIST P-521 curve with a SHA512 digest.",
-            "ECDSA on the NIST P-521 curve with a SHA512 digest."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not specified.",

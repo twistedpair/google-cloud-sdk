@@ -220,16 +220,6 @@
         },
         "features": {
           "description": "Required. Requested video annotation features.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Label detection. Detect objects, such as dog or flower.",
-            "Shot change detection.",
-            "Explicit content detection.",
-            "Speech transcription.",
-            "OCR text detection and tracking.",
-            "Object detection and tracking.",
-            "Logo detection, tracking, and recognition."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -331,12 +321,6 @@
       "properties": {
         "labelDetectionMode": {
           "description": "What labels should be detected with LABEL_DETECTION, in addition to video-level labels or segment-level labels. If unspecified, defaults to `SHOT_MODE`.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Detect shot-level labels.",
-            "Detect frame-level labels.",
-            "Detect both shot-level and frame-level labels."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -730,14 +714,6 @@
         },
         "pornographyLikelihood": {
           "description": "Likelihood of the pornography content..",
-          "enumDescriptions": [
-            "Unspecified likelihood.",
-            "Very unlikely.",
-            "Unlikely.",
-            "Possible.",
-            "Likely.",
-            "Very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified likelihood.",
@@ -1171,16 +1147,6 @@
         },
         "feature": {
           "description": "Specifies which feature is being tracked if the request contains more than one feature.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Label detection. Detect objects, such as dog or flower.",
-            "Shot change detection.",
-            "Explicit content detection.",
-            "Speech transcription.",
-            "OCR text detection and tracking.",
-            "Object detection and tracking.",
-            "Logo detection, tracking, and recognition."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -1434,14 +1400,6 @@
         },
         "pornographyLikelihood": {
           "description": "Likelihood of the pornography content..",
-          "enumDescriptions": [
-            "Unspecified likelihood.",
-            "Very unlikely.",
-            "Unlikely.",
-            "Possible.",
-            "Likely.",
-            "Very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified likelihood.",
@@ -1875,16 +1833,6 @@
         },
         "feature": {
           "description": "Specifies which feature is being tracked if the request contains more than one feature.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Label detection. Detect objects, such as dog or flower.",
-            "Shot change detection.",
-            "Explicit content detection.",
-            "Speech transcription.",
-            "OCR text detection and tracking.",
-            "Object detection and tracking.",
-            "Logo detection, tracking, and recognition."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -2155,14 +2103,6 @@
         },
         "pornographyLikelihood": {
           "description": "Likelihood of the pornography content..",
-          "enumDescriptions": [
-            "Unspecified likelihood.",
-            "Very unlikely.",
-            "Unlikely.",
-            "Possible.",
-            "Likely.",
-            "Very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified likelihood.",
@@ -2596,16 +2536,6 @@
         },
         "feature": {
           "description": "Specifies which feature is being tracked if the request contains more than one feature.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Label detection. Detect objects, such as dog or flower.",
-            "Shot change detection.",
-            "Explicit content detection.",
-            "Speech transcription.",
-            "OCR text detection and tracking.",
-            "Object detection and tracking.",
-            "Logo detection, tracking, and recognition."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -2876,14 +2806,6 @@
         },
         "pornographyLikelihood": {
           "description": "Likelihood of the pornography content..",
-          "enumDescriptions": [
-            "Unspecified likelihood.",
-            "Very unlikely.",
-            "Unlikely.",
-            "Possible.",
-            "Likely.",
-            "Very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified likelihood.",
@@ -3317,16 +3239,6 @@
         },
         "feature": {
           "description": "Specifies which feature is being tracked if the request contains more than one feature.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Label detection. Detect objects, such as dog or flower.",
-            "Shot change detection.",
-            "Explicit content detection.",
-            "Speech transcription.",
-            "OCR text detection and tracking.",
-            "Object detection and tracking.",
-            "Logo detection, tracking, and recognition."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",
@@ -3782,14 +3694,6 @@
         },
         "pornographyLikelihood": {
           "description": "Likelihood of the pornography content..",
-          "enumDescriptions": [
-            "Unspecified likelihood.",
-            "Very unlikely.",
-            "Unlikely.",
-            "Possible.",
-            "Likely.",
-            "Very likely."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified likelihood.",
@@ -4168,19 +4072,6 @@
         },
         "feature": {
           "description": "Specifies which feature is being tracked if the request contains more than one feature.",
-          "enumDescriptions": [
-            "Unspecified.",
-            "Label detection. Detect objects, such as dog or flower.",
-            "Shot change detection.",
-            "Explicit content detection.",
-            "Human face detection.",
-            "Speech transcription.",
-            "OCR text detection and tracking.",
-            "Object detection and tracking.",
-            "Logo detection, tracking, and recognition.",
-            "Celebrity recognition.",
-            "Person detection."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Unspecified.",

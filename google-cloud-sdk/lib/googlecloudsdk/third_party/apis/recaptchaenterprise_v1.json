@@ -174,14 +174,6 @@
         },
         "reasons": {
           "description": "Reasons contributing to the risk analysis verdict.",
-          "enumDescriptions": [
-            "Default unspecified type.",
-            "Interactions matched the behavior of an automated agent.",
-            "The event originated from an illegitimate environment.",
-            "Traffic volume from the event source is higher than normal.",
-            "Interactions with the site were significantly different than expected patterns.",
-            "Too little traffic has been received from this site thus far to generate quality risk analysis."
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -215,14 +207,6 @@
         },
         "invalidReason": {
           "description": "Reason associated with the response when valid = false.",
-          "enumDescriptions": [
-            "Default unspecified type.",
-            "If the failure reason was not accounted for.",
-            "The provided user verification token was malformed.",
-            "The user verification token had expired.",
-            "The user verification had already been seen.",
-            "The user verification token was not present."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified type.",
@@ -263,13 +247,6 @@
       "properties": {
         "annotation": {
           "description": "Required. The annotation that will be assigned to the Event.",
-          "enumDescriptions": [
-            "Default unspecified type.",
-            "Provides information that the event turned out to be legitimate.",
-            "Provides information that the event turned out to be fraudulent.",
-            "Provides information that the event was related to a login event in which the user typed the correct password.",
-            "Provides information that the event was related to a login event in which the user typed the incorrect password."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified type.",
@@ -356,12 +333,6 @@
         },
         "integrationType": {
           "description": "Required. Describes how this key is integrated with the website.",
-          "enumDescriptions": [
-            "Default type that indicates this enum hasn't been specified. This is not a valid IntegrationType, one of the other types must be specified instead.",
-            "Only used to produce scores. It doesn't display the \"I'm not a robot\" checkbox and never shows captcha challenges.",
-            "Displays the \"I'm not a robot\" checkbox and may show captcha challenges after it is checked.",
-            "Doesn't display the \"I'm not a robot\" checkbox, but may show captcha challenges after risk analysis."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default type that indicates this enum hasn't been specified. This is not a valid IntegrationType, one of the other types must be specified instead.",
@@ -378,12 +349,6 @@
         },
         "challengeSecurityPreference": {
           "description": "Settings for the frequency and difficulty at which this key triggers captcha challenges. This should only be specified for IntegrationTypes CHECKBOX and INVISIBLE.",
-          "enumDescriptions": [
-            "Default type that indicates this enum hasn't been specified.",
-            "Key tends to show fewer and easier challenges.",
-            "Key tends to show balanced (in amount and difficulty) challenges.",
-            "Key tends to show more and harder challenges."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default type that indicates this enum hasn't been specified.",

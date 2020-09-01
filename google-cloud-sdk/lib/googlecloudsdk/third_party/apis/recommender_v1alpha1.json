@@ -178,12 +178,6 @@
       "properties": {
         "category": {
           "description": "Category that is being targeted.",
-          "enumDescriptions": [
-            "Default unspecified category. Don't use directly.",
-            "Indicates a potential increase or decrease in cost.",
-            "Indicates a potential increase or decrease in security.",
-            "Indicates a potential increase or decrease in performance."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default unspecified category. Don't use directly.",
@@ -326,14 +320,6 @@
       "properties": {
         "state": {
           "description": "Output only. The state of the recommendation, Eg ACTIVE, SUCCEEDED, FAILED.",
-          "enumDescriptions": [
-            "Default state. Don't use directly.",
-            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in dismissed state. DISMISSED recommendations can be marked as ACTIVE."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default state. Don't use directly.",
@@ -464,14 +450,6 @@
         },
         "targetState": {
           "description": "State to set for recommendations matching the conditions.",
-          "enumDescriptions": [
-            "Default state. Don't use directly.",
-            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in dismissed state. DISMISSED recommendations can be marked as ACTIVE."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default state. Don't use directly.",
@@ -531,14 +509,6 @@
       "properties": {
         "targetState": {
           "description": "State to set for the recommendation. Only DISMISSED state is allowed.",
-          "enumDescriptions": [
-            "Default state. Don't use directly.",
-            "Recommendation is active and can be applied. Recommendations content can be updated by Google. ACTIVE recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in claimed state. Recommendations content is immutable and cannot be updated by Google. CLAIMED recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.",
-            "Recommendation is in succeeded state. Recommendations content is immutable and cannot be updated by Google. SUCCEEDED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in failed state. Recommendations content is immutable and cannot be updated by Google. FAILED recommendations can be marked as SUCCEEDED, or FAILED.",
-            "Recommendation is in dismissed state. DISMISSED recommendations can be marked as ACTIVE."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default state. Don't use directly.",

@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.storage.storage_url import CloudUrl
+from googlecloudsdk.command_lib.storage import storage_url as storage_url_lib
 
 
 class Resource(object):
@@ -59,6 +59,9 @@ class Resource(object):
         self.storage_url == other.storage_url
     )
 
+  def is_container(self):
+    raise NotImplementedError('is_container must be overridden.')
+
 
 class BucketResource(Resource):
   """Class representing a bucket.
@@ -79,8 +82,9 @@ class BucketResource(Resource):
   @classmethod
   def from_gcs_metadata_object(cls, provider, metadata_object):
     """Helper method to generate the instance from metadata_object."""
-    return cls(CloudUrl(scheme=provider, bucket_name=metadata_object.name),
-               metadata_object)
+    return cls(
+        storage_url_lib.CloudUrl(
+            scheme=provider, bucket_name=metadata_object.name), metadata_object)
 
   def __eq__(self, other):
     return (
@@ -88,6 +92,9 @@ class BucketResource(Resource):
         self.metadata_object == other.metadata_object and
         self.additional_metadata == other.additional_metadata
     )
+
+  def is_container(self):
+    return True
 
 
 class ObjectResource(Resource):
@@ -109,7 +116,7 @@ class ObjectResource(Resource):
   @classmethod
   def from_gcs_metadata_object(cls, provider, metadata_object):
     """Helper method to generate the instance from metadata_object."""
-    storage_url = CloudUrl(
+    storage_url = storage_url_lib.CloudUrl(
         scheme=provider,
         bucket_name=metadata_object.bucket,
         object_name=metadata_object.name,
@@ -122,6 +129,9 @@ class ObjectResource(Resource):
         self.metadata_object == other.metadata_object and
         self.additional_metadata == other.additional_metadata
     )
+
+  def is_container(self):
+    return False
 
 
 class PrefixResource(Resource):
@@ -142,12 +152,23 @@ class PrefixResource(Resource):
     super(PrefixResource, self).__init__(storage_url)
     self.prefix = prefix
 
+  def is_container(self):
+    return True
+
 
 class FileObjectResource(Resource):
   """Wrapper for a filesystem file."""
+
+  def is_container(self):
+    return False
 
 
 class FileDirectoryResource(Resource):
   """Wrapper for a File system directory."""
 
+  def is_container(self):
+    return True
 
+
+class UnknownResource(Resource):
+  """Represents a resource that may or may not exist."""

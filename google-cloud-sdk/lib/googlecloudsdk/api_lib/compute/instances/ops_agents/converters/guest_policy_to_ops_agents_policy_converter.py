@@ -110,24 +110,25 @@ def _CreateAssignment(guest_policy_assignment):
   Returns:
     assignment in ops agent policy.
   """
-  os_types = []
-  for guest_os_type in guest_policy_assignment.osTypes or []:
-    os_type = agent_policy.OpsAgentPolicy.Assignment.OsType(
-        guest_os_type.osShortName, guest_os_type.osVersion)
-    os_types.append(os_type)
-  assignment = agent_policy.OpsAgentPolicy.Assignment(
-      _CreateGroupLabels(guest_policy_assignment.groupLabels),
-      guest_policy_assignment.zones, guest_policy_assignment.instances,
-      os_types)
-  return assignment
+  return agent_policy.OpsAgentPolicy.Assignment(
+      group_labels=_CreateGroupLabels(guest_policy_assignment.groupLabels),
+      zones=guest_policy_assignment.zones,
+      instances=guest_policy_assignment.instances,
+      os_types=[
+          agent_policy.OpsAgentPolicy.Assignment.OsType(
+              t.osShortName, t.osVersion)
+          for t in guest_policy_assignment.osTypes or []])
 
 
 def ConvertGuestPolicyToOpsAgentPolicy(guest_policy):
+  """Converts OS Config guest policy to Ops Agent policy."""
   description, agent_rules = _ExtractDescriptionAndAgentRules(
       guest_policy.description)
-  ops_agent_policy = agent_policy.OpsAgentPolicy(
-      _CreateAssignment(guest_policy.assignment),
-      _CreateAgentRules(agent_rules),
-      description, guest_policy.etag, guest_policy.name,
-      guest_policy.updateTime, guest_policy.createTime)
-  return ops_agent_policy
+  return agent_policy.OpsAgentPolicy(
+      assignment=_CreateAssignment(guest_policy.assignment),
+      agent_rules=_CreateAgentRules(agent_rules),
+      description=description,
+      etag=guest_policy.etag,
+      name=guest_policy.name,
+      update_time=guest_policy.updateTime,
+      create_time=guest_policy.createTime)

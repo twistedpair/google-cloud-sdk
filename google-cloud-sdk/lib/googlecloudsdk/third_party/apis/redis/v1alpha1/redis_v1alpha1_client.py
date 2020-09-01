@@ -163,7 +163,7 @@ class RedisV1alpha1(base_api.BaseApiClient):
     )
 
     def GetAuthString(self, request, global_params=None):
-      r"""Gets the AUTH string for a Redis instance. If AUTH is not enabled for the instance the response will be empty. See go/cloud-redis-auth-design for more details. This information is not included in the details returned to GetInstance.
+      r"""Gets the AUTH string for a Redis instance. If AUTH is not enabled for the instance the response will be empty. This information is not included in the details returned to GetInstance.
 
       Args:
         request: (RedisProjectsLocationsInstancesGetAuthStringRequest) input message
