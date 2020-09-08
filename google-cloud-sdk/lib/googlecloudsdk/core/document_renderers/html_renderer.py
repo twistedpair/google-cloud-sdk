@@ -152,8 +152,8 @@ class HTMLRenderer(renderer.Renderer):
 
     m = re.match(r'(-- |\[)*'
                  '(<[^>]*>)*'
-                 '(?P<anchor>-[-_a-z0-9]+|[_A-Za-z.0-9 ][-_A-Za-z.0-9 ]*|'
-                 '[-.0-9]+)'
+                 r'(?P<anchor>-[-_a-z0-9\[\]]+|[_A-Za-z.0-9 ][-_A-Za-z.0-9 ]*|'
+                 r'[-.0-9]+)'
                  '.*',
                  name)
     if m:
@@ -432,7 +432,7 @@ class HTMLRenderer(renderer.Renderer):
 
     # Add flag local links. NOTE: --no-foo defined under --foo.
 
-    line = re.sub('(<code>)([-a-z0-9]+)(</code>)',
+    line = re.sub(r'(<code>)([-a-z0-9\[\]]+)(</code>)',
                   r'\1<a href="#\2">\2</a>\3',
                   line)
     line = re.sub('href="#--no-', 'href=#--', line)
@@ -443,7 +443,8 @@ class HTMLRenderer(renderer.Renderer):
                   r'\1<a href="#\2">\2</a>\3',
                   line)
 
-    line = re.sub(r'(<code><a href="#[-a-z0-9]+">[-a-z0-9]+(<[^>]*>|\S)*)',
+    line = re.sub(r'(<code><a href="#[-a-z0-9\[\]]+">[-a-z0-9\[\]]+'
+                  r'(<[^>]*>|\S)*)',
                   r'<span class="flag">\1</span>',
                   line)
 

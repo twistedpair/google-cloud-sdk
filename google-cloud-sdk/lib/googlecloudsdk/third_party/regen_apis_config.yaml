@@ -96,6 +96,12 @@ apis:
     v1beta1:
       discovery_doc: artifactregistry_v1beta1.json
       default: true
+    v1beta2:
+      discovery_doc: artifactregistry_v1beta2.json
+  assuredworkloads:
+    v1beta1:
+      discovery_doc: assuredworkloads_v1beta1.json
+      default: true
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
@@ -171,6 +177,7 @@ apis:
       # of a request containing (project_id + xyz) into just an Xyz object.
       unelidable_request_methods:
       - cloudbuild.projects.builds.create
+      - cloudbuild.projects.builds.cancel
     v1alpha1:
       discovery_doc: cloudbuild_v1alpha1.json
       resources:
@@ -497,6 +504,11 @@ apis:
       discovery_doc: gkehub_v1alpha1.json
     v1alpha2:
       discovery_doc: gkehub_v1alpha2.json
+      # Include projects.locations.global.memberships collection explicitly for initializeHub.
+      # This is not imported automatically since gcloud skips collections that do not have a GET method.
+      resources:
+        projects.locations.global.memberships:
+          path: projects/{projectsId}/locations/global/memberships
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
     v1:

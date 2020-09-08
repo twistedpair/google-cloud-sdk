@@ -113,6 +113,50 @@ def AddBuildConfigArgs(flag_config):
   )
 
   # Build configuration
+  build_config = AddBuildFileConfigArgs(flag_config)
+
+  docker = build_config.add_argument_group(
+      help='Dockerfile build configuration flags')
+  docker.add_argument(
+      '--dockerfile',
+      help="""\
+Path of Dockerfile to use for builds in the repository.
+
+If specified, a build config will be generated to run docker
+build using the specified file.
+
+The filename is relative to the Dockerfile directory.
+""")
+  docker.add_argument(
+      '--dockerfile-dir',
+      default='/',
+      help="""\
+Location of the directory containing the Dockerfile in the repository.
+
+The directory will also be used as the Docker build context.
+""")
+  docker.add_argument(
+      '--dockerfile-image',
+      help="""\
+Docker image name to build.
+
+If not specified, gcr.io/PROJECT/github.com/REPO_OWNER/REPO_NAME:$COMMIT_SHA will be used.
+
+Use a build configuration (cloudbuild.yaml) file for building multiple images in a single trigger.
+""")
+
+
+def AddBuildFileConfigArgs(flag_config):
+  """Adds additional argparse flags to a group for build configuration options.
+
+  Args:
+    flag_config: argparse argument group. Additional flags will be added to
+      this group to cover common build configuration settings.
+
+  Returns:
+    build_config: a build config.
+  """
+
   build_config = flag_config.add_mutually_exclusive_group(required=True)
   build_file_config = build_config.add_argument_group(
       help='Build file configuration flags')
@@ -149,35 +193,7 @@ For more details, see:
 https://cloud.google.com/cloud-build/docs/api/build-requests#substitutions
 """)
 
-  docker = build_config.add_argument_group(
-      help='Dockerfile build configuration flags')
-  docker.add_argument(
-      '--dockerfile',
-      help="""\
-Path of Dockerfile to use for builds in the repository.
-
-If specified, a build config will be generated to run docker
-build using the specified file.
-
-The filename is relative to the Dockerfile directory.
-""")
-  docker.add_argument(
-      '--dockerfile-dir',
-      default='/',
-      help="""\
-Location of the directory containing the Dockerfile in the repository.
-
-The directory will also be used as the Docker build context.
-""")
-  docker.add_argument(
-      '--dockerfile-image',
-      help="""\
-Docker image name to build.
-
-If not specified, gcr.io/PROJECT/github.com/REPO_OWNER/REPO_NAME:$COMMIT_SHA will be used.
-
-Use a build configuration (cloudbuild.yaml) file for building multiple images in a single trigger.
-""")
+  return build_config
 
 
 def ParseBuildConfigArgs(trigger, args, messages, default_image):

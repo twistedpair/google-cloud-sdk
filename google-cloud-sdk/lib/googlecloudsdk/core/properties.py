@@ -1415,12 +1415,13 @@ class _SectionAuth(_Section):
                   'google-auth. Users can use it to switch back to the old '
                   'mode if google-auth breaks users.'
     )
-    self.google_auth_allowed = self._AddBool(
-        'google_auth_allowed',
+    self.opt_out_google_auth = self._AddBool(
+        'opt_out_google_auth',
         default=False,
         hidden=True,
-        help_text='A switch to opt in a surface or a command group '
-                  'to google-auth.'
+        help_text='A switch to disable google-auth for a surface or a command '
+                  'group, in case there are some edge cases or google-auth '
+                  'does not work for some surface.'
     )
     self.disable_activate_service_account_google_auth = self._AddBool(
         'disable_activate_service_account_google_auth',
@@ -1806,6 +1807,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.apigateway = self._Add('apigateway')
     self.apigee = self._Add('apigee')
     self.appengine = self._Add('appengine')
+    self.assuredworkloads = self._Add('assuredworkloads')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.binaryauthorization = self._Add('binaryauthorization')
     self.artifactregistry = self._Add('artifactregistry')

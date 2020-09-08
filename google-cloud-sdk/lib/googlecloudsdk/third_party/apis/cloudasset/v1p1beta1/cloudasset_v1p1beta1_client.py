@@ -52,39 +52,8 @@ class CloudassetV1p1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Search(self, request, global_params=None):
-      r"""Searches IAM policies which are accessible with .getIamPolicy permission.
-
-      Args:
-        request: (CloudassetIamPoliciesSearchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SearchIamPoliciesResponse) The response message.
-      """
-      config = self.GetMethodConfig('Search')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='cloudasset.iamPolicies.search',
-        ordered_params=[],
-        path_params=[],
-        query_params=['pageSize', 'pageToken', 'query', 'scope'],
-        relative_path='v1p1beta1/iamPolicies:search',
-        request_field='',
-        request_type_name='CloudassetIamPoliciesSearchRequest',
-        response_type_name='SearchIamPoliciesResponse',
-        supports_download=False,
-    )
-
     def SearchAll(self, request, global_params=None):
-      r"""Searches all the IAM policies under a given accessible CRM scope.
-(project/folder/organization). This RPC gives callers
-especially admins the ability to search all the IAM policies under a scope,
-even if they don't have .getIamPolicy permission of all the IAM policies.
-Callers should have cloud.assets.SearchAllIamPolicies permission on the
-requested scope, otherwise it will be rejected.
+      r"""Searches all the IAM policies within a given accessible CRM scope (project/folder/organization). This RPC gives callers especially administrators the ability to search all the IAM policies within a scope, even if they don't have `.getIamPolicy` permission of all the IAM policies. Callers should have `cloud.assets.SearchAllIamPolicies` permission on the requested scope, otherwise the request will be rejected.
 
       Args:
         request: (CloudassetIamPoliciesSearchAllRequest) input message
@@ -120,39 +89,8 @@ requested scope, otherwise it will be rejected.
       self._upload_configs = {
           }
 
-    def Search(self, request, global_params=None):
-      r"""Searches resources which are accessible with .get permission.
-
-      Args:
-        request: (CloudassetResourcesSearchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SearchResourcesResponse) The response message.
-      """
-      config = self.GetMethodConfig('Search')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='cloudasset.resources.search',
-        ordered_params=[],
-        path_params=[],
-        query_params=['assetTypes', 'orderBy', 'pageSize', 'pageToken', 'query', 'scope'],
-        relative_path='v1p1beta1/resources:search',
-        request_field='',
-        request_type_name='CloudassetResourcesSearchRequest',
-        response_type_name='SearchResourcesResponse',
-        supports_download=False,
-    )
-
     def SearchAll(self, request, global_params=None):
-      r"""Searches all the resources under a given accessible CRM scope.
-(project/folder/organization). This RPC gives callers
-especially admins the ability to search all the resources under a scope,
-even if they don't have .get permission of all the resources. Callers
-should have cloud.assets.SearchAllResources permission on the requested
-scope, otherwise it will be rejected.
+      r"""Searches all the resources within a given accessible CRM scope (project/folder/organization). This RPC gives callers especially administrators the ability to search all the resources within a scope, even if they don't have `.get` permission of all the resources. Callers should have `cloud.assets.SearchAllResources` permission on the requested scope, otherwise the request will be rejected.
 
       Args:
         request: (CloudassetResourcesSearchAllRequest) input message

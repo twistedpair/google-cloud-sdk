@@ -79,7 +79,7 @@ def create(args, product_name, enum_value):
   if not args.region:
     raise RegionNotSpecified(
         'You must specify a region using the --region flag to use this '
-        'command. The region needs to match the Google App Engine region:'
+        'command. The region needs to match the Google App Engine region: '
         '--region={app_region}'.format(app_region=current_region))
 
   if current_region != args.region:

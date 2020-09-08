@@ -24,6 +24,7 @@ import collections
 from googlecloudsdk.api_lib.events import iam_util
 from googlecloudsdk.api_lib.events import trigger
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.events import exceptions
 from googlecloudsdk.command_lib.iam import iam_util as core_iam_util
@@ -43,11 +44,13 @@ def AddSourceFlag(parser):
       help='Events source kind by which to filter results.')
 
 
-def AddEventTypePositionalArg(parser):
+def AddEventTypePositionalArg(parser, release_track):
   """Adds event type positional arg."""
-  parser.add_argument(
-      'event_type',
-      help='Type of event (e.g. com.google.cloud.auditlog.event).')
+  if release_track == base.ReleaseTrack.ALPHA:
+    help_text = 'Type of event (e.g. com.google.cloud.auditlog.event).'
+  else:
+    help_text = 'Type of event (e.g. google.cloud.audit.log.v1.written).'
+  parser.add_argument('event_type', help=help_text)
 
 
 def AddTargetServiceFlag(parser, required=False):
@@ -59,12 +62,13 @@ def AddTargetServiceFlag(parser, required=False):
       'events should be received.')
 
 
-def AddEventTypeFlagArg(parser):
+def AddEventTypeFlagArg(parser, release_track):
   """Adds event type flag arg."""
-  parser.add_argument(
-      '--type',
-      required=True,
-      help='Type of event (e.g. com.google.cloud.auditlog.event).')
+  if release_track == base.ReleaseTrack.ALPHA:
+    help_text = 'Type of event (e.g. com.google.cloud.auditlog.event).'
+  else:
+    help_text = 'Type of event (e.g. google.cloud.audit.log.v1.written).'
+  parser.add_argument('--type', required=True, help=help_text)
 
 
 def AddBrokerFlag(parser):

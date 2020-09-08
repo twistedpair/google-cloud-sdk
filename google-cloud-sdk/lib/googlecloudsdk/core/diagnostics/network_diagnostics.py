@@ -52,8 +52,7 @@ def DefaultUrls():
   Returns:
     A list of urls (str) to check reachability for.
   """
-  urls = ['https://www.google.com',
-          'https://accounts.google.com',
+  urls = ['https://accounts.google.com',
           'https://cloudresourcemanager.googleapis.com/v1beta1/projects',
           'https://www.googleapis.com/auth/cloud-platform']
 

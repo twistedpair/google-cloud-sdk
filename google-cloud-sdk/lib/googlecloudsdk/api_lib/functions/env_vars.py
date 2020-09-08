@@ -18,31 +18,27 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.functions import util
 
-
-def GetFunctionEnvVarsAsDict(function):
-  if function.environmentVariables:
-    return {
-        prop.key: prop.value
-        for prop in function.environmentVariables.additionalProperties
-    }
+def GetEnvVarsAsDict(env_vars):
+  if env_vars:
+    return {prop.key: prop.value for prop in env_vars.additionalProperties}
   else:
     return {}
 
 
-def DictToEnvVarsProperty(env_vars=None):
-  """Set function environment variables.
+def DictToEnvVarsProperty(env_vars_type_class=None, env_vars=None):
+  """Sets environment variables.
 
   Args:
+    env_vars_type_class: type class of environment variables
     env_vars: a dict of environment variables
+
   Returns:
-    An EnvironmentVariablesValue with the env vars from env_vars
+    An message with the environment variables from env_vars
   """
-  if not env_vars:
+  if not env_vars_type_class or not env_vars:
     return None
-  messages = util.GetApiMessagesModule()
-  env_vars_class = messages.CloudFunction.EnvironmentVariablesValue
-  return env_vars_class(additionalProperties=[
-      env_vars_class.AdditionalProperty(key=key, value=value)
-      for key, value in sorted(env_vars.items())])
+  return env_vars_type_class(additionalProperties=[
+      env_vars_type_class.AdditionalProperty(key=key, value=value)
+      for key, value in sorted(env_vars.items())
+  ])

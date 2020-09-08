@@ -70,6 +70,8 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -113,9 +115,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -303,10 +306,12 @@ class Instance(_messages.Message):
       DISK_TYPE_UNSPECIFIED: Disk type not set.
       PD_STANDARD: Standard persistent disk type.
       PD_SSD: SSD persistent disk type.
+      PD_BALANCED: Balanced persistent disk type.
     """
     DISK_TYPE_UNSPECIFIED = 0
     PD_STANDARD = 1
     PD_SSD = 2
+    PD_BALANCED = 3
 
   class DataDiskTypeValueValuesEnum(_messages.Enum):
     r"""Input only. The type of the data disk attached to this instance,
@@ -316,10 +321,12 @@ class Instance(_messages.Message):
       DISK_TYPE_UNSPECIFIED: Disk type not set.
       PD_STANDARD: Standard persistent disk type.
       PD_SSD: SSD persistent disk type.
+      PD_BALANCED: Balanced persistent disk type.
     """
     DISK_TYPE_UNSPECIFIED = 0
     PD_STANDARD = 1
     PD_SSD = 2
+    PD_BALANCED = 3
 
   class DiskEncryptionValueValuesEnum(_messages.Enum):
     r"""Input only. Disk encryption method used on the boot and data disks,
@@ -348,6 +355,7 @@ class Instance(_messages.Message):
       DELETED: The instance is deleted.
       UPGRADING: The instance is upgrading.
       INITIALIZING: The instance is being created.
+      REGISTERING: The instance is getting registered.
     """
     STATE_UNSPECIFIED = 0
     STARTING = 1
@@ -358,6 +366,7 @@ class Instance(_messages.Message):
     DELETED = 6
     UPGRADING = 7
     INITIALIZING = 8
+    REGISTERING = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -441,14 +450,16 @@ class IsInstanceUpgradeableResponse(_messages.Message):
   r"""Response for checking if a notebook instance is upgradeable.
 
   Fields:
+    upgradeInfo: Additional information about upgrade.
     upgradeVersion: The version this instance will be upgraded to if calling
       the upgrade endpoint. This field will only be populated if field
       upgradeable is true.
     upgradeable: If an instance is upgradeable.
   """
 
-  upgradeVersion = _messages.StringField(1)
-  upgradeable = _messages.BooleanField(2)
+  upgradeInfo = _messages.StringField(1)
+  upgradeVersion = _messages.StringField(2)
+  upgradeable = _messages.BooleanField(3)
 
 
 class ListEnvironmentsResponse(_messages.Message):

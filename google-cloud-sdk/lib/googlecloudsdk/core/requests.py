@@ -19,12 +19,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import socket
+
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
+from googlecloudsdk.core.util import http_proxy_types
 
 import requests
 import six
 from six.moves import urllib
+import socks
 
 
 def GetSession(timeout='unset', response_encoding=None, ca_certs=None):
@@ -55,6 +59,86 @@ def GetSession(timeout='unset', response_encoding=None, ca_certs=None):
   return http_client
 
 
+class HTTPAdapter(requests.adapters.HTTPAdapter):
+  """Transport adapter for requests.
+
+  Transport adapters provide an interface to extend the default behavior of the
+  requests library using the full power of the underlying urrlib3 library.
+
+  See https://requests.readthedocs.io/en/master/user/advanced/
+      #transport-adapters for more information about adapters.
+
+  Attributes:
+    rdns: If True, DNS queries will not be performed locally, and instead handed
+        to the proxy to resolve.
+  """
+
+  def __init__(self, rdns, *args, **kwargs):
+    self.rdns = rdns
+    super(HTTPAdapter, self).__init__(*args, **kwargs)
+
+  def send(self, request, **kwargs):
+    if not self.rdns:
+      connection_pool_kwargs = self.poolmanager.connection_pool_kw
+
+      result = urllib.parse.urlparse(request.url)
+      # Resolve DNS locally using first IP
+      resolved_ip = socket.getaddrinfo(result.hostname, None)[0][4][0]
+
+      request.url = request.url.replace(result.hostname, resolved_ip, 1)
+      connection_pool_kwargs['server_hostname'] = result.hostname  # SNI
+      connection_pool_kwargs['assert_hostname'] = result.hostname
+
+      # overwrite the host header
+      request.headers['Host'] = result.hostname
+
+    return super(HTTPAdapter, self).send(request, **kwargs)
+
+
+def GetProxyInfo():
+  """Returns the proxy string for use by requests from gcloud properties.
+
+  See https://requests.readthedocs.io/en/master/user/advanced/#proxies.
+  """
+  proxy_type = properties.VALUES.proxy.proxy_type.Get()
+  proxy_address = properties.VALUES.proxy.address.Get()
+  proxy_port = properties.VALUES.proxy.port.GetInt()
+
+  proxy_prop_set = len(
+      [f for f in (proxy_type, proxy_address, proxy_port) if f])
+  if proxy_prop_set > 0 and proxy_prop_set != 3:
+    raise properties.InvalidValueError(
+        'Please set all or none of the following properties: '
+        'proxy/type, proxy/address and proxy/port')
+
+  if not proxy_prop_set:
+    return
+
+  proxy_rdns = properties.VALUES.proxy.rdns.GetBool()
+  proxy_user = properties.VALUES.proxy.username.Get()
+  proxy_pass = properties.VALUES.proxy.password.Get()
+
+  proxy_type = http_proxy_types.PROXY_TYPE_MAP[proxy_type]
+  if proxy_type == socks.PROXY_TYPE_SOCKS4:
+    proxy_scheme = 'socks4a' if proxy_rdns else 'socks4'
+  elif proxy_type == socks.PROXY_TYPE_SOCKS5:
+    proxy_scheme = 'socks5h' if proxy_rdns else 'socks5'
+  elif proxy_type == socks.PROXY_TYPE_HTTP:
+    proxy_scheme = 'https'
+  elif proxy_type == socks.PROXY_TYPE_HTTP_NO_TUNNEL:
+    proxy_scheme = 'http'
+  else:
+    raise ValueError('Unsupported proxy type: {}'.format(proxy_type))
+
+  if proxy_user or proxy_pass:
+    proxy_auth = ':'.join(x or '' for x in (proxy_user, proxy_pass))
+    proxy_auth += '@'
+  else:
+    proxy_auth = ''
+  return '{}://{}{}:{}'.format(proxy_scheme, proxy_auth, proxy_address,
+                               proxy_port)
+
+
 def Session(
     timeout=None,
     ca_certs=None,
@@ -70,13 +154,24 @@ def Session(
   Returns: A requests.Session subclass.
   """
   session = _Session(timeout=timeout)
-  # TODO(b/157164674) - support proxies
+
+  proxy_rdns = True
+  proxy_info = GetProxyInfo()
+  if proxy_info:
+    proxy_rdns = properties.VALUES.proxy.rdns.GetBool()
+    session.proxies = {
+        'http': proxy_info,
+        'https': proxy_info,
+    }
+  adapter = HTTPAdapter(proxy_rdns)
+
   if disable_ssl_certificate_validation:
     session.verify = False
   elif ca_certs:
     session.verify = ca_certs
 
   # TODO(b/157164006) - Support mTLS
+  session.mount('https://', adapter)
   return session
 
 

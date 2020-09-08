@@ -604,6 +604,18 @@ def AddUriArgument(parser, help_text):
   parser.add_argument('uri', help=help_text)
 
 
+def AddOffloadArgument(parser):
+  """Add the 'offload' argument to the parser."""
+  parser.add_argument(
+      '--offload',
+      action='store_true',
+      help=(
+          'Offload an export to a temporary instance. Doing so reduces strain '
+          'on source instances and allows other operations to be performed '
+          'while the export is in progress.'
+      ))
+
+
 DEFAULT_DATABASE_IMPORT_HELP_TEXT = (
     'Database to which the import is made. If not set, it is assumed that '
     'the database is specified in the file to be imported. If your SQL '

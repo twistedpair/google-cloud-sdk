@@ -118,7 +118,7 @@ class CloudUrl(StorageUrl):
     self.scheme = scheme if scheme else None
     self.bucket_name = bucket_name if bucket_name else None
     self.object_name = object_name if object_name else None
-    self.generation = generation if generation else None
+    self.generation = str(generation) if generation else None
     self._validate_scheme()
     self._validate_object_name()
 

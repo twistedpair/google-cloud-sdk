@@ -19,7 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
-def SqlExportContext(sql_messages, uri, database=None, table=None):
+def SqlExportContext(sql_messages,
+                     uri,
+                     database=None,
+                     table=None,
+                     offload=False):
   """Generates the ExportContext for the given args, for exporting to SQL.
 
   Args:
@@ -28,6 +32,7 @@ def SqlExportContext(sql_messages, uri, database=None, table=None):
     database: The list of databases to export from; the output of the
       '--database' flag.
     table: The list of tables to export from; the output of the '--table' flag.
+    offload: bool, The export offload flag.
 
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
@@ -36,12 +41,17 @@ def SqlExportContext(sql_messages, uri, database=None, table=None):
       kind='sql#exportContext',
       uri=uri,
       databases=database or [],
+      offload=offload,
       fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.SQL,
       sqlExportOptions=sql_messages.ExportContext.SqlExportOptionsValue(
           tables=table or []))
 
 
-def CsvExportContext(sql_messages, uri, database=None, query=None):
+def CsvExportContext(sql_messages,
+                     uri,
+                     database=None,
+                     query=None,
+                     offload=False):
   """Generates the ExportContext for the given args, for exporting to CSV.
 
   Args:
@@ -51,6 +61,7 @@ def CsvExportContext(sql_messages, uri, database=None, query=None):
       '--database' flag.
     query: The query string to use to generate the table; the output of the
       '--query' flag.
+    offload: bool, The export offload flag.
 
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
@@ -59,6 +70,7 @@ def CsvExportContext(sql_messages, uri, database=None, query=None):
       kind='sql#exportContext',
       uri=uri,
       databases=database or [],
+      offload=offload,
       fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.CSV,
       csvExportOptions=sql_messages.ExportContext.CsvExportOptionsValue(
           selectQuery=query))

@@ -136,7 +136,9 @@ def CreateWebSocketConnectUrl(tunnel_target):
 def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):
   """Create Reconnect URL for WebSocket connection."""
   return _CreateWebSocketUrl(RECONNECT_ENDPOINT,
-                             {'sid': sid, 'ack': ack_bytes},
+                             {'sid': sid,
+                              'ack': ack_bytes,
+                              'zone': tunnel_target.zone},
                              tunnel_target.url_override)
 
 

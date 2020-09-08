@@ -27,11 +27,11 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
 
 
-def GetClientInstance(version='v1alpha1', no_http=False):
+def GetClientInstance(version='v1beta', no_http=False):
   return apis.GetClientInstance('apigateway', version, no_http=no_http)
 
 
-def GetMessagesModule(version='v1alpha1'):
+def GetMessagesModule(version='v1beta'):
   return apis.GetMessagesModule('apigateway', version)
 
 

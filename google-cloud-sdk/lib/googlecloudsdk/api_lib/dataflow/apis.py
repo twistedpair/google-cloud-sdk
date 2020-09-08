@@ -143,6 +143,35 @@ class Jobs(object):
       raise exceptions.HttpException(error)
 
   @staticmethod
+  def ResumeUnsupportedSDK(job_id,
+                           experiment_with_token,
+                           project_id=None,
+                           region_id=None):
+    """Resumes a job by calling the Jobs.Update method.
+
+    Args:
+      job_id: Identifies a single job.
+      experiment_with_token: The resume token unique to the job prefixed with
+        the experiment key.
+      project_id: The project which owns the job.
+      region_id: The regional endpoint where the job lives.
+
+    Returns:
+      (Job)
+    """
+    project_id = project_id or GetProject()
+    region_id = region_id or DATAFLOW_API_DEFAULT_REGION
+    environment = GetMessagesModule().Environment(
+        experiments=[experiment_with_token])
+    job = GetMessagesModule().Job(environment=environment)
+    request = GetMessagesModule().DataflowProjectsLocationsJobsUpdateRequest(
+        jobId=job_id, location=region_id, projectId=project_id, job=job)
+    try:
+      return Jobs.GetService().Update(request)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error)
+
+  @staticmethod
   def Snapshot(job_id,
                project_id=None,
                region_id=None,
@@ -726,7 +755,7 @@ class Templates(object):
       build_config = submit_util.CreateBuildConfig(
           image_gcr_path, False, messages, None,
           'cloudbuild.yaml', True, False, temp_dir, None, None, None,
-          None, None)
+          None, None, None)
       log.status.Print('Pushing flex template container image to GCR...')
 
       submit_util.Build(messages, False, build_config)

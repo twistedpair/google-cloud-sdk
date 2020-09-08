@@ -94,7 +94,9 @@ def AddAutoscalerArgs(
     parser,
     autoscaling_file_enabled=False,
     stackdriver_metrics_flags=False,
-    predictive=False):
+    predictive=False,
+    scheduled=False,
+    patch_args=False):
   """Adds commandline arguments to parser."""
   parser.add_argument(
       '--cool-down-period',
@@ -106,13 +108,7 @@ def AddAutoscalerArgs(
             'reliable. The default is 60s. See $ gcloud topic datetimes '
             'for information on duration formats.'))
   parser.add_argument('--description', help='Notes about Autoscaler.')
-  parser.add_argument('--min-num-replicas',
-                      type=arg_parsers.BoundedInt(0, sys.maxsize),
-                      help='Minimum number of replicas Autoscaler will set.')
-  parser.add_argument('--max-num-replicas',
-                      type=arg_parsers.BoundedInt(0, sys.maxsize),
-                      required=not autoscaling_file_enabled,
-                      help='Maximum number of replicas Autoscaler will set.')
+  AddMinMaxControl(parser, max_required=not autoscaling_file_enabled)
   parser.add_argument('--scale-based-on-cpu',
                       action='store_true',
                       help='Autoscaler will be based on CPU utilization.')
@@ -223,6 +219,20 @@ Mutually exclusive with `--update-stackdriver-metric`.
   if predictive:
     AddPredictiveAutoscaling(parser)
 
+  if scheduled:
+    AddScheduledAutoscaling(parser, patch_args)
+
+
+def AddMinMaxControl(parser, max_required=True):
+  """Adds min and max num replicas controls to a given parser."""
+  parser.add_argument('--min-num-replicas',
+                      type=arg_parsers.BoundedInt(0, sys.maxsize),
+                      help='Minimum number of replicas Autoscaler will set.')
+  parser.add_argument('--max-num-replicas',
+                      type=arg_parsers.BoundedInt(0, sys.maxsize),
+                      required=max_required,
+                      help='Maximum number of replicas Autoscaler will set.')
+
 
 def GetModeFlag():
   # Can't use a ChoiceEnumMapper because we don't have access to the "messages"
@@ -317,6 +327,120 @@ def AddPredictiveAutoscaling(parser):
       },
       help='Indicates which method of prediction is used for CPU utilization metric, if any.'
   )
+
+
+def AddScheduledAutoscaling(parser, patch_args):
+  """Add parameters controlling scheduled autoscaling."""
+  if patch_args:
+    arg_group = parser.add_group(mutex=True)
+    arg_group_config = parser.add_group()
+    arg_group.add_argument(
+        '--set-schedule',
+        help='A unique name of the scaling schedule to be configured.')
+    arg_group.add_argument(
+        '--update-schedule',
+        help='A unique name of the scaling schedule to be updated.')
+    arg_group.add_argument(
+        '--remove-schedule',
+        help="""\
+          A unique name of the scaling schedule to be removed.
+
+          Be careful with this action as scaling schedule deletion cannot be
+          undone.
+
+          You can delete any schedule regardless of its status. If you delete
+          a scaling schedule that is currently active, the deleted scaling
+          schedule will stop being effective immediately after it is deleted.
+          If this results in removing instances from MIG, the autoscaler will
+          respect the 10-minute stabilization period and if configured also
+          scale-in controls. This ensures you don't accidentally lose capacity
+          immediately after the scaling schedule ends.
+          """)
+    arg_group.add_argument(
+        '--enable-schedule',
+        help='A unique name of the scaling schedule to be enabled.')
+    arg_group.add_argument(
+        '--disable-schedule',
+        help="""\
+          A unique name of the scaling schedule to be disabled.
+
+          When the scaling schedule is disabled its configuration persists but
+          the scaling schedule itself never becomes active. If you disable a
+          scaling schedule that is currently active the deleted scaling
+          schedule will stop being effective immediately after it moves into
+          DISABLED state. If this results in removing instances from
+          MIG, the autoscaler will respect the 10-minute stabilization period
+          and if configured also scale-in controls. This ensures you don't
+          accidentally lose capacity immediately after the scaling schedule
+          ends.
+          """)
+    AddScheduledAutoscalingConfigurationArguments(arg_group_config)
+  else:
+    arg_group = parser
+    parser.add_argument(
+        '--set-schedule',
+        help='A unique name of the scaling schedule.')
+    AddScheduledAutoscalingConfigurationArguments(parser.add_group())
+
+
+def AddScheduledAutoscalingConfigurationArguments(arg_group):
+  """Add arguments that are common to adding or modifying a scaling schedule."""
+  arg_group.add_argument(
+      '--schedule-cron',
+      help="""\
+        Start time of the scaling schedule in cron format.
+
+        This is when an autoscaler will start creating new VMs if MIG size is
+        lower than the minimum number of instances. Set the start time to allow
+        enough time for new VMs to boot and initialize. For example if your
+        workload takes 10 minutes from VM creation to start serving then set
+        start time 10 minutes earlier than the time you need VMs to be ready.
+        """)
+  arg_group.add_argument(
+      '--schedule-duration-sec',
+      type=arg_parsers.BoundedInt(300, sys.maxsize),
+      help="""\
+        How long should the scaling schedule be active, measured in seconds.
+
+        Minimum duration is 5 minutes. Scaling schedule is active from its start
+        time and for configured duration. During this time autoscaler will scale
+        MIG to have at least as many VMs as defined by the minimum number of
+        instances. After specified duration if there is no need to maintain
+        capacity, the autoscaler will start removing instances after a 10
+        minutes stabilization period and (if configured) following scale-in
+        controls.
+        """)
+  arg_group.add_argument(
+      '--schedule-min-required-replicas',
+      type=arg_parsers.BoundedInt(0, sys.maxsize),
+      help="""\
+        How many VMs autoscaler should ensure for the duration of this scaling
+        schedule.
+
+        Autoscaler will provide at least this number of instances when the
+        scaling schedule is active. MIG can have more VMs if there are other
+        scaling schedules active with higher instance count or if autoscaling
+        policy (for example on CPU) requires more instances to meet its target.
+
+        This configuration does not change autoscaling minimum and maximum
+        instance limits which are always in effect. Autoscaler will not create
+        more than the maximum number of instances configured for MIG.
+        """)
+  arg_group.add_argument(
+      '--schedule-time-zone',
+      help="""\
+        Location of the scaling schedule's start time.
+
+        It should be provided provided as a location from the IANA tz database
+        (for example Europe/Paris). It will consider daylight saving time (DST)
+        adjustments. If no time zone is provided UTC is used as a default.
+
+        See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for
+        the list of valid timezones.
+        """)
+  arg_group.add_argument(
+      '--schedule-description',
+      help='A verbose description of the scaling schedule.')
 
 
 def ValidateConflictsWithAutoscalingFile(args, conflicting_args):
@@ -877,7 +1001,146 @@ def BuildScaleIn(args, messages):
         timeWindowSec=args.scale_in_control.get('time-window'))
 
 
-def _BuildAutoscalerPolicy(args, messages, original, predictive=False):
+def BuildScheduled(args, messages):
+  """Builds AutoscalingPolicyScalingSchedules.
+
+  Args:
+    args: command line arguments.
+    messages: module containing message classes.
+  Returns:
+    Dict containing an AutoscalingPolicyScalingSchedule message object.
+
+  if getattr(args, 'enable_schedule', None) is not None:
+    return messages.AutoscalingPolicy.ScalingSchedulesValue(
+        additionalProperties=[
+            scaling_schedule_wrapper(
+                key=args.enable_schedule,
+                value=messages.AutoscalingPolicyScalingSchedule(
+                    disabled=False))])
+  if getattr(args, 'disable_schedule', None) is not None:
+    return messages.AutoscalingPolicy.ScalingSchedulesValue(
+        additionalProperties=[
+            scaling_schedule_wrapper(
+                key=args.disable_schedule,
+                value=messages.AutoscalingPolicyScalingSchedule(
+                    disabled=True))])
+  if getattr(args, 'remove_schedule', None) is not None:
+    return messages.AutoscalingPolicy.ScalingSchedulesValue(
+        additionalProperties=[
+            scaling_schedule_wrapper(
+                key=args.remove_schedule,
+                value=messages.AutoscalingPolicyScalingSchedule())])
+  if getattr(args, 'set_schedule', None) is not None:
+    policy_name = args.set_schedule
+    required = {'schedule_cron', 'schedule_duration_sec',
+                'schedule_min_required_replicas'}
+    # Set-shedule should clear pre-existing fields, so we set them to None.
+    scaling_schedule = {field: None for field in field_mapping.values()}
+  else:
+    policy_name = args.update_schedule
+    required = set()
+    scaling_schedule = {}
+
+  for arg_attr, field in six.iteritems(field_mapping):
+    arg = getattr(args, arg_attr, None)
+    if arg is not None:
+      scaling_schedule[field] = arg
+    elif arg_attr in required:
+      raise InvalidArgumentError(
+          '--set-schedule argument requires --schedule-duration-sec, '
+          '--schedule-cron, and --schedule-min-required-replicas to be '
+          'specified.')
+
+  return messages.AutoscalingPolicy.ScalingSchedulesValue(
+      additionalProperties=[
+          scaling_schedule_wrapper(
+              key=policy_name,
+              value=messages.AutoscalingPolicyScalingSchedule(
+                  **scaling_schedule))])
+
+  Raises:
+    InvalidArgumentError:  if more than one of --scaling-schedule,
+    --update-schedule, --remove-schedule,
+    --enable-schedule, --disable-schedule is specified.
+  """
+  # The following method uses getattr insead of args.IsSpecified because the
+  # latter doesn't work before the parameter is available in GA, raising
+  # googlecloudsdk.calliope.parser_errors.UnknownDestinationException.
+  mutex_group = {'set_schedule', 'update_schedule', 'remove_schedule',
+                 'enable_schedule', 'disable_schedule'}
+  count = 0
+  for possitble_argument in mutex_group:
+    if getattr(args, possitble_argument, None) is not None:
+      count += 1
+  if count == 0:
+    return None
+  if count > 1:
+    raise InvalidArgumentError(
+        '--set-schedule, --update-schedule, --remove-schedule, '
+        '--enable-schedule, --disable-schedule are mutually exclusive, only '
+        'one can be specified.')
+
+  scaling_schedule_wrapper = (messages.AutoscalingPolicy.
+                              ScalingSchedulesValue.AdditionalProperty)
+  field_mapping = {
+      'schedule_cron': 'schedule',
+      'schedule_duration_sec': 'durationSec',
+      'schedule_min_required_replicas': 'minRequiredReplicas',
+      'schedule_time_zone': 'timeZone',
+      'schedule_description': 'description',
+  }
+
+  if getattr(args, 'enable_schedule', None) is not None:
+    return messages.AutoscalingPolicy.ScalingSchedulesValue(
+        additionalProperties=[
+            scaling_schedule_wrapper(
+                key=args.enable_schedule,
+                value=messages.AutoscalingPolicyScalingSchedule(
+                    disabled=False))])
+  if getattr(args, 'disable_schedule', None) is not None:
+    return messages.AutoscalingPolicy.ScalingSchedulesValue(
+        additionalProperties=[
+            scaling_schedule_wrapper(
+                key=args.disable_schedule,
+                value=messages.AutoscalingPolicyScalingSchedule(
+                    disabled=True))])
+  if getattr(args, 'remove_schedule', None) is not None:
+    return messages.AutoscalingPolicy.ScalingSchedulesValue(
+        additionalProperties=[
+            scaling_schedule_wrapper(
+                key=args.remove_schedule,
+                value=messages.AutoscalingPolicyScalingSchedule())])
+  if getattr(args, 'set_schedule', None) is not None:
+    policy_name = args.set_schedule
+    required = {'schedule_cron', 'schedule_duration_sec',
+                'schedule_min_required_replicas'}
+    # Set-shedule should clear pre-existing fields, so we set them to None.
+    scaling_schedule = {field: None for field in field_mapping.values()}
+  else:
+    policy_name = args.update_schedule
+    required = set()
+    scaling_schedule = {}
+
+  for arg_attr, field in six.iteritems(field_mapping):
+    arg = getattr(args, arg_attr, None)
+    if arg is not None:
+      scaling_schedule[field] = arg
+    elif arg_attr in required:
+      raise InvalidArgumentError(
+          '--set-schedule argument requires --schedule-duration-sec, '
+          '--schedule-cron, and --schedule-min-required-replicas to be '
+          'specified.')
+
+  return messages.AutoscalingPolicy.ScalingSchedulesValue(
+      additionalProperties=[
+          scaling_schedule_wrapper(
+              key=policy_name,
+              value=messages.AutoscalingPolicyScalingSchedule(
+                  **scaling_schedule))])
+
+
+def _BuildAutoscalerPolicy(args, messages, original, predictive=False,
+                           scheduled=False):
   """Builds AutoscalingPolicy from args.
 
   Args:
@@ -885,7 +1148,9 @@ def _BuildAutoscalerPolicy(args, messages, original, predictive=False):
     messages: module containing message classes.
     original: original autoscaler message.
     predictive: bool, whether to inclue the
-      `autoscalingPolicy.cpuUtilization.predictiveMethod' field in the message.
+      `autoscalingPolicy.cpuUtilization.predictiveMethod` field in the message.
+    scheduled: bool, whether to include the
+      `autoscalingPolicy.scalingSchedules` field in the message.
   Returns:
     AutoscalingPolicy message object.
   """
@@ -901,6 +1166,8 @@ def _BuildAutoscalerPolicy(args, messages, original, predictive=False):
   }
   policy_dict['mode'] = _BuildMode(args, messages, original)
   policy_dict['scaleInControl'] = BuildScaleIn(args, messages)
+  if scheduled:
+    policy_dict['scalingSchedules'] = BuildScheduled(args, messages)
 
   return messages.AutoscalingPolicy(
       **dict((key, value) for key, value in six.iteritems(policy_dict)
@@ -937,14 +1204,16 @@ def BuildAutoscaler(args,
                     igm_ref,
                     name,
                     original,
-                    predictive=False):
+                    predictive=False,
+                    scheduled=False):
   """Builds autoscaler message protocol buffer."""
   autoscaler = messages.Autoscaler(
       autoscalingPolicy=_BuildAutoscalerPolicy(
           args,
           messages,
           original,
-          predictive=predictive),
+          predictive=predictive,
+          scheduled=scheduled),
       description=args.description,
       name=name,
       target=igm_ref.SelfLink(),

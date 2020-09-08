@@ -685,6 +685,7 @@ class ClusterUpdate(_messages.Message):
       sNAT for this cluster.
     desiredEnableGvnic: Enable or disable gvnic on this cluster. This field is
       not yet used.
+    desiredGkeOidcConfig: Security message for security related configuration
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image.
     desiredImageProject: The project containing the desired image to use for
@@ -798,30 +799,31 @@ class ClusterUpdate(_messages.Message):
   desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 6)
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 7)
   desiredEnableGvnic = _messages.BooleanField(8)
-  desiredImage = _messages.StringField(9)
-  desiredImageProject = _messages.StringField(10)
-  desiredImageType = _messages.StringField(11)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 12)
-  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 13)
-  desiredLocations = _messages.StringField(14, repeated=True)
-  desiredLoggingService = _messages.StringField(15)
-  desiredMaster = _messages.MessageField('Master', 16)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 17)
-  desiredMasterVersion = _messages.StringField(18)
-  desiredMonitoringService = _messages.StringField(19)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 20)
-  desiredNodePoolId = _messages.StringField(21)
-  desiredNodeVersion = _messages.StringField(22)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 23)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 24)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 25)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 26)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 27)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 28)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 29)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 30)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 31)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 32)
+  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 9)
+  desiredImage = _messages.StringField(10)
+  desiredImageProject = _messages.StringField(11)
+  desiredImageType = _messages.StringField(12)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 13)
+  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 14)
+  desiredLocations = _messages.StringField(15, repeated=True)
+  desiredLoggingService = _messages.StringField(16)
+  desiredMaster = _messages.MessageField('Master', 17)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 18)
+  desiredMasterVersion = _messages.StringField(19)
+  desiredMonitoringService = _messages.StringField(20)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 21)
+  desiredNodePoolId = _messages.StringField(22)
+  desiredNodeVersion = _messages.StringField(23)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 24)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 25)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 26)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 27)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 28)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 29)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 30)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 31)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 32)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 33)
 
 
 class CompleteIPRotationRequest(_messages.Message):

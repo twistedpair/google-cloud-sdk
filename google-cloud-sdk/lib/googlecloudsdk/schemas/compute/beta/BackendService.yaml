@@ -74,6 +74,12 @@ properties:
     type: array
     items:
       type: string
+  customResponseHeaders:
+    description: |-
+      Headers that the HTTP/S load balancer should add to proxied      responses.
+    type: array
+    items:
+      type: string
   description:
     description: |-
       An optional description of this resource. Provide this property
@@ -212,6 +218,7 @@ properties:
       load balancer or for Traffic Director for more information.
     type: string
     enum:
+    - GRPC
     - HTTP
     - HTTP2
     - HTTPS
@@ -258,6 +265,7 @@ properties:
     type: string
     enum:
     - CLIENT_IP
+    - CLIENT_IP_NO_DESTINATION
     - CLIENT_IP_PORT_PROTO
     - CLIENT_IP_PROTO
     - GENERATED_COOKIE

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
+
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -346,11 +348,41 @@ def ApplySubsettingArgs(client, args, backend_service):
     backend_service.subsetting = client.messages.Subsetting(**subsetting_args)
 
 
+def GetNegativeCachingPolicy(client, args, backend_service):
+  """Returns the negative caching policy.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service object. If the backend service object
+      contains a negative caching policy already, it is used as the base to
+      apply changes based on args.
+
+  Returns:
+    The negative caching policy.
+  """
+  negative_caching_policy = None
+  if args.negative_caching_policy:
+    negative_caching_policy = []
+    for code, ttl in args.negative_caching_policy.items():
+      negative_caching_policy.append(
+          client.messages.BackendServiceCdnPolicyNegativeCachingPolicy(
+              code=code, ttl=ttl))
+  else:
+    if (backend_service.cdnPolicy is not None and
+        backend_service.cdnPolicy.negativeCachingPolicy is not None):
+      negative_caching_policy = backend_service.cdnPolicy.negativeCachingPolicy
+
+  return negative_caching_policy
+
+
 def ApplyCdnPolicyArgs(client,
                        args,
                        backend_service,
                        is_update=False,
-                       apply_signed_url_cache_max_age=False):
+                       apply_signed_url_cache_max_age=False,
+                       cleared_fields=None,
+                       support_flexible_cache_step_one=False):
   """Applies the CdnPolicy arguments to the specified backend service.
 
   If there are no arguments related to CdnPolicy, the backend service remains
@@ -360,26 +392,74 @@ def ApplyCdnPolicyArgs(client,
     client: The client used by gcloud.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service object.
-    is_update: True if this is called on behalf of an update command instead
-    of a create command, False otherwise.
+    is_update: True if this is called on behalf of an update command instead of
+      a create command, False otherwise.
     apply_signed_url_cache_max_age: If True, also adds the
-    signedUrlCacheMaxAgeSec parameter to the CdnPolicy if present in the input
-    arguments.
+      signedUrlCacheMaxAgeSec parameter to the CdnPolicy if present in the input
+      arguments.
+    cleared_fields: Reference to list with fields that should be cleared. Valid
+      only for update command.
+    support_flexible_cache_step_one: If True then maps Flexible Cache Control
+    properties from milestone 1: cache mode, max ttl, default ttl, client ttl,
+      negative caching and negative caching policy
   """
-  cdn_policy_args = {}
+  if backend_service.cdnPolicy is not None:
+    cdn_policy = encoding.CopyProtoMessage(backend_service.cdnPolicy)
+  else:
+    cdn_policy = client.messages.BackendServiceCdnPolicy()
 
   add_cache_key_policy = (HasCacheKeyPolicyArgsForUpdate(args) if is_update else
                           HasCacheKeyPolicyArgsForCreate(args))
   if add_cache_key_policy:
-    cdn_policy_args['cacheKeyPolicy'] = GetCacheKeyPolicy(
-        client, args, backend_service)
+    cdn_policy.cacheKeyPolicy = GetCacheKeyPolicy(client, args, backend_service)
   if apply_signed_url_cache_max_age and args.IsSpecified(
       'signed_url_cache_max_age'):
-    cdn_policy_args['signedUrlCacheMaxAgeSec'] = args.signed_url_cache_max_age
+    cdn_policy.signedUrlCacheMaxAgeSec = args.signed_url_cache_max_age
 
-  if cdn_policy_args:
-    backend_service.cdnPolicy = client.messages.BackendServiceCdnPolicy(
-        **cdn_policy_args)
+  if support_flexible_cache_step_one:
+    if args.cache_mode:
+      cdn_policy.cacheMode = client.messages.BackendServiceCdnPolicy.\
+        CacheModeValueValuesEnum(args.cache_mode)
+    if args.client_ttl:
+      cdn_policy.clientTtl = args.client_ttl
+    if args.default_ttl:
+      cdn_policy.defaultTtl = args.default_ttl
+    if args.max_ttl:
+      cdn_policy.maxTtl = args.max_ttl
+    if args.negative_caching is not None:
+      cdn_policy.negativeCaching = args.negative_caching
+    negative_caching_policy = GetNegativeCachingPolicy(client, args,
+                                                       backend_service)
+    if negative_caching_policy is not None:
+      cdn_policy.negativeCachingPolicy = negative_caching_policy
+
+    if is_update:
+      # Takes care of resetting fields that are invalid for given cache modes.
+      should_clean_client_ttl = args.cache_mode == 'USE_ORIGIN_HEADERS' and \
+                                args.client_ttl is None
+      if args.no_client_ttl or should_clean_client_ttl:
+        cleared_fields.append('cdnPolicy.clientTtl')
+        cdn_policy.clientTtl = None
+
+      should_clean_default_ttl = args.cache_mode == 'USE_ORIGIN_HEADERS' and \
+                                 args.default_ttl is None
+      if args.no_default_ttl or should_clean_default_ttl:
+        cleared_fields.append('cdnPolicy.defaultTtl')
+        cdn_policy.defaultTtl = None
+
+      should_clean_max_ttl = (args.cache_mode == 'USE_ORIGIN_HEADERS' or \
+                 args.cache_mode == 'FORCE_CACHE_ALL') and args.max_ttl is None
+      if args.no_max_ttl or should_clean_max_ttl:
+        cleared_fields.append('cdnPolicy.maxTtl')
+        cdn_policy.maxTtl = None
+
+      if args.no_negative_caching_policies or \
+          (args.negative_caching is not None and not args.negative_caching):
+        cleared_fields.append('cdnPolicy.negativeCachingPolicy')
+        cdn_policy.negativeCachingPolicy = []
+
+  if cdn_policy != client.messages.BackendServiceCdnPolicy():
+    backend_service.cdnPolicy = cdn_policy
 
 
 def ApplyFailoverPolicyArgs(messages, args, backend_service, support_failover):

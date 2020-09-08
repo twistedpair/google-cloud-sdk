@@ -2628,6 +2628,10 @@
         "desiredKubernetesObjectsExportConfig": {
           "description": "Configuration which enables export of kubernetes objects changes and snapshots to specified targets.",
           "$ref": "KubernetesObjectsExportConfig"
+        },
+        "desiredGkeOidcConfig": {
+          "description": "Security message for security related configuration",
+          "$ref": "GkeOidcConfig"
         }
       }
     },

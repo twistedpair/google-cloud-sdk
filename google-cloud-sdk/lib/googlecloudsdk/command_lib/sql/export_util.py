@@ -121,9 +121,12 @@ def RunSqlExportCommand(args, client):
     A dict object representing the operations resource describing the export
     operation if the export was successful.
   """
-  sql_export_context = export_util.SqlExportContext(client.sql_messages,
-                                                    args.uri, args.database,
-                                                    args.table)
+  sql_export_context = export_util.SqlExportContext(
+      client.sql_messages,
+      args.uri,
+      args.database,
+      args.table,
+      offload=args.offload)
   return RunExportCommand(args, client, sql_export_context)
 
 
@@ -139,9 +142,12 @@ def RunCsvExportCommand(args, client):
     A dict object representing the operations resource describing the export
     operation if the export was successful.
   """
-  csv_export_context = export_util.CsvExportContext(client.sql_messages,
-                                                    args.uri, args.database,
-                                                    args.query)
+  csv_export_context = export_util.CsvExportContext(
+      client.sql_messages,
+      args.uri,
+      args.database,
+      args.query,
+      offload=args.offload)
   return RunExportCommand(args, client, csv_export_context)
 
 

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import collections
 import json
+import re
 
 from googlecloudsdk.api_lib.apigee import base
 from googlecloudsdk.command_lib.apigee import errors
@@ -75,6 +76,35 @@ class _DeveloperApplicationsClient(base.PagedListClient):
   _entity_path = ["organization", "developer", "app"]
   _list_container = "app"
   _page_field = "name"
+
+
+class OperationsClient(base.BaseClient):
+  """REST client for Apigee long running operations."""
+  _entity_path = ["organization", "operation"]
+
+  @classmethod
+  def SplitName(cls, operation_info):
+    name_parts = re.match(
+        r"organizations/([a-z][-a-z0-9]{0,30}[a-z0-9])/operations/"
+        r"([0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12})",
+        operation_info["name"])
+    if not name_parts:
+      return operation_info
+    operation_info["organization"] = name_parts.group(1)
+    operation_info["uuid"] = name_parts.group(2)
+    return operation_info
+
+  @classmethod
+  def List(cls, identifiers):
+    response = super(OperationsClient, cls).List(identifiers)
+    if not response:
+      return
+    for item in response["operations"]:
+      yield cls.SplitName(item)
+
+  @classmethod
+  def Describe(cls, identifiers):
+    return cls.SplitName(super(OperationsClient, cls).Describe(identifiers))
 
 
 class ApplicationsClient(base.PagedListClient):

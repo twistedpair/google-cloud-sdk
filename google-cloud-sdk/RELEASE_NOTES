@@ -6,6 +6,69 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 309.0.0 (2020-09-08)
+
+### Assured Workloads
+
+*   Added `gcloud assured` command group to beta. Commands in this group provide
+    the ability to read and modify Assured data controls.
+*   Added `gcloud assured workloads` command group to beta. Commands in this
+    group allow you to manage Assured Workloads environment resources.
+*   Added `gcloud assured operations` command group to beta. Commands in this
+    group  allow you to view Assured Workloads operation resources.
+
+### Cloud API Gateway
+
+* Promoted `gcloud api-gateway` to beta.
+    * Modified `gcloud api-gateway api-configs create`. Removed `--grpc-files`
+      temporarily since Cloud API Gateway does not support gRPC.
+    * Modified `gcloud apis create`. Added the optional `--managed-service` flag
+      to specify a pre-existing Google Managed Service.
+
+### Cloud Firestore
+
+* Promoted `gcloud firestore databases` to beta and GA.
+* Promoted `gcloud datastore databases` to beta and GA.
+
+### Cloud SQL
+
+*   Updated `cloud_sql_proxy` component to version 1.17.0. Please visit the
+    following release notes for details:
+    <https://github.com/GoogleCloudPlatform/cloudsql-proxy/releases>.
+*   Added support for offloading export operations.
+
+### Compute Engine
+
+* Added the following flags to `gcloud beta compute backend-services create`,  `gcloud beta compute backend-services update`,
+  `gcloud beta compute backend-buckets create` and `gcloud beta compute backend-buckets update`:
+  * `--cache-mode`
+  * `--[no-]client-ttl`
+  * `--[no-]default-ttl`
+  * `--[no-]max-ttl`
+  * `--[no-]negative-caching`
+  * `--[no-]negative-caching-policy`
+  * `--[no-]custom-response-header`
+* Added the following fields to `gcloud beta compute backend-services import` and `gcloud beta compute backend-services export`:
+  * customResponseHeader
+  * cdnPolicy:
+    * cacheMode
+    * clientTtl
+    * defaultTtl
+    * maxTtl
+    * negativeCaching
+    * negativeCachingPolicy
+
+### Kubernetes Engine
+
+* Added `--notification-config` to `gcloud <alpha|beta> container clusters
+  <create|update>`. This flag is used to enable notifications on a cluster.
+  Currently Pub/Sub notifications are supported.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 308.0.0 (2020-09-01)
 
 ### BigQuery

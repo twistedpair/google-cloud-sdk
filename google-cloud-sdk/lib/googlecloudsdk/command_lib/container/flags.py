@@ -234,11 +234,11 @@ Pub/Sub topics and subscriptions.
 
 Example:
 
-    $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/gke-notifications
+    $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/{topic-name}
 
-    The project of the Pub/Sub topic must be the same one as the cluster. It can
-    be either the project ID or the project number.
-    """
+The project of the Pub/Sub topic must be the same one as the cluster. It can
+be either the project ID or the project number.
+"""
   return parser.add_argument(
       '--notification-config',
       type=arg_parsers.ArgDict(
@@ -3105,7 +3105,7 @@ List of supported kubelet configs in 'kubeletConfig'.
 
 KEY               | VALUE
 ----------------- | ----------------------------------
-cpuManagerPolicy  | either 'static' or 'default'
+cpuManagerPolicy  | either 'static' or 'none'
 cpuCFSQuota       | true or false (enabled by default)
 cpuCFSQuotaPeriod | interval (e.g., '100ms')
 

@@ -500,9 +500,24 @@ class StorageClient(object):
     Returns:
       The new IAM Policy.
     """
+    return self.AddIamPolicyBindings(bucket_ref, [(member, role)])
+
+  def AddIamPolicyBindings(self, bucket_ref, member_roles):
+    """Add IAM policy bindings on the specified bucket.
+
+    Does an atomic Read-Modify-Write, adding the member to the role.
+
+    Args:
+      bucket_ref: storage_util.BucketReference to the bucket with the policy.
+      member_roles: List of 2-tuples in the form [(member, role), ...].
+
+    Returns:
+      The new IAM Policy.
+    """
     policy = self.GetIamPolicy(bucket_ref)
     policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
 
-    iam_util.AddBindingToIamPolicy(self.messages.Policy.BindingsValueListEntry,
-                                   policy, member, role)
+    for member, role in member_roles:
+      iam_util.AddBindingToIamPolicy(
+          self.messages.Policy.BindingsValueListEntry, policy, member, role)
     return self.SetIamPolicy(bucket_ref, policy)

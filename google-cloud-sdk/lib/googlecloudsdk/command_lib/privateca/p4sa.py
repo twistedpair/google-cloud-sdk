@@ -54,7 +54,10 @@ def AddResourceRoleBindings(p4sa_email, kms_key_ref, bucket_ref):
                 a role binding.
   """
   principal = 'serviceAccount:{}'.format(p4sa_email)
-  kms_iam.AddPolicyBindingToCryptoKey(kms_key_ref, principal,
-                                      'roles/cloudkms.signerVerifier')
+  kms_iam.AddPolicyBindingsToCryptoKey(
+      kms_key_ref, [(principal, 'roles/cloudkms.signerVerifier'),
+                    (principal, 'roles/viewer')])
   client = storage_api.StorageClient()
-  client.AddIamPolicyBinding(bucket_ref, principal, 'roles/storage.objectAdmin')
+  client.AddIamPolicyBindings(bucket_ref,
+                              [(principal, 'roles/storage.objectAdmin'),
+                               (principal, 'roles/storage.legacyBucketReader')])

@@ -1322,6 +1322,14 @@ class _LegacyGenerator(object):
   def WriteTemplate(self):
     """Write the credential file."""
 
+    # Remove all the credential files first. As per the comment in __init__
+    # the BQ file (singlestore_bq) is created by the BQ CLI and not
+    # regenerated. This file should be removed when the credentials are
+    # created. If this file isn't removed, it will be stale, but BQ CLI will
+    # try to use it anyways. The rest of the credential files should be
+    # recreated here.
+    self.Clean()
+
     # Generates credentials used by bq and gsutil.
     if self._cred_type == c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME:
       cred = self.credentials

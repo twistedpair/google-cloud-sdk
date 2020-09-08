@@ -51,7 +51,7 @@ def EventTypeFromTypeString(source_crds, type_string, source=None):
   Args:
     source_crds: list[SourceCustomResourceDefinition]
     type_string: str, matching an event type string
-      (e.g. "com.google.cloud.pubsub.topic.publish").
+      (e.g. "google.cloud.pubsub.topic.v1.messagePublished").
     source: str, optional source to further specify which event type in the case
       of multiple sources having event types with the same type string.
   """

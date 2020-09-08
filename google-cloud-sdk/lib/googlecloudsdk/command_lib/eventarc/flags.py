@@ -156,3 +156,8 @@ def AddClearDestinationRunPathArg(parser):
       action='store_true',
       help='Clear the relative path on the destination Cloud Run service to '
       'which the events for the trigger should be sent.')
+
+
+def AddTypePositionalArg(parser, help_text):
+  """Adds a positional argument for the event type."""
+  parser.add_argument('type', help=help_text)

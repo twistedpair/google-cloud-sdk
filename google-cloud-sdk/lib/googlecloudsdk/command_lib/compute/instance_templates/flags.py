@@ -154,3 +154,16 @@ def ValidateServiceProxyFlags(args):
             'Port value can only be between 1025 and 65535.')
 
 
+def AddPostKeyRevocationActionTypeArgs(parser):
+  """Helper to add --post-key-revocation-action-type flag."""
+  parser.add_argument(
+      '--post-key-revocation-action-type',
+      choices=['noop', 'shutdown'],
+      metavar='POLICY',
+      required=False,
+      help="""\
+      The instance will be shut down when the KMS key of one of its disk is
+      revoked, if set to `SHUTDOWN`.
+
+      Default setting is `NOOP`.
+      """)

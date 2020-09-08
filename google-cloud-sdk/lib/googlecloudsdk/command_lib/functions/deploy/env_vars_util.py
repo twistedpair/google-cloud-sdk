@@ -58,3 +58,45 @@ def AddUpdateEnvVarsFlags(parser):
   map_util.AddUpdateMapFlags(
       parser, 'env-vars', long_name='environment variables',
       key_type=EnvVarKeyType, value_type=EnvVarValueType)
+
+
+def BuildEnvVarKeyType(key):
+  """Validator for build environment variable keys.
+
+  All existing validations for environment variables are also applicable for
+  build environment variables.
+
+  Args:
+    key: The build environment variable key.
+
+  Returns:
+    The build environment variable key type.
+  Raises:
+    ArgumentTypeError: If the key is not valid.
+  """
+  if key in [
+      'GOOGLE_ENTRYPOINT', 'GOOGLE_FUNCTION_TARGET', 'GOOGLE_RUNTIME',
+      'GOOGLE_RUNTIME_VERSION'
+  ]:
+    raise argparse.ArgumentTypeError(
+        '{} is reserved for internal use by GCF deployments and cannot be used.'
+        .format(key))
+  return EnvVarKeyType(key)
+
+
+def BuildEnvVarValueType(value):
+  return value
+
+
+def AddBuildEnvVarsFlags(parser):
+  """Add flags for managing build environment variables.
+
+  Args:
+    parser: The argument parser.
+  """
+  map_util.AddUpdateMapFlags(
+      parser,
+      'build-env-vars',
+      long_name='Build environment variables',
+      key_type=BuildEnvVarKeyType,
+      value_type=BuildEnvVarValueType)
