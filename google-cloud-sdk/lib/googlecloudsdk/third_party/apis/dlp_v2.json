@@ -2731,8 +2731,8 @@
           "type": "string",
           "enumDescriptions": [
             "",
-            "Scan from the top (default).",
-            "Randomly pick the row to start scanning. The scanned rows are contiguous."
+            "Scan groups of rows in the order BigQuery provides (default). Multiple groups of rows may be scanned in parallel, so results may not appear in the same order the rows are read.",
+            "Randomly pick groups of rows to scan."
           ],
           "enum": [
             "SAMPLE_METHOD_UNSPECIFIED",

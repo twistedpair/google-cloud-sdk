@@ -3963,17 +3963,17 @@ class ServicemanagementServicesRolloutsCreateRequest(_messages.Message):
   r"""A ServicemanagementServicesRolloutsCreateRequest object.
 
   Fields:
-    force: This flag will skip safety checks for this rollout. The current
-      safety check is whether to skip default quota limit validation. Quota
-      limit validation verifies that the default quota limits defined in the
-      configs that are effective in this rollout don't decrease by more than a
-      specific percentage (10% right now) from the configs that are effective
-      in the current rollout. For group-based quota limits, the default limit
-      for a quota limit cannot decrease by more than 10%. For metric-based
-      quota limits, the assigned quota for each reputation tier cannot
-      decrease by more than 10%. Regional quota is assigned per region, and
-      the quota for each region cannot decrease by more than 10%. Removing a
-      regional quota can cause an effective decrease for that region, if the
+    force: Optional. This flag will skip safety checks for this rollout. The
+      current safety check is whether to skip default quota limit validation.
+      Quota limit validation verifies that the default quota limits defined in
+      the configs that are effective in this rollout don't decrease by more
+      than a specific percentage (10% right now) from the configs that are
+      effective in the current rollout. For group-based quota limits, the
+      default limit for a quota limit cannot decrease by more than 10%. For
+      metric-based quota limits, the assigned quota for each reputation tier
+      cannot decrease by more than 10%. Regional quota is assigned per region,
+      and the quota for each region cannot decrease by more than 10%. Removing
+      a regional quota can cause an effective decrease for that region, if the
       global quota for that tier is lower. For example, if the current rollout
       has a quota limit with values: {STANDARD: 50, STANDARD/us-central1: 100}
       and it is to be changed in the new rollout to: {STANDARD: 50} The net

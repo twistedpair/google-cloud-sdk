@@ -78,11 +78,6 @@ DEFAULTS_WITHOUT_AUTOPROVISIONING_MSG = """\
 Must enable node autoprovisioning to specify defaults for node autoprovisioning.
 """
 
-MIN_CPU_PLATFORM_NOT_IMPLEMENTED_IN_GA = """\
-Min CPU platform not implemented in GA. Please remove 'minCpuPlatform' from
-auto-provisioning config file
-"""
-
 BOTH_AUTOPROVISIONING_UPGRADE_SETTINGS_ERROR_MSG = """\
 Must specify both 'maxSurgeUpgrade' and 'maxUnavailableUpgrade' in \
 'upgradeSettings' in --autoprovisioning-config-file to set upgrade settings.
@@ -91,6 +86,12 @@ Must specify both 'maxSurgeUpgrade' and 'maxUnavailableUpgrade' in \
 BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG = """\
 Must specify both 'autoUpgrade' and 'autoRepair' in 'management' in \
 --autoprovisioning-config-file to set management settings.
+"""
+
+BOTH_AUTOPROVISIONING_SHIELDED_INSTANCE_SETTINGS_ERROR_MSG = """\
+Must specify both 'enableSecureBoot' and 'enableIntegrityMonitoring' \
+in 'shieldedInstanceConfig' in --autoprovisioning-config-file to set \
+management settings.
 """
 
 LIMITS_WITHOUT_AUTOPROVISIONING_FLAG_MSG = """\
@@ -252,6 +253,12 @@ ENABLE_AUTO_UPGRADE = 'autoUpgrade'
 ENABLE_AUTO_REPAIR = 'autoRepair'
 SCOPES = 'scopes'
 AUTOPROVISIONING_LOCATIONS = 'autoprovisioningLocations'
+BOOT_DISK_KMS_KEY = 'bootDiskKmsKey'
+DISK_SIZE_GB = 'diskSizeGb'
+DISK_TYPE = 'diskType'
+SHIELDED_INSTANCE_CONFIG = 'shieldedInstanceConfig'
+ENABLE_SECURE_BOOT = 'enableSecureBoot'
+ENABLE_INTEGRITY_MONITORING = 'enableIntegrityMonitoring'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [
     DASHBOARD,
@@ -479,6 +486,7 @@ class CreateClusterOptions(object):
       enable_resource_consumption_metering=None,
       workload_pool=None,
       identity_provider=None,
+      enable_gke_oidc=None,
       enable_shielded_nodes=None,
       linux_sysctls=None,
       disable_default_snat=None,
@@ -609,6 +617,7 @@ class CreateClusterOptions(object):
     self.enable_resource_consumption_metering = enable_resource_consumption_metering
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
+    self.enable_gke_oidc = enable_gke_oidc
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
     self.disable_default_snat = disable_default_snat
@@ -693,6 +702,7 @@ class UpdateClusterOptions(object):
                workload_pool=None,
                identity_provider=None,
                disable_workload_identity=None,
+               enable_gke_oidc=None,
                enable_shielded_nodes=None,
                disable_default_snat=None,
                resource_usage_bigquery_dataset=None,
@@ -761,6 +771,7 @@ class UpdateClusterOptions(object):
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
     self.disable_workload_identity = disable_workload_identity
+    self.enable_gke_oidc = enable_gke_oidc
     self.enable_shielded_nodes = enable_shielded_nodes
     self.disable_default_snat = disable_default_snat
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
@@ -1689,8 +1700,10 @@ class APIAdapter(object):
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
+        load_balancer_type = _GetCloudRunLoadBalancerType(
+            options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
-            disabled=False)
+            disabled=False, loadBalancerType=load_balancer_type)
 
     if options.workload_pool:
       cluster.workloadIdentityConfig = self.messages.WorkloadIdentityConfig(
@@ -1749,8 +1762,17 @@ class APIAdapter(object):
         enable_autorepair = management_settings.get(ENABLE_AUTO_REPAIR)
       autoprovisioning_locations = \
           config.get(AUTOPROVISIONING_LOCATIONS)
-      if config.get(MIN_CPU_PLATFORM):
-        raise util.Error(MIN_CPU_PLATFORM_NOT_IMPLEMENTED_IN_GA)
+      min_cpu_platform = config.get(MIN_CPU_PLATFORM)
+      boot_disk_kms_key = config.get(BOOT_DISK_KMS_KEY)
+      disk_type = config.get(DISK_TYPE)
+      disk_size_gb = config.get(DISK_SIZE_GB)
+      shielded_instance_config = config.get(SHIELDED_INSTANCE_CONFIG)
+      enable_secure_boot = None
+      enable_integrity_monitoring = None
+      if shielded_instance_config:
+        enable_secure_boot = shielded_instance_config.get(ENABLE_SECURE_BOOT)
+        enable_integrity_monitoring = \
+            shielded_instance_config.get(ENABLE_INTEGRITY_MONITORING)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
@@ -1760,6 +1782,12 @@ class APIAdapter(object):
       enable_autoupgrade = options.enable_autoprovisioning_autoupgrade
       enable_autorepair = options.enable_autoprovisioning_autorepair
       autoprovisioning_locations = options.autoprovisioning_locations
+      min_cpu_platform = options.autoprovisioning_min_cpu_platform
+      boot_disk_kms_key = None
+      disk_type = None
+      disk_size_gb = None
+      enable_secure_boot = None
+      enable_integrity_monitoring = None
 
     if options.enable_autoprovisioning is not None:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
@@ -1778,11 +1806,24 @@ class APIAdapter(object):
         management = (
             self.messages.NodeManagement(
                 autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair))
+      shielded_instance_config = None
+      if (enable_secure_boot is not None or
+          enable_integrity_monitoring is not None):
+        shielded_instance_config = self.messages.ShieldedInstanceConfig()
+        shielded_instance_config.enableSecureBoot = enable_secure_boot
+        shielded_instance_config.enableIntegrityMonitoring = \
+            enable_integrity_monitoring
       autoscaling.autoprovisioningNodePoolDefaults = self.messages \
         .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
                                           oauthScopes=scopes,
                                           upgradeSettings=upgrade_settings,
-                                          management=management)
+                                          management=management,
+                                          minCpuPlatform=min_cpu_platform,
+                                          bootDiskKmsKey=boot_disk_kms_key,
+                                          diskSizeGb=disk_size_gb,
+                                          diskType=disk_type,
+                                          shieldedInstanceConfig=
+                                          shielded_instance_config)
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
             sorted(autoprovisioning_locations)
@@ -1821,6 +1862,12 @@ class APIAdapter(object):
             if auto_repair_found != auto_upgrade_found:
               raise util.Error(
                   BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG)
+          if defaults.shieldedInstanceConfig:
+            secure_boot_found = defaults.shieldedInstanceConfig.enableSecureBoot is not None
+            integrity_monitoring_found = defaults.shieldedInstanceConfig.enableIntegrityMonitoring is not None
+            if secure_boot_found != integrity_monitoring_found:
+              raise util.Error(
+                  BOTH_AUTOPROVISIONING_SHIELDED_INSTANCE_SETTINGS_ERROR_MSG)
     elif autoscaling.resourceLimits:
       raise util.Error(LIMITS_WITHOUT_AUTOPROVISIONING_MSG)
     elif autoscaling.autoprovisioningNodePoolDefaults and \
@@ -2070,9 +2117,12 @@ class APIAdapter(object):
 
     if options.disable_addons is not None:
       if options.disable_addons.get(CLOUDRUN) is not None:
+        load_balancer_type = _GetCloudRunLoadBalancerType(
+            options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN)))
+                disabled=options.disable_addons.get(CLOUDRUN),
+                loadBalancerType=load_balancer_type))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -2982,8 +3032,10 @@ class V1Beta1Adapter(V1Adapter):
           raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if INGRESS not in options.addons:
           raise util.Error(CLOUDRUN_INGRESS_KUBERNETES_DISABLED_ERROR_MSG)
+        load_balancer_type = _GetCloudRunLoadBalancerType(
+            options, self.messages)
         cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
-            disabled=False)
+            disabled=False, loadBalancerType=load_balancer_type)
       # CloudBuild is disabled by default.
       if CLOUDBUILD in options.addons:
         if not options.enable_stackdriver_kubernetes:
@@ -3011,6 +3063,9 @@ class V1Beta1Adapter(V1Adapter):
           workloadPool=options.workload_pool)
       if options.identity_provider:
         cluster.workloadIdentityConfig.identityProvider = options.identity_provider
+    if options.enable_gke_oidc:
+      cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
+          enabled=options.enable_gke_oidc)
     if options.enable_master_global_access is not None:
       if not options.enable_private_nodes:
         raise util.Error(
@@ -3088,6 +3143,11 @@ class V1Beta1Adapter(V1Adapter):
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               workloadPool=''))
 
+    if options.enable_gke_oidc is not None:
+      update = self.messages.ClusterUpdate(
+          desiredGkeOidcConfig=self.messages.GkeOidcConfig(
+              enabled=options.enable_gke_oidc))
+
     if options.notification_config is not None:
       update = self.messages.ClusterUpdate(
           desiredNotificationConfig=_GetNotificationConfigForClusterUpdate(
@@ -3146,9 +3206,12 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
       if options.disable_addons.get(CLOUDRUN) is not None:
+        load_balancer_type = _GetCloudRunLoadBalancerType(
+            options, self.messages)
         update.desiredAddonsConfig.cloudRunConfig = (
             self.messages.CloudRunConfig(
-                disabled=options.disable_addons.get(CLOUDRUN)))
+                disabled=options.disable_addons.get(CLOUDRUN),
+                loadBalancerType=load_balancer_type))
       if options.disable_addons.get(APPLICATIONMANAGER) is not None:
         update.desiredAddonsConfig.kalmConfig = (
             self.messages.KalmConfig(
@@ -3210,6 +3273,16 @@ class V1Beta1Adapter(V1Adapter):
       autoprovisioning_locations = \
         config.get(AUTOPROVISIONING_LOCATIONS)
       min_cpu_platform = config.get(MIN_CPU_PLATFORM)
+      boot_disk_kms_key = config.get(BOOT_DISK_KMS_KEY)
+      disk_type = config.get(DISK_TYPE)
+      disk_size_gb = config.get(DISK_SIZE_GB)
+      shielded_instance_config = config.get(SHIELDED_INSTANCE_CONFIG)
+      enable_secure_boot = None
+      enable_integrity_monitoring = None
+      if shielded_instance_config:
+        enable_secure_boot = shielded_instance_config.get(ENABLE_SECURE_BOOT)
+        enable_integrity_monitoring = \
+            shielded_instance_config.get(ENABLE_INTEGRITY_MONITORING)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
@@ -3220,6 +3293,11 @@ class V1Beta1Adapter(V1Adapter):
       enable_autoupgrade = options.enable_autoprovisioning_autoupgrade
       enable_autorepair = options.enable_autoprovisioning_autorepair
       min_cpu_platform = options.autoprovisioning_min_cpu_platform
+      boot_disk_kms_key = None
+      disk_type = None
+      disk_size_gb = None
+      enable_secure_boot = None
+      enable_integrity_monitoring = None
 
     if options.enable_autoprovisioning is not None:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
@@ -3236,12 +3314,24 @@ class V1Beta1Adapter(V1Adapter):
         management = (
             self.messages.NodeManagement(
                 autoUpgrade=enable_autoupgrade, autoRepair=enable_autorepair))
+      shielded_instance_config = None
+      if enable_secure_boot is not None or \
+          enable_integrity_monitoring is not None:
+        shielded_instance_config = self.messages.ShieldedInstanceConfig()
+        shielded_instance_config.enableSecureBoot = enable_secure_boot
+        shielded_instance_config.enableIntegrityMonitoring = \
+            enable_integrity_monitoring
       autoscaling.autoprovisioningNodePoolDefaults = self.messages \
         .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
                                           oauthScopes=scopes,
                                           upgradeSettings=upgrade_settings,
                                           management=management,
-                                          minCpuPlatform=min_cpu_platform)
+                                          minCpuPlatform=min_cpu_platform,
+                                          bootDiskKmsKey=boot_disk_kms_key,
+                                          diskSizeGb=disk_size_gb,
+                                          diskType=disk_type,
+                                          shieldedInstanceConfig=
+                                          shielded_instance_config)
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
           sorted(autoprovisioning_locations)
@@ -3306,6 +3396,12 @@ class V1Beta1Adapter(V1Adapter):
             if auto_repair_found != auto_upgrade_found:
               raise util.Error(
                   BOTH_AUTOPROVISIONING_MANAGEMENT_SETTINGS_ERROR_MSG)
+          if defaults.shieldedInstanceConfig:
+            secure_boot_found = defaults.shieldedInstanceConfig.enableSecureBoot is not None
+            integrity_monitoring_found = defaults.shieldedInstanceConfig.enableIntegrityMonitoring is not None
+            if secure_boot_found != integrity_monitoring_found:
+              raise util.Error(
+                  BOTH_AUTOPROVISIONING_SHIELDED_INSTANCE_SETTINGS_ERROR_MSG)
     elif autoscaling.resourceLimits:
       raise util.Error(LIMITS_WITHOUT_AUTOPROVISIONING_MSG)
     elif autoscaling.autoprovisioningNodePoolDefaults and \
@@ -3398,6 +3494,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           workloadPool=options.workload_pool)
       if options.identity_provider:
         cluster.workloadIdentityConfig.identityProvider = options.identity_provider
+    if options.enable_gke_oidc:
+      cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
+          enabled=options.enable_gke_oidc)
     if options.security_profile is not None:
       cluster.securityProfile = self.messages.SecurityProfile(
           name=options.security_profile)
@@ -3491,6 +3590,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               workloadPool=''))
+
+    if options.enable_gke_oidc is not None:
+      update = self.messages.ClusterUpdate(
+          desiredGkeOidcConfig=self.messages.GkeOidcConfig(
+              enabled=options.enable_gke_oidc))
 
     if options.enable_cost_management is not None:
       update = self.messages.ClusterUpdate(
@@ -3648,6 +3752,16 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       autoprovisioning_locations = \
           config.get(AUTOPROVISIONING_LOCATIONS)
       min_cpu_platform = config.get(MIN_CPU_PLATFORM)
+      boot_disk_kms_key = config.get(BOOT_DISK_KMS_KEY)
+      disk_type = config.get(DISK_TYPE)
+      disk_size_gb = config.get(DISK_SIZE_GB)
+      shielded_instance_config = config.get(SHIELDED_INSTANCE_CONFIG)
+      enable_secure_boot = None
+      enable_integrity_monitoring = None
+      if shielded_instance_config:
+        enable_secure_boot = shielded_instance_config.get(ENABLE_SECURE_BOOT)
+        enable_integrity_monitoring = \
+            shielded_instance_config.get(ENABLE_INTEGRITY_MONITORING)
     else:
       resource_limits = self.ResourceLimitsFromFlags(options)
       service_account = options.autoprovisioning_service_account
@@ -3658,6 +3772,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       enable_autoupgrade = options.enable_autoprovisioning_autoupgrade
       enable_autorepair = options.enable_autoprovisioning_autorepair
       min_cpu_platform = options.autoprovisioning_min_cpu_platform
+      boot_disk_kms_key = None
+      disk_type = None
+      disk_size_gb = None
+      enable_secure_boot = None
+      enable_integrity_monitoring = None
 
     if options.enable_autoprovisioning is not None:
       autoscaling.enableNodeAutoprovisioning = options.enable_autoprovisioning
@@ -3676,12 +3795,24 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         management = self.messages \
           .NodeManagement(autoUpgrade=enable_autoupgrade,
                           autoRepair=enable_autorepair)
+      shielded_instance_config = None
+      if enable_secure_boot is not None or \
+          enable_integrity_monitoring is not None:
+        shielded_instance_config = self.messages.ShieldedInstanceConfig()
+        shielded_instance_config.enableSecureBoot = enable_secure_boot
+        shielded_instance_config.enableIntegrityMonitoring = \
+            enable_integrity_monitoring
       autoscaling.autoprovisioningNodePoolDefaults = self.messages \
         .AutoprovisioningNodePoolDefaults(serviceAccount=service_account,
                                           oauthScopes=scopes,
                                           upgradeSettings=upgrade_settings,
                                           management=management,
-                                          minCpuPlatform=min_cpu_platform)
+                                          minCpuPlatform=min_cpu_platform,
+                                          bootDiskKmsKey=boot_disk_kms_key,
+                                          diskSizeGb=disk_size_gb,
+                                          diskType=disk_type,
+                                          shieldedInstanceConfig=
+                                          shielded_instance_config)
 
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \

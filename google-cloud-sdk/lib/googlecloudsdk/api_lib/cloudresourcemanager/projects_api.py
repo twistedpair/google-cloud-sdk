@@ -169,6 +169,19 @@ def GetIamPolicy(project_ref, api_version=DEFAULT_API_VERSION):
   return client.projects.GetIamPolicy(policy_request)
 
 
+def GetAncestry(project_id, api_version=DEFAULT_API_VERSION):
+  """Get ancestry for a given project."""
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
+
+  ancestry_request = messages.CloudresourcemanagerProjectsGetAncestryRequest(
+      getAncestryRequest=messages.GetAncestryRequest(),
+      projectId=project_id,
+  )
+
+  return client.projects.GetAncestry(ancestry_request)
+
+
 def SetIamPolicy(project_ref,
                  policy,
                  update_mask=None,

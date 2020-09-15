@@ -45,6 +45,9 @@ class AnthoseventsV1(base_api.BaseApiClient):
     self.api_v1_namespaces = self.ApiV1NamespacesService(self)
     self.api_v1 = self.ApiV1Service(self)
     self.api = self.ApiService(self)
+    self.customresourcedefinitions = self.CustomresourcedefinitionsService(self)
+    self.namespaces_customresourcedefinitions = self.NamespacesCustomresourcedefinitionsService(self)
+    self.namespaces = self.NamespacesService(self)
     self.project_serviceaccounts = self.ProjectServiceaccountsService(self)
     self.project = self.ProjectService(self)
     self.projects_locations_configmaps = self.ProjectsLocationsConfigmapsService(self)
@@ -293,14 +296,7 @@ class AnthoseventsV1(base_api.BaseApiClient):
     )
 
     def ReplaceSecret(self, request, global_params=None):
-      r"""Rpc to replace a secret.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a secret. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (AnthoseventsApiV1NamespacesSecretsReplaceSecretRequest) input message
@@ -631,6 +627,89 @@ optimistic concurrency control.
 
     def __init__(self, client):
       super(AnthoseventsV1.ApiService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class CustomresourcedefinitionsService(base_api.BaseApiService):
+    """Service class for the customresourcedefinitions resource."""
+
+    _NAME = 'customresourcedefinitions'
+
+    def __init__(self, client):
+      super(AnthoseventsV1.CustomresourcedefinitionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list custom resource definitions.
+
+      Args:
+        request: (AnthoseventsCustomresourcedefinitionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCustomResourceDefinitionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='anthosevents.customresourcedefinitions.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'parent', 'resourceVersion', 'watch'],
+        relative_path='apis/apiextensions.k8s.io/v1/customresourcedefinitions',
+        request_field='',
+        request_type_name='AnthoseventsCustomresourcedefinitionsListRequest',
+        response_type_name='ListCustomResourceDefinitionsResponse',
+        supports_download=False,
+    )
+
+  class NamespacesCustomresourcedefinitionsService(base_api.BaseApiService):
+    """Service class for the namespaces_customresourcedefinitions resource."""
+
+    _NAME = 'namespaces_customresourcedefinitions'
+
+    def __init__(self, client):
+      super(AnthoseventsV1.NamespacesCustomresourcedefinitionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a CustomResourceDefinition.
+
+      Args:
+        request: (AnthoseventsNamespacesCustomresourcedefinitionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CustomResourceDefinition) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/apiextensions.k8s.io/v1/namespaces/{namespacesId}/customresourcedefinitions/{customresourcedefinitionsId}',
+        http_method='GET',
+        method_id='anthosevents.namespaces.customresourcedefinitions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/apiextensions.k8s.io/v1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesCustomresourcedefinitionsGetRequest',
+        response_type_name='CustomResourceDefinition',
+        supports_download=False,
+    )
+
+  class NamespacesService(base_api.BaseApiService):
+    """Service class for the namespaces resource."""
+
+    _NAME = 'namespaces'
+
+    def __init__(self, client):
+      super(AnthoseventsV1.NamespacesService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -1137,14 +1216,7 @@ optimistic concurrency control.
     )
 
     def ReplaceSecret(self, request, global_params=None):
-      r"""Rpc to replace a secret.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a secret. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (AnthoseventsProjectsLocationsSecretsReplaceSecretRequest) input message

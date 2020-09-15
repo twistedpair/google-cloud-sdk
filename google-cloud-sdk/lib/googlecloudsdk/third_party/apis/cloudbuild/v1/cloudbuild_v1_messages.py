@@ -646,8 +646,7 @@ class BuildTrigger(_messages.Message):
 
   Messages:
     SubstitutionsValue: Substitutions for Build resource. The keys must match
-      the following regular expression: `^_[A-Z0-9_]+$`.The keys cannot
-      conflict with the keys in bindings.
+      the following regular expression: `^_[A-Z0-9_]+$`.
 
   Fields:
     approvalConfig: Configuration for manual approval to start a build
@@ -689,8 +688,7 @@ class BuildTrigger(_messages.Message):
       events. Triggers that respond to such events build source at whatever
       commit caused the event.
     substitutions: Substitutions for Build resource. The keys must match the
-      following regular expression: `^_[A-Z0-9_]+$`.The keys cannot conflict
-      with the keys in bindings.
+      following regular expression: `^_[A-Z0-9_]+$`.
     tags: Tags for annotation of a `BuildTrigger`
     triggerTemplate: Template describing the types of source changes to
       trigger a build. Branch and tag names in trigger templates are
@@ -702,8 +700,7 @@ class BuildTrigger(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
     r"""Substitutions for Build resource. The keys must match the following
-    regular expression: `^_[A-Z0-9_]+$`.The keys cannot conflict with the keys
-    in bindings.
+    regular expression: `^_[A-Z0-9_]+$`.
 
     Messages:
       AdditionalProperty: An additional property for a SubstitutionsValue

@@ -19,8 +19,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import socket
 
+from googlecloudsdk.core import context_aware
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import http_proxy_types
@@ -29,6 +32,7 @@ import requests
 import six
 from six.moves import urllib
 import socks
+from urllib3.util.ssl_ import create_urllib3_context
 
 
 def GetSession(timeout='unset', response_encoding=None, ca_certs=None):
@@ -59,6 +63,27 @@ def GetSession(timeout='unset', response_encoding=None, ca_certs=None):
   return http_client
 
 
+class ClientSideCertificate(
+    collections.namedtuple('ClientSideCertificate',
+                           ['certfile', 'keyfile', 'password'])):
+  """Holds information about a client side certificate.
+
+  Attributes:
+    certfile: str, path to a cert file.
+    keyfile: str, path to a key file.
+    password: str, password to the private key.
+  """
+
+  def __new__(cls, certfile, keyfile, password=None):
+    return super(ClientSideCertificate, cls).__new__(
+        cls, certfile, keyfile, password)
+
+
+def CreateSSLContext():
+  """Returns a urrlib3 SSL context."""
+  return create_urllib3_context()
+
+
 class HTTPAdapter(requests.adapters.HTTPAdapter):
   """Transport adapter for requests.
 
@@ -73,9 +98,34 @@ class HTTPAdapter(requests.adapters.HTTPAdapter):
         to the proxy to resolve.
   """
 
-  def __init__(self, rdns, *args, **kwargs):
+  def __init__(self, rdns, client_side_certificate, *args, **kwargs):
     self.rdns = rdns
+    self._cert_info = client_side_certificate
     super(HTTPAdapter, self).__init__(*args, **kwargs)
+
+  def init_poolmanager(self, *args, **kwargs):
+    self._add_ssl_context(kwargs)
+    return super(HTTPAdapter, self).init_poolmanager(*args, **kwargs)
+
+  def proxy_manager_for(self, *args, **kwargs):
+    self._add_ssl_context(kwargs)
+    return super(HTTPAdapter, self).proxy_manager_for(*args, **kwargs)
+
+  def _add_ssl_context(self, kwargs):
+    if not self._cert_info:
+      return
+
+    context = CreateSSLContext()
+
+    cert_chain_kwargs = {}
+    if self._cert_info.keyfile:
+      cert_chain_kwargs['keyfile'] = self._cert_info.keyfile
+    if self._cert_info.password:
+      cert_chain_kwargs['password'] = self._cert_info.password
+
+    context.load_cert_chain(self._cert_info.certfile, **cert_chain_kwargs)
+
+    kwargs['ssl_context'] = context
 
   def send(self, request, **kwargs):
     if not self.rdns:
@@ -91,7 +141,6 @@ class HTTPAdapter(requests.adapters.HTTPAdapter):
 
       # overwrite the host header
       request.headers['Host'] = result.hostname
-
     return super(HTTPAdapter, self).send(request, **kwargs)
 
 
@@ -163,14 +212,25 @@ def Session(
         'http': proxy_info,
         'https': proxy_info,
     }
-  adapter = HTTPAdapter(proxy_rdns)
+
+  client_side_certificate = None
+  if properties.VALUES.context_aware.use_client_certificate.Get():
+    ca_config = context_aware.Config()
+    log.debug('Using client certificate %s', ca_config.client_cert_path)
+    client_side_certificate = ClientSideCertificate(
+        ca_config.client_cert_path,
+        ca_config.client_cert_path,
+        ca_config.client_cert_password)
+  else:
+    client_side_certificate = None
+
+  adapter = HTTPAdapter(proxy_rdns, client_side_certificate)
 
   if disable_ssl_certificate_validation:
     session.verify = False
   elif ca_certs:
     session.verify = ca_certs
 
-  # TODO(b/157164006) - Support mTLS
   session.mount('https://', adapter)
   return session
 

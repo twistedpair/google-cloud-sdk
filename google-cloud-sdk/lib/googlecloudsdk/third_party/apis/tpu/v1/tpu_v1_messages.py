@@ -254,6 +254,7 @@ class Node(_messages.Message):
       Cloud Storage data, with the Tensorflow job running in the Node, this
       account must have permissions to that data.
     state: Output only. The current state for the TPU Node.
+    symptoms: Output only. The Symptoms that have occurred to the TPU Node.
     tensorflowVersion: The version of Tensorflow running in the Node.
       Required.
     useServiceNetworking: Whether the VPC peering for the node is set up
@@ -366,8 +367,9 @@ class Node(_messages.Message):
   schedulingConfig = _messages.MessageField('SchedulingConfig', 17)
   serviceAccount = _messages.StringField(18)
   state = _messages.EnumField('StateValueValuesEnum', 19)
-  tensorflowVersion = _messages.StringField(20)
-  useServiceNetworking = _messages.BooleanField(21)
+  symptoms = _messages.MessageField('Symptom', 20, repeated=True)
+  tensorflowVersion = _messages.StringField(21)
+  useServiceNetworking = _messages.BooleanField(22)
 
 
 class Operation(_messages.Message):
@@ -647,6 +649,45 @@ class Status(_messages.Message):
 
 class StopNodeRequest(_messages.Message):
   r"""Request for StopNode."""
+
+
+class Symptom(_messages.Message):
+  r"""A Symptom instance.
+
+  Enums:
+    SymptomTypeValueValuesEnum: Type of the Symptom.
+
+  Fields:
+    createTime: Timestamp when the Symptom is created.
+    details: Detailed information of the current Symptom.
+    symptomType: Type of the Symptom.
+    workerId: A string used to uniquely distinguish a worker within a TPU
+      node.
+  """
+
+  class SymptomTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the Symptom.
+
+    Values:
+      SYMPTOM_TYPE_UNSPECIFIED: Unspecified symptom.
+      LOW_MEMORY: TPU VM memory is low.
+      OUT_OF_MEMORY: TPU runtime is out of memory.
+      EXECUTE_TIMED_OUT: TPU runtime execution has timed out.
+      MESH_BUILD_FAIL: TPU runtime fails to construct a mesh that recognizes
+        each TPU device's neighbors.
+      HBM_OUT_OF_MEMORY: TPU HBM is out of memory.
+    """
+    SYMPTOM_TYPE_UNSPECIFIED = 0
+    LOW_MEMORY = 1
+    OUT_OF_MEMORY = 2
+    EXECUTE_TIMED_OUT = 3
+    MESH_BUILD_FAIL = 4
+    HBM_OUT_OF_MEMORY = 5
+
+  createTime = _messages.StringField(1)
+  details = _messages.StringField(2)
+  symptomType = _messages.EnumField('SymptomTypeValueValuesEnum', 3)
+  workerId = _messages.StringField(4)
 
 
 class TensorFlowVersion(_messages.Message):

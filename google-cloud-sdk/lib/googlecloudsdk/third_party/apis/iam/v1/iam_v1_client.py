@@ -658,7 +658,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a ServiceAccountKey.
+      r"""Deletes a ServiceAccountKey. Deleting a service account key does not revoke short-lived credentials that have been issued based on the service account key.
 
       Args:
         request: (IamProjectsServiceAccountsKeysDeleteRequest) input message

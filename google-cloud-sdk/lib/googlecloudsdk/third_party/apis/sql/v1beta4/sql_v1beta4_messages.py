@@ -291,7 +291,7 @@ class DatabaseFlags(_messages.Message):
 
 
 class DatabaseInstance(_messages.Message):
-  r"""A Cloud SQL instance resource. Next field: 35
+  r"""A Cloud SQL instance resource. Next field: 36
 
   Enums:
     BackendTypeValueValuesEnum:  *SECOND_GEN*: Cloud SQL database instance.
@@ -307,8 +307,8 @@ class DatabaseInstance(_messages.Message):
       *SQLSERVER_2017_WEB*.
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
       following. *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not
-      replicating from a master. *ON_PREMISES_INSTANCE*: An instance running
-      on the customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL
+      replicating from a primary instance. *ON_PREMISES_INSTANCE*: An instance
+      running on the customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL
       instance configured as a read-replica.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
       This can be one of the following. *RUNNABLE*: The instance is running,
@@ -355,14 +355,14 @@ class DatabaseInstance(_messages.Message):
       secondary zone.
     instanceType: The instance type. This can be one of the following.
       *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from
-      a master. *ON_PREMISES_INSTANCE*: An instance running on the customer's
-      premises. *READ_REPLICA_INSTANCE*: A Cloud SQL instance configured as a
-      read-replica.
+      a primary instance. *ON_PREMISES_INSTANCE*: An instance running on the
+      customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL instance
+      configured as a read-replica.
     ipAddresses: The assigned IP addresses for the instance.
     ipv6Address: The IPv6 address assigned to the instance. (Deprecated) This
       property was applicable only to First Generation instances.
     kind: This is always *sql#instance*.
-    masterInstanceName: The name of the instance which will act as master in
+    masterInstanceName: The name of the instance which will act as primary in
       the replication setup.
     maxDiskSize: The maximum disk size of the instance in bytes.
     name: Name of the Cloud SQL instance. This does not include the project
@@ -460,9 +460,9 @@ class DatabaseInstance(_messages.Message):
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following.
     *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from a
-    master. *ON_PREMISES_INSTANCE*: An instance running on the customer's
-    premises. *READ_REPLICA_INSTANCE*: A Cloud SQL instance configured as a
-    read-replica.
+    primary instance. *ON_PREMISES_INSTANCE*: An instance running on the
+    customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL instance
+    configured as a read-replica.
 
     Values:
       SQL_INSTANCE_TYPE_UNSPECIFIED: This is an unknown Cloud SQL instance
@@ -530,8 +530,9 @@ class DatabaseInstance(_messages.Message):
 
     Fields:
       available: The availability status of the failover replica. A false
-        status indicates that the failover replica is out of sync. The master
-        can only failover to the failover replica when the status is true.
+        status indicates that the failover replica is out of sync. The primary
+        instance can only failover to the failover replica when the status is
+        true.
       name: The name of the failover replica. If specified at instance
         creation, a failover replica is created for the instance. The name
         doesn't include the project ID. This property is applicable only to
@@ -585,16 +586,17 @@ class DatabasesListResponse(_messages.Message):
 
 
 class DemoteMasterConfiguration(_messages.Message):
-  r"""Read-replica configuration for connecting to the on-premises master.
+  r"""Read-replica configuration for connecting to the on-premises primary
+  instance.
 
   Fields:
     kind: This is always *sql#demoteMasterConfiguration*.
     mysqlReplicaConfiguration: MySQL specific configuration when replicating
-      from a MySQL on-premises master. Replication configuration information
-      such as the username, password, certificates, and keys are not stored in
-      the instance metadata. The configuration information is used only to set
-      up the replication connection and is stored by MySQL in a file named
-      *master.info* in the data directory.
+      from a MySQL on-premises primary instance. Replication configuration
+      information such as the username, password, certificates, and keys are
+      not stored in the instance metadata. The configuration information is
+      used only to set up the replication connection and is stored by MySQL in
+      a file named *master.info* in the data directory.
   """
 
   kind = _messages.StringField(1)
@@ -602,21 +604,22 @@ class DemoteMasterConfiguration(_messages.Message):
 
 
 class DemoteMasterContext(_messages.Message):
-  r"""Database instance demote master context.
+  r"""Database instance demote primary instance context.
 
   Fields:
     kind: This is always *sql#demoteMasterContext*.
     masterInstanceName: The name of the instance which will act as on-premises
-      master in the replication setup.
+      primary instance in the replication setup.
     replicaConfiguration: Configuration specific to read-replicas replicating
-      from the on-premises master.
+      from the on-premises primary instance.
     verifyGtidConsistency: Verify GTID consistency for demote operation.
       Default value: *True*. Second Generation instances only. Setting this
       flag to false enables you to bypass GTID consistency check between on-
-      premises master and Cloud SQL instance during the demotion operation but
-      also exposes you to the risk of future replication failures. Change the
-      value only if you know the reason for the GTID divergence and are
-      confident that doing so will not cause any replication issues.
+      premises primary instance and Cloud SQL instance during the demotion
+      operation but also exposes you to the risk of future replication
+      failures. Change the value only if you know the reason for the GTID
+      divergence and are confident that doing so will not cause any
+      replication issues.
   """
 
   kind = _messages.StringField(1)
@@ -1004,7 +1007,7 @@ class InstancesCloneRequest(_messages.Message):
 
 
 class InstancesDemoteMasterRequest(_messages.Message):
-  r"""Database demote master request.
+  r"""Database demote primary instance request.
 
   Fields:
     demoteMasterContext: Contains details about the demoteMaster operation.
@@ -1161,9 +1164,9 @@ class IpMapping(_messages.Message):
       PRIMARY: IP address the customer is supposed to connect to. Usually this
         is the load balancer's IP address
       OUTGOING: Source IP address of the connection a read replica establishes
-        to its external master. This IP address can be allowlisted by the
-        customer in case it has a firewall that filters incoming connection to
-        its on premises master.
+        to its external primary instance. This IP address can be allowlisted
+        by the customer in case it has a firewall that filters incoming
+        connection to its on premises primary instance.
       PRIVATE: Private IP used when using private IPs and network peering.
       MIGRATED_1ST_GEN: V1 IP of a migrated instance. We want the user to
         decommission this IP as soon as the migration is complete. Note: V1
@@ -1198,6 +1201,28 @@ class LocationPreference(_messages.Message):
   followGaeApplication = _messages.StringField(1)
   kind = _messages.StringField(2)
   zone = _messages.StringField(3)
+
+
+class MaintenanceDenyPeriod(_messages.Message):
+  r"""Maintenance Deny Periods. This specifies a date range during when all
+  CSA rollout will be denied.
+
+  Fields:
+    endDate: "maintenance deny period" end date. If the year of the end date
+      is empty, the year of the start date also must be empty. In this case,
+      it means the no maintenance interval recurs every year. The date is in
+      format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01
+    startDate: "maintenance deny period" start date. If the year of the start
+      date is empty, the year of the end date also must be empty. In this
+      case, it means the no maintenance interval recurs every year. The date
+      is in format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01
+    time: Time in UTC when the "no maintenance interval" starts on start_date
+      and ends on end_date. The time is in format: HH:mm:SS, i.e., 00:00:00
+  """
+
+  endDate = _messages.StringField(1)
+  startDate = _messages.StringField(2)
+  time = _messages.StringField(3)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -1262,8 +1287,9 @@ class MySqlReplicaConfiguration(_messages.Message):
     password: The password for the replication connection.
     sslCipher: A list of permissible ciphers to use for SSL encryption.
     username: The username for the replication connection.
-    verifyServerCertificate: Whether or not to check the master's Common Name
-      value in the certificate that it sends during the SSL handshake.
+    verifyServerCertificate: Whether or not to check the primary instance's
+      Common Name value in the certificate that it sends during the SSL
+      handshake.
   """
 
   caCertificate = _messages.StringField(1)
@@ -1393,7 +1419,7 @@ class Operation(_messages.Message):
       CREATE_CLONE: Creates clone instance.
       RESCHEDULE_MAINTENANCE: Reschedule maintenance to another time.
       START_EXTERNAL_SYNC: Starts external sync of a Cloud SQL EM replica to
-        an external master.
+        an external primary instance.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -1506,22 +1532,22 @@ class OperationsListResponse(_messages.Message):
 
 
 class ReplicaConfiguration(_messages.Message):
-  r"""Read-replica configuration for connecting to the master.
+  r"""Read-replica configuration for connecting to the primary instance.
 
   Fields:
     failoverTarget: Specifies if the replica is the failover target. If the
       field is set to *true* the replica will be designated as a failover
-      replica. In case the master instance fails, the replica instance will be
-      promoted as the new master instance. Only one replica can be specified
-      as failover target, and the replica has to be in different zone with the
-      master instance.
+      replica. In case the primary instance fails, the replica instance will
+      be promoted as the new primary instance. Only one replica can be
+      specified as failover target, and the replica has to be in different
+      zone with the primary instance.
     kind: This is always *sql#replicaConfiguration*.
     mysqlReplicaConfiguration: MySQL specific configuration when replicating
-      from a MySQL on-premises master. Replication configuration information
-      such as the username, password, certificates, and keys are not stored in
-      the instance metadata. The configuration information is used only to set
-      up the replication connection and is stored by MySQL in a file named
-      *master.info* in the data directory.
+      from a MySQL on-premises primary instance. Replication configuration
+      information such as the username, password, certificates, and keys are
+      not stored in the instance metadata. The configuration information is
+      used only to set up the replication connection and is stored by MySQL in
+      a file named *master.info* in the data directory.
   """
 
   failoverTarget = _messages.BooleanField(1)
@@ -1657,6 +1683,7 @@ class Settings(_messages.Message):
       instance to be located as near as possible to either an App Engine app
       or Compute Engine zone for better performance. App Engine co-location
       was only applicable to First Generation instances.
+    maintenanceDenyPeriods: Maintenance deny periods
     maintenanceWindow: The maintenance window for this instance. This
       specifies when the instance can be restarted for maintenance purposes.
     pricingPlan: The pricing plan for this instance. This can be either
@@ -1803,14 +1830,15 @@ class Settings(_messages.Message):
   ipConfiguration = _messages.MessageField('IpConfiguration', 12)
   kind = _messages.StringField(13)
   locationPreference = _messages.MessageField('LocationPreference', 14)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 15)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 16)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 17)
-  settingsVersion = _messages.IntegerField(18)
-  storageAutoResize = _messages.BooleanField(19)
-  storageAutoResizeLimit = _messages.IntegerField(20)
-  tier = _messages.StringField(21)
-  userLabels = _messages.MessageField('UserLabelsValue', 22)
+  maintenanceDenyPeriods = _messages.MessageField('MaintenanceDenyPeriod', 15, repeated=True)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 16)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 17)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 18)
+  settingsVersion = _messages.IntegerField(19)
+  storageAutoResize = _messages.BooleanField(20)
+  storageAutoResizeLimit = _messages.IntegerField(21)
+  tier = _messages.StringField(22)
+  userLabels = _messages.MessageField('UserLabelsValue', 23)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -1958,7 +1986,7 @@ class SqlDatabasesUpdateRequest(_messages.Message):
 
 
 class SqlExternalSyncSettingError(_messages.Message):
-  r"""External master migration setting error.
+  r"""External primary instance migration setting error.
 
   Enums:
     TypeValueValuesEnum: Identifies the specific error that occurred.
@@ -1998,9 +2026,10 @@ class SqlExternalSyncSettingError(_messages.Message):
         having unsupported versions
       INVALID_RDS_LOGICAL_REPLICATION: The value of parameter
         rds.logical_replication is not set to 1.
-      INVALID_LOGGING_SETUP: The master logging setup doesn't allow EM sync.
-      INVALID_DB_PARAM: The master database parameter setup doesn't allow EM
-        sync.
+      INVALID_LOGGING_SETUP: The primary instance logging setup doesn't allow
+        EM sync.
+      INVALID_DB_PARAM: The primary instance database parameter setup doesn't
+        allow EM sync.
       UNSUPPORTED_GTID_MODE: The gtid_mode is not supported, applicable for
         MySQL.
     """
@@ -2415,7 +2444,7 @@ class SqlProjectsInstancesStartExternalSyncRequest(_messages.Message):
       ONLINE: Online external sync will set up replication after initial data
         external sync
       OFFLINE: Offline external sync only dumps and loads a one-time snapshot
-        of master's data
+        of the primary instance's data
     """
     EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
     ONLINE = 1
@@ -2448,7 +2477,7 @@ class SqlProjectsInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
       ONLINE: Online external sync will set up replication after initial data
         external sync
       OFFLINE: Offline external sync only dumps and loads a one-time snapshot
-        of master's data
+        of the primary instance's data
     """
     EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
     ONLINE = 1

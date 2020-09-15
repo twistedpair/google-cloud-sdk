@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20200826",
+ "revision": "20200902",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1133,18 +1133,6 @@
      "description": "Specifies the number of hours after reservation creation where instances using the reservation won't be scheduled for maintenance.",
      "format": "int32"
     },
-    "maintenanceInterval": {
-     "type": "string",
-     "description": "Specifies whether this VM may be a stable fleet VM. Setting this to \"Periodic\" designates this VM as a Stable Fleet VM.\n\nSee go/stable-fleet-ug for more details.",
-     "enum": [
-      "AS_NEEDED",
-      "PERIODIC"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
-    },
     "minCpuPlatform": {
      "type": "string",
      "description": "Minimum cpu platform the reservation."
@@ -2066,7 +2054,7 @@
    "properties": {
     "predictiveMethod": {
      "type": "string",
-     "description": "Indicates which method of prediction is used for CPU utilization metric, if any. Current set of possible values: * NONE: No predictions are made based on the scaling metric when calculating the number of VM instances. * OPTIMIZE_AVAILABILITY: Standard predictive autoscaling predicts the future values of the scaling metric and then scales a MIG to ensure that new VM instances are ready in time to cover the predicted peak. New values might be added in the future. Some of the values might not be available in all API versions.",
+     "description": "Indicates whether predictive autoscaling based on CPU metric is enabled. Valid values are:\n\n* NONE (default). No predictive method is used. The autoscaler scales the group to meet current demand based on real-time metrics. * OPTIMIZE_AVAILABILITY. Predictive autoscaling improves availability by monitoring daily and weekly load patterns and scaling out ahead of anticipated demand.",
      "enum": [
       "NONE",
       "OPTIMIZE_AVAILABILITY",
@@ -2347,6 +2335,7 @@
     },
     "cacheMode": {
      "type": "string",
+     "description": "Specifies the cache setting for all responses from this backend. The possible values are:\n\nUSE_ORIGIN_HEADERS Requires the origin to set valid caching headers to cache content. Responses without these headers will not be cached at Google's edge, and will require a full trip to the origin on every request, potentially impacting performance and increasing load on the origin server.\n\nFORCE_CACHE_ALL Cache all content, ignoring any \"private\", \"no-store\" or \"no-cache\" directives in Cache-Control response headers. Warning: this may result in Cloud CDN caching private, per-user (user identifiable) content.\n\nCACHE_ALL_STATIC Automatically cache static content, including common image formats, media (video & audio), web assets (JavaScript & CSS). Requests and responses that are marked as uncacheable, as well as dynamic content (including HTML), will not be cached.",
      "enum": [
       "CACHE_ALL_STATIC",
       "FORCE_CACHE_ALL",
@@ -2372,12 +2361,12 @@
     },
     "maxTtl": {
      "type": "integer",
-     "description": "Specifies the maximum allowed TTL for cached content served by this origin. Cache directives that attempt to set a max-age or s-maxage higher than this, or an Expires header more than maxTTL seconds in the future will be capped at the value of maxTTL, as if it were the value of an s-maxage Cache-Control directive. Setting a TTL of \"0\" means \"always revalidate\". The maximum allowed value is 31,622,400s (1 year), noting that infrequently accessed objects may be evicted from the cache before the defined TTL.",
+     "description": "Specifies the maximum allowed TTL for cached content served by this origin. Cache directives that attempt to set a max-age or s-maxage higher than this, or an Expires header more than maxTTL seconds in the future will be capped at the value of maxTTL, as if it were the value of an s-maxage Cache-Control directive. Headers sent to the client will not be modified. Setting a TTL of \"0\" means \"always revalidate\". The maximum allowed value is 31,622,400s (1 year), noting that infrequently accessed objects may be evicted from the cache before the defined TTL.",
      "format": "int32"
     },
     "negativeCaching": {
      "type": "boolean",
-     "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 414 (URI Too Long), 421 (Misdirected Request), 501 (Not Implemented): 60s These defaults can be overridden in negative_caching_policy"
+     "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These defaults can be overridden in negative_caching_policy"
     },
     "negativeCachingPolicy": {
      "type": "array",
@@ -2427,7 +2416,7 @@
    "properties": {
     "code": {
      "type": "integer",
-     "description": "The HTTP status code to define a TTL against. Only HTTP status codes 300, 301, 308, 404, 405, 410, 414, 421, 451 and 501 are can be specified as values, and you cannot specify a status code more than once.",
+     "description": "The HTTP status code to define a TTL against. Only HTTP status codes 300, 301, 308, 404, 405, 410, 421, 451 and 501 are can be specified as values, and you cannot specify a status code more than once.",
      "format": "int32"
     },
     "ttl": {
@@ -2558,7 +2547,7 @@
    "properties": {
     "affinityCookieTtlSec": {
      "type": "integer",
-     "description": "If set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is one day (86,400).\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+     "description": "Lifetime of cookies in seconds. Only applicable if the loadBalancingScheme is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, the protocol is HTTP or HTTPS, and the sessionAffinity is GENERATED_COOKIE, or HTTP_COOKIE.\n\nIf set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is one day (86,400).\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "format": "int32"
     },
     "backends": {
@@ -2923,6 +2912,7 @@
     },
     "cacheMode": {
      "type": "string",
+     "description": "Specifies the cache setting for all responses from this backend. The possible values are:\n\nUSE_ORIGIN_HEADERS Requires the origin to set valid caching headers to cache content. Responses without these headers will not be cached at Google's edge, and will require a full trip to the origin on every request, potentially impacting performance and increasing load on the origin server.\n\nFORCE_CACHE_ALL Cache all content, ignoring any \"private\", \"no-store\" or \"no-cache\" directives in Cache-Control response headers. Warning: this may result in Cloud CDN caching private, per-user (user identifiable) content.\n\nCACHE_ALL_STATIC Automatically cache static content, including common image formats, media (video & audio), web assets (JavaScript & CSS). Requests and responses that are marked as uncacheable, as well as dynamic content (including HTML), will not be cached.",
      "enum": [
       "CACHE_ALL_STATIC",
       "FORCE_CACHE_ALL",
@@ -2948,12 +2938,12 @@
     },
     "maxTtl": {
      "type": "integer",
-     "description": "Specifies the maximum allowed TTL for cached content served by this origin. Cache directives that attempt to set a max-age or s-maxage higher than this, or an Expires header more than maxTTL seconds in the future will be capped at the value of maxTTL, as if it were the value of an s-maxage Cache-Control directive. Setting a TTL of \"0\" means \"always revalidate\". The maximum allowed value is 31,622,400s (1 year), noting that infrequently accessed objects may be evicted from the cache before the defined TTL.",
+     "description": "Specifies the maximum allowed TTL for cached content served by this origin. Cache directives that attempt to set a max-age or s-maxage higher than this, or an Expires header more than maxTTL seconds in the future will be capped at the value of maxTTL, as if it were the value of an s-maxage Cache-Control directive. Headers sent to the client will not be modified. Setting a TTL of \"0\" means \"always revalidate\". The maximum allowed value is 31,622,400s (1 year), noting that infrequently accessed objects may be evicted from the cache before the defined TTL.",
      "format": "int32"
     },
     "negativeCaching": {
      "type": "boolean",
-     "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 414 (URI Too Long), 421 (Misdirected Request), 501 (Not Implemented): 60s These defaults can be overridden in negative_caching_policy"
+     "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These defaults can be overridden in negative_caching_policy"
     },
     "negativeCachingPolicy": {
      "type": "array",
@@ -3003,7 +2993,7 @@
    "properties": {
     "code": {
      "type": "integer",
-     "description": "The HTTP status code to define a TTL against. Only HTTP status codes 300, 301, 308, 404, 405, 410, 414, 421, 451 and 501 are can be specified as values, and you cannot specify a status code more than once.",
+     "description": "The HTTP status code to define a TTL against. Only HTTP status codes 300, 301, 308, 404, 405, 410, 421, 451 and 501 are can be specified as values, and you cannot specify a status code more than once.",
      "format": "int32"
     },
     "ttl": {
@@ -3607,6 +3597,10 @@
    "type": "object",
    "description": "Associates `members` with a `role`.",
    "properties": {
+    "bindingId": {
+     "type": "string",
+     "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API."
+    },
     "condition": {
      "$ref": "Expr",
      "description": "The condition that is associated with this binding.\n\nIf the condition evaluates to `true`, then this binding applies to the current request.\n\nIf the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding.\n\nTo learn which resources support conditions in their IAM policies, see the [IAM documentation](https://cloud.google.com/iam/help/conditions/resource-policies)."
@@ -6934,7 +6928,7 @@
     },
     "target": {
      "type": "string",
-     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must live in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object. For INTERNAL_SELF_MANAGED load balancing, only targetHttpProxy and targetGrpcProxy are valid, not targetHttpsProxy."
+     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must be in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object. For more information, see the \"Target\" column in [Port specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications)."
     }
    }
   },
@@ -26492,9 +26486,18 @@
    "id": "SecurityPolicyRuleRateLimitOptions",
    "type": "object",
    "properties": {
+    "banDurationSec": {
+     "type": "integer",
+     "description": "Can only be specified if the action for the rule is \"rate_based_ban\". If specified, the key will be banned for the configured 'ban_duration' when the number of requests that exceed the 'rate_limit_threshold' also exceed this 'ban_threshold'.",
+     "format": "int32"
+    },
+    "banThreshold": {
+     "$ref": "SecurityPolicyRuleRateLimitOptionsThreshold",
+     "description": "Can only be specified if the action for the rule is \"rate_based_ban\". If specified, the key will be banned for the configured 'ban_duration' when the number of requests that exceed the 'rate_limit_threshold' also exceed this 'ban_threshold'."
+    },
     "blockDuration": {
      "type": "integer",
-     "description": "Can only be specified if the action for the rule is \"rate_based_blacklist\" If specified, determines the time (in seconds) the traffic will continue to be blocked by the rate limit after the rate falls below the threshold. The default value is 0 seconds.",
+     "description": "Can only be specified if the action for the rule is \"rate_based_ban\" If specified, determines the time (in seconds) the traffic will continue to be blocked by the rate limit after the rate falls below the threshold. The default value is 0 seconds. [Deprecated] This field is deprecated.",
      "format": "int32"
     },
     "conformAction": {
@@ -26517,9 +26520,29 @@
      "type": "string",
      "description": "When a request is denied, returns the HTTP response code specified. Valid options are \"deny()\" where valid values for status are 403, 404, 429, and 502."
     },
+    "rateLimitThreshold": {
+     "$ref": "SecurityPolicyRuleRateLimitOptionsThreshold",
+     "description": "Threshold at which to begin ratelimiting."
+    },
     "thresholdRps": {
      "type": "integer",
-     "description": "Rate in requests per second at which to begin ratelimiting.",
+     "description": "Rate in requests per second at which to begin ratelimiting. [Deprecated] This field is deprecated.",
+     "format": "int32"
+    }
+   }
+  },
+  "SecurityPolicyRuleRateLimitOptionsThreshold": {
+   "id": "SecurityPolicyRuleRateLimitOptionsThreshold",
+   "type": "object",
+   "properties": {
+    "count": {
+     "type": "integer",
+     "description": "Number of HTTP(S) requests for calculating the threshold.",
+     "format": "int32"
+    },
+    "intervalSec": {
+     "type": "integer",
+     "description": "Interval over which the threshold is computed.",
      "format": "int32"
     }
    }
@@ -27046,6 +27069,10 @@
      "description": "[Output Only] Number of bytes downloaded to restore a snapshot to a disk.",
      "format": "int64"
     },
+    "guestFlush": {
+     "type": "boolean",
+     "description": "[Input Only] Whether to attempt an application consistent snapshot by informing the OS to prepare for the snapshot process. Currently only supported on Windows instances using the Volume Shadow Copy Service (VSS)."
+    },
     "guestOsFeatures": {
      "type": "array",
      "description": "[Output Only] A list of features to enable on the guest operating system. Applicable only for bootable images. Read  Enabling guest operating system features to see a list of available options.",
@@ -27093,7 +27120,12 @@
     "name": {
      "type": "string",
      "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
-     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+     "annotations": {
+      "required": [
+       "compute.snapshots.insert"
+      ]
+     }
     },
     "satisfiesPzs": {
      "type": "boolean",
@@ -27390,7 +27422,7 @@
    "properties": {
     "certificate": {
      "type": "string",
-     "description": "A local certificate file. The certificate must be in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert."
+     "description": "A value read into memory from a certificate file. The certificate file must be in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert."
     },
     "creationTimestamp": {
      "type": "string",
@@ -27425,7 +27457,7 @@
     },
     "privateKey": {
      "type": "string",
-     "description": "A write-only private key in PEM format. Only insert requests will include this field."
+     "description": "A value read into memory from a write-only private key file. The private key file must be in PEM format. For security, only insert requests include this field."
     },
     "region": {
      "type": "string",
@@ -60786,6 +60818,39 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.snapshots.insert",
+     "path": "projects/{project}/global/snapshots",
+     "httpMethod": "POST",
+     "description": "Creates a snapshot in the specified project using the data included in the request.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "request": {
+      "$ref": "Snapshot"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "list": {

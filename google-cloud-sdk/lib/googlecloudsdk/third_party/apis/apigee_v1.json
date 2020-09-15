@@ -1275,6 +1275,10 @@
           "items": {
             "$ref": "GoogleCloudApigeeV1DataCollectorConfig"
           }
+        },
+        "traceConfig": {
+          "description": "Trace configurations. Contains config for the environment and config overrides for specific API proxies.",
+          "$ref": "GoogleCloudApigeeV1RuntimeTraceConfig"
         }
       }
     },
@@ -1526,6 +1530,164 @@
             "BOOLEAN",
             "DATETIME"
           ]
+        }
+      }
+    },
+    "GoogleCloudApigeeV1RuntimeTraceConfig": {
+      "id": "GoogleCloudApigeeV1RuntimeTraceConfig",
+      "description": "NEXT ID: 8 RuntimeTraceConfig defines the configurations for distributed trace in an environment.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the trace config in the following format: `organizations\/{org}\/environment\/{env}\/traceConfig`",
+          "type": "string"
+        },
+        "revisionId": {
+          "description": "Revision number which can be used by the runtime to detect if the trace config has changed between two versions.",
+          "type": "string"
+        },
+        "revisionCreateTime": {
+          "description": "The timestamp that the revision was created or updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "exporter": {
+          "description": "Exporter that is used to view the distributed trace captured using OpenCensus. An exporter sends traces to any backend that is capable of consuming them. Recorded spans can be exported by registered exporters.",
+          "type": "string",
+          "enumDescriptions": [
+            "Exporter unspecified",
+            "Jaeger exporter",
+            "Cloudtrace exporter"
+          ],
+          "enum": [
+            "EXPORTER_UNSPECIFIED",
+            "JAEGER",
+            "CLOUD_TRACE"
+          ]
+        },
+        "endpoint": {
+          "description": "Endpoint of the exporter.",
+          "type": "string"
+        },
+        "samplingConfig": {
+          "description": "Trace configuration for all API proxies in an environment.",
+          "$ref": "GoogleCloudApigeeV1RuntimeTraceSamplingConfig"
+        },
+        "overrides": {
+          "description": "List of trace configuration overrides for spicific API proxies.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1RuntimeTraceConfigOverride"
+          }
+        }
+      }
+    },
+    "GoogleCloudApigeeV1RuntimeTraceSamplingConfig": {
+      "id": "GoogleCloudApigeeV1RuntimeTraceSamplingConfig",
+      "description": "NEXT ID: 6 RuntimeTraceSamplingConfig represents the detail settings of distributed tracing. Only the fields that are defined in the distributed trace configuration can be overridden using the distribute trace configuration override APIs.",
+      "type": "object",
+      "properties": {
+        "sampler": {
+          "description": "Sampler of distributed tracing. OFF is the default value.",
+          "type": "string",
+          "enumDescriptions": [
+            "Sampler unspecified.",
+            "OFF means distributed trace is disabled, or the sampling probability is 0.",
+            "ON means distributed trace is enabled always for all api calls, and sampling probability is 0.5.",
+            "PROBABILITY means traces are captured on a probability that defined by sampling_rate. The sampling rate is limited to 0 to 0.5 when this is set."
+          ],
+          "enum": [
+            "SAMPLER_UNSPECIFIED",
+            "OFF",
+            "ON",
+            "PROBABILITY"
+          ]
+        },
+        "samplingRate": {
+          "description": "Field sampling rate. This value is only valid when is only applicable when sampling value is probabilistic(PROBABILITY). The supported values are > 0 and <= 0.5.",
+          "type": "number",
+          "format": "float"
+        },
+        "responseCodeRanges": {
+          "description": "List of response code ranges.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1RuntimeTraceSamplingConfigResponseCodeRange"
+          }
+        },
+        "responseCodes": {
+          "description": "List of single response codes.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "errorSources": {
+          "description": "Error sources from which to capture errors. If none are specified, error codes are captured from all sources.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Error source is unspecified.",
+              "Only capture trace errors within the Apigee system.",
+              "Only capture trace errors from target server."
+            ],
+            "enum": [
+              "ERROR_SOURCE_UNSPECIFIED",
+              "APIGEE",
+              "TARGET"
+            ]
+          }
+        }
+      }
+    },
+    "GoogleCloudApigeeV1RuntimeTraceSamplingConfigResponseCodeRange": {
+      "id": "GoogleCloudApigeeV1RuntimeTraceSamplingConfigResponseCodeRange",
+      "description": "ResponseCodeRange represents a group of response codes to capture, from the first response code to the last response code. Each range is a close interval. For example, if an interval is [400, 403], then that means 400, 401, 402, 403 will be all captured.",
+      "type": "object",
+      "properties": {
+        "firstResponseCode": {
+          "description": "The first response code to capture.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "lastResponseCode": {
+          "description": "The last response code to capture.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1RuntimeTraceConfigOverride": {
+      "id": "GoogleCloudApigeeV1RuntimeTraceConfigOverride",
+      "description": "NEXT ID: 7 Trace configuration override for a specific API proxy in an environment.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the trace config override in the following format: `organizations\/{org}\/environment\/{env}\/traceConfig\/overrides\/{override}`",
+          "type": "string"
+        },
+        "uid": {
+          "description": "Unique ID for the configuration override. The ID will only change if the override is deleted and recreated.",
+          "type": "string"
+        },
+        "revisionId": {
+          "description": "Revision number which can be used by the runtime to detect if the trace config override has changed between two versions.",
+          "type": "string"
+        },
+        "revisionCreateTime": {
+          "description": "The timestamp that the revision was created or updated.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "apiProxy": {
+          "description": "Name of the API proxy that will have its trace configuration overridden following format: `organizations\/{org}\/apis\/{api}`",
+          "type": "string"
+        },
+        "samplingConfig": {
+          "description": "Trace configuration override for a specific API proxy in an environment.",
+          "$ref": "GoogleCloudApigeeV1RuntimeTraceSamplingConfig"
         }
       }
     },
@@ -1814,8 +1976,7 @@
           "type": "string"
         },
         "runtimeType": {
-          "description": "Output only. Runtime type of the Apigee organization based on the Apigee subscription purchased.",
-          "readOnly": true,
+          "description": "Required. Runtime type of the Apigee organization based on the Apigee subscription purchased.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -3033,7 +3194,7 @@
           }
         },
         "operationConfigType": {
-          "description": "Identfies whether the configuration is for Apigee proxy or a remote service. Possible values are \"proxy\" and \"remote_service\". If none specified, the default is \"proxy\". \"proxy\" is used when Apigee proxies are associated with the API product. \"remote_service\" is used when non-Apigee proxy like Envoy is used, and is associated with the API product.",
+          "description": "Identfies whether the configuration is for Apigee proxy or a remote service. Possible values are \"proxy\" and \"remoteservice\". If none specified, the default is \"proxy\". \"proxy\" is used when Apigee proxies are associated with the API product. \"remoteservice\" is used when non-Apigee proxy like Envoy is used, and is associated with the API product.",
           "type": "string"
         }
       }
@@ -3047,18 +3208,11 @@
           "description": "Required. api_source represents either a proxy or remote service name for which the resources, methods and quota are associated with.",
           "type": "string"
         },
-        "resources": {
-          "description": "Required. resources represents a list of REST resource path associated with the proxy\/remote service.",
+        "operations": {
+          "description": "operations is the list of resource\/methods pair, belonging to proxy\/remote service, upon which quota will applied on. Note that currently we allow only a single operation. The call will fail if more than one is provided.",
           "type": "array",
           "items": {
-            "type": "string"
-          }
-        },
-        "methods": {
-          "description": "methods refers to the REST verbs as in https:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec9.html. When none specified, all verb types are allowed.",
-          "type": "array",
-          "items": {
-            "type": "string"
+            "$ref": "GoogleCloudApigeeV1Operation"
           }
         },
         "quota": {
@@ -3070,6 +3224,24 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudApigeeV1Attribute"
+          }
+        }
+      }
+    },
+    "GoogleCloudApigeeV1Operation": {
+      "id": "GoogleCloudApigeeV1Operation",
+      "description": "Operation represents the pairing of REST resource path and the actions (verbs) allowed on the resource path.",
+      "type": "object",
+      "properties": {
+        "resource": {
+          "description": "Required. resource represents REST resource path associated with the proxy\/remote service.",
+          "type": "string"
+        },
+        "methods": {
+          "description": "methods refers to the REST verbs as in https:\/\/www.w3.org\/Protocols\/rfc2616\/rfc2616-sec9.html. When none specified, all verb types are allowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

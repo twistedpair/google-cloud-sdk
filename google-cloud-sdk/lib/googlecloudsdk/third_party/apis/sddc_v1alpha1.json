@@ -598,13 +598,15 @@
             "The default value. This value should never be used.",
             "The cluster group is ready.",
             "The cluster group is being created.",
-            "The cluster group is being deleted."
+            "The cluster group is being deleted.",
+            "The cluster group is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
             "CREATING",
-            "DELETING"
+            "DELETING",
+            "UPDATING"
           ]
         },
         "vcenter": {
@@ -819,6 +821,10 @@
         "condition": {
           "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
+        },
+        "bindingId": {
+          "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API.",
+          "type": "string"
         }
       }
     },

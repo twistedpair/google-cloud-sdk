@@ -207,9 +207,10 @@ class GkeCluster(_messages.Message):
 
   Fields:
     resourceLink: Immutable. Self-link of the GCP resource for the GKE
-      cluster. For example: //container.googleapis.com/v1/projects/my-
-      project/zones/us-west1-a/clusters/my-cluster It can be at the most 1000
-      characters in length.
+      cluster. For example: //container.googleapis.com/projects/my-
+      project/locations/us-west1-a/clusters/my-cluster Using "zones" instead
+      of "locations" is also valid. It can be at the most 1000 characters in
+      length.
   """
 
   resourceLink = _messages.StringField(1)

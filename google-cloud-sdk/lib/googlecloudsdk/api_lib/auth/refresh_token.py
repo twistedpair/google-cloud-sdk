@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import store as c_store
 
 from oauth2client import client
@@ -39,10 +38,8 @@ class UnsupportedCredentialsType(exceptions.Error):
 def ActivateCredentials(account, refresh_token):
   """Activates credentials for given account with given refresh token."""
 
-  use_google_auth = (
-      not properties.VALUES.auth.disable_load_google_auth.GetBool())
   creds = c_store.AcquireFromToken(
-      refresh_token, use_google_auth=use_google_auth)
+      refresh_token, use_google_auth=True)
 
   c_store.ActivateCredentials(account, creds)
 
@@ -62,11 +59,8 @@ def GetForAccount(account=None):
   Raises:
     UnsupportedCredentialsType: if credentials are not user credentials.
   """
-
-  use_google_auth = (
-      not properties.VALUES.auth.disable_load_google_auth.GetBool())
   try:
-    creds = c_store.Load(account, use_google_auth=use_google_auth)
+    creds = c_store.Load(account, use_google_auth=True)
   except (client.Error, google_auth_exceptions.GoogleAuthError):
     raise calliope_exceptions.NewErrorFromCurrentException(
         LoadingCredentialsError)

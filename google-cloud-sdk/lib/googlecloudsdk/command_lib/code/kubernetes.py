@@ -19,6 +19,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import subprocess
+import sys
 
 from googlecloudsdk.command_lib.code import run_subprocess
 from googlecloudsdk.core import exceptions
@@ -264,7 +265,7 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
             raise MinikubeStartError(msg)
 
   except Exception as e:
-    six.reraise(MinikubeStartError, e)
+    six.reraise(MinikubeStartError, e, sys.exc_info()[2])
 
 
 def _GetMinikubeDockerEnvs(cluster_name):

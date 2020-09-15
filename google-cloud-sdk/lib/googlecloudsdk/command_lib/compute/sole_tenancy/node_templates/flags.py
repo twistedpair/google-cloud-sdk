@@ -140,6 +140,26 @@ unconstrained.
       """)
 
 
+def AddAcceleratorArgs(parser):
+  """Adds Accelerator-related args."""
+  parser.add_argument(
+      '--accelerator',
+      type=arg_parsers.ArgDict(spec={
+          'type': str,
+          'count': int,
+      }),
+      help="""\
+      Attaches accelerators (e.g. GPUs) to the node template.
+
+      *type*::: The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+      of accelerator to attach to the node template. Use 'gcloud compute
+      accelerator-types list' to learn about all available accelerator types.
+
+      *count*::: Number of accelerators to attach to each
+      node template. The default value is 1.
+      """)
+
+
 def AddDiskArgToParser(parser):
   """Add flag for specifying disk information."""
   parser.add_argument(

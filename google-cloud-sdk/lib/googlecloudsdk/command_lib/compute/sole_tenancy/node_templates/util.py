@@ -32,8 +32,12 @@ def _ParseNodeAffinityLabels(affinity_labels, messages):
 
 def CreateNodeTemplate(node_template_ref,
                        args,
+                       project,
+                       region,
                        messages,
-                       enable_disk=False):
+                       resource_parser,
+                       enable_disk=False,
+                       enable_accelerator=False):
   """Creates a Node Template message from args."""
   node_affinity_labels = None
   if args.node_affinity_labels:
@@ -71,9 +75,54 @@ def CreateNodeTemplate(node_template_ref,
         messages.NodeTemplate.CpuOvercommitTypeValueValuesEnum)
     node_template.cpuOvercommitType = overcommit_type
 
+  if enable_accelerator:
+    node_template.accelerators = GetAccelerators(args, messages,
+                                                 resource_parser, project,
+                                                 region)
+
   server_binding_flag = flags.GetServerBindingMapperFlag(messages)
   server_binding = messages.ServerBinding(
       type=server_binding_flag.GetEnumForChoice(args.server_binding))
   node_template.serverBinding = server_binding
 
   return node_template
+
+
+def GetAccelerators(args, messages, resource_parser, project, region):
+  """Returns list of messages with accelerators for the instance."""
+  if args.accelerator:
+    accelerator_type_name = args.accelerator['type']
+    accelerator_type = ParseAcceleratorType(
+        accelerator_type_name, resource_parser, project, region)
+    # Accelerator count is default to 1.
+    accelerator_count = int(args.accelerator.get('count', 1))
+    return CreateAcceleratorConfigMessages(messages, accelerator_type,
+                                           accelerator_count)
+  return []
+
+
+def CreateAcceleratorConfigMessages(msgs, accelerator_type, accelerator_count):
+  """Returns a list of accelerator config messages.
+
+  Args:
+    msgs: tracked GCE API messages.
+    accelerator_type: reference to the accelerator type.
+    accelerator_count: number of accelerators to attach to the VM.
+
+  Returns:
+    a list of accelerator config message that specifies the type and number of
+    accelerators to attach to an instance.
+  """
+
+  accelerator_config = msgs.AcceleratorConfig(
+      acceleratorType=accelerator_type, acceleratorCount=accelerator_count)
+  return [accelerator_config]
+
+
+def ParseAcceleratorType(accelerator_type_name, resource_parser, project,
+                         region):
+  collection = 'compute.regionAcceleratorTypes'
+  params = {'project': project, 'region': region}
+  accelerator_type = resource_parser.Parse(
+      accelerator_type_name, collection=collection, params=params).SelfLink()
+  return accelerator_type

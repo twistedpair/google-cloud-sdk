@@ -78,7 +78,12 @@ def ParseAndReturnIncludePaths(appinfo_file):
 
   # Reimplement appinfo.py handler checks after merge.
   if not appyaml.handlers:
-    appyaml.handlers = []
+    # Add a placeholder handler for VM runtime apps.
+    # TODO(b/65159665): Do not require this placeholder entry.
+    if appyaml.IsVm():
+      appyaml.handlers = [appinfo.URLMap(url='.*', script='PLACEHOLDER')]
+    else:
+      appyaml.handlers = []
   if len(appyaml.handlers) > appinfo.MAX_URL_MAPS:
     raise appinfo_errors.TooManyURLMappings(
         'Found more than %d URLMap entries in application configuration' %

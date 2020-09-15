@@ -4318,6 +4318,39 @@
                   }
                 }
               }
+            },
+            "corpora": {
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "get": {
+                      "id": "videointelligence.projects.locations.corpora.operations.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/corpora/{corporaId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/corpora\/[^\/]+\/operations\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunning_Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    }
+                  }
+                }
+              }
             }
           }
         }

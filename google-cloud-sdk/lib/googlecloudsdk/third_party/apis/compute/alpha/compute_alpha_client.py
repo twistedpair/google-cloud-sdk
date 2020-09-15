@@ -15941,6 +15941,32 @@ For more information, see Deleting snapshots.
         supports_download=False,
     )
 
+    def Insert(self, request, global_params=None):
+      r"""Creates a snapshot in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSnapshotsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.snapshots.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/snapshots',
+        request_field='snapshot',
+        request_type_name='ComputeSnapshotsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Retrieves the list of Snapshot resources contained within the specified project.
 

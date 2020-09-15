@@ -246,11 +246,6 @@
             "type": "string"
           }
         },
-        "endpointUrl": {
-          "description": "Output only. AnthosApiEndpoint URL used for interacting with the KRM endpoint",
-          "readOnly": true,
-          "type": "string"
-        },
         "manBlock": {
           "description": "Master Authorized Network. Allows access to the k8s master from this block.",
           "type": "string"
@@ -297,6 +292,11 @@
         },
         "servicesNamedRange": {
           "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "gkeResourceLink": {
+          "description": "Output only. AnthosApiEndpoint GCP self link used for identifying the underlying endpoint (GKE cluster currently)",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -347,11 +347,6 @@
           "description": "Configuration for the bundles that are enabled on the KrmApiHost.",
           "$ref": "BundlesConfig"
         },
-        "endpoint": {
-          "description": "Output only. IP address of the KRM endpoint on the KrmApiHost.",
-          "readOnly": true,
-          "type": "string"
-        },
         "manBlock": {
           "description": "Master Authorized Network. Allows access to the k8s master from this block.",
           "type": "string"
@@ -398,6 +393,11 @@
         },
         "servicesNamedRange": {
           "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "gkeResourceLink": {
+          "description": "Output only. AnthosApiEndpoint GCP self link used for identifying the underlying endpoint (GKE cluster currently)",
+          "readOnly": true,
           "type": "string"
         }
       }

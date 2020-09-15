@@ -66,14 +66,6 @@ def GetMigrationJobResourceSpec(resource_name='migration_job'):
       disable_auto_completers=False)
 
 
-def GetRegionResourceSpec():
-  return concepts.ResourceSpec(
-      'datamigration.projects.locations',
-      resource_name='region',
-      locationsId=RegionAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
-
-
 def AddConnectionProfileResourceArg(parser, verb, positional=True):
   """Add a resource argument for a database migration connection profile.
 
@@ -122,12 +114,13 @@ def AddCloudSqlConnectionProfileResouceArgs(parser, verb):
   ).AddToParser(parser)
 
 
-def AddMigrationJobResourceArgs(parser, verb):
+def AddMigrationJobResourceArgs(parser, verb, required=False):
   """Add resource arguments for creating/updating a database migration job.
 
   Args:
     parser: argparse.ArgumentParser, the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    required: boolean, whether source/dest resource args are required.
   """
   resource_specs = [
       presentation_specs.ResourcePresentationSpec(
@@ -140,14 +133,14 @@ def AddMigrationJobResourceArgs(parser, verb):
           '--source',
           GetConnectionProfileResourceSpec(),
           'Resource ID of the source connection profile.',
-          required=True,
+          required=required,
           flag_name_overrides={'region': ''}
       ),
       presentation_specs.ResourcePresentationSpec(
           '--destination',
           GetConnectionProfileResourceSpec(),
           'Resource ID of the destination connection profile.',
-          required=True,
+          required=required,
           flag_name_overrides={'region': ''}
       )
   ]
@@ -157,19 +150,3 @@ def AddMigrationJobResourceArgs(parser, verb):
           '--source.region': ['--region'],
           '--destination.region': ['--region']
       }).AddToParser(parser)
-
-
-def AddRegionResourceArg(parser, verb):
-  """Add a resource argument for a database migration region.
-
-  NOTE: Must be used only if it's the only resource arg in the command.
-
-  Args:
-    parser: the parser for the command.
-    verb: str, the verb to describe the resource, such as 'to update'.
-  """
-  concept_parsers.ConceptParser.ForResource(
-      '--region',
-      GetRegionResourceSpec(),
-      'The Cloud region {}.'.format(verb),
-      required=True).AddToParser(parser)

@@ -998,7 +998,7 @@ class ServerlessOperations(object):
     Ensures a new revision is always created, even if the spec of the revision
     has not changed.
 
-    Arguments:
+    Args:
       service_ref: Resource, the service to release.
       config_changes: list, objects that implement Adjust().
       tracker: StagedProgressTracker, to report on the progress of releasing.
@@ -1014,6 +1014,9 @@ class ServerlessOperations(object):
         service.
       build_op_ref: The reference to the build.
       build_log_url: The log url of the build result.
+    Returns:
+      service.Service, the service as returned by the server on the POST/PUT
+       request to create/update the service.
     """
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
@@ -1054,7 +1057,7 @@ class ServerlessOperations(object):
         self._EnsureImageDigest(serv, config_changes)
     config_changes = [_SetClientNameAndVersion()] + config_changes
 
-    self._UpdateOrCreateService(
+    created_or_updated_service = self._UpdateOrCreateService(
         service_ref, config_changes, with_image, serv)
 
     if allow_unauthenticated is not None:
@@ -1086,6 +1089,7 @@ class ServerlessOperations(object):
       self.WaitForCondition(poller)
       for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
         tracker.AddWarning(msg)
+    return created_or_updated_service
 
   def ListRevisions(self, namespace_ref, service_name,
                     limit=None, page_size=100):

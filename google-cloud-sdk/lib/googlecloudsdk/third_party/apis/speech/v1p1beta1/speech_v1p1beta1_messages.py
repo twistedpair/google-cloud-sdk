@@ -369,8 +369,8 @@ class LongRunningRecognizeRequest(_messages.Message):
     config: Required. Provides information to the recognizer that specifies
       how to process the request.
     name: Use `model` field in RecognitionConfig instead.
-    outputConfig: Optional. If set this field configures how the recognizer
-      will output the final transcript.
+    outputConfig: Optional. Specifies an optional destination for the
+      recognition results.
   """
 
   audio = _messages.MessageField('RecognitionAudio', 1)
@@ -1653,14 +1653,11 @@ class Status(_messages.Message):
 
 
 class TranscriptOutputConfig(_messages.Message):
-  r"""Provides information to the recognizer that specifies the transcript
-  output.
+  r"""Specifies an optional destination for the recognition results.
 
   Fields:
-    gcsUri: Specifies a Cloud Storage URI for the final transcript. Returns
-      INVALID_ARGUMENT if not in the format: `gs://bucket_name/object_name`.
-      If the write attempt fails, relevant error information will be stored in
-      the response object.
+    gcsUri: Specifies a Cloud Storage URI for the recognition results. Must be
+      specified in the format: `gs://bucket_name/object_name`
   """
 
   gcsUri = _messages.StringField(1)

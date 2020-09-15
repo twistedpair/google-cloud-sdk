@@ -356,6 +356,11 @@ def AvailableAccounts():
   return sorted(accounts)
 
 
+def GoogleAuthDisabledGlobally():
+  """Returns True if google-auth is disabled globally."""
+  return properties.VALUES.auth.disable_load_google_auth.GetBool()
+
+
 def _TokenExpiresWithinWindow(expiry_window,
                               token_expiry_time,
                               max_window_seconds=3600):
@@ -400,26 +405,36 @@ def _TokenExpiresWithinWindow(expiry_window,
 def LoadFreshCredential(account=None,
                         scopes=None,
                         min_expiry_duration='1h',
-                        allow_account_impersonation=True):
-  """Get Load credentials and force a refresh.
+                        allow_account_impersonation=True,
+                        use_google_auth=False):
+  """Load credentials and force a refresh.
 
     Will always refresh loaded credential if it is expired or would expire
     within min_expiry_duration.
 
   Args:
     account: str, The account address for the credentials being fetched. If
-        None, the account stored in the core.account property is used.
-    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
-        are requested.
+      None, the account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES are
+      requested.
     min_expiry_duration: Duration str, Refresh the credentials if they are
-        within this duration from expiration. Must be a valid duration between
-        0 seconds and 1 hour (e.g. '0s' >x< '1h').
+      within this duration from expiration. Must be a valid duration between 0
+      seconds and 1 hour (e.g. '0s' >x< '1h').
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
+    use_google_auth: bool, True to load credentials as google-auth credentials.
+      False to load credentials as oauth2client credentials..
 
   Returns:
-    oauth2client.client.Credentials, The specified credentials.
+    oauth2client.client.Credentials or google.auth.credentials.Credentials.
+    When all of the following conditions are met, it returns
+    google.auth.credentials.Credentials and otherwise it returns
+    oauth2client.client.Credentials.
+
+    * use_google_auth is True
+    * google-auth is not globally disabled by auth/disable_load_google_auth.
+    * the active credential is not p12 service account.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -434,13 +449,12 @@ def LoadFreshCredential(account=None,
       impersonation provider is not configured.
    ValueError:
   """
-  cred = Load(account=account,
-              scopes=scopes,
-              allow_account_impersonation=allow_account_impersonation)
-  if not cred.token_expiry or _TokenExpiresWithinWindow(
-      expiry_window=min_expiry_duration,
-      token_expiry_time=cred.token_expiry):
-    Refresh(cred)
+  cred = Load(
+      account=account,
+      scopes=scopes,
+      allow_account_impersonation=allow_account_impersonation,
+      use_google_auth=use_google_auth)
+  RefreshIfExpireWithinWindow(cred, min_expiry_duration)
 
   return cred
 
@@ -457,22 +471,18 @@ def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=False):
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
-    use_google_auth: bool, True to load credentials of google-auth if it is
-      supported in the current authentication scenario. False to load
-      credentials of oauth2client.
+    use_google_auth: bool, True to load credentials as google-auth credentials.
+    False to load credentials as oauth2client credentials..
 
   Returns:
-    The credentials or None. The returned credentails will be type of
-    oauth2client.client.Credentials or google.auth.credentials.Credentials based
-    on use_google_auth and whether google-auth is supported in the current
-    authentication scenario. The only two scenarios that google-auth is not
-    supported are,
-    1) Property auth/disable_load_google_auth is set to True;
-    2) P12 service account key is being used.
+    oauth2client.client.Credentials or google.auth.credentials.Credentials if
+    credentials are enabled. When all of the following conditions are met, it
+    returns google.auth.credentials.Credentials and otherwise it returns
+    oauth2client.client.Credentials.
 
-    The only time None is returned is when credentials are disabled via
-    properties. If no credentials are present but credentials are enabled via
-    properties, it will be an error.
+    * use_google_auth is True
+    * google-auth is not globally disabled by auth/disable_load_google_auth.
+    * the active credential is not p12 service account.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -518,17 +528,18 @@ def Load(account=None,
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials (if that is configured). If False, the active user
       credentials will always be loaded.
-    use_google_auth: bool, True to load credentials of google-auth if it is
-      supported in the current authentication scenario. False to load
-      credentials of oauth2client.
+    use_google_auth: bool, True to load credentials as google-auth credentials.
+    False to load credentials as oauth2client credentials..
 
   Returns:
-    oauth2client.client.Credentials or google.auth.credentials.Credentials based
-    on use_google_auth and whether google-auth is supported in the current
-    authentication sceanrio. The only two scenarios that google-auth is not
-    supported are,
-    1) Property auth/disable_load_google_auth is set to True;
-    2) P12 service account key is being used.
+    oauth2client.client.Credentials or google.auth.credentials.Credentials.
+    When all of the following conditions are met, it returns
+    google.auth.credentials.Credentials and otherwise it returns
+    oauth2client.client.Credentials.
+
+    * use_google_auth is True
+    * google-auth is not globally disabled by auth/disable_load_google_auth.
+    * the active credential is not p12 service account.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -542,9 +553,7 @@ def Load(account=None,
     AccountImpersonationError: If impersonation is requested but an
       impersonation provider is not configured.
   """
-  google_auth_disabled = (
-      properties.VALUES.auth.disable_load_google_auth.GetBool())
-  use_google_auth = use_google_auth and (not google_auth_disabled)
+  use_google_auth = use_google_auth and (not GoogleAuthDisabledGlobally())
 
   impersonate_service_account = (
       properties.VALUES.auth.impersonate_service_account.Get())
@@ -1043,15 +1052,12 @@ def RevokeCredentials(credentials):
     credentials.revoke(http.GoogleAuthRequest(http_client))
 
 
-def Revoke(account=None, use_google_auth=False):
+def Revoke(account=None):
   """Revoke credentials and clean up related files.
 
   Args:
     account: str, The account address for the credentials to be revoked. If
         None, the currently active account is used.
-    use_google_auth: bool, True to revoke the credentials as google auth
-        credentials. False to revoke the credentials as oauth2client
-        credentials.
 
   Returns:
     True if this call revoked the account; False if the account was already
@@ -1078,7 +1084,7 @@ def Revoke(account=None, use_google_auth=False):
     raise RevokeError('Cannot revoke GCE-provided credentials.')
 
   credentials = Load(
-      account, prevent_refresh=True, use_google_auth=use_google_auth)
+      account, prevent_refresh=True, use_google_auth=True)
   if not credentials:
     raise NoCredentialsForAccountException(account)
 
@@ -1194,14 +1200,19 @@ def AcquireFromToken(refresh_token,
     refresh_token: An oauth2 refresh token.
     token_uri: str, URI to use for refreshing.
     revoke_uri: str, URI to use for revoking.
-    use_google_auth: bool, True to return google-auth credentials, False to
-      return oauth2client credentials.
+    use_google_auth: bool, True to return google-auth credentials. False to
+    return oauth2client credentials..
 
   Returns:
-    client.Credentials or google.auth.credentials.Credentials, Credentials made
-      from the refresh token. The returned credentials type is based on the
-      value of use_google_auth.
+    oauth2client.client.Credentials or google.auth.credentials.Credentials.
+    When all of the following conditions are true, it returns
+    google.auth.credentials.Credentials and otherwise it returns
+    oauth2client.client.Credentials.
+
+    * use_google_auth=True
+    * google-auth is not globally disabled by auth/disable_load_google_auth.
   """
+  use_google_auth = use_google_auth and (not GoogleAuthDisabledGlobally())
   if use_google_auth:
     # Import only when necessary to decrease the startup time. Move it to
     # global once google-auth is ready to replace oauth2client.

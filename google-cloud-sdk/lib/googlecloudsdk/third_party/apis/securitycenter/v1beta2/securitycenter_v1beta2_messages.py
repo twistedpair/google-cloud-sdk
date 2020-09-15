@@ -288,10 +288,12 @@ class Finding(_messages.Message):
       "XSS_FLASH_INJECTION"
     createTime: The time at which the finding was created in Security Command
       Center.
-    eventTime: The time at which the event took place. For example, if the
-      finding represents an open firewall it would capture the time the
-      detector believes the firewall became open. The accuracy is determined
-      by the detector.
+    eventTime: The time at which the event took place, or when an update to
+      the finding occurred. For example, if the finding represents an open
+      firewall it would capture the time the detector believes the firewall
+      became open. The accuracy is determined by the detector. If the finding
+      were to be resolved afterward, this time would reflect when the finding
+      was resolved.
     externalUri: The URI that, if available, points to a web page outside of
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well
@@ -568,10 +570,12 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
       "XSS_FLASH_INJECTION"
     createTime: The time at which the finding was created in Security Command
       Center.
-    eventTime: The time at which the event took place. For example, if the
-      finding represents an open firewall it would capture the time the
-      detector believes the firewall became open. The accuracy is determined
-      by the detector.
+    eventTime: The time at which the event took place, or when an update to
+      the finding occurred. For example, if the finding represents an open
+      firewall it would capture the time the detector believes the firewall
+      became open. The accuracy is determined by the detector. If the finding
+      were to be resolved afterward, this time would reflect when the finding
+      was resolved.
     externalUri: The URI that, if available, points to a web page outside of
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well

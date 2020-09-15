@@ -383,6 +383,18 @@
         "persistenceConfig": {
           "description": "Optional. Persistence configuration parameters",
           "$ref": "PersistenceConfig"
+        },
+        "transitEncryptionMode": {
+          "description": "Optional. The In-transit encryption mode of Redis instance. If not provided, in-transit encryption is disabled for instance.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "In-transit encryption enabled with server authentication"
+          ],
+          "enum": [
+            "TRANSIT_ENCRYPTION_MODE_UNSPECIFIED",
+            "SERVER_AUTHENTICATION"
+          ]
         }
       }
     },
@@ -414,22 +426,6 @@
         "sha1Fingerprint": {
           "description": "Sha1 Fingerprint of the certificate.",
           "type": "string"
-        },
-        "state": {
-          "description": "Status of current TLS Cert",
-          "type": "string",
-          "enumDescriptions": [
-            "Not set.",
-            "Current certificate is active",
-            "certificate is just phased out",
-            "new certificate to rotate to."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "ACTIVE",
-            "PHASED_OUT",
-            "NEW_TO_ROTATE"
-          ]
         }
       }
     },

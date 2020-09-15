@@ -941,6 +941,28 @@ def EnableUserProjectQuota():
       properties.VALUES.billing.CURRENT_PROJECT)
 
 
+def OptInRequests():
+  """Opts the command group into to using google auth for authentication.
+
+  Call this function in the Filter method of the command group
+  to enable requests.
+  """
+  properties.VALUES.transport.opt_in_requests.Set(True)
+
+
+def UseRequests():
+  """Returns True if using google-auth to authenticate the http request.
+
+  transport/disable_requests_override is a global switch to turn off requests in
+  case support is buggy. transport/opt_in_requests is an internal property
+  to opt-in surfaces.
+  """
+
+  return (UseGoogleAuth() and
+          properties.VALUES.transport.opt_in_requests.GetBool() and
+          not properties.VALUES.transport.disable_requests_override.GetBool())
+
+
 def OptOutGoogleAuth():
   """Opt-out the command group to use google auth for authentication.
 

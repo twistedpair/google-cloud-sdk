@@ -681,6 +681,10 @@
         "grpcEndpoint": {
           "description": "gRPC specific configuration to access the gRPC server to obtain the cert and private key.",
           "$ref": "GoogleCloudNetworksecurityV1alpha1GrpcEndpoint"
+        },
+        "certificateProviderInstance": {
+          "description": "The certificate provider instance specification that will be passed to the data plane, which will be used to load necessary credential information.",
+          "$ref": "CertificateProviderInstance"
         }
       }
     },
@@ -706,6 +710,17 @@
       "properties": {
         "targetUri": {
           "description": "Required. The target URI of the gRPC endpoint. Only UDS path is supported, and should start with \u201Cunix:\u201D.",
+          "type": "string"
+        }
+      }
+    },
+    "CertificateProviderInstance": {
+      "id": "CertificateProviderInstance",
+      "description": "Specification of a TLS certificate provider instance. Workloads may have one or more CertificateProvider instances (plugins) and one of them is enabled and configured by specifying this message. Workloads use the values from this message to locate and load the CertificateProvider instance configuration.",
+      "type": "object",
+      "properties": {
+        "pluginInstance": {
+          "description": "Required. Plugin instance name, used to locate and load CertificateProvider instance configuration.",
           "type": "string"
         }
       }
@@ -736,6 +751,10 @@
         "grpcEndpoint": {
           "description": "gRPC specific configuration to access the gRPC server to obtain the CA certificate.",
           "$ref": "GoogleCloudNetworksecurityV1alpha1GrpcEndpoint"
+        },
+        "certificateProviderInstance": {
+          "description": "The certificate provider instance specification that will be passed to the data plane, which will be used to load necessary credential information.",
+          "$ref": "CertificateProviderInstance"
         }
       }
     },

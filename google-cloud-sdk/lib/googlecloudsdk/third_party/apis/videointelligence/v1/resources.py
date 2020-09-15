@@ -63,6 +63,24 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
+  PROJECTS_LOCATIONS_CORPORA = (
+      'projects.locations.corpora',
+      'projects/{projectsId}/locations/{locationsId}/corpora/{corporaId}',
+      {},
+      ['projectsId', 'locationsId', 'corporaId'],
+      True
+  )
+  PROJECTS_LOCATIONS_CORPORA_OPERATIONS = (
+      'projects.locations.corpora.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/corpora/'
+              '{corporaId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CORPURA = (
       'projects.locations.corpura',
       'projects/{projectsId}/locations/{locationsId}/corpura/{corpuraId}',

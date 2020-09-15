@@ -140,16 +140,13 @@ class CloudRunService(_messages.Message):
       should be sent to. The value must conform to the definition of URI path
       segment (section 3.3 of RFC2396). Examples: "/route", "route",
       "route/subroute".
-    region: Optional. The region the Cloud Run service is deployed in. This
-      field should only be populated if the trigger is created in the "global"
-      location. In all other cases, values other than "" or region of the
-      trigger to be created in will be considered invalid.
+    region: Optional. The region the Cloud Run service is deployed in. If not
+      set, the location of the trigger is used. For triggers in the "global"
+      location, setting this field is mandatory.
     service: Required. The name of the Cloud run service being addressed (see
       https://cloud.google.com/run/docs/reference/rest/v1/namespaces.services)
-      . Only services located in the same project and region of the trigger
-      object can be addressed. For example `my-service1` is acceptable value
-      for this field while `projects/my-project1/locations/us-
-      central1/services/my-service1` is not an acceptable pattern.
+      . Only services located in the same project of the trigger object can be
+      addressed.
   """
 
   path = _messages.StringField(1)
@@ -162,8 +159,7 @@ class Destination(_messages.Message):
 
   Fields:
     cloudRunService: Cloud Run fully-managed service that receives the events.
-      The service should be running in the same region and project of the
-      trigger.
+      The service should be running in the same project of the trigger.
   """
 
   cloudRunService = _messages.MessageField('CloudRunService', 1)
@@ -262,37 +258,24 @@ class EventarcProjectsLocationsTriggersCreateRequest(_messages.Message):
     trigger: A Trigger resource to be passed as the request body.
     triggerId: The user-provided ID to be assigned to the trigger. If not
       specified, the system will select an ID.
-    validateOnly: If true, the service will validate that the request is valid
-      and reasonably likely to succeed, but will not actually create the
-      trigger.
   """
 
   parent = _messages.StringField(1, required=True)
   trigger = _messages.MessageField('Trigger', 2)
   triggerId = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
 
 
 class EventarcProjectsLocationsTriggersDeleteRequest(_messages.Message):
   r"""A EventarcProjectsLocationsTriggersDeleteRequest object.
 
   Fields:
-    allowMissing: If true, the service will no-op and return a success
-      response if the requested trigger does not exist. If the trigger is soft
-      deleted, then it is returned in the response. If the trigger never
-      existed or has been expunged, then an empty message is returned instead.
     etag: If provided, the trigger will only be deleted if the etag matches
       the current etag on the resource.
     name: Required. The name of the trigger to be deleted.
-    validateOnly: If true, the service will validate that the request is valid
-      and reasonably likely to succeed, but will not actually delete the
-      trigger.
   """
 
-  allowMissing = _messages.BooleanField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class EventarcProjectsLocationsTriggersGetIamPolicyRequest(_messages.Message):
@@ -341,40 +324,31 @@ class EventarcProjectsLocationsTriggersListRequest(_messages.Message):
       When paginating, all other parameters provided to `ListTriggers` must
       match the call that provided the page token.
     parent: Required. The parent collection to list triggers on.
-    showDeleted: Whether the results should include the deleted triggers or
-      not. Default value is 'false'.
   """
 
   orderBy = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-  showDeleted = _messages.BooleanField(5)
 
 
 class EventarcProjectsLocationsTriggersPatchRequest(_messages.Message):
   r"""A EventarcProjectsLocationsTriggersPatchRequest object.
 
   Fields:
-    createMissing: If true, the service will create a new trigger if no
-      trigger with the same name currently exists. In this situation, the
-      `update_mask` field is ignored and all fields are written.
     name: Required. The resource name of the trigger. Must be unique within
       the location on the project. Format:
       projects/{project}/locations/{location}/triggers/{trigger}
     trigger: A Trigger resource to be passed as the request body.
     updateMask: The fields to be updated; only fields explicitly provided will
-      be updated. If no field mask is provided,
-    validateOnly: If true, the service will validate that the request is valid
-      and reasonably likely to succeed, but will not actually update the
-      trigger.
+      be updated. If no field mask is provided, all provided fields in the
+      request will be updated. To update all fields, provide a field mask of
+      "*".
   """
 
-  createMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  trigger = _messages.MessageField('Trigger', 3)
-  updateMask = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
+  name = _messages.StringField(1, required=True)
+  trigger = _messages.MessageField('Trigger', 2)
+  updateMask = _messages.StringField(3)
 
 
 class EventarcProjectsLocationsTriggersSetIamPolicyRequest(_messages.Message):
@@ -405,26 +379,6 @@ class EventarcProjectsLocationsTriggersTestIamPermissionsRequest(_messages.Messa
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class EventarcProjectsLocationsTriggersUndeleteRequest(_messages.Message):
-  r"""A EventarcProjectsLocationsTriggersUndeleteRequest object.
-
-  Fields:
-    etag: A boolean attribute.
-    instanceId: The client-specified ID to assign to the trigger. Does not
-      need to be set unless `free_trigger_id` was set when the trigger was
-      deleted.
-    uid: The UUID of the trigger to be undeleted.
-    validateOnly: If true, the service will validate that the request is valid
-      and reasonably likely to succeed, but will not actually undelete the
-      trigger.
-  """
-
-  etag = _messages.BooleanField(1)
-  instanceId = _messages.StringField(2)
-  uid = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
 
 
 class Expr(_messages.Message):
@@ -993,11 +947,8 @@ class Transport(_messages.Message):
 class Trigger(_messages.Message):
   r"""A representation of the trigger resource.
 
-  Messages:
-    AnnotationsValue: Optional. The custom annotations for this trigger.
-
   Fields:
-    annotations: Optional. The custom annotations for this trigger.
+    createTime: Output only. The creation time.
     destination: Required. Destinations specify where the events will be sent
       to. Exactly one destination is supported at this time.
     etag: Output only. This checksum is computed by the server based on the
@@ -1009,17 +960,6 @@ class Trigger(_messages.Message):
     name: Required. The resource name of the trigger. Must be unique within
       the location on the project. Format:
       projects/{project}/locations/{location}/triggers/{trigger}
-    resourceLocation: Optional. The location that events are collected from.
-      Location can be a region (e.g. `us-central1`), a multi-region (e.g.
-      `europe`) or all regions (i.e. `global`). The resource location should
-      match the location of the service and resource specified in the matching
-      criteria. For example, if you want to receive `objects.finalized` events
-      for a Cloud Storage bucket created in multi-region 'europe', the value
-      of `resource_location` should be `europe`. Setting this field to a
-      single region in this case will result in partial event generated. Note
-      that specifying this field my result in event data transferred between
-      regions. If not specified, the trigger region is used as the location to
-      collect events.
     serviceAccount: Optional. The IAM service account email associated with
       the trigger. The service account represents the identity of the trigger.
       If not specified, the default compute service account will be used (see
@@ -1032,48 +972,23 @@ class Trigger(_messages.Message):
       when invoking the service. See
       https://cloud.google.com/run/docs/triggering/pubsub-push#create-service-
       account for information on how to invoke authenticated Cloud Run
-      services.
+      services. In order to create Audit Log triggers, the service account
+      should also have 'eventarc.events.receiveAuditLogV1Written' permission.
     transport: Output only. In order to deliver messages, Eventarc may
       configure other GCP products as transport intermediary. This field
       returns a reference to that transport intermediary. This information can
       be used for debugging purposes.
-    triggerId: Optional. The UUID of this trigger.
+    updateTime: Output only. The last-modified time.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""Optional. The custom annotations for this trigger.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(1)
   destination = _messages.MessageField('Destination', 2)
   etag = _messages.StringField(3)
   matchingCriteria = _messages.MessageField('MatchingCriteria', 4, repeated=True)
   name = _messages.StringField(5)
-  resourceLocation = _messages.StringField(6)
-  serviceAccount = _messages.StringField(7)
-  transport = _messages.MessageField('Transport', 8)
-  triggerId = _messages.StringField(9)
+  serviceAccount = _messages.StringField(6)
+  transport = _messages.MessageField('Transport', 7)
+  updateTime = _messages.StringField(8)
 
 
 encoding.AddCustomJsonFieldMapping(

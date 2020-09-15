@@ -300,6 +300,13 @@ class Collections(enum.Enum):
       ['project'],
       True
   )
+  REGIONACCELERATORTYPES = (
+      'regionAcceleratorTypes',
+      'projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}',
+      {},
+      ['project', 'region', 'acceleratorType'],
+      True
+  )
   REGIONAUTOSCALERS = (
       'regionAutoscalers',
       'projects/{project}/regions/{region}/autoscalers/{autoscaler}',

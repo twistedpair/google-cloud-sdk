@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://eventarc.googleapis.com/v1beta1/'
-DOCS_URL = ''
+DOCS_URL = 'https://cloud.google.com/eventarc'
 
 
 class Collections(enum.Enum):

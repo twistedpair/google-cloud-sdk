@@ -25,11 +25,12 @@ def AddDisplayNameFlag(parser):
   parser.add_argument('--display-name', help=help_text)
 
 
-def AddTypeFlag(parser):
+def AddTypeFlag(parser, required=False):
   """Adds --type flag to the given parser."""
   help_text = 'Type of the migration job (ONE_TIME or CONTINUOUS).'
   choices = ['ONE_TIME', 'CONTINUOUS']
-  parser.add_argument('--type', help=help_text, choices=choices, required=True)
+  parser.add_argument(
+      '--type', help=help_text, choices=choices, required=required)
 
 
 def AddDumpPathFlag(parser):
@@ -41,7 +42,7 @@ def AddDumpPathFlag(parser):
   parser.add_argument('--dump-path', help=help_text)
 
 
-def AddConnectivityGroupFlag(parser):
+def AddConnectivityGroupFlag(parser, required=False):
   """Adds connectivity flag group to the given parser."""
   connectivity_group = parser.add_group(mutex=True)
   connectivity_group.add_argument(
@@ -52,13 +53,13 @@ def AddConnectivityGroupFlag(parser):
   reverse_ssh_group.add_argument(
       '--vm-ip',
       help='Bastion Virtual Machine IP.',
-      required=True
+      required=required
   )
   reverse_ssh_group.add_argument(
       '--vm-port',
       help='Forwarding port for the SSH tunnel.',
       type=int,
-      required=True
+      required=required
   )
   reverse_ssh_group.add_argument(
       '--vm',
@@ -67,5 +68,5 @@ def AddConnectivityGroupFlag(parser):
   reverse_ssh_group.add_argument(
       '--vpc',
       help='Name of the VPC network where the VM is hosted.',
-      required=True
+      required=required
   )

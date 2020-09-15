@@ -28,6 +28,25 @@ from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import exceptions as core_exceptions
 
+# Head object response keys and their self.messages.Object attribute
+# counterparts. Note: this does not include all of the keys that head_object
+# can return, as some require additional processing or do not clearly
+# correspond to a field in self.messages.Object.
+_S3_HEAD_OBJECT_KEY_TRANSLATION = {
+    'CacheControl': 'cacheControl',
+    'PartsCount': 'componentCount',
+    'ContentDisposition': 'contentDisposition',
+    'ContentEncoding': 'contentEncoding',
+    'ContentLanguage': 'contentLanguage',
+    'ContentType': 'contentType',
+    'ETag': 'etag',
+    'ContentLength': 'size',
+    'StorageClass': 'storageClass',
+    'LastModified': 'updated',
+    'SSEKMSKeyId': 'kmsKeyName',
+    'ObjectLockRetainUntilDate': 'retentionExpirationTime',
+}
+
 
 class S3Api(cloud_api.CloudApi):
   """S3 Api client."""
@@ -88,3 +107,98 @@ class S3Api(cloud_api.CloudApi):
           yield self._TranslateListObjectsResponse(obj, bucket_name)
     except botocore.exceptions.ClientError as error:
       core_exceptions.reraise(errors.S3ApiError(error))
+
+  # pylint:disable=unused-argument
+  def DownloadObject(self,
+                     bucket_name,
+                     object_name,
+                     download_stream,
+                     compressed_encoding=False,
+                     decryption_wrapper=None,
+                     digesters=None,
+                     download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
+                     generation=None,
+                     object_size=None,
+                     progress_callback=None,
+                     serialization_data=None,
+                     start_byte=0,
+                     end_byte=None):
+    """See super class."""
+    kwargs = {'Bucket': bucket_name, 'Key': object_name}
+    if generation:
+      kwargs['VersionId'] = generation
+    try:
+      response = self.client.get_object(**kwargs)
+      download_stream.write(response['Body'].read())
+      return response['ContentEncoding']
+    except botocore.exceptions.ClientError as error:
+      core_exceptions.reraise(errors.S3ApiError(error))
+
+    # TODO(b/161437901): Handle resumed download.
+    # TODO(b/161460749): Handle download retries.
+    # pylint:enable=unused-argument
+
+  def _GetObjectMessageFromS3Response(self, object_dict, bucket_name,
+                                      object_name):
+    object_message = self.messages.Object(
+        bucket=bucket_name,
+        name=object_name,
+    )
+
+    for key, value in object_dict.items():
+      if key in _S3_HEAD_OBJECT_KEY_TRANSLATION:
+        message_class_field_name = _S3_HEAD_OBJECT_KEY_TRANSLATION[key]
+        setattr(object_message, message_class_field_name, value)
+
+    if 'Metadata' in object_dict:
+      property_class = self.messages.Object.MetadataValue.AdditionalProperty
+      object_message.metadata = self.messages.Object.MetadataValue(
+          additionalProperties=[
+              property_class(key=k, value=v)
+              for k, v in object_dict['Metadata'].items()
+          ])
+
+    return object_message
+
+  def _GetObjectUrlFromS3Response(self, object_dict, bucket_name, object_name):
+    object_url = storage_url.CloudUrl(
+        scheme=self.scheme, bucket_name=bucket_name, object_name=object_name)
+
+    if 'VersionId' in object_dict:
+      # botocore validates the type of the fields it returns, ensuring VersionId
+      # is a string.
+      object_url.generation = object_dict['VersionId']
+
+    return object_url
+
+  def _GetObjectResourceFromS3Response(self, object_dict, bucket_name,
+                                       object_name):
+    object_message = self._GetObjectMessageFromS3Response(
+        object_dict, bucket_name, object_name)
+
+    object_url = self._GetObjectUrlFromS3Response(
+        object_dict, bucket_name, object_name)
+
+    return resource_reference.ObjectResource(
+        object_url, object_message, additional_metadata=object_dict)
+
+  def GetObjectMetadata(self,
+                        bucket_name,
+                        object_name,
+                        generation=None,
+                        fields_scope=None):
+    """See super class."""
+    request = {'Bucket': bucket_name, 'Key': object_name}
+
+    # The VersionId keyword argument to head_object is not nullable if it is
+    # present, so only include it in the function call if it has a value.
+    if generation is not None:
+      request['VersionId'] = generation
+
+    try:
+      object_dict = self.client.head_object(**request)
+    except botocore.exceptions.ClientError as error:
+      core_exceptions.reraise(errors.S3ApiError(error))
+
+    return self._GetObjectResourceFromS3Response(
+        object_dict, bucket_name, object_name)

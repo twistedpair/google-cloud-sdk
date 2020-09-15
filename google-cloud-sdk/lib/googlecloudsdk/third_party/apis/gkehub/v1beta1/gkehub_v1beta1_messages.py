@@ -145,6 +145,8 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -188,9 +190,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -509,9 +512,10 @@ class GkeCluster(_messages.Message):
 
   Fields:
     resourceLink: Immutable. Self-link of the GCP resource for the GKE
-      cluster. For example: //container.googleapis.com/v1/projects/my-
-      project/zones/us-west1-a/clusters/my-cluster It can be at the most 1000
-      characters in length.
+      cluster. For example: //container.googleapis.com/projects/my-
+      project/locations/us-west1-a/clusters/my-cluster Using "zones" instead
+      of "locations" is also valid. It can be at the most 1000 characters in
+      length.
   """
 
   resourceLink = _messages.StringField(1)

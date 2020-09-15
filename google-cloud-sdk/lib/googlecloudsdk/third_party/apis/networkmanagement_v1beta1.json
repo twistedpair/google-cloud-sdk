@@ -341,6 +341,11 @@
           "description": "Output only. The reachability details of this test from the latest run. The details are updated when creating a new test, updating an existing test, or triggering a one-time rerun of an existing test.",
           "readOnly": true,
           "$ref": "ReachabilityDetails"
+        },
+        "probingDetails": {
+          "description": "Output only. The probing details of this test from the latest run, present for applicable tests only. The details are updated when creating a new test, updating an existing test, or triggering a one-time rerun of an existing test.",
+          "readOnly": true,
+          "$ref": "ProbingDetails"
         }
       }
     },
@@ -1256,6 +1261,68 @@
         "region": {
           "description": "Region in which the Cloud SQL instance is running.",
           "type": "string"
+        }
+      }
+    },
+    "ProbingDetails": {
+      "id": "ProbingDetails",
+      "description": "The details of probing from the latest run.",
+      "type": "object",
+      "properties": {
+        "result": {
+          "description": "The overall reachability result of the test.",
+          "type": "string",
+          "enumDescriptions": [
+            "Result is not specified.",
+            "95% or more packets originating from source reached destination.",
+            "No packet originating from source reached destination.",
+            "Less than 95% packets originating from source reached destination.",
+            "The reachability could not be determined. Possible reasons are: * Analysis is aborted due to permission error. User does not have read permission to the projects listed in the test. * Analysis is aborted due to internal errors."
+          ],
+          "enum": [
+            "PROBING_RESULT_UNSPECIFIED",
+            "REACHABLE",
+            "UNREACHABLE",
+            "REACHABILITY_INCONSISTENT",
+            "UNDETERMINED"
+          ]
+        },
+        "verifyTime": {
+          "description": "The time the reachability state was verified.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "error": {
+          "description": "The details of an internal failure or a cancellation of reachability analysis.",
+          "$ref": "Status"
+        },
+        "abortCause": {
+          "description": "Causes that the probing was aborted.",
+          "type": "string",
+          "enumDescriptions": [
+            "Abort reason unspecified.",
+            "Aborted because the user lacks the permission to access all or part of the network configurations required to run the test.",
+            "Aborted because no valid source endpoint is derived from the input test request."
+          ],
+          "enum": [
+            "PROBING_ABORT_CAUSE_UNSPECIFIED",
+            "PERMISSION_DENIED",
+            "NO_SOURCE_LOCATION"
+          ]
+        },
+        "sentProbeCount": {
+          "description": "Number of probes sent.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "successfulProbeCount": {
+          "description": "Number of probes that reached destination.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "endpointInfo": {
+          "description": "Derived from the test input. The actual source and destination endpoint where the probing was run.",
+          "$ref": "EndpointInfo"
         }
       }
     },

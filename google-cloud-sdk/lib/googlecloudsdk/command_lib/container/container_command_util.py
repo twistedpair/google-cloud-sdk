@@ -251,11 +251,11 @@ def GetAutoRepair(args):
     return True
   if getattr(args, 'enable_kubernetes_alpha', False):
     return None
-  # Node pools using COS support auto repairs, enable it for them by
-  # default. Other node pools using (Ubuntu, custom images) don't support
-  # node auto repairs, attempting to enable autorepair for them will result
-  # in API call failing so don't do it.
-  return (args.image_type or '').lower() in ['', 'cos', 'cos_containerd']
+  # Node pools using COS and UBUNTU support auto repairs, enable it for them by
+  # default.
+  return (args.image_type or '').lower() in [
+      '', 'cos', 'cos_containerd', 'gci', 'ubuntu', 'ubuntu_containerd'
+  ]
 
 
 def ParseUpdateOptionsBase(args, locations):

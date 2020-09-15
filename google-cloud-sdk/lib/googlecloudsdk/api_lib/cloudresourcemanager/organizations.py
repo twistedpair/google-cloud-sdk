@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 class Client(object):
@@ -52,3 +53,21 @@ class Client(object):
     return self.client.organizations.Get(
         self.client.MESSAGES_MODULE.CloudresourcemanagerOrganizationsGetRequest(
             organizationsId=organization_id))
+
+  def GetIamPolicy(self, organization_id):
+    """Returns IAM policy for a organization.
+
+    Args:
+      organization_id: organization id
+
+    Returns:
+      IAM policy
+    """
+    request = self.messages.CloudresourcemanagerOrganizationsGetIamPolicyRequest(
+        getIamPolicyRequest=self.messages.GetIamPolicyRequest(
+            options=self.messages.GetPolicyOptions(
+                requestedPolicyVersion=iam_util
+                .MAX_LIBRARY_IAM_SUPPORTED_VERSION)),
+        organizationsId=organization_id)
+
+    return self.client.organizations.GetIamPolicy(request)

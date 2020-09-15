@@ -732,6 +732,33 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the specified device.
+
+      Args:
+        request: (CloudidentityDevicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/devices/{devicesId}',
+        http_method='PATCH',
+        method_id='cloudidentity.devices.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['customer', 'name1', 'updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='device',
+        request_type_name='CloudidentityDevicesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def ResetPin(self, request, global_params=None):
       r"""Resets the specified device's pin.
 

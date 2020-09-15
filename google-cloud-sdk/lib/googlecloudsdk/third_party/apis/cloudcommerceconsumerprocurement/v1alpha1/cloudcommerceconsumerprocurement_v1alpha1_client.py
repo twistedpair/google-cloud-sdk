@@ -42,6 +42,7 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
     self.billingAccounts_accounts_operations = self.BillingAccountsAccountsOperationsService(self)
     self.billingAccounts_accounts = self.BillingAccountsAccountsService(self)
     self.billingAccounts_orders_operations = self.BillingAccountsOrdersOperationsService(self)
+    self.billingAccounts_orders_orderAllocations = self.BillingAccountsOrdersOrderAllocationsService(self)
     self.billingAccounts_orders = self.BillingAccountsOrdersService(self)
     self.billingAccounts = self.BillingAccountsService(self)
     self.projects_entitlements = self.ProjectsEntitlementsService(self)
@@ -400,6 +401,151 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class BillingAccountsOrdersOrderAllocationsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_orders_orderAllocations resource."""
+
+    _NAME = 'billingAccounts_orders_orderAllocations'
+
+    def __init__(self, client):
+      super(CloudcommerceconsumerprocurementV1alpha1.BillingAccountsOrdersOrderAllocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an OrderAllocation resource.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations',
+        http_method='POST',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha1/{+parent}/orderAllocations',
+        request_field='googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing OrderAllocation.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}',
+        http_method='DELETE',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the requested OrderAllocation resource.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}',
+        http_method='GET',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsGetRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists OrderAllocation resources that the user has access to, within the scope of the parent resource.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAllocationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations',
+        http_method='GET',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/orderAllocations',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsListRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAllocationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing OrderAllocation.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}',
+        http_method='PATCH',
+        method_id='cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation',
+        request_type_name='CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

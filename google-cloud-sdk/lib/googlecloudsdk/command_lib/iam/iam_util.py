@@ -75,7 +75,8 @@ STAGE_TYPES = (msgs.Role.StageValueValuesEnum)
 
 SERVICE_ACCOUNTS_COLLECTION = 'iam.projects.serviceAccounts'
 
-SERVICE_ACCOUNT_FORMAT = 'table(displayName:label=NAME, email, disabled)'
+SERVICE_ACCOUNT_FORMAT = ('table(displayName:label="DISPLAY NAME", email, '
+                          'disabled)')
 SERVICE_ACCOUNT_KEY_FORMAT = """
     table(
         name.scope(keys):label=KEY_ID,

@@ -20,7 +20,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.credentials import requests
 
 
 def GetApitoolsTransport(timeout='unset',
@@ -54,12 +56,22 @@ def GetApitoolsTransport(timeout='unset',
       fallback to using the oauth2client library.
 
   Returns:
-    1. A regular httplib2.Http object if no credentials are available;
-    2. Or a httplib2.Http client object authorized by oauth2client
-       credentials if use_google_auth==False;
-    3. Or a google_auth_httplib2.AuthorizedHttp client object authorized by
-       google-auth credentials.
+    1. A httplib2.Http-like object backed by httplib2 or requests.
   """
+  if base.UseRequests():
+    try:
+      session = requests.GetSession(
+          timeout=timeout,
+          enable_resource_quota=enable_resource_quota,
+          force_resource_quota=force_resource_quota,
+          response_encoding=response_encoding,
+          ca_certs=ca_certs,
+          allow_account_impersonation=allow_account_impersonation)
+
+      return requests.GetApitoolsRequests(session)
+    except requests.UnsupportedCredentialsException:
+      pass
+
   return http.Http(timeout=timeout,
                    enable_resource_quota=enable_resource_quota,
                    force_resource_quota=force_resource_quota,

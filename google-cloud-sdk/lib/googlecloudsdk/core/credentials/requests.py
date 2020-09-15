@@ -19,10 +19,21 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import requests
+from googlecloudsdk.core.credentials import creds as core_creds
 from googlecloudsdk.core.credentials import transport
 
+import httplib2
 from google.auth.transport import requests as google_auth_requests
+
+
+class Error(exceptions.Error):
+  """Exceptions for this module."""
+
+
+class UnsupportedCredentialsException(Error):
+  """An error for when we fail to determine the type of the credentials."""
 
 
 def GetSession(timeout='unset',
@@ -58,6 +69,8 @@ def GetSession(timeout='unset',
 
   Raises:
     c_store.Error: If an error loading the credentials occurs.
+    UnsupportedCredentialsException: If the attached credentails are not
+      supported by requests.
   """
   session = requests.GetSession(timeout=timeout,
                                 response_encoding=response_encoding,
@@ -65,6 +78,14 @@ def GetSession(timeout='unset',
   session = RequestWrapper().WrapCredentials(
       session, enable_resource_quota, force_resource_quota,
       allow_account_impersonation)
+
+  if hasattr(session, '_googlecloudsdk_credentials'):
+    creds = session._googlecloudsdk_credentials  # pylint: disable=protected-access
+    # The requests transport only supports google auth credentials
+    if not core_creds.IsGoogleAuthCredentials(creds):
+      raise UnsupportedCredentialsException(
+          'Requests does not support credentials of this type: {}'.format(
+              creds))
   return session
 
 
@@ -84,3 +105,64 @@ class RequestWrapper(transport.CredentialWrappingMixin,
 
     http_client.request = WrappedRequest
     return http_client
+
+
+class _GoogleAuthApitoolsCredentials():
+
+  def __init__(self, credentials):
+    self.credentials = credentials
+
+  def refresh(self, http_client):  # pylint: disable=invalid-name
+    auth_request = google_auth_requests.Request(http_client)
+    self.credentials.refresh(auth_request)
+
+
+def GetApitoolsRequests(session):
+  """Returns an authenticated httplib2.Http-like object for use by apitools."""
+  http_client = _ApitoolsRequests(session)
+  # apitools needs this attribute to do credential refreshes during batch API
+  # requests.
+  if hasattr(session, '_googlecloudsdk_credentials'):
+    creds = _GoogleAuthApitoolsCredentials(
+        session._googlecloudsdk_credentials)  # pylint: disable=protected-access
+
+    orig_request_method = http_client.request
+    # The closure that will replace 'httplib2.Http.request'.
+    def Request(*args, **kwargs):
+      return orig_request_method(*args, **kwargs)
+
+    http_client.request = Request
+    setattr(http_client.request, 'credentials', creds)
+
+  return http_client
+
+
+class _ApitoolsRequests():
+  """A httplib2.Http-like object for use by apitools."""
+
+  def __init__(self, session):
+    self.session = session
+
+  def request(
+      self,
+      uri,
+      method='GET',
+      body=None,
+      headers=None,
+      redirections=None,
+      connection_type=None,
+  ):  # pylint: disable=invalid-name
+    """Makes an HTTP request using httplib2 semantics."""
+    del connection_type  # Unused
+
+    self.session.max_redirects = redirections
+    response = self.session.request(method, uri, data=body, headers=headers)
+    headers = dict(response.headers)
+    headers['status'] = response.status_code
+
+    if response.encoding is not None:
+      content = response.text
+    else:
+      content = response.content
+
+    return httplib2.Response(headers), content

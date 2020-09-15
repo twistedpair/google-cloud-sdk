@@ -768,18 +768,18 @@
           "type": "string"
         },
         "outputConfig": {
-          "description": "Optional. If set this field configures how the recognizer will output the final transcript.",
+          "description": "Optional. Specifies an optional destination for the recognition results.",
           "$ref": "TranscriptOutputConfig"
         }
       }
     },
     "TranscriptOutputConfig": {
       "id": "TranscriptOutputConfig",
-      "description": "Provides information to the recognizer that specifies the transcript output.",
+      "description": "Specifies an optional destination for the recognition results.",
       "type": "object",
       "properties": {
         "gcsUri": {
-          "description": "Specifies a Cloud Storage URI for the final transcript. Returns INVALID_ARGUMENT if not in the format: `gs:\/\/bucket_name\/object_name`. If the write attempt fails, relevant error information will be stored in the response object.",
+          "description": "Specifies a Cloud Storage URI for the recognition results. Must be specified in the format: `gs:\/\/bucket_name\/object_name`",
           "type": "string"
         }
       }

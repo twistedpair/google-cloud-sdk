@@ -1850,6 +1850,61 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresTestIamPermissionsReque
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresSetIamPolicyRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsConsentStoresSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsConsentStoresTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsConsentStoresTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsCreateRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsCreateRequest object.
 
@@ -4329,6 +4384,11 @@ class ParserConfig(_messages.Message):
   r"""The configuration for the parser. It determines how the server parses
   the messages.
 
+  Enums:
+    VersionValueValuesEnum: Immutable. Determines the version of the
+      unschematized parser to be used when `schema` is not given. This field
+      is immutable after store creation.
+
   Fields:
     allowNullHeader: Determines whether messages with no header are allowed.
     schema: Schemas used to parse messages in this store, if schematized
@@ -4336,11 +4396,33 @@ class ParserConfig(_messages.Message):
     segmentTerminator: Byte(s) to use as the segment terminator. If this is
       unset, '\r' is used as segment terminator, matching the HL7 version 2
       specification.
+    version: Immutable. Determines the version of the unschematized parser to
+      be used when `schema` is not given. This field is immutable after store
+      creation.
   """
+
+  class VersionValueValuesEnum(_messages.Enum):
+    r"""Immutable. Determines the version of the unschematized parser to be
+    used when `schema` is not given. This field is immutable after store
+    creation.
+
+    Values:
+      PARSER_VERSION_UNSPECIFIED: Unspecified parser version, equivalent to
+        V1.
+      V1: The `parsed_data` includes every given non-empty message field
+        except the Field Separator (MSH-1) field. As a result, the parsed MSH
+        segment starts with the MSH-2 field and the field numbers are off-by-
+        one with respect to the HL7 standard.
+      V2: The `parsed_data` includes every given non-empty message field.
+    """
+    PARSER_VERSION_UNSPECIFIED = 0
+    V1 = 1
+    V2 = 2
 
   allowNullHeader = _messages.BooleanField(1)
   schema = _messages.MessageField('SchemaPackage', 2)
   segmentTerminator = _messages.BytesField(3)
+  version = _messages.EnumField('VersionValueValuesEnum', 4)
 
 
 class PatientId(_messages.Message):
@@ -4498,7 +4580,8 @@ class SchemaConfig(_messages.Message):
     r"""Specifies the output schema type. Schema type is required.
 
     Values:
-      SCHEMA_TYPE_UNSPECIFIED: No schema type specified. Same as `LOSSLESS`.
+      SCHEMA_TYPE_UNSPECIFIED: No schema type specified. This type is
+        unsupported.
       LOSSLESS: A data-driven schema generated from the fields present in the
         FHIR data being exported, with no additional simplification.
       ANALYTICS: Analytics schema defined by the FHIR community. See

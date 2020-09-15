@@ -167,6 +167,21 @@ class CertificateProvider(_messages.Message):
   grpcEndpoint = _messages.MessageField('GrpcEndpoint', 2)
 
 
+class CertificateProviderInstance(_messages.Message):
+  r"""Specification of a TLS certificate provider instance. Workloads may have
+  one or more CertificateProvider instances (plugins) and one of them is
+  enabled and configured by specifying this message. Workloads use the values
+  from this message to locate and load the CertificateProvider instance
+  configuration.
+
+  Fields:
+    pluginInstance: Required. Plugin instance name, used to locate and load
+      CertificateProvider instance configuration.
+  """
+
+  pluginInstance = _messages.StringField(1)
+
+
 class ClientTlsPolicy(_messages.Message):
   r"""ClientTlsPolicy is a resource that specifies how a client should
   authenticate connections to backends of a service. This resource itself does
@@ -306,14 +321,18 @@ class GoogleCloudNetworksecurityV1alpha1CertificateProvider(_messages.Message):
   the certificate and private key for peer to peer authentication.
 
   Fields:
+    certificateProviderInstance: The certificate provider instance
+      specification that will be passed to the data plane, which will be used
+      to load necessary credential information.
     grpcEndpoint: gRPC specific configuration to access the gRPC server to
       obtain the cert and private key.
     localFilepath: Obtain certificates and private key from a locally mounted
       filesystem path.
   """
 
-  grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1alpha1GrpcEndpoint', 1)
-  localFilepath = _messages.MessageField('TlsCertificateFiles', 2)
+  certificateProviderInstance = _messages.MessageField('CertificateProviderInstance', 1)
+  grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1alpha1GrpcEndpoint', 2)
+  localFilepath = _messages.MessageField('TlsCertificateFiles', 3)
 
 
 class GoogleCloudNetworksecurityV1alpha1GrpcEndpoint(_messages.Message):
@@ -1865,12 +1884,16 @@ class ValidationCA(_messages.Message):
   Fields:
     caCertPath: The path to the file holding the CA certificate to validate
       the client or server certificate.
+    certificateProviderInstance: The certificate provider instance
+      specification that will be passed to the data plane, which will be used
+      to load necessary credential information.
     grpcEndpoint: gRPC specific configuration to access the gRPC server to
       obtain the CA certificate.
   """
 
   caCertPath = _messages.StringField(1)
-  grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1alpha1GrpcEndpoint', 2)
+  certificateProviderInstance = _messages.MessageField('CertificateProviderInstance', 2)
+  grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1alpha1GrpcEndpoint', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

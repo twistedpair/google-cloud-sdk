@@ -77,7 +77,6 @@ def _LogFilterForIds(log_ids, parent):
   log_names = ['"{0}"'.format(util.CreateLogResourceName(parent, log_id))
                for log_id in log_ids]
   log_names = ' OR '.join(log_names)
-  # TODO(b/27930464): Always use parentheses when resolved
   if len(log_ids) > 1:
     log_names = '(%s)' % log_names
   return 'logName=%s' % log_names

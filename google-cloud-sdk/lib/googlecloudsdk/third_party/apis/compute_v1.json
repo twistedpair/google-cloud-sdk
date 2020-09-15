@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20200826",
+ "revision": "20200902",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1065,18 +1065,6 @@
     "machineType": {
      "type": "string",
      "description": "Specifies type of machine (name only) which has fixed number of vCPUs and fixed amount of memory. This also includes specifying custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY pattern."
-    },
-    "maintenanceInterval": {
-     "type": "string",
-     "description": "Specifies whether this VM may be a stable fleet VM. Setting this to \"Periodic\" designates this VM as a Stable Fleet VM.\n\nSee go/stable-fleet-ug for more details.",
-     "enum": [
-      "AS_NEEDED",
-      "PERIODIC"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
     },
     "minCpuPlatform": {
      "type": "string",
@@ -2210,7 +2198,7 @@
    "properties": {
     "affinityCookieTtlSec": {
      "type": "integer",
-     "description": "If set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is one day (86,400).\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
+     "description": "Lifetime of cookies in seconds. Only applicable if the loadBalancingScheme is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, the protocol is HTTP or HTTPS, and the sessionAffinity is GENERATED_COOKIE, or HTTP_COOKIE.\n\nIf set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent). The maximum allowed value is one day (86,400).\n\nNot supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true.",
      "format": "int32"
     },
     "backends": {
@@ -2866,6 +2854,10 @@
    "type": "object",
    "description": "Associates `members` with a `role`.",
    "properties": {
+    "bindingId": {
+     "type": "string",
+     "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API."
+    },
     "condition": {
      "$ref": "Expr",
      "description": "The condition that is associated with this binding.\n\nIf the condition evaluates to `true`, then this binding applies to the current request.\n\nIf the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding.\n\nTo learn which resources support conditions in their IAM policies, see the [IAM documentation](https://cloud.google.com/iam/help/conditions/resource-policies)."
@@ -5598,7 +5590,7 @@
     },
     "target": {
      "type": "string",
-     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must live in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object. For INTERNAL_SELF_MANAGED load balancing, only targetHttpProxy and targetGrpcProxy are valid, not targetHttpsProxy."
+     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must be in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object. For more information, see the \"Target\" column in [Port specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications)."
     }
    }
   },
@@ -22078,7 +22070,7 @@
    "properties": {
     "certificate": {
      "type": "string",
-     "description": "A local certificate file. The certificate must be in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert."
+     "description": "A value read into memory from a certificate file. The certificate file must be in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert."
     },
     "creationTimestamp": {
      "type": "string",
@@ -22113,7 +22105,7 @@
     },
     "privateKey": {
      "type": "string",
-     "description": "A write-only private key in PEM format. Only insert requests will include this field."
+     "description": "A value read into memory from a write-only private key file. The private key file must be in PEM format. For security, only insert requests include this field."
     },
     "region": {
      "type": "string",

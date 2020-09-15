@@ -31,11 +31,14 @@ _EntityNames = collections.namedtuple(
     "singular plural docs_name valid_pattern secondary_description")
 
 _ENTITY_TUPLES = [
-    _EntityNames("organization", "organizations", "organization",
-                 r"^[a-z][-a-z0-9]{0,30}[a-z0-9]$",
-                 "Apigee organization containing the {resource}. If "
-                 "unspecified, the Cloud Platform project's associated "
-                 "organization will be used."),
+    _EntityNames("project", "projects", "projects", None,
+                 "GCP project containing the {resource}."),
+    _EntityNames(
+        "organization", "organizations", "organization",
+        r"^[a-z][-a-z0-9]{0,30}[a-z0-9]$",
+        "Apigee organization containing the {resource}. If "
+        "unspecified, the Cloud Platform project's associated "
+        "organization will be used."),
     _EntityNames("api", "apis", "API proxy", r"^[\s\w.-]{1,255}$",
                  "API proxy for the {resource}."),
     _EntityNames("environment", "environments", "environment",

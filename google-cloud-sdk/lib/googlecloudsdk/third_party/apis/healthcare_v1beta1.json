@@ -1394,6 +1394,20 @@
         "schema": {
           "description": "Schemas used to parse messages in this store, if schematized parsing is desired.",
           "$ref": "SchemaPackage"
+        },
+        "version": {
+          "description": "Immutable. Determines the version of the unschematized parser to be used when `schema` is not given. This field is immutable after store creation.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified parser version, equivalent to V1.",
+            "The `parsed_data` includes every given non-empty message field except the Field Separator (MSH-1) field. As a result, the parsed MSH segment starts with the MSH-2 field and the field numbers are off-by-one with respect to the HL7 standard.",
+            "The `parsed_data` includes every given non-empty message field."
+          ],
+          "enum": [
+            "PARSER_VERSION_UNSPECIFIED",
+            "V1",
+            "V2"
+          ]
         }
       }
     },
@@ -1977,7 +1991,7 @@
           "description": "Specifies the output schema type. Schema type is required.",
           "type": "string",
           "enumDescriptions": [
-            "No schema type specified. Same as `LOSSLESS`.",
+            "No schema type specified. This type is unsupported.",
             "A data-driven schema generated from the fields present in the FHIR data being exported, with no additional simplification.",
             "Analytics schema defined by the FHIR community. See https:\/\/github.com\/FHIR\/sql-on-fhir\/blob\/master\/sql-on-fhir.md. BigQuery only allows a maximum of 10,000 columns per table. Due to this limitation, the server will not generate schemas for fields of type `Resource`, which can hold any resource type. The affected fields are `Parameters.parameter.resource`, `Bundle.entry.resource`, and `Bundle.entry.response.outcome`."
           ],
@@ -2651,7 +2665,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new health dataset. Results are returned through the Operation interface which returns either an `Operation.response` which contains a Dataset or `Operation.error`. The metadata field type is OperationMetadata. A Google Cloud Platform project can contain up to 500 datasets across all regions."
+                  "description": "Creates a new health dataset. Results are returned through the Operation interface which returns either an `Operation.response` which contains a Dataset or `Operation.error`. The metadata field type is OperationMetadata."
                 },
                 "list": {
                   "id": "healthcare.projects.locations.datasets.list",
@@ -5884,6 +5898,97 @@
                           "description": "Lists the Annotations in the given Annotation store for a source resource."
                         }
                       }
+                    }
+                  }
+                },
+                "consentStores": {
+                  "methods": {
+                    "setIamPolicy": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.setIamPolicy",
+                      "path": "v1beta1/{+resource}:setIamPolicy",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.getIamPolicy",
+                      "path": "v1beta1/{+resource}:getIamPolicy",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                    },
+                    "testIamPermissions": {
+                      "id": "healthcare.projects.locations.datasets.consentStores.testIamPermissions",
+                      "path": "v1beta1/{+resource}:testIamPermissions",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     }
                   }
                 },

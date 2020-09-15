@@ -2385,6 +2385,125 @@ class FlattenInstruction(_messages.Message):
   inputs = _messages.MessageField('InstructionInput', 1, repeated=True)
 
 
+class FlexTemplateRuntimeEnvironment(_messages.Message):
+  r"""The environment values to be set at runtime for flex template.
+
+  Enums:
+    IpConfigurationValueValuesEnum: Configuration for VM IPs.
+
+  Messages:
+    AdditionalUserLabelsValue: Additional user labels to be specified for the
+      job. Keys and values must follow the restrictions specified in the
+      [labeling restrictions](https://cloud.google.com/compute/docs/labeling-
+      resources#restrictions) page. An object containing a list of "key":
+      value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
+
+  Fields:
+    additionalExperiments: Additional experiment flags for the job.
+    additionalUserLabels: Additional user labels to be specified for the job.
+      Keys and values must follow the restrictions specified in the [labeling
+      restrictions](https://cloud.google.com/compute/docs/labeling-
+      resources#restrictions) page. An object containing a list of "key":
+      value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
+    enableStreamingEngine: Whether to enable Streaming Engine for the job.
+    ipConfiguration: Configuration for VM IPs.
+    kmsKeyName: Name for the Cloud KMS key for the job. Key format is:
+      projects//locations//keyRings//cryptoKeys/
+    machineType: The machine type to use for the job. Defaults to the value
+      from the template if not specified.
+    maxWorkers: The maximum number of Google Compute Engine instances to be
+      made available to your pipeline during execution, from 1 to 1000.
+    network: Network to which VMs will be assigned. If empty or unspecified,
+      the service will use the network "default".
+    numWorkers: The initial number of Google Compute Engine instances for the
+      job.
+    serviceAccountEmail: The email address of the service account to run the
+      job as.
+    subnetwork: Subnetwork to which VMs will be assigned, if desired. You can
+      specify a subnetwork using either a complete URL or an abbreviated path.
+      Expected to be of the form "https://www.googleapis.com/compute/v1/projec
+      ts/HOST_PROJECT_ID/regions/REGION/subnetworks/SUBNETWORK" or
+      "regions/REGION/subnetworks/SUBNETWORK". If the subnetwork is located in
+      a Shared VPC network, you must use the complete URL.
+    tempLocation: The Cloud Storage path to use for temporary files. Must be a
+      valid Cloud Storage URL, beginning with `gs://`.
+    workerRegion: The Compute Engine region
+      (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
+      which worker processing should occur, e.g. "us-west1". Mutually
+      exclusive with worker_zone. If neither worker_region nor worker_zone is
+      specified, default to the control plane's region.
+    workerZone: The Compute Engine zone
+      (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
+      which worker processing should occur, e.g. "us-west1-a". Mutually
+      exclusive with worker_region. If neither worker_region nor worker_zone
+      is specified, a zone in the control plane's region is chosen based on
+      available capacity. If both `worker_zone` and `zone` are set,
+      `worker_zone` takes precedence.
+    zone: The Compute Engine [availability
+      zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones)
+      for launching worker instances to run your pipeline. In the future,
+      worker_zone will take precedence.
+  """
+
+  class IpConfigurationValueValuesEnum(_messages.Enum):
+    r"""Configuration for VM IPs.
+
+    Values:
+      WORKER_IP_UNSPECIFIED: The configuration is unknown, or unspecified.
+      WORKER_IP_PUBLIC: Workers should have public IP addresses.
+      WORKER_IP_PRIVATE: Workers should have private IP addresses.
+    """
+    WORKER_IP_UNSPECIFIED = 0
+    WORKER_IP_PUBLIC = 1
+    WORKER_IP_PRIVATE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalUserLabelsValue(_messages.Message):
+    r"""Additional user labels to be specified for the job. Keys and values
+    must follow the restrictions specified in the [labeling
+    restrictions](https://cloud.google.com/compute/docs/labeling-
+    resources#restrictions) page. An object containing a list of "key": value
+    pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AdditionalUserLabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AdditionalUserLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalUserLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
+  enableStreamingEngine = _messages.BooleanField(3)
+  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 4)
+  kmsKeyName = _messages.StringField(5)
+  machineType = _messages.StringField(6)
+  maxWorkers = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  network = _messages.StringField(8)
+  numWorkers = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(10)
+  subnetwork = _messages.StringField(11)
+  tempLocation = _messages.StringField(12)
+  workerRegion = _messages.StringField(13)
+  workerZone = _messages.StringField(14)
+  zone = _messages.StringField(15)
+
+
 class FloatingPointList(_messages.Message):
   r"""A metric value representing a list of floating point numbers.
 
@@ -3170,6 +3289,7 @@ class LaunchFlexTemplateParameter(_messages.Message):
     containerSpec: Spec about the container image to launch.
     containerSpecGcsPath: Gcs path to a file with json serialized
       ContainerSpec as content.
+    environment: The runtime environment for the FlexTemplate job
     jobName: Required. The job name to use for the created job.
     launchOptions: Launch options for this flex template job. This is a common
       set of options across languages and templates. This should not be used
@@ -3230,9 +3350,10 @@ class LaunchFlexTemplateParameter(_messages.Message):
 
   containerSpec = _messages.MessageField('ContainerSpec', 1)
   containerSpecGcsPath = _messages.StringField(2)
-  jobName = _messages.StringField(3)
-  launchOptions = _messages.MessageField('LaunchOptionsValue', 4)
-  parameters = _messages.MessageField('ParametersValue', 5)
+  environment = _messages.MessageField('FlexTemplateRuntimeEnvironment', 3)
+  jobName = _messages.StringField(4)
+  launchOptions = _messages.MessageField('LaunchOptionsValue', 5)
+  parameters = _messages.MessageField('ParametersValue', 6)
 
 
 class LaunchFlexTemplateRequest(_messages.Message):
@@ -4410,20 +4531,22 @@ class RuntimeEnvironment(_messages.Message):
     AdditionalUserLabelsValue: Additional user labels to be specified for the
       job. Keys and values should follow the restrictions specified in the
       [labeling restrictions](https://cloud.google.com/compute/docs/labeling-
-      resources#restrictions) page.
+      resources#restrictions) page. An object containing a list of "key":
+      value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
 
   Fields:
     additionalExperiments: Additional experiment flags for the job.
     additionalUserLabels: Additional user labels to be specified for the job.
       Keys and values should follow the restrictions specified in the
       [labeling restrictions](https://cloud.google.com/compute/docs/labeling-
-      resources#restrictions) page.
+      resources#restrictions) page. An object containing a list of "key":
+      value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
     bypassTempDirValidation: Whether to bypass the safety checks for the job's
       temporary directory. Use with caution.
     enableStreamingEngine: Whether to enable Streaming Engine for the job.
     ipConfiguration: Configuration for VM IPs.
-    kmsKeyName: Optional. Name for the Cloud KMS key for the job. Key format
-      is: projects//locations//keyRings//cryptoKeys/
+    kmsKeyName: Name for the Cloud KMS key for the job. Key format is:
+      projects//locations//keyRings//cryptoKeys/
     machineType: The machine type to use for the job. Defaults to the value
       from the template if not specified.
     maxWorkers: The maximum number of Google Compute Engine instances to be
@@ -4434,8 +4557,12 @@ class RuntimeEnvironment(_messages.Message):
       job.
     serviceAccountEmail: The email address of the service account to run the
       job as.
-    subnetwork: Subnetwork to which VMs will be assigned, if desired. Expected
-      to be of the form "regions/REGION/subnetworks/SUBNETWORK".
+    subnetwork: Subnetwork to which VMs will be assigned, if desired. You can
+      specify a subnetwork using either a complete URL or an abbreviated path.
+      Expected to be of the form "https://www.googleapis.com/compute/v1/projec
+      ts/HOST_PROJECT_ID/regions/REGION/subnetworks/SUBNETWORK" or
+      "regions/REGION/subnetworks/SUBNETWORK". If the subnetwork is located in
+      a Shared VPC network, you must use the complete URL.
     tempLocation: The Cloud Storage path to use for temporary files. Must be a
       valid Cloud Storage URL, beginning with `gs://`.
     workerRegion: The Compute Engine region
@@ -4473,7 +4600,8 @@ class RuntimeEnvironment(_messages.Message):
     r"""Additional user labels to be specified for the job. Keys and values
     should follow the restrictions specified in the [labeling
     restrictions](https://cloud.google.com/compute/docs/labeling-
-    resources#restrictions) page.
+    resources#restrictions) page. An object containing a list of "key": value
+    pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
 
     Messages:
       AdditionalProperty: An additional property for a

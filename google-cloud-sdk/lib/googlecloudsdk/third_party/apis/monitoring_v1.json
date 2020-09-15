@@ -140,6 +140,10 @@
           "description": "Content is arranged with a basic layout that re-flows a simple list of informational elements like widgets or tiles.",
           "$ref": "GridLayout"
         },
+        "mosaicLayout": {
+          "description": "The content is arranged as a grid of tiles, with each content widget occupying one or more grid squares.",
+          "$ref": "MosaicLayout"
+        },
         "rowLayout": {
           "description": "The content is divided into equally spaced rows and the widgets are arranged horizontally.",
           "$ref": "RowLayout"
@@ -726,6 +730,56 @@
       "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for Empty is empty JSON object {}.",
       "type": "object",
       "properties": {
+      }
+    },
+    "MosaicLayout": {
+      "id": "MosaicLayout",
+      "description": "A mosaic layout divides the available space into a grid of squares, and overlays the grid with tiles. Unlike GridLayout, tiles may span multiple grid squares and can be placed at arbitrary locations in the grid.",
+      "type": "object",
+      "properties": {
+        "columns": {
+          "description": "The number of columns in the mosaic grid. The number of columns must be between 1 and 12, inclusive.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "tiles": {
+          "description": "The tiles to display.",
+          "type": "array",
+          "items": {
+            "$ref": "Tile"
+          }
+        }
+      }
+    },
+    "Tile": {
+      "id": "Tile",
+      "description": "A single tile in the mosaic. The placement and size of the tile are configurable.",
+      "type": "object",
+      "properties": {
+        "xPos": {
+          "description": "The zero-indexed position of the tile in grid squares relative to the left edge of the grid. Tiles must be contained within the specified number of columns. x_pos cannot be negative.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "yPos": {
+          "description": "The zero-indexed position of the tile in grid squares relative to the top edge of the grid. y_pos cannot be negative.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "width": {
+          "description": "The width of the tile, measured in grid squares. Tiles must have a minimum width of 1.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "height": {
+          "description": "The height of the tile, measured in grid squares. Tiles must have a minimum height of 1.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "widget": {
+          "description": "The informational widget contained in the tile. For example an XyChart.",
+          "$ref": "Widget"
+        }
       }
     },
     "RowLayout": {

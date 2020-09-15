@@ -445,6 +445,8 @@ class Dashboard(_messages.Message):
       configuration. The field should not be passed during dashboard creation.
     gridLayout: Content is arranged with a basic layout that re-flows a simple
       list of informational elements like widgets or tiles.
+    mosaicLayout: The content is arranged as a grid of tiles, with each
+      content widget occupying one or more grid squares.
     name: Immutable. The resource name of the dashboard.
     rowLayout: The content is divided into equally spaced rows and the widgets
       are arranged horizontally.
@@ -454,8 +456,9 @@ class Dashboard(_messages.Message):
   displayName = _messages.StringField(2)
   etag = _messages.StringField(3)
   gridLayout = _messages.MessageField('GridLayout', 4)
-  name = _messages.StringField(5)
-  rowLayout = _messages.MessageField('RowLayout', 6)
+  mosaicLayout = _messages.MessageField('MosaicLayout', 5)
+  name = _messages.StringField(6)
+  rowLayout = _messages.MessageField('RowLayout', 7)
 
 
 class DataSet(_messages.Message):
@@ -781,6 +784,21 @@ class MonitoringProjectsDashboardsPatchRequest(_messages.Message):
 
   dashboard = _messages.MessageField('Dashboard', 1)
   name = _messages.StringField(2, required=True)
+
+
+class MosaicLayout(_messages.Message):
+  r"""A mosaic layout divides the available space into a grid of squares, and
+  overlays the grid with tiles. Unlike GridLayout, tiles may span multiple
+  grid squares and can be placed at arbitrary locations in the grid.
+
+  Fields:
+    columns: The number of columns in the mosaic grid. The number of columns
+      must be between 1 and 12, inclusive.
+    tiles: The tiles to display.
+  """
+
+  columns = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  tiles = _messages.MessageField('Tile', 2, repeated=True)
 
 
 class Option(_messages.Message):
@@ -1223,6 +1241,31 @@ class Threshold(_messages.Message):
   direction = _messages.EnumField('DirectionValueValuesEnum', 2)
   label = _messages.StringField(3)
   value = _messages.FloatField(4)
+
+
+class Tile(_messages.Message):
+  r"""A single tile in the mosaic. The placement and size of the tile are
+  configurable.
+
+  Fields:
+    height: The height of the tile, measured in grid squares. Tiles must have
+      a minimum height of 1.
+    widget: The informational widget contained in the tile. For example an
+      XyChart.
+    width: The width of the tile, measured in grid squares. Tiles must have a
+      minimum width of 1.
+    xPos: The zero-indexed position of the tile in grid squares relative to
+      the left edge of the grid. Tiles must be contained within the specified
+      number of columns. x_pos cannot be negative.
+    yPos: The zero-indexed position of the tile in grid squares relative to
+      the top edge of the grid. y_pos cannot be negative.
+  """
+
+  height = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  widget = _messages.MessageField('Widget', 2)
+  width = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  xPos = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  yPos = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class TimeSeriesFilter(_messages.Message):

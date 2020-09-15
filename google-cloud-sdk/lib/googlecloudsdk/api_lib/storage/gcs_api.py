@@ -44,6 +44,23 @@ DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 DEFAULT_NUM_RETRIES = 23
 
 
+ # TODO(b/167691513): Replace all BucketResource.from_gcs_metadata_object
+ # instances with this.
+def _BucketResourceFromMetadata(metadata):
+  """Helper method to generate the Bucket instance from GCS metadata.
+
+  Args:
+    metadata (messages.Bucket): Extract resource properties from this.
+
+  Returns:
+    BucketResource with properties populated by metadata.
+  """
+  url = storage_url.CloudUrl(scheme=cloud_api.ProviderPrefix.GCS.value,
+                             bucket_name=metadata.name)
+  return resource_reference.BucketResource(
+      url, metadata.name, metadata.etag, metadata)
+
+
 # Disable Apitools' default print callbacks.
 def _NoOpCallback(unused_response, unused_object):
   pass
@@ -165,8 +182,7 @@ class GcsApi(cloud_api.CloudApi):
 
     created_bucket_metadata = self.client.buckets.Insert(
         request, global_params=global_params)
-    return resource_reference.BucketResource.from_gcs_metadata_object(
-        cloud_api.ProviderPrefix.GCS.value, created_bucket_metadata)
+    return _BucketResourceFromMetadata(created_bucket_metadata)
 
   @cloud_errors.catch_http_error_raise_gcs_api_error()
   def DeleteBucket(self,
@@ -191,10 +207,8 @@ class GcsApi(cloud_api.CloudApi):
         bucket=bucket_name,
         projection=projection)
 
-    bucket_metadata = self.client.buckets.Get(request,
-                                              global_params=global_params)
-    return resource_reference.BucketResource.from_gcs_metadata_object(
-        cloud_api.ProviderPrefix.GCS.value, bucket_metadata)
+    metadata = self.client.buckets.Get(request, global_params=global_params)
+    return _BucketResourceFromMetadata(metadata)
 
   def ListBuckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
@@ -212,9 +226,7 @@ class GcsApi(cloud_api.CloudApi):
         global_params=global_params)
     try:
       for bucket in bucket_iter:
-        yield resource_reference.BucketResource.from_gcs_metadata_object(
-            provider=cloud_api.ProviderPrefix.GCS.value,
-            metadata_object=bucket)
+        yield _BucketResourceFromMetadata(bucket)
     except apitools_exceptions.HttpError as error:
       core_exceptions.reraise(cloud_errors.GcsApiError(error))
 
@@ -303,13 +315,19 @@ class GcsApi(cloud_api.CloudApi):
         fields_scope, self.messages.StorageObjectsGetRequest)
 
     # TODO(b/160238394) Decrypt metadata fields if necessary.
-    object_metadata = self.client.objects.Get(
-        self.messages.StorageObjectsGetRequest(
-            bucket=bucket_name,
-            object=object_name,
-            generation=generation,
-            projection=projection),
-        global_params=global_params)
+    try:
+      object_metadata = self.client.objects.Get(
+          self.messages.StorageObjectsGetRequest(
+              bucket=bucket_name,
+              object=object_name,
+              generation=generation,
+              projection=projection),
+          global_params=global_params)
+    except apitools_exceptions.HttpNotFoundError:
+      raise cloud_errors.NotFoundError(
+          'Object not found: {}'.format(storage_url.CloudUrl(
+              'gs', bucket_name, object_name, generation).url_string)
+      )
     return resource_reference.ObjectResource.from_gcs_metadata_object(
         cloud_api.ProviderPrefix.GCS.value, object_metadata)
 

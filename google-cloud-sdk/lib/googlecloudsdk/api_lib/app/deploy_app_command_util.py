@@ -140,8 +140,10 @@ def _GetLifecycleDeletePolicy(storage_client, bucket_ref):
   if not bucket.lifecycle:
     return None
   rules = bucket.lifecycle.rule
-  ages = [rule.condition.age for rule in rules
-          if rule.condition.age >= 0 and rule.action.type == 'Delete']
+  ages = [
+      rule.condition.age for rule in rules if rule.condition.age is not None and
+      rule.condition.age >= 0 and rule.action.type == 'Delete'
+  ]
   return datetime.timedelta(min(ages)) if ages else None
 
 

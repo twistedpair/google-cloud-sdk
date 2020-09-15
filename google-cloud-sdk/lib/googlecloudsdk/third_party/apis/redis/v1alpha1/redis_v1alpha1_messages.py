@@ -146,6 +146,9 @@ class Instance(_messages.Message):
     TierValueValuesEnum: Required. The service tier of the instance.
     TlsModeValueValuesEnum: Optional. The TLS mode of Redis instance. If not
       provided, default one will be used. Current default: DISABLED.
+    TransitEncryptionModeValueValuesEnum: Optional. The In-transit encryption
+      mode of Redis instance. If not provided, in-transit encryption is
+      disabled for instance.
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata
@@ -223,6 +226,9 @@ class Instance(_messages.Message):
     tier: Required. The service tier of the instance.
     tlsMode: Optional. The TLS mode of Redis instance. If not provided,
       default one will be used. Current default: DISABLED.
+    transitEncryptionMode: Optional. The In-transit encryption mode of Redis
+      instance. If not provided, in-transit encryption is disabled for
+      instance.
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
@@ -295,6 +301,18 @@ class Instance(_messages.Message):
     TLS_MODE_UNSPECIFIED = 0
     DISABLED = 1
     BASIC_TLS = 2
+
+  class TransitEncryptionModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The In-transit encryption mode of Redis instance. If not
+    provided, in-transit encryption is disabled for instance.
+
+    Values:
+      TRANSIT_ENCRYPTION_MODE_UNSPECIFIED: Not set.
+      SERVER_AUTHENTICATION: In-transit encryption enabled with server
+        authentication
+    """
+    TRANSIT_ENCRYPTION_MODE_UNSPECIFIED = 0
+    SERVER_AUTHENTICATION = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -371,6 +389,7 @@ class Instance(_messages.Message):
   statusMessage = _messages.StringField(21)
   tier = _messages.EnumField('TierValueValuesEnum', 22)
   tlsMode = _messages.EnumField('TlsModeValueValuesEnum', 23)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 24)
 
 
 class InstanceAuthString(_messages.Message):
@@ -1226,9 +1245,6 @@ class TimeOfDay(_messages.Message):
 class TlsCertificate(_messages.Message):
   r"""TlsCertificate Resource
 
-  Enums:
-    StateValueValuesEnum: Status of current TLS Cert
-
   Fields:
     cert: PEM representation.
     createTime: Output only. The time when the certificate was created in [RFC
@@ -1239,29 +1255,13 @@ class TlsCertificate(_messages.Message):
       `2020-05-18T00:00:00.094Z`.
     serialNumber: Serial number, as extracted from the certificate.
     sha1Fingerprint: Sha1 Fingerprint of the certificate.
-    state: Status of current TLS Cert
   """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Status of current TLS Cert
-
-    Values:
-      STATE_UNSPECIFIED: Not set.
-      ACTIVE: Current certificate is active
-      PHASED_OUT: certificate is just phased out
-      NEW_TO_ROTATE: new certificate to rotate to.
-    """
-    STATE_UNSPECIFIED = 0
-    ACTIVE = 1
-    PHASED_OUT = 2
-    NEW_TO_ROTATE = 3
 
   cert = _messages.StringField(1)
   createTime = _messages.StringField(2)
   expireTime = _messages.StringField(3)
   serialNumber = _messages.StringField(4)
   sha1Fingerprint = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class UpgradeInstanceRequest(_messages.Message):

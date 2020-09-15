@@ -857,6 +857,36 @@ class CloudidentityDevicesLockRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class CloudidentityDevicesPatchRequest(_messages.Message):
+  r"""A CloudidentityDevicesPatchRequest object.
+
+  Fields:
+    customer: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the
+      customer. If you're using this API for your own organization, use
+      `customers/my_customer` If you're using this API to manage another
+      organization, use `customers/{customer_id}`, where customer_id is the
+      customer to whom the device belongs.
+    device: A Device resource to be passed as the request body.
+    name: Output only. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique id
+      assigned to the Device.
+    name1: Required. [Resource
+      name](https://cloud.google.com/apis/design/resource_names) of the Device
+      in format: `devices/{device_id}`, where device_id is the unique ID
+      assigned to the Device.
+    updateMask: Required. Fully qualified names of fields to update. Only
+      "custom_attributes" is supported.
+  """
+
+  customer = _messages.StringField(1)
+  device = _messages.MessageField('Device', 2)
+  name = _messages.StringField(3, required=True)
+  name1 = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+
+
 class CloudidentityDevicesResetPinRequest(_messages.Message):
   r"""A CloudidentityDevicesResetPinRequest object.
 
@@ -1876,7 +1906,11 @@ class GoogleAppsCloudidentityDevicesV1ClientState(_messages.Message):
   Enums:
     ComplianceStateValueValuesEnum: The compliance state of the resource as
       specified by the API client.
-    HealthScoreValueValuesEnum: The Health score of the resource
+    HealthScoreValueValuesEnum: The Health score of the resource. The Health
+      score is the callers specification of the condition of the device from a
+      usability point of view. For example, a third-party device management
+      provider may specify a health score based on its compliance with
+      organizational policies.
     ManagedValueValuesEnum: The management state of the resource as specified
       by the API client.
     OwnerTypeValueValuesEnum: Output only. The owner of the ClientState
@@ -1895,7 +1929,11 @@ class GoogleAppsCloudidentityDevicesV1ClientState(_messages.Message):
       resource within which these CustomAttributes are a field.
     etag: The token that needs to be passed back for concurrency control in
       updates. Token needs to be passed back in UpdateRequest
-    healthScore: The Health score of the resource
+    healthScore: The Health score of the resource. The Health score is the
+      callers specification of the condition of the device from a usability
+      point of view. For example, a third-party device management provider may
+      specify a health score based on its compliance with organizational
+      policies.
     keyValuePairs: The map of key-value attributes stored by callers specific
       to a device. The total serialized length of this map may not exceed
       10KB. No limit is placed on the number of attributes in a map.
@@ -1907,7 +1945,12 @@ class GoogleAppsCloudidentityDevicesV1ClientState(_messages.Message):
       name](https://cloud.google.com/apis/design/resource_names) of the
       ClientState in format: `devices/{device_id}/deviceUsers/{device_user_id}
       /clientState/{partner_id}`, where partner_id corresponds to the partner
-      storing the data.
+      storing the data. For partners belonging to the "BeyondCorp Alliance",
+      this is the partner ID specified to you by Google. For all other
+      callers, this is a string of the form: `{customer_id}-suffix`, where
+      `customer_id` is your customer id. The suffix is any string the caller
+      specifies. This string will be displayed verbatim in the administration
+      console.
     ownerType: Output only. The owner of the ClientState
     scoreReason: A descriptive cause of the health score.
   """
@@ -1926,7 +1969,10 @@ class GoogleAppsCloudidentityDevicesV1ClientState(_messages.Message):
     NON_COMPLIANT = 2
 
   class HealthScoreValueValuesEnum(_messages.Enum):
-    r"""The Health score of the resource
+    r"""The Health score of the resource. The Health score is the callers
+    specification of the condition of the device from a usability point of
+    view. For example, a third-party device management provider may specify a
+    health score based on its compliance with organizational policies.
 
     Values:
       HEALTH_SCORE_UNSPECIFIED: Default value
@@ -2026,7 +2072,7 @@ class GoogleAppsCloudidentityDevicesV1CustomAttributeValue(_messages.Message):
 
 
 class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
-  r"""A Device within the Cloud Identity Devices API. Represents a Device
+  r""" A Device within the Cloud Identity Devices API. Represents a Device
   known to Google Cloud, independent of the device ownership, type, and
   whether it is assigned or in use by a user.
 

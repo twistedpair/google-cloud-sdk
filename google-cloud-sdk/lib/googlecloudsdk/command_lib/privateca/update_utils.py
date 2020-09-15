@@ -66,7 +66,9 @@ def UpdateCAFromArgs(args, current_labels):
   update_mask = []
 
   if 'pem_chain' in vars(args) and args.IsSpecified('pem_chain'):
-    ca_to_update.pemIssuerCertChain = _ParsePemChainFromFile(args.pem_chain)
+    ca_to_update.subordinateConfig = messages.SubordinateConfig(
+        pemIssuerChain=messages.SubordinateConfigChain(
+            pemCertificates=_ParsePemChainFromFile(args.pem_chain)))
     update_mask.append('pem_issuer_cert_chain')
 
   if args.IsSpecified('publish_crl') or args.IsSpecified('publish_ca_cert'):

@@ -22,20 +22,22 @@ from googlecloudsdk.api_lib.util import apis
 
 import six.moves.urllib.parse
 
-
-def GetClientClass():
-  return apis.GetClientClass('privateca', 'v1alpha1')
+DEFAULT_API_VERSION = 'v1beta1'
 
 
-def GetClientInstance():
-  return apis.GetClientInstance('privateca', 'v1alpha1')
+def GetClientClass(api_version=DEFAULT_API_VERSION):
+  return apis.GetClientClass('privateca', api_version)
 
 
-def GetMessagesModule():
-  return apis.GetMessagesModule('privateca', 'v1alpha1')
+def GetClientInstance(api_version=DEFAULT_API_VERSION):
+  return apis.GetClientInstance('privateca', api_version)
 
 
-def GetServiceName():
+def GetMessagesModule(api_version=DEFAULT_API_VERSION):
+  return apis.GetMessagesModule('privateca', api_version)
+
+
+def GetServiceName(api_version=DEFAULT_API_VERSION):
   """Gets the service name based on the configured API endpoint."""
-  endpoint = apis.GetEffectiveApiEndpoint('privateca', 'v1alpha1')
+  endpoint = apis.GetEffectiveApiEndpoint('privateca', api_version)
   return six.moves.urllib.parse.urlparse(endpoint).hostname

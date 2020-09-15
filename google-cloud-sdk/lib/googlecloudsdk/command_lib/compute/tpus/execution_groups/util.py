@@ -576,7 +576,9 @@ class SSH(object):
         remote=remote,
         identity_file=identity_file, options=options, max_wait_ms=300*1000)
     try:
-      ssh_poller.Poll(ssh_helper.env, force_connect=True)
+      ssh_poller.Poll(
+          ssh_helper.env,
+          force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
     except retry.WaitException:
       raise ssh_utils.NetworkError()
 
@@ -615,7 +617,9 @@ class SSH(object):
     }
     cmd = ssh.SSHCommand(**ssh_cmd_args)
     # Errors from SSH itself result in an ssh.CommandError being raised
-    return_code = cmd.Run(ssh_helper.env, force_connect=True)
+    return_code = cmd.Run(
+        ssh_helper.env,
+        force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
     if return_code:
       # This is the return code of the remote command.  Problems with SSH itself
       # will result in ssh.CommandError being raised above.

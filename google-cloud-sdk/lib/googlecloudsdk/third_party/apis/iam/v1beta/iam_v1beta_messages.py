@@ -238,7 +238,7 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
       keywords may be referenced in the expressions: * `assertion`: JSON
       representing the authentication credential issued by the provider. *
       `google`: The Google attributes mapped from the assertion in the
-      `attrubute_mappings`. * `attribute`: The custom attributes mapped from
+      `attribute_mappings`. * `attribute`: The custom attributes mapped from
       the assertion in the `attribute_mappings`. The maximum length of the
       attribute condition expression is 4096 characters. If unspecified, all
       valid authentication credential are accepted. The following example
@@ -398,15 +398,9 @@ class GoogleIamV1betaWorkloadIdentityPoolProviderAws(_messages.Message):
 
   Fields:
     accountId: Required. The AWS account ID.
-    stsUri: A list of AWS STS URIs that can be used when exchanging
-      credentials. If not provided, any valid AWS STS URI is allowed. URIs
-      must use the form `https://sts.amazonaws.com` or
-      `https://sts.{region}.amazonaws.com`, where {region} is a valid AWS
-      region. You can specify a maximum of 25 URIs.
   """
 
   accountId = _messages.StringField(1)
-  stsUri = _messages.StringField(2, repeated=True)
 
 
 class GoogleIamV1betaWorkloadIdentityPoolProviderOidc(_messages.Message):

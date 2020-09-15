@@ -147,6 +147,8 @@ class Binding(_messages.Message):
   r"""Associates members with a role.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding.If the
       condition evaluates to true, then this binding applies to the current
       request.If the condition evaluates to false, then this binding does not
@@ -188,9 +190,10 @@ class Binding(_messages.Message):
       roles/editor, or roles/owner.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CancelJobRequest(_messages.Message):
@@ -1992,7 +1995,11 @@ class Expr(_messages.Message):
 
 class GceClusterConfig(_messages.Message):
   r"""Common config settings for resources of Compute Engine cluster
-  instances, applicable to all instances in the cluster.
+  instances, applicable to all instances in the cluster. NEXT ID: 14
+
+  Enums:
+    PrivateIpv6GoogleAccessValueValuesEnum: Optional. The type of IPv6 access
+      for a cluster.
 
   Messages:
     MetadataValue: The Compute Engine metadata entries to add to all instances
@@ -2022,6 +2029,7 @@ class GceClusterConfig(_messages.Message):
       https://www.googleapis.com/compute/v1/projects/[project_id]/regions/glob
       al/default projects/[project_id]/regions/global/default default
     nodeGroupAffinity: Optional. Node Group Affinity for sole-tenant clusters.
+    privateIpv6GoogleAccess: Optional. The type of IPv6 access for a cluster.
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
       reservation.
     serviceAccount: Optional. The Dataproc service account
@@ -2064,6 +2072,24 @@ class GceClusterConfig(_messages.Message):
       projects/[project_id]/zones/[zone] us-central1-f
   """
 
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of IPv6 access for a cluster.
+
+    Values:
+      PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED: Default value. Same as
+        INHERIT_FROM_SUBNETWORK
+      INHERIT_FROM_SUBNETWORK: Private access to or from Google Services
+        configuration inherited from subnetowrk configuration
+      OUTBOUND: Enables outbound private IPv6 access to Google Services from
+        Dataproc cluster
+      BIDIRECTIONAL: Enables bidirectionl private IPv6 access between Google
+        Services and Dataproc cluster
+    """
+    PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
+    INHERIT_FROM_SUBNETWORK = 1
+    OUTBOUND = 2
+    BIDIRECTIONAL = 3
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""The Compute Engine metadata entries to add to all instances (see
@@ -2095,12 +2121,13 @@ class GceClusterConfig(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 2)
   networkUri = _messages.StringField(3)
   nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 4)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 5)
-  serviceAccount = _messages.StringField(6)
-  serviceAccountScopes = _messages.StringField(7, repeated=True)
-  subnetworkUri = _messages.StringField(8)
-  tags = _messages.StringField(9, repeated=True)
-  zoneUri = _messages.StringField(10)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 5)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 6)
+  serviceAccount = _messages.StringField(7)
+  serviceAccountScopes = _messages.StringField(8, repeated=True)
+  subnetworkUri = _messages.StringField(9)
+  tags = _messages.StringField(10, repeated=True)
+  zoneUri = _messages.StringField(11)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -3047,11 +3074,13 @@ class ManagedGroupConfig(_messages.Message):
 
 
 class MetastoreConfig(_messages.Message):
-  r"""Specifies the metastore configuration.
+  r"""Specifies a Metastore configuration.
 
   Fields:
-    dataprocMetastoreService: Optional. Relative resource name of an existing
-      Dataproc Metastore service.
+    dataprocMetastoreService: Required. Resource name of an existing Dataproc
+      Metastore service.Example:
+      projects/[project_id]/locations/[dataproc_region]/services/[service-
+      name]
   """
 
   dataprocMetastoreService = _messages.StringField(1)
@@ -3599,9 +3628,9 @@ class QueryList(_messages.Message):
   r"""A list of queries to run on a cluster.
 
   Fields:
-    queries: Required. The queries to execute. You do not need to terminate a
-      query with a semicolon. Multiple queries can be specified in one string
-      by separating each with a semicolon. Here is an example of an Cloud
+    queries: Required. The queries to execute. You do not need to end a query
+      expression with a semicolon. Multiple queries can be specified in one
+      string by separating each with a semicolon. Here is an example of a
       Dataproc API snippet that uses a QueryList to specify a HiveJob:
       "hiveJob": { "queryList": { "queries": [ "query1", "query2",
       "query3;query4", ] } }
@@ -4430,9 +4459,9 @@ class WorkflowTemplate(_messages.Message):
       duration values, respectively. The timeout duration must be from 10
       minutes ("10m") to 24 hours ("24h" or "1d"). The timer begins when the
       first job is submitted. If the workflow is running at the end of the
-      timeout period, any remaining jobs are cancelled, the workflow is
-      terminated, and if the workflow was running on a managed cluster, the
-      cluster is deleted.
+      timeout period, any remaining jobs are cancelled, the workflow is ended,
+      and if the workflow was running on a managed cluster, the cluster is
+      deleted.
     id: Required. The template id.The id must contain only letters (a-z, A-Z),
       numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
       with underscore or hyphen. Must consist of between 3 and 50 characters..

@@ -165,7 +165,7 @@ def SetMembershipRoles(unused_ref, args, request):
 
 
 def SetExpiryDetail(unused_ref, args, request):
-  """Set expiration to request.membership.expiryDetail.
+  """Set expiration to request.membership.expiryDetail (v1alpha1) or in request.membership.roles (v1beta1).
 
   Args:
     unused_ref: unused.
@@ -175,12 +175,25 @@ def SetExpiryDetail(unused_ref, args, request):
   Returns:
     The updated request.
 
+  Raises:
+    InvalidArgumentException: If 'expiration' is specified upon following cases:
+    1. 'request.membership' doesn't have 'roles' attribute, or
+    2. Non-MEMBER role (e.g. OWNER) is provided.
+
   """
 
   version = groups_hooks.GetApiVersion(args)
   if hasattr(args, 'expiration') and args.IsSpecified('expiration'):
-    request.membership.expiryDetail = ReformatExpiryDetail(
-        version, args.expiration)
+    if version == 'v1alpha1':
+      request.membership.expiryDetail = ReformatExpiryDetail(
+          version, args.expiration)
+    else:
+      if hasattr(request.membership, 'roles'):
+        request.membership.roles = AddExpiryDetailInMembershipRoles(
+            version, request, args.expiration)
+      else:
+        raise exceptions.InvalidArgumentException(
+            'expiration', 'roles must be specified.')
 
   return request
 
@@ -328,7 +341,11 @@ def ReformatExpiryDetail(version, expiration):
   messages = ci_client.GetMessages(version)
   duration = 'P' + expiration
   expiration_ts = FormatDateTime(duration)
-  return messages.MembershipRoleExpiryDetail(expireTime=expiration_ts)
+
+  if version == 'v1alpha1':
+    return messages.MembershipRoleExpiryDetail(expireTime=expiration_ts)
+  else:
+    return messages.ExpiryDetail(expireTime=expiration_ts)
 
 
 def ReformatMembershipRoles(version, roles_list):
@@ -409,3 +426,39 @@ def TokenizeParams(params, arg_name):
 
   raise exceptions.InvalidArgumentException(
       arg_name, 'Invalid format of params: ' + params)
+
+
+def AddExpiryDetailInMembershipRoles(version, request, expiration):
+  """Add an expiration in request.membership.roles.
+
+  Args:
+    version: version
+    request: The request to modify
+    expiration: expiration date to set
+
+  Returns:
+    The updated roles.
+
+  Raises:
+    InvalidArgumentException: If 'expiration' is specified without MEMBER role.
+
+  """
+
+  messages = ci_client.GetMessages(version)
+  roles = []
+  has_member_role = False
+  for role in request.membership.roles:
+    if hasattr(role, 'name') and role.name == 'MEMBER':
+      has_member_role = True
+      roles.append(messages.MembershipRole(
+          name='MEMBER',
+          expiryDetail=ReformatExpiryDetail(version, expiration)))
+    else:
+      roles.append(role)
+
+  # Checking whether the 'expiration' is specified with a MEMBER role.
+  if not has_member_role:
+    raise exceptions.InvalidArgumentException(
+        'expiration', 'Expiration date can be set with a MEMBER role only.')
+
+  return roles

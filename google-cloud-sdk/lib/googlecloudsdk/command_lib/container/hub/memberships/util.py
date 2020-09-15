@@ -18,6 +18,22 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
+def SetInitProjectPath(ref, args, request):
+  """Set the appropriate request path in project attribute for initializeHub requests.
+
+  Args:
+    ref: reference to the membership object.
+    args: command line arguments.
+    request: API request to be issued
+
+  Returns:
+    modified request
+  """
+  del ref, args  # Unused.
+  request.project = request.project + '/locations/global/memberships'
+  return request
+
+
 def SetParentCollection(ref, args, request):
   """Set parent collection to global for created resources.
 

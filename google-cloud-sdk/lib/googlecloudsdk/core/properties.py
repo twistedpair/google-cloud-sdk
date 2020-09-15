@@ -266,6 +266,7 @@ class _Sections(object):
     context_aware: Section, The section containing context aware access
       configurations for the Cloud SDK.
     core: Section, The section containing core properties for the Cloud SDK.
+    ssh: Section, The section containing ssh-related properties.
     scc: Section, The section containing scc properties for the Cloud SDK.
     dataproc: Section, The section containing dataproc properties for the Cloud
       SDK.
@@ -324,6 +325,8 @@ class _Sections(object):
       SDK.
     survey: Section, The section containing survey properties for the Cloud SDK.
     test: Section, The section containing test properties for the Cloud SDK.
+    transport: Section, The section containing transport properties for the
+      Cloud SDK.
     vmware: Section, The section containing vmware properties for the Cloud SDK.
     workflows: Section, The section containing workflows properties for the
       Cloud SDK.
@@ -351,6 +354,7 @@ class _Sections(object):
     self.container = _SectionContainer()
     self.context_aware = _SectionContextAware()
     self.core = _SectionCore()
+    self.ssh = _SectionSsh()
     self.scc = _SectionScc()
     self.dataproc = _SectionDataproc()
     self.dataflow = _SectionDataflow()
@@ -383,6 +387,7 @@ class _Sections(object):
     self.storage = _SectionStorage()
     self.survey = _SectionSurvey()
     self.test = _SectionTest()
+    self.transport = _SectionTransport()
     self.vmware = _SectionVmware()
     self.workflows = _SectionWorkflows()
 
@@ -402,6 +407,7 @@ class _Sections(object):
         self.container,
         self.context_aware,
         self.core,
+        self.ssh,
         self.scc,
         self.dataproc,
         self.dataflow,
@@ -433,6 +439,7 @@ class _Sections(object):
         self.spanner,
         self.survey,
         self.test,
+        self.transport,
         self.vmware,
         self.workflows,
     ]
@@ -1355,6 +1362,30 @@ class _SectionCore(_Section):
         'credentialed_hosted_repo_domains', hidden=True)
 
 
+class _SectionSsh(_Section):
+  """Contains SSH-related properties."""
+
+  def __init__(self):
+    super(_SectionSsh, self).__init__('ssh')
+    self.putty_force_connect = self._AddBool(
+        'putty_force_connect',
+        default=True,  # For backwards compatibility only.
+        help_text='Whether or not `gcloud` should automatically accept new or '
+        'changed host keys when executing plink/pscp commands on Windows. '
+        'Defaults to True, but can be set to False to present these '
+        'interactive prompts to the user for host key checking.')
+    self.verify_internal_ip = self._AddBool(
+        'verify_internal_ip',
+        default=True,
+        help_text='Whether or not `gcloud` should perform an initial SSH '
+        'connection to verify an instance ID is correct when connecting via '
+        'its internal IP. Without this check, `gcloud` will simply connect to '
+        'the internal IP of the desired instance, which may be wrong if the '
+        'desired instance is in a different subnet but happens to share the '
+        'same internal IP as an instance in the current subnet. Defaults to '
+        'True.')
+
+
 class _SectionScc(_Section):
   """Contains the properties for the 'scc' section."""
 
@@ -1517,6 +1548,26 @@ class _SectionTest(_Section):
     self.results_base_url = self._Add('results_base_url', hidden=True)
     self.matrix_status_interval = self._Add(
         'matrix_status_interval', hidden=True)
+
+
+class _SectionTransport(_Section):
+  """Contains the properties for the 'transport' section."""
+
+  def __init__(self):
+    super(_SectionTransport, self).__init__('transport', hidden=True)
+    self.disable_requests_override = self._AddBool(
+        'disable_requests_override',
+        default=False,
+        hidden=True,
+        help_text='Global switch to turn off using requests as a'
+                  'transport. Users can use it to switch back to the old '
+                  'mode if requests breaks users.')
+    self.opt_in_requests = self._AddBool(
+        'opt_in_requests',
+        default=False,
+        hidden=True,
+        help_text='A switch to opt in a surface or a command group '
+                  'to requests.')
 
 
 class _SectionMlEngine(_Section):
@@ -1804,6 +1855,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.accessapproval = self._Add('accessapproval')
     self.accesscontextmanager = self._Add('accesscontextmanager')
     self.anthosevents = self._Add('anthosevents')
+    self.aiplatform = self._Add('aiplatform')
     self.apigateway = self._Add('apigateway')
     self.apigee = self._Add('apigee')
     self.appengine = self._Add('appengine')

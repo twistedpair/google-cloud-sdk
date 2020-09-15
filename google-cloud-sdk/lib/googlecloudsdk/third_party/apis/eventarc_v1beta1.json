@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/eventarc",
   "protocol": "rest",
   "rootUrl": "https://eventarc.googleapis.com/",
   "mtlsRootUrl": "https://eventarc.mtls.googleapis.com/",
@@ -22,6 +22,7 @@
   "baseUrl": "https://eventarc.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -212,16 +213,17 @@
           "description": "Required. The resource name of the trigger. Must be unique within the location on the project. Format: projects\/{project}\/locations\/{location}\/triggers\/{trigger}",
           "type": "string"
         },
-        "triggerId": {
-          "description": "Optional. The UUID of this trigger.",
-          "type": "string"
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         },
-        "annotations": {
-          "description": "Optional. The custom annotations for this trigger.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+        "updateTime": {
+          "description": "Output only. The last-modified time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         },
         "matchingCriteria": {
           "description": "Required. The criteria by which events are filtered. Only events that match with this critera will be sent to the destinations.",
@@ -230,12 +232,8 @@
             "$ref": "MatchingCriteria"
           }
         },
-        "resourceLocation": {
-          "description": "Optional. The location that events are collected from. Location can be a region (e.g. `us-central1`), a multi-region (e.g. `europe`) or all regions (i.e. `global`). The resource location should match the location of the service and resource specified in the matching criteria. For example, if you want to receive `objects.finalized` events for a Cloud Storage bucket created in multi-region 'europe', the value of `resource_location` should be `europe`. Setting this field to a single region in this case will result in partial event generated. Note that specifying this field my result in event data transferred between regions. If not specified, the trigger region is used as the location to collect events.",
-          "type": "string"
-        },
         "serviceAccount": {
-          "description": "Optional. The IAM service account email associated with the trigger. The service account represents the identity of the trigger. If not specified, the default compute service account will be used (see https:\/\/cloud.google.com\/compute\/docs\/access\/service-accounts#default_service_account). The principal who calls this API must have `iam.serviceAccounts.actAs` permission in the service account. See https:\/\/cloud.google.com\/iam\/docs\/understanding-service-accounts?hl=en#sa_common for more information. For Cloud Run destinations, this service account is used to generate identity tokens when invoking the service. See https:\/\/cloud.google.com\/run\/docs\/triggering\/pubsub-push#create-service-account for information on how to invoke authenticated Cloud Run services.",
+          "description": "Optional. The IAM service account email associated with the trigger. The service account represents the identity of the trigger. If not specified, the default compute service account will be used (see https:\/\/cloud.google.com\/compute\/docs\/access\/service-accounts#default_service_account). The principal who calls this API must have `iam.serviceAccounts.actAs` permission in the service account. See https:\/\/cloud.google.com\/iam\/docs\/understanding-service-accounts?hl=en#sa_common for more information. For Cloud Run destinations, this service account is used to generate identity tokens when invoking the service. See https:\/\/cloud.google.com\/run\/docs\/triggering\/pubsub-push#create-service-account for information on how to invoke authenticated Cloud Run services. In order to create Audit Log triggers, the service account should also have 'eventarc.events.receiveAuditLogV1Written' permission.",
           "type": "string"
         },
         "destination": {
@@ -275,7 +273,7 @@
       "type": "object",
       "properties": {
         "cloudRunService": {
-          "description": "Cloud Run fully-managed service that receives the events. The service should be running in the same region and project of the trigger.",
+          "description": "Cloud Run fully-managed service that receives the events. The service should be running in the same project of the trigger.",
           "$ref": "CloudRunService"
         }
       }
@@ -286,7 +284,7 @@
       "type": "object",
       "properties": {
         "service": {
-          "description": "Required. The name of the Cloud run service being addressed (see https:\/\/cloud.google.com\/run\/docs\/reference\/rest\/v1\/namespaces.services). Only services located in the same project and region of the trigger object can be addressed. For example `my-service1` is acceptable value for this field while `projects\/my-project1\/locations\/us-central1\/services\/my-service1` is not an acceptable pattern.",
+          "description": "Required. The name of the Cloud run service being addressed (see https:\/\/cloud.google.com\/run\/docs\/reference\/rest\/v1\/namespaces.services). Only services located in the same project of the trigger object can be addressed.",
           "type": "string"
         },
         "path": {
@@ -294,7 +292,7 @@
           "type": "string"
         },
         "region": {
-          "description": "Optional. The region the Cloud Run service is deployed in. This field should only be populated if the trigger is created in the \"global\" location. In all other cases, values other than \"\" or region of the trigger to be created in will be considered invalid.",
+          "description": "Optional. The region the Cloud Run service is deployed in. If not set, the location of the trigger is used. For triggers in the \"global\" location, setting this field is mandatory.",
           "type": "string"
         }
       }
@@ -867,11 +865,6 @@
                       "description": "The sorting order of the resources returned. Value should be a comma separated list of fields. The default sorting oder is ascending. To specify descending order for a field, append a ` desc` suffix; for example: `name desc, trigger_id`.",
                       "location": "query",
                       "type": "string"
-                    },
-                    "showDeleted": {
-                      "description": "Whether the results should include the deleted triggers or not. Default value is 'false'.",
-                      "location": "query",
-                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -902,11 +895,6 @@
                       "description": "The user-provided ID to be assigned to the trigger. If not specified, the system will select an ID.",
                       "location": "query",
                       "type": "string"
-                    },
-                    "validateOnly": {
-                      "description": "If true, the service will validate that the request is valid and reasonably likely to succeed, but will not actually create the trigger.",
-                      "location": "query",
-                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -937,20 +925,10 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The fields to be updated; only fields explicitly provided will be updated. If no field mask is provided, ",
+                      "description": "The fields to be updated; only fields explicitly provided will be updated. If no field mask is provided, all provided fields in the request will be updated. To update all fields, provide a field mask of \"*\".",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
-                    },
-                    "validateOnly": {
-                      "description": "If true, the service will validate that the request is valid and reasonably likely to succeed, but will not actually update the trigger.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "createMissing": {
-                      "description": "If true, the service will create a new trigger if no trigger with the same name currently exists. In this situation, the `update_mask` field is ignored and all fields are written.",
-                      "location": "query",
-                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -984,16 +962,6 @@
                       "description": "If provided, the trigger will only be deleted if the etag matches the current etag on the resource.",
                       "location": "query",
                       "type": "string"
-                    },
-                    "validateOnly": {
-                      "description": "If true, the service will validate that the request is valid and reasonably likely to succeed, but will not actually delete the trigger.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "allowMissing": {
-                      "description": "If true, the service will no-op and return a success response if the requested trigger does not exist. If the trigger is soft deleted, then it is returned in the response. If the trigger never existed or has been expunged, then an empty message is returned instead.",
-                      "location": "query",
-                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -1006,45 +974,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete a single trigger."
-                },
-                "undelete": {
-                  "id": "eventarc.projects.locations.triggers.undelete",
-                  "path": "v1beta1/{+uid}:undelete",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}:undelete",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "uid": {
-                      "description": "The UUID of the trigger to be undeleted.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/triggers\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "instanceId": {
-                      "description": "The client-specified ID to assign to the trigger. Does not need to be set unless `free_trigger_id` was set when the trigger was deleted.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "validateOnly": {
-                      "description": "If true, the service will validate that the request is valid and reasonably likely to succeed, but will not actually undelete the trigger.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "etag": {
-                      "location": "query",
-                      "type": "boolean"
-                    }
-                  },
-                  "parameterOrder": [
-                    "uid"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Undelete a single trigger."
                 },
                 "setIamPolicy": {
                   "id": "eventarc.projects.locations.triggers.setIamPolicy",

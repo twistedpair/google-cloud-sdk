@@ -92,6 +92,8 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -135,9 +137,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class BooleanConstraint(_messages.Message):
@@ -507,7 +510,7 @@ class CloudresourcemanagerProjectsGetAncestryRequest(_messages.Message):
   Fields:
     getAncestryRequest: A GetAncestryRequest resource to be passed as the
       request body.
-    projectId: The Project ID (for example, `my-project-123`). Required.
+    projectId: Required. The Project ID (for example, `my-project-123`).
   """
 
   getAncestryRequest = _messages.MessageField('GetAncestryRequest', 1)
@@ -561,7 +564,7 @@ class CloudresourcemanagerProjectsGetRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsGetRequest object.
 
   Fields:
-    projectId: The Project ID (for example, `my-project-123`). Required.
+    projectId: Required. The Project ID (for example, `my-project-123`).
   """
 
   projectId = _messages.StringField(1, required=True)
@@ -600,18 +603,20 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsListRequest object.
 
   Fields:
-    filter: An expression for filtering the results of the request. Filter
-      rules are case insensitive. Some eligible fields for filtering are: +
-      `name` + `id` + `labels.` (where *key* is the name of a label) +
-      `parent.type` + `parent.id` + `lifecycleState` Some examples of filter
-      strings: | Filter | Description | |------------------|------------------
-      -----------------------------------| | name:how* | The project's name
-      starts with "how". | | name:Howl | The project's name is `Howl` or
-      `howl`. | | name:HOWL | Equivalent to above. | | NAME:howl | Equivalent
-      to above. | | labels.color:* | The project has the label `color`. | |
-      labels.color:red | The project's label `color` has the value `red`. | |
-      labels.color:red labels.size:big | The project's label `color` | : : has
-      the value `red` and its : : : label`size` has the value : : : `big`. : |
+    filter: Optional. An expression for filtering the results of the request.
+      Filter rules are case insensitive. If multiple fields are included in a
+      filter query, the query will return results that match any of the
+      fields. Some eligible fields for filtering are: + `name` + `id` +
+      `labels.` (where *key* is the name of a label) + `parent.type` +
+      `parent.id` + `lifecycleState` Some examples of filter strings: | Filter
+      | Description | |------------------|------------------------------------
+      -----------------| | name:how* | The project's name starts with "how". |
+      | name:Howl | The project's name is `Howl` or `howl`. | | name:HOWL |
+      Equivalent to above. | | NAME:howl | Equivalent to above. | |
+      labels.color:* | The project has the label `color`. | | labels.color:red
+      | The project's label `color` has the value `red`. | | labels.color:red
+      labels.size:big | The project's label `color` | : : has the value `red`
+      and its : : : label`size` has the value : : : `big`. : |
       lifecycleState:DELETE_REQUESTED | Only show projects that are | : :
       pending deletion. : If no filter is specified, the call will return
       projects for which the user has the `resourcemanager.projects.get`
@@ -620,13 +625,12 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
       `resourcemanager.projects.list` permission on the parent and the filter
       must contain both a `parent.type` and a `parent.id` restriction
       (example: "parent.type:folder parent.id:123"). In this case an alternate
-      search index is used which provides more consistent results. Optional.
-    pageSize: The maximum number of Projects to return in the response. The
-      server can return fewer Projects than requested. If unspecified, server
-      picks an appropriate default. Optional.
-    pageToken: A pagination token returned from a previous call to
+      search index is used which provides more consistent results.
+    pageSize: Optional. The maximum number of Projects to return in the
+      response. The server can return fewer Projects than requested. If
+      unspecified, server picks an appropriate default.
+    pageToken: Optional. A pagination token returned from a previous call to
       ListProjects that indicates from where listing should continue.
-      Optional.
   """
 
   filter = _messages.StringField(1)
@@ -682,7 +686,7 @@ class CloudresourcemanagerProjectsUndeleteRequest(_messages.Message):
   r"""A CloudresourcemanagerProjectsUndeleteRequest object.
 
   Fields:
-    projectId: The project ID (for example, `foo-bar-123`). Required.
+    projectId: Required. The project ID (for example, `foo-bar-123`).
     undeleteProjectRequest: A UndeleteProjectRequest resource to be passed as
       the request body.
   """
@@ -1466,18 +1470,18 @@ class Project(_messages.Message):
     name: The optional user-assigned display name of the Project. When present
       it must be between 4 to 30 characters. Allowed characters are: lowercase
       and uppercase letters, numbers, hyphen, single-quote, double-quote,
-      space, and exclamation point. Example: My Project Read-write.
+      space, and exclamation point. Example: `My Project` Read-write.
     parent: An optional reference to a parent Resource. Supported parent types
       include "organization" and "folder". Once set, the parent cannot be
       cleared. The `parent` can be set on creation or using the
       `UpdateProject` method; the end user must have the
-      `resourcemanager.projects.create` permission on the parent. Read-write.
+      `resourcemanager.projects.create` permission on the parent.
     projectId: The unique, user-assigned ID of the Project. It must be 6 to 30
       lowercase letters, digits, or hyphens. It must start with a letter.
-      Trailing hyphens are prohibited. Example: tokyo-rain-123 Read-only after
-      creation.
+      Trailing hyphens are prohibited. Example: `tokyo-rain-123` Read-only
+      after creation.
     projectNumber: The number uniquely identifying the project. Example:
-      415104041262 Read-only.
+      `415104041262` Read-only.
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
@@ -1563,10 +1567,10 @@ class ResourceId(_messages.Message):
   Engine app, a Compute Engine instance, a Cloud SQL database, and so on.
 
   Fields:
-    id: Required field for the type-specific id. This should correspond to the
-      id used in the type-specific API's.
-    type: Required field representing the resource type this id is for. At
-      present, the valid types are: "organization", "folder", and "project".
+    id: The type-specific id. This should correspond to the id used in the
+      type-specific API's.
+    type: The resource type this id is for. At present, the valid types are:
+      "organization", "folder", and "project".
   """
 
   id = _messages.StringField(1)

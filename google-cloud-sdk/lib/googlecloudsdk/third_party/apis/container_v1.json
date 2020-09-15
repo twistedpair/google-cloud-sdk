@@ -307,15 +307,6 @@
         },
         "status": {
           "description": "[Output only] The current status of this cluster.",
-          "enumDescriptions": [
-            "Not set.",
-            "The PROVISIONING state indicates the cluster is being created.",
-            "The RUNNING state indicates the cluster has been created and is fully usable.",
-            "The RECONCILING state indicates that some work is actively being done on the cluster, such as upgrading the master or node software. Details can be found in the `statusMessage` field.",
-            "The STOPPING state indicates the cluster is being deleted.",
-            "The ERROR state indicates the cluster is unusable. It will be automatically deleted. Details can be found in the `statusMessage` field.",
-            "The DEGRADED state indicates the cluster requires user action to restore full functionality. Details can be found in the `statusMessage` field."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -539,11 +530,6 @@
       "properties": {
         "mode": {
           "description": "Mode is the configuration for how to expose metadata to workloads running on the node pool.",
-          "enumDescriptions": [
-            "Not set.",
-            "Expose all Compute Engine metadata to pods.",
-            "Run the GKE Metadata Server on this node. The GKE Metadata Server exposes a metadata API to workloads that is compatible with the V1 Compute Metadata APIs exposed by the Compute Engine and App Engine Metadata Servers. This feature can only be enabled if Workload Identity is enabled at the cluster level."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -573,12 +559,6 @@
         },
         "effect": {
           "description": "Effect for taint.",
-          "enumDescriptions": [
-            "Not set",
-            "NoSchedule",
-            "PreferNoSchedule",
-            "NoExecute"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set",
@@ -602,10 +582,6 @@
       "properties": {
         "type": {
           "description": "Type of the sandbox to use for the node.",
-          "enumDescriptions": [
-            "Default value. This should not be used.",
-            "Run sandbox using gvisor."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. This should not be used.",
@@ -625,12 +601,6 @@
       "properties": {
         "consumeReservationType": {
           "description": "Corresponds to the type of reservation consumption.",
-          "enumDescriptions": [
-            "Default value. This should not be used.",
-            "Do not consume from any reserved capacity.",
-            "Consume any reservation available.",
-            "Must consume from a specific reservation. Must specify key value fields for specifying the reservations."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. This should not be used.",
@@ -679,11 +649,11 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "The username to use for HTTP basic authentication to the master endpoint. For clusters v1.6.0 and later, basic authentication can be disabled by leaving username unspecified (or setting it to the empty string).",
+          "description": "The username to use for HTTP basic authentication to the master endpoint. For clusters v1.6.0 and later, basic authentication can be disabled by leaving username unspecified (or setting it to the empty string). Warning: basic authentication is deprecated, and will be removed in GKE control plane versions 1.19 and newer. For a list of recommended authentication methods, see: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/api-server-authentication",
           "type": "string"
         },
         "password": {
-          "description": "The password to use for HTTP basic authentication to the master endpoint. Because the master endpoint is open to the Internet, you should create a strong password. If a password is provided for cluster creation, username must be non-empty.",
+          "description": "The password to use for HTTP basic authentication to the master endpoint. Because the master endpoint is open to the Internet, you should create a strong password. If a password is provided for cluster creation, username must be non-empty. Warning: basic authentication is deprecated, and will be removed in GKE control plane versions 1.19 and newer. For a list of recommended authentication methods, see: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/api-server-authentication",
           "type": "string"
         },
         "clientCertificateConfig": {
@@ -805,11 +775,6 @@
         },
         "loadBalancerType": {
           "description": "Which load balancer type is installed for Cloud Run.",
-          "enumDescriptions": [
-            "Load balancer type for Cloud Run is unspecified.",
-            "Install external load balancer for Cloud Run.",
-            "Install internal load balancer for Cloud Run."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Load balancer type for Cloud Run is unspecified.",
@@ -888,15 +853,6 @@
         },
         "status": {
           "description": "[Output only] The status of the nodes in this pool instance.",
-          "enumDescriptions": [
-            "Not set.",
-            "The PROVISIONING state indicates the node pool is being created.",
-            "The RUNNING state indicates the node pool has been created and is fully usable.",
-            "The RUNNING_WITH_ERROR state indicates the node pool has been created and is partially usable. Some error state has occurred and some functionality may be impaired. Customer may need to reissue a request or trigger a new update.",
-            "The RECONCILING state indicates that some work is actively being done on the node pool, such as upgrading node software. Details can be found in the `statusMessage` field.",
-            "The STOPPING state indicates the node pool is being deleted.",
-            "The ERROR state indicates the node pool may be unusable. Details can be found in the `statusMessage` field."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -1029,14 +985,6 @@
       "properties": {
         "code": {
           "description": "Machine-friendly representation of the condition",
-          "enumDescriptions": [
-            "UNKNOWN indicates a generic condition.",
-            "GCE_STOCKOUT indicates that Google Compute Engine resources are temporarily unavailable.",
-            "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot service account.",
-            "Google Compute Engine quota was exceeded.",
-            "Cluster state was manually changed by an SRE due to a system logic error.",
-            "Unable to perform an encrypt operation against the CloudKMS key used for etcd level encryption. More codes TBA"
-          ],
           "type": "string",
           "enumDescriptions": [
             "UNKNOWN indicates a generic condition.",
@@ -1096,10 +1044,6 @@
       "properties": {
         "provider": {
           "description": "The selected network policy provider.",
-          "enumDescriptions": [
-            "Not set",
-            "Tigera (Calico Felix)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set",
@@ -1543,11 +1487,6 @@
       "properties": {
         "state": {
           "description": "Denotes the state of etcd encryption.",
-          "enumDescriptions": [
-            "Should never be set",
-            "Secrets in etcd are encrypted.",
-            "Secrets in etcd are stored in plain text (at etcd level) - this is unrelated to Compute Engine level full disk encryption."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Should never be set",
@@ -1595,12 +1534,6 @@
       "properties": {
         "channel": {
           "description": "channel specifies which release channel the cluster is subscribed to.",
-          "enumDescriptions": [
-            "No channel specified.",
-            "RAPID channel is offered on an early access basis for customers who want to test new releases. WARNING: Versions available in the RAPID Channel may be subject to unresolved issues with no known workaround and are not subject to any SLAs.",
-            "Clusters subscribed to REGULAR receive versions that are considered GA quality. REGULAR is intended for production users who want to take advantage of new features.",
-            "Clusters subscribed to STABLE receive versions that are known to be stable and reliable in production."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No channel specified.",
@@ -1666,25 +1599,6 @@
         },
         "operationType": {
           "description": "The operation type.",
-          "enumDescriptions": [
-            "Not set.",
-            "Cluster create.",
-            "Cluster delete.",
-            "A master upgrade.",
-            "A node upgrade.",
-            "Cluster repair.",
-            "Cluster update.",
-            "Node pool create.",
-            "Node pool delete.",
-            "Set node pool management.",
-            "Automatic node pool repair.",
-            "Automatic node upgrade.",
-            "Set labels.",
-            "Set\/generate master auth materials",
-            "Set node pool size.",
-            "Updates network policy for a cluster.",
-            "Set the maintenance policy."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -1727,13 +1641,6 @@
         },
         "status": {
           "description": "The current status of the operation.",
-          "enumDescriptions": [
-            "Not set.",
-            "The operation has been created.",
-            "The operation is currently running.",
-            "The operation is done, either cancelled or completed.",
-            "The operation is aborting."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -1811,13 +1718,6 @@
         },
         "status": {
           "description": "Status of an operation stage. Unset for single-stage operations.",
-          "enumDescriptions": [
-            "Not set.",
-            "The operation has been created.",
-            "The operation is currently running.",
-            "The operation is done, either cancelled or completed.",
-            "The operation is aborting."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -2261,12 +2161,6 @@
         },
         "action": {
           "description": "Required. The exact form of action to be taken on the master auth.",
-          "enumDescriptions": [
-            "Operation is unknown and will error out.",
-            "Set the password to a user generated value.",
-            "Generate a new password and set it to that.",
-            "Set the username. If an empty username is provided, basic authentication is disabled for the cluster. If a non-empty username is provided, basic authentication is enabled, with either a provided password or a generated one."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Operation is unknown and will error out.",
@@ -2392,12 +2286,6 @@
       "properties": {
         "channel": {
           "description": "The release channel this configuration applies to.",
-          "enumDescriptions": [
-            "No channel specified.",
-            "RAPID channel is offered on an early access basis for customers who want to test new releases. WARNING: Versions available in the RAPID Channel may be subject to unresolved issues with no known workaround and are not subject to any SLAs.",
-            "Clusters subscribed to REGULAR receive versions that are considered GA quality. REGULAR is intended for production users who want to take advantage of new features.",
-            "Clusters subscribed to STABLE receive versions that are known to be stable and reliable in production."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No channel specified.",
@@ -2919,13 +2807,6 @@
         },
         "status": {
           "description": "This field is to determine the status of the secondary range programmably.",
-          "enumDescriptions": [
-            "UNKNOWN is the zero value of the Status enum. It's not a valid status.",
-            "UNUSED denotes that this range is unclaimed by any cluster.",
-            "IN_USE_SERVICE denotes that this range is claimed by a cluster for services. It cannot be used for other clusters.",
-            "IN_USE_SHAREABLE_POD denotes this range was created by the network admin and is currently claimed by a cluster for pods. It can only be used by other clusters as a pod range.",
-            "IN_USE_MANAGED_POD denotes this range was created by GKE and is claimed for pods. It cannot be used for other clusters."
-          ],
           "type": "string",
           "enumDescriptions": [
             "UNKNOWN is the zero value of the Status enum. It's not a valid status.",
@@ -2951,11 +2832,6 @@
       "properties": {
         "resourceType": {
           "description": "Required. The resource type that is upgrading.",
-          "enumDescriptions": [
-            "Default value. This shouldn't be used.",
-            "Master \/ control plane",
-            "Node pool"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. This shouldn't be used.",

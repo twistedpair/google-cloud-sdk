@@ -42,7 +42,6 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     self.projects_locations_datasets_annotationStores = self.ProjectsLocationsDatasetsAnnotationStoresService(self)
     self.projects_locations_datasets_consentStores_attributeDefinitions = self.ProjectsLocationsDatasetsConsentStoresAttributeDefinitionsService(self)
     self.projects_locations_datasets_consentStores_consentArtifacts = self.ProjectsLocationsDatasetsConsentStoresConsentArtifactsService(self)
-    self.projects_locations_datasets_consentStores_consents_history = self.ProjectsLocationsDatasetsConsentStoresConsentsHistoryService(self)
     self.projects_locations_datasets_consentStores_consents = self.ProjectsLocationsDatasetsConsentStoresConsentsService(self)
     self.projects_locations_datasets_consentStores_userDataMappings = self.ProjectsLocationsDatasetsConsentStoresUserDataMappingsService(self)
     self.projects_locations_datasets_consentStores = self.ProjectsLocationsDatasetsConsentStoresService(self)
@@ -626,70 +625,6 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         request_field='',
         request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentArtifactsListRequest',
         response_type_name='ListConsentArtifactsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsDatasetsConsentStoresConsentsHistoryService(base_api.BaseApiService):
-    """Service class for the projects_locations_datasets_consentStores_consents_history resource."""
-
-    _NAME = 'projects_locations_datasets_consentStores_consents_history'
-
-    def __init__(self, client):
-      super(HealthcareV1alpha2.ProjectsLocationsDatasetsConsentStoresConsentsHistoryService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def DeleteAll(self, request, global_params=None):
-      r"""Deletes historical versions of a Consent excluding the current version from the Consent store. This operation does not affect the related consent artifact.
-
-      Args:
-        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryDeleteAllRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('DeleteAll')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    DeleteAll.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history:deleteAll',
-        http_method='POST',
-        method_id='healthcare.projects.locations.datasets.consentStores.consents.history.deleteAll',
-        ordered_params=['consent'],
-        path_params=['consent'],
-        query_params=[],
-        relative_path='v1alpha2/{+consent}/history:deleteAll',
-        request_field='deleteAllConsentHistoryRequest',
-        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryDeleteAllRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists historical versions of a Consent excluding the current version from the Consent store.
-
-      Args:
-        request: (HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListConsentHistoryResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history',
-        http_method='GET',
-        method_id='healthcare.projects.locations.datasets.consentStores.consents.history.list',
-        ordered_params=['consent'],
-        path_params=['consent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha2/{+consent}/history',
-        request_field='',
-        request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryListRequest',
-        response_type_name='ListConsentHistoryResponse',
         supports_download=False,
     )
 
@@ -2414,7 +2349,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new health dataset. Results are returned through the Operation interface which returns either an `Operation.response` which contains a Dataset or `Operation.error`. The metadata field type is OperationMetadata. A Google Cloud Platform project can contain up to 500 datasets across all regions.
+      r"""Creates a new health dataset. Results are returned through the Operation interface which returns either an `Operation.response` which contains a Dataset or `Operation.error`. The metadata field type is OperationMetadata.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsCreateRequest) input message

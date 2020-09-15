@@ -516,7 +516,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the order. Order names have the form `billingAccounts\/\/orders\/{order_id}`.",
+          "description": "Output only. The resource name of the order. Order names have the form `billingAccounts\/{billing-account-id}\/orders\/{order_id}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -823,6 +823,20 @@
         "etag": {
           "description": "The weak etag, which can be optionally populated, of the order that this cancel request is based on. Validation checking will only happen if the invoker supplies this field.",
           "type": "string"
+        },
+        "cancellationPolicy": {
+          "description": "Cancellation policy of this request.",
+          "type": "string",
+          "enumDescriptions": [
+            "If unspecified, cancellation will try to cancel the order, if order cannot be immediately cancelled, auto renewal will be turned off.",
+            "Request will cancel the whole order immediately, if order cannot be immediately cancelled, the request will fail.",
+            "Request will cancel the auto renewal, if order is not subscription based, the request will fail."
+          ],
+          "enum": [
+            "CANCELLATION_POLICY_UNSPECIFIED",
+            "CANCELLATION_POLICY_CANCEL_IMMEDIATELY",
+            "CANCELLATION_POLICY_CANCEL_AT_TERM_END"
+          ]
         }
       }
     },
@@ -1093,6 +1107,108 @@
           "type": "string"
         }
       }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation",
+      "description": "OrderAllocation represents the allocation of resources within a specific order to a set of targets (projects). Next Id: 8",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the allocation. This field is of the form: `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Optional. The user-specified name of the allocation. Must be unique within an Order if specified.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the allocation.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "The allocation is pending activation.",
+            "The allocation is active.",
+            "The allocation is pending deletion.",
+            "The allocation is cancelled. This can be caused by failure in creating the allocation."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "STATE_PENDING_ACTIVATION",
+            "STATE_ACTIVE",
+            "STATE_PENDING_DELETION",
+            "STATE_CANCELLED"
+          ]
+        },
+        "allocationEntry": {
+          "description": "Required. The currently effective allocation entry.",
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry"
+        },
+        "pendingAllocationEntry": {
+          "description": "Output only. The upcoming allocation entry.",
+          "readOnly": true,
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry"
+        },
+        "createTime": {
+          "description": "Output only. The time when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the resource was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry",
+      "description": "An allocation entry representing what resource is being allocated to which targets.",
+      "type": "object",
+      "properties": {
+        "int64ResourceValue": {
+          "description": "Represents an int64 value.",
+          "type": "string",
+          "format": "int64"
+        },
+        "doubleResourceValue": {
+          "description": "Represents a double value.",
+          "type": "number",
+          "format": "double"
+        },
+        "stringResourceValue": {
+          "description": "Represents a string value.",
+          "type": "string"
+        },
+        "targets": {
+          "description": "Required. The targets of the allocation, only projects are allowed at the moment.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAllocationsResponse": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAllocationsResponse",
+      "description": "Response message for ConsumerProcurementService.ListOrderAllocations.",
+      "type": "object",
+      "properties": {
+        "orderAllocations": {
+          "description": "The list of OrderAllocations in this response.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token for fetching the next page.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -1107,7 +1223,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource of this account. This field is of the form \"\/\". Currently supported type: 'billingAccounts\/'",
+                  "description": "Required. The parent resource of this account. This field is of the form \"\/\". Currently supported type: 'billingAccounts\/{billing-account-id}'",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -1135,7 +1251,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for accounts. This field is of the form `billingAccounts\/`.",
+                  "description": "Required. The parent resource to query for accounts. This field is of the form `billingAccounts\/{billing-account-id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -1351,7 +1467,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource name of the parent resource. This field is of the form `billingAccounts\/`.",
+                  "description": "Required. The resource name of the parent resource. This field is of the form `billingAccounts\/{billing-account-id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -1404,7 +1520,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for orders. This field is of the form `billingAccounts\/`.",
+                  "description": "Required. The parent resource to query for orders. This field is of the form `billingAccounts\/{billing-account-id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^billingAccounts\/[^\/]+$",
@@ -1619,6 +1735,158 @@
                   "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                 }
               }
+            },
+            "orderAllocations": {
+              "methods": {
+                "create": {
+                  "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.create",
+                  "path": "v1alpha1/{+parent}/orderAllocations",
+                  "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource of this OrderAllocation. This field is of the form 'billingAccounts\/{billing-account-id}\/orders\/{order-id}'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates an OrderAllocation resource."
+                },
+                "get": {
+                  "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the OrderAllocation to retrieve. This field is of the form `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the requested OrderAllocation resource."
+                },
+                "list": {
+                  "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.list",
+                  "path": "v1alpha1/{+parent}/orderAllocations",
+                  "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource to query for OrderAllocations. This field is of the form `billingAccounts\/{billing-account-id}\/orders\/{order-id}`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of entries that are requested.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The token for fetching the next page.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAllocationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists OrderAllocation resources that the user has access to, within the scope of the parent resource."
+                },
+                "patch": {
+                  "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of the allocation. This field is of the form: `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "The update mask that applies to the resource. See the [FieldMask definition] (https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask) for more details.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates an existing OrderAllocation."
+                },
+                "delete": {
+                  "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.orderAllocations.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}/orderAllocations/{orderAllocationsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the OrderAllocation to delete.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes an existing OrderAllocation."
+                }
+              }
             }
           }
         }
@@ -1635,7 +1903,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the entitlement to retrieve. This field is one of the following forms: `projects\/\/entitlements\/` `projects\/\/entitlements\/`.",
+                  "description": "Required. The name of the entitlement to retrieve. This field is one of the following forms: `projects\/{project-number}\/entitlements\/{entitlement-id}` `projects\/{project-id}\/entitlements\/{entitlement-id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/entitlements\/[^\/]+$",
@@ -1660,7 +1928,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for Entitlements. Currently the only parents supported are \"projects\/\" and \"projects\/\".",
+                  "description": "Required. The parent resource to query for Entitlements. Currently the only parents supported are \"projects\/{project-number}\" and \"projects\/{project-id}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1700,7 +1968,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for FreeTrials. Currently the only parent supported is \"projects\/\".",
+                  "description": "Required. The parent resource to query for FreeTrials. Currently the only parent supported is \"projects\/{project-id}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1728,7 +1996,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the freeTrial to retrieve. This field is of the form `projects\/\/freeTrials\/`.",
+                  "description": "Required. The name of the freeTrial to retrieve. This field is of the form `projects\/{project-id}\/freeTrials\/{freetrial-id}`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/freeTrials\/[^\/]+$",
@@ -1753,7 +2021,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource to query for FreeTrials. Currently the only parent supported is \"projects\/\".",
+                  "description": "Required. The parent resource to query for FreeTrials. Currently the only parent supported is \"projects\/{project-id}\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",

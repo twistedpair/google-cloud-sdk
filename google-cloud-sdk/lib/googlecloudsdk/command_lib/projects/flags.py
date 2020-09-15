@@ -20,7 +20,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.resource_manager import completers
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
 def GetProjectFlag(verb):
@@ -37,6 +39,27 @@ def GetProjectIDNumberFlag(verb):
       metavar='PROJECT_ID_OR_NUMBER',
       completer=completers.ProjectCompleter,
       help='ID or number for the project you want to {0}.'.format(verb))
+
+
+def ProjectAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='project_id',
+      help_text='The project id.')
+
+
+def GetProjectResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudresourcemanager.projects',
+      resource_name='project_id',
+      projectId=ProjectAttributeConfig())
+
+
+def GetProjectResourceArg(verb):
+  return concept_parsers.ConceptParser.ForResource(
+      'project_id',
+      GetProjectResourceSpec(),
+      'ID for the project you want to {}.'.format(verb),
+      required=True)
 
 
 SHUT_DOWN_PROJECTS_URL = 'https://cloud.google.com/resource-manager/docs/creating-managing-projects'

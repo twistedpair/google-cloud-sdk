@@ -454,7 +454,7 @@ def AddAutoscalingProfilesFlag(parser, hidden=False):
       type=str)
 
 
-def AddAutoprovisioningFlags(parser, hidden=False, for_create=False, ga=False):
+def AddAutoprovisioningFlags(parser, hidden=False, for_create=False):
   """Adds node autoprovisioning related flags to parser.
 
   Autoprovisioning related flags are: --enable-autoprovisioning
@@ -464,7 +464,6 @@ def AddAutoprovisioningFlags(parser, hidden=False, for_create=False, ga=False):
     parser: A given parser.
     hidden: If true, suppress help text for added options.
     for_create: Add flags for create request.
-    ga: If false adds non GA flags
   """
 
   group = parser.add_argument_group('Node autoprovisioning', hidden=hidden)
@@ -489,8 +488,9 @@ and memory limits to be specified.""",
 Path of the JSON/YAML file which contains information about the
 cluster's node autoprovisioning configuration. Currently it contains
 a list of resource limits, identity defaults for autoprovisioning, node upgrade
-settings, node management settings, minimum cpu platform, and node locations for
-autoprovisioning.
+settings, node management settings, minimum cpu platform, node locations for
+autoprovisioning, disk type and size configuration, shielded instance settings,
+and customer-managed encryption keys settings.
 
 Resource limits are specified in the field 'resourceLimits'.
 Each resource limits definition contains three fields:
@@ -532,6 +532,20 @@ Autoprovisioning locations is a set of zones where new node pools
 can be created by Autoprovisioning. Autoprovisioning locations are
 specified in the field 'autoprovisioningLocations'. All zones must
 be in the same region as the cluster's master(s).
+
+Disk type and size are specified under the 'diskType' and 'diskSizeGb' fields,
+respectively. If specified, new autoprovisioned nodes will be created with
+custom boot disks configured by these settings.
+
+Shielded instance settings are specified under the 'shieldedInstanceConfig'
+field, which has the following fields:
+enableSecureBoot: A boolean field that indicates if secure boot is enabled for
+autoprovisioned nodes.
+enableIntegrityMonitoring: A boolean field that indicates if integrity
+monitoring is enabled for autoprovisioned nodes.
+
+Customer Managed Encryption Keys (CMEK) used by new auto-provisioned node pools
+can be specified in the 'bootDiskKmsKey' field.
 """)
 
   from_flags_group = limits_group.add_argument_group(
@@ -693,19 +707,9 @@ All zones must be in the same region as the cluster's master(s).
 Multiple locations can be specified, separated by commas.""",
       metavar='ZONE',
       type=arg_parsers.ArgList(min_length=1))
-  if not ga:
-    AddNonGAAutoscalingFlags(from_flags_group)
-
-
-def AddNonGAAutoscalingFlags(from_flags_group):
-  """Adds node autoprovisioning related non GA flags.
-
-  Args:
-    from_flags_group: Autoprovisioning flags group
-  """
   from_flags_group.add_argument(
       '--autoprovisioning-min-cpu-platform',
-      hidden=True,
+      hidden=hidden,
       metavar='PLATFORM',
       help="""\
 If specified, new autoprovisioned nodes will be scheduled on host with
@@ -1079,7 +1083,7 @@ Enable node autorepair feature for a node pool.
 """
     if for_create:
       help_text += """
-Node autorepair is enabled by default for node pools using COS or COS_CONTAINERD
+Node autorepair is enabled by default for node pools using COS, COS_CONTAINERD, UBUNTU or UBUNTU_CONTAINERD
 as a base image, use --no-enable-autorepair to disable.
 """
   else:
@@ -1090,7 +1094,7 @@ Enable node autorepair feature for a cluster's default node pool(s).
 """
     if for_create:
       help_text += """
-Node autorepair is enabled by default for clusters using COS or COS_CONTAINERD
+Node autorepair is enabled by default for clusters using COS, COS_CONTAINERD, UBUNTU or UBUNTU_CONTAINERD
 as a base image, use --no-enable-autorepair to disable.
 """
   help_text += """
@@ -2404,6 +2408,22 @@ Disable Workload Identity on the cluster.
 For more information on Workload Identity, see
 
             https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+""")
+
+
+def AddGkeOidcFlag(parser):
+  parser.add_argument(
+      '--enable-gke-oidc',
+      default=None,
+      action='store_true',
+      help="""\
+Enable GKE OIDC authentication on the cluster.
+
+When enabled, users would be able to authenticate to Kubernetes cluster after
+properly setting OIDC config.
+
+GKE OIDC is by default disabled when creating a new cluster. To disable GKE OIDC
+in an existing cluster, explicitly set flag `--no-enable-gke-oidc`.
 """)
 
 

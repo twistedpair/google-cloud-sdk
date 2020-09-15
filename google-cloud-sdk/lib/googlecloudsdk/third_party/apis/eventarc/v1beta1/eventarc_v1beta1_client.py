@@ -191,7 +191,7 @@ class EventarcV1beta1(base_api.BaseApiClient):
         method_id='eventarc.projects.locations.triggers.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['triggerId', 'validateOnly'],
+        query_params=['triggerId'],
         relative_path='v1beta1/{+parent}/triggers',
         request_field='trigger',
         request_type_name='EventarcProjectsLocationsTriggersCreateRequest',
@@ -218,7 +218,7 @@ class EventarcV1beta1(base_api.BaseApiClient):
         method_id='eventarc.projects.locations.triggers.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'validateOnly'],
+        query_params=['etag'],
         relative_path='v1beta1/{+name}',
         request_field='',
         request_type_name='EventarcProjectsLocationsTriggersDeleteRequest',
@@ -299,7 +299,7 @@ class EventarcV1beta1(base_api.BaseApiClient):
         method_id='eventarc.projects.locations.triggers.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken', 'showDeleted'],
+        query_params=['orderBy', 'pageSize', 'pageToken'],
         relative_path='v1beta1/{+parent}/triggers',
         request_field='',
         request_type_name='EventarcProjectsLocationsTriggersListRequest',
@@ -326,7 +326,7 @@ class EventarcV1beta1(base_api.BaseApiClient):
         method_id='eventarc.projects.locations.triggers.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['createMissing', 'updateMask', 'validateOnly'],
+        query_params=['updateMask'],
         relative_path='v1beta1/{+name}',
         request_field='trigger',
         request_type_name='EventarcProjectsLocationsTriggersPatchRequest',
@@ -385,33 +385,6 @@ class EventarcV1beta1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='EventarcProjectsLocationsTriggersTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-    def Undelete(self, request, global_params=None):
-      r"""Undelete a single trigger.
-
-      Args:
-        request: (EventarcProjectsLocationsTriggersUndeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Undelete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Undelete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/triggers/{triggersId}:undelete',
-        http_method='POST',
-        method_id='eventarc.projects.locations.triggers.undelete',
-        ordered_params=['uid'],
-        path_params=['uid'],
-        query_params=['etag', 'instanceId', 'validateOnly'],
-        relative_path='v1beta1/{+uid}:undelete',
-        request_field='',
-        request_type_name='EventarcProjectsLocationsTriggersUndeleteRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

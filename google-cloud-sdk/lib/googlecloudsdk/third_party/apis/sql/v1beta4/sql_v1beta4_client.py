@@ -1021,7 +1021,7 @@ class SqlV1beta4(base_api.BaseApiClient):
     )
 
     def StartExternalSync(self, request, global_params=None):
-      r"""Start External master migration.
+      r"""Start External primary instance migration.
 
       Args:
         request: (SqlProjectsInstancesStartExternalSyncRequest) input message
@@ -1047,7 +1047,7 @@ class SqlV1beta4(base_api.BaseApiClient):
     )
 
     def VerifyExternalSyncSettings(self, request, global_params=None):
-      r"""Verify External master external sync settings.
+      r"""Verify External primary instance external sync settings.
 
       Args:
         request: (SqlProjectsInstancesVerifyExternalSyncSettingsRequest) input message

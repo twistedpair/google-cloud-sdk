@@ -647,12 +647,8 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args,
                                                for_update=False,
                                                need_disk_source=False):
   """Validates the values of stateful flags for instance configs."""
-  if for_update:
-    stateful_disks = args.stateful_disk
-    flag_name = '--stateful-disk'
-  else:
-    stateful_disks = args.stateful_disk
-    flag_name = '--stateful-disk'
+  stateful_disks = args.stateful_disk
+  flag_name = '--stateful-disk'
   device_names = set()
   for stateful_disk in stateful_disks or []:
     if not stateful_disk.get('device-name'):
@@ -678,7 +674,7 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args,
           parameter_name=flag_name,
           message='[source] is required for all stateful disks')
 
-    if mode_value and not stateful_disk.get('source'):
+    if not for_update and mode_value and not stateful_disk.get('source'):
       raise exceptions.InvalidArgumentException(
           parameter_name=flag_name,
           message='[mode] can be set then and only then when [source] is given')

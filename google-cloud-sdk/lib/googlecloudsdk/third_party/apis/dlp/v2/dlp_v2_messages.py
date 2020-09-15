@@ -2195,9 +2195,10 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
 
     Values:
       SAMPLE_METHOD_UNSPECIFIED: <no description>
-      TOP: Scan from the top (default).
-      RANDOM_START: Randomly pick the row to start scanning. The scanned rows
-        are contiguous.
+      TOP: Scan groups of rows in the order BigQuery provides (default).
+        Multiple groups of rows may be scanned in parallel, so results may not
+        appear in the same order the rows are read.
+      RANDOM_START: Randomly pick groups of rows to scan.
     """
     SAMPLE_METHOD_UNSPECIFIED = 0
     TOP = 1

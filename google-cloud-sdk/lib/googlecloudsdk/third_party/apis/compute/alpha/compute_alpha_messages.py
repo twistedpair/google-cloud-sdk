@@ -1285,11 +1285,6 @@ class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_me
 class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Message):
   r"""Properties of the SKU instances being reserved. Next ID: 9
 
-  Enums:
-    MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
-      stable fleet VM. Setting this to "Periodic" designates this VM as a
-      Stable Fleet VM.  See go/stable-fleet-ug for more details.
-
   Fields:
     guestAccelerators: Specifies accelerator type and count.
     localSsds: Specifies amount of local ssd to reserve with each instance.
@@ -1304,31 +1299,15 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     maintenanceFreezeDurationHours: Specifies the number of hours after
       reservation creation where instances using the reservation won't be
       scheduled for maintenance.
-    maintenanceInterval: Specifies whether this VM may be a stable fleet VM.
-      Setting this to "Periodic" designates this VM as a Stable Fleet VM.  See
-      go/stable-fleet-ug for more details.
     minCpuPlatform: Minimum cpu platform the reservation.
   """
-
-  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
-    r"""Specifies whether this VM may be a stable fleet VM. Setting this to
-    "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
-    ug for more details.
-
-    Values:
-      AS_NEEDED: <no description>
-      PERIODIC: <no description>
-    """
-    AS_NEEDED = 0
-    PERIODIC = 1
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
   locationHint = _messages.StringField(3)
   machineType = _messages.StringField(4)
   maintenanceFreezeDurationHours = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 6)
-  minCpuPlatform = _messages.StringField(7)
+  minCpuPlatform = _messages.StringField(6)
 
 
 class AllocationSpecificSKUReservation(_messages.Message):
@@ -2618,25 +2597,20 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
   r"""CPU utilization policy.
 
   Enums:
-    PredictiveMethodValueValuesEnum: Indicates which method of prediction is
-      used for CPU utilization metric, if any. Current set of possible values:
-      * NONE: No predictions are made based on the scaling metric when
-      calculating the number of VM instances. * OPTIMIZE_AVAILABILITY:
-      Standard predictive autoscaling predicts the future values of the
-      scaling metric and then scales a MIG to ensure that new VM instances are
-      ready in time to cover the predicted peak. New values might be added in
-      the future. Some of the values might not be available in all API
-      versions.
+    PredictiveMethodValueValuesEnum: Indicates whether predictive autoscaling
+      based on CPU metric is enabled. Valid values are:  * NONE (default). No
+      predictive method is used. The autoscaler scales the group to meet
+      current demand based on real-time metrics. * OPTIMIZE_AVAILABILITY.
+      Predictive autoscaling improves availability by monitoring daily and
+      weekly load patterns and scaling out ahead of anticipated demand.
 
   Fields:
-    predictiveMethod: Indicates which method of prediction is used for CPU
-      utilization metric, if any. Current set of possible values: * NONE: No
-      predictions are made based on the scaling metric when calculating the
-      number of VM instances. * OPTIMIZE_AVAILABILITY: Standard predictive
-      autoscaling predicts the future values of the scaling metric and then
-      scales a MIG to ensure that new VM instances are ready in time to cover
-      the predicted peak. New values might be added in the future. Some of the
-      values might not be available in all API versions.
+    predictiveMethod: Indicates whether predictive autoscaling based on CPU
+      metric is enabled. Valid values are:  * NONE (default). No predictive
+      method is used. The autoscaler scales the group to meet current demand
+      based on real-time metrics. * OPTIMIZE_AVAILABILITY. Predictive
+      autoscaling improves availability by monitoring daily and weekly load
+      patterns and scaling out ahead of anticipated demand.
     utilizationTarget: The target CPU utilization that the autoscaler should
       maintain. Must be a float value in the range (0, 1]. If not specified,
       the default is 0.6.  If the CPU level is below the target utilization,
@@ -2649,14 +2623,12 @@ class AutoscalingPolicyCpuUtilization(_messages.Message):
   """
 
   class PredictiveMethodValueValuesEnum(_messages.Enum):
-    r"""Indicates which method of prediction is used for CPU utilization
-    metric, if any. Current set of possible values: * NONE: No predictions are
-    made based on the scaling metric when calculating the number of VM
-    instances. * OPTIMIZE_AVAILABILITY: Standard predictive autoscaling
-    predicts the future values of the scaling metric and then scales a MIG to
-    ensure that new VM instances are ready in time to cover the predicted
-    peak. New values might be added in the future. Some of the values might
-    not be available in all API versions.
+    r"""Indicates whether predictive autoscaling based on CPU metric is
+    enabled. Valid values are:  * NONE (default). No predictive method is
+    used. The autoscaler scales the group to meet current demand based on
+    real-time metrics. * OPTIMIZE_AVAILABILITY. Predictive autoscaling
+    improves availability by monitoring daily and weekly load patterns and
+    scaling out ahead of anticipated demand.
 
     Values:
       NONE: <no description>
@@ -3087,14 +3059,38 @@ class BackendBucketCdnPolicy(_messages.Message):
   r"""Message containing Cloud CDN configuration for a backend bucket.
 
   Enums:
-    CacheModeValueValuesEnum:
+    CacheModeValueValuesEnum: Specifies the cache setting for all responses
+      from this backend. The possible values are:  USE_ORIGIN_HEADERS Requires
+      the origin to set valid caching headers to cache content. Responses
+      without these headers will not be cached at Google's edge, and will
+      require a full trip to the origin on every request, potentially
+      impacting performance and increasing load on the origin server.
+      FORCE_CACHE_ALL Cache all content, ignoring any "private", "no-store" or
+      "no-cache" directives in Cache-Control response headers. Warning: this
+      may result in Cloud CDN caching private, per-user (user identifiable)
+      content.  CACHE_ALL_STATIC Automatically cache static content, including
+      common image formats, media (video & audio), web assets (JavaScript &
+      CSS). Requests and responses that are marked as uncacheable, as well as
+      dynamic content (including HTML), will not be cached.
 
   Fields:
     bypassCacheOnRequestHeaders: Bypass the cache when the specified request
       headers are matched - e.g. Pragma or Authorization headers. Up to 5
       headers can be specified. The cache is bypassed for all
       cdnPolicy.cacheMode settings.
-    cacheMode: A CacheModeValueValuesEnum attribute.
+    cacheMode: Specifies the cache setting for all responses from this
+      backend. The possible values are:  USE_ORIGIN_HEADERS Requires the
+      origin to set valid caching headers to cache content. Responses without
+      these headers will not be cached at Google's edge, and will require a
+      full trip to the origin on every request, potentially impacting
+      performance and increasing load on the origin server.  FORCE_CACHE_ALL
+      Cache all content, ignoring any "private", "no-store" or "no-cache"
+      directives in Cache-Control response headers. Warning: this may result
+      in Cloud CDN caching private, per-user (user identifiable) content.
+      CACHE_ALL_STATIC Automatically cache static content, including common
+      image formats, media (video & audio), web assets (JavaScript & CSS).
+      Requests and responses that are marked as uncacheable, as well as
+      dynamic content (including HTML), will not be cached.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
       from the TTL for Cloud CDN's edge caches. Leaving this empty will use
       the same cache TTL for both Cloud CDN and the client-facing response.
@@ -3111,10 +3107,10 @@ class BackendBucketCdnPolicy(_messages.Message):
       this origin. Cache directives that attempt to set a max-age or s-maxage
       higher than this, or an Expires header more than maxTTL seconds in the
       future will be capped at the value of maxTTL, as if it were the value of
-      an s-maxage Cache-Control directive. Setting a TTL of "0" means "always
-      revalidate". The maximum allowed value is 31,622,400s (1 year), noting
-      that infrequently accessed objects may be evicted from the cache before
-      the defined TTL.
+      an s-maxage Cache-Control directive. Headers sent to the client will not
+      be modified. Setting a TTL of "0" means "always revalidate". The maximum
+      allowed value is 31,622,400s (1 year), noting that infrequently accessed
+      objects may be evicted from the cache before the defined TTL.
     negativeCaching: Negative caching allows per-status code TTLs to be set,
       in order to apply fine-grained caching for common errors or redirects.
       This can reduce the load on your origin and improve end-user experience
@@ -3122,9 +3118,8 @@ class BackendBucketCdnPolicy(_messages.Message):
       following default TTLs to these status codes: HTTP 300 (Multiple
       Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410
       (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
-      Found), 414 (URI Too Long), 421 (Misdirected Request), 501 (Not
-      Implemented): 60s These defaults can be overridden in
-      negative_caching_policy
+      Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These
+      defaults can be overridden in negative_caching_policy
     negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
@@ -3157,7 +3152,18 @@ class BackendBucketCdnPolicy(_messages.Message):
   """
 
   class CacheModeValueValuesEnum(_messages.Enum):
-    r"""CacheModeValueValuesEnum enum type.
+    r"""Specifies the cache setting for all responses from this backend. The
+    possible values are:  USE_ORIGIN_HEADERS Requires the origin to set valid
+    caching headers to cache content. Responses without these headers will not
+    be cached at Google's edge, and will require a full trip to the origin on
+    every request, potentially impacting performance and increasing load on
+    the origin server.  FORCE_CACHE_ALL Cache all content, ignoring any
+    "private", "no-store" or "no-cache" directives in Cache-Control response
+    headers. Warning: this may result in Cloud CDN caching private, per-user
+    (user identifiable) content.  CACHE_ALL_STATIC Automatically cache static
+    content, including common image formats, media (video & audio), web assets
+    (JavaScript & CSS). Requests and responses that are marked as uncacheable,
+    as well as dynamic content (including HTML), will not be cached.
 
     Values:
       CACHE_ALL_STATIC: <no description>
@@ -3201,8 +3207,8 @@ class BackendBucketCdnPolicyNegativeCachingPolicy(_messages.Message):
 
   Fields:
     code: The HTTP status code to define a TTL against. Only HTTP status codes
-      300, 301, 308, 404, 405, 410, 414, 421, 451 and 501 are can be specified
-      as values, and you cannot specify a status code more than once.
+      300, 301, 308, 404, 405, 410, 421, 451 and 501 are can be specified as
+      values, and you cannot specify a status code more than once.
     ttl: The TTL (in seconds) to cache responses with the corresponding status
       code for. The maximum allowed value is 1800s (30 minutes), noting that
       infrequently accessed objects may be evicted from the cache before the
@@ -3408,11 +3414,15 @@ class BackendService(_messages.Message):
       true.
 
   Fields:
-    affinityCookieTtlSec: If set to 0, the cookie is non-persistent and lasts
-      only until the end of the browser session (or equivalent). The maximum
-      allowed value is one day (86,400).  Not supported when the backend
-      service is referenced by a URL map that is bound to target gRPC proxy
-      that has validateForProxyless field set to true.
+    affinityCookieTtlSec: Lifetime of cookies in seconds. Only applicable if
+      the loadBalancingScheme is EXTERNAL, INTERNAL_SELF_MANAGED, or
+      INTERNAL_MANAGED, the protocol is HTTP or HTTPS, and the sessionAffinity
+      is GENERATED_COOKIE, or HTTP_COOKIE.  If set to 0, the cookie is non-
+      persistent and lasts only until the end of the browser session (or
+      equivalent). The maximum allowed value is one day (86,400).  Not
+      supported when the backend service is referenced by a URL map that is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService.
     circuitBreakers: Settings controlling the volume of connections to a
@@ -3892,7 +3902,19 @@ class BackendServiceCdnPolicy(_messages.Message):
   r"""Message containing Cloud CDN configuration for a backend service.
 
   Enums:
-    CacheModeValueValuesEnum:
+    CacheModeValueValuesEnum: Specifies the cache setting for all responses
+      from this backend. The possible values are:  USE_ORIGIN_HEADERS Requires
+      the origin to set valid caching headers to cache content. Responses
+      without these headers will not be cached at Google's edge, and will
+      require a full trip to the origin on every request, potentially
+      impacting performance and increasing load on the origin server.
+      FORCE_CACHE_ALL Cache all content, ignoring any "private", "no-store" or
+      "no-cache" directives in Cache-Control response headers. Warning: this
+      may result in Cloud CDN caching private, per-user (user identifiable)
+      content.  CACHE_ALL_STATIC Automatically cache static content, including
+      common image formats, media (video & audio), web assets (JavaScript &
+      CSS). Requests and responses that are marked as uncacheable, as well as
+      dynamic content (including HTML), will not be cached.
 
   Fields:
     bypassCacheOnRequestHeaders: Bypass the cache when the specified request
@@ -3900,7 +3922,19 @@ class BackendServiceCdnPolicy(_messages.Message):
       headers can be specified. The cache is bypassed for all
       cdnPolicy.cacheMode settings.
     cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
-    cacheMode: A CacheModeValueValuesEnum attribute.
+    cacheMode: Specifies the cache setting for all responses from this
+      backend. The possible values are:  USE_ORIGIN_HEADERS Requires the
+      origin to set valid caching headers to cache content. Responses without
+      these headers will not be cached at Google's edge, and will require a
+      full trip to the origin on every request, potentially impacting
+      performance and increasing load on the origin server.  FORCE_CACHE_ALL
+      Cache all content, ignoring any "private", "no-store" or "no-cache"
+      directives in Cache-Control response headers. Warning: this may result
+      in Cloud CDN caching private, per-user (user identifiable) content.
+      CACHE_ALL_STATIC Automatically cache static content, including common
+      image formats, media (video & audio), web assets (JavaScript & CSS).
+      Requests and responses that are marked as uncacheable, as well as
+      dynamic content (including HTML), will not be cached.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
       from the TTL for Cloud CDN's edge caches. Leaving this empty will use
       the same cache TTL for both Cloud CDN and the client-facing response.
@@ -3917,10 +3951,10 @@ class BackendServiceCdnPolicy(_messages.Message):
       this origin. Cache directives that attempt to set a max-age or s-maxage
       higher than this, or an Expires header more than maxTTL seconds in the
       future will be capped at the value of maxTTL, as if it were the value of
-      an s-maxage Cache-Control directive. Setting a TTL of "0" means "always
-      revalidate". The maximum allowed value is 31,622,400s (1 year), noting
-      that infrequently accessed objects may be evicted from the cache before
-      the defined TTL.
+      an s-maxage Cache-Control directive. Headers sent to the client will not
+      be modified. Setting a TTL of "0" means "always revalidate". The maximum
+      allowed value is 31,622,400s (1 year), noting that infrequently accessed
+      objects may be evicted from the cache before the defined TTL.
     negativeCaching: Negative caching allows per-status code TTLs to be set,
       in order to apply fine-grained caching for common errors or redirects.
       This can reduce the load on your origin and improve end-user experience
@@ -3928,9 +3962,8 @@ class BackendServiceCdnPolicy(_messages.Message):
       following default TTLs to these status codes: HTTP 300 (Multiple
       Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410
       (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
-      Found), 414 (URI Too Long), 421 (Misdirected Request), 501 (Not
-      Implemented): 60s These defaults can be overridden in
-      negative_caching_policy
+      Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These
+      defaults can be overridden in negative_caching_policy
     negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
@@ -3963,7 +3996,18 @@ class BackendServiceCdnPolicy(_messages.Message):
   """
 
   class CacheModeValueValuesEnum(_messages.Enum):
-    r"""CacheModeValueValuesEnum enum type.
+    r"""Specifies the cache setting for all responses from this backend. The
+    possible values are:  USE_ORIGIN_HEADERS Requires the origin to set valid
+    caching headers to cache content. Responses without these headers will not
+    be cached at Google's edge, and will require a full trip to the origin on
+    every request, potentially impacting performance and increasing load on
+    the origin server.  FORCE_CACHE_ALL Cache all content, ignoring any
+    "private", "no-store" or "no-cache" directives in Cache-Control response
+    headers. Warning: this may result in Cloud CDN caching private, per-user
+    (user identifiable) content.  CACHE_ALL_STATIC Automatically cache static
+    content, including common image formats, media (video & audio), web assets
+    (JavaScript & CSS). Requests and responses that are marked as uncacheable,
+    as well as dynamic content (including HTML), will not be cached.
 
     Values:
       CACHE_ALL_STATIC: <no description>
@@ -4008,8 +4052,8 @@ class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
 
   Fields:
     code: The HTTP status code to define a TTL against. Only HTTP status codes
-      300, 301, 308, 404, 405, 410, 414, 421, 451 and 501 are can be specified
-      as values, and you cannot specify a status code more than once.
+      300, 301, 308, 404, 405, 410, 421, 451 and 501 are can be specified as
+      values, and you cannot specify a status code more than once.
     ttl: The TTL (in seconds) to cache responses with the corresponding status
       code for. The maximum allowed value is 1800s (30 minutes), noting that
       infrequently accessed objects may be evicted from the cache before the
@@ -4674,6 +4718,8 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding.  If the
       condition evaluates to `true`, then this binding applies to the current
       request.  If the condition evaluates to `false`, then this binding does
@@ -4717,9 +4763,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class BulkInsertInstanceResource(_messages.Message):
@@ -21583,6 +21630,29 @@ class ComputeSnapshotsGetRequest(_messages.Message):
   snapshot = _messages.StringField(2, required=True)
 
 
+class ComputeSnapshotsInsertRequest(_messages.Message):
+  r"""A ComputeSnapshotsInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    snapshot: A Snapshot resource to be passed as the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  snapshot = _messages.MessageField('Snapshot', 3)
+
+
 class ComputeSnapshotsListRequest(_messages.Message):
   r"""A ComputeSnapshotsListRequest object.
 
@@ -28675,12 +28745,12 @@ class ForwardingRule(_messages.Message):
       However, if the network is in custom subnet mode, a subnetwork must be
       specified.
     target: The URL of the target resource to receive the matched traffic. For
-      regional forwarding rules, this target must live in the same region as
-      the forwarding rule. For global forwarding rules, this target must be a
+      regional forwarding rules, this target must be in the same region as the
+      forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For INTERNAL_SELF_MANAGED load
-      balancing, only targetHttpProxy and targetGrpcProxy are valid, not
-      targetHttpsProxy.
+      appropriate to the target object. For more information, see the "Target"
+      column in [Port specifications](/load-balancing/docs/forwarding-rule-
+      concepts#ip_address_specifications).
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -51178,10 +51248,19 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       requests matching this rule.
 
   Fields:
+    banDurationSec: Can only be specified if the action for the rule is
+      "rate_based_ban". If specified, the key will be banned for the
+      configured 'ban_duration' when the number of requests that exceed the
+      'rate_limit_threshold' also exceed this 'ban_threshold'.
+    banThreshold: Can only be specified if the action for the rule is
+      "rate_based_ban". If specified, the key will be banned for the
+      configured 'ban_duration' when the number of requests that exceed the
+      'rate_limit_threshold' also exceed this 'ban_threshold'.
     blockDuration: Can only be specified if the action for the rule is
-      "rate_based_blacklist" If specified, determines the time (in seconds)
-      the traffic will continue to be blocked by the rate limit after the rate
-      falls below the threshold. The default value is 0 seconds.
+      "rate_based_ban" If specified, determines the time (in seconds) the
+      traffic will continue to be blocked by the rate limit after the rate
+      falls below the threshold. The default value is 0 seconds. [Deprecated]
+      This field is deprecated.
     conformAction: Action to take when requests are under the given threshold.
       When requests are throttled, this is also the action for all requests
       which are not dropped. Valid options are "allow", "fairshare", and
@@ -51193,7 +51272,9 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     exceedAction: When a request is denied, returns the HTTP response code
       specified. Valid options are "deny()" where valid values for status are
       403, 404, 429, and 502.
+    rateLimitThreshold: Threshold at which to begin ratelimiting.
     thresholdRps: Rate in requests per second at which to begin ratelimiting.
+      [Deprecated] This field is deprecated.
   """
 
   class EnforceOnKeyValueValuesEnum(_messages.Enum):
@@ -51208,11 +51289,26 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     ALL_IPS = 0
     IP = 1
 
-  blockDuration = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  conformAction = _messages.StringField(2)
-  enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 3)
-  exceedAction = _messages.StringField(4)
-  thresholdRps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  banDurationSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  banThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 2)
+  blockDuration = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  conformAction = _messages.StringField(4)
+  enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 5)
+  exceedAction = _messages.StringField(6)
+  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 7)
+  thresholdRps = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+
+
+class SecurityPolicyRuleRateLimitOptionsThreshold(_messages.Message):
+  r"""A SecurityPolicyRuleRateLimitOptionsThreshold object.
+
+  Fields:
+    count: Number of HTTP(S) requests for calculating the threshold.
+    intervalSec: Interval over which the threshold is computed.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  intervalSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class SecuritySettings(_messages.Message):
@@ -51745,6 +51841,10 @@ class Snapshot(_messages.Message):
     diskSizeGb: [Output Only] Size of the source disk, specified in GB.
     downloadBytes: [Output Only] Number of bytes downloaded to restore a
       snapshot to a disk.
+    guestFlush: [Input Only] Whether to attempt an application consistent
+      snapshot by informing the OS to prepare for the snapshot process.
+      Currently only supported on Windows instances using the Volume Shadow
+      Copy Service (VSS).
     guestOsFeatures: [Output Only] A list of features to enable on the guest
       operating system. Applicable only for bootable images. Read  Enabling
       guest operating system features to see a list of available options.
@@ -51869,25 +51969,26 @@ class Snapshot(_messages.Message):
   description = _messages.StringField(4)
   diskSizeGb = _messages.IntegerField(5)
   downloadBytes = _messages.IntegerField(6)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default='compute#snapshot')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  licenseCodes = _messages.IntegerField(12, repeated=True)
-  licenses = _messages.StringField(13, repeated=True)
-  name = _messages.StringField(14)
-  satisfiesPzs = _messages.BooleanField(15)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceDisk = _messages.StringField(19)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  sourceDiskId = _messages.StringField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  storageBytes = _messages.IntegerField(23)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 24)
-  storageLocations = _messages.StringField(25, repeated=True)
+  guestFlush = _messages.BooleanField(7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#snapshot')
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  licenseCodes = _messages.IntegerField(13, repeated=True)
+  licenses = _messages.StringField(14, repeated=True)
+  name = _messages.StringField(15)
+  satisfiesPzs = _messages.BooleanField(16)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 19)
+  sourceDisk = _messages.StringField(20)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceDiskId = _messages.StringField(22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  storageBytes = _messages.IntegerField(24)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 25)
+  storageLocations = _messages.StringField(26, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -52159,9 +52260,10 @@ class SslCertificate(_messages.Message):
       self-managed and the fields certificate and private_key are used.
 
   Fields:
-    certificate: A local certificate file. The certificate must be in PEM
-      format. The certificate chain must be no greater than 5 certs long. The
-      chain must include at least one intermediate cert.
+    certificate: A value read into memory from a certificate file. The
+      certificate file must be in PEM format. The certificate chain must be no
+      greater than 5 certs long. The chain must include at least one
+      intermediate cert.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -52179,8 +52281,9 @@ class SslCertificate(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    privateKey: A write-only private key in PEM format. Only insert requests
-      will include this field.
+    privateKey: A value read into memory from a write-only private key file.
+      The private key file must be in PEM format. For security, only insert
+      requests include this field.
     region: [Output Only] URL of the region where the regional SSL Certificate
       resides. This field is not applicable to global SSL Certificate.
     selfLink: [Output only] Server-defined URL for the resource.

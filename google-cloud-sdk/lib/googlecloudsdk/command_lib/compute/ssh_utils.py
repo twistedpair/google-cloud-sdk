@@ -40,6 +40,7 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.ssh import ssh
@@ -829,6 +830,20 @@ class BaseSSHHelper(object):
     return config
 
 
+def AddVerifyInternalIpArg(parser):
+  parser.add_argument(
+      '--verify-internal-ip',
+      action=actions.StoreBooleanProperty(
+          properties.VALUES.ssh.verify_internal_ip),
+      hidden=True,
+      help='Whether or not `gcloud` should perform an initial SSH connection '
+      'to verify an instance ID is correct when connecting via its internal '
+      'IP. Without this check, `gcloud` will simply connect to the internal '
+      'IP of the desired instance, which may be wrong if the desired instance '
+      'is in a different subnet but happens to share the same internal IP as '
+      'an instance in the current subnet. Defaults to True.')
+
+
 def AddSSHKeyExpirationArgs(parser):
   """Additional flags to handle expiring SSH keys."""
   group = parser.add_mutually_exclusive_group()
@@ -924,6 +939,13 @@ class BaseSSHCLIHelper(BaseSSHHelper):
       ssh.CommandError: The ssh command failed.
       core_exceptions.NetworkIssueError: The instance id does not match.
     """
+    if not properties.VALUES.ssh.verify_internal_ip.GetBool():
+      log.warning(
+          'Skipping internal IP verification connection and connecting to [{}] '
+          'in the current subnet. This may be the wrong host if the instance '
+          'is in a different subnet!'.format(remote.host))
+      return
+
     metadata_id_url = (
         'http://metadata.google.internal/computeMetadata/v1/instance/id')
     # Exit codes 255 and 1 are taken by OpenSSH and PuTTY.
@@ -933,7 +955,9 @@ class BaseSSHCLIHelper(BaseSSHHelper):
         .format(metadata_id_url, instance_id)]
     cmd = ssh.SSHCommand(remote, identity_file=identity_file,
                          options=options, remote_command=remote_command)
-    return_code = cmd.Run(self.env, force_connect=True)
+    return_code = cmd.Run(
+        self.env,
+        force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
     if return_code == 0:
       return
     elif return_code == 23:

@@ -6,6 +6,54 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 310.0.0 (2020-09-15)
+
+### Assured Workloads
+
+*   Added confirmation text to `gcloud assured workloads delete` command.
+
+### Cloud IAM
+
+*   Changed default format for `gcloud iam service-accounts list` to refer to
+    the display name of the service account as "DISPLAY NAME" instead of "NAME".
+
+### Cloud Resource Manager
+
+* Added a command `gcloud projects get-ancestors-iam-policy` for retrieving IAM policies for a given project and its ancestors.
+
+### Cloud Run
+
+* Added support for `--format` to `gcloud run deploy`, `gcloud run services
+  update`, and `gcloud run replace`.
+
+### Compute Engine
+
+* Promoted `--disk` flag of `gcloud compute sole-tenancy node-templates create`
+ to beta.
+* Added `--accelerator` flag of `gcloud compute sole-tenancy node-templates create`
+ to beta.
+
+### Events
+
+* Added `gcloud events` command group to beta to allow the configuration of event-based triggers on Cloud Run for Anthos services..
+
+### Kubernetes Engine
+
+* Added `--cloud-run-config` to `gcloud container clusters create` and `gcloud container clusters update`. This flag is used to enable internal load balancer for Cloud Run cluster.
+* Enabled auto repair by default on UBUNTU and UBUNTU_CONTAINERD image.
+* Added `--enable-gke-oidc` to `gcloud container clusters create` and `gcloud container clusters update`. This flag is used to enable the GKE OIDC component for authentication using OIDC.
+* Added new fields to specify disk type and size configuration, shielded
+instance settings, and customer-managed encryption keys when using
+`--autoprovisioning-config-file` with `gcloud container clusters create` and
+`gcloud container clusters update`.
+* Promoted `--autoprovisioning-min-cpu-platform` flag of
+`gcloud container clusters create` and `gcloud container clusters update` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 309.0.0 (2020-09-08)
 
 ### Assured Workloads

@@ -134,13 +134,16 @@ def CreateCAFromArgs(args, is_subordinate):
       args, messages.CertificateAuthority.LabelsValue)
 
   new_ca = messages.CertificateAuthority(
+      # TODO(b/156664858): Use the tier provided in the commandline.
+      tier=messages.CertificateAuthority.TierValueValuesEnum.ENTERPRISE,
       type=messages.CertificateAuthority.TypeValueValuesEnum.SUBORDINATE
       if is_subordinate else
       messages.CertificateAuthority.TypeValueValuesEnum.SELF_SIGNED,
       lifetime=lifetime,
       config=messages.CertificateConfig(
           reusableConfig=reusable_config_wrapper, subjectConfig=subject_config),
-      cloudKmsKeyVersion=kms_key_version_ref.RelativeName(),
+      keySpec=messages.KeyVersionSpec(
+          cloudKmsKeyVersion=kms_key_version_ref.RelativeName()),
       certificatePolicy=issuance_policy,
       issuingOptions=issuing_options,
       gcsBucket=None,

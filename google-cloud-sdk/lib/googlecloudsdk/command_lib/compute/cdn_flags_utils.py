@@ -177,8 +177,10 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
   parser.add_argument(
       '--negative-caching',
       action=arg_parsers.StoreTrueFalseAction,
-      help=negative_caching_help)
-  negative_caching_policy_group = parser.add_mutually_exclusive_group()
+      help=negative_caching_help,
+      hidden=True)
+  negative_caching_policy_group = parser.add_mutually_exclusive_group(
+      hidden=True)
   negative_caching_policy_help = """\
   Sets a cache TTL for the specified HTTP status code.
 
@@ -219,31 +221,18 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
       '--negative-caching-policy',
       type=arg_parsers.ArgDict(key_type=int, value_type=int),
       metavar='[CODE=TTL]',
-      help=negative_caching_policy_help)
+      help=negative_caching_policy_help,
+      hidden=True)
   if update_command:
     negative_caching_policy_group.add_argument(
         '--no-negative-caching-policies',
         action='store_true',
+        hidden=True,
         help='Remove all negative caching policies for the %s.' % resource_name)
   custom_response_header_help = """\
-  Headers that the HTTP/S load balancer should add to proxied responses. For the
-  list of headers, see the documentation.
+  Custom headers that the external HTTP(S) load balancer adds to proxied responses.
+  For the list of headers, see [Creating custom headers](https://cloud.google.com/load-balancing/docs/custom-headers).
 
-  New variables that apply to both request and response headers include the
-  following:
-
-  *{cdn_cache_id}*: The location code and ID of the cache instance used to
-  serve the request. This is the same value populated in the jsonPayload.cacheId
-  field of the CDN request logs in Cloud Logging.
-
-  *{cdn_cache_status}*: Expands to a "hit", "miss", "revalidated", "stale",
-  "uncacheable", or "disabled" value for any object served by a Cloud CDN enabled
-  backend.
-
-  *{origin_request_header}*: Reflects the value of the "Origin" header in the
-  request for Cross-Origin ResourceSharing (CORS) use cases.
-
-  Variables supported by request headers are also supported by response headers.
   Variables are not case-sensitive.
   """
   custom_response_header_group = parser.add_mutually_exclusive_group()

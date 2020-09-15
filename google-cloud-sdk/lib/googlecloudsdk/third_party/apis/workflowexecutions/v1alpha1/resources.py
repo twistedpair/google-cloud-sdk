@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://workflowexecutions.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://sites.google.com/corp/google.com/cloudworkflows'
+DOCS_URL = 'https://cloud.google.com/workflows'
 
 
 class Collections(enum.Enum):

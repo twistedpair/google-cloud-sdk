@@ -564,6 +564,9 @@ class LogBucket(_messages.Message):
     LifecycleStateValueValuesEnum: Output only. The bucket lifecycle state.
 
   Fields:
+    analyticsEnabled: Whether the bucket is opted in to advanced log
+      analytics. This field may only be set at bucket creation and cannot be
+      changed later.
     createTime: Output only. The creation timestamp of the bucket. This is not
       set for any of the default buckets.
     description: Describes this bucket.
@@ -596,13 +599,14 @@ class LogBucket(_messages.Message):
     ACTIVE = 1
     DELETE_REQUESTED = 2
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
-  locked = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  retentionDays = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(7)
+  analyticsEnabled = _messages.BooleanField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 4)
+  locked = _messages.BooleanField(5)
+  name = _messages.StringField(6)
+  retentionDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(8)
 
 
 class LogEntry(_messages.Message):

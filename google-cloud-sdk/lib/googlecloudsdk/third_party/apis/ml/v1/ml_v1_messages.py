@@ -119,6 +119,7 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
+      NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
       TPU_V2_POD: TPU v2 POD.
@@ -130,10 +131,11 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
-    TPU_V2_POD = 8
-    TPU_V3_POD = 9
+    NVIDIA_TESLA_A100 = 6
+    TPU_V2 = 7
+    TPU_V3 = 8
+    TPU_V2_POD = 9
+    TPU_V3_POD = 10
 
   count = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -285,6 +287,7 @@ class GoogleCloudMlV1Capability(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
+      NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
       TPU_V2: TPU v2.
       TPU_V3: TPU v3.
       TPU_V2_POD: TPU v2 POD.
@@ -296,10 +299,11 @@ class GoogleCloudMlV1Capability(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
-    TPU_V2_POD = 8
-    TPU_V3_POD = 9
+    NVIDIA_TESLA_A100 = 6
+    TPU_V2 = 7
+    TPU_V3 = 8
+    TPU_V2_POD = 9
+    TPU_V3_POD = 10
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""TypeValueValuesEnum enum type.
@@ -3054,6 +3058,8 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -3097,9 +3103,10 @@ class GoogleIamV1Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('GoogleTypeExpr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('GoogleTypeExpr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class GoogleIamV1Policy(_messages.Message):

@@ -1196,11 +1196,6 @@ class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_me
 class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Message):
   r"""Properties of the SKU instances being reserved. Next ID: 9
 
-  Enums:
-    MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
-      stable fleet VM. Setting this to "Periodic" designates this VM as a
-      Stable Fleet VM.  See go/stable-fleet-ug for more details.
-
   Fields:
     guestAccelerators: Specifies accelerator type and count.
     localSsds: Specifies amount of local ssd to reserve with each instance.
@@ -1209,29 +1204,13 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
       of vCPUs and fixed amount of memory. This also includes specifying
       custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY
       pattern.
-    maintenanceInterval: Specifies whether this VM may be a stable fleet VM.
-      Setting this to "Periodic" designates this VM as a Stable Fleet VM.  See
-      go/stable-fleet-ug for more details.
     minCpuPlatform: Minimum cpu platform the reservation.
   """
-
-  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
-    r"""Specifies whether this VM may be a stable fleet VM. Setting this to
-    "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
-    ug for more details.
-
-    Values:
-      AS_NEEDED: <no description>
-      PERIODIC: <no description>
-    """
-    AS_NEEDED = 0
-    PERIODIC = 1
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
   machineType = _messages.StringField(3)
-  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 4)
-  minCpuPlatform = _messages.StringField(5)
+  minCpuPlatform = _messages.StringField(4)
 
 
 class AllocationSpecificSKUReservation(_messages.Message):
@@ -2866,11 +2845,15 @@ class BackendService(_messages.Message):
       true.
 
   Fields:
-    affinityCookieTtlSec: If set to 0, the cookie is non-persistent and lasts
-      only until the end of the browser session (or equivalent). The maximum
-      allowed value is one day (86,400).  Not supported when the backend
-      service is referenced by a URL map that is bound to target gRPC proxy
-      that has validateForProxyless field set to true.
+    affinityCookieTtlSec: Lifetime of cookies in seconds. Only applicable if
+      the loadBalancingScheme is EXTERNAL, INTERNAL_SELF_MANAGED, or
+      INTERNAL_MANAGED, the protocol is HTTP or HTTPS, and the sessionAffinity
+      is GENERATED_COOKIE, or HTTP_COOKIE.  If set to 0, the cookie is non-
+      persistent and lasts only until the end of the browser session (or
+      equivalent). The maximum allowed value is one day (86,400).  Not
+      supported when the backend service is referenced by a URL map that is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService.
     circuitBreakers: Settings controlling the volume of connections to a
@@ -3725,6 +3708,8 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding.  If the
       condition evaluates to `true`, then this binding applies to the current
       request.  If the condition evaluates to `false`, then this binding does
@@ -3768,9 +3753,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -23012,12 +22998,12 @@ class ForwardingRule(_messages.Message):
       However, if the network is in custom subnet mode, a subnetwork must be
       specified.
     target: The URL of the target resource to receive the matched traffic. For
-      regional forwarding rules, this target must live in the same region as
-      the forwarding rule. For global forwarding rules, this target must be a
+      regional forwarding rules, this target must be in the same region as the
+      forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For INTERNAL_SELF_MANAGED load
-      balancing, only targetHttpProxy and targetGrpcProxy are valid, not
-      targetHttpsProxy.
+      appropriate to the target object. For more information, see the "Target"
+      column in [Port specifications](/load-balancing/docs/forwarding-rule-
+      concepts#ip_address_specifications).
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -42148,9 +42134,10 @@ class SslCertificate(_messages.Message):
       self-managed and the fields certificate and private_key are used.
 
   Fields:
-    certificate: A local certificate file. The certificate must be in PEM
-      format. The certificate chain must be no greater than 5 certs long. The
-      chain must include at least one intermediate cert.
+    certificate: A value read into memory from a certificate file. The
+      certificate file must be in PEM format. The certificate chain must be no
+      greater than 5 certs long. The chain must include at least one
+      intermediate cert.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -42168,8 +42155,9 @@ class SslCertificate(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    privateKey: A write-only private key in PEM format. Only insert requests
-      will include this field.
+    privateKey: A value read into memory from a write-only private key file.
+      The private key file must be in PEM format. For security, only insert
+      requests include this field.
     region: [Output Only] URL of the region where the regional SSL Certificate
       resides. This field is not applicable to global SSL Certificate.
     selfLink: [Output only] Server-defined URL for the resource.

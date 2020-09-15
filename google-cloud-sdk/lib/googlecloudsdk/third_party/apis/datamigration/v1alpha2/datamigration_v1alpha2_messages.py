@@ -969,8 +969,8 @@ class MigrationJob(_messages.Message):
     dumpPath: The path to the dump file in Google Cloud Storage, in the
       format: (gs://[BUCKET_NAME]/[OBJECT_NAME]).
     duration: Output only. The duration of the migration job (in seconds). A
-      duration in seconds with up to nine fractional digits, terminated by
-      's'. Example: "3.5s".
+      duration in seconds with up to nine fractional digits, ending with 's'.
+      Example: "3.5s".
     endTime: Output only. If the migration job is completed, the time when it
       was completed.
     error: Output only. The error details in case of state FAILED.
@@ -1401,7 +1401,7 @@ class SqlAclEntry(_messages.Message):
       3339](https://tools.ietf.org/html/rfc3339) format, for example:
       `2012-11-15T16:19:00.094Z`.
     label: A label to identify this entry.
-    value: The whitelisted value for the access control list.
+    value: The allowlisted value for the access control list.
   """
 
   expireTime = _messages.StringField(1)

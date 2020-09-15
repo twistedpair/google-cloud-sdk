@@ -151,6 +151,8 @@ class Binding(_messages.Message):
   r"""Associates members with a role.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding.If the
       condition evaluates to true, then this binding applies to the current
       request.If the condition evaluates to false, then this binding does not
@@ -192,9 +194,10 @@ class Binding(_messages.Message):
       roles/editor, or roles/owner.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class CancelJobRequest(_messages.Message):
@@ -1860,7 +1863,11 @@ class Expr(_messages.Message):
 
 class GceClusterConfig(_messages.Message):
   r"""Common config settings for resources of Compute Engine cluster
-  instances, applicable to all instances in the cluster.
+  instances, applicable to all instances in the cluster. NEXT ID: 13
+
+  Enums:
+    PrivateIpv6GoogleAccessValueValuesEnum: Optional. The type of IPv6 access
+      for a cluster.
 
   Messages:
     MetadataValue: The Compute Engine metadata entries to add to all instances
@@ -1889,6 +1896,7 @@ class GceClusterConfig(_messages.Message):
       information).A full URL, partial URI, or short name are valid. Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/regions/glob
       al/default projects/[project_id]/regions/global/default default
+    privateIpv6GoogleAccess: Optional. The type of IPv6 access for a cluster.
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
       reservation.
     serviceAccount: Optional. The Dataproc service account
@@ -1931,6 +1939,24 @@ class GceClusterConfig(_messages.Message):
       projects/[project_id]/zones/[zone] us-central1-f
   """
 
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of IPv6 access for a cluster.
+
+    Values:
+      PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED: Default value. Same as
+        INHERIT_FROM_SUBNETWORK
+      INHERIT_FROM_SUBNETWORK: Private access to or from Google Services
+        configuration inherited from subnetowrk configuration
+      OUTBOUND: Enables outbound private IPv6 access to Google Services from
+        Dataproc cluster
+      BIDIRECTIONAL: Enables bidirectionl private IPv6 access between Google
+        Services and Dataproc cluster
+    """
+    PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
+    INHERIT_FROM_SUBNETWORK = 1
+    OUTBOUND = 2
+    BIDIRECTIONAL = 3
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
     r"""The Compute Engine metadata entries to add to all instances (see
@@ -1961,12 +1987,13 @@ class GceClusterConfig(_messages.Message):
   internalIpOnly = _messages.BooleanField(1)
   metadata = _messages.MessageField('MetadataValue', 2)
   networkUri = _messages.StringField(3)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 4)
-  serviceAccount = _messages.StringField(5)
-  serviceAccountScopes = _messages.StringField(6, repeated=True)
-  subnetworkUri = _messages.StringField(7)
-  tags = _messages.StringField(8, repeated=True)
-  zoneUri = _messages.StringField(9)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 4)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 5)
+  serviceAccount = _messages.StringField(6)
+  serviceAccountScopes = _messages.StringField(7, repeated=True)
+  subnetworkUri = _messages.StringField(8)
+  tags = _messages.StringField(9, repeated=True)
+  zoneUri = _messages.StringField(10)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -2508,10 +2535,10 @@ class JobScheduling(_messages.Message):
 
   Fields:
     maxFailuresPerHour: Optional. Maximum number of times per hour a driver
-      may be restarted as a result of driver terminating with non-zero code
-      before job is reported failed.A job may be reported as thrashing if
-      driver exits with non-zero code 4 times within 10 minute window.Maximum
-      value is 10.
+      may be restarted as a result of driver exiting with non-zero code before
+      job is reported failed.A job may be reported as thrashing if driver
+      exits with non-zero code 4 times within 10 minute window.Maximum value
+      is 10.
   """
 
   maxFailuresPerHour = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3411,9 +3438,9 @@ class QueryList(_messages.Message):
   r"""A list of queries to run on a cluster.
 
   Fields:
-    queries: Required. The queries to execute. You do not need to terminate a
-      query with a semicolon. Multiple queries can be specified in one string
-      by separating each with a semicolon. Here is an example of an Cloud
+    queries: Required. The queries to execute. You do not need to end a query
+      expression with a semicolon. Multiple queries can be specified in one
+      string by separating each with a semicolon. Here is an example of a
       Dataproc API snippet that uses a QueryList to specify a HiveJob:
       "hiveJob": { "queryList": { "queries": [ "query1", "query2",
       "query3;query4", ] } }

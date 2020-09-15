@@ -104,34 +104,16 @@ class AuditLogConfig(_messages.Message):
 class Automatic(_messages.Message):
   r"""A replication policy that replicates the Secret payload without any
   restrictions.
-
-  Fields:
-    customerManagedEncryption: Optional. The customer-managed encryption
-      configuration of the Secret. If no configuration is provided, Google-
-      managed default encryption is used.  Updates to the Secret encryption
-      configuration do not apply retroactively to existing SecretVersions.
   """
 
-  customerManagedEncryption = _messages.MessageField('CustomerManagedEncryption', 1)
-
-
-class AutomaticStatus(_messages.Message):
-  r"""The replication status of a SecretVersion using automatic replication.
-  Only populated if the parent Secret has an automatic replication policy.
-
-  Fields:
-    customerManagedEncryption: Output only. The customer-managed encryption
-      status of the SecretVersion. Only populated if customer-managed
-      encryption is used.
-  """
-
-  customerManagedEncryption = _messages.MessageField('CustomerManagedEncryptionStatus', 1)
 
 
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    bindingId: A client-specified ID for this binding. Expected to be globally
+      unique to support the internal bindings-by-ID API.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -175,37 +157,10 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  condition = _messages.MessageField('Expr', 1)
-  members = _messages.StringField(2, repeated=True)
-  role = _messages.StringField(3)
-
-
-class CustomerManagedEncryption(_messages.Message):
-  r"""Configuration for encrypting secret payloads using customer-managed
-  encryption keys (CMEK).
-
-  Fields:
-    kmsKeyName: Required. The resource name of the Cloud KMS CryptoKey used to
-      encrypt secret payloads.  For secrets using the UserManaged replication
-      policy type, Cloud KMS CryptoKeys must reside in the same location as
-      the replica location.  For secrets using the Automatic replication
-      policy type, Cloud KMS CryptoKeys must reside in `global`.  The expected
-      format is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
-  """
-
-  kmsKeyName = _messages.StringField(1)
-
-
-class CustomerManagedEncryptionStatus(_messages.Message):
-  r"""Describes the status of customer-managed encryption.
-
-  Fields:
-    kmsKeyVersionName: Required. The resource name of the Cloud KMS
-      CryptoKeyVersion used to encrypt the secret payload, in the following
-      format: `projects/*/locations/*/keyRings/*/cryptoKeys/*/versions/*`.
-  """
-
-  kmsKeyVersionName = _messages.StringField(1)
+  bindingId = _messages.StringField(1)
+  condition = _messages.MessageField('Expr', 2)
+  members = _messages.StringField(3, repeated=True)
+  role = _messages.StringField(4)
 
 
 class DestroySecretVersionRequest(_messages.Message):
@@ -467,32 +422,11 @@ class Replica(_messages.Message):
   r"""Represents a Replica for this Secret.
 
   Fields:
-    customerManagedEncryption: Optional. The customer-managed encryption
-      configuration of the User-Managed Replica. If no configuration is
-      provided, Google-managed default encryption is used.  Updates to the
-      Secret encryption configuration do not apply retroactively to existing
-      SecretVersions.
     location: The canonical IDs of the location to replicate data. For
       example: `"us-east1"`.
   """
 
-  customerManagedEncryption = _messages.MessageField('CustomerManagedEncryption', 1)
-  location = _messages.StringField(2)
-
-
-class ReplicaStatus(_messages.Message):
-  r"""Describes the status of a user-managed replica for the SecretVersion.
-
-  Fields:
-    customerManagedEncryption: Output only. The customer-managed encryption
-      status of the SecretVersion. Only populated if customer-managed
-      encryption is used.
-    location: Output only. The canonical ID of the replica location. For
-      example: `"us-east1"`.
-  """
-
-  customerManagedEncryption = _messages.MessageField('CustomerManagedEncryptionStatus', 1)
-  location = _messages.StringField(2)
+  location = _messages.StringField(1)
 
 
 class Replication(_messages.Message):
@@ -507,22 +441,6 @@ class Replication(_messages.Message):
 
   automatic = _messages.MessageField('Automatic', 1)
   userManaged = _messages.MessageField('UserManaged', 2)
-
-
-class ReplicationStatus(_messages.Message):
-  r"""The replication status of a SecretVersion.
-
-  Fields:
-    automatic: Describes the replication status of a SecretVersion with
-      automatic replication.  Only populated if the parent Secret has an
-      automatic replication policy.
-    userManaged: Describes the replication status of a SecretVersion with
-      user-managed replication.  Only populated if the parent Secret has a
-      user-managed replication policy.
-  """
-
-  automatic = _messages.MessageField('AutomaticStatus', 1)
-  userManaged = _messages.MessageField('UserManagedStatus', 2)
 
 
 class Secret(_messages.Message):
@@ -615,7 +533,6 @@ class SecretVersion(_messages.Message):
     name: Output only. The resource name of the SecretVersion in the format
       `projects/*/secrets/*/versions/*`. SecretVersion IDs in a Secret start
       at 1 and are incremented for each subsequent version of the secret.
-    replicationStatus: The replication status of the SecretVersion.
     state: Output only. The current state of the SecretVersion.
   """
 
@@ -638,8 +555,7 @@ class SecretVersion(_messages.Message):
   createTime = _messages.StringField(1)
   destroyTime = _messages.StringField(2)
   name = _messages.StringField(3)
-  replicationStatus = _messages.MessageField('ReplicationStatus', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class SecretmanagerProjectsLocationsGetRequest(_messages.Message):
@@ -1003,18 +919,6 @@ class UserManaged(_messages.Message):
   """
 
   replicas = _messages.MessageField('Replica', 1, repeated=True)
-
-
-class UserManagedStatus(_messages.Message):
-  r"""The replication status of a SecretVersion using user-managed
-  replication.  Only populated if the parent Secret has a user-managed
-  replication policy.
-
-  Fields:
-    replicas: Output only. The list of replica statuses for the SecretVersion.
-  """
-
-  replicas = _messages.MessageField('ReplicaStatus', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

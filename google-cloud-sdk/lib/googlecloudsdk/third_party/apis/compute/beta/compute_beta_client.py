@@ -5486,7 +5486,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListReferrers(self, request, global_params=None):
-      r"""Retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed instance group, the referrers list includes the managed instance group. For more information, read Viewing Referrers to VM Instances.
+      r"""Retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed or unmanaged instance group, the referrers list includes the instance group. For more information, read Viewing referrers to VM instances.
 
       Args:
         request: (ComputeInstancesListReferrersRequest) input message
@@ -13738,6 +13738,32 @@ For more information, see Deleting snapshots.
         request_field='',
         request_type_name='ComputeSnapshotsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a snapshot in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSnapshotsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.snapshots.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/snapshots',
+        request_field='snapshot',
+        request_type_name='ComputeSnapshotsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

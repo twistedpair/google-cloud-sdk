@@ -34,14 +34,6 @@ def CheckFieldsSpecified(unused_instance_ref, args, patch_request):
   return CheckFieldsSpecifiedCommon(args, patch_request, [])
 
 
-def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
-  """Checks if fields to update are registered for Alpha API version."""
-  additional_update_args = [
-      'tls_mode',
-  ]
-  return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
-
-
 def CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args):
   update_args = [
       'clear_labels',
@@ -138,12 +130,4 @@ def AddNewRedisConfigs(instance_ref, redis_configs_dict, patch_request):
                                                       messages)
   patch_request.instance.redisConfigs = new_redis_configs
   patch_request = AddFieldToUpdateMask('redis_configs', patch_request)
-  return patch_request
-
-
-def AddTlsMode(unused_instance_ref, args, patch_request):
-  """Python hook to update the TLS mode of redis instance update request."""
-  if args.IsSpecified('tls_mode'):
-    patch_request = AddFieldToUpdateMask('tls_mode', patch_request)
-
   return patch_request

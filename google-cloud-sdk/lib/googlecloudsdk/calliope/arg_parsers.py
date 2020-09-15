@@ -1482,7 +1482,7 @@ class YAMLFileContents(object):
     self.validator = validator
 
   def _AssertJsonLike(self, yaml_data):
-    if not yaml.dict_like(yaml_data) or yaml.list_like(yaml_data):
+    if not (yaml.dict_like(yaml_data) or yaml.list_like(yaml_data)):
       raise ArgumentTypeError('Invalid YAML/JSON Data [{}]'.format(yaml_data))
 
   def __call__(self, name):

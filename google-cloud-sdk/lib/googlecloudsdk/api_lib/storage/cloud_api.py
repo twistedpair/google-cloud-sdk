@@ -207,6 +207,7 @@ class CloudApi(object):
 
     Raises:
       CloudApiError: API returned an error.
+      NotFoundError: Raised if object does not exist.
       NotImplementedError: This function was not implemented by a class using
           this interface.
       ValueError: Invalid fields_scope.

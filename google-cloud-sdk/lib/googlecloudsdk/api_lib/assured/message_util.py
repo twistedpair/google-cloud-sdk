@@ -18,34 +18,52 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.assured import workloads
+from googlecloudsdk.api_lib.assured import client_util
+
+BETA = 'BETA'
 
 
-def GetWorkloadsMessages(no_http):
-  client = workloads.GetClientInstance(no_http)
-  return workloads.GetMessagesModule(client)
+def GetMessages(release_track):
+  return client_util.GetClientInstance(release_track).MESSAGES_MODULE
 
 
-def GetV1Beta1Workload(no_http):
-  return GetWorkloadsMessages(
-      no_http).GoogleCloudAssuredworkloadsV1beta1Workload
+def GetBetaWorkloadMessage():
+  return GetMessages(BETA).GoogleCloudAssuredworkloadsV1beta1Workload
 
 
 def CreateAssuredParent(organization_id, location):
   return 'organizations/{}/locations/{}'.format(organization_id, location)
 
 
-def CreateAssuredWorkload(display_name=None,
-                          compliance_regime=None,
-                          billing_account=None,
-                          next_rotation_time=None,
-                          rotation_period=None,
-                          labels=None,
-                          etag=None,
-                          no_http=False):
-  workloads_messages = GetWorkloadsMessages(no_http)
-  v1beta1_workload = GetV1Beta1Workload(no_http)
-  workload = v1beta1_workload()
+def CreateBetaAssuredWorkload(display_name=None,
+                              compliance_regime=None,
+                              billing_account=None,
+                              next_rotation_time=None,
+                              rotation_period=None,
+                              labels=None,
+                              etag=None):
+  """Construct an Assured Workload message for Assured Workloads Beta API requests.
+
+  Args:
+    display_name: str, display name of the Assured Workloads environment.
+    compliance_regime: str, the compliance regime, which is one of:
+      FEDRAMP_MODERATE, FEDRAMP_HIGH, IL4 or CJIS.
+    billing_account: str, the billing account of the Assured Workloads
+      environment in the form: billingAccounts/{BILLING_ACCOUNT_ID}
+    next_rotation_time: str, the next key rotation time for the Assured
+      Workloads environment, for example: 2020-12-30T10:15:00.00Z
+    rotation_period: str, the time between key rotations, for example: 172800s
+    labels: dict, dictionary of label keys and values of the Assured Workloads
+      environment.
+    etag: str, the etag of the Assured Workloads environment.
+
+  Returns:
+    A populated Assured Workloads message for the Assured Workloads Beta API.
+  """
+
+  workloads_messages = GetMessages(BETA)
+  workload_message = GetBetaWorkloadMessage()
+  workload = workload_message()
   if etag:
     workload.etag = etag
   if billing_account:
@@ -53,51 +71,54 @@ def CreateAssuredWorkload(display_name=None,
   if display_name:
     workload.displayName = display_name
   if labels:
-    workload.labels = CreateLabels(labels)
+    workload.labels = CreateBetaLabels(labels)
   if compliance_regime:
-    workload.complianceRegime = v1beta1_workload.ComplianceRegimeValueValuesEnum(
+    workload.complianceRegime = workload_message.ComplianceRegimeValueValuesEnum(
         compliance_regime)
     if compliance_regime == 'FEDRAMP_MODERATE':
       settings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings(
       )
-      settings.kmsSettings = CreateKmsSettings(next_rotation_time,
-                                               rotation_period)
+      settings.kmsSettings = CreateBetaKmsSettings(workloads_messages,
+                                                   next_rotation_time,
+                                                   rotation_period)
       workload.fedrampModerateSettings = settings
     elif compliance_regime == 'FEDRAMP_HIGH':
       settings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings(
       )
-      settings.kmsSettings = CreateKmsSettings(next_rotation_time,
-                                               rotation_period)
+      settings.kmsSettings = CreateBetaKmsSettings(workloads_messages,
+                                                   next_rotation_time,
+                                                   rotation_period)
       workload.fedrampHighSettings = settings
     elif compliance_regime == 'CJIS':
       settings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(
       )
-      settings.kmsSettings = CreateKmsSettings(next_rotation_time,
-                                               rotation_period)
+      settings.kmsSettings = CreateBetaKmsSettings(workloads_messages,
+                                                   next_rotation_time,
+                                                   rotation_period)
       workload.cjisSettings = settings
     elif compliance_regime == 'IL4':
       settings = workloads_messages.GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings(
       )
-      settings.kmsSettings = CreateKmsSettings(next_rotation_time,
-                                               rotation_period)
+      settings.kmsSettings = CreateBetaKmsSettings(workloads_messages,
+                                                   next_rotation_time,
+                                                   rotation_period)
       workload.il4Settings = settings
   return workload
 
 
-def CreateKmsSettings(next_rotation_time, rotation_period, no_http=False):
-  return GetWorkloadsMessages(
-      no_http).GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings(
-          nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
+def CreateBetaKmsSettings(messages, next_rotation_time, rotation_period):
+  return messages.GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings(
+      nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
 
 
-def CreateLabels(labels, no_http=False):
-  v1beta1_workload = GetV1Beta1Workload(no_http)
+def CreateBetaLabels(labels):
+  workload_message = GetBetaWorkloadMessage()
   workload_labels = []
   for key, value in labels.items():
-    new_label = v1beta1_workload.LabelsValue.AdditionalProperty(
+    new_label = workload_message.LabelsValue.AdditionalProperty(
         key=key, value=value)
     workload_labels.append(new_label)
-  return v1beta1_workload.LabelsValue(additionalProperties=workload_labels)
+  return workload_message.LabelsValue(additionalProperties=workload_labels)
 
 
 def CreateUpdateMask(display_name, labels):

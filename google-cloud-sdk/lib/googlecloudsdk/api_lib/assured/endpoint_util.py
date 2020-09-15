@@ -21,13 +21,12 @@ from __future__ import unicode_literals
 import contextlib
 import re
 
+from googlecloudsdk.api_lib.assured import client_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from six.moves.urllib import parse
 
-API_VERSION = 'v1beta1'
-API_NAME = 'assuredworkloads'
 
 RESOURCE_LOCATION_REGEX_PATTERN = r'organizations\/.+\/locations\/([-a-zA-Z0-9]+)($|\/.*)'
 ENV_NETLOC_REGEX_PATTERN = r'((staging|autopush|dev)-)?(assuredworkloads.*)'
@@ -46,31 +45,33 @@ def DeriveAssuredWorkloadsRegionalEndpoint(endpoint, region):
 
 
 @contextlib.contextmanager
-def AssuredWorkloadsEndpointOverridesFromResource(resource=None):
+def AssuredWorkloadsEndpointOverridesFromResource(release_track, resource):
   """Context manager to regionalize Assured endpoints using a provided resource.
 
   Args:
+    release_track: str, Release track of the command being called.
     resource: str, Assured resource from which the region must be extracted.
 
   Yields:
     None.
   """
   region = GetRegionFromResource(resource)
-  with AssuredWorkloadsEndpointOverridesFromRegion(region):
+  with AssuredWorkloadsEndpointOverridesFromRegion(release_track, region):
     yield
 
 
 @contextlib.contextmanager
-def AssuredWorkloadsEndpointOverridesFromRegion(region=None):
+def AssuredWorkloadsEndpointOverridesFromRegion(release_track, region):
   """Context manager to regionalize Assured endpoints using a provided region.
 
   Args:
+    release_track: str, Release track of the command being called.
     region: str, Region to use for regionalizing the Assured endpoint.
 
   Yields:
     None.
   """
-  used_endpoint = GetEffectiveAssuredWorkloadsEndpoint(region)
+  used_endpoint = GetEffectiveAssuredWorkloadsEndpoint(release_track, region)
   old_endpoint = properties.VALUES.api_endpoint_overrides.assuredworkloads.Get()
   try:
     log.status.Print('Using endpoint [{}]'.format(used_endpoint))
@@ -83,7 +84,7 @@ def AssuredWorkloadsEndpointOverridesFromRegion(region=None):
         old_endpoint)
 
 
-def GetRegionFromResource(resource=None):
+def GetRegionFromResource(resource):
   if resource is None:
     return None
   m = re.search(RESOURCE_LOCATION_REGEX_PATTERN, resource)
@@ -93,9 +94,10 @@ def GetRegionFromResource(resource=None):
   return region
 
 
-def GetEffectiveAssuredWorkloadsEndpoint(region):
+def GetEffectiveAssuredWorkloadsEndpoint(release_track, region):
   """Returns regional Assured Workloads endpoint, or global if region not set."""
-  endpoint = apis.GetEffectiveApiEndpoint(API_NAME, API_VERSION)
+  endpoint = apis.GetEffectiveApiEndpoint(
+      client_util.API_NAME, client_util.GetApiVersion(release_track))
   if region:
     return DeriveAssuredWorkloadsRegionalEndpoint(endpoint, region)
   return endpoint

@@ -134,8 +134,8 @@ class BillingAccount(_messages.Message):
       [subaccount](https://cloud.google.com/billing/docs/concepts), then this
       will be the resource name of the master billing account that it is being
       resold through. Otherwise this will be empty.
-    name: The resource name of the billing account. The resource name has the
-      form `billingAccounts/{billing_account_id}`. For example,
+    name: Output only. The resource name of the billing account. The resource
+      name has the form `billingAccounts/{billing_account_id}`. For example,
       `billingAccounts/012345-567890-ABCDEF` would be the resource name for
       billing account `012345-567890-ABCDEF`.
     open: Output only. True if the billing account is open, and will therefore

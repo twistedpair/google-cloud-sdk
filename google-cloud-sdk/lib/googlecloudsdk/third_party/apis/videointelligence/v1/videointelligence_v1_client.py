@@ -43,6 +43,8 @@ class VideointelligenceV1(base_api.BaseApiClient):
     self.operations_projects_locations = self.OperationsProjectsLocationsService(self)
     self.operations_projects = self.OperationsProjectsService(self)
     self.operations = self.OperationsService(self)
+    self.projects_locations_corpora_operations = self.ProjectsLocationsCorporaOperationsService(self)
+    self.projects_locations_corpora = self.ProjectsLocationsCorporaService(self)
     self.projects_locations_corpura_operations = self.ProjectsLocationsCorpuraOperationsService(self)
     self.projects_locations_corpura = self.ProjectsLocationsCorpuraService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -168,6 +170,53 @@ class VideointelligenceV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(VideointelligenceV1.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsCorporaOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_corpora_operations resource."""
+
+    _NAME = 'projects_locations_corpora_operations'
+
+    def __init__(self, client):
+      super(VideointelligenceV1.ProjectsLocationsCorporaOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (VideointelligenceProjectsLocationsCorporaOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/corpora/{corporaId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='videointelligence.projects.locations.corpora.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VideointelligenceProjectsLocationsCorporaOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsCorporaService(base_api.BaseApiService):
+    """Service class for the projects_locations_corpora resource."""
+
+    _NAME = 'projects_locations_corpora'
+
+    def __init__(self, client):
+      super(VideointelligenceV1.ProjectsLocationsCorporaService, self).__init__(client)
       self._upload_configs = {
           }
 

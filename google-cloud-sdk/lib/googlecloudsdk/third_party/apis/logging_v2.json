@@ -240,6 +240,10 @@
             "ACTIVE",
             "DELETE_REQUESTED"
           ]
+        },
+        "analyticsEnabled": {
+          "description": "Whether the bucket is opted in to advanced log analytics. This field may only be set at bucket creation and cannot be changed later.",
+          "type": "boolean"
         }
       }
     },

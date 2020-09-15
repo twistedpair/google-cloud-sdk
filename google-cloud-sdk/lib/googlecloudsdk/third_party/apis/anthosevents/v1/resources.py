@@ -122,6 +122,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  NAMESPACES_CUSTOMRESOURCEDEFINITIONS = (
+      'namespaces.customresourcedefinitions',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/customresourcedefinitions/'
+              '{customresourcedefinitionsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

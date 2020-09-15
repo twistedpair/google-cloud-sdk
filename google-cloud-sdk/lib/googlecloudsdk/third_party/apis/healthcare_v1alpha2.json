@@ -873,31 +873,6 @@
       "properties": {
       }
     },
-    "DeleteAllConsentHistoryRequest": {
-      "id": "DeleteAllConsentHistoryRequest",
-      "description": "Deletes historical versions of the Consent excluding the current version from the Consent store. This operation does not affect the related consent artifact.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "ListConsentHistoryResponse": {
-      "id": "ListConsentHistoryResponse",
-      "description": "Lists all the historical versions of the Consent from the Consent store.",
-      "type": "object",
-      "properties": {
-        "consents": {
-          "description": "The returned historical versions of a consent. The maximum number of versions returned is determined by the value of page_size in the ListConsentHistoryRequest.",
-          "type": "array",
-          "items": {
-            "$ref": "Consent"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
     "UserDataMapping": {
       "id": "UserDataMapping",
       "description": "Maps a user data entry to its end user and Attributes.",
@@ -1212,13 +1187,15 @@
             "If unspecified in CreateDataset, the StorageClass defaults to STANDARD. If unspecified in UpdateDataset and the StorageClass is set in the field mask, an InvalidRequest error is thrown.",
             "Stores the Object in Blob Standard Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#standard",
             "Stores the Object in Blob Nearline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#nearline",
-            "Stores the Object in Blob Coldline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#coldline"
+            "Stores the Object in Blob Coldline Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#coldline",
+            "Stores the Object in Blob Archive Storage: https:\/\/cloud.google.com\/storage\/docs\/storage-classes#archive"
           ],
           "enum": [
             "BLOB_STORAGE_CLASS_UNSPECIFIED",
             "STANDARD",
             "NEARLINE",
-            "COLDLINE"
+            "COLDLINE",
+            "ARCHIVE"
           ]
         }
       }
@@ -1858,7 +1835,7 @@
           "description": "Specifies the output schema type. Schema type is required.",
           "type": "string",
           "enumDescriptions": [
-            "No schema type specified. Same as `LOSSLESS`.",
+            "No schema type specified. This type is unsupported.",
             "A data-driven schema generated from the fields present in the FHIR data being exported, with no additional simplification.",
             "Analytics schema defined by the FHIR community. See https:\/\/github.com\/FHIR\/sql-on-fhir\/blob\/master\/sql-on-fhir.md. BigQuery only allows a maximum of 10,000 columns per table. Due to this limitation, the server will not generate schemas for fields of type `Resource`, which can hold any resource type. The affected fields are `Parameters.parameter.resource`, `Bundle.entry.resource`, and `Bundle.entry.response.outcome`."
           ],
@@ -2528,7 +2505,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new health dataset. Results are returned through the Operation interface which returns either an `Operation.response` which contains a Dataset or `Operation.error`. The metadata field type is OperationMetadata. A Google Cloud Platform project can contain up to 500 datasets across all regions."
+                  "description": "Creates a new health dataset. Results are returned through the Operation interface which returns either an `Operation.response` which contains a Dataset or `Operation.error`. The metadata field type is OperationMetadata."
                 },
                 "list": {
                   "id": "healthcare.projects.locations.datasets.list",
@@ -4768,7 +4745,7 @@
                               "type": "string"
                             },
                             "updateMask": {
-                              "description": "The update mask to apply to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask. The `user_id`, `policies`, `consent_artifact`, and `revoke_consent_artifact` fields can be updated.",
+                              "description": "The update mask to apply to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask. The `user_id`, `policies`, and `consent_artifact` fields can be updated.",
                               "location": "query",
                               "type": "string",
                               "format": "google-fieldmask"
@@ -4813,7 +4790,7 @@
                               "type": "string"
                             },
                             "filter": {
-                              "description": "Restricts the consents returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - user_id - consent_artifact - state - state_change_time",
+                              "description": "Restricts the consents returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - user_id - consent_artifact - state - state_change_time - expire_time",
                               "location": "query",
                               "type": "string"
                             }
@@ -4856,82 +4833,6 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Revokes the latest revision of the specified Consent by committing a new revision with `state` updated to `REVOKED`. If the latest revision of the given consent is in the `REVOKED` state, no new revision is committed. A FAILED_PRECONDITION error occurs if the latest revision of the given consent is in `DRAFT` or `REJECTED` state."
-                        }
-                      }
-                      ,
-                      "resources": {
-                        "history": {
-                          "methods": {
-                            "deleteAll": {
-                              "id": "healthcare.projects.locations.datasets.consentStores.consents.history.deleteAll",
-                              "path": "v1alpha2/{+consent}/history:deleteAll",
-                              "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history:deleteAll",
-                              "httpMethod": "POST",
-                              "parameters": {
-                                "consent": {
-                                  "description": "The name of the Consent for which the history is deleted, of the form `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "consent"
-                              ],
-                              "request": {
-                                "$ref": "DeleteAllConsentHistoryRequest"
-                              },
-                              "response": {
-                                "$ref": "Empty"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Deletes historical versions of a Consent excluding the current version from the Consent store. This operation does not affect the related consent artifact."
-                            },
-                            "list": {
-                              "id": "healthcare.projects.locations.datasets.consentStores.consents.history.list",
-                              "path": "v1alpha2/{+consent}/history",
-                              "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/consentStores/{consentStoresId}/consents/{consentsId}/history",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "consent": {
-                                  "description": "The name of the Consent for which the history is listed, of the form `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/consentStores\/{consent_store_id}\/consents\/{consent_id}`.",
-                                  "location": "path",
-                                  "required": true,
-                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/consentStores\/[^\/]+\/consents\/[^\/]+$",
-                                  "type": "string"
-                                },
-                                "pageSize": {
-                                  "description": "Limit on the number of historical versions to return in a single response. If zero the default page size of 100 is used.",
-                                  "location": "query",
-                                  "type": "integer",
-                                  "format": "int32"
-                                },
-                                "pageToken": {
-                                  "description": "The next_page_token value returned from the previous List request, if any.",
-                                  "location": "query",
-                                  "type": "string"
-                                },
-                                "filter": {
-                                  "description": "Restricts the historical versions of consents returned to those matching a filter. Syntax: https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/search\/query_strings The fields available for filtering are: - user_id - consent_artifact - state - state_change_time",
-                                  "location": "query",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                                "consent"
-                              ],
-                              "response": {
-                                "$ref": "ListConsentHistoryResponse"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Lists historical versions of a Consent excluding the current version from the Consent store."
-                            }
-                          }
                         }
                       }
                     },

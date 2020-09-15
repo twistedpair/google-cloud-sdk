@@ -56,6 +56,9 @@ apis:
       resources:
         customer:
           path: customer/{customerId}
+  aiplatform:
+    v1alpha1:
+      discovery_doc: aiplatform_v1alpha1.json
   anthosevents:
     v1:
       discovery_doc: anthosevents_v1.json
@@ -261,9 +264,6 @@ apis:
       discovery_doc: cloudresourcemanager_v2beta1.json
     v2:
       discovery_doc: cloudresourcemanager_v2.json
-  cloudresourcesearch:
-    v1:
-      discovery_doc: cloudresourcesearch_v1.json
   cloudshell:
     v1alpha1:
       discovery_doc: cloudshell_v1alpha1.json
@@ -321,6 +321,8 @@ apis:
       unelidable_request_methods:
         - compute.disks.resize
       resources:
+        regionAcceleratorTypes:
+          path: projects/{project}/regions/{region}/acceleratorTypes/{acceleratorType}
         nextHopGateways:
           path: projects/{project}/global/gateways/{nextHopGateway}
         securityPolicyRules:
@@ -460,9 +462,11 @@ apis:
     v1alpha2:
       discovery_doc: dns_v1alpha2.json
   domains:
+    v1beta1:
+      discovery_doc: domains_v1beta1.json
+      default: true
     v1alpha2:
       discovery_doc: domains_v1alpha2.json
-      default: true
   eventarc:
     v1beta1:
       discovery_doc: eventarc_v1beta1.json

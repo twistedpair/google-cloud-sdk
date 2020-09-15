@@ -24,7 +24,8 @@ class CloudcommerceconsumerprocurementBillingAccountsAccountsCreateRequest(_mess
       GoogleCloudCommerceConsumerProcurementV1alpha1Account resource to be
       passed as the request body.
     parent: Required. The parent resource of this account. This field is of
-      the form "/". Currently supported type: 'billingAccounts/'
+      the form "/". Currently supported type: 'billingAccounts/{billing-
+      account-id}'
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1Account = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Account', 1)
@@ -61,7 +62,7 @@ class CloudcommerceconsumerprocurementBillingAccountsAccountsListRequest(_messag
     pageSize: The maximum number of entries that are requested.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for accounts. This field is
-      of the form `billingAccounts/`.
+      of the form `billingAccounts/{billing-account-id}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -169,7 +170,7 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
     pageSize: The maximum number of entries that are requested.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for orders. This field is
-      of the form `billingAccounts/`.
+      of the form `billingAccounts/{billing-account-id}`.
   """
 
   filter = _messages.StringField(1)
@@ -251,6 +252,84 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOperationsListRequest
   pageToken = _messages.StringField(4)
 
 
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsCreateRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsC
+  reateRequest object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation resource
+      to be passed as the request body.
+    parent: Required. The parent resource of this OrderAllocation. This field
+      is of the form 'billingAccounts/{billing-account-id}/orders/{order-id}'.
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsDeleteRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsD
+  eleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the OrderAllocation to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsGetRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsG
+  etRequest object.
+
+  Fields:
+    name: Required. The name of the OrderAllocation to retrieve. This field is
+      of the form `billingAccounts/{billing-account-id}/orders/{order-
+      id}/orderAllocations/{order-allocation-id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsListRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsL
+  istRequest object.
+
+  Fields:
+    pageSize: The maximum number of entries that are requested.
+    pageToken: The token for fetching the next page.
+    parent: Required. The parent resource to query for OrderAllocations. This
+      field is of the form `billingAccounts/{billing-account-
+      id}/orders/{order-id}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatchRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsP
+  atchRequest object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation resource
+      to be passed as the request body.
+    name: Output only. The resource name of the allocation. This field is of
+      the form: `billingAccounts/{billing-account-id}/orders/{order-
+      id}/orderAllocations/{order-allocation-id}`.
+    updateMask: The update mask that applies to the resource. See the
+      [FieldMask definition] (https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask) for more details.
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest
   object.
@@ -260,7 +339,7 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest(_message
       GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest resource
       to be passed as the request body.
     parent: Required. The resource name of the parent resource. This field is
-      of the form `billingAccounts/`.
+      of the form `billingAccounts/{billing-account-id}`.
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest', 1)
@@ -272,8 +351,9 @@ class CloudcommerceconsumerprocurementProjectsEntitlementsGetRequest(_messages.M
 
   Fields:
     name: Required. The name of the entitlement to retrieve. This field is one
-      of the following forms: `projects//entitlements/`
-      `projects//entitlements/`.
+      of the following forms: `projects/{project-
+      number}/entitlements/{entitlement-id}` `projects/{project-
+      id}/entitlements/{entitlement-id}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -287,7 +367,8 @@ class CloudcommerceconsumerprocurementProjectsEntitlementsListRequest(_messages.
     pageSize: The maximum number of entries that are requested.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for Entitlements. Currently
-      the only parents supported are "projects/" and "projects/".
+      the only parents supported are "projects/{project-number}" and
+      "projects/{project-id}".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -304,7 +385,7 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsCreateRequest(_messages.
       GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial resource to be
       passed as the request body.
     parent: Required. The parent resource to query for FreeTrials. Currently
-      the only parent supported is "projects/".
+      the only parent supported is "projects/{project-id}".
   """
 
   googleCloudCommerceConsumerProcurementV1alpha1FreeTrial = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial', 1)
@@ -316,7 +397,7 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsGetRequest(_messages.Mes
 
   Fields:
     name: Required. The name of the freeTrial to retrieve. This field is of
-      the form `projects//freeTrials/`.
+      the form `projects/{project-id}/freeTrials/{freetrial-id}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -344,7 +425,7 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsListRequest(_messages.Me
     pageSize: The maximum number of entries that are requested.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for FreeTrials. Currently
-      the only parent supported is "projects/".
+      the only parent supported is "projects/{project-id}".
   """
 
   filter = _messages.StringField(1)
@@ -525,13 +606,35 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1AddOnDetails(_messages.Messa
 class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderRequest(_messages.Message):
   r"""Request message for ConsumerProcurementService.CancelOrder.
 
+  Enums:
+    CancellationPolicyValueValuesEnum: Cancellation policy of this request.
+
   Fields:
+    cancellationPolicy: Cancellation policy of this request.
     etag: The weak etag, which can be optionally populated, of the order that
       this cancel request is based on. Validation checking will only happen if
       the invoker supplies this field.
   """
 
-  etag = _messages.StringField(1)
+  class CancellationPolicyValueValuesEnum(_messages.Enum):
+    r"""Cancellation policy of this request.
+
+    Values:
+      CANCELLATION_POLICY_UNSPECIFIED: If unspecified, cancellation will try
+        to cancel the order, if order cannot be immediately cancelled, auto
+        renewal will be turned off.
+      CANCELLATION_POLICY_CANCEL_IMMEDIATELY: Request will cancel the whole
+        order immediately, if order cannot be immediately cancelled, the
+        request will fail.
+      CANCELLATION_POLICY_CANCEL_AT_TERM_END: Request will cancel the auto
+        renewal, if order is not subscription based, the request will fail.
+    """
+    CANCELLATION_POLICY_UNSPECIFIED = 0
+    CANCELLATION_POLICY_CANCEL_IMMEDIATELY = 1
+    CANCELLATION_POLICY_CANCEL_AT_TERM_END = 2
+
+  cancellationPolicy = _messages.EnumField('CancellationPolicyValueValuesEnum', 1)
+  etag = _messages.StringField(2)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing(_messages.Message):
@@ -945,6 +1048,18 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListFreeTrialsResponse(_mess
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrderAllocationsResponse(_messages.Message):
+  r"""Response message for ConsumerProcurementService.ListOrderAllocations.
+
+  Fields:
+    nextPageToken: The token for fetching the next page.
+    orderAllocations: The list of OrderAllocations in this response.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  orderAllocations = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation', 2, repeated=True)
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrdersResponse(_messages.Message):
   r"""Response message for ConsumerProcurementService.ListOrders.
 
@@ -1089,7 +1204,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
     etag: The weak etag of the order.
     lineItems: Output only. The items being purchased.
     name: Output only. The resource name of the order. Order names have the
-      form `billingAccounts//orders/{order_id}`.
+      form `billingAccounts/{billing-account-id}/orders/{order_id}`.
     orderState: Output only. The state of the order.
     provider: Provider of the products being purchased. Provider has the
       format of `providers/{provider_id}`.
@@ -1129,6 +1244,70 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
   provider = _messages.StringField(9)
   stateReason = _messages.StringField(10)
   updateTime = _messages.StringField(11)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation(_messages.Message):
+  r"""OrderAllocation represents the allocation of resources within a specific
+  order to a set of targets (projects). Next Id: 8
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the allocation.
+
+  Fields:
+    allocationEntry: Required. The currently effective allocation entry.
+    createTime: Output only. The time when the resource was created.
+    displayName: Optional. The user-specified name of the allocation. Must be
+      unique within an Order if specified.
+    name: Output only. The resource name of the allocation. This field is of
+      the form: `billingAccounts/{billing-account-id}/orders/{order-
+      id}/orderAllocations/{order-allocation-id}`.
+    pendingAllocationEntry: Output only. The upcoming allocation entry.
+    state: Output only. The state of the allocation.
+    updateTime: Output only. The time when the resource was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the allocation.
+
+    Values:
+      STATE_UNSPECIFIED: Sentinel value. Do not use.
+      STATE_PENDING_ACTIVATION: The allocation is pending activation.
+      STATE_ACTIVE: The allocation is active.
+      STATE_PENDING_DELETION: The allocation is pending deletion.
+      STATE_CANCELLED: The allocation is cancelled. This can be caused by
+        failure in creating the allocation.
+    """
+    STATE_UNSPECIFIED = 0
+    STATE_PENDING_ACTIVATION = 1
+    STATE_ACTIVE = 2
+    STATE_PENDING_DELETION = 3
+    STATE_CANCELLED = 4
+
+  allocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  pendingAllocationEntry = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocationAllocationEntry(_messages.Message):
+  r"""An allocation entry representing what resource is being allocated to
+  which targets.
+
+  Fields:
+    doubleResourceValue: Represents a double value.
+    int64ResourceValue: Represents an int64 value.
+    stringResourceValue: Represents a string value.
+    targets: Required. The targets of the allocation, only projects are
+      allowed at the moment.
+  """
+
+  doubleResourceValue = _messages.FloatField(1)
+  int64ResourceValue = _messages.IntegerField(2)
+  stringResourceValue = _messages.StringField(3)
+  targets = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1Parameter(_messages.Message):

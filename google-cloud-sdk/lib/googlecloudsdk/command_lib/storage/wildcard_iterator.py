@@ -28,6 +28,7 @@ import re
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import errors as api_errors
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
@@ -49,19 +50,22 @@ def contains_wildcard(url_string):
   return bool(WILDCARD_REGEX.search(url_string))
 
 
-def get_wildcard_iterator(url_str, all_versions=False):
+def get_wildcard_iterator(
+    url_str, all_versions=False, fields_scope=cloud_api.FieldsScope.SHORT):
   """Instantiate a WildcardIterator for the given URL string.
 
   Args:
     url_str (str): URL string which may contain wildcard characters.
     all_versions (bool): If true, the iterator yields all versions of objects
         matching the wildcard.  If false, yields just the live object version.
+    fields_scope (cloud_api.FieldsScope): Determines amount of metadata
+        returned by API.
   Returns:
     A WildcardIterator object.
   """
   url = storage_url.storage_url_from_string(url_str)
   if isinstance(url, storage_url.CloudUrl):
-    return CloudWildcardIterator(url, all_versions)
+    return CloudWildcardIterator(url, all_versions, fields_scope)
   elif isinstance(url, storage_url.FileUrl):
     return FileWildcardIterator(url)
   else:
@@ -113,17 +117,21 @@ class FileWildcardIterator(WildcardIterator):
 class CloudWildcardIterator(WildcardIterator):
   """Class to iterate over Cloud Storage strings containing wildcards."""
 
-  def __init__(self, url, all_versions=False):
+  def __init__(
+      self, url, all_versions=False, fields_scope=cloud_api.FieldsScope.SHORT):
     """Instantiates an iterator that matches the wildcard URL.
 
     Args:
       url (CloudUrl): CloudUrl that may contain wildcard that needs expansion.
       all_versions (bool): If true, the iterator yields all versions of objects
-        matching the wildcard.  If false, yields just the live object version.
+          matching the wildcard.  If false, yields just the live object version.
+      fields_scope (cloud_api.FieldsScope): Determines amount of metadata
+          returned by API.
     """
     super(CloudWildcardIterator, self).__init__()
     self._url = url
     self._all_versions = all_versions
+    self._fields_scope = fields_scope
     self._client = api_factory.get_api(cloud_api.ProviderPrefix(url.scheme))
 
     if url.url_string.endswith(url.delimiter):
@@ -133,7 +141,7 @@ class CloudWildcardIterator(WildcardIterator):
 
   def __iter__(self):
     if self._url.is_provider():
-      for bucket_resource in self._client.ListBuckets():
+      for bucket_resource in self._client.ListBuckets(self._fields_scope):
         yield bucket_resource
     else:
       for bucket_resource in self._fetch_buckets():
@@ -145,6 +153,19 @@ class CloudWildcardIterator(WildcardIterator):
             yield obj_resource
 
   def _fetch_objects(self, bucket_name):
+    """Fetch all objects for the given bucket that match the URL."""
+    if not contains_wildcard(self._url.object_name) and not self._all_versions:
+      try:
+        # Assume that the url represents a single object.
+        return [self._client.GetObjectMetadata(
+            bucket_name, self._url.object_name, self._url.generation,
+            self._fields_scope)]
+      except api_errors.NotFoundError:
+        # Object does not exist. Could be a prefix.
+        pass
+    return self._expand_object_path(bucket_name)
+
+  def _expand_object_path(self, bucket_name):
     """If wildcard, expand object names.
 
     Recursively expand each folder with wildcard.
@@ -173,10 +194,11 @@ class CloudWildcardIterator(WildcardIterator):
 
       # Fetch all the objects and prefixes.
       resource_iterator = self._client.ListObjects(
+          all_versions=self._all_versions or bool(self._url.generation),
           bucket_name=bucket_name,
-          prefix=wildcard_parts.prefix or None,
           delimiter=wildcard_parts.delimiter,
-          all_versions=self._all_versions or bool(self._url.generation))
+          fields_scope=self._fields_scope,
+          prefix=wildcard_parts.prefix or None)
 
       # We have all the objects and prefixes that matched the
       # wildcard_parts.prefix. Use the filter_pattern to eliminate non-matching
@@ -212,7 +234,6 @@ class CloudWildcardIterator(WildcardIterator):
     Yields:
       resource_reference.Resource objects matching the wildcard_pattern
     """
-    # TODO(b/162453538) Handle the case: a/b*/c where c is a directory.
     regex_string = fnmatch.translate(wildcard_pattern)
     regex_pattern = re.compile(regex_string)
     for resource in resource_iterator:
@@ -236,10 +257,11 @@ class CloudWildcardIterator(WildcardIterator):
     if contains_wildcard(self._url.bucket_name):
       return self._expand_bucket_wildcards(self._url.bucket_name)
     elif self._url.is_bucket():
-      return  [self._client.GetBucket(self._url.bucket_name)]
+      return  [self._client.GetBucket(
+          self._url.bucket_name, self._fields_scope)]
     else:
       return [resource_reference.BucketResource(
-          storage_url=self._url, metadata_object=None)]
+          self._url, self._url.bucket_name)]
 
   def _expand_bucket_wildcards(self, bucket_name):
     """Expand bucket names with wildcard.
@@ -252,7 +274,7 @@ class CloudWildcardIterator(WildcardIterator):
     """
     regex = fnmatch.translate(bucket_name)
     bucket_pattern = re.compile(regex)
-    for bucket_resource in self._client.ListBuckets():
+    for bucket_resource in self._client.ListBuckets(self._fields_scope):
       if bucket_pattern.match(bucket_resource.metadata_object.name):
         yield bucket_resource
 

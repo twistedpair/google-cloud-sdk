@@ -33,8 +33,6 @@ class AnthosApiEndpoint(_messages.Message):
       cluster's subnetwork to use for pod IP addresses. Alternatively,
       cluster_cidr_block can be used to automatically create a GKE-managed
       one.
-    endpointUrl: Output only. AnthosApiEndpoint URL used for interacting with
-      the KRM endpoint
     gitBranch: The branch of the repository to sync from.
     gitEndpoint: The URL of the Git repository to use as the source of truth.
     gitPolicyDir: The path within the Git repository that represents the top
@@ -42,6 +40,8 @@ class AnthosApiEndpoint(_messages.Message):
       repository.
     gitSecretType: The type of secret configured for access to the Git
       repository. One of ssh, cookiefile, token, gcenode, or none.
+    gkeResourceLink: Output only. AnthosApiEndpoint GCP self link used for
+      identifying the underlying endpoint (GKE cluster currently)
     labels: Labels are used for additional label information for a
       AnthosApiEndpoint.
     manBlock: Master Authorized Network. Allows access to the k8s master from
@@ -91,11 +91,11 @@ class AnthosApiEndpoint(_messages.Message):
 
   clusterCidrBlock = _messages.StringField(1)
   clusterNamedRange = _messages.StringField(2)
-  endpointUrl = _messages.StringField(3)
-  gitBranch = _messages.StringField(4)
-  gitEndpoint = _messages.StringField(5)
-  gitPolicyDir = _messages.StringField(6)
-  gitSecretType = _messages.StringField(7)
+  gitBranch = _messages.StringField(3)
+  gitEndpoint = _messages.StringField(4)
+  gitPolicyDir = _messages.StringField(5)
+  gitSecretType = _messages.StringField(6)
+  gkeResourceLink = _messages.StringField(7)
   labels = _messages.MessageField('LabelsValue', 8)
   manBlock = _messages.StringField(9)
   masterIpv4CidrBlock = _messages.StringField(10)
@@ -313,7 +313,6 @@ class KrmApiHost(_messages.Message):
       cluster's subnetwork to use for pod IP addresses. Alternatively,
       cluster_cidr_block can be used to automatically create a GKE-managed
       one.
-    endpoint: Output only. IP address of the KRM endpoint on the KrmApiHost.
     gitBranch: The branch of the repository to sync from.
     gitEndpoint: The URL of the Git repository to use as the source of truth.
     gitPolicyDir: The path within the Git repository that represents the top
@@ -321,6 +320,8 @@ class KrmApiHost(_messages.Message):
       repository.
     gitSecretType: The type of secret configured for access to the Git
       repository. One of ssh, cookiefile, token, gcenode, or none.
+    gkeResourceLink: Output only. AnthosApiEndpoint GCP self link used for
+      identifying the underlying endpoint (GKE cluster currently)
     labels: Labels are used for additional information for a KrmApiHost.
     manBlock: Master Authorized Network. Allows access to the k8s master from
       this block.
@@ -368,11 +369,11 @@ class KrmApiHost(_messages.Message):
   bundlesConfig = _messages.MessageField('BundlesConfig', 1)
   clusterCidrBlock = _messages.StringField(2)
   clusterNamedRange = _messages.StringField(3)
-  endpoint = _messages.StringField(4)
-  gitBranch = _messages.StringField(5)
-  gitEndpoint = _messages.StringField(6)
-  gitPolicyDir = _messages.StringField(7)
-  gitSecretType = _messages.StringField(8)
+  gitBranch = _messages.StringField(4)
+  gitEndpoint = _messages.StringField(5)
+  gitPolicyDir = _messages.StringField(6)
+  gitSecretType = _messages.StringField(7)
+  gkeResourceLink = _messages.StringField(8)
   labels = _messages.MessageField('LabelsValue', 9)
   manBlock = _messages.StringField(10)
   masterIpv4CidrBlock = _messages.StringField(11)

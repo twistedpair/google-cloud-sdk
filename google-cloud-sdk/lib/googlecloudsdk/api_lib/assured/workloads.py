@@ -19,21 +19,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.assured import client_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
-API_VERSION = 'v1beta1'
-API_NAME = 'assuredworkloads'
+
 WORKLOAD_CREATION_IN_PROGRESS_MESSAGE = 'Creating Assured Workloads environment'
-
-def GetClientInstance(no_http=False):
-  return apis.GetClientInstance(API_NAME, API_VERSION, no_http=no_http)
-
-
-def GetMessagesModule(client=None):
-  client = client or GetClientInstance()
-  return client.MESSAGES_MODULE
 
 
 def GetWorkloadURI(resource):
@@ -46,9 +37,9 @@ def GetWorkloadURI(resource):
 class WorkloadsClient(object):
   """Client for Workloads in Assured Workloads API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
-    self.messages = messages or GetMessagesModule(client)
+  def __init__(self, release_track, no_http=False):
+    self.client = client_util.GetClientInstance(release_track, no_http)
+    self.messages = self.client.MESSAGES_MODULE
     self._service = self.client.organizations_locations_workloads
 
   def List(self, parent, limit=None, page_size=100):

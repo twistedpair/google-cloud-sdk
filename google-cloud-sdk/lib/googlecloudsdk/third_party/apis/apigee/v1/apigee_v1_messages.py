@@ -3756,6 +3756,8 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
     sequenceNumber: DEPRECATED: Use revision_id.
     targets: List of target servers in the environment. Disabled target
       servers are not displayed.
+    traceConfig: Trace configurations. Contains config for the environment and
+      config overrides for specific API proxies.
     uid: Unique ID for the environment configuration. The ID will only change
       if the environment is deleted and recreated.
   """
@@ -3800,7 +3802,8 @@ class GoogleCloudApigeeV1EnvironmentConfig(_messages.Message):
   revisionId = _messages.IntegerField(13)
   sequenceNumber = _messages.IntegerField(14)
   targets = _messages.MessageField('GoogleCloudApigeeV1TargetServerConfig', 15, repeated=True)
-  uid = _messages.StringField(16)
+  traceConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfig', 16)
+  uid = _messages.StringField(17)
 
 
 class GoogleCloudApigeeV1EnvironmentGroup(_messages.Message):
@@ -4375,6 +4378,22 @@ class GoogleCloudApigeeV1Metric(_messages.Message):
   values = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
 
 
+class GoogleCloudApigeeV1Operation(_messages.Message):
+  r"""Operation represents the pairing of REST resource path and the actions
+  (verbs) allowed on the resource path.
+
+  Fields:
+    methods: methods refers to the REST verbs as in
+      https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html. When none
+      specified, all verb types are allowed.
+    resource: Required. resource represents REST resource path associated with
+      the proxy/remote service.
+  """
+
+  methods = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1OperationConfig(_messages.Message):
   r"""OperationConfig binds the resources in a proxy or remote service with
   the allowed REST methods and its associated quota enforcement.
@@ -4384,21 +4403,19 @@ class GoogleCloudApigeeV1OperationConfig(_messages.Message):
       service name for which the resources, methods and quota are associated
       with.
     attributes: custom attribute associated with the operation.
-    methods: methods refers to the REST verbs as in
-      https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html. When none
-      specified, all verb types are allowed.
+    operations: operations is the list of resource/methods pair, belonging to
+      proxy/remote service, upon which quota will applied on. Note that
+      currently we allow only a single operation. The call will fail if more
+      than one is provided.
     quota: Quota parameters to be enforced for the resources, methods,
       api_source combination. If none specified, quota enforcement will not be
       done.
-    resources: Required. resources represents a list of REST resource path
-      associated with the proxy/remote service.
   """
 
   apiSource = _messages.StringField(1)
   attributes = _messages.MessageField('GoogleCloudApigeeV1Attribute', 2, repeated=True)
-  methods = _messages.StringField(3, repeated=True)
+  operations = _messages.MessageField('GoogleCloudApigeeV1Operation', 3, repeated=True)
   quota = _messages.MessageField('GoogleCloudApigeeV1Quota', 4)
-  resources = _messages.StringField(5, repeated=True)
 
 
 class GoogleCloudApigeeV1OperationGroup(_messages.Message):
@@ -4409,10 +4426,10 @@ class GoogleCloudApigeeV1OperationGroup(_messages.Message):
   Fields:
     operationConfigType: Identfies whether the configuration is for Apigee
       proxy or a remote service. Possible values are "proxy" and
-      "remote_service". If none specified, the default is "proxy". "proxy" is
+      "remoteservice". If none specified, the default is "proxy". "proxy" is
       used when Apigee proxies are associated with the API product.
-      "remote_service" is used when non-Apigee proxy like Envoy is used, and
-      is associated with the API product.
+      "remoteservice" is used when non-Apigee proxy like Envoy is used, and is
+      associated with the API product.
     operationConfigs: Required. A list of OperationConfig for either Apigee
       proxies or other other remote services, that are associated with this
       API product.
@@ -4528,7 +4545,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   r"""A GoogleCloudApigeeV1Organization object.
 
   Enums:
-    RuntimeTypeValueValuesEnum: Output only. Runtime type of the Apigee
+    RuntimeTypeValueValuesEnum: Required. Runtime type of the Apigee
       organization based on the Apigee subscription purchased.
     SubscriptionTypeValueValuesEnum: Output only. Subscription type of the
       Apigee organization. Valid values include trial (free, limited, and for
@@ -4563,7 +4580,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     name: Output only. Name of the Apigee organization.
     projectId: The project ID associated with the Apigee organization.
     properties: Properties defined in the Apigee organization profile.
-    runtimeType: Output only. Runtime type of the Apigee organization based on
+    runtimeType: Required. Runtime type of the Apigee organization based on
       the Apigee subscription purchased.
     subscriptionType: Output only. Subscription type of the Apigee
       organization. Valid values include trial (free, limited, and for
@@ -4574,8 +4591,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   """
 
   class RuntimeTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. Runtime type of the Apigee organization based on the
-    Apigee subscription purchased.
+    r"""Required. Runtime type of the Apigee organization based on the Apigee
+    subscription purchased.
 
     Values:
       RUNTIME_TYPE_UNSPECIFIED: <no description>
@@ -5045,6 +5062,156 @@ class GoogleCloudApigeeV1RoutingRule(_messages.Message):
 
   basepath = _messages.StringField(1)
   environment = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):
+  r"""NEXT ID: 8 RuntimeTraceConfig defines the configurations for distributed
+  trace in an environment.
+
+  Enums:
+    ExporterValueValuesEnum: Exporter that is used to view the distributed
+      trace captured using OpenCensus. An exporter sends traces to any backend
+      that is capable of consuming them. Recorded spans can be exported by
+      registered exporters.
+
+  Fields:
+    endpoint: Endpoint of the exporter.
+    exporter: Exporter that is used to view the distributed trace captured
+      using OpenCensus. An exporter sends traces to any backend that is
+      capable of consuming them. Recorded spans can be exported by registered
+      exporters.
+    name: Name of the trace config in the following format:
+      `organizations/{org}/environment/{env}/traceConfig`
+    overrides: List of trace configuration overrides for spicific API proxies.
+    revisionCreateTime: The timestamp that the revision was created or
+      updated.
+    revisionId: Revision number which can be used by the runtime to detect if
+      the trace config has changed between two versions.
+    samplingConfig: Trace configuration for all API proxies in an environment.
+  """
+
+  class ExporterValueValuesEnum(_messages.Enum):
+    r"""Exporter that is used to view the distributed trace captured using
+    OpenCensus. An exporter sends traces to any backend that is capable of
+    consuming them. Recorded spans can be exported by registered exporters.
+
+    Values:
+      EXPORTER_UNSPECIFIED: Exporter unspecified
+      JAEGER: Jaeger exporter
+      CLOUD_TRACE: Cloudtrace exporter
+    """
+    EXPORTER_UNSPECIFIED = 0
+    JAEGER = 1
+    CLOUD_TRACE = 2
+
+  endpoint = _messages.StringField(1)
+  exporter = _messages.EnumField('ExporterValueValuesEnum', 2)
+  name = _messages.StringField(3)
+  overrides = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceConfigOverride', 4, repeated=True)
+  revisionCreateTime = _messages.StringField(5)
+  revisionId = _messages.StringField(6)
+  samplingConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceSamplingConfig', 7)
+
+
+class GoogleCloudApigeeV1RuntimeTraceConfigOverride(_messages.Message):
+  r"""NEXT ID: 7 Trace configuration override for a specific API proxy in an
+  environment.
+
+  Fields:
+    apiProxy: Name of the API proxy that will have its trace configuration
+      overridden following format: `organizations/{org}/apis/{api}`
+    name: Name of the trace config override in the following format:
+      `organizations/{org}/environment/{env}/traceConfig/overrides/{override}`
+    revisionCreateTime: The timestamp that the revision was created or
+      updated.
+    revisionId: Revision number which can be used by the runtime to detect if
+      the trace config override has changed between two versions.
+    samplingConfig: Trace configuration override for a specific API proxy in
+      an environment.
+    uid: Unique ID for the configuration override. The ID will only change if
+      the override is deleted and recreated.
+  """
+
+  apiProxy = _messages.StringField(1)
+  name = _messages.StringField(2)
+  revisionCreateTime = _messages.StringField(3)
+  revisionId = _messages.StringField(4)
+  samplingConfig = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceSamplingConfig', 5)
+  uid = _messages.StringField(6)
+
+
+class GoogleCloudApigeeV1RuntimeTraceSamplingConfig(_messages.Message):
+  r"""NEXT ID: 6 RuntimeTraceSamplingConfig represents the detail settings of
+  distributed tracing. Only the fields that are defined in the distributed
+  trace configuration can be overridden using the distribute trace
+  configuration override APIs.
+
+  Enums:
+    ErrorSourcesValueListEntryValuesEnum:
+    SamplerValueValuesEnum: Sampler of distributed tracing. OFF is the default
+      value.
+
+  Fields:
+    errorSources: Error sources from which to capture errors. If none are
+      specified, error codes are captured from all sources.
+    responseCodeRanges: List of response code ranges.
+    responseCodes: List of single response codes.
+    sampler: Sampler of distributed tracing. OFF is the default value.
+    samplingRate: Field sampling rate. This value is only valid when is only
+      applicable when sampling value is probabilistic(PROBABILITY). The
+      supported values are > 0 and <= 0.5.
+  """
+
+  class ErrorSourcesValueListEntryValuesEnum(_messages.Enum):
+    r"""ErrorSourcesValueListEntryValuesEnum enum type.
+
+    Values:
+      ERROR_SOURCE_UNSPECIFIED: Error source is unspecified.
+      APIGEE: Only capture trace errors within the Apigee system.
+      TARGET: Only capture trace errors from target server.
+    """
+    ERROR_SOURCE_UNSPECIFIED = 0
+    APIGEE = 1
+    TARGET = 2
+
+  class SamplerValueValuesEnum(_messages.Enum):
+    r"""Sampler of distributed tracing. OFF is the default value.
+
+    Values:
+      SAMPLER_UNSPECIFIED: Sampler unspecified.
+      OFF: OFF means distributed trace is disabled, or the sampling
+        probability is 0.
+      ON: ON means distributed trace is enabled always for all api calls, and
+        sampling probability is 0.5.
+      PROBABILITY: PROBABILITY means traces are captured on a probability that
+        defined by sampling_rate. The sampling rate is limited to 0 to 0.5
+        when this is set.
+    """
+    SAMPLER_UNSPECIFIED = 0
+    OFF = 1
+    ON = 2
+    PROBABILITY = 3
+
+  errorSources = _messages.EnumField('ErrorSourcesValueListEntryValuesEnum', 1, repeated=True)
+  responseCodeRanges = _messages.MessageField('GoogleCloudApigeeV1RuntimeTraceSamplingConfigResponseCodeRange', 2, repeated=True)
+  responseCodes = _messages.IntegerField(3, repeated=True, variant=_messages.Variant.INT32)
+  sampler = _messages.EnumField('SamplerValueValuesEnum', 4)
+  samplingRate = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudApigeeV1RuntimeTraceSamplingConfigResponseCodeRange(_messages.Message):
+  r"""ResponseCodeRange represents a group of response codes to capture, from
+  the first response code to the last response code. Each range is a close
+  interval. For example, if an interval is [400, 403], then that means 400,
+  401, 402, 403 will be all captured.
+
+  Fields:
+    firstResponseCode: The first response code to capture.
+    lastResponseCode: The last response code to capture.
+  """
+
+  firstResponseCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  lastResponseCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudApigeeV1Schema(_messages.Message):

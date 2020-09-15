@@ -302,6 +302,47 @@ class AnthoseventsApiV1NamespacesServiceaccountsReplaceServiceAccountRequest(_me
   serviceAccount = _messages.MessageField('ServiceAccount', 2)
 
 
+class AnthoseventsCustomresourcedefinitionsListRequest(_messages.Message):
+  r"""A AnthoseventsCustomresourcedefinitionsListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: A integer attribute.
+    parent: The project ID or project number from which the storages should be
+      listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class AnthoseventsNamespacesCustomresourcedefinitionsGetRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesCustomresourcedefinitionsGetRequest object.
+
+  Fields:
+    name: The name of the CustomResourceDefinition being retrieved. If needed,
+      replace {namespace_id} with the project ID.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AnthoseventsProjectServiceaccountsCreateRequest(_messages.Message):
   r"""A AnthoseventsProjectServiceaccountsCreateRequest object.
 
@@ -595,7 +636,7 @@ class AnthoseventsProjectsLocationsServiceaccountsListRequest(_messages.Message)
 
 
 class ConfigMap(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   ConfigMap holds configuration data for pods to consume.
 
   Messages:
@@ -696,14 +737,529 @@ class ConfigMap(_messages.Message):
   metadata = _messages.MessageField('ObjectMeta', 4)
 
 
+class CustomResourceColumnDefinition(_messages.Message):
+  r"""CustomResourceColumnDefinition specifies a column for server side
+  printing.
+
+  Fields:
+    description: description is a human readable description of this column.
+    format: format is an optional OpenAPI type definition for this column. The
+      'name' format is applied to the primary identifier column to assist in
+      clients identifying column is the resource name. See
+      https://github.com/OAI/OpenAPI-
+      Specification/blob/master/versions/2.0.md#data-types for more.
+    jsonPath: JSONPath is a simple JSON path, i.e. with array notation.
+    name: name is a human readable name for the column.
+    priority: priority is an integer defining the relative importance of this
+      column compared to others. Lower numbers are considered higher priority.
+      Columns that may be omitted in limited space scenarios should be given a
+      higher priority. +optional
+    type: type is an OpenAPI type definition for this column. See
+      https://github.com/OAI/OpenAPI-
+      Specification/blob/master/versions/2.0.md#data-types for more.
+  """
+
+  description = _messages.StringField(1)
+  format = _messages.StringField(2)
+  jsonPath = _messages.StringField(3)
+  name = _messages.StringField(4)
+  priority = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  type = _messages.StringField(6)
+
+
+class CustomResourceConversion(_messages.Message):
+  r"""CustomResourceConversion describes how to convert different versions of
+  a CR.
+
+  Fields:
+    strategy: strategy specifies how custom resources are converted between
+      versions. Allowed values are: - `None`: The converter only change the
+      apiVersion and would not touch any other field in the custom resource. -
+      `Webhook`: API Server will call to an external webhook to do the
+      conversion. Additional information is needed for this option. This
+      requires spec.preserveUnknownFields to be false, and
+      spec.conversion.webhook to be set.
+    webhook: webhook describes how to call the conversion webhook. Required
+      when `strategy` is set to `Webhook`.
+  """
+
+  strategy = _messages.StringField(1)
+  webhook = _messages.MessageField('WebhookConversion', 2)
+
+
+class CustomResourceDefinition(_messages.Message):
+  r"""CustomResourceDefinition represents a resource that should be exposed on
+  the API server. Its name MUST be in the format <.spec.name>.<.spec.group>.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "k8s.apiextensions.io/v1".
+    kind: The kind of resource, in this case always
+      "CustomResourceDefinition".
+    metadata: Metadata associated with this CustomResourceDefinition.
+    spec: Spec describes how the user wants the resources to appear
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('CustomResourceDefinitionSpec', 4)
+
+
+class CustomResourceDefinitionNames(_messages.Message):
+  r"""CustomResourceDefinitionNames indicates the names to serve this
+  CustomResourceDefinition
+
+  Fields:
+    categories: Categories is a list of grouped resources custom resources
+      belong to (e.g. 'all') +optional
+    kind: Kind is the serialized kind of the resource. It is normally
+      CamelCase and singular.
+    listKind: ListKind is the serialized kind of the list for this resource.
+      Defaults to List. +optional
+    plural: Plural is the plural name of the resource to serve. It must match
+      the name of the CustomResourceDefinition-registration too: plural.group
+      and it must be all lowercase.
+    shortNames: ShortNames are short names for the resource. It must be all
+      lowercase. +optional
+    singular: Singular is the singular name of the resource. It must be all
+      lowercase Defaults to lowercased +optional
+  """
+
+  categories = _messages.StringField(1, repeated=True)
+  kind = _messages.StringField(2)
+  listKind = _messages.StringField(3)
+  plural = _messages.StringField(4)
+  shortNames = _messages.StringField(5, repeated=True)
+  singular = _messages.StringField(6)
+
+
+class CustomResourceDefinitionSpec(_messages.Message):
+  r"""CustomResourceDefinitionSpec describes how a user wants their resource
+  to appear
+
+  Fields:
+    conversion: conversion defines conversion settings for the CRD.
+    group: group is the API group of the defined custom resource. The custom
+      resources are served under `/apis//...`. Must match the name of the
+      CustomResourceDefinition (in the form `.`).
+    names: names specify the resource and kind names for the custom resource.
+    preserveUnknownFields: preserveUnknownFields indicates that object fields
+      which are not specified in the OpenAPI schema should be preserved when
+      persisting to storage. apiVersion, kind, metadata and known fields
+      inside metadata are always preserved. This field is deprecated in favor
+      of setting `x-preserve-unknown-fields` to true in
+      `spec.versions[*].schema.openAPIV3Schema`. See
+      https://kubernetes.io/docs/tasks/access-kubernetes-api/custom-
+      resources/custom-resource-definitions/#pruning-versus-preserving-
+      unknown-fields for details.
+    scope: scope indicates whether the defined custom resource is cluster- or
+      namespace-scoped. Allowed values are `Cluster` and `Namespaced`.
+    versions: versions is the list of all API versions of the defined custom
+      resource. Version names are used to compute the order in which served
+      versions are listed in API discovery. If the version string is "kube-
+      like", it will sort above non "kube-like" version strings, which are
+      ordered lexicographically. "Kube-like" versions start with a "v", then
+      are followed by a number (the major version), then optionally the string
+      "alpha" or "beta" and another number (the minor version). These are
+      sorted first by GA > beta > alpha (where GA is a version with no suffix
+      such as beta or alpha), and then by comparing major version, then minor
+      version. An example sorted list of versions: v10, v2, v1, v11beta2,
+      v10beta3, v3beta1, v12alpha1, v11alpha2, foo1, foo10.
+  """
+
+  conversion = _messages.MessageField('CustomResourceConversion', 1)
+  group = _messages.StringField(2)
+  names = _messages.MessageField('CustomResourceDefinitionNames', 3)
+  preserveUnknownFields = _messages.BooleanField(4)
+  scope = _messages.StringField(5)
+  versions = _messages.MessageField('CustomResourceDefinitionVersion', 6, repeated=True)
+
+
+class CustomResourceDefinitionVersion(_messages.Message):
+  r"""A CustomResourceDefinitionVersion object.
+
+  Fields:
+    additionalPrinterColumns: additionalPrinterColumns specifies additional
+      columns returned in Table output. See
+      https://kubernetes.io/docs/reference/using-api/api-concepts/#receiving-
+      resources-as-tables for details. If no columns are specified, a single
+      column displaying the age of the custom resource is used.
+    deprecated: deprecated indicates this version of the custom resource API
+      is deprecated. When set to true, API requests to this version receive a
+      warning header in the server response. Defaults to false.
+    deprecationWarning: deprecationWarning overrides the default warning
+      returned to API clients. May only be set when `deprecated` is true. The
+      default warning indicates this version is deprecated and recommends use
+      of the newest served version of equal or greater stability, if one
+      exists.
+    name: Name is the version name, e.g. "v1", "v2beta1", etc.
+    schema: schema describes the schema used for validation, pruning, and
+      defaulting of this version of the custom resource.
+    served: Served is a flag enabling/disabling this version from being served
+      via REST APIs
+    storage: Storage flags the version as storage version. There must be
+      exactly one flagged as storage version.
+    subresources: subresources specify what subresources this version of the
+      defined custom resource have.
+  """
+
+  additionalPrinterColumns = _messages.MessageField('CustomResourceColumnDefinition', 1, repeated=True)
+  deprecated = _messages.BooleanField(2)
+  deprecationWarning = _messages.StringField(3)
+  name = _messages.StringField(4)
+  schema = _messages.MessageField('CustomResourceValidation', 5)
+  served = _messages.BooleanField(6)
+  storage = _messages.BooleanField(7)
+  subresources = _messages.MessageField('CustomResourceSubresources', 8)
+
+
+class CustomResourceSubresourceScale(_messages.Message):
+  r"""CustomResourceSubresourceScale defines how to serve the scale
+  subresource for CustomResources.
+
+  Fields:
+    labelSelectorPath: LabelSelectorPath defines the JSON path inside of a
+      CustomResource that corresponds to Scale.Status.Selector. Only JSON
+      paths without the array notation are allowed. Must be a JSON Path under
+      .status. Must be set to work with HPA. If there is no value under the
+      given path in the CustomResource, the status label selector value in the
+      /scale subresource will default to the empty string. +optional
+    specReplicasPath: SpecReplicasPath defines the JSON path inside of a
+      CustomResource that corresponds to Scale.Spec.Replicas. Only JSON paths
+      without the array notation are allowed. Must be a JSON Path under .spec.
+      If there is no value under the given path in the CustomResource, the
+      /scale subresource will return an error on GET.
+    statusReplicasPath: StatusReplicasPath defines the JSON path inside of a
+      CustomResource that corresponds to Scale.Status.Replicas. Only JSON
+      paths without the array notation are allowed. Must be a JSON Path under
+      .status. If there is no value under the given path in the
+      CustomResource, the status replica value in the /scale subresource will
+      default to 0.
+  """
+
+  labelSelectorPath = _messages.StringField(1)
+  specReplicasPath = _messages.StringField(2)
+  statusReplicasPath = _messages.StringField(3)
+
+
+class CustomResourceSubresourceStatus(_messages.Message):
+  r"""CustomResourceSubresourceStatus defines how to serve the status
+  subresource for CustomResources. Status is represented by the `.status` JSON
+  path inside of a CustomResource. When set, * exposes a /status subresource
+  for the custom resource * PUT requests to the /status subresource take a
+  custom resource object, and ignore changes to anything except the status
+  stanza * PUT/POST/PATCH requests to the custom resource ignore changes to
+  the status stanza
+  """
+
+
+
+class CustomResourceSubresources(_messages.Message):
+  r"""CustomResourceSubresources defines the status and scale subresources for
+  CustomResources.
+
+  Fields:
+    scale: Scale denotes the scale subresource for CustomResources +optional
+    status: Status denotes the status subresource for CustomResources
+      +optional
+  """
+
+  scale = _messages.MessageField('CustomResourceSubresourceScale', 1)
+  status = _messages.MessageField('CustomResourceSubresourceStatus', 2)
+
+
+class CustomResourceValidation(_messages.Message):
+  r"""CustomResourceValidation is a list of validation methods for
+  CustomResources.
+
+  Fields:
+    openAPIV3Schema: OpenAPIV3Schema is the OpenAPI v3 schema to be validated
+      against.
+  """
+
+  openAPIV3Schema = _messages.MessageField('JSONSchemaProps', 1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class ExternalDocumentation(_messages.Message):
+  r"""ExternalDocumentation allows referencing an external resource for
+  extended documentation.
+
+  Fields:
+    description: A string attribute.
+    url: A string attribute.
+  """
+
+  description = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
+class JSON(_messages.Message):
+  r"""JSON represents any valid JSON value. These types are supported: bool,
+  int64, float64, string, []interface{}, map[string]interface{} and nil.
+
+  Fields:
+    raw: A byte attribute.
+  """
+
+  raw = _messages.BytesField(1)
+
+
+class JSONSchemaProps(_messages.Message):
+  r"""JSONSchemaProps is a JSON-Schema following Specification Draft 4
+  (http://json-schema.org/).
+
+  Messages:
+    DefinitionsValue: A DefinitionsValue object.
+    DependenciesValue: A DependenciesValue object.
+    PatternPropertiesValue: A PatternPropertiesValue object.
+    PropertiesValue: A PropertiesValue object.
+
+  Fields:
+    additionalItems: A JSONSchemaPropsOrBool attribute.
+    additionalProperties: A JSONSchemaPropsOrBool attribute.
+    allOf: A JSONSchemaProps attribute.
+    anyOf: A JSONSchemaProps attribute.
+    default: A JSON attribute.
+    definitions: A DefinitionsValue attribute.
+    dependencies: A DependenciesValue attribute.
+    description: A string attribute.
+    enum: A string attribute.
+    example: A JSON attribute.
+    exclusiveMaximum: A boolean attribute.
+    exclusiveMinimum: A boolean attribute.
+    externalDocs: A ExternalDocumentation attribute.
+    format: A string attribute.
+    id: A string attribute.
+    items: A JSONSchemaPropsOrArray attribute.
+    maxItems: A string attribute.
+    maxLength: A string attribute.
+    maxProperties: A string attribute.
+    maximum: A number attribute.
+    minItems: A string attribute.
+    minLength: A string attribute.
+    minProperties: A string attribute.
+    minimum: A number attribute.
+    multipleOf: A number attribute.
+    not_: A JSONSchemaProps attribute.
+    oneOf: A JSONSchemaProps attribute.
+    pattern: A string attribute.
+    patternProperties: A PatternPropertiesValue attribute.
+    properties: A PropertiesValue attribute.
+    ref: A string attribute.
+    required: A string attribute.
+    schema: A string attribute.
+    title: A string attribute.
+    type: A string attribute.
+    uniqueItems: A boolean attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DefinitionsValue(_messages.Message):
+    r"""A DefinitionsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DefinitionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DefinitionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DefinitionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A JSONSchemaProps attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('JSONSchemaProps', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DependenciesValue(_messages.Message):
+    r"""A DependenciesValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DependenciesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DependenciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DependenciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A JSONSchemaPropsOrStringArray attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('JSONSchemaPropsOrStringArray', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PatternPropertiesValue(_messages.Message):
+    r"""A PatternPropertiesValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a PatternPropertiesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        PatternPropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PatternPropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A JSONSchemaProps attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('JSONSchemaProps', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""A PropertiesValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A JSONSchemaProps attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('JSONSchemaProps', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalItems = _messages.MessageField('JSONSchemaPropsOrBool', 1)
+  additionalProperties = _messages.MessageField('JSONSchemaPropsOrBool', 2)
+  allOf = _messages.MessageField('JSONSchemaProps', 3, repeated=True)
+  anyOf = _messages.MessageField('JSONSchemaProps', 4, repeated=True)
+  default = _messages.MessageField('JSON', 5)
+  definitions = _messages.MessageField('DefinitionsValue', 6)
+  dependencies = _messages.MessageField('DependenciesValue', 7)
+  description = _messages.StringField(8)
+  enum = _messages.StringField(9, repeated=True)
+  example = _messages.MessageField('JSON', 10)
+  exclusiveMaximum = _messages.BooleanField(11)
+  exclusiveMinimum = _messages.BooleanField(12)
+  externalDocs = _messages.MessageField('ExternalDocumentation', 13)
+  format = _messages.StringField(14)
+  id = _messages.StringField(15)
+  items = _messages.MessageField('JSONSchemaPropsOrArray', 16)
+  maxItems = _messages.IntegerField(17)
+  maxLength = _messages.IntegerField(18)
+  maxProperties = _messages.IntegerField(19)
+  maximum = _messages.FloatField(20)
+  minItems = _messages.IntegerField(21)
+  minLength = _messages.IntegerField(22)
+  minProperties = _messages.IntegerField(23)
+  minimum = _messages.FloatField(24)
+  multipleOf = _messages.FloatField(25)
+  not_ = _messages.MessageField('JSONSchemaProps', 26)
+  oneOf = _messages.MessageField('JSONSchemaProps', 27, repeated=True)
+  pattern = _messages.StringField(28)
+  patternProperties = _messages.MessageField('PatternPropertiesValue', 29)
+  properties = _messages.MessageField('PropertiesValue', 30)
+  ref = _messages.StringField(31)
+  required = _messages.StringField(32, repeated=True)
+  schema = _messages.StringField(33)
+  title = _messages.StringField(34)
+  type = _messages.StringField(35)
+  uniqueItems = _messages.BooleanField(36)
+
+
+class JSONSchemaPropsOrArray(_messages.Message):
+  r"""JSONSchemaPropsOrArray represents a value that can either be a
+  JSONSchemaProps or an array of JSONSchemaProps. Mainly here for
+  serialization purposes.
+
+  Fields:
+    jsonSchemas: A JSONSchemaProps attribute.
+    schema: A JSONSchemaProps attribute.
+  """
+
+  jsonSchemas = _messages.MessageField('JSONSchemaProps', 1, repeated=True)
+  schema = _messages.MessageField('JSONSchemaProps', 2)
+
+
+class JSONSchemaPropsOrBool(_messages.Message):
+  r"""JSONSchemaPropsOrBool represents JSONSchemaProps or a boolean value.
+  Defaults to true for the boolean property.
+
+  Fields:
+    allows: A boolean attribute.
+    schema: A JSONSchemaProps attribute.
+  """
+
+  allows = _messages.BooleanField(1)
+  schema = _messages.MessageField('JSONSchemaProps', 2)
+
+
+class JSONSchemaPropsOrStringArray(_messages.Message):
+  r"""JSONSchemaPropsOrStringArray represents a JSONSchemaProps or a string
+  array.
+
+  Fields:
+    property: A string attribute.
+    schema: A JSONSchemaProps attribute.
+  """
+
+  property = _messages.StringField(1, repeated=True)
+  schema = _messages.MessageField('JSONSchemaProps', 2)
+
+
+class ListCustomResourceDefinitionsResponse(_messages.Message):
+  r"""A ListCustomResourceDefinitionsResponse object.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "k8s.apiextensions.io/v1".
+    items: List of CustomResourceDefinitions.
+    kind: The kind of this resource, in this case
+      "CustomResourceDefinitionList".
+    metadata: Metadata associated with this CustomResourceDefinition list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('CustomResourceDefinition', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListMeta(_messages.Message):
@@ -796,13 +1352,13 @@ class ListServiceAccountsResponse(_messages.Message):
 
 
 class LocalObjectReference(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run for Anthos: supported
+  r"""Cloud Run fully managed: not supported Cloud Run for Anthos: supported
   LocalObjectReference contains enough information to let you locate the
   referenced object inside the same namespace.
 
   Fields:
-    name: (Optional)  Cloud Run fully managed: not supported  Cloud Run for
-      Anthos: supported  Name of the referent. More info:
+    name: (Optional) Cloud Run fully managed: not supported Cloud Run for
+      Anthos: supported Name of the referent. More info:
       https://kubernetes.io/docs/concepts/overview/working-with-
       objects/names/#names
   """
@@ -811,7 +1367,7 @@ class LocalObjectReference(_messages.Message):
 
 
 class Namespace(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   Namespace provides a scope for Names. Use of multiple namespaces is
   optional.
 
@@ -833,7 +1389,7 @@ class Namespace(_messages.Message):
 
 
 class NamespaceSpec(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   NamespaceSpec describes the attributes on a Namespace.
 
   Fields:
@@ -846,7 +1402,7 @@ class NamespaceSpec(_messages.Message):
 
 
 class NamespaceStatus(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   NamespaceStatus is information about the current status of a Namespace.
 
   Fields:
@@ -862,47 +1418,47 @@ class ObjectMeta(_messages.Message):
   persisted resources must have, which includes all objects users must create.
 
   Messages:
-    AnnotationsValue: (Optional)  Annotations is an unstructured key value map
+    AnnotationsValue: (Optional) Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
       preserved when modifying objects. More info:
       http://kubernetes.io/docs/user-guide/annotations
-    LabelsValue: (Optional)  Map of string keys and values that can be used to
+    LabelsValue: (Optional) Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
       http://kubernetes.io/docs/user-guide/labels
 
   Fields:
-    annotations: (Optional)  Annotations is an unstructured key value map
+    annotations: (Optional) Annotations is an unstructured key value map
       stored with a resource that may be set by external tools to store and
       retrieve arbitrary metadata. They are not queryable and should be
       preserved when modifying objects. More info:
       http://kubernetes.io/docs/user-guide/annotations
-    clusterName: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  The name of the cluster which the object belongs
+    clusterName: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported The name of the cluster which the object belongs
       to. This is used to distinguish resources with same name and namespace
       in different clusters. This field is not set anywhere right now and
       apiserver is going to ignore it if set in create or update request.
-    creationTimestamp: (Optional)  CreationTimestamp is a timestamp
+    creationTimestamp: (Optional) CreationTimestamp is a timestamp
       representing the server time when this object was created. It is not
       guaranteed to be set in happens-before order across separate operations.
       Clients may not set this value. It is represented in RFC3339 form and is
-      in UTC.  Populated by the system. Read-only. Null for lists. More info:
+      in UTC. Populated by the system. Read-only. Null for lists. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata
-    deletionGracePeriodSeconds: (Optional)  Cloud Run fully managed: not
-      supported  Cloud Run for Anthos: supported  Number of seconds allowed
-      for this object to gracefully terminate before it will be removed from
-      the system. Only set when deletionTimestamp is also set. May only be
+    deletionGracePeriodSeconds: (Optional) Cloud Run fully managed: not
+      supported Cloud Run for Anthos: supported Number of seconds allowed for
+      this object to gracefully terminate before it will be removed from the
+      system. Only set when deletionTimestamp is also set. May only be
       shortened. Read-only.
-    deletionTimestamp: (Optional)  Cloud Run fully managed: not supported
-      Cloud Run for Anthos: supported  DeletionTimestamp is RFC 3339 date and
-      time at which this resource will be deleted. This field is set by the
-      server when a graceful deletion is requested by the user, and is not
-      directly settable by a client. The resource is expected to be deleted
-      (no longer visible from resource lists, and not reachable by name) after
-      the time in this field, once the finalizers list is empty. As long as
-      the finalizers list contains items, deletion is blocked. Once the
+    deletionTimestamp: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported DeletionTimestamp is RFC 3339 date and time at
+      which this resource will be deleted. This field is set by the server
+      when a graceful deletion is requested by the user, and is not directly
+      settable by a client. The resource is expected to be deleted (no longer
+      visible from resource lists, and not reachable by name) after the time
+      in this field, once the finalizers list is empty. As long as the
+      finalizers list contains items, deletion is blocked. Once the
       deletionTimestamp is set, this value may not be unset or be set further
       into the future, although it may be shortened or the resource may be
       deleted prior to this time. For example, a user may request that a pod
@@ -913,35 +1469,34 @@ class ObjectMeta(_messages.Message):
       presence of network partitions, this object may still exist after this
       timestamp, until an administrator or automated process can determine the
       resource is fully terminated. If not set, graceful deletion of the
-      object has not been requested.  Populated by the system when a graceful
+      object has not been requested. Populated by the system when a graceful
       deletion is requested. Read-only. More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#metadata
-    finalizers: (Optional)  Cloud Run fully managed: not supported  Cloud Run
-      for Anthos: supported  Must be empty before the object is deleted from
+    finalizers: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported Must be empty before the object is deleted from
       the registry. Each entry is an identifier for the responsible component
       that will remove the entry from the list. If the deletionTimestamp of
       the object is non-nil, entries in this list can only be removed.
       +patchStrategy=merge
-    generateName: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  GenerateName is an optional prefix, used by
-      the server, to generate a unique name ONLY IF the Name field has not
-      been provided. If this field is used, the name returned to the client
-      will be different than the name passed. This value will also be combined
-      with a unique suffix. The provided value has the same validation rules
-      as the Name field, and may be truncated by the length of the suffix
-      required to make the value unique on the server.  If this field is
-      specified and the generated name exists, the server will NOT return a
-      409 - instead, it will either return 201 Created or 500 with Reason
-      ServerTimeout indicating a unique name could not be found in the time
-      allotted, and the client should retry (optionally after the time
-      indicated in the Retry-After header).  Applied only if Name is not
-      specified. More info:
+    generateName: (Optional) Cloud Run fully managed: not supported Cloud Run
+      for Anthos: supported GenerateName is an optional prefix, used by the
+      server, to generate a unique name ONLY IF the Name field has not been
+      provided. If this field is used, the name returned to the client will be
+      different than the name passed. This value will also be combined with a
+      unique suffix. The provided value has the same validation rules as the
+      Name field, and may be truncated by the length of the suffix required to
+      make the value unique on the server. If this field is specified and the
+      generated name exists, the server will NOT return a 409 - instead, it
+      will either return 201 Created or 500 with Reason ServerTimeout
+      indicating a unique name could not be found in the time allotted, and
+      the client should retry (optionally after the time indicated in the
+      Retry-After header). Applied only if Name is not specified. More info:
       https://git.k8s.io/community/contributors/devel/api-
-      conventions.md#idempotency  string generateName = 2;
-    generation: (Optional)  A sequence number representing a specific
+      conventions.md#idempotency string generateName = 2;
+    generation: (Optional) A sequence number representing a specific
       generation of the desired state. Populated by the system. Read-only.
-    labels: (Optional)  Map of string keys and values that can be used to
+    labels: (Optional) Map of string keys and values that can be used to
       organize and categorize (scope and select) objects. May match selectors
       of replication controllers and routes. More info:
       http://kubernetes.io/docs/user-guide/labels
@@ -954,32 +1509,32 @@ class ObjectMeta(_messages.Message):
     namespace: Namespace defines the space within each name must be unique,
       within a Cloud Run region. In Cloud Run the namespace must be equal to
       either the project ID or project number.
-    ownerReferences: (Optional)  Cloud Run fully managed: not supported  Cloud
-      Run for Anthos: supported  List of objects that own this object. If ALL
+    ownerReferences: (Optional) Cloud Run fully managed: not supported Cloud
+      Run for Anthos: supported List of objects that own this object. If ALL
       objects in the list have been deleted, this object will be garbage
       collected.
-    resourceVersion: (Optional)  An opaque value that represents the internal
+    resourceVersion: (Optional) An opaque value that represents the internal
       version of this object that can be used by clients to determine when
       objects have changed. May be used for optimistic concurrency, change
       detection, and the watch operation on a resource or set of resources.
       Clients must treat these values as opaque and passed unmodified back to
       the server. They may only be valid for a particular resource or set of
-      resources.  Populated by the system. Read-only. Value must be treated as
+      resources. Populated by the system. Read-only. Value must be treated as
       opaque by clients and . More info:
       https://git.k8s.io/community/contributors/devel/api-
       conventions.md#concurrency-control-and-consistency
-    selfLink: (Optional)  SelfLink is a URL representing this object.
-      Populated by the system. Read-only.  string selfLink = 4;
-    uid: (Optional)  UID is the unique in time and space value for this
-      object. It is typically generated by the server on successful creation
-      of a resource and is not allowed to change on PUT operations.  Populated
-      by the system. Read-only. More info: http://kubernetes.io/docs/user-
+    selfLink: (Optional) SelfLink is a URL representing this object. Populated
+      by the system. Read-only. string selfLink = 4;
+    uid: (Optional) UID is the unique in time and space value for this object.
+      It is typically generated by the server on successful creation of a
+      resource and is not allowed to change on PUT operations. Populated by
+      the system. Read-only. More info: http://kubernetes.io/docs/user-
       guide/identifiers#uids
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""(Optional)  Annotations is an unstructured key value map stored with a
+    r"""(Optional) Annotations is an unstructured key value map stored with a
     resource that may be set by external tools to store and retrieve arbitrary
     metadata. They are not queryable and should be preserved when modifying
     objects. More info: http://kubernetes.io/docs/user-guide/annotations
@@ -1007,7 +1562,7 @@ class ObjectMeta(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""(Optional)  Map of string keys and values that can be used to organize
+    r"""(Optional) Map of string keys and values that can be used to organize
     and categorize (scope and select) objects. May match selectors of
     replication controllers and routes. More info:
     http://kubernetes.io/docs/user-guide/labels
@@ -1122,7 +1677,7 @@ class OwnerReference(_messages.Message):
 
 
 class Secret(_messages.Message):
-  r"""Cloud Run fully managed: not supported  Cloud Run on GKE: supported
+  r"""Cloud Run fully managed: not supported Cloud Run on GKE: supported
   Secret holds secret data of a certain type. The total bytes of the values in
   the Data field must be less than MaxSecretSize bytes.
 
@@ -1245,6 +1800,24 @@ class ServiceAccount(_messages.Message):
   secrets = _messages.MessageField('ObjectReference', 4, repeated=True)
 
 
+class ServiceReference(_messages.Message):
+  r"""ServiceReference holds a reference to Service.legacy.k8s.io
+
+  Fields:
+    name: name is the name of the service. Required
+    namespace: namespace is the namespace of the service.
+    path: path is an optional URL path at which the webhook will be contacted.
+    port: port is an optional service port at which the webhook will be
+      contacted. `port` should be a valid port number (1-65535, inclusive).
+      Defaults to 443 for backward compatibility.
+  """
+
+  name = _messages.StringField(1)
+  namespace = _messages.StringField(2)
+  path = _messages.StringField(3)
+  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1308,6 +1881,61 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class WebhookClientConfig(_messages.Message):
+  r"""WebhookClientConfig contains the information to make a TLS connection
+  with the webhook.
+
+  Fields:
+    caBundle: caBundle is a PEM encoded CA bundle which will be used to
+      validate the webhook's server certificate. If unspecified, system trust
+      roots on the apiserver are used.
+    service: service is a reference to the service for this webhook. Either
+      service or url must be specified. If the webhook is running within the
+      cluster, then you should use `service`.
+    url: url gives the location of the webhook, in standard URL form
+      (`scheme://host:port/path`). Exactly one of `url` or `service` must be
+      specified. The `host` should not refer to a service running in the
+      cluster; use the `service` field instead. The host might be resolved via
+      external DNS in some apiservers (e.g., `kube-apiserver` cannot resolve
+      in-cluster DNS as that would be a layering violation). `host` may also
+      be an IP address. Please note that using `localhost` or `127.0.0.1` as a
+      `host` is risky unless you take great care to run this webhook on all
+      hosts which run an apiserver which might need to make calls to this
+      webhook. Such installs are likely to be non-portable, i.e., not easy to
+      turn up in a new cluster. The scheme must be "https"; the URL must begin
+      with "https://". A path is optional, and if present may be any string
+      permissible in a URL. You may use the path to pass an arbitrary string
+      to the webhook, for example, a cluster identifier. Attempting to use a
+      user or basic auth e.g. "user:password@" is not allowed. Fragments
+      ("#...") and query parameters ("?...") are not allowed, either.
+  """
+
+  caBundle = _messages.BytesField(1)
+  service = _messages.MessageField('ServiceReference', 2)
+  url = _messages.StringField(3)
+
+
+class WebhookConversion(_messages.Message):
+  r"""WebhookConversion describes how to call a conversion webhook
+
+  Fields:
+    clientConfig: clientConfig is the instructions for how to call the webhook
+      if strategy is `Webhook`.
+    conversionReviewVersions: conversionReviewVersions is an ordered list of
+      preferred `ConversionReview` versions the Webhook expects. The API
+      server will use the first version in the list which it supports. If none
+      of the versions specified in this list are supported by API server,
+      conversion will fail for the custom resource. If a persisted Webhook
+      configuration specifies allowed versions and does not include any
+      versions known to the API Server, calls to the webhook will fail.
+  """
+
+  clientConfig = _messages.MessageField('WebhookClientConfig', 1)
+  conversionReviewVersions = _messages.StringField(2, repeated=True)
+
+
+encoding.AddCustomJsonFieldMapping(
+    JSONSchemaProps, 'not_', 'not')
 encoding.AddCustomJsonFieldMapping(
     ListMeta, 'continue_', 'continue')
 encoding.AddCustomJsonFieldMapping(

@@ -18,38 +18,26 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import threading
-
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_api
-
-
-# Module variable for holding one API instance per thread per provider.
-_cloud_api_thread_local_storage = threading.local()
+from googlecloudsdk.api_lib.storage import s3_api
 
 
 def get_api(provider):
-  """Returns thread local API instance for cloud provider.
-
-  Uses thread local storage to make sure only one instance of an API exists
-  per thread per provider.
+  """Returns API instance for cloud provider.
 
   Args:
     provider (ProviderPrefix): Cloud provider prefix.
 
   Returns:
-    API for cloud provider or None if unrecognized provider.
+    CloudApi instance for specific cloud provider.
 
   Raises:
     ValueError: Invalid API provider.
   """
-  if getattr(_cloud_api_thread_local_storage, provider.value, None) is None:
-    if provider == cloud_api.ProviderPrefix.GCS:
-      # TODO(b/159164504): Update with implemented GCS API.
-      _cloud_api_thread_local_storage.gs = gcs_api.GcsApi()
-    elif provider == cloud_api.ProviderPrefix.S3:
-      # TODO(b/159164385): Update with implemented S3 API.
-      _cloud_api_thread_local_storage.s3 = None
-    else:
-      raise ValueError('Provider API value must be "gs" or "s3".')
-  return getattr(_cloud_api_thread_local_storage, provider.value)
+  # TODO(b/167685797): Use thread-local.
+  if provider == cloud_api.ProviderPrefix.GCS:
+    return gcs_api.GcsApi()
+  elif provider == cloud_api.ProviderPrefix.S3:
+    return s3_api.S3Api()
+  raise ValueError('Provider API value must be "gs" or "s3".')

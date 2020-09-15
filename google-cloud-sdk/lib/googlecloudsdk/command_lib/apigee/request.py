@@ -75,7 +75,9 @@ def ResponseToApiRequest(identifiers,
     entity_collection: if provided, the final entity type; the request will not
       be specific as to which entity of that type is being referenced.
     method: an HTTP method string specifying what to do with the accessed
-      entity.
+      entity. If the method begins with a colon, it will be interpreted as a
+      Cloud custom method (https://cloud.google.com/apis/design/custom_methods)
+      and appended to the request URL with the POST HTTP method.
     query_params: any extra query parameters to be sent in the request.
     accept_mimetype: the mimetype to expect in the response body. If not
       provided, the response will be parsed as JSON.
@@ -117,8 +119,12 @@ def ResponseToApiRequest(identifiers,
   else:
     scheme = "https"
     host = APIGEE_HOST
-  url = urllib.parse.urlunparse(
-      (scheme, host, "/".join(url_path_elements), "", query_string, ""))
+
+  url_path = "/".join(url_path_elements)
+  if method and method[0] == ":":
+    url_path += method
+    method = "POST"
+  url = urllib.parse.urlunparse((scheme, host, url_path, "", query_string, ""))
 
   response, body = connection.request(url, method, body=body, headers=headers)
 

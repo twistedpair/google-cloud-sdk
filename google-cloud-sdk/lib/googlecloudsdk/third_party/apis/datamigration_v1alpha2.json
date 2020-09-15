@@ -361,7 +361,7 @@
           "$ref": "StaticIpConnectivity"
         },
         "duration": {
-          "description": "Output only. The duration of the migration job (in seconds). A duration in seconds with up to nine fractional digits, terminated by 's'. Example: \"3.5s\".",
+          "description": "Output only. The duration of the migration job (in seconds). A duration in seconds with up to nine fractional digits, ending with 's'. Example: \"3.5s\".",
           "readOnly": true,
           "type": "string",
           "format": "google-duration"
@@ -959,7 +959,7 @@
       "type": "object",
       "properties": {
         "value": {
-          "description": "The whitelisted value for the access control list.",
+          "description": "The allowlisted value for the access control list.",
           "type": "string"
         },
         "expireTime": {

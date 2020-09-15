@@ -31,6 +31,16 @@ class GcsApiError(CloudApiError, api_exceptions.HttpException):
   pass
 
 
+class NotFoundError(CloudApiError):
+  """Error raised when the requested resource does not exist.
+
+  Both GCS and S3 APIs should raise this same error if a resource
+  does not exist so that the caller can handle the error in an API agnostic
+  manner.
+  """
+  pass
+
+
 class S3ApiError(CloudApiError):
 
   def __init__(self, error, error_format=None):
@@ -65,8 +75,8 @@ def catch_http_error_raise_gcs_api_error(format_str=None):
       try:
         return function(*args, **kwargs)
       except apitools_exceptions.HttpError as error:
-        error = GcsApiError(error, format_str)
-        core_exceptions.reraise(error)
+        gcs_error = GcsApiError(error, format_str)
+        core_exceptions.reraise(gcs_error)
     return wrapper
 
   return catch_http_error_raise_gcs_api_error_decorator

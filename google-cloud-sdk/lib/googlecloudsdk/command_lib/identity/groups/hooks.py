@@ -84,7 +84,12 @@ def SetLabels(unused_ref, args, request):
   """
 
   if args.IsSpecified('labels'):
-    request.group.labels = ReformatLabels(args, args.labels)
+    if hasattr(request.group, 'labels'):
+      request.group.labels = ReformatLabels(args, args.labels)
+    else:
+      version = GetApiVersion(args)
+      messages = ci_client.GetMessages(version)
+      request.group = messages.Group(labels=ReformatLabels(args, args.labels))
 
   return request
 
@@ -147,6 +152,10 @@ def SetGroupUpdateMask(unused_ref, args, request):
 
   if (args.IsSpecified('description') or args.IsSpecified('clear_description')):
     update_mask.append('description')
+
+  if hasattr(args, 'labels'):
+    if args.IsSpecified('labels'):
+      update_mask.append('labels')
 
   if hasattr(args, 'add_posix_group'):
     if (args.IsSpecified('add_posix_group') or
@@ -395,6 +404,11 @@ def FilterLabels(labels):
   Raises:
     InvalidArgumentException: If invalid labels string is input.
   """
+
+  if not labels:
+    raise exceptions.InvalidArgumentException(
+        'labels',
+        'labels can not be an empty string')
 
   # Convert a comma separated string to a list of strings.
   label_list = labels.split(',')

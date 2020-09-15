@@ -67,30 +67,44 @@ class BucketResource(Resource):
   """Class representing a bucket.
 
   Attributes:
-    storage_url (StorageUrl): A StorageUrl object representing the bucket
-    metadata_object (apitools.messages.Bucket): Bucket instance.
-    additional_metadata (dict): Key-value pairs representing additional
-      metadata. This is needed for S3, where we want to preserve S3 metadata,
-      which cannot be added to apitools.messages.Bucket
+    storage_url (StorageUrl): A StorageUrl object representing the bucket.
+    name (str): Name of bucket.
+    etag (str): HTTP version identifier.
+    metadata (object | dict): Cloud-provider specific data type for holding
+        bucket metadata.
+    metadata_object (messages.Bucket): For compatibility until b/167691513
+        refactors are complete.
   """
 
-  def __init__(self, storage_url, metadata_object, additional_metadata=None):
+  def __init__(self, storage_url, name, etag=None, metadata=None):
     super(BucketResource, self).__init__(storage_url)
-    self.metadata_object = metadata_object
-    self.additional_metadata = additional_metadata
+    self.name = name
+    self.etag = etag
+    self.metadata = metadata
 
+    # TODO(b/167691513) Delete after refactors to not use this property are
+    # complete.
+    self.metadata_object = metadata
+
+  # TODO(b/167691513) Delete when refactors to
+  # change things to gcs_api._BucketResourceFromMetadata are complete.
   @classmethod
   def from_gcs_metadata_object(cls, provider, metadata_object):
-    """Helper method to generate the instance from metadata_object."""
+    """Helper method to generate the instance from GCS metadata_object."""
     return cls(
         storage_url_lib.CloudUrl(
-            scheme=provider, bucket_name=metadata_object.name), metadata_object)
+            scheme=provider,
+            bucket_name=metadata_object.name),
+        metadata_object.name,
+        metadata_object.etag,
+        metadata_object)
 
   def __eq__(self, other):
     return (
-        super().__eq__(other) and
-        self.metadata_object == other.metadata_object and
-        self.additional_metadata == other.additional_metadata
+        super(BucketResource, self).__eq__(other) and
+        self.metadata == other.metadata and
+        self.name == other.name and
+        self.etag == other.etag
     )
 
   def is_container(self):

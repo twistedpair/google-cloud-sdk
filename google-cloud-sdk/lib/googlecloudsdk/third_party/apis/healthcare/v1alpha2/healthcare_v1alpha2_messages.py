@@ -721,14 +721,6 @@ class DeidentifySummary(_messages.Message):
   successStoreCount = _messages.IntegerField(2)
 
 
-class DeleteAllConsentHistoryRequest(_messages.Message):
-  r"""Deletes historical versions of the Consent excluding the current version
-  from the Consent store. This operation does not affect the related consent
-  artifact.
-  """
-
-
-
 class DicomConfig(_messages.Message):
   r"""Specifies the parameters needed for the de-identification of DICOM
   stores.
@@ -2178,47 +2170,6 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsGetRequest(_messag
   name = _messages.StringField(1, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryDeleteAllRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryDeleteA
-  llRequest object.
-
-  Fields:
-    consent: The name of the Consent for which the history is deleted, of the
-      form `projects/{project_id}/locations/{location_id}/datasets/{dataset_id
-      }/consentStores/{consent_store_id}/consents/{consent_id}`.
-    deleteAllConsentHistoryRequest: A DeleteAllConsentHistoryRequest resource
-      to be passed as the request body.
-  """
-
-  consent = _messages.StringField(1, required=True)
-  deleteAllConsentHistoryRequest = _messages.MessageField('DeleteAllConsentHistoryRequest', 2)
-
-
-class HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryListRequest(_messages.Message):
-  r"""A
-  HealthcareProjectsLocationsDatasetsConsentStoresConsentsHistoryListRequest
-  object.
-
-  Fields:
-    consent: The name of the Consent for which the history is listed, of the
-      form `projects/{project_id}/locations/{location_id}/datasets/{dataset_id
-      }/consentStores/{consent_store_id}/consents/{consent_id}`.
-    filter: Restricts the historical versions of consents returned to those
-      matching a filter. Syntax: https://cloud.google.com/appengine/docs/stand
-      ard/python/search/query_strings The fields available for filtering are:
-      - user_id - consent_artifact - state - state_change_time
-    pageSize: Limit on the number of historical versions to return in a single
-      response. If zero the default page size of 100 is used.
-    pageToken: The next_page_token value returned from the previous List
-      request, if any.
-  """
-
-  consent = _messages.StringField(1, required=True)
-  filter = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest
   object.
@@ -2227,7 +2178,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest(_messa
     filter: Restricts the consents returned to those matching a filter.
       Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
       uery_strings The fields available for filtering are: - user_id -
-      consent_artifact - state - state_change_time
+      consent_artifact - state - state_change_time - expire_time
     pageSize: Limit on the number of consents to return in a single response.
       If zero the default page size of 100 is used.
     pageToken: The next_page_token value returned from the previous List
@@ -2253,8 +2204,7 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsPatchRequest(_mess
     updateMask: The update mask to apply to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask. The `user_id`,
-      `policies`, `consent_artifact`, and `revoke_consent_artifact` fields can
-      be updated.
+      `policies`, and `consent_artifact` fields can be updated.
   """
 
   consent = _messages.MessageField('Consent', 1)
@@ -3707,21 +3657,6 @@ class ListConsentArtifactsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListConsentHistoryResponse(_messages.Message):
-  r"""Lists all the historical versions of the Consent from the Consent store.
-
-  Fields:
-    consents: The returned historical versions of a consent. The maximum
-      number of versions returned is determined by the value of page_size in
-      the ListConsentHistoryRequest.
-    nextPageToken: Token to retrieve the next page of results or empty if
-      there are no more results in the list.
-  """
-
-  consents = _messages.MessageField('Consent', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class ListConsentStoresResponse(_messages.Message):
   r"""Lists the Consent stores in the given dataset.
 
@@ -4352,7 +4287,8 @@ class SchemaConfig(_messages.Message):
     r"""Specifies the output schema type. Schema type is required.
 
     Values:
-      SCHEMA_TYPE_UNSPECIFIED: No schema type specified. Same as `LOSSLESS`.
+      SCHEMA_TYPE_UNSPECIFIED: No schema type specified. This type is
+        unsupported.
       LOSSLESS: A data-driven schema generated from the fields present in the
         FHIR data being exported, with no additional simplification.
       ANALYTICS: Analytics schema defined by the FHIR community. See
@@ -4575,11 +4511,14 @@ class StorageOptions(_messages.Message):
         https://cloud.google.com/storage/docs/storage-classes#nearline
       COLDLINE: Stores the Object in Blob Coldline Storage:
         https://cloud.google.com/storage/docs/storage-classes#coldline
+      ARCHIVE: Stores the Object in Blob Archive Storage:
+        https://cloud.google.com/storage/docs/storage-classes#archive
     """
     BLOB_STORAGE_CLASS_UNSPECIFIED = 0
     STANDARD = 1
     NEARLINE = 2
     COLDLINE = 3
+    ARCHIVE = 4
 
   defaultBlobStorageClass = _messages.EnumField('DefaultBlobStorageClassValueValuesEnum', 1)
 

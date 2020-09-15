@@ -515,6 +515,17 @@ class _ConsoleLoggingFormatterMuxer(logging.Formatter):
     return self.default_formatter.format(record)
 
 
+class NoHeaderErrorFilter(logging.Filter):
+  """Filter out urllib3 Header Parsing Errors due to a urllib3 bug.
+
+  See https://bugs.python.org/issue36226
+  """
+
+  def filter(self, record):
+    """Filter out Header Parsing Errors."""
+    return 'Failed to parse headers' not in record.getMessage()
+
+
 class _LogManager(object):
   """A class to manage the logging handlers based on how calliope is being used.
 
@@ -592,6 +603,9 @@ class _LogManager(object):
     self.SetVerbosity(None)
     self.SetUserOutputEnabled(None)
     self.current_log_file = None
+
+    logging.getLogger('urllib3.connectionpool').addFilter(
+        NoHeaderErrorFilter())
 
   def SetVerbosity(self, verbosity):
     """Sets the active verbosity for the logger.

@@ -18,8 +18,8 @@ class AllowedIpRange(_messages.Message):
   r"""Allowed IP range with user-provided description.
 
   Fields:
-    description: User-provided description. It must contain at most 300
-      characters.
+    description: Optional. User-provided description. It must contain at most
+      300 characters.
     value: IP address or range, defined using CIDR notation, of requests that
       this rule applies to. Examples: `192.168.1.1` or `192.168.0.0/16` or
       `2001:db8::/32` or `2001:0db8:0000:0042:0000:8a2e:0370:7334`. IP range
@@ -162,8 +162,14 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       a replacement environment variable map is not included in `environment`,
       all custom environment variables are cleared. It is an error to provide
       both this mask and a mask specifying one or more individual environment
-      variables. config.databaseConfig.machineType Cloud SQL machine type used
-      by Airflow database. It has to be one of: db-n1-standard-2,
+      variables. config.softwareConfig.imageVersion Upgrade the version of the
+      environment in-place. Refer to `SoftwareConfig.image_version` for
+      information on how to format the new image version. Additionally, the
+      new image version cannot effect a version downgrade and must match the
+      current image version's Composer major version and Airflow major and
+      minor versions. Consult the Cloud Composer Version List for valid
+      values. config.databaseConfig.machineType Cloud SQL machine type used by
+      Airflow database. It has to be one of: db-n1-standard-2,
       db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16.
       config.webServerConfig.machineType Machine type on which Airflow web
       server is running. It has to be one of: composer-n1-webserver-2,
@@ -458,37 +464,34 @@ class EnvironmentConfig(_messages.Message):
 
 
 class IPAllocationPolicy(_messages.Message):
-  r"""Configuration for controlling how IPs are allocated in the GKE cluster.
+  r"""Configuration for controlling how IPs are allocated in the GKE cluster
+  running the Apache Airflow software.
 
   Fields:
     clusterIpv4CidrBlock: Optional. The IP address range used to allocate IP
-      addresses to pods in the cluster. This field is applicable only when
+      addresses to pods in the GKE cluster. This field is applicable only when
       `use_ip_aliases` is true. Set to blank to have GKE choose a range with
       the default size. Set to /netmask (e.g. `/14`) to have GKE choose a
       range with a specific netmask. Set to a
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
-      range to use. Specify `cluster_secondary_range_name` or
-      `cluster_ipv4_cidr_block` but not both.
-    clusterSecondaryRangeName: Optional. The name of the cluster's secondary
-      range used to allocate IP addresses to pods. Specify either
-      `cluster_secondary_range_name` or `cluster_ipv4_cidr_block` but not
-      both. This field is applicable only when `use_ip_aliases` is true.
+      range to use.
+    clusterSecondaryRangeName: Optional. The name of the GKE cluster's
+      secondary range used to allocate IP addresses to pods. This field is
+      applicable only when `use_ip_aliases` is true.
     servicesIpv4CidrBlock: Optional. The IP address range of the services IP
-      addresses in this cluster. This field is applicable only when
+      addresses in this GKE cluster. This field is applicable only when
       `use_ip_aliases` is true. Set to blank to have GKE choose a range with
       the default size. Set to /netmask (e.g. `/14`) to have GKE choose a
       range with a specific netmask. Set to a
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
-      range to use. Specify `services_secondary_range_name` or
-      `services_ipv4_cidr_block` but not both.
+      range to use.
     servicesSecondaryRangeName: Optional. The name of the services' secondary
-      range used to allocate IP addresses to the cluster. Specify either
-      `services_secondary_range_name` or `services_ipv4_cidr_block` but not
-      both. This field is applicable only when `use_ip_aliases` is true.
+      range used to allocate IP addresses to the GKE cluster. This field is
+      applicable only when `use_ip_aliases` is true.
     useIpAliases: Optional. Whether or not to enable Alias IPs in the GKE
       cluster. If `true`, a VPC-native cluster is created.
   """
@@ -605,12 +608,12 @@ class NodeConfig(_messages.Message):
     network: Optional. The Compute Engine network to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:
-      "projects/{projectId}/global/networks/{networkId}". [Shared
-      VPC](/vpc/docs/shared-vpc) is not currently supported. The network must
-      belong to the environment's project. If unspecified, the "default"
-      network ID in the environment's project is used. If a [Custom Subnet
-      Network](/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
-      `nodeConfig.subnetwork` must also be provided.
+      "projects/{projectId}/global/networks/{networkId}". If unspecified, the
+      default network in the environment's project is used. If a [Custom
+      Subnet Network](/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
+      `nodeConfig.subnetwork` must also be provided. For [Shared
+      VPC](/vpc/docs/shared-vpc) subnetwork requirements, see
+      `nodeConfig.subnetwork`.
     oauthScopes: Optional. The set of Google API scopes to be made available
       on all node VMs. If `oauth_scopes` is empty, defaults to
       ["https://www.googleapis.com/auth/cloud-platform"]. Cannot be updated.
@@ -816,16 +819,19 @@ class PrivateClusterConfig(_messages.Message):
   Fields:
     enablePrivateEndpoint: Optional. If `true`, access to the public endpoint
       of the GKE cluster is denied.
-    masterIpv4CidrBlock: The IP range in CIDR notation to use for the hosted
-      master network. This range is used for assigning internal IP addresses
-      to the cluster master or set of masters and to the internal load
-      balancer virtual IP. This range must not overlap with any other ranges
-      in use within the cluster's network. If left blank, the default value of
-      '172.16.0.0/28' is used.
+    masterIpv4CidrBlock: Optional. The CIDR block from which IPv4 range for
+      GKE master will be reserved. If left blank, the default value of
+      '172.16.0.0/23' is used.
+    masterIpv4ReservedRange: Output only. The IP range in CIDR notation to use
+      for the hosted master network. This range is used for assigning internal
+      IP addresses to the GKE cluster master or set of masters and to the
+      internal load balancer virtual IP. This range must not overlap with any
+      other ranges in use within the cluster's network.
   """
 
   enablePrivateEndpoint = _messages.BooleanField(1)
   masterIpv4CidrBlock = _messages.StringField(2)
+  masterIpv4ReservedRange = _messages.StringField(3)
 
 
 class PrivateEnvironmentConfig(_messages.Message):
@@ -833,15 +839,27 @@ class PrivateEnvironmentConfig(_messages.Message):
   Composer environment.
 
   Fields:
+    cloudSqlIpv4CidrBlock: Optional. The CIDR block from which IP range in
+      tenant project will be reserved for Cloud SQL. Needs to be disjoint from
+      `web_server_ipv4_cidr_block`.
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
-      environment is created. If this field is true, `use_ip_aliases` must be
-      true.
+      environment is created. If this field is set to true,
+      `IPAllocationPolicy.use_ip_aliases` must be set to true.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
+    webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for
+      web server will be reserved. Needs to be disjoint from
+      `private_cluster_config.master_ipv4_cidr_block` and
+      `cloud_sql_ipv4_cidr_block`.
+    webServerIpv4ReservedRange: Output only. The IP range reserved for the
+      tenant project's App Engine VMs.
   """
 
-  enablePrivateEnvironment = _messages.BooleanField(1)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 2)
+  cloudSqlIpv4CidrBlock = _messages.StringField(1)
+  enablePrivateEnvironment = _messages.BooleanField(2)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 3)
+  webServerIpv4CidrBlock = _messages.StringField(4)
+  webServerIpv4ReservedRange = _messages.StringField(5)
 
 
 class RestartWebServerRequest(_messages.Message):

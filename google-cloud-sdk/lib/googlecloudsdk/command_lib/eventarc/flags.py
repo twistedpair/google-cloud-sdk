@@ -100,12 +100,12 @@ def AddMatchingCriteriaArg(parser, required=False):
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgDict(),
       required=required,
-      help='The criteria by which events are filtered for the trigger, '
-      'specified as a comma-separated list of CloudEvents attribute names and '
-      'values. This flag can also be repeated to add more criteria to the '
-      'list. Only events that match with this criteria will be sent to the '
-      'destination. The criteria must include the `type` attribute, as well as '
-      'any other attributes that are expected for the chosen type.',
+      help="The criteria by which events are filtered for the trigger, "
+      "specified as a comma-separated list of CloudEvents attribute names and "
+      "values. This flag can also be repeated to add more criteria to the "
+      "list. Only events that match with this criteria will be sent to the "
+      "destination. The criteria must include the ``type'' attribute, as "
+      "well as any other attributes that are expected for the chosen type.",
       metavar='ATTRIBUTE=VALUE')
 
 
@@ -115,9 +115,8 @@ def AddDestinationRunServiceArg(parser, required=False):
       '--destination-run-service',
       required=required,
       help='The name of the Cloud Run fully-managed service that receives the '
-      'events for the trigger. The service must be in the same region as the '
-      'trigger unless the trigger\'s location is `global`. The service must be '
-      'in the same project as the trigger.')
+      'events for the trigger. The service must be in the same project as the '
+      'trigger.')
 
 
 def AddDestinationRunPathArg(parser, required=False):
@@ -125,9 +124,9 @@ def AddDestinationRunPathArg(parser, required=False):
   parser.add_argument(
       '--destination-run-path',
       required=required,
-      help='The relative path on the destination Cloud Run service to which '
-      'the events for the trigger should be sent. Examples: "/route", "route", '
-      '"route/subroute".')
+      help="The relative path on the destination Cloud Run service to which "
+      "the events for the trigger should be sent. Examples: ``/route'', "
+      "``route'', ``route/subroute''.")
 
 
 def AddDestinationRunRegionArg(parser, required=False):

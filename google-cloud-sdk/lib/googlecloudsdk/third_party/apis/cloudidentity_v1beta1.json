@@ -119,419 +119,6 @@
     }
   },
   "schemas": {
-    "GoogleAppsCloudidentityDevicesV1Device": {
-      "id": "GoogleAppsCloudidentityDevicesV1Device",
-      "description": "A Device within the Cloud Identity Devices API. Represents a Device known to Google Cloud, independent of the device ownership, type, and whether it is assigned or in use by a user.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique id assigned to the Device.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. When the Company-Owned device was imported. This field is empty for BYOD devices.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "lastSyncTime": {
-          "description": "Most recent time when device synced with this service.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "ownerType": {
-          "description": "Output only. Whether the device is owned by the company or an individual",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. The value is unused.",
-            "Company owns the device.",
-            "Bring Your Own Device (i.e. individual owns the device)"
-          ],
-          "enum": [
-            "DEVICE_OWNERSHIP_UNSPECIFIED",
-            "COMPANY",
-            "BYOD"
-          ]
-        },
-        "model": {
-          "description": "Output only. Model name of device. Example: Pixel 3.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "osVersion": {
-          "description": "Output only. OS version of the device. Example: Android 8.1.0.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "deviceType": {
-          "description": "Output only. Type of device.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Unknown device type",
-            "Device is an Android device",
-            "Device is an iOS device",
-            "Device is a Google Sync device.",
-            "Device is a Windows device.",
-            "Device is a MacOS device.",
-            "Device is a Linux device.",
-            "Device is a ChromeOS device."
-          ],
-          "enum": [
-            "DEVICE_TYPE_UNSPECIFIED",
-            "ANDROID",
-            "IOS",
-            "GOOGLE_SYNC",
-            "WINDOWS",
-            "MAC_OS",
-            "LINUX",
-            "CHROME_OS"
-          ]
-        },
-        "serialNumber": {
-          "description": "Serial Number of device. Example: HT82V1A01076.",
-          "type": "string"
-        },
-        "assetTag": {
-          "description": "Asset tag of the device.",
-          "type": "string"
-        },
-        "imei": {
-          "description": "Output only. IMEI number of device if GSM device; empty otherwise.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "meid": {
-          "description": "Output only. MEID number of device if CDMA device; empty otherwise.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "wifiMacAddresses": {
-          "description": "WiFi MAC addresses of device.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "networkOperator": {
-          "description": "Output only. Mobile or network operator of device, if available.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "manufacturer": {
-          "description": "Output only. Device manufacturer. Example: Motorola.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "releaseVersion": {
-          "description": "Output only. OS release version. Example: 6.0.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "brand": {
-          "description": "Output only. Device brand. Example: Samsung.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "buildNumber": {
-          "description": "Output only. Build number of the device.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "kernelVersion": {
-          "description": "Output only. Kernel version of the device.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "basebandVersion": {
-          "description": "Output only. Baseband version of the device.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "enabledDeveloperOptions": {
-          "description": "Output only. Whether developer options is enabled on device.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "otherAccounts": {
-          "description": "Output only. Domain name for Google accounts on device. Type for other accounts on device. On Android, will only be populated if |ownership_privilege| is |PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed in to the device policy app if that account's domain has only one account. Examples: \"com.example\", \"xyz.com\".",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "enabledUsbDebugging": {
-          "description": "Output only. Whether USB debugging is enabled on device.",
-          "readOnly": true,
-          "type": "boolean"
-        },
-        "securityPatchTime": {
-          "description": "Output only. OS security patch update time on device.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "bootloaderVersion": {
-          "description": "Output only. Device bootloader version. Example: 0.6.7.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "encryptionState": {
-          "description": "Output only. Device encryption state.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Encryption Status is not set.",
-            "Device doesn't support encryption.",
-            "Device is encrypted.",
-            "Device is not encrypted."
-          ],
-          "enum": [
-            "ENCRYPTION_STATE_UNSPECIFIED",
-            "UNSUPPORTED_BY_DEVICE",
-            "ENCRYPTED",
-            "NOT_ENCRYPTED"
-          ]
-        },
-        "androidSpecificAttributes": {
-          "description": "Output only. Attributes specific to Android devices.",
-          "readOnly": true,
-          "$ref": "GoogleAppsCloudidentityDevicesV1AndroidAttributes"
-        },
-        "managementState": {
-          "description": "Output only. Management state of the device",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "Device is approved.",
-            "Device is blocked.",
-            "Device is pending approval.",
-            "The device is not provisioned. Device will start from this state until some action is taken (i.e. a user starts using the device).",
-            "Data and settings on the device are being removed.",
-            "All data and settings on the device are removed."
-          ],
-          "enum": [
-            "MANAGEMENT_STATE_UNSPECIFIED",
-            "APPROVED",
-            "BLOCKED",
-            "PENDING",
-            "UNPROVISIONED",
-            "WIPING",
-            "WIPED"
-          ]
-        },
-        "compromisedState": {
-          "description": "Output only. Represents whether the Device is compromised.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Default value.",
-            "The device is compromised (currently, this means Android device is rooted).",
-            "The device is safe (currently, this means Android device is unrooted)."
-          ],
-          "enum": [
-            "COMPROMISED_STATE_UNSPECIFIED",
-            "COMPROMISED",
-            "UNCOMPROMISED"
-          ]
-        }
-      }
-    },
-    "GoogleAppsCloudidentityDevicesV1AndroidAttributes": {
-      "id": "GoogleAppsCloudidentityDevicesV1AndroidAttributes",
-      "description": "Resource representing the Android specific attributes of a Device.",
-      "type": "object",
-      "properties": {
-        "enabledUnknownSources": {
-          "description": "Whether applications from unknown sources can be installed on device.",
-          "type": "boolean"
-        },
-        "supportsWorkProfile": {
-          "description": "Whether device supports Android work profiles. If false, this service will not block access to corp data even if an administrator turns on the \"Enforce Work Profile\" policy.",
-          "type": "boolean"
-        },
-        "ownerProfileAccount": {
-          "description": "Whether this account is on an owner\/primary profile. For phones, only true for owner profiles. Android 4+ devices can have secondary or restricted user profiles.",
-          "type": "boolean"
-        },
-        "ownershipPrivilege": {
-          "description": "Ownership privileges on device.",
-          "type": "string",
-          "enumDescriptions": [
-            "Ownership privilege is not set.",
-            "Active device administrator privileges on the device.",
-            "Profile Owner privileges. The account is in a managed corporate profile.",
-            "Device Owner privileges on the device."
-          ],
-          "enum": [
-            "OWNERSHIP_PRIVILEGE_UNSPECIFIED",
-            "DEVICE_ADMINISTRATOR",
-            "PROFILE_OWNER",
-            "DEVICE_OWNER"
-          ]
-        }
-      }
-    },
-    "Operation": {
-      "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a network API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "Status"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
-    "GoogleAppsCloudidentityDevicesV1DeviceUser": {
-      "id": "GoogleAppsCloudidentityDevicesV1DeviceUser",
-      "description": "Represents a user's use of a Device in the Cloud Identity Devices API. A DeviceUser is a resource representing a user's use of a Device",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the DeviceUser in format: `devices\/{device_id}\/deviceUsers\/{user_id}`, where user_id is the ID of the user associated with the user session.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "userEmail": {
-          "description": "Email address of the user registered on the device.",
-          "type": "string"
-        },
-        "managementState": {
-          "description": "Output only. Management state of the user on the device.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "Default value. This value is unused.",
-            "This user's data and profile is being removed from the device.",
-            "This user's data and profile is removed from the device.",
-            "User is approved to access data on the device.",
-            "User is blocked from accessing data on the device.",
-            "User is awaiting approval.",
-            "User is unenrolled from Advanced Windows Management, but the Windows account is still intact."
-          ],
-          "enum": [
-            "MANAGEMENT_STATE_UNSPECIFIED",
-            "WIPING",
-            "WIPED",
-            "APPROVED",
-            "BLOCKED",
-            "PENDING_APPROVAL",
-            "UNENROLLED"
-          ]
-        },
-        "firstSyncTime": {
-          "description": "Output only. Most recent time when user registered with this service.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "lastSyncTime": {
-          "description": "Output only. Last time when user synced with policies.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "userAgent": {
-          "description": "Output only. User agent on the device for this specific user",
-          "readOnly": true,
-          "type": "string"
-        },
-        "languageCode": {
-          "description": "Output only. Default locale used on device, in IETF BCP-47 format.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "compromisedState": {
-          "description": "Compromised State of the DeviceUser object",
-          "type": "string",
-          "enumDescriptions": [
-            "Compromised state of Device User account is unknown or unspecified.",
-            "Device User Account is compromised.",
-            "Device User Account is not compromised."
-          ],
-          "enum": [
-            "COMPROMISED_STATE_UNSPECIFIED",
-            "COMPROMISED",
-            "NOT_COMPROMISED"
-          ]
-        },
-        "passwordState": {
-          "description": "Password state of the DeviceUser object",
-          "type": "string",
-          "enumDescriptions": [
-            "Password state not set.",
-            "Password set in object.",
-            "Password not set in object."
-          ],
-          "enum": [
-            "PASSWORD_STATE_UNSPECIFIED",
-            "PASSWORD_SET",
-            "PASSWORD_NOT_SET"
-          ]
-        },
-        "createTime": {
-          "description": "When the user first signed in to the device",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
     "CreateDeviceRequest": {
       "id": "CreateDeviceRequest",
       "description": "Request message for creating a Company Owned device.",
@@ -801,6 +388,68 @@
             "PROFILE_OWNER",
             "DEVICE_OWNER"
           ]
+        }
+      }
+    },
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations\/{unique_id}`.",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`\/`Create`\/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https:\/\/github.com\/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https:\/\/cloud.google.com\/apis\/design\/errors).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
         }
       }
     },
@@ -1940,13 +1589,364 @@
         }
       }
     },
+    "GoogleAppsCloudidentityDevicesV1Device": {
+      "id": "GoogleAppsCloudidentityDevicesV1Device",
+      "description": " A Device within the Cloud Identity Devices API. Represents a Device known to Google Cloud, independent of the device ownership, type, and whether it is assigned or in use by a user.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique id assigned to the Device.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. When the Company-Owned device was imported. This field is empty for BYOD devices.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastSyncTime": {
+          "description": "Most recent time when device synced with this service.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "ownerType": {
+          "description": "Output only. Whether the device is owned by the company or an individual",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. The value is unused.",
+            "Company owns the device.",
+            "Bring Your Own Device (i.e. individual owns the device)"
+          ],
+          "enum": [
+            "DEVICE_OWNERSHIP_UNSPECIFIED",
+            "COMPANY",
+            "BYOD"
+          ]
+        },
+        "model": {
+          "description": "Output only. Model name of device. Example: Pixel 3.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "osVersion": {
+          "description": "Output only. OS version of the device. Example: Android 8.1.0.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deviceType": {
+          "description": "Output only. Type of device.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown device type",
+            "Device is an Android device",
+            "Device is an iOS device",
+            "Device is a Google Sync device.",
+            "Device is a Windows device.",
+            "Device is a MacOS device.",
+            "Device is a Linux device.",
+            "Device is a ChromeOS device."
+          ],
+          "enum": [
+            "DEVICE_TYPE_UNSPECIFIED",
+            "ANDROID",
+            "IOS",
+            "GOOGLE_SYNC",
+            "WINDOWS",
+            "MAC_OS",
+            "LINUX",
+            "CHROME_OS"
+          ]
+        },
+        "serialNumber": {
+          "description": "Serial Number of device. Example: HT82V1A01076.",
+          "type": "string"
+        },
+        "assetTag": {
+          "description": "Asset tag of the device.",
+          "type": "string"
+        },
+        "imei": {
+          "description": "Output only. IMEI number of device if GSM device; empty otherwise.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "meid": {
+          "description": "Output only. MEID number of device if CDMA device; empty otherwise.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "wifiMacAddresses": {
+          "description": "WiFi MAC addresses of device.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "networkOperator": {
+          "description": "Output only. Mobile or network operator of device, if available.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "manufacturer": {
+          "description": "Output only. Device manufacturer. Example: Motorola.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "releaseVersion": {
+          "description": "Output only. OS release version. Example: 6.0.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "brand": {
+          "description": "Output only. Device brand. Example: Samsung.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "buildNumber": {
+          "description": "Output only. Build number of the device.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "kernelVersion": {
+          "description": "Output only. Kernel version of the device.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "basebandVersion": {
+          "description": "Output only. Baseband version of the device.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "enabledDeveloperOptions": {
+          "description": "Output only. Whether developer options is enabled on device.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "otherAccounts": {
+          "description": "Output only. Domain name for Google accounts on device. Type for other accounts on device. On Android, will only be populated if |ownership_privilege| is |PROFILE_OWNER| or |DEVICE_OWNER|. Does not include the account signed in to the device policy app if that account's domain has only one account. Examples: \"com.example\", \"xyz.com\".",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enabledUsbDebugging": {
+          "description": "Output only. Whether USB debugging is enabled on device.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "securityPatchTime": {
+          "description": "Output only. OS security patch update time on device.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "bootloaderVersion": {
+          "description": "Output only. Device bootloader version. Example: 0.6.7.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "encryptionState": {
+          "description": "Output only. Device encryption state.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Encryption Status is not set.",
+            "Device doesn't support encryption.",
+            "Device is encrypted.",
+            "Device is not encrypted."
+          ],
+          "enum": [
+            "ENCRYPTION_STATE_UNSPECIFIED",
+            "UNSUPPORTED_BY_DEVICE",
+            "ENCRYPTED",
+            "NOT_ENCRYPTED"
+          ]
+        },
+        "androidSpecificAttributes": {
+          "description": "Output only. Attributes specific to Android devices.",
+          "readOnly": true,
+          "$ref": "GoogleAppsCloudidentityDevicesV1AndroidAttributes"
+        },
+        "managementState": {
+          "description": "Output only. Management state of the device",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "Device is approved.",
+            "Device is blocked.",
+            "Device is pending approval.",
+            "The device is not provisioned. Device will start from this state until some action is taken (i.e. a user starts using the device).",
+            "Data and settings on the device are being removed.",
+            "All data and settings on the device are removed."
+          ],
+          "enum": [
+            "MANAGEMENT_STATE_UNSPECIFIED",
+            "APPROVED",
+            "BLOCKED",
+            "PENDING",
+            "UNPROVISIONED",
+            "WIPING",
+            "WIPED"
+          ]
+        },
+        "compromisedState": {
+          "description": "Output only. Represents whether the Device is compromised.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "The device is compromised (currently, this means Android device is rooted).",
+            "The device is safe (currently, this means Android device is unrooted)."
+          ],
+          "enum": [
+            "COMPROMISED_STATE_UNSPECIFIED",
+            "COMPROMISED",
+            "UNCOMPROMISED"
+          ]
+        }
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1AndroidAttributes": {
+      "id": "GoogleAppsCloudidentityDevicesV1AndroidAttributes",
+      "description": "Resource representing the Android specific attributes of a Device.",
+      "type": "object",
+      "properties": {
+        "enabledUnknownSources": {
+          "description": "Whether applications from unknown sources can be installed on device.",
+          "type": "boolean"
+        },
+        "supportsWorkProfile": {
+          "description": "Whether device supports Android work profiles. If false, this service will not block access to corp data even if an administrator turns on the \"Enforce Work Profile\" policy.",
+          "type": "boolean"
+        },
+        "ownerProfileAccount": {
+          "description": "Whether this account is on an owner\/primary profile. For phones, only true for owner profiles. Android 4+ devices can have secondary or restricted user profiles.",
+          "type": "boolean"
+        },
+        "ownershipPrivilege": {
+          "description": "Ownership privileges on device.",
+          "type": "string",
+          "enumDescriptions": [
+            "Ownership privilege is not set.",
+            "Active device administrator privileges on the device.",
+            "Profile Owner privileges. The account is in a managed corporate profile.",
+            "Device Owner privileges on the device."
+          ],
+          "enum": [
+            "OWNERSHIP_PRIVILEGE_UNSPECIFIED",
+            "DEVICE_ADMINISTRATOR",
+            "PROFILE_OWNER",
+            "DEVICE_OWNER"
+          ]
+        }
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1DeviceUser": {
+      "id": "GoogleAppsCloudidentityDevicesV1DeviceUser",
+      "description": "Represents a user's use of a Device in the Cloud Identity Devices API. A DeviceUser is a resource representing a user's use of a Device",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the DeviceUser in format: `devices\/{device_id}\/deviceUsers\/{user_id}`, where user_id is the ID of the user associated with the user session.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "userEmail": {
+          "description": "Email address of the user registered on the device.",
+          "type": "string"
+        },
+        "managementState": {
+          "description": "Output only. Management state of the user on the device.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value is unused.",
+            "This user's data and profile is being removed from the device.",
+            "This user's data and profile is removed from the device.",
+            "User is approved to access data on the device.",
+            "User is blocked from accessing data on the device.",
+            "User is awaiting approval.",
+            "User is unenrolled from Advanced Windows Management, but the Windows account is still intact."
+          ],
+          "enum": [
+            "MANAGEMENT_STATE_UNSPECIFIED",
+            "WIPING",
+            "WIPED",
+            "APPROVED",
+            "BLOCKED",
+            "PENDING_APPROVAL",
+            "UNENROLLED"
+          ]
+        },
+        "firstSyncTime": {
+          "description": "Output only. Most recent time when user registered with this service.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastSyncTime": {
+          "description": "Output only. Last time when user synced with policies.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "userAgent": {
+          "description": "Output only. User agent on the device for this specific user",
+          "readOnly": true,
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "Output only. Default locale used on device, in IETF BCP-47 format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "compromisedState": {
+          "description": "Compromised State of the DeviceUser object",
+          "type": "string",
+          "enumDescriptions": [
+            "Compromised state of Device User account is unknown or unspecified.",
+            "Device User Account is compromised.",
+            "Device User Account is not compromised."
+          ],
+          "enum": [
+            "COMPROMISED_STATE_UNSPECIFIED",
+            "COMPROMISED",
+            "NOT_COMPROMISED"
+          ]
+        },
+        "passwordState": {
+          "description": "Password state of the DeviceUser object",
+          "type": "string",
+          "enumDescriptions": [
+            "Password state not set.",
+            "Password set in object.",
+            "Password not set in object."
+          ],
+          "enum": [
+            "PASSWORD_STATE_UNSPECIFIED",
+            "PASSWORD_SET",
+            "PASSWORD_NOT_SET"
+          ]
+        },
+        "createTime": {
+          "description": "When the user first signed in to the device",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "GoogleAppsCloudidentityDevicesV1ClientState": {
       "id": "GoogleAppsCloudidentityDevicesV1ClientState",
       "description": "Represents the state associated with an API client calling the Devices API. Resource representing ClientState and supports updates from API users",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the ClientState in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}\/clientState\/{partner_id}`, where partner_id corresponds to the partner storing the data.",
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the ClientState in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}\/clientState\/{partner_id}`, where partner_id corresponds to the partner storing the data. For partners belonging to the \"BeyondCorp Alliance\", this is the partner ID specified to you by Google. For all other callers, this is a string of the form: `{customer_id}-suffix`, where `customer_id` is your customer id. The suffix is any string the caller specifies. This string will be displayed verbatim in the administration console.",
           "readOnly": true,
           "type": "string"
         },
@@ -1978,7 +1978,7 @@
           }
         },
         "healthScore": {
-          "description": "The Health score of the resource",
+          "description": "The Health score of the resource. The Health score is the callers specification of the condition of the device from a usability point of view. For example, a third-party device management provider may specify a health score based on its compliance with organizational policies.",
           "type": "string",
           "enumDescriptions": [
             "Default value",
@@ -2242,6 +2242,47 @@
           },
           "description": "Lists\/Searches devices."
         },
+        "patch": {
+          "id": "cloudidentity.devices.patch",
+          "path": "v1beta1/{+name}",
+          "flatPath": "v1beta1/devices/{devicesId}",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique id assigned to the Device.",
+              "location": "path",
+              "required": true,
+              "pattern": "^devices\/[^\/]+$",
+              "type": "string"
+            },
+            "name1": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique ID assigned to the Device.",
+              "location": "query",
+              "type": "string"
+            },
+            "customer": {
+              "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
+              "location": "query",
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Required. Fully qualified names of fields to update. Only \"custom_attributes\" is supported.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "Device"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "description": "Updates the specified device."
+        },
         "delete": {
           "id": "cloudidentity.devices.delete",
           "path": "v1beta1/{+name}",
@@ -2466,47 +2507,6 @@
       "resources": {
         "deviceUsers": {
           "methods": {
-            "patch": {
-              "id": "cloudidentity.devices.deviceUsers.patch",
-              "path": "v1beta1/{+name}",
-              "flatPath": "v1beta1/devices/{devicesId}/deviceUsers/{deviceUsersId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the DeviceUser in format: `devices\/{device_id}\/deviceUsers\/{user_id}`, where user_id is the ID of the user associated with the user session.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^devices\/[^\/]+\/deviceUsers\/[^\/]+$",
-                  "type": "string"
-                },
-                "name1": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`, where device_id is the unique ID assigned to the Device, and device_user_id is the unique ID assigned to the User.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "customer": {
-                  "description": "Required. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the customer. If you're using this API for your own organization, use `customers\/my_customer` If you're using this API to manage another organization, use `customers\/{customer_id}`, where customer_id is the customer to whom the device belongs.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "Required. Fully qualified names of fields to update. Only \"custom_attributes\" is supported.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "GoogleAppsCloudidentityDevicesV1DeviceUser"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "description": "Updates the specified DeviceUser."
-            },
             "get": {
               "id": "cloudidentity.devices.deviceUsers.get",
               "path": "v1beta1/{+name}",

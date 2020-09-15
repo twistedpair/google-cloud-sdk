@@ -107,6 +107,17 @@ class OperationsClient(base.BaseClient):
     return cls.SplitName(super(OperationsClient, cls).Describe(identifiers))
 
 
+class ProjectsClient(base.BaseClient):
+  """REST client for Apigee APIs related to GCP projects."""
+  _entity_path = ["project"]
+
+  @classmethod
+  def ProvisionOrganization(cls, project_id, org_info):
+    return request.ResponseToApiRequest({"projectsId": project_id}, ["project"],
+                                        method=":provisionOrganization",
+                                        body=json.dumps(org_info))
+
+
 class ApplicationsClient(base.PagedListClient):
   """REST client for Apigee applications."""
   _entity_path = ["organization", "app"]

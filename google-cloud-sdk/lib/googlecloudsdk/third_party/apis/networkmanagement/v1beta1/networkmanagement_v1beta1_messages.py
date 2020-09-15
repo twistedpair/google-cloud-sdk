@@ -239,6 +239,10 @@ class ConnectivityTest(_messages.Message):
     labels: Resource labels to represent user-provided metadata.
     name: Required. Unique name of the resource using the form:
       `projects/{project_id}/locations/global/connectivityTests/{test}`
+    probingDetails: Output only. The probing details of this test from the
+      latest run, present for applicable tests only. The details are updated
+      when creating a new test, updating an existing test, or triggering a
+      one-time rerun of an existing test.
     protocol: IP Protocol of the test. When not provided, "TCP" is assumed.
     reachabilityDetails: Output only. The reachability details of this test
       from the latest run. The details are updated when creating a new test,
@@ -294,11 +298,12 @@ class ConnectivityTest(_messages.Message):
   displayName = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  protocol = _messages.StringField(7)
-  reachabilityDetails = _messages.MessageField('ReachabilityDetails', 8)
-  relatedProjects = _messages.StringField(9, repeated=True)
-  source = _messages.MessageField('Endpoint', 10)
-  updateTime = _messages.StringField(11)
+  probingDetails = _messages.MessageField('ProbingDetails', 7)
+  protocol = _messages.StringField(8)
+  reachabilityDetails = _messages.MessageField('ReachabilityDetails', 9)
+  relatedProjects = _messages.StringField(10, repeated=True)
+  source = _messages.MessageField('Endpoint', 11)
+  updateTime = _messages.StringField(12)
 
 
 class DeliverInfo(_messages.Message):
@@ -1368,6 +1373,70 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class ProbingDetails(_messages.Message):
+  r"""The details of probing from the latest run.
+
+  Enums:
+    AbortCauseValueValuesEnum: Causes that the probing was aborted.
+    ResultValueValuesEnum: The overall reachability result of the test.
+
+  Fields:
+    abortCause: Causes that the probing was aborted.
+    endpointInfo: Derived from the test input. The actual source and
+      destination endpoint where the probing was run.
+    error: The details of an internal failure or a cancellation of
+      reachability analysis.
+    result: The overall reachability result of the test.
+    sentProbeCount: Number of probes sent.
+    successfulProbeCount: Number of probes that reached destination.
+    verifyTime: The time the reachability state was verified.
+  """
+
+  class AbortCauseValueValuesEnum(_messages.Enum):
+    r"""Causes that the probing was aborted.
+
+    Values:
+      PROBING_ABORT_CAUSE_UNSPECIFIED: Abort reason unspecified.
+      PERMISSION_DENIED: Aborted because the user lacks the permission to
+        access all or part of the network configurations required to run the
+        test.
+      NO_SOURCE_LOCATION: Aborted because no valid source endpoint is derived
+        from the input test request.
+    """
+    PROBING_ABORT_CAUSE_UNSPECIFIED = 0
+    PERMISSION_DENIED = 1
+    NO_SOURCE_LOCATION = 2
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The overall reachability result of the test.
+
+    Values:
+      PROBING_RESULT_UNSPECIFIED: Result is not specified.
+      REACHABLE: 95% or more packets originating from source reached
+        destination.
+      UNREACHABLE: No packet originating from source reached destination.
+      REACHABILITY_INCONSISTENT: Less than 95% packets originating from source
+        reached destination.
+      UNDETERMINED: The reachability could not be determined. Possible reasons
+        are: * Analysis is aborted due to permission error. User does not have
+        read permission to the projects listed in the test. * Analysis is
+        aborted due to internal errors.
+    """
+    PROBING_RESULT_UNSPECIFIED = 0
+    REACHABLE = 1
+    UNREACHABLE = 2
+    REACHABILITY_INCONSISTENT = 3
+    UNDETERMINED = 4
+
+  abortCause = _messages.EnumField('AbortCauseValueValuesEnum', 1)
+  endpointInfo = _messages.MessageField('EndpointInfo', 2)
+  error = _messages.MessageField('Status', 3)
+  result = _messages.EnumField('ResultValueValuesEnum', 4)
+  sentProbeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  successfulProbeCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  verifyTime = _messages.StringField(7)
 
 
 class ReachabilityDetails(_messages.Message):

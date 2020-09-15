@@ -757,8 +757,7 @@ def AddIpAliasEnvironmentFlags(update_type_group):
   SERVICES_SECONDARY_RANGE_NAME_FLAG.AddToParser(group)
 
 
-def AddPrivateIpEnvironmentFlags(update_type_group,
-                                 web_server_cloud_sql_flags):
+def AddPrivateIpEnvironmentFlags(update_type_group):
   """Adds flags related to private clusters to parser.
 
   Private cluster flags are related to similar flags found within GKE SDK:
@@ -766,15 +765,13 @@ def AddPrivateIpEnvironmentFlags(update_type_group,
 
   Args:
     update_type_group: argument group, the group to which flag should be added.
-    web_server_cloud_sql_flags: boolean, indicates if API includes new flags.
   """
   group = update_type_group.add_group(help='Private Clusters')
   ENABLE_PRIVATE_ENVIRONMENT_FLAG.AddToParser(group)
   ENABLE_PRIVATE_ENDPOINT_FLAG.AddToParser(group)
   MASTER_IPV4_CIDR_FLAG.AddToParser(group)
-  if web_server_cloud_sql_flags:
-    WEB_SERVER_IPV4_CIDR_FLAG.AddToParser(group)
-    CLOUD_SQL_IPV4_CIDR_FLAG.AddToParser(group)
+  WEB_SERVER_IPV4_CIDR_FLAG.AddToParser(group)
+  CLOUD_SQL_IPV4_CIDR_FLAG.AddToParser(group)
 
 
 def AddPypiUpdateFlagsToGroup(update_type_group):

@@ -268,11 +268,6 @@
         },
         "nodeSchedulingStrategy": {
           "description": "Defines behaviour of k8s scheduler.",
-          "enumDescriptions": [
-            "Use default scheduling strategy.",
-            "Least utilized nodes will be prioritized by k8s scheduler.",
-            "Nodes with medium utilization will be prioritized by k8s scheduler. This option improves interoperability of scheduler with cluster autoscaler."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Use default scheduling strategy.",
@@ -367,15 +362,6 @@
         },
         "status": {
           "description": "[Output only] The current status of this cluster.",
-          "enumDescriptions": [
-            "Not set.",
-            "The PROVISIONING state indicates the cluster is being created.",
-            "The RUNNING state indicates the cluster has been created and is fully usable.",
-            "The RECONCILING state indicates that some work is actively being done on the cluster, such as upgrading the master or node software. Details can be found in the `statusMessage` field.",
-            "The STOPPING state indicates the cluster is being deleted.",
-            "The ERROR state indicates the cluster may be unusable. Details can be found in the `statusMessage` field.",
-            "The DEGRADED state indicates the cluster requires user action to restore full functionality. Details can be found in the `statusMessage` field."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -638,12 +624,6 @@
       "properties": {
         "nodeMetadata": {
           "description": "NodeMetadata is the configuration for how to expose metadata to the workloads running on the node.",
-          "enumDescriptions": [
-            "Not set.",
-            "Prevent workloads not in hostNetwork from accessing certain VM metadata, specifically kube-env, which contains Kubelet credentials, and the instance identity token. Metadata concealment is a temporary security solution available while the bootstrapping process for cluster nodes is being redesigned with significant security improvements. This feature is scheduled to be deprecated in the future and later removed.",
-            "Expose all VM metadata to pods.",
-            "Run the GKE Metadata Server on this node. The GKE Metadata Server exposes a metadata API to workloads that is compatible with the V1 Compute Metadata APIs exposed by the Compute Engine and App Engine Metadata Servers. This feature can only be enabled if Workload Identity is enabled at the cluster level."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -660,11 +640,6 @@
         },
         "mode": {
           "description": "Mode is the configuration for how to expose metadata to workloads running on the node pool.",
-          "enumDescriptions": [
-            "Not set.",
-            "Expose all Compute Engine metadata to pods.",
-            "Run the GKE Metadata Server on this node. The GKE Metadata Server exposes a metadata API to workloads that is compatible with the V1 Compute Metadata APIs exposed by the Compute Engine and App Engine Metadata Servers. This feature can only be enabled if Workload Identity is enabled at the cluster level."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -694,12 +669,6 @@
         },
         "effect": {
           "description": "Effect for taint.",
-          "enumDescriptions": [
-            "Not set",
-            "NoSchedule",
-            "PreferNoSchedule",
-            "NoExecute"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set",
@@ -732,11 +701,6 @@
         },
         "format": {
           "description": "Format of the local SSD (fs\/block).",
-          "enumDescriptions": [
-            "Default value",
-            "File system formatted",
-            "Raw block"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value",
@@ -762,10 +726,6 @@
         },
         "type": {
           "description": "Type of the sandbox to use for the node.",
-          "enumDescriptions": [
-            "Default value. This should not be used.",
-            "Run sandbox using gvisor."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. This should not be used.",
@@ -785,12 +745,6 @@
       "properties": {
         "consumeReservationType": {
           "description": "Corresponds to the type of reservation consumption.",
-          "enumDescriptions": [
-            "Default value. This should not be used.",
-            "Do not consume from any reserved capacity.",
-            "Consume any reservation available.",
-            "Must consume from a specific reservation. Must specify key value fields for specifying the reservations."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. This should not be used.",
@@ -872,11 +826,11 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "The username to use for HTTP basic authentication to the master endpoint. For clusters v1.6.0 and later, basic authentication can be disabled by leaving username unspecified (or setting it to the empty string).",
+          "description": "The username to use for HTTP basic authentication to the master endpoint. For clusters v1.6.0 and later, basic authentication can be disabled by leaving username unspecified (or setting it to the empty string). Warning: basic authentication is deprecated, and will be removed in GKE control plane versions 1.19 and newer. For a list of recommended authentication methods, see: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/api-server-authentication",
           "type": "string"
         },
         "password": {
-          "description": "The password to use for HTTP basic authentication to the master endpoint. Because the master endpoint is open to the Internet, you should create a strong password. If a password is provided for cluster creation, username must be non-empty.",
+          "description": "The password to use for HTTP basic authentication to the master endpoint. Because the master endpoint is open to the Internet, you should create a strong password. If a password is provided for cluster creation, username must be non-empty. Warning: basic authentication is deprecated, and will be removed in GKE control plane versions 1.19 and newer. For a list of recommended authentication methods, see: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/api-server-authentication",
           "type": "string"
         },
         "clientCertificateConfig": {
@@ -1014,10 +968,6 @@
         },
         "auth": {
           "description": "The specified Istio auth mode, either none, or mutual TLS.",
-          "enumDescriptions": [
-            "auth not enabled",
-            "auth mutual TLS enabled"
-          ],
           "type": "string",
           "enumDescriptions": [
             "auth not enabled",
@@ -1049,11 +999,6 @@
         },
         "loadBalancerType": {
           "description": "Which load balancer type is installed for Cloud Run.",
-          "enumDescriptions": [
-            "Load balancer type for Cloud Run is unspecified.",
-            "Install external load balancer for Cloud Run.",
-            "Install internal load balancer for Cloud Run."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Load balancer type for Cloud Run is unspecified.",
@@ -1186,15 +1131,6 @@
         },
         "status": {
           "description": "[Output only] The status of the nodes in this pool instance.",
-          "enumDescriptions": [
-            "Not set.",
-            "The PROVISIONING state indicates the node pool is being created.",
-            "The RUNNING state indicates the node pool has been created and is fully usable.",
-            "The RUNNING_WITH_ERROR state indicates the node pool has been created and is partially usable. Some error state has occurred and some functionality may be impaired. Customer may need to reissue a request or trigger a new update.",
-            "The RECONCILING state indicates that some work is actively being done on the node pool, such as upgrading node software. Details can be found in the `statusMessage` field.",
-            "The STOPPING state indicates the node pool is being deleted.",
-            "The ERROR state indicates the node pool may be unusable. Details can be found in the `statusMessage` field."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -1345,14 +1281,6 @@
       "properties": {
         "code": {
           "description": "Machine-friendly representation of the condition Deprecated. Use canonical_code instead.",
-          "enumDescriptions": [
-            "UNKNOWN indicates a generic condition.",
-            "GCE_STOCKOUT indicates that Google Compute Engine resources are temporarily unavailable.",
-            "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot service account.",
-            "Google Compute Engine quota was exceeded.",
-            "Cluster state was manually changed by an SRE due to a system logic error.",
-            "Unable to perform an encrypt operation against the CloudKMS key used for etcd level encryption. More codes TBA"
-          ],
           "type": "string",
           "enumDescriptions": [
             "UNKNOWN indicates a generic condition.",
@@ -1377,25 +1305,6 @@
         },
         "canonicalCode": {
           "description": "Canonical code of the condition.",
-          "enumDescriptions": [
-            "Not an error; returned on success HTTP Mapping: 200 OK",
-            "The operation was cancelled, typically by the caller. HTTP Mapping: 499 Client Closed Request",
-            "Unknown error. For example, this error may be returned when a `Status` value received from another address space belongs to an error space that is not known in this address space. Also errors raised by APIs that do not return enough error information may be converted to this error. HTTP Mapping: 500 Internal Server Error",
-            "The client specified an invalid argument. Note that this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates arguments that are problematic regardless of the state of the system (e.g., a malformed file name). HTTP Mapping: 400 Bad Request",
-            "The deadline expired before the operation could complete. For operations that change the state of the system, this error may be returned even if the operation has completed successfully. For example, a successful response from a server could have been delayed long enough for the deadline to expire. HTTP Mapping: 504 Gateway Timeout",
-            "Some requested entity (e.g., file or directory) was not found. Note to server developers: if a request is denied for an entire class of users, such as gradual feature rollout or undocumented allowlist, `NOT_FOUND` may be used. If a request is denied for some users within a class of users, such as user-based access control, `PERMISSION_DENIED` must be used. HTTP Mapping: 404 Not Found",
-            "The entity that a client attempted to create (e.g., file or directory) already exists. HTTP Mapping: 409 Conflict",
-            "The caller does not have permission to execute the specified operation. `PERMISSION_DENIED` must not be used for rejections caused by exhausting some resource (use `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED` must not be used if the caller can not be identified (use `UNAUTHENTICATED` instead for those errors). This error code does not imply the request is valid or the requested entity exists or satisfies other pre-conditions. HTTP Mapping: 403 Forbidden",
-            "The request does not have valid authentication credentials for the operation. HTTP Mapping: 401 Unauthorized",
-            "Some resource has been exhausted, perhaps a per-user quota, or perhaps the entire file system is out of space. HTTP Mapping: 429 Too Many Requests",
-            "The operation was rejected because the system is not in a state required for the operation's execution. For example, the directory to be deleted is non-empty, an rmdir operation is applied to a non-directory, etc. Service implementors can use the following guidelines to decide between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can retry just the failing call. (b) Use `ABORTED` if the client should retry at a higher level (e.g., when a client-specified test-and-set fails, indicating the client should restart a read-modify-write sequence). (c) Use `FAILED_PRECONDITION` if the client should not retry until the system state has been explicitly fixed. E.g., if an \"rmdir\" fails because the directory is non-empty, `FAILED_PRECONDITION` should be returned since the client should not retry unless the files are deleted from the directory. HTTP Mapping: 400 Bad Request",
-            "The operation was aborted, typically due to a concurrency issue such as a sequencer check failure or transaction abort. See the guidelines above for deciding between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict",
-            "The operation was attempted past the valid range. E.g., seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this error indicates a problem that may be fixed if the system state changes. For example, a 32-bit file system will generate `INVALID_ARGUMENT` if asked to read at an offset that is not in the range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read from an offset past the current file size. There is a fair bit of overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend using `OUT_OF_RANGE` (the more specific error) when it applies so that callers who are iterating through a space can easily look for an `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400 Bad Request",
-            "The operation is not implemented or is not supported\/enabled in this service. HTTP Mapping: 501 Not Implemented",
-            "Internal errors. This means that some invariants expected by the underlying system have been broken. This error code is reserved for serious errors. HTTP Mapping: 500 Internal Server Error",
-            "The service is currently unavailable. This is most likely a transient condition, which can be corrected by retrying with a backoff. Note that it is not always safe to retry non-idempotent operations. See the guidelines above for deciding between `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 503 Service Unavailable",
-            "Unrecoverable data loss or corruption. HTTP Mapping: 500 Internal Server Error"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not an error; returned on success HTTP Mapping: 200 OK",
@@ -1473,10 +1382,6 @@
       "properties": {
         "provider": {
           "description": "The selected network policy provider.",
-          "enumDescriptions": [
-            "Not set",
-            "Tigera (Calico Felix)."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set",
@@ -1717,11 +1622,6 @@
         },
         "autoscalingProfile": {
           "description": "Defines autoscaling behaviour.",
-          "enumDescriptions": [
-            "No change to autoscaling configuration.",
-            "Prioritize optimizing utilization of resources.",
-            "Use default (balanced) autoscaling configuration."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No change to autoscaling configuration.",
@@ -1858,11 +1758,6 @@
         },
         "datapathProvider": {
           "description": "The desired datapath provider for this cluster. By default, uses the IPTables-based kube-proxy implementation.",
-          "enumDescriptions": [
-            "Default value.",
-            "Use the IPTables implementation based on kube-proxy.",
-            "Use the eBPF based data plane with additional visibility features."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value.",
@@ -1877,12 +1772,6 @@
         },
         "privateIpv6GoogleAccess": {
           "description": "The desired state of IPv6 connectivity to Google Services. By default, no private IPv6 access to or from Google Services (all access will be via IPv4)",
-          "enumDescriptions": [
-            "Default value. Same as DISABLED",
-            "No private access to or from Google Services",
-            "Enables private IPv6 access to Google Services from GKE",
-            "Enables priate IPv6 access to and from Google Services"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. Same as DISABLED",
@@ -1921,11 +1810,6 @@
       "properties": {
         "clusterDns": {
           "description": "cluster_dns indicates which in-cluster DNS provider should be used.",
-          "enumDescriptions": [
-            "Default value",
-            "Use GKE default DNS provider(kube-dns) for DNS resolution",
-            "Use CloudDNS for DNS resolution"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value",
@@ -1940,11 +1824,6 @@
         },
         "clusterDnsScope": {
           "description": "cluster_dns_scope indicates the scope of access to cluster DNS records.",
-          "enumDescriptions": [
-            "Default value, will be inferred as cluster scope",
-            "DNS records are accessible from within the cluster",
-            "DNS records are accessible from within the VPC"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value, will be inferred as cluster scope",
@@ -2087,11 +1966,6 @@
       "properties": {
         "state": {
           "description": "Denotes the state of etcd encryption.",
-          "enumDescriptions": [
-            "Should never be set",
-            "Secrets in etcd are encrypted.",
-            "Secrets in etcd are stored in plain text (at etcd level) - this is unrelated to Compute Engine level full disk encryption."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Should never be set",
@@ -2118,6 +1992,10 @@
         "enabled": {
           "description": "Enables vertical pod autoscaling.",
           "type": "boolean"
+        },
+        "enableExperimentalFeatures": {
+          "description": "Enables experimental features support for Vertical Pod Autoscaling.",
+          "type": "boolean"
         }
       }
     },
@@ -2139,12 +2017,6 @@
       "properties": {
         "channel": {
           "description": "channel specifies which release channel the cluster is subscribed to.",
-          "enumDescriptions": [
-            "No channel specified.",
-            "RAPID channel is offered on an early access basis for customers who want to test new releases. WARNING: Versions available in the RAPID Channel may be subject to unresolved issues with no known workaround and are not subject to any SLAs.",
-            "Clusters subscribed to REGULAR receive versions that are considered GA quality. REGULAR is intended for production users who want to take advantage of new features.",
-            "Clusters subscribed to STABLE receive versions that are known to be stable and reliable in production."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No channel specified.",
@@ -2198,12 +2070,6 @@
       "properties": {
         "type": {
           "description": "Type of the integration.",
-          "enumDescriptions": [
-            "Not set.",
-            "Monitoring integration is disabled.",
-            "Monitoring integration is enabled.",
-            "Only system components are monitored and logged."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -2309,13 +2175,6 @@
         },
         "logEnabledComponents": {
           "description": "Select components to expose logs",
-          "enumDescriptions": [
-            "Didn't specify any components. Used to avoid overriding existing list.",
-            "kube-apiserver",
-            "kube-scheduler",
-            "kube-controller-manager",
-            "kube-addon-manager"
-          ],
           "type": "array",
           "items": {
             "type": "string",
@@ -2401,26 +2260,6 @@
         },
         "operationType": {
           "description": "The operation type.",
-          "enumDescriptions": [
-            "Not set.",
-            "Cluster create.",
-            "Cluster delete.",
-            "A master upgrade.",
-            "A node upgrade.",
-            "Cluster repair.",
-            "Cluster update.",
-            "Node pool create.",
-            "Node pool delete.",
-            "Set node pool management.",
-            "Automatic node pool repair.",
-            "Automatic node upgrade.",
-            "Set labels.",
-            "Set\/generate master auth materials",
-            "Set node pool size.",
-            "Updates network policy for a cluster.",
-            "Set the maintenance policy.",
-            "Update cluster IP allocation policy."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -2465,13 +2304,6 @@
         },
         "status": {
           "description": "The current status of the operation.",
-          "enumDescriptions": [
-            "Not set.",
-            "The operation has been created.",
-            "The operation is currently running.",
-            "The operation is done, either cancelled or completed.",
-            "The operation is aborting."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -2553,13 +2385,6 @@
         },
         "status": {
           "description": "Status of an operation stage. Unset for single-stage operations.",
-          "enumDescriptions": [
-            "Not set.",
-            "The operation has been created.",
-            "The operation is currently running.",
-            "The operation is done, either cancelled or completed.",
-            "The operation is aborting."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -2790,11 +2615,6 @@
         },
         "desiredDatapathProvider": {
           "description": "The desired datapath provider for the cluster.",
-          "enumDescriptions": [
-            "Default value.",
-            "Use the IPTables implementation based on kube-proxy.",
-            "Use the eBPF based data plane with additional visibility features."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value.",
@@ -2809,12 +2629,6 @@
         },
         "desiredPrivateIpv6GoogleAccess": {
           "description": "The desired state of IPv6 connectivity to Google Services.",
-          "enumDescriptions": [
-            "Default value. Same as DISABLED",
-            "No private access to or from Google Services",
-            "Enables private IPv6 access to Google Services from GKE",
-            "Enables priate IPv6 access to and from Google Services"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. Same as DISABLED",
@@ -3185,12 +2999,6 @@
         },
         "action": {
           "description": "The exact form of action to be taken on the master auth.",
-          "enumDescriptions": [
-            "Operation is unknown and will error out.",
-            "Set the password to a user generated value.",
-            "Generate a new password and set it to that.",
-            "Set the username. If an empty username is provided, basic authentication is disabled for the cluster. If a non-empty username is provided, basic authentication is enabled, with either a provided password or a generated one."
-          ],
           "type": "string",
           "enumDescriptions": [
             "Operation is unknown and will error out.",
@@ -3316,12 +3124,6 @@
       "properties": {
         "channel": {
           "description": "The release channel this configuration applies to.",
-          "enumDescriptions": [
-            "No channel specified.",
-            "RAPID channel is offered on an early access basis for customers who want to test new releases. WARNING: Versions available in the RAPID Channel may be subject to unresolved issues with no known workaround and are not subject to any SLAs.",
-            "Clusters subscribed to REGULAR receive versions that are considered GA quality. REGULAR is intended for production users who want to take advantage of new features.",
-            "Clusters subscribed to STABLE receive versions that are known to be stable and reliable in production."
-          ],
           "type": "string",
           "enumDescriptions": [
             "No channel specified.",
@@ -3827,11 +3629,6 @@
       "properties": {
         "type": {
           "description": "Contains the type of location this Location is for. Regional or Zonal.",
-          "enumDescriptions": [
-            "LOCATION_TYPE_UNSPECIFIED means the location type was not determined.",
-            "A GKE Location where Zonal clusters can be created.",
-            "A GKE Location where Regional clusters can be created."
-          ],
           "type": "string",
           "enumDescriptions": [
             "LOCATION_TYPE_UNSPECIFIED means the location type was not determined.",
@@ -3917,13 +3714,6 @@
         },
         "status": {
           "description": "This field is to determine the status of the secondary range programmably.",
-          "enumDescriptions": [
-            "UNKNOWN is the zero value of the Status enum. It's not a valid status.",
-            "UNUSED denotes that this range is unclaimed by any cluster.",
-            "IN_USE_SERVICE denotes that this range is claimed by a cluster for services. It cannot be used for other clusters.",
-            "IN_USE_SHAREABLE_POD denotes this range was created by the network admin and is currently claimed by a cluster for pods. It can only be used by other clusters as a pod range.",
-            "IN_USE_MANAGED_POD denotes this range was created by Google Kubernetes Engine and is claimed for pods. It cannot be used for other clusters."
-          ],
           "type": "string",
           "enumDescriptions": [
             "UNKNOWN is the zero value of the Status enum. It's not a valid status.",
@@ -3949,11 +3739,6 @@
       "properties": {
         "resourceType": {
           "description": "Required. The resource type that is upgrading.",
-          "enumDescriptions": [
-            "Default value. This shouldn't be used.",
-            "Master \/ control plane",
-            "Node pool"
-          ],
           "type": "string",
           "enumDescriptions": [
             "Default value. This shouldn't be used.",

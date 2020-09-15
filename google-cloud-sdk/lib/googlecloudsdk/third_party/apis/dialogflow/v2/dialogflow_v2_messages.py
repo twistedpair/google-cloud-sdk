@@ -1399,13 +1399,17 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessageOutputAudioText(_messages.Mes
   synthesis, as described in the comment on the ResponseMessage message.
 
   Fields:
+    allowPlaybackInterruption: Output only. Whether the playback of this
+      message can be interrupted by the end user's speech and the client can
+      then starts the next Dialogflow request.
     ssml: The SSML text to be synthesized. For more information, see
       [SSML](/speech/text-to-speech/docs/ssml).
     text: The raw text to be synthesized.
   """
 
-  ssml = _messages.StringField(1)
-  text = _messages.StringField(2)
+  allowPlaybackInterruption = _messages.BooleanField(1)
+  ssml = _messages.StringField(2)
+  text = _messages.StringField(3)
 
 
 class GoogleCloudDialogflowCxV3beta1ResponseMessagePlayAudio(_messages.Message):
@@ -3667,9 +3671,9 @@ class GoogleCloudDialogflowV2OriginalDetectIntentRequest(_messages.Message):
       that query a Dialogflow agent may provide additional information in the
       payload. In particular, for the Dialogflow Phone Gateway integration,
       this field has the form: { "telephony": { "caller_id": "+18558363987" }
-      } Note: The caller ID field (`caller_id`) will be redacted for Standard
+      } Note: The caller ID field (`caller_id`) will be redacted for Trial
       Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+      format](https://en.wikipedia.org/wiki/E.164) for Essentials Edition
       agents.
 
   Fields:
@@ -3678,9 +3682,9 @@ class GoogleCloudDialogflowV2OriginalDetectIntentRequest(_messages.Message):
       that query a Dialogflow agent may provide additional information in the
       payload. In particular, for the Dialogflow Phone Gateway integration,
       this field has the form: { "telephony": { "caller_id": "+18558363987" }
-      } Note: The caller ID field (`caller_id`) will be redacted for Standard
+      } Note: The caller ID field (`caller_id`) will be redacted for Trial
       Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+      format](https://en.wikipedia.org/wiki/E.164) for Essentials Edition
       agents.
     source: The source of this request, e.g., `google`, `facebook`, `slack`.
       It is set by Dialogflow-owned servers.
@@ -3695,9 +3699,9 @@ class GoogleCloudDialogflowV2OriginalDetectIntentRequest(_messages.Message):
     that query a Dialogflow agent may provide additional information in the
     payload. In particular, for the Dialogflow Phone Gateway integration, this
     field has the form: { "telephony": { "caller_id": "+18558363987" } } Note:
-    The caller ID field (`caller_id`) will be redacted for Standard Edition
+    The caller ID field (`caller_id`) will be redacted for Trial Edition
     agents and populated with the caller ID in [E.164
-    format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+    format](https://en.wikipedia.org/wiki/E.164) for Essentials Edition
     agents.
 
     Messages:
@@ -4570,16 +4574,18 @@ class GoogleCloudDialogflowV2beta1Context(_messages.Message):
       which the context expires. The default is `0`. If set to `0`, the
       context expires immediately. Contexts expire automatically after 20
       minutes if there are no matching queries.
-    name: Required. The unique identifier of the context. Format:
-      `projects//agent/sessions//contexts/`, or
-      `projects//agent/environments//users//sessions//contexts/`. The `Context
-      ID` is always converted to lowercase, may only contain characters in
-      a-zA-Z0-9_-% and may be at most 250 bytes long. If `Environment ID` is
-      not specified, we assume default 'draft' environment. If `User ID` is
-      not specified, we assume default '-' user. The following context names
-      are reserved for internal use by Dialogflow. You should not use these
-      contexts or create contexts with these names: * `__system_counters__` *
-      `*_id_dialog_context` * `*_dialog_params_size`
+    name: Required. The unique identifier of the context. Supported formats: -
+      `projects//agent/sessions//contexts/`, -
+      `projects//locations//agent/sessions//contexts/`, -
+      `projects//agent/environments//users//sessions//contexts/`, -
+      `projects//locations//agent/environments//users//sessions//contexts/`,
+      The `Context ID` is always converted to lowercase, may only contain
+      characters in a-zA-Z0-9_-% and may be at most 250 bytes long. If
+      `Environment ID` is not specified, we assume default 'draft'
+      environment. If `User ID` is not specified, we assume default '-' user.
+      The following context names are reserved for internal use by Dialogflow.
+      You should not use these contexts or create contexts with these names: *
+      `__system_counters__` * `*_id_dialog_context` * `*_dialog_params_size`
     parameters: Optional. The collection of parameters associated with this
       context. Depending on your protocol or client library language, this is
       a map, associative array, symbol table, dictionary, or JSON object
@@ -4655,7 +4661,8 @@ class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
     kind: Required. Indicates the kind of entity type.
     name: The unique identifier of the entity type. Required for
       EntityTypes.UpdateEntityType and EntityTypes.BatchUpdateEntityTypes
-      methods. Format: `projects//agent/entityTypes/`.
+      methods. Supported formats: - `projects//agent/entityTypes/` -
+      `projects//locations//agent/entityTypes/`
   """
 
   class AutoExpansionModeValueValuesEnum(_messages.Enum):
@@ -4833,7 +4840,9 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
       that have this intent as a direct or indirect parent. We populate this
       field only in the output.
     inputContextNames: Optional. The list of context names required for this
-      intent to be triggered. Format: `projects//agent/sessions/-/contexts/`.
+      intent to be triggered. Formats: -
+      `projects//agent/sessions/-/contexts/` -
+      `projects//locations//agent/sessions/-/contexts/`
     isFallback: Optional. Indicates whether this is a fallback intent.
     messages: Optional. The collection of rich messages corresponding to the
       `Response` field in the Dialogflow console.
@@ -4851,8 +4860,9 @@ class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
       ml_enabled = false / ml_disabled = true. - After April 15th, 2018 the
       default is: ml_enabled = true / ml_disabled = false.
     name: Optional. The unique identifier of this intent. Required for
-      Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Format:
-      `projects//agent/intents/`.
+      Intents.UpdateIntent and Intents.BatchUpdateIntents methods. Supported
+      formats: - `projects//agent/intents/` -
+      `projects//locations//agent/intents/`
     outputContexts: Optional. The collection of contexts that are activated
       when the intent is matched. Context messages in this collection should
       not set the parameters field. Setting the `lifespan_count` to 0 will
@@ -6057,9 +6067,9 @@ class GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest(_messages.Message)
       that query a Dialogflow agent may provide additional information in the
       payload. In particular, for the Dialogflow Phone Gateway integration,
       this field has the form: { "telephony": { "caller_id": "+18558363987" }
-      } Note: The caller ID field (`caller_id`) will be redacted for Standard
+      } Note: The caller ID field (`caller_id`) will be redacted for Trial
       Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+      format](https://en.wikipedia.org/wiki/E.164) for Essentials Edition
       agents.
 
   Fields:
@@ -6068,9 +6078,9 @@ class GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest(_messages.Message)
       that query a Dialogflow agent may provide additional information in the
       payload. In particular, for the Dialogflow Phone Gateway integration,
       this field has the form: { "telephony": { "caller_id": "+18558363987" }
-      } Note: The caller ID field (`caller_id`) will be redacted for Standard
+      } Note: The caller ID field (`caller_id`) will be redacted for Trial
       Edition agents and populated with the caller ID in [E.164
-      format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+      format](https://en.wikipedia.org/wiki/E.164) for Essentials Edition
       agents.
     source: The source of this request, e.g., `google`, `facebook`, `slack`.
       It is set by Dialogflow-owned servers.
@@ -6085,9 +6095,9 @@ class GoogleCloudDialogflowV2beta1OriginalDetectIntentRequest(_messages.Message)
     that query a Dialogflow agent may provide additional information in the
     payload. In particular, for the Dialogflow Phone Gateway integration, this
     field has the form: { "telephony": { "caller_id": "+18558363987" } } Note:
-    The caller ID field (`caller_id`) will be redacted for Standard Edition
+    The caller ID field (`caller_id`) will be redacted for Trial Edition
     agents and populated with the caller ID in [E.164
-    format](https://en.wikipedia.org/wiki/E.164) for Enterprise Edition
+    format](https://en.wikipedia.org/wiki/E.164) for Essentials Edition
     agents.
 
     Messages:
@@ -6360,13 +6370,16 @@ class GoogleCloudDialogflowV2beta1SessionEntityType(_messages.Message):
       session entity type.
     entityOverrideMode: Required. Indicates whether the additional data should
       override or supplement the custom entity type definition.
-    name: Required. The unique identifier of this session entity type. Format:
-      `projects//agent/sessions//entityTypes/`, or
-      `projects//agent/environments//users//sessions//entityTypes/`. If
-      `Environment ID` is not specified, we assume default 'draft'
-      environment. If `User ID` is not specified, we assume default '-' user.
-      `` must be the display name of an existing entity type in the same agent
-      that will be overridden or supplemented.
+    name: Required. The unique identifier of this session entity type.
+      Supported formats: - `projects//agent/sessions//entityTypes/` -
+      `projects//locations//agent/sessions//entityTypes/` -
+      `projects//agent/environments//users//sessions//entityTypes/` -
+      `projects//locations//agent/environments/
+      /users//sessions//entityTypes/` If `Location ID` is not specified we
+      assume default 'us' location. If `Environment ID` is not specified, we
+      assume default 'draft' environment. If `User ID` is not specified, we
+      assume default '-' user. `` must be the display name of an existing
+      entity type in the same agent that will be overridden or supplemented.
   """
 
   class EntityOverrideModeValueValuesEnum(_messages.Enum):
@@ -6410,9 +6423,11 @@ class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):
     responseId: The unique identifier of the response. Contains the same value
       as `[Streaming]DetectIntentResponse.response_id`.
     session: The unique identifier of detectIntent request session. Can be
-      used to identify end-user inside webhook implementation. Format:
-      `projects//agent/sessions/`, or
-      `projects//agent/environments//users//sessions/`.
+      used to identify end-user inside webhook implementation. Supported
+      formats: - `projects//agent/sessions/, -
+      `projects//locations//agent/sessions/`, -
+      `projects//agent/environments//users//sessions/`, -
+      `projects//locations//agent/environments//users//sessions/`,
   """
 
   alternativeQueryResults = _messages.MessageField('GoogleCloudDialogflowV2beta1QueryResult', 1, repeated=True)
