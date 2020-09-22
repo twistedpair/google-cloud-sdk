@@ -581,7 +581,9 @@ class FieldTransform(_messages.Message):
     Values:
       SERVER_VALUE_UNSPECIFIED: Unspecified. This value must not be used.
       REQUEST_TIME: The time at which the server processed the request, with
-        millisecond precision.
+        millisecond precision. If used on multiple fields (same or different
+        documents) in a transaction, all the fields will get the same server
+        timestamp.
     """
     SERVER_VALUE_UNSPECIFIED = 0
     REQUEST_TIME = 1

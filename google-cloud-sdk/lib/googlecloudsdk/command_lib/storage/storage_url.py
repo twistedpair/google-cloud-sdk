@@ -27,7 +27,8 @@ from googlecloudsdk.command_lib.storage import errors
 
 import six
 
-
+# TODO(b/168690302): Transfer ProviderPrefix enum from cloud_api.py here, and
+# start using an enum instead of string schemes.
 FILE_SCHEME = 'file'
 VALID_CLOUD_SCHEMES = frozenset({
     provider.value for provider in cloud_api.ProviderPrefix})
@@ -38,13 +39,51 @@ class StorageUrl(six.with_metaclass(abc.ABCMeta)):
 
   @abc.abstractproperty
   def delimiter(self):
-    """Return the delimiter for the url."""
+    """Returns the delimiter for the url."""
+
+  @abc.abstractproperty
+  def url_string(self):
+    """Returns the string representation of the instance."""
+
+  def join(self, part):
+    """Appends part at the end of url_string.
+
+    The join is performed in 3 steps:
+    1) Strip off one delimiter (if present) from the right of the url_string.
+    2) Strip off one delimiter (if present) from the left of the part.
+    3) Join the two strings with delimiter in between.
+
+    Note that the behavior is slight different from os.path.join for cases
+    where the part starts with a delimiter.
+    os.path.join('a/b', '/c') => '/c'
+    But this join method will return a StorageUrl with url_string as 'a/b/c'.
+    This is done to be consistent across FileUrl and CloudUrl.
+
+    The delimiter of the instance will be used. So, if you are trying to append
+    a Windows path to a CloudUrl instance, you have to make sure to convert
+    the Windows path before passing it to this method.
+
+    Args:
+      part (str): The part that needs to be appended.
+
+    Returns:
+      A StorageUrl instance.
+    """
+    left = rstrip_one_delimiter(self.url_string, self.delimiter)
+    right = part[1:] if part.startswith(self.delimiter) else part
+    new_url_string = '{}{}{}'.format(left, self.delimiter, right)
+    return storage_url_from_string(new_url_string)
 
   def __eq__(self, other):
-    return isinstance(other, StorageUrl) and self.url_string == other.url_string
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return self.url_string == other.url_string
 
   def __hash__(self):
     return hash(self.url_string)
+
+  def __str__(self):
+    return self.url_string
 
 
 class FileUrl(StorageUrl):
@@ -184,9 +223,6 @@ class CloudUrl(StorageUrl):
 
   def is_provider(self):
     return bool(self.scheme and not self.bucket_name)
-
-  def __str__(self):
-    return self.url_string
 
 
 def _get_scheme_from_url_string(url_str):

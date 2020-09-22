@@ -59,6 +59,9 @@ apis:
   aiplatform:
     v1alpha1:
       discovery_doc: aiplatform_v1alpha1.json
+    v1beta1:
+      default: true
+      discovery_doc: aiplatform_v1beta1.json
   anthosevents:
     v1:
       discovery_doc: anthosevents_v1.json
@@ -227,6 +230,13 @@ apis:
       discovery_doc: cloudidentity_v1alpha1.json
     v1beta1:
       discovery_doc: cloudidentity_v1beta1.json
+      resources:
+        groups:
+          path: groups/{groupId}
+        groups.memberships:
+          path: groups/{groupId}/memberships/{membershipId}
+    v1:
+      discovery_doc: cloudidentity_v1.json
       default: true
       resources:
         groups:
@@ -670,6 +680,9 @@ apis:
         # This is required in order to properly generate a PatchRequest message. Without this, the
         # generated client will simply use the Dashboard message as the request message for PATCH.
         - monitoring.projects.dashboards.patch
+  networkconnectivity:
+    v1alpha1:
+      discovery_doc: networkconnectivity_v1alpha1.json
   networkmanagement:
     v1:
       discovery_doc: networkmanagement_v1.json

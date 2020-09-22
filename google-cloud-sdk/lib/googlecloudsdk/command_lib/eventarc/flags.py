@@ -160,3 +160,16 @@ def AddClearDestinationRunPathArg(parser):
 def AddTypePositionalArg(parser, help_text):
   """Adds a positional argument for the event type."""
   parser.add_argument('type', help=help_text)
+
+
+def AddTypeArg(parser, required=False):
+  """Adds an argument for the event type."""
+  parser.add_argument('--type', required=required, help='The event type.')
+
+
+def AddServiceNameArg(parser, required=False):
+  """Adds an argument for the value of the serviceName CloudEvents attribute."""
+  parser.add_argument(
+      '--service-name',
+      required=required,
+      help='The value of the serviceName CloudEvents attribute.')

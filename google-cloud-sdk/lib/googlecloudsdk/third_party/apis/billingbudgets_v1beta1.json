@@ -103,6 +103,9 @@
   "auth": {
     "oauth2": {
       "scopes": {
+        "https://www.googleapis.com/auth/cloud-billing": {
+          "description": "View and manage your Google Cloud Platform billing accounts"
+        },
         "https://www.googleapis.com/auth/cloud-platform": {
           "description": "View and manage your data across Google Cloud Platform services"
         }
@@ -295,11 +298,15 @@
           "type": "string"
         },
         "monitoringNotificationChannels": {
-          "description": "Optional. Targets to send notifications to when a threshold is exceeded. This is in addition to default recipients who have billing account roles. The value is the full REST resource name of a monitoring notification channel with the form `projects\/{project_id}\/notificationChannels\/{channel_id}`. A maximum of 5 channels are allowed. See https:\/\/cloud.google.com\/billing\/docs\/how-to\/budgets-notification-recipients for more details.",
+          "description": "Optional. Targets to send notifications to when a threshold is exceeded. This is in addition to default recipients who have billing account IAM roles. The value is the full REST resource name of a monitoring notification channel with the form `projects\/{project_id}\/notificationChannels\/{channel_id}`. A maximum of 5 channels are allowed. See https:\/\/cloud.google.com\/billing\/docs\/how-to\/budgets-notification-recipients for more details.",
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "disableDefaultIamRecipients": {
+          "description": "Optional. When set to true, disables default notifications sent when a threshold is exceeded. Recipients are those with Billing Account Administrators and Billing Account Users IAM roles for the target account.",
+          "type": "boolean"
         }
       }
     },
@@ -374,6 +381,7 @@
                 "$ref": "GoogleCloudBillingBudgetsV1beta1Budget"
               },
               "scopes": [
+                "https://www.googleapis.com/auth/cloud-billing",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Creates a new budget. See Quotas and limits for more information on the limits of the number of budgets you can create."
@@ -402,6 +410,7 @@
                 "$ref": "GoogleCloudBillingBudgetsV1beta1Budget"
               },
               "scopes": [
+                "https://www.googleapis.com/auth/cloud-billing",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Updates a budget and returns the updated budget. WARNING: There are some fields exposed on the Google Cloud Console that aren't available on this API. Budget fields that are not exposed in this API will not be changed by this method."
@@ -427,6 +436,7 @@
                 "$ref": "GoogleCloudBillingBudgetsV1beta1Budget"
               },
               "scopes": [
+                "https://www.googleapis.com/auth/cloud-billing",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Returns a budget. WARNING: There are some fields exposed on the Google Cloud Console that aren't available on this API. When reading from the API, you will not see these fields in the return value, though they may have been set in the Cloud Console."
@@ -463,6 +473,7 @@
                 "$ref": "GoogleCloudBillingBudgetsV1beta1ListBudgetsResponse"
               },
               "scopes": [
+                "https://www.googleapis.com/auth/cloud-billing",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Returns a list of budgets for a billing account. WARNING: There are some fields exposed on the Google Cloud Console that aren't available on this API. When reading from the API, you will not see these fields in the return value, though they may have been set in the Cloud Console."
@@ -488,6 +499,7 @@
                 "$ref": "GoogleProtobufEmpty"
               },
               "scopes": [
+                "https://www.googleapis.com/auth/cloud-billing",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a budget. Returns successfully if already deleted."

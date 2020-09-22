@@ -628,7 +628,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates description, labels and network config of a specific clusterGroup.
+      r"""Updates description, labels, and network config of a specific clusterGroup.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsPatchRequest) input message

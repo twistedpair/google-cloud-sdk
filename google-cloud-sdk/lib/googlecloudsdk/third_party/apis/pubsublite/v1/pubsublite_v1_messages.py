@@ -26,6 +26,47 @@ class Capacity(_messages.Message):
   subscribeMibPerSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class ComputeMessageStatsRequest(_messages.Message):
+  r"""Compute statistics about a range of messages in a given topic and
+  partition.
+
+  Fields:
+    endCursor: The exclusive end of the range. The range is empty if
+      end_cursor <= start_cursor. Specifying a start_cursor before the first
+      message and an end_cursor after the last message will retrieve all
+      messages.
+    partition: Required. The partition for which we should compute message
+      stats.
+    startCursor: The inclusive start of the range.
+  """
+
+  endCursor = _messages.MessageField('Cursor', 1)
+  partition = _messages.IntegerField(2)
+  startCursor = _messages.MessageField('Cursor', 3)
+
+
+class ComputeMessageStatsResponse(_messages.Message):
+  r"""Response containing stats for messages in the requested topic and
+  partition.
+
+  Fields:
+    messageBytes: The number of quota bytes accounted to these messages.
+    messageCount: The count of messages.
+    minimumEventTime: The minimum event timestamp across these messages. For
+      the purposes of this computation, if a message does not have an event
+      time, we use the publish time. The timestamp will be unset if there are
+      no messages.
+    minimumPublishTime: The minimum publish timestamp across these messages.
+      Note that publish timestamps within a partition are non-decreasing. The
+      timestamp will be unset if there are no messages.
+  """
+
+  messageBytes = _messages.IntegerField(1)
+  messageCount = _messages.IntegerField(2)
+  minimumEventTime = _messages.StringField(3)
+  minimumPublishTime = _messages.StringField(4)
+
+
 class Cursor(_messages.Message):
   r"""A cursor that describes the position of a message within a topic
   partition.
@@ -362,6 +403,20 @@ class PubsubliteCursorProjectsLocationsSubscriptionsCursorsListRequest(_messages
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class PubsubliteTopicStatsProjectsLocationsTopicsComputeMessageStatsRequest(_messages.Message):
+  r"""A PubsubliteTopicStatsProjectsLocationsTopicsComputeMessageStatsRequest
+  object.
+
+  Fields:
+    computeMessageStatsRequest: A ComputeMessageStatsRequest resource to be
+      passed as the request body.
+    topic: Required. The topic for which we should compute message stats.
+  """
+
+  computeMessageStatsRequest = _messages.MessageField('ComputeMessageStatsRequest', 1)
+  topic = _messages.StringField(2, required=True)
 
 
 class RetentionConfig(_messages.Message):

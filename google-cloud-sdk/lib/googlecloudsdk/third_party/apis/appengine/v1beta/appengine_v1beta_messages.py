@@ -1446,38 +1446,43 @@ class Instance(_messages.Message):
   automatically scale an application.
 
   Enums:
-    AvailabilityValueValuesEnum: Availability of the instance.@OutputOnly
+    AvailabilityValueValuesEnum: Output only. Availability of the instance.
+    VmLivenessValueValuesEnum: Output only. The liveness health check of this
+      instance. Only applicable for instances in App Engine flexible
+      environment.
 
   Fields:
-    appEngineRelease: App Engine release this instance is running
-      on.@OutputOnly
-    availability: Availability of the instance.@OutputOnly
-    averageLatency: Average latency (ms) over the last minute.@OutputOnly
-    errors: Number of errors since this instance was started.@OutputOnly
-    id: Relative name of the instance within the version. Example:
-      instance-1.@OutputOnly
-    memoryUsage: Total memory in use (bytes).@OutputOnly
-    name: Full path to the Instance resource in the API. Example:
-      apps/myapp/services/default/versions/v1/instances/instance-1.@OutputOnly
-    qps: Average queries per second (QPS) over the last minute.@OutputOnly
-    requests: Number of requests since this instance was started.@OutputOnly
-    startTime: Time that this instance was started.@OutputOnly
-    vmDebugEnabled: Whether this instance is in debug mode. Only applicable
-      for instances in App Engine flexible environment.@OutputOnly
-    vmId: Virtual machine ID of this instance. Only applicable for instances
-      in App Engine flexible environment.@OutputOnly
-    vmIp: The IP address of this instance. Only applicable for instances in
-      App Engine flexible environment.@OutputOnly
-    vmName: Name of the virtual machine where this instance lives. Only
-      applicable for instances in App Engine flexible environment.@OutputOnly
-    vmStatus: Status of the virtual machine where this instance lives. Only
-      applicable for instances in App Engine flexible environment.@OutputOnly
-    vmZoneName: Zone where the virtual machine is located. Only applicable for
-      instances in App Engine flexible environment.@OutputOnly
+    appEngineRelease: Output only. App Engine release this instance is running
+      on.
+    availability: Output only. Availability of the instance.
+    averageLatency: Output only. Average latency (ms) over the last minute.
+    errors: Output only. Number of errors since this instance was started.
+    id: Output only. Relative name of the instance within the version.
+      Example: instance-1.
+    memoryUsage: Output only. Total memory in use (bytes).
+    name: Output only. Full path to the Instance resource in the API. Example:
+      apps/myapp/services/default/versions/v1/instances/instance-1.
+    qps: Output only. Average queries per second (QPS) over the last minute.
+    requests: Output only. Number of requests since this instance was started.
+    startTime: Output only. Time that this instance was started.@OutputOnly
+    vmDebugEnabled: Output only. Whether this instance is in debug mode. Only
+      applicable for instances in App Engine flexible environment.
+    vmId: Output only. Virtual machine ID of this instance. Only applicable
+      for instances in App Engine flexible environment.
+    vmIp: Output only. The IP address of this instance. Only applicable for
+      instances in App Engine flexible environment.
+    vmLiveness: Output only. The liveness health check of this instance. Only
+      applicable for instances in App Engine flexible environment.
+    vmName: Output only. Name of the virtual machine where this instance
+      lives. Only applicable for instances in App Engine flexible environment.
+    vmStatus: Output only. Status of the virtual machine where this instance
+      lives. Only applicable for instances in App Engine flexible environment.
+    vmZoneName: Output only. Zone where the virtual machine is located. Only
+      applicable for instances in App Engine flexible environment.
   """
 
   class AvailabilityValueValuesEnum(_messages.Enum):
-    r"""Availability of the instance.@OutputOnly
+    r"""Output only. Availability of the instance.
 
     Values:
       UNSPECIFIED: <no description>
@@ -1487,6 +1492,33 @@ class Instance(_messages.Message):
     UNSPECIFIED = 0
     RESIDENT = 1
     DYNAMIC = 2
+
+  class VmLivenessValueValuesEnum(_messages.Enum):
+    r"""Output only. The liveness health check of this instance. Only
+    applicable for instances in App Engine flexible environment.
+
+    Values:
+      STATE_UNSPECIFIED: There is no liveness health check for the instance.
+        Only applicable for instances in App Engine standard environment.
+      UNKNOWN: The health checking system is aware of the instance but its
+        health is not known at the moment.
+      HEALTHY: The instance is reachable i.e. a connection to the application
+        health checking endpoint can be established, and conforms to the
+        requirements defined by the health check.
+      UNHEALTHY: The instance is reachable, but does not conform to the
+        requirements defined by the health check.
+      DRAINING: The instance is being drained. The existing connections to the
+        instance have time to complete, but the new ones are being refused.
+      TIMEOUT: The instance is unreachable i.e. a connection to the
+        application health checking endpoint cannot be established, or the
+        server does not respond within the specified timeout.
+    """
+    STATE_UNSPECIFIED = 0
+    UNKNOWN = 1
+    HEALTHY = 2
+    UNHEALTHY = 3
+    DRAINING = 4
+    TIMEOUT = 5
 
   appEngineRelease = _messages.StringField(1)
   availability = _messages.EnumField('AvailabilityValueValuesEnum', 2)
@@ -1501,9 +1533,10 @@ class Instance(_messages.Message):
   vmDebugEnabled = _messages.BooleanField(11)
   vmId = _messages.StringField(12)
   vmIp = _messages.StringField(13)
-  vmName = _messages.StringField(14)
-  vmStatus = _messages.StringField(15)
-  vmZoneName = _messages.StringField(16)
+  vmLiveness = _messages.EnumField('VmLivenessValueValuesEnum', 14)
+  vmName = _messages.StringField(15)
+  vmStatus = _messages.StringField(16)
+  vmZoneName = _messages.StringField(17)
 
 
 class Library(_messages.Message):
@@ -2729,7 +2762,8 @@ class Version(_messages.Message):
       (https://cloud.google.com/appengine/docs/python/endpoints/).Only
       returned in GET requests if view=FULL is set.
     automaticScaling: Automatic scaling is based on request rate, response
-      latencies, and other application metrics.
+      latencies, and other application metrics. Instances are dynamically
+      created and destroyed as needed in order to handle traffic.
     basicScaling: A service with basic scaling will create an instance when
       the application receives a request. The instance will be turned down
       when the app becomes idle. Basic scaling is ideal for work that is
@@ -2785,7 +2819,8 @@ class Version(_messages.Message):
       returned in GET requests if view=FULL is set.
     manualScaling: A service with manual scaling runs continuously, allowing
       you to perform complex initialization and rely on the state of its
-      memory over time.
+      memory over time. Manually scaled versions are sometimes referred to as
+      "backends".
     name: Full path to the Version resource in the API. Example:
       apps/myapp/services/default/versions/v1.@OutputOnly
     network: Extra network settings. Only applicable in the App Engine

@@ -1107,9 +1107,15 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequestMo
   r"""Modifications to make on the order.
 
   Enums:
+    AutoRenewalBehaviorValueValuesEnum: Auto renewal behavior of the
+      subscription for the update. Applied when change_type is
+      [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].
     ChangeTypeValueValuesEnum: Required. Type of change to make.
 
   Fields:
+    autoRenewalBehavior: Auto renewal behavior of the subscription for the
+      update. Applied when change_type is
+      [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].
     changeType: Required. Type of change to make.
     lineItemId: ID of the existing line item to make change to. Required when
       change type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or
@@ -1118,6 +1124,22 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequestMo
       [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or
       [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].
   """
+
+  class AutoRenewalBehaviorValueValuesEnum(_messages.Enum):
+    r"""Auto renewal behavior of the subscription for the update. Applied when
+    change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].
+
+    Values:
+      AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED: If unspecified, the auto renewal
+        behavior will follow the default config.
+      AUTO_RENEWAL_BEHAVIOR_ENABLE: Auto Renewal will be enabled on
+        subscription.
+      AUTO_RENEWAL_BEHAVIOR_DISABLE: Auto Renewal will be disabled on
+        subscription.
+    """
+    AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED = 0
+    AUTO_RENEWAL_BEHAVIOR_ENABLE = 1
+    AUTO_RENEWAL_BEHAVIOR_DISABLE = 2
 
   class ChangeTypeValueValuesEnum(_messages.Enum):
     r"""Required. Type of change to make.
@@ -1138,22 +1160,45 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequestMo
     LINE_ITEM_CHANGE_TYPE_CANCEL = 3
     LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION = 4
 
-  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 1)
-  lineItemId = _messages.StringField(2)
-  newLineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 3)
+  autoRenewalBehavior = _messages.EnumField('AutoRenewalBehaviorValueValuesEnum', 1)
+  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 2)
+  lineItemId = _messages.StringField(3)
+  newLineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 4)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyQuoteOrderRequest(_messages.Message):
   r"""Request message for ConsumerProcurementService.ModifyOrder.
 
   Enums:
+    AutoRenewalBehaviorValueValuesEnum: Auto renewal behavior of the
+      subscription for the update. Applied when change_type is
+      [QuoteChangeType.QUOTE_CHANGE_TYPE_UPDATE].
     ChangeTypeValueValuesEnum: Required. Type of change to make.
 
   Fields:
+    autoRenewalBehavior: Auto renewal behavior of the subscription for the
+      update. Applied when change_type is
+      [QuoteChangeType.QUOTE_CHANGE_TYPE_UPDATE].
     changeType: Required. Type of change to make.
     newQuoteExternalName: External name of the new quote to update to.
       Required when change_type is [QuoteChangeType.QUOTE_CHANGE_TYPE_UPDATE].
   """
+
+  class AutoRenewalBehaviorValueValuesEnum(_messages.Enum):
+    r"""Auto renewal behavior of the subscription for the update. Applied when
+    change_type is [QuoteChangeType.QUOTE_CHANGE_TYPE_UPDATE].
+
+    Values:
+      AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED: If unspecified, the auto renewal
+        behavior will follow the default config.
+      AUTO_RENEWAL_BEHAVIOR_ENABLE: Auto Renewal will be enabled on
+        subscription.
+      AUTO_RENEWAL_BEHAVIOR_DISABLE: Auto Renewal will be disabled on
+        subscription.
+    """
+    AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED = 0
+    AUTO_RENEWAL_BEHAVIOR_ENABLE = 1
+    AUTO_RENEWAL_BEHAVIOR_DISABLE = 2
 
   class ChangeTypeValueValuesEnum(_messages.Enum):
     r"""Required. Type of change to make.
@@ -1172,8 +1217,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyQuoteOrderRequest(_mes
     QUOTE_CHANGE_TYPE_CANCEL = 2
     QUOTE_CHANGE_TYPE_REVERT_CANCELLATION = 3
 
-  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 1)
-  newQuoteExternalName = _messages.StringField(2)
+  autoRenewalBehavior = _messages.EnumField('AutoRenewalBehaviorValueValuesEnum', 1)
+  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 2)
+  newQuoteExternalName = _messages.StringField(3)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
@@ -1337,13 +1383,19 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ParameterValue(_messages.Mes
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 9
+  r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 10
+
+  Enums:
+    AutoRenewalBehaviorValueValuesEnum: Optional. Auto renewal behavior of the
+      subscription associated with the order.
 
   Fields:
     account: The resource name of the account that this order is based on. If
       this field is not specified and the creation of any products in the
       order requires an account, system will look for existing account and
       auto create one if there is no existing one.
+    autoRenewalBehavior: Optional. Auto renewal behavior of the subscription
+      associated with the order.
     displayName: Required. The user-specified name of the order being placed.
       Must be unique within a billing account.
     placeProductsOrderRequest: Required. Places order for non-quote products.
@@ -1357,12 +1409,29 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
       #Format).
   """
 
+  class AutoRenewalBehaviorValueValuesEnum(_messages.Enum):
+    r"""Optional. Auto renewal behavior of the subscription associated with
+    the order.
+
+    Values:
+      AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED: If unspecified, the auto renewal
+        behavior will follow the default config.
+      AUTO_RENEWAL_BEHAVIOR_ENABLE: Auto Renewal will be enabled on
+        subscription.
+      AUTO_RENEWAL_BEHAVIOR_DISABLE: Auto Renewal will be disabled on
+        subscription.
+    """
+    AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED = 0
+    AUTO_RENEWAL_BEHAVIOR_ENABLE = 1
+    AUTO_RENEWAL_BEHAVIOR_DISABLE = 2
+
   account = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  placeProductsOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest', 3)
-  placeQuoteOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest', 4)
-  provider = _messages.StringField(5)
-  requestId = _messages.StringField(6)
+  autoRenewalBehavior = _messages.EnumField('AutoRenewalBehaviorValueValuesEnum', 2)
+  displayName = _messages.StringField(3)
+  placeProductsOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest', 4)
+  placeQuoteOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest', 5)
+  provider = _messages.StringField(6)
+  requestId = _messages.StringField(7)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest(_messages.Message):

@@ -7,7 +7,7 @@
   "version": "v1beta",
   "revision": "0",
   "title": "Workflow Executions API",
-  "description": "Manages user-provided workflows.",
+  "description": "Execute workflows created with Workflows API.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

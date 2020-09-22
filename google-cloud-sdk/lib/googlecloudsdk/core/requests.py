@@ -35,7 +35,8 @@ import socks
 from urllib3.util.ssl_ import create_urllib3_context
 
 
-def GetSession(timeout='unset', response_encoding=None, ca_certs=None):
+def GetSession(timeout='unset', response_encoding=None, ca_certs=None,
+               session=None):
   """Get a requests.Session that is properly configured for use by gcloud.
 
   This method does not add credentials to the client. For a requests.Session
@@ -52,12 +53,13 @@ def GetSession(timeout='unset', response_encoding=None, ca_certs=None):
     ca_certs: str, absolute filename of a ca_certs file that overrides the
         default. The gcloud config property for ca_certs, in turn, overrides
         this argument.
+    session: requests.Session instance
 
   Returns:
     A requests.Session object configured with all the required settings
     for gcloud.
   """
-  http_client = _CreateRawSession(timeout, ca_certs)
+  http_client = _CreateRawSession(timeout, ca_certs, session)
   http_client = RequestWrapper().WrapWithDefaults(http_client,
                                                   response_encoding)
   return http_client
@@ -191,7 +193,8 @@ def GetProxyInfo():
 def Session(
     timeout=None,
     ca_certs=None,
-    disable_ssl_certificate_validation=False):
+    disable_ssl_certificate_validation=False,
+    session=None):
   """Returns a requests.Session subclass.
 
   Args:
@@ -199,10 +202,19 @@ def Session(
     ca_certs: str, absolute filename of a ca_certs file
     disable_ssl_certificate_validation: bool, If true, disable ssl certificate
         validation.
+    session: requests.Session instance. Otherwise, a new requests.Session will
+        be initialized.
 
   Returns: A requests.Session subclass.
   """
-  session = _Session(timeout=timeout)
+  session = session or requests.Session()
+
+  orig_request_method = session.request
+  def WrappedRequest(*args, **kwargs):
+    if 'timeout' not in kwargs:
+      kwargs['timeout'] = timeout
+    return orig_request_method(*args, **kwargs)
+  session.request = WrappedRequest
 
   proxy_rdns = True
   proxy_info = GetProxyInfo()
@@ -235,7 +247,7 @@ def Session(
   return session
 
 
-def _CreateRawSession(timeout='unset', ca_certs=None):
+def _CreateRawSession(timeout='unset', ca_certs=None, session=None):
   """Create a requests.Session matching the appropriate gcloud properties."""
   # Compared with setting the default timeout in the function signature (i.e.
   # timeout=300), this lets you test with short default timeouts by mocking
@@ -254,7 +266,8 @@ def _CreateRawSession(timeout='unset', ca_certs=None):
     ca_certs = None
   return Session(timeout=effective_timeout,
                  ca_certs=ca_certs,
-                 disable_ssl_certificate_validation=no_validate)
+                 disable_ssl_certificate_validation=no_validate,
+                 session=session)
 
 
 def _GetURIFromRequestArgs(url, params):
@@ -321,17 +334,3 @@ class RequestWrapper(transport.RequestWrapper):
   def DecodeResponse(self, response, response_encoding):
     response.encoding = response_encoding
     return response
-
-
-class _Session(requests.Session):
-  """Base request.Session class."""
-
-  def __init__(self, timeout):
-    super(_Session, self).__init__()
-    self.timeout = timeout
-
-  def request(self, *args, **kwargs):
-    if 'timeout' not in kwargs:
-      kwargs['timeout'] = self.timeout
-
-    return super(_Session, self).request(*args, **kwargs)

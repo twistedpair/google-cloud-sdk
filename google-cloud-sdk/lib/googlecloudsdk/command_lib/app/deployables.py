@@ -29,6 +29,7 @@ from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
 
 _STANDARD_APP_YAML_URL = (
     'https://cloud.google.com/appengine/docs/standard/python/config/appref')
@@ -284,6 +285,12 @@ def AppengineWebMatcher(path, stager, appyaml):
   descriptor = os.path.join(app_dir, 'WEB-INF', 'appengine-web.xml')
   if not os.path.isfile(descriptor):
     return None
+
+  xml_file = files.ReadFileContents(descriptor)
+  if '<application>' in xml_file or '<version>' in xml_file:
+    log.warning('<application> and <version> elements in ' +
+                '`appengine-web.xml` are not respected')
+
   staging_dir = stager.Stage(descriptor, app_dir, 'java-xml', env.STANDARD,
                              appyaml)
   if not staging_dir:

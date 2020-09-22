@@ -426,7 +426,7 @@
     },
     "GceClusterConfig": {
       "id": "GceClusterConfig",
-      "description": "Common config settings for resources of Compute Engine cluster instances, applicable to all instances in the cluster. NEXT ID: 13",
+      "description": "Common config settings for resources of Compute Engine cluster instances, applicable to all instances in the cluster. NEXT ID: 14",
       "type": "object",
       "properties": {
         "zoneUri": {
@@ -452,7 +452,7 @@
             "Default value. Same as INHERIT_FROM_SUBNETWORK",
             "Private access to or from Google Services configuration inherited from subnetowrk configuration",
             "Enables outbound private IPv6 access to Google Services from Dataproc cluster",
-            "Enables bidirectionl private IPv6 access between Google Services and Dataproc cluster"
+            "Enables bidirectional private IPv6 access between Google Services and Dataproc cluster"
           ],
           "enum": [
             "PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED",
@@ -489,6 +489,10 @@
         "reservationAffinity": {
           "description": "Optional. Reservation Affinity for consuming Zonal reservation.",
           "$ref": "ReservationAffinity"
+        },
+        "nodeGroupAffinity": {
+          "description": "Optional. Node Group Affinity for sole-tenant clusters.",
+          "$ref": "NodeGroupAffinity"
         }
       }
     },
@@ -523,6 +527,17 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "NodeGroupAffinity": {
+      "id": "NodeGroupAffinity",
+      "description": "Node Group Affinity for clusters using sole-tenant node groups.",
+      "type": "object",
+      "properties": {
+        "nodeGroupUri": {
+          "description": "Optional. The name of a single node group (https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/nodeGroups) a cluster will be created on.",
+          "type": "string"
         }
       }
     },
@@ -1974,7 +1989,7 @@
           "type": "string"
         },
         "parameters": {
-          "description": "Optional. Map from parameter names to values that should be used for those parameters. Values may not exceed 100 characters.",
+          "description": "Optional. Map from parameter names to values that should be used for those parameters. Values may not exceed 1000 characters.",
           "type": "object",
           "additionalProperties": {
             "type": "string"

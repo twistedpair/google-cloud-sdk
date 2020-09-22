@@ -67,7 +67,6 @@ def GetGcloudPreferredExecutable(exe):
   return path
 
 
-# When we drop python 2, use py3's timeout arg to eliminate this.
 class _TimeoutThread(object):
   """A context manager based on threading.Timer.
 
@@ -76,11 +75,22 @@ class _TimeoutThread(object):
   timer function, we raise TimeoutError at exit time.
   """
 
-  def __init__(self, func, timeout_sec):
+  def __init__(self,
+               func,
+               timeout_sec,
+               error_format='Task ran for more than {timeout_sec} seconds'):
     self.func = func
     self.timeout_sec = timeout_sec
+    self.error_format = error_format
+    self.timer = None
 
   def __enter__(self):
+    self.Reset()
+    return self
+
+  def Reset(self):
+    if self.timer is not None:
+      self.timer.cancel()
     self.timer = threading.Timer(self.timeout_sec, self.func)
     self.timer.start()
 
@@ -89,14 +99,17 @@ class _TimeoutThread(object):
     self.timer.cancel()
 
     if timed_out:
-      raise utils.TimeoutError('Task ran for more than %s seconds' %
-                               self.timeout_sec)
+      raise utils.TimeoutError(
+          self.error_format.format(timeout_sec=self.timeout_sec))
 
 
 def Run(cmd, timeout_sec, show_output=True):
   """Run command and optionally send the output to /dev/null or nul."""
   if show_output:
     p = subprocess.Popen(cmd)
+    # [py3 port] Should be able to use subprocess.run (etc) with 'timeout' param
+    # here and below. We're only using the Popen API in order to have a process
+    # to give to _TimeoutThread.
     with _TimeoutThread(p.kill, timeout_sec):
       p.wait()
   else:
@@ -154,12 +167,13 @@ def GetOutputJson(cmd, timeout_sec, show_stderr=True):
   return json.loads(stdout.strip())
 
 
-def StreamOutputJson(cmd, timeout_sec, show_stderr=True):
+def StreamOutputJson(cmd, event_timeout_sec, show_stderr=True):
   """Run command and get its output streamed as an iterable of dicts.
 
   Args:
     cmd: List of executable and arg strings.
-    timeout_sec: Command will be killed if it exceeds this.
+    event_timeout_sec: Command will be killed if we don't get a JSON line for
+      this long. (This is not the same as timeout_sec above).
     show_stderr: False to suppress stderr from the command.
 
   Yields:
@@ -173,8 +187,12 @@ def StreamOutputJson(cmd, timeout_sec, show_stderr=True):
       cmd,
       stdout=subprocess.PIPE,
       stderr=None if show_stderr else subprocess.PIPE)
-  with _TimeoutThread(p.kill, timeout_sec):
+  with _TimeoutThread(
+      p.kill,
+      event_timeout_sec,
+      error_format='No subprocess output for {timeout_sec} seconds') as timer:
     for obj in json_stream.ReadJsonStream(p.stdout):
+      timer.Reset()
       yield obj
     p.wait()
   if p.returncode != 0:

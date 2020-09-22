@@ -167,7 +167,8 @@ def AddPolicyBindingToCryptoKey(crypto_key_ref, member, role):
 def AddPolicyBindingsToCryptoKey(crypto_key_ref, member_roles):
   """Add IAM policy bindings on the CryptoKey.
 
-  Does an atomic Read-Modify-Write, adding the members to the roles.
+  Does an atomic Read-Modify-Write, adding the members to the roles. Only calls
+  SetIamPolicy if the policy would be different.
 
   Args:
     crypto_key_ref: A resources.Resource naming the CryptoKey.
@@ -181,10 +182,16 @@ def AddPolicyBindingsToCryptoKey(crypto_key_ref, member_roles):
   policy = GetCryptoKeyIamPolicy(crypto_key_ref)
   policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
 
+  policy_was_updated = False
   for member, role in member_roles:
-    iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
-  return SetCryptoKeyIamPolicy(
-      crypto_key_ref, policy, update_mask='bindings,etag')
+    if iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role):
+      policy_was_updated = True
+
+  if policy_was_updated:
+    return SetCryptoKeyIamPolicy(
+        crypto_key_ref, policy, update_mask='bindings,etag')
+
+  return policy
 
 
 def RemovePolicyBindingFromCryptoKey(crypto_key_ref, member, role):

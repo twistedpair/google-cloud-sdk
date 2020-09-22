@@ -903,13 +903,6 @@ class KubernetesResource(_messages.Message):
       but not in standalone Get/ListMembership requests. To get the resource
       manifest after the initial registration, the caller could make an
       UpdateMembership call with an empty field mask.
-    connectVersion: Immutable. The connect version to generate for
-      connect_resources. * If set to "latest", the latest Connect resources
-      will be populated. This should be the default option for most clients. *
-      If set to a specific Connect version, the Connect resources of the
-      version will be generated. If the version does not exist or is already
-      out of support window, an INVALID_ARGUMENT error will be returned. * If
-      unset connect_resources will not be populated.
     membershipCrManifest: Input only. The YAML representation of the
       Membership CR if already exists in the cluster. Leave empty if no
       Membership CR exists. The CR manifest will be used to validate that the
@@ -929,10 +922,9 @@ class KubernetesResource(_messages.Message):
   """
 
   connectResources = _messages.MessageField('ResourceManifest', 1, repeated=True)
-  connectVersion = _messages.StringField(2)
-  membershipCrManifest = _messages.StringField(3)
-  membershipResources = _messages.MessageField('ResourceManifest', 4, repeated=True)
-  resourceOptions = _messages.MessageField('ResourceOptions', 5)
+  membershipCrManifest = _messages.StringField(2)
+  membershipResources = _messages.MessageField('ResourceManifest', 3, repeated=True)
+  resourceOptions = _messages.MessageField('ResourceOptions', 4)
 
 
 class ListLocationsResponse(_messages.Message):

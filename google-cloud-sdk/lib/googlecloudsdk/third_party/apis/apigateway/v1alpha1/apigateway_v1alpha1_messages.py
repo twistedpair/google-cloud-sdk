@@ -38,6 +38,7 @@ class ApigatewayApi(_messages.Message):
     name: Output only. Resource name of the API. Format:
       projects/{project}/locations/global/apis/{api}
     state: Output only. State of the API.
+    uniqueId: Output only. The unique resource ID.
     updateTime: Output only. Updated time.
   """
 
@@ -92,7 +93,8 @@ class ApigatewayApi(_messages.Message):
   managedService = _messages.StringField(5)
   name = _messages.StringField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ApigatewayApiApiController(_messages.Message):
@@ -153,6 +155,7 @@ class ApigatewayApiConfig(_messages.Message):
       Controller of this API Config's parent must be a Managed Service (
       https://cloud.google.com/service-infrastructure/docs/glossary#managed).
     state: Output only. State of the API Config.
+    uniqueId: Output only. The unique resource ID.
     updateTime: Output only. Updated time.
   """
 
@@ -215,7 +218,8 @@ class ApigatewayApiConfig(_messages.Message):
   serviceConfigId = _messages.StringField(9)
   serviceRollout = _messages.MessageField('ApigatewayApiConfigManagedServiceRollout', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  uniqueId = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class ApigatewayApiConfigFile(_messages.Message):
@@ -477,6 +481,7 @@ class ApigatewayGateway(_messages.Message):
     name: Output only. Resource name of the Gateway. Format:
       projects/{project}/locations/{location}/gateways/{gateway}
     state: Output only. The current state of the Gateway.
+    uniqueId: Output only. The unique resource ID.
     updateTime: Output only. Updated time.
   """
 
@@ -531,7 +536,8 @@ class ApigatewayGateway(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  uniqueId = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ApigatewayGatewayConfig(_messages.Message):

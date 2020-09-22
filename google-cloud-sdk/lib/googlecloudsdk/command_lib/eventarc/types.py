@@ -48,3 +48,10 @@ def Get(name):
     if event_type.name == name:
       return event_type
   raise InvalidEventType('"{}" is not a supported event type.'.format(name))
+
+
+def ValidateAuditLogEventType(name):
+  if name != _AUDIT_LOG_TYPE.name:
+    raise InvalidEventType(
+        'For this command, the event type must be: {}.'.format(
+            _AUDIT_LOG_TYPE.name))

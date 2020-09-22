@@ -2338,10 +2338,9 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
       maintain. This must be a positive value. A utilization metric scales
       number of virtual machines handling requests to increase or decrease
       proportionally to the metric.  For example, a good metric to use as a
-      utilization_target is
-      compute.googleapis.com/instance/network/received_bytes_count. The
-      autoscaler will work to keep this value constant for each of the
-      instances.
+      utilization_target is https://www.googleapis.com/compute/v1/instance/net
+      work/received_bytes_count. The autoscaler will work to keep this value
+      constant for each of the instances.
     utilizationTargetType: Defines how target utilization value is expressed
       for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
       DELTA_PER_MINUTE.
@@ -26102,7 +26101,8 @@ class Instance(_messages.Message):
       default.
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
       the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
-      SUSPENDING, SUSPENDED, REPAIRING, and TERMINATED.
+      SUSPENDING, SUSPENDED, REPAIRING, and TERMINATED. For more information
+      about the status of the instance, see  Instance life cycle.
 
   Messages:
     LabelsValue: Labels to apply to this instance. These can be later modified
@@ -26150,6 +26150,12 @@ class Instance(_messages.Message):
       the latest fingerprint, make get() request to the instance.
     labels: Labels to apply to this instance. These can be later modified by
       the setLabels method.
+    lastStartTimestamp: [Output Only] Last start timestamp in RFC3339 text
+      format.
+    lastStopTimestamp: [Output Only] Last stop timestamp in RFC3339 text
+      format.
+    lastSuspendedTimestamp: [Output Only] Last suspended timestamp in RFC3339
+      text format.
     machineType: Full or partial URL of the machine type resource to use for
       this instance, in the format: zones/zone/machineTypes/machine-type. This
       is provided by the client when the instance is created. For example, the
@@ -26197,7 +26203,8 @@ class Instance(_messages.Message):
       because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
       values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
-      REPAIRING, and TERMINATED.
+      REPAIRING, and TERMINATED. For more information about the status of the
+      instance, see  Instance life cycle.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
     tags: Tags to apply to this instance. Tags are used to identify valid
@@ -26226,7 +26233,8 @@ class Instance(_messages.Message):
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. One of the following values:
     PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
-    REPAIRING, and TERMINATED.
+    REPAIRING, and TERMINATED. For more information about the status of the
+    instance, see  Instance life cycle.
 
     Values:
       DEPROVISIONING: <no description>
@@ -26291,24 +26299,27 @@ class Instance(_messages.Message):
   kind = _messages.StringField(13, default='compute#instance')
   labelFingerprint = _messages.BytesField(14)
   labels = _messages.MessageField('LabelsValue', 15)
-  machineType = _messages.StringField(16)
-  metadata = _messages.MessageField('Metadata', 17)
-  minCpuPlatform = _messages.StringField(18)
-  name = _messages.StringField(19)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 20, repeated=True)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 21)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 22)
-  resourcePolicies = _messages.StringField(23, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 24)
-  selfLink = _messages.StringField(25)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 26, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 27)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 28)
-  startRestricted = _messages.BooleanField(29)
-  status = _messages.EnumField('StatusValueValuesEnum', 30)
-  statusMessage = _messages.StringField(31)
-  tags = _messages.MessageField('Tags', 32)
-  zone = _messages.StringField(33)
+  lastStartTimestamp = _messages.StringField(16)
+  lastStopTimestamp = _messages.StringField(17)
+  lastSuspendedTimestamp = _messages.StringField(18)
+  machineType = _messages.StringField(19)
+  metadata = _messages.MessageField('Metadata', 20)
+  minCpuPlatform = _messages.StringField(21)
+  name = _messages.StringField(22)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 23, repeated=True)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 24)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 25)
+  resourcePolicies = _messages.StringField(26, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 27)
+  selfLink = _messages.StringField(28)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 29, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 30)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 31)
+  startRestricted = _messages.BooleanField(32)
+  status = _messages.EnumField('StatusValueValuesEnum', 33)
+  statusMessage = _messages.StringField(34)
+  tags = _messages.MessageField('Tags', 35)
+  zone = _messages.StringField(36)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -33551,7 +33562,8 @@ class NodeGroupAutoscalingPolicy(_messages.Message):
       ONLY_SCALE_OUT. For more information, see  Autoscaler modes.
 
   Fields:
-    maxNodes: The maximum number of nodes that the group should have.
+    maxNodes: The maximum number of nodes that the group should have. Must be
+      set if autoscaling is enabled. Maximum value allowed is 100.
     minNodes: The minimum number of nodes that the group should have.
     mode: The autoscaling mode. Set to one of: ON, OFF, or ONLY_SCALE_OUT. For
       more information, see  Autoscaler modes.

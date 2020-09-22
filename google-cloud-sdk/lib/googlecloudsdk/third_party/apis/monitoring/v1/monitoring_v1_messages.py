@@ -446,7 +446,7 @@ class Dashboard(_messages.Message):
     gridLayout: Content is arranged with a basic layout that re-flows a simple
       list of informational elements like widgets or tiles.
     mosaicLayout: The content is arranged as a grid of tiles, with each
-      content widget occupying one or more grid squares.
+      content widget occupying one or more grid blocks.
     name: Immutable. The resource name of the dashboard.
     rowLayout: The content is divided into equally spaced rows and the widgets
       are arranged horizontally.
@@ -787,9 +787,9 @@ class MonitoringProjectsDashboardsPatchRequest(_messages.Message):
 
 
 class MosaicLayout(_messages.Message):
-  r"""A mosaic layout divides the available space into a grid of squares, and
+  r"""A mosaic layout divides the available space into a grid of blocks, and
   overlays the grid with tiles. Unlike GridLayout, tiles may span multiple
-  grid squares and can be placed at arbitrary locations in the grid.
+  grid blocks and can be placed at arbitrary locations in the grid.
 
   Fields:
     columns: The number of columns in the mosaic grid. The number of columns
@@ -1248,17 +1248,17 @@ class Tile(_messages.Message):
   configurable.
 
   Fields:
-    height: The height of the tile, measured in grid squares. Tiles must have
-      a minimum height of 1.
+    height: The height of the tile, measured in grid blocks. Tiles must have a
+      minimum height of 1.
     widget: The informational widget contained in the tile. For example an
       XyChart.
-    width: The width of the tile, measured in grid squares. Tiles must have a
+    width: The width of the tile, measured in grid blocks. Tiles must have a
       minimum width of 1.
-    xPos: The zero-indexed position of the tile in grid squares relative to
-      the left edge of the grid. Tiles must be contained within the specified
+    xPos: The zero-indexed position of the tile in grid blocks relative to the
+      left edge of the grid. Tiles must be contained within the specified
       number of columns. x_pos cannot be negative.
-    yPos: The zero-indexed position of the tile in grid squares relative to
-      the top edge of the grid. y_pos cannot be negative.
+    yPos: The zero-indexed position of the tile in grid blocks relative to the
+      top edge of the grid. y_pos cannot be negative.
   """
 
   height = _messages.IntegerField(1, variant=_messages.Variant.INT32)

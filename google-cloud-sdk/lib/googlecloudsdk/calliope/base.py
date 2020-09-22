@@ -941,6 +941,18 @@ def EnableUserProjectQuota():
       properties.VALUES.billing.CURRENT_PROJECT)
 
 
+def EnableUserProjectQuotaWithFallback():
+  """Tries the current project and fall back to the legacy mode."""
+  properties.VALUES.billing.quota_project.Set(
+      properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK)
+
+
+def UserProjectQuotaWithFallbackEnabled():
+  """Returns if the CURRENT_PROJECT_WITH_FALLBACK mode is enabled."""
+  return properties.VALUES.billing.quota_project.Get(
+  ) == properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK
+
+
 def OptInRequests():
   """Opts the command group into to using google auth for authentication.
 

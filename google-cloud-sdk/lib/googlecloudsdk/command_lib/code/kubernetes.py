@@ -230,7 +230,7 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
 
       with console_io.ProgressBar(start_msg) as progress_bar:
         for json_obj in run_subprocess.StreamOutputJson(
-            cmd, timeout_sec=240, show_stderr=debug):
+            cmd, event_timeout_sec=90, show_stderr=debug):
           if debug:
             print('minikube', json_obj)
           if json_obj['type'] == _MINIKUBE_STEP:

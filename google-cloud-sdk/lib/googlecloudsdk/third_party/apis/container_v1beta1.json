@@ -542,6 +542,10 @@
         "kubeletConfig": {
           "description": "Node kubelet configs.",
           "$ref": "NodeKubeletConfig"
+        },
+        "gcfsConfig": {
+          "description": "GCFS (Google Container File System) configs.",
+          "$ref": "GcfsConfig"
         }
       }
     },
@@ -750,6 +754,17 @@
         "cpuCfsQuotaPeriod": {
           "description": "Set the CPU CFS quota period value 'cpu.cfs_period_us'. The string must be a sequence of decimal numbers, each with optional fraction and a unit suffix, such as \"300ms\". Valid time units are \"ns\", \"us\" (or \"\u00B5s\"), \"ms\", \"s\", \"m\", \"h\". The value must be a positive duration.",
           "type": "string"
+        }
+      }
+    },
+    "GcfsConfig": {
+      "id": "GcfsConfig",
+      "description": "GcfsConfig contains configurations of Google Container File System.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to use GCFS.",
+          "type": "boolean"
         }
       }
     },

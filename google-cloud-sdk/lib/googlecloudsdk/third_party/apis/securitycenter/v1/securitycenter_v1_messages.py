@@ -1342,10 +1342,10 @@ class NotificationConfig(_messages.Message):
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/notificationConfigs/notify_
       public_bucket".
-    pubsubTopic: The PubSub topic to send notifications to. Its format is
+    pubsubTopic: The Pub/Sub topic to send notifications to. Its format is
       "projects/[project_id]/topics/[topic]".
     serviceAccount: Output only. The service account that needs
-      "pubsub.topics.publish" permission to publish to the PubSub topic.
+      "pubsub.topics.publish" permission to publish to the Pub/Sub topic.
     streamingConfig: The config for triggering streaming-based notifications.
   """
 

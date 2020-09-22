@@ -50,6 +50,10 @@ class PubsubliteV1(base_api.BaseApiClient):
     self.cursor_projects_locations = self.CursorProjectsLocationsService(self)
     self.cursor_projects = self.CursorProjectsService(self)
     self.cursor = self.CursorService(self)
+    self.topicStats_projects_locations_topics = self.TopicStatsProjectsLocationsTopicsService(self)
+    self.topicStats_projects_locations = self.TopicStatsProjectsLocationsService(self)
+    self.topicStats_projects = self.TopicStatsProjectsService(self)
+    self.topicStats = self.TopicStatsService(self)
 
   class AdminProjectsLocationsSubscriptionsService(base_api.BaseApiService):
     """Service class for the admin_projects_locations_subscriptions resource."""
@@ -509,5 +513,72 @@ class PubsubliteV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(PubsubliteV1.CursorService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class TopicStatsProjectsLocationsTopicsService(base_api.BaseApiService):
+    """Service class for the topicStats_projects_locations_topics resource."""
+
+    _NAME = 'topicStats_projects_locations_topics'
+
+    def __init__(self, client):
+      super(PubsubliteV1.TopicStatsProjectsLocationsTopicsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ComputeMessageStats(self, request, global_params=None):
+      r"""Compute statistics about a range of messages in a given topic and partition.
+
+      Args:
+        request: (PubsubliteTopicStatsProjectsLocationsTopicsComputeMessageStatsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ComputeMessageStatsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeMessageStats')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeMessageStats.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/topicStats/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}:computeMessageStats',
+        http_method='POST',
+        method_id='pubsublite.topicStats.projects.locations.topics.computeMessageStats',
+        ordered_params=['topic'],
+        path_params=['topic'],
+        query_params=[],
+        relative_path='v1/topicStats/{+topic}:computeMessageStats',
+        request_field='computeMessageStatsRequest',
+        request_type_name='PubsubliteTopicStatsProjectsLocationsTopicsComputeMessageStatsRequest',
+        response_type_name='ComputeMessageStatsResponse',
+        supports_download=False,
+    )
+
+  class TopicStatsProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the topicStats_projects_locations resource."""
+
+    _NAME = 'topicStats_projects_locations'
+
+    def __init__(self, client):
+      super(PubsubliteV1.TopicStatsProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class TopicStatsProjectsService(base_api.BaseApiService):
+    """Service class for the topicStats_projects resource."""
+
+    _NAME = 'topicStats_projects'
+
+    def __init__(self, client):
+      super(PubsubliteV1.TopicStatsProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class TopicStatsService(base_api.BaseApiService):
+    """Service class for the topicStats resource."""
+
+    _NAME = 'topicStats'
+
+    def __init__(self, client):
+      super(PubsubliteV1.TopicStatsService, self).__init__(client)
       self._upload_configs = {
           }

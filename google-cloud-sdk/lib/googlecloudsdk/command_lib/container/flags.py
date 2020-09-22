@@ -944,9 +944,7 @@ and usage information."""
       help=help_text)
 
 
-def AddLocalSSDAndLocalSSDVolumeConfigsFlag(parser,
-                                            for_node_pool=False,
-                                            suppressed=False):
+def AddLocalSSDsAlphaFlags(parser, for_node_pool=False, suppressed=False):
   """Adds the --local-ssd-count and --local-ssd-volumes flags to the parser."""
   help_text = """\
 --local-ssd-volumes enables the ability to request local SSD with variable count, interfaces, and format\n
@@ -957,6 +955,12 @@ def AddLocalSSDAndLocalSSDVolumeConfigsFlag(parser,
   AddLocalSSDVolumeConfigsFlag(
       group, for_node_pool=for_node_pool, help_text=help_text)
   AddLocalSSDFlag(group, suppressed=suppressed, help_text=help_text)
+
+
+def AddLocalSSDsBetaFlags(parser, suppressed=False):
+  """Adds the --local-ssd-count flag to the parser."""
+  group = parser.add_mutually_exclusive_group()
+  AddLocalSSDFlag(group, suppressed=suppressed)
 
 
 def AddLocalSSDVolumeConfigsFlag(parser, for_node_pool=False, help_text=''):
@@ -3347,3 +3351,16 @@ def AddNumNodes(parser, default=3):
       type=arg_parsers.BoundedInt(1),
       help='The number of nodes to be created in each of the cluster\'s zones.',
       default=default)
+
+
+def AddEnableGcfsFlag(parser, for_node_pool=False, hidden=True):
+  """Adds the argument to handle GCFS configurations."""
+  target = 'node pool' if for_node_pool else 'default initial node pool'
+  help_text = """\
+Specifies whether to enable GCFS on {}.""".format(target)
+  parser.add_argument(
+      '--enable-gcfs',
+      help=help_text,
+      default=None,
+      hidden=hidden,
+      action='store_true')

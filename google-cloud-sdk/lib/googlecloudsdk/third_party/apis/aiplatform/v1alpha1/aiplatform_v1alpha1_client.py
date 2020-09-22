@@ -749,7 +749,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Explain(self, request, global_params=None):
-      r"""Perform an online explanation. If [ExplainRequest.deployed_model_id] is specified, the corresponding DeployModel must have explanation_spec populated. If [ExplainRequest.deployed_model_id] is not specified, all DeployedModels must have explanation_spec populated. Currently, only deployed AutoML Tables Models have explanation_spec.
+      r"""Perform an online explanation. If [ExplainRequest.deployed_model_id] is specified, the corresponding DeployModel must have explanation_spec populated. If [ExplainRequest.deployed_model_id] is not specified, all DeployedModels must have explanation_spec populated. Only deployed AutoML tabular Models have explanation_spec.
 
       Args:
         request: (AiplatformProjectsLocationsEndpointsExplainRequest) input message
@@ -1066,7 +1066,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
           }
 
     def BatchMigrate(self, request, global_params=None):
-      r"""Batch migrates resources from ml.googleapis.com, automl.googleapis.com, datalabeling.googleapis.com to AI Platform.
+      r"""Batch migrates resources from ml.googleapis.com, automl.googleapis.com, and datalabeling.googleapis.com to AI Platform (Unified).
 
       Args:
         request: (AiplatformProjectsLocationsMigratableResourcesBatchMigrateRequest) input message
@@ -1194,7 +1194,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
           }
 
     def ExportEvaluatedDataItems(self, request, global_params=None):
-      r"""Exports DataItems on which the Model was evaluated (i.e. which were in the TEST set of the dataset the Model was created from), together with their ground truth Annotations and the predictions predicted by the Model. The DataItems, ground truth Annotations and predictions are exported in the state they were at the moment the Model was evaluated. This export is available only for 30 days since the ModelEvaluation is created. Currently only available for AutoML Tables Models.
+      r"""Exports DataItems on which the Model was evaluated (i.e. which were in the TEST set of the dataset the Model was created from), together with their ground truth Annotations and the predictions predicted by the Model. The DataItems, ground truth Annotations and predictions are exported in the state they were at the moment the Model was evaluated. This export is available only for 30 days since the ModelEvaluation is created. Currently only available for AutoML tabular Models.
 
       Args:
         request: (AiplatformProjectsLocationsModelsEvaluationsExportEvaluatedDataItemsRequest) input message
@@ -1312,7 +1312,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Export(self, request, global_params=None):
-      r"""Exports a trained, "export-able", Model to a location specified by the user. A Model is considered export-able if it has at least one supported export format.
+      r"""Exports a trained, exportable, Model to a location specified by the user. A Model is considered to be exportable if it has at least one supported export format.
 
       Args:
         request: (AiplatformProjectsLocationsModelsExportRequest) input message

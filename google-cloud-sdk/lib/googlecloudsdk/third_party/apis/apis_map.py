@@ -130,6 +130,14 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.aiplatform.v1alpha1',
                 client_classpath='aiplatform_v1alpha1_client.AiplatformV1alpha1',
                 messages_modulepath='aiplatform_v1alpha1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.aiplatform.v1beta1',
+                client_classpath='aiplatform_v1beta1_client.AiplatformV1beta1',
+                messages_modulepath='aiplatform_v1beta1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -487,6 +495,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'cloudidentity': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudidentity.v1',
+                client_classpath='cloudidentity_v1_client.CloudidentityV1',
+                messages_modulepath='cloudidentity_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.cloudidentity.v1alpha1',
@@ -500,7 +516,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.cloudidentity.v1beta1',
                 client_classpath='cloudidentity_v1beta1_client.CloudidentityV1beta1',
                 messages_modulepath='cloudidentity_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1346,6 +1362,16 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.monitoring.v3',
                 client_classpath='monitoring_v3_client.MonitoringV3',
                 messages_modulepath='monitoring_v3_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'networkconnectivity': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.networkconnectivity.v1alpha1',
+                client_classpath='networkconnectivity_v1alpha1_client.NetworkconnectivityV1alpha1',
+                messages_modulepath='networkconnectivity_v1alpha1_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),

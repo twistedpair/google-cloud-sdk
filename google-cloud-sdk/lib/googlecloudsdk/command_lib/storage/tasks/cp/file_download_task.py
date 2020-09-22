@@ -48,17 +48,14 @@ class FileDownloadTask(task.Task):
     self._destination_resource = destination_resource
 
   def execute(self, callback=None):
-    download_stream = files.BinaryFileWriter(
-        self._destination_resource.storage_url.object_name, create_path=True)
-    provider = cloud_api.ProviderPrefix(
-        self._source_resource.storage_url.scheme)
-    bucket_name = self._source_resource.storage_url.bucket_name
-    object_name = self._source_resource.storage_url.object_name
+    with files.BinaryFileWriter(
+        self._destination_resource.storage_url.object_name,
+        create_path=True) as download_stream:
+      provider = cloud_api.ProviderPrefix(
+          self._source_resource.storage_url.scheme)
+      bucket_name = self._source_resource.storage_url.bucket_name
+      object_name = self._source_resource.storage_url.object_name
 
-    try:
       # TODO(b/162264437): Support all of DownloadObject's parameters.
-      api_factory.get_api(provider).DownloadObject(bucket_name,
-                                                   object_name,
+      api_factory.get_api(provider).DownloadObject(bucket_name, object_name,
                                                    download_stream)
-    finally:
-      download_stream.close()

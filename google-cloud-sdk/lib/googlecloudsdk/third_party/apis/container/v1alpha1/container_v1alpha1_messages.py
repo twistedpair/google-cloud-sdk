@@ -1646,6 +1646,16 @@ class GcePersistentDiskCsiDriverConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class GcfsConfig(_messages.Message):
+  r"""GcfsConfig contains configurations of Google Container File System.
+
+  Fields:
+    enabled: Whether to use GCFS.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GetJSONWebKeysResponse(_messages.Message):
   r"""GetJSONWebKeysResponse is a valid JSON Web Key Set as specififed in rfc
   7517
@@ -2533,6 +2543,7 @@ class NodeConfig(_messages.Message):
       size is 100GB.
     diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
       'pd-ssd') If unspecified, the default disk type is 'pd-standard'
+    gcfsConfig: GCFS (Google Container File System) configs.
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
     kubeletConfig: Node kubelet configs.
@@ -2690,26 +2701,27 @@ class NodeConfig(_messages.Message):
   bootDiskKmsKey = _messages.StringField(2)
   diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(4)
-  imageType = _messages.StringField(5)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 8)
-  localSsdCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 10, repeated=True)
-  machineType = _messages.StringField(11)
-  metadata = _messages.MessageField('MetadataValue', 12)
-  minCpuPlatform = _messages.StringField(13)
-  nodeGroup = _messages.StringField(14)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 15)
-  oauthScopes = _messages.StringField(16, repeated=True)
-  preemptible = _messages.BooleanField(17)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 18)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 19)
-  serviceAccount = _messages.StringField(20)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
-  tags = _messages.StringField(22, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 23, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 24)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 5)
+  imageType = _messages.StringField(6)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 9)
+  localSsdCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 11, repeated=True)
+  machineType = _messages.StringField(12)
+  metadata = _messages.MessageField('MetadataValue', 13)
+  minCpuPlatform = _messages.StringField(14)
+  nodeGroup = _messages.StringField(15)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 16)
+  oauthScopes = _messages.StringField(17, repeated=True)
+  preemptible = _messages.BooleanField(18)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 19)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 20)
+  serviceAccount = _messages.StringField(21)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 22)
+  tags = _messages.StringField(23, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 24, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 25)
 
 
 class NodeKubeletConfig(_messages.Message):

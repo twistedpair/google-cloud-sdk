@@ -51,6 +51,33 @@ def AddServiceResourceArg(parser,
       plural=plural).AddToParser(parser)
 
 
+def AddOperationResourceArg(parser,
+                            verb,
+                            positional=True,
+                            required=True,
+                            plural=False):
+  """Add a resource argument for a Dataproc Metastore long-running operation.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command
+    verb: str, the verb to describe the resource, for example, 'to update'.
+    positional: boolean, if True, means that the resource is a positional rather
+        than a flag.
+    required: boolean, if True, the arg is required
+    plural: boolean, if True, expects a list of resources
+  """
+  noun = 'operation' + ('s' if plural else '')
+  name = _BuildArgName(noun, positional)
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetOperationResourceSpec(),
+      'The {} {}.'.format(noun, verb),
+      required=required,
+      plural=plural).AddToParser(parser)
+
+
 def GetServiceResourceSpec():
   return concepts.ResourceSpec(
       'metastore.projects.locations.services',
@@ -60,10 +87,25 @@ def GetServiceResourceSpec():
       servicesId=ServiceAttributeConfig())
 
 
+def GetOperationResourceSpec():
+  return concepts.ResourceSpec(
+      'metastore.projects.locations.operations',
+      resource_name='operation',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      operationsId=OperationAttributeConfig())
+
+
 def ServiceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='service',
       help_text='Dataproc Metastore service for the {resource}.')
+
+
+def OperationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='operation',
+      help_text='Dataproc Metastore operation for the {resource}.')
 
 
 def LocationAttributeConfig(fallthroughs_enabled=True):

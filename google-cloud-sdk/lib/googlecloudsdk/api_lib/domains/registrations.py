@@ -210,14 +210,18 @@ class RegistrationsClient(object):
     """
 
     updated_list = []
-    if updated.dns_provider:
-      updated_list += ['dns_provider']
     if updated.glue_records:
       updated_list += ['glue_records']
     if updated.google_domains_dnssec:
-      updated_list += ['google_domains_dns.ds_state']
+      if updated.name_servers:
+        updated_list += ['google_domains_dns']
+      else:
+        updated_list += ['google_domains_dns.ds_state']
     if updated.custom_dnssec:
-      updated_list += ['custom_dns.ds_records']
+      if updated.name_servers:
+        updated_list += ['custom_dns']
+      else:
+        updated_list += ['custom_dns.ds_records']
     update_mask = ','.join(updated_list)
 
     # pylint: disable=line-too-long

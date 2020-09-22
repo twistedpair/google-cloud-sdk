@@ -579,6 +579,10 @@
         "bootDiskKmsKey": {
           "description": " The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects\/[KEY_PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[RING_NAME]\/cryptoKeys\/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https:\/\/cloud.google.com\/compute\/docs\/disks\/customer-managed-encryption",
           "type": "string"
+        },
+        "gcfsConfig": {
+          "description": "GCFS (Google Container File System) configs.",
+          "$ref": "GcfsConfig"
         }
       }
     },
@@ -817,6 +821,17 @@
         "cpuCfsQuotaPeriod": {
           "description": "Set the CPU CFS quota period value 'cpu.cfs_period_us'. The string must be a sequence of decimal numbers, each with optional fraction and a unit suffix, such as \"300ms\". Valid time units are \"ns\", \"us\" (or \"\u00B5s\"), \"ms\", \"s\", \"m\", \"h\". The value must be a positive duration.",
           "type": "string"
+        }
+      }
+    },
+    "GcfsConfig": {
+      "id": "GcfsConfig",
+      "description": "GcfsConfig contains configurations of Google Container File System.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to use GCFS.",
+          "type": "boolean"
         }
       }
     },

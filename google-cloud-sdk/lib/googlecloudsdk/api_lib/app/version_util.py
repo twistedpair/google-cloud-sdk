@@ -111,6 +111,31 @@ class Version(object):
   def IsReceivingAllTraffic(self):
     return abs(self.traffic_split - 1.0) < self._ALL_TRAFFIC_EPSILON
 
+  def GetVersionResource(self, api_client):
+    """Attempts to load the Version resource for this version.
+
+    Returns the cached Version resource if it exists. Otherwise, attempts to
+    load it from the server. Errors are logged and ignored.
+
+    Args:
+      api_client: An AppengineApiClient.
+
+    Returns:
+      The Version resource, or None if it could not be loaded.
+    """
+    if not self.version:
+      try:
+        self.version = api_client.GetVersionResource(self.service, self.id)
+        if not self.version:
+          log.info('Failed to retrieve resource for version [{0}]'.format(self))
+      except apitools_exceptions.Error as e:
+        # Log and drop the exception so we don't introduce a new failure mode
+        # into the app deployment flow. If we find this isn't happening very
+        # often, we could choose to propagate the error.
+        log.warning('Error retrieving Version resource [{0}]: {1}'
+                    .format(six.text_type(self), six.text_type(e)))
+    return self.version
+
   def __eq__(self, other):
     return (type(other) is Version and
             self.project == other.project and
@@ -233,7 +258,10 @@ def PromoteVersion(all_services, new_version, api_client,
                    stop_previous_version):
   """Promote the new version to receive all traffic.
 
-  Additionally, stops the previous version if applicable.
+  First starts the new version if it is not running.
+
+  Additionally, stops the previous version if stop_previous_version is True and
+  it is possible to stop the previous version.
 
   Args:
     all_services: {str, Service}, A mapping of service id to Service objects
@@ -249,6 +277,16 @@ def PromoteVersion(all_services, new_version, api_client,
     # figure out what the previous default version was
     old_default_version = _GetPreviousVersion(
         all_services, new_version, api_client)
+
+  # If the new version is stopped, try to start it.
+  new_version_resource = new_version.GetVersionResource(api_client)
+  status_enum = api_client.messages.Version.ServingStatusValueValuesEnum
+  if (new_version_resource and
+      new_version_resource.servingStatus == status_enum.STOPPED):
+    # start new version
+    log.status.Print('Starting version [{0}] before promoting it.'
+                     .format(new_version))
+    api_client.StartVersion(new_version.service, new_version.id, block=True)
 
   _SetDefaultVersion(new_version, api_client)
 

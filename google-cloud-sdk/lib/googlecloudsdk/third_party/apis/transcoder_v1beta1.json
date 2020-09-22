@@ -444,12 +444,12 @@
           "type": "string"
         },
         "heightPixels": {
-          "description": "Required. The height of video in pixels. Must be an even integer.",
+          "description": "The height of the video in pixels. Must be an even integer. When not specified, the height is adjusted to match the specified width and input aspect ratio. If both are omitted, the input height is used.",
           "type": "integer",
           "format": "int32"
         },
         "widthPixels": {
-          "description": "Required. The width of video in pixels. Must be an even integer.",
+          "description": "The width of the video in pixels. Must be an even integer. When not specified, the width is adjusted to match the specified height and input aspect ratio. If both are omitted, the input width is used.",
           "type": "integer",
           "format": "int32"
         },
@@ -798,7 +798,7 @@
       "type": "object",
       "properties": {
         "fileName": {
-          "description": "The name of the generated file. The default is `\"master\"` with the extension suffix corresponding to the `Manifest.type`.",
+          "description": "The name of the generated file. The default is `\"master\"` with the extension suffix corresponding to the `Manifest.type`. ",
           "type": "string"
         },
         "type": {

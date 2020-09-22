@@ -517,7 +517,13 @@ class StorageClient(object):
     policy = self.GetIamPolicy(bucket_ref)
     policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
 
+    policy_was_updated = False
     for member, role in member_roles:
-      iam_util.AddBindingToIamPolicy(
-          self.messages.Policy.BindingsValueListEntry, policy, member, role)
-    return self.SetIamPolicy(bucket_ref, policy)
+      if iam_util.AddBindingToIamPolicy(
+          self.messages.Policy.BindingsValueListEntry, policy, member, role):
+        policy_was_updated = True
+
+    if policy_was_updated:
+      return self.SetIamPolicy(bucket_ref, policy)
+
+    return policy

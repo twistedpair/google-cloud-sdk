@@ -351,7 +351,7 @@ def GetFunction(function_name):
     raise
 
 
-# TODO(b/139026575): Remove try_set_invoker option
+# TODO(b/130604453): Remove try_set_invoker option
 @CatchHTTPErrorRaiseHTTPException
 def WaitForFunctionUpdateOperation(op, try_set_invoker=None,
                                    on_every_poll=None):

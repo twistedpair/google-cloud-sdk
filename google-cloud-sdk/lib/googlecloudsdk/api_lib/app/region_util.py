@@ -45,6 +45,7 @@ class Region(object):
   def __str__(self):
     envs = (x[1] for x in
             [(self.standard, 'standard'), (self.flexible, 'flexible')] if x[0])
-    return '{region: <13} (supports {envs})'.format(region=self.region,
-                                                    envs=' and '.join(envs))
-
+    out = '{region: <13}'.format(region=self.region)
+    if self.standard and self.flexible:
+      return out
+    return out + ' (supports {envs})'.format(envs=' and '.join(envs))

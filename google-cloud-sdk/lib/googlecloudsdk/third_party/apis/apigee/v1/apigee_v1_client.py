@@ -2548,7 +2548,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def GenerateDeployChangeReport(self, request, global_params=None):
-      r"""Generates a report for a dry run analysis of a DeployApiProxy request without committing the deployment. In addition to the standard validations performed when adding deployments, additional analysis will be done to detect possible traffic routing changes that would result from this deployment being created. Any potential routing conflicts or unsafe changes will be reported in the response. This routing analysis is not performed for a non-dry-run DeployApiProxy request.
+      r"""Generates a report for a dry run analysis of a DeployApiProxy request without committing the deployment. In addition to the standard validations performed when adding deployments, additional analysis will be done to detect possible traffic routing changes that would result from this deployment being created. Any potential routing conflicts or unsafe changes will be reported in the response. This routing analysis is not performed for a non-dry-run DeployApiProxy request. For a request path `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}/deployments:generateDeployChangeReport`, two permissions are required: * `apigee.deployments.create` on the resource `organizations/{org}/environments/{env}` * `apigee.proxyrevisions.deploy` on the resource `organizations/{org}/apis/{api}/revisions/{rev}`.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChangeReportRequest) input message
@@ -2566,7 +2566,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.environments.apis.revisions.deployments.generateDeployChangeReport',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['basepath', 'override'],
+        query_params=['override'],
         relative_path='v1/{+name}/deployments:generateDeployChangeReport',
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChangeReportRequest',
@@ -2575,7 +2575,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def GenerateUndeployChangeReport(self, request, global_params=None):
-      r"""Generates a report for a dry run analysis of an UndeployApiProxy request without committing the undeploy. In addition to the standard validations performed when removing deployments, additional analysis will be done to detect possible traffic routing changes that would result from this deployment being removed. Any potential routing conflicts or unsafe changes will be reported in the response. This routing analysis is not performed for a non-dry-run UndeployApiProxy request.
+      r"""Generates a report for a dry run analysis of an UndeployApiProxy request without committing the undeploy. In addition to the standard validations performed when removing deployments, additional analysis will be done to detect possible traffic routing changes that would result from this deployment being removed. Any potential routing conflicts or unsafe changes will be reported in the response. This routing analysis is not performed for a non-dry-run UndeployApiProxy request. For a request path `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}/deployments:generateUndeployChangeReport`, two permissions are required: * `apigee.deployments.delete` on the resource `organizations/{org}/environments/{env}` * `apigee.proxyrevisions.undeploy` on the resource `organizations/{org}/apis/{api}/revisions/{rev}`.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateUndeployChangeReportRequest) input message
@@ -2612,7 +2612,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Deploy(self, request, global_params=None):
-      r"""Deploys a revision of an API proxy. If an API proxy revision is currently deployed, to ensure seamless deployment with zero downtime set the `override` parameter to `true`. In this case, hybrid attempts to deploy the new revision fully before undeploying the existing revision. You cannot invoke an API proxy until it has been deployed to an environment. After you deploy an API proxy revision, you cannot edit it. To edit the API proxy, you must create and deploy a new revision. .
+      r"""Deploys a revision of an API proxy. If another revision of the same API proxy revision is currently deployed, set the `override` parameter to `true` to have this revision replace the currently deployed revision. You cannot invoke an API proxy until it has been deployed to an environment. After you deploy an API proxy revision, you cannot edit it. To edit the API proxy, you must create and deploy a new revision. For a request path `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}/deployments`, two permissions are required: * `apigee.deployments.create` on the resource `organizations/{org}/environments/{env}` * `apigee.proxyrevisions.deploy` on the resource `organizations/{org}/apis/{api}/revisions/{rev}` .
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsApisRevisionsDeployRequest) input message
@@ -2666,7 +2666,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Undeploy(self, request, global_params=None):
-      r"""Undeploys an API proxy revision from an environment. Because multiple revisions of the same API proxy can be deployed in the same environment if the base paths are different, you must specify the revision number of the API proxy.
+      r"""Undeploys an API proxy revision from an environment. For a request path `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}/deployments`, two permissions are required: * `apigee.deployments.delete` on the resource `organizations/{org}/environments/{env}` * `apigee.proxyrevisions.undeploy` on the resource `organizations/{org}/apis/{api}/revisions/{rev}`.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsApisRevisionsUndeployRequest) input message
@@ -3687,7 +3687,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Deploy(self, request, global_params=None):
-      r"""Deploys a revision of a shared flow. If a shared flow revision is currently deployed, to ensure seamless deployment with zero downtime set the `override` parameter to `true`. In this case, hybrid attempts to deply the new revision fully before undeploying the existing revision. You cannot use a shared flows until it has been deployed to an environment.
+      r"""Deploys a revision of a shared flow. If another revision of the same shared flow is currently deployed, set the `override` parameter to `true` to have this revision replace the currently deployed revision. You cannot use a shared flow until it has been deployed to an environment. For a request path `organizations/{org}/environments/{env}/sharedflows/{sf}/revisions/{rev}/deployments`, two permissions are required: * `apigee.deployments.create` on the resource `organizations/{org}/environments/{env}` * `apigee.sharedflowrevisions.deploy` on the resource `organizations/{org}/sharedflows/{sf}/revisions/{rev}`.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsSharedflowsRevisionsDeployRequest) input message
@@ -3741,7 +3741,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Undeploy(self, request, global_params=None):
-      r"""Undeploys a shared flow revision from an environment.
+      r"""Undeploys a shared flow revision from an environment. For a request path `organizations/{org}/environments/{env}/sharedflows/{sf}/revisions/{rev}/deployments`, two permissions are required: * `apigee.deployments.delete` on the resource `organizations/{org}/environments/{env}` * `apigee.sharedflowrevisions.undeploy` on the resource `organizations/{org}/sharedflows/{sf}/revisions/{rev}`.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsSharedflowsRevisionsUndeployRequest) input message

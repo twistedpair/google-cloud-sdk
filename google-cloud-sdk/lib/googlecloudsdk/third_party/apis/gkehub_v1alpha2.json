@@ -374,10 +374,6 @@
           "description": "Input only. The YAML representation of the Membership CR if already exists in the cluster. Leave empty if no Membership CR exists. The CR manifest will be used to validate that the cluster has not been registered with another Membership. For GKE clusters, the input from the caller will be ignored as Hub API server will directly fetch the Membership CR from the cluster.",
           "type": "string"
         },
-        "connectVersion": {
-          "description": "Immutable. The connect version to generate for connect_resources. * If set to \"latest\", the latest Connect resources will be populated. This should be the default option for most clients. * If set to a specific Connect version, the Connect resources of the version will be generated. If the version does not exist or is already out of support window, an INVALID_ARGUMENT error will be returned. * If unset connect_resources will not be populated.",
-          "type": "string"
-        },
         "membershipResources": {
           "description": "Output only. The additional Kubernetes resources that need to be applied to the cluster after the membership creation and every update. This field is only populated in the Membership returned after the long-running operation of Create\/UpdateMembership finished, but not in standalone Get\/ListMembership requests. To get the resource manifest after the initial registration, the caller could make an UpdateMembership call with an empty field mask.",
           "readOnly": true,

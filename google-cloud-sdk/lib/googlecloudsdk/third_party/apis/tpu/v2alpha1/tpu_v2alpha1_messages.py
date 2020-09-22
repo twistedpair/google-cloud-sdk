@@ -37,20 +37,6 @@ class AccessConfig(_messages.Message):
   externalIp = _messages.StringField(1)
 
 
-class AttachedDisk(_messages.Message):
-  r"""A node-attached disk resource.
-
-  Fields:
-    diskSizeGb: Specifies the size of the disk in base-2 GB. The size must be
-      at least 10 GB.
-    sourceImage: Specifies the image full path of the disk. For example:
-      "projects/my-project/global/images/my-image".
-  """
-
-  diskSizeGb = _messages.IntegerField(1)
-  sourceImage = _messages.StringField(2)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -236,15 +222,11 @@ class NetworkEndpoint(_messages.Message):
     accessConfig: The access config for the TPU worker.
     ipAddress: The internal IP address of this network endpoint.
     port: The port of this network endpoint.
-    tpuVmInstanceId: The instance ID for the TPU worker.
-    tpuVmSelflink: The SelfLink for the VM backing this TPU worker.
   """
 
   accessConfig = _messages.MessageField('AccessConfig', 1)
   ipAddress = _messages.StringField(2)
   port = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  tpuVmInstanceId = _messages.StringField(4)
-  tpuVmSelflink = _messages.StringField(5)
 
 
 class Node(_messages.Message):
@@ -265,7 +247,6 @@ class Node(_messages.Message):
     acceleratorType: Required. The type of hardware accelerators associated
       with this node.
     apiVersion: Output only. The API version that created this Node.
-    bootDisk: The attached boot disk for the Node.
     cidrBlock: The CIDR block that the TPU node will use when selecting an IP
       address. This CIDR block must be a /29 block; the Compute Engine
       networks API forbids a smaller block, and using a larger block would be
@@ -282,30 +263,13 @@ class Node(_messages.Message):
       description of why the TPU Node is unhealthy.
     id: Output only. The unique identifier for the TPU Node.
     labels: Resource labels to represent user-provided metadata.
-    machineType: A string attribute.
     metadata: Custom metadata to apply to the TPU Node. Can set startup-script
       and shutdown-script
-    modelBasePath: Inference Mode: Base path to exported saved model. This
-      field can be used instead of model_config_file directly to specify the
-      exported saved model's base path (excluding timestamp), whereas
-      model_config_file points to a GCS path to a ModelServerConfig proto.
-    modelConfigFile: Inference Mode: GCS path to model configuration file for
-      models to serve The contents of the model_config.pbtxt is a
-      ModelServerConfig proto.
-    modelName: Inference Mode: Model name for tensorflow serving to serve to
-      incoming requests. If none is provided, "serving_default" will be used.
     name: Output only. Immutable. The name of the TPU.
     networkConfig: Network configurations for the TPU node.
     networkEndpoints: Output only. The network endpoints where TPU workers can
       be accessed and sent work. It is recommended that runtime clients of the
       node reach out to the 0th entry in this map first.
-    platformConfigFile: Inference Mode: GCS path to configuration file for
-      platform requirements The contents of the platform_config.pbtxt is a
-      PlatformConfigMap proto.
-    runtimeEnvVars: Allow tests to pass environment variables to runtime
-      server.
-    runtimeFlags: Allow tests to pass flags to runtime server.
-    runtimeUrlOverride: A string attribute.
     runtimeVersion: Required. The runtime version running in the Node.
     schedulingConfig: A SchedulingConfig attribute.
     serviceAccount: The Google Cloud Platform Service Account to be used by
@@ -439,32 +403,23 @@ class Node(_messages.Message):
 
   acceleratorType = _messages.StringField(1)
   apiVersion = _messages.EnumField('ApiVersionValueValuesEnum', 2)
-  bootDisk = _messages.MessageField('AttachedDisk', 3)
-  cidrBlock = _messages.StringField(4)
-  createTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  health = _messages.EnumField('HealthValueValuesEnum', 7)
-  healthDescription = _messages.StringField(8)
-  id = _messages.IntegerField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  machineType = _messages.StringField(11)
-  metadata = _messages.MessageField('MetadataValue', 12)
-  modelBasePath = _messages.StringField(13)
-  modelConfigFile = _messages.StringField(14)
-  modelName = _messages.StringField(15)
-  name = _messages.StringField(16)
-  networkConfig = _messages.MessageField('NetworkConfig', 17)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 18, repeated=True)
-  platformConfigFile = _messages.StringField(19)
-  runtimeEnvVars = _messages.StringField(20)
-  runtimeFlags = _messages.StringField(21)
-  runtimeUrlOverride = _messages.StringField(22)
-  runtimeVersion = _messages.StringField(23)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 24)
-  serviceAccount = _messages.MessageField('ServiceAccount', 25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  symptoms = _messages.MessageField('Symptom', 27, repeated=True)
-  tags = _messages.StringField(28, repeated=True)
+  cidrBlock = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  health = _messages.EnumField('HealthValueValuesEnum', 6)
+  healthDescription = _messages.StringField(7)
+  id = _messages.IntegerField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  metadata = _messages.MessageField('MetadataValue', 10)
+  name = _messages.StringField(11)
+  networkConfig = _messages.MessageField('NetworkConfig', 12)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 13, repeated=True)
+  runtimeVersion = _messages.StringField(14)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 15)
+  serviceAccount = _messages.MessageField('ServiceAccount', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  symptoms = _messages.MessageField('Symptom', 18, repeated=True)
+  tags = _messages.StringField(19, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -863,26 +818,21 @@ class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
     node: A Node resource to be passed as the request body.
     nodeId: The unqualified resource name.
     parent: The parent resource name.
-    serviceAccount: Allows user to set the service account running on the TPU
-      node's workers.
   """
 
   node = _messages.MessageField('Node', 1)
   nodeId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  serviceAccount = _messages.StringField(4)
 
 
 class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
   r"""A TpuProjectsLocationsNodesDeleteRequest object.
 
   Fields:
-    deleteTenantProject: A boolean attribute.
     name: The resource name.
   """
 
-  deleteTenantProject = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class TpuProjectsLocationsNodesGetRequest(_messages.Message):

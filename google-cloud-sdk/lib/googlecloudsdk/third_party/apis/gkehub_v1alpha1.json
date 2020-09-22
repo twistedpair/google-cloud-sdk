@@ -278,6 +278,10 @@
           "description": "Feature for Anthos Cloud Audit Logging.",
           "$ref": "CloudAuditLoggingFeatureSpec"
         },
+        "apigeeFeatureSpec": {
+          "description": "Feature for Apigee.",
+          "$ref": "ApigeeFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the resource itself.",
           "readOnly": true,
@@ -456,6 +460,10 @@
           "description": "Policy Controller configuration for the cluster.",
           "$ref": "PolicyController"
         },
+        "binauthz": {
+          "description": "Binauthz conifguration for the cluster.",
+          "$ref": "BinauthzConfig"
+        },
         "version": {
           "description": "Version of ACM installed.",
           "type": "string"
@@ -544,6 +552,17 @@
         }
       }
     },
+    "BinauthzConfig": {
+      "id": "BinauthzConfig",
+      "description": "Configuration for Binauthz",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether binauthz is enabled in this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
     "AppDevExperienceFeatureSpec": {
       "id": "AppDevExperienceFeatureSpec",
       "description": "Spec for App Dev Experience Feature.",
@@ -558,6 +577,38 @@
       "properties": {
         "allowlistedServiceAccounts": {
           "description": "Service account that should be allowlisted to send the audit logs; eg cloudauditlogging@gcp-project.iam.gserviceaccount.com. These accounts must already exist, but do not need to have any permissions granted to them. The customer's entitlements will be checked prior to allowlisting (i.e. the customer must be an Anthos customer.)",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ApigeeFeatureSpec": {
+      "id": "ApigeeFeatureSpec",
+      "description": "Feature spec for Apigee",
+      "type": "object",
+      "properties": {
+        "membershipSpecs": {
+          "description": "Map of Hub-based Membership IDs to individual membership spec. Membership IDs are in this format: `projects\/[project-number]\/locations\/global\/memberships\/[membership-name]`",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "MembershipSpec"
+          }
+        }
+      }
+    },
+    "MembershipSpec": {
+      "id": "MembershipSpec",
+      "description": "Membership information",
+      "type": "object",
+      "properties": {
+        "location": {
+          "description": "Location of the cluster. This is used by Apigee management plane for making location-based routing decisions.",
+          "type": "string"
+        },
+        "organizationProjects": {
+          "description": "In Apigee hybrid install, a project can contain memberships that serve multiple Apigee org projects. This is the list of Apigee org projects that the membership serves. E.g., In order to get the memberships that serve a specific organization project, Consumers can filter based on this field.",
           "type": "array",
           "items": {
             "type": "string"
@@ -665,6 +716,10 @@
         "cloudauditloggingFeatureState": {
           "description": "The state of the Anthos Cloud Audit Logging feature.",
           "$ref": "CloudAuditLoggingFeatureState"
+        },
+        "apigeeFeatureState": {
+          "description": "State for the Apigee Feature.",
+          "$ref": "ApigeeFeatureState"
         },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
@@ -833,6 +888,10 @@
         "policyControllerState": {
           "description": "PolicyController status",
           "$ref": "PolicyControllerState"
+        },
+        "binauthzState": {
+          "description": "Binauthz status",
+          "$ref": "BinauthzState"
         }
       }
     },
@@ -1182,6 +1241,44 @@
         }
       }
     },
+    "BinauthzState": {
+      "id": "BinauthzState",
+      "description": "State for Binauthz",
+      "type": "object",
+      "properties": {
+        "webhook": {
+          "description": "The state of the binauthz webhook.",
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "version": {
+          "description": "The version of binauthz that is installed.",
+          "$ref": "BinauthzVersion"
+        }
+      }
+    },
+    "BinauthzVersion": {
+      "id": "BinauthzVersion",
+      "description": "The version of binauthz.",
+      "type": "object",
+      "properties": {
+        "webhookVersion": {
+          "description": "The version of the binauthz webhook.",
+          "type": "string"
+        }
+      }
+    },
     "AppDevExperienceFeatureState": {
       "id": "AppDevExperienceFeatureState",
       "description": "State for App Dev Exp Feature.",
@@ -1192,6 +1289,13 @@
     "CloudAuditLoggingFeatureState": {
       "id": "CloudAuditLoggingFeatureState",
       "description": "An empty state for Audit Logging Allowlisting. This is required since FeatureStateDetails requires a state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ApigeeFeatureState": {
+      "id": "ApigeeFeatureState",
+      "description": "An empty state for Apigee feature.",
       "type": "object",
       "properties": {
       }

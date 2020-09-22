@@ -532,7 +532,7 @@ class Templates(object):
     {copy}
     """
     if sdk_language == 'JAVA':
-      env['FLEX_TEMPLATE_JAVA_CLASSPATH'] = '/template/'
+      env['FLEX_TEMPLATE_JAVA_CLASSPATH'] = '/template/*'
     envs = ['ENV {}={}'.format(k, v) for k, v in env.items()]
     env_list = '\n'.join(envs)
     copy_commands = '\n'.join(

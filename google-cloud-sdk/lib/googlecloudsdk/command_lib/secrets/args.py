@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2019 Google LLC. All Rights Reserved.
+# Copyright 2020 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -138,6 +138,64 @@ def AddVersion(parser, purpose, positional=False, **kwargs):
       group_help=('Numeric secret version {} or `latest` to use the latest '
                   'version.').format(purpose),
       **kwargs).AddToParser(parser)
+
+
+def AddUpdateReplicationGroup(parser):
+  """Add flags for specifying replication policy updates."""
+  group = parser.add_group(
+      mutex=True, help='Replication update.')
+  group.add_argument(
+      _ArgOrFlag('remove-cmek', False),
+      action='store_true',
+      help=(
+          'Remove customer managed encryption key so that future versions will '
+          'be encrypted by a Google managed encryption key.'))
+  subgroup = group.add_group(help='CMEK Update.')
+  subgroup.add_argument(
+      _ArgOrFlag('set-kms-key', False),
+      metavar='SET-KMS-KEY',
+      help=(
+          'New KMS key with which to encrypt and decrypt future secret versions.'
+      ))
+  subgroup.add_argument(
+      _ArgOrFlag('location', False),
+      metavar='REPLICA-LOCATION',
+      help=('Location of replica to update. For secrets with automatic '
+            'replication policies, this can be omitted.'))
+
+
+def AddCreateReplicationPolicyGroup(parser):
+  """Add flags for specifying replication policy on secret creation."""
+
+  group = parser.add_group(mutex=True, help='Replication policy.')
+  group.add_argument(
+      _ArgOrFlag('replication-policy-file', False),
+      metavar='REPLICATION-POLICY-FILE',
+      help=(
+          'JSON or YAML file to use to read the replication policy. The file '
+          'must conform to '
+          'https://cloud.google.com/secret-manager/docs/reference/rest/v1/projects.secrets#replication.'
+          'Set this to "-" to read from stdin.'))
+  subgroup = group.add_group(help='Inline replication arguments.')
+  subgroup.add_argument(
+      _ArgOrFlag('replication-policy', False),
+      metavar='POLICY',
+      help=('The type of replication policy to apply to this secret. Allowed '
+            'values are "automatic" and "user-managed". If user-managed then '
+            '--locations must also be provided.'))
+  subgroup.add_argument(
+      _ArgOrFlag('kms-key-name', False),
+      metavar='KMS-KEY-NAME',
+      help=('Global KMS key with which to encrypt and decrypt the secret. Only '
+            'valid for secrets with an automatic replication policy.'))
+
+  subgroup.add_argument(
+      _ArgOrFlag('locations', False),
+      action=arg_parsers.UpdateAction,
+      metavar='LOCATION',
+      type=arg_parsers.ArgList(),
+      help=('Comma-separated list of locations in which the secret should be '
+            'replicated.'))
 
 
 def _ArgOrFlag(name, positional):

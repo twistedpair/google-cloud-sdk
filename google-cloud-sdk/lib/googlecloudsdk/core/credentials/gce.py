@@ -143,15 +143,18 @@ class _GCEMetadata(object):
           metadata server.
 
     Returns:
-      str, The email address for the default service account. None if not on a
-          GCE VM.
+      str, The project ID for the current active project. None if no project is
+          currently active.
     """
 
     if not self.connected:
       return None
 
-    return _ReadNoProxyWithCleanFailures(
+    project = _ReadNoProxyWithCleanFailures(
         gce_read.GOOGLE_GCE_METADATA_PROJECT_URI)
+    if project:
+      return project
+    return None
 
   @_HandleMissingMetadataServer(return_list=True)
   def Accounts(self):

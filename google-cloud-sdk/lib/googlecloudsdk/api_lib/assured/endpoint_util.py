@@ -28,36 +28,7 @@ from googlecloudsdk.core import properties
 from six.moves.urllib import parse
 
 
-RESOURCE_LOCATION_REGEX_PATTERN = r'organizations\/.+\/locations\/([-a-zA-Z0-9]+)($|\/.*)'
 ENV_NETLOC_REGEX_PATTERN = r'((staging|autopush|dev)-)?(assuredworkloads.*)'
-
-
-def DeriveAssuredWorkloadsRegionalEndpoint(endpoint, region):
-  scheme, netloc, path, params, query, fragment = parse.urlparse(endpoint)
-  m = re.match(ENV_NETLOC_REGEX_PATTERN, netloc)
-  env = m.group(1)
-  netloc_suffix = m.group(3)
-  if env:
-    netloc = '{}{}-{}'.format(env, region, netloc_suffix)
-  else:
-    netloc = '{}-{}'.format(region, netloc_suffix)
-  return parse.urlunparse((scheme, netloc, path, params, query, fragment))
-
-
-@contextlib.contextmanager
-def AssuredWorkloadsEndpointOverridesFromResource(release_track, resource):
-  """Context manager to regionalize Assured endpoints using a provided resource.
-
-  Args:
-    release_track: str, Release track of the command being called.
-    resource: str, Assured resource from which the region must be extracted.
-
-  Yields:
-    None.
-  """
-  region = GetRegionFromResource(resource)
-  with AssuredWorkloadsEndpointOverridesFromRegion(release_track, region):
-    yield
 
 
 @contextlib.contextmanager
@@ -84,16 +55,6 @@ def AssuredWorkloadsEndpointOverridesFromRegion(release_track, region):
         old_endpoint)
 
 
-def GetRegionFromResource(resource):
-  if resource is None:
-    return None
-  m = re.search(RESOURCE_LOCATION_REGEX_PATTERN, resource)
-  if not m:
-    raise Exception('Resource {} was not recognised.'.format(resource))
-  region = m.group(1)
-  return region
-
-
 def GetEffectiveAssuredWorkloadsEndpoint(release_track, region):
   """Returns regional Assured Workloads endpoint, or global if region not set."""
   endpoint = apis.GetEffectiveApiEndpoint(
@@ -101,3 +62,15 @@ def GetEffectiveAssuredWorkloadsEndpoint(release_track, region):
   if region:
     return DeriveAssuredWorkloadsRegionalEndpoint(endpoint, region)
   return endpoint
+
+
+def DeriveAssuredWorkloadsRegionalEndpoint(endpoint, region):
+  scheme, netloc, path, params, query, fragment = parse.urlparse(endpoint)
+  m = re.match(ENV_NETLOC_REGEX_PATTERN, netloc)
+  env = m.group(1)
+  netloc_suffix = m.group(3)
+  if env:
+    netloc = '{}{}-{}'.format(env, region, netloc_suffix)
+  else:
+    netloc = '{}-{}'.format(region, netloc_suffix)
+  return parse.urlunparse((scheme, netloc, path, params, query, fragment))

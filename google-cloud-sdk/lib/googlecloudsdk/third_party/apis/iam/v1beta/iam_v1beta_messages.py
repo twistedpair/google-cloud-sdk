@@ -191,7 +191,7 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
       Google Cloud IAM attribute to map to. The following keys are supported:
       * `google.subject`: The principal IAM is authenticating. You can
       reference this value in IAM bindings. This is also the subject that
-      appears in Cloud Logging logs. Cannot exceed 100 characters. *
+      appears in Cloud Logging logs. Cannot exceed 127 characters. *
       `google.groups`: Groups the external identity belongs to. You can grant
       groups access to resources using an IAM `principalSet` binding; access
       applies to all members of the group. You can also provide custom
@@ -199,7 +199,7 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
       `{custom_attribute}` is the name of the custom attribute to be mapped.
       You can define a maximum of 50 custom attributes. The maximum length of
       a mapped attribute key is 100 characters, and the key may only contain
-      the characters [a-z0-9-]. You can reference these attributes in IAM
+      the characters [a-z0-9_]. You can reference these attributes in IAM
       policies to define fine-grained access for a workload to Google Cloud
       resources. For example: * `google.subject`: `principal://iam.googleapis.
       com/projects/{project}/locations/{location}/workloadIdentityPools/{pool}
@@ -250,14 +250,14 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
       Cloud IAM attribute to map to. The following keys are supported: *
       `google.subject`: The principal IAM is authenticating. You can reference
       this value in IAM bindings. This is also the subject that appears in
-      Cloud Logging logs. Cannot exceed 100 characters. * `google.groups`:
+      Cloud Logging logs. Cannot exceed 127 characters. * `google.groups`:
       Groups the external identity belongs to. You can grant groups access to
       resources using an IAM `principalSet` binding; access applies to all
       members of the group. You can also provide custom attributes by
       specifying `attribute.{custom_attribute}`, where `{custom_attribute}` is
       the name of the custom attribute to be mapped. You can define a maximum
       of 50 custom attributes. The maximum length of a mapped attribute key is
-      100 characters, and the key may only contain the characters [a-z0-9-].
+      100 characters, and the key may only contain the characters [a-z0-9_].
       You can reference these attributes in IAM policies to define fine-
       grained access for a workload to Google Cloud resources. For example: *
       `google.subject`: `principal://iam.googleapis.com/projects/{project}/loc
@@ -323,14 +323,14 @@ class GoogleIamV1betaWorkloadIdentityPoolProvider(_messages.Message):
     attribute to map to. The following keys are supported: * `google.subject`:
     The principal IAM is authenticating. You can reference this value in IAM
     bindings. This is also the subject that appears in Cloud Logging logs.
-    Cannot exceed 100 characters. * `google.groups`: Groups the external
+    Cannot exceed 127 characters. * `google.groups`: Groups the external
     identity belongs to. You can grant groups access to resources using an IAM
     `principalSet` binding; access applies to all members of the group. You
     can also provide custom attributes by specifying
     `attribute.{custom_attribute}`, where `{custom_attribute}` is the name of
     the custom attribute to be mapped. You can define a maximum of 50 custom
     attributes. The maximum length of a mapped attribute key is 100
-    characters, and the key may only contain the characters [a-z0-9-]. You can
+    characters, and the key may only contain the characters [a-z0-9_]. You can
     reference these attributes in IAM policies to define fine-grained access
     for a workload to Google Cloud resources. For example: * `google.subject`:
     `principal://iam.googleapis.com/projects/{project}/locations/{location}/wo
@@ -421,23 +421,6 @@ class GoogleIamV1betaWorkloadIdentityPoolProviderOidc(_messages.Message):
 
   allowedAudiences = _messages.StringField(1, repeated=True)
   issuerUri = _messages.StringField(2)
-
-
-class GoogleLongrunningCancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
-
-
-class GoogleLongrunningListOperationsResponse(_messages.Message):
-  r"""The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -546,16 +529,6 @@ class GoogleLongrunningOperation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
-
-
-class GoogleProtobufEmpty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
-  representation for `Empty` is empty JSON object `{}`.
-  """
-
 
 
 class GoogleRpcStatus(_messages.Message):
@@ -704,32 +677,6 @@ class IamProjectsLocationsWorkloadIdentityPoolsListRequest(_messages.Message):
   showDeleted = _messages.BooleanField(4)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsOperationsCancelRequest(_messages.Message):
-  r"""A IamProjectsLocationsWorkloadIdentityPoolsOperationsCancelRequest
-  object.
-
-  Fields:
-    googleLongrunningCancelOperationRequest: A
-      GoogleLongrunningCancelOperationRequest resource to be passed as the
-      request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class IamProjectsLocationsWorkloadIdentityPoolsOperationsDeleteRequest(_messages.Message):
-  r"""A IamProjectsLocationsWorkloadIdentityPoolsOperationsDeleteRequest
-  object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class IamProjectsLocationsWorkloadIdentityPoolsOperationsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsOperationsGetRequest object.
 
@@ -738,22 +685,6 @@ class IamProjectsLocationsWorkloadIdentityPoolsOperationsGetRequest(_messages.Me
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class IamProjectsLocationsWorkloadIdentityPoolsOperationsListRequest(_messages.Message):
-  r"""A IamProjectsLocationsWorkloadIdentityPoolsOperationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsPatchRequest(_messages.Message):
@@ -832,34 +763,6 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersListRequest(_messages.Me
   showDeleted = _messages.BooleanField(4)
 
 
-class IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsCancelRequest(_messages.Message):
-  r"""A
-  IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsCancelRequest
-  object.
-
-  Fields:
-    googleLongrunningCancelOperationRequest: A
-      GoogleLongrunningCancelOperationRequest resource to be passed as the
-      request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsDeleteRequest(_messages.Message):
-  r"""A
-  IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsDeleteRequest
-  object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsGetRequest
   object.
@@ -869,24 +772,6 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsGetRequest(_me
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsListRequest(_messages.Message):
-  r"""A
-  IamProjectsLocationsWorkloadIdentityPoolsProvidersOperationsListRequest
-  object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsProvidersPatchRequest(_messages.Message):

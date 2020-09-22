@@ -1322,6 +1322,19 @@
           "description": "The objective value at this training step.",
           "type": "number",
           "format": "double"
+        },
+        "modelFlops": {
+          "description": "The model flops associated with the `objective_value`.",
+          "type": "number",
+          "format": "double"
+        },
+        "metrics": {
+          "description": "Reported metrics other than objective and model_flops",
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "format": "double"
+          }
         }
       }
     },
@@ -1778,12 +1791,12 @@
           "format": "int32"
         },
         "maxNodes": {
-          "description": "Optional. The maximum number of nodes to scale this model under load. The actual value will depend on resource quota and availability.",
+          "description": "The maximum number of nodes to scale this model under load. The actual value will depend on resource quota and availability.",
           "type": "integer",
           "format": "int32"
         },
         "metrics": {
-          "description": "Optional. MetricSpec contains the specifications to use to calculate the desired nodes count.",
+          "description": "MetricSpec contains the specifications to use to calculate the desired nodes count.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudMlV1__MetricSpec"

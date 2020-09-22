@@ -311,11 +311,11 @@
           "type": "string"
         },
         "pubsubTopic": {
-          "description": "The PubSub topic to send notifications to. Its format is \"projects\/[project_id]\/topics\/[topic]\".",
+          "description": "The Pub\/Sub topic to send notifications to. Its format is \"projects\/[project_id]\/topics\/[topic]\".",
           "type": "string"
         },
         "serviceAccount": {
-          "description": "Output only. The service account that needs \"pubsub.topics.publish\" permission to publish to the PubSub topic.",
+          "description": "Output only. The service account that needs \"pubsub.topics.publish\" permission to publish to the Pub\/Sub topic.",
           "readOnly": true,
           "type": "string"
         },

@@ -75,6 +75,7 @@ def CreateDiskMessages(args,
                        compute_client,
                        resource_parser,
                        image_uri,
+                       holder=None,
                        boot_disk_size_gb=None,
                        instance_name=None,
                        create_boot_disk=False,
@@ -87,7 +88,8 @@ def CreateDiskMessages(args,
                        support_image_csek=False,
                        support_match_container_mount_disks=False,
                        support_create_disk_snapshots=False,
-                       support_persistent_attached_disks=True):
+                       support_persistent_attached_disks=True,
+                       support_replica_zones=False):
   """Creates disk messages for a single instance."""
 
   container_mount_disk = []
@@ -116,12 +118,14 @@ def CreateDiskMessages(args,
           project=project,
           location=location,
           scope=scope,
+          holder=holder,
           enable_kms=support_kms,
           enable_snapshots=support_create_disk_snapshots,
           container_mount_disk=container_mount_disk,
           resource_policy=support_disk_resource_policy,
           enable_source_snapshot_csek=support_source_snapshot_csek,
-          enable_image_csek=support_image_csek))
+          enable_image_csek=support_image_csek,
+          support_replica_zones=support_replica_zones))
 
   local_nvdimms = []
   if support_nvdimm:
@@ -132,7 +136,6 @@ def CreateDiskMessages(args,
   local_ssds = CreateLocalSsdMessages(args, resource_parser,
                                       compute_client.messages, location, scope,
                                       project)
-
   if create_boot_disk:
     boot_snapshot_uri = None
     if support_boot_snapshot_uri:
@@ -233,12 +236,14 @@ def CreatePersistentCreateDiskMessages(compute_client,
                                        project,
                                        location,
                                        scope,
+                                       holder,
                                        enable_kms=False,
                                        enable_snapshots=False,
                                        container_mount_disk=None,
                                        resource_policy=False,
                                        enable_source_snapshot_csek=False,
-                                       enable_image_csek=False):
+                                       enable_image_csek=False,
+                                       support_replica_zones=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -261,12 +266,14 @@ def CreatePersistentCreateDiskMessages(compute_client,
     project: Project of instance that will own the new disks.
     location: Location of the instance that will own the new disks.
     scope: Location type of the instance that will own the new disks.
+    holder: Convenience class to hold lazy initialized client and resources.
     enable_kms: True if KMS keys are supported for the disk.
     enable_snapshots: True if snapshot initialization is supported for the disk.
     container_mount_disk: list of disks to be mounted to container, if any.
     resource_policy: True if resource-policies are enabled
     enable_source_snapshot_csek: True if snapshot CSK files are enabled
     enable_image_csek: True if image CSK files are enabled
+    support_replica_zones: True if we allow creation of regional disks
 
   Returns:
     list of API messages for attached disks
@@ -333,6 +340,15 @@ def CreatePersistentCreateDiskMessages(compute_client,
         diskType=disk_type_uri,
         sourceImageEncryptionKey=image_key)
 
+    replica_zones = disk.get('replica-zones')
+    if support_replica_zones and replica_zones:
+      normalized_zones = []
+      for zone in replica_zones:
+        zone_ref = holder.resources.Parse(
+            zone, collection='compute.zones', params={'project': project})
+        normalized_zones.append(zone_ref.SelfLink())
+      initialize_params.replicaZones = normalized_zones
+
     if enable_snapshots:
       snapshot_name = disk.get('source-snapshot')
       attached_snapshot_uri = instance_utils.ResolveSnapshotURI(
@@ -371,7 +387,6 @@ def CreatePersistentCreateDiskMessages(compute_client,
         mode=mode,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         diskEncryptionKey=disk_key)
-
     disks_messages.append(create_disk)
 
   return disks_messages

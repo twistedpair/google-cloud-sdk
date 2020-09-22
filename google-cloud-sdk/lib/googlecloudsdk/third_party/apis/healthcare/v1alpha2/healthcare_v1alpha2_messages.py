@@ -409,8 +409,6 @@ class Consent(_messages.Message):
     policies: Represents an end user's consent in terms of the resources that
       can be accessed and under what conditions.
     state: Indicates the current state of this consent.
-    stateChangeTime: Output only. Indicates the timestamp when the state of
-      this consent last changed.
     userId: Required. User's UUID provided by the client.
   """
 
@@ -435,8 +433,7 @@ class Consent(_messages.Message):
   name = _messages.StringField(2)
   policies = _messages.MessageField('GoogleCloudHealthcareV1alpha2ConsentPolicy', 3, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 4)
-  stateChangeTime = _messages.StringField(5)
-  userId = _messages.StringField(6)
+  userId = _messages.StringField(5)
 
 
 class ConsentArtifact(_messages.Message):
@@ -2178,7 +2175,9 @@ class HealthcareProjectsLocationsDatasetsConsentStoresConsentsListRequest(_messa
     filter: Restricts the consents returned to those matching a filter.
       Syntax: https://cloud.google.com/appengine/docs/standard/python/search/q
       uery_strings The fields available for filtering are: - user_id -
-      consent_artifact - state - state_change_time - expire_time
+      consent_artifact - state - revision_create_time - expire_time -
+      metadata. For example, `Metadata("key")="value"` or
+      `HasMetadata("key")`.
     pageSize: Limit on the number of consents to return in a single response.
       If zero the default page size of 100 is used.
     pageToken: The next_page_token value returned from the previous List
@@ -3881,6 +3880,9 @@ class NotificationConfig(_messages.Message):
       If a notification can't be published to Cloud Pub/Sub, errors are logged
       to Cloud Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)).
       If the number of errors exceeds a certain rate, some aren't submitted.
+      Note that not all operations trigger notifications, see [Configuring
+      Pub/Sub notifications](https://cloud.google.com/healthcare/docs/how-
+      tos/pubsub) for specific details.
   """
 
   pubsubTopic = _messages.StringField(1)

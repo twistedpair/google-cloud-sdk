@@ -990,8 +990,9 @@ class VideoStream(_messages.Message):
       default is `"3s"`.
     gopFrameCount: Select the GOP size based on the specified frame count.
       Must be greater than zero.
-    heightPixels: Required. The height of video in pixels. Must be an even
-      integer.
+    heightPixels: The height of the video in pixels. Must be an even integer.
+      When not specified, the height is adjusted to match the specified width
+      and input aspect ratio. If both are omitted, the input height is used.
     pixelFormat: Pixel format to use. The default is `"yuv420p"`. Supported
       pixel formats: - 'yuv420p' pixel format. - 'yuv422p' pixel format. -
       'yuv444p' pixel format. - 'yuv420p10' 10-bit HDR pixel format. -
@@ -1011,8 +1012,9 @@ class VideoStream(_messages.Message):
     vbvSizeBits: Size of the Video Buffering Verifier (VBV) buffer in bits.
       Must be greater than zero. The default is equal to
       `VideoStream.bitrate_bps`.
-    widthPixels: Required. The width of video in pixels. Must be an even
-      integer.
+    widthPixels: The width of the video in pixels. Must be an even integer.
+      When not specified, the width is adjusted to match the specified height
+      and input aspect ratio. If both are omitted, the input width is used.
   """
 
   allowOpenGop = _messages.BooleanField(1)

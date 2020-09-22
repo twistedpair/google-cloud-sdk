@@ -869,7 +869,8 @@ class MemcacheProjectsLocationsInstancesCreateRequest(_messages.Message):
       user project with the following restrictions: * Must contain only
       lowercase letters, numbers, and hyphens. * Must start with a letter. *
       Must be between 1-40 characters. * Must end with a number or a letter. *
-      Must be unique within the user project / location
+      Must be unique within the user project / location If any of the above
+      are not met, will raise an invalid argument error.
     parent: Required. The resource name of the instance location using the
       form: `projects/{project_id}/locations/{location_id}` where
       `location_id` refers to a GCP region

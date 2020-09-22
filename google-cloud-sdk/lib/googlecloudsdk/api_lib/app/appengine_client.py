@@ -88,7 +88,7 @@ class AppengineClient(object):
     self.client_id = None
     self.client_secret = None
 
-    credentials = c_store.LoadIfEnabled()
+    credentials = c_store.LoadFreshCredential()
     if credentials:
       if isinstance(credentials, service_account.ServiceAccountCredentials):
         self.oauth2_access_token = credentials.access_token
@@ -268,9 +268,7 @@ class AppengineClient(object):
         account_type='HOSTED_OR_GOOGLE',
         secure=True,
         ignore_certs=self.ignore_bad_certs,
-        # TODO(b/160877892): switch to google-auth when we drop
-        #  google_auth_httplib2
-        http_object=http.Http(use_google_auth=False))
+        http_object=http.Http())
     # TODO(b/36050949) Hack to avoid failure due to missing cacerts.txt
     # resource.
     server.certpath = None

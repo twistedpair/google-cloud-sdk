@@ -28,6 +28,24 @@ def GetOperation(release_track=base.ReleaseTrack.ALPHA):
       release_track=release_track).projects_locations_operations
 
 
+def Delete(relative_resource_name, release_track=base.ReleaseTrack.ALPHA):
+  """Calls the Metastore Operations.Delete method.
+
+  Args:
+    relative_resource_name: str, the relative resource name of
+      the Metastore operation to delete.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
+
+  Returns:
+    Empty
+  """
+  return GetOperation(release_track=release_track).Delete(
+      api_util.GetMessagesModule(release_track=release_track)
+      .MetastoreProjectsLocationsOperationsDeleteRequest(
+          name=relative_resource_name))
+
+
 def WaitForOperation(operation, message, release_track=base.ReleaseTrack.ALPHA):
   """Waits for an operation to complete.
 

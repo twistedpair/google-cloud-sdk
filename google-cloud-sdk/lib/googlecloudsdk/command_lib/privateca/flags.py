@@ -192,9 +192,8 @@ def AddBucketFlag(parser):
   base.Argument(
       '--bucket',
       help='The name of an existing storage bucket to use for storing the CA '
-      'certificate and CRLs. If omitted, a new bucket with an '
-      'auto-generated name will be created in the same project and '
-      'location as the CA.',
+      'certificate and CRLs. If omitted, a new bucket will be created and '
+      'managed by the service on your behalf.',
       required=False).AddToParser(parser)
 
 
@@ -515,6 +514,19 @@ _REVOCATION_REASON_MAPPER = arg_utils.ChoiceEnumMapper(
     .ReasonValueValuesEnum,
     custom_mappings=_REVOCATION_MAPPING)
 
+_TIER_MAPPING = {
+    'ENTERPRISE': 'enterprise',
+    'DEVOPS': 'devops',
+}
+
+_TIER_MAPPER = arg_utils.ChoiceEnumMapper(
+    arg_name='--tier',
+    default='enterprise',
+    help_str='The tier for the Certificate Authority.',
+    message_enum=privateca_base.GetMessagesModule().CertificateAuthority
+    .TierValueValuesEnum,
+    custom_mappings=_TIER_MAPPING)
+
 
 def AddRevocationReasonFlag(parser):
   """Add a revocation reason enum flag to the parser.
@@ -540,3 +552,11 @@ def ParseRevocationChoiceToEnum(choice):
 def ParseValidityFlag(args):
   """Parses the validity from args."""
   return times.FormatDurationForJson(times.ParseDuration(args.validity))
+
+
+def AddTierFlag(parser):
+  _TIER_MAPPER.choice_arg.AddToParser(parser)
+
+
+def ParseTierFlag(args):
+  return _TIER_MAPPER.GetEnumForChoice(args.tier)

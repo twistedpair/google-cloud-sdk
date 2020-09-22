@@ -21,6 +21,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.resource_manager import exceptions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
 def FolderIdArg(use_description):
@@ -98,3 +100,25 @@ def CheckParentFlags(args, parent_required=True):
           'Neither --folder nor --organization provided, exactly one required')
     elif 'folder' not in args and not args.organization:
       raise exceptions.ArgumentError('--organization is required')
+
+
+def FolderAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='folder',
+      help_text='The folder id')
+
+
+def GetFolderResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudresourcemanager.folders',
+      resource_name='folder',
+      api_version='v2',
+      foldersId=FolderAttributeConfig())
+
+
+def GetFolderResourceArg(verb):
+  return concept_parsers.ConceptParser.ForResource(
+      'folder_id',
+      GetFolderResourceSpec(),
+      'ID for the folder you want to {}'.format(verb),
+      required=True)

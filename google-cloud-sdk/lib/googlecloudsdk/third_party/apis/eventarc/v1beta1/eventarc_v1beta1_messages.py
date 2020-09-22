@@ -256,8 +256,7 @@ class EventarcProjectsLocationsTriggersCreateRequest(_messages.Message):
   Fields:
     parent: Required. The parent collection in which to add this trigger.
     trigger: A Trigger resource to be passed as the request body.
-    triggerId: The user-provided ID to be assigned to the trigger. If not
-      specified, the system will select an ID.
+    triggerId: Required. The user-provided ID to be assigned to the trigger.
   """
 
   parent = _messages.StringField(1, required=True)

@@ -58,7 +58,7 @@ class FailoverInstanceRequest(_messages.Message):
         data protection mode is not specified.
       LIMITED_DATA_LOSS: Instance failover will be protected with data loss
         control. More specifically, the failover will only be performed if the
-        current replication offset diff between master and replica is under a
+        current replication offset diff between primary and replica is under a
         certain threshold.
       FORCE_DATA_LOSS: Instance failover will be performed without data loss
         control.
@@ -412,8 +412,8 @@ class ListInstancesResponse(_messages.Message):
       location, or across all locations. If the `location_id` in the parent
       field of the request is "-", all regions available to the project are
       queried, and the results aggregated. If in such an aggregated query a
-      location is unavailable, a dummy Redis entry is included in the response
-      with the `name` field set to a value of the form
+      location is unavailable, a placeholder Redis entry is included in the
+      response with the `name` field set to a value of the form
       `projects/{project_id}/locations/{location_id}/instances/`- and the
       `status` field set to ERROR and `status_message` field set to "location
       not available for ListInstances".

@@ -38,16 +38,40 @@ class Error(exceptions.Error):
   """Exceptions for the credentials transport module."""
 
 
-class CredentialWrappingMixin(object):
-  """Mixin for wrapping authorized http clients."""
+USER_PROJECT_OVERRIDE_ERR_MSG = ('Grant the caller the Owner or Editor role, or'
+                                 ' a custom role with the '
+                                 'serviceusage.services.use permission')
 
-  def WrapCredentials(self,
-                      http_client,
-                      enable_resource_quota=True,
-                      force_resource_quota=False,
-                      allow_account_impersonation=True,
-                      use_google_auth=None):
-    """Get an http client for working with Google APIs.
+
+class QuotaHandlerMixin(object):
+  """Mixin for handling quota project."""
+
+  def QuotaProject(self, enable_resource_quota, force_resource_quota,
+                   allow_account_impersonation, use_google_auth):
+    if not (enable_resource_quota or force_resource_quota):
+      return None
+    creds = store.LoadIfEnabled(allow_account_impersonation, use_google_auth)
+    return core_creds.GetQuotaProject(creds, force_resource_quota)
+
+  def QuotaWrappedRequest(self,
+                          http_client,
+                          quota_project):
+    """Returns a request method which adds the quota project header."""
+    handlers = [
+        transport.Handler(
+            transport.SetHeader('X-Goog-User-Project', quota_project))
+    ]
+    self.WrapRequest(http_client, handlers)
+    return http_client.request
+
+  @abc.abstractmethod
+  def WrapQuota(self,
+                http_client,
+                enable_resource_quota,
+                force_resource_quota,
+                allow_account_impersonation,
+                use_google_auth):
+    """Returns a http_client with quota project handling.
 
     Args:
       http_client: The http client to be wrapped.
@@ -63,8 +87,29 @@ class CredentialWrappingMixin(object):
         the active user credentials will always be used.
       use_google_auth: bool, True if the calling command indicates to use
         google-auth library for authentication. If False, authentication will
-        fallback to using the oauth2client library. If None, set the value
-        based the configuration.
+        fallback to using the oauth2client library. If None, set the value based
+        the configuration.
+    """
+
+
+class CredentialWrappingMixin(object):
+  """Mixin for wrapping authorized http clients."""
+
+  def WrapCredentials(self,
+                      http_client,
+                      allow_account_impersonation=True,
+                      use_google_auth=None):
+    """Get an http client for working with Google APIs.
+
+    Args:
+      http_client: The http client to be wrapped.
+      allow_account_impersonation: bool, True to allow use of impersonated
+        service account credentials for calls made with this client. If False,
+        the active user credentials will always be used.
+      use_google_auth: bool, True if the calling command indicates to use
+        google-auth library for authentication. If False, authentication will
+        fallback to using the oauth2client library. If None, set the value based
+        the configuration.
 
     Returns:
       An authorized http client with exception handling.
@@ -83,14 +128,6 @@ class CredentialWrappingMixin(object):
       use_google_auth = base.UseGoogleAuth()
     creds = store.LoadIfEnabled(allow_account_impersonation, use_google_auth)
     if creds:
-      # Inject the resource project header for quota unless explicitly disabled.
-      if enable_resource_quota or force_resource_quota:
-        quota_project = core_creds.GetQuotaProject(creds, force_resource_quota)
-        if quota_project:
-          handlers.append(
-              transport.Handler(
-                  transport.SetHeader('X-Goog-User-Project', quota_project)))
-
       http_client = self.AuthorizeClient(http_client, creds)
       # Set this attribute so we can access it later, even after the http_client
       # request method has been wrapped

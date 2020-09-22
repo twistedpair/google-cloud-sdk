@@ -2773,7 +2773,7 @@ class GooglePrivacyDlpV2CreateDeidentifyTemplateRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     templateId: The template id can contain uppercase and lowercase letters,
       numbers, and hyphens; that is, it must match the regular expression:
-      `[a-zA-Z\\d-_]+`. The maximum length is 100 characters. Can be empty to
+      `[a-zA-Z\d-_]+`. The maximum length is 100 characters. Can be empty to
       allow the system to generate one.
   """
 
@@ -2790,7 +2790,7 @@ class GooglePrivacyDlpV2CreateDlpJobRequest(_messages.Message):
     inspectJob: Set to control what and how to inspect.
     jobId: The job id can contain uppercase and lowercase letters, numbers,
       and hyphens; that is, it must match the regular expression:
-      `[a-zA-Z\\d-_]+`. The maximum length is 100 characters. Can be empty to
+      `[a-zA-Z\d-_]+`. The maximum length is 100 characters. Can be empty to
       allow the system to generate one.
     locationId: Deprecated. This field has no effect.
     riskJob: Set to choose what metric to calculate.
@@ -2810,7 +2810,7 @@ class GooglePrivacyDlpV2CreateInspectTemplateRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     templateId: The template id can contain uppercase and lowercase letters,
       numbers, and hyphens; that is, it must match the regular expression:
-      `[a-zA-Z\\d-_]+`. The maximum length is 100 characters. Can be empty to
+      `[a-zA-Z\d-_]+`. The maximum length is 100 characters. Can be empty to
       allow the system to generate one.
   """
 
@@ -2827,7 +2827,7 @@ class GooglePrivacyDlpV2CreateJobTriggerRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     triggerId: The trigger id can contain uppercase and lowercase letters,
       numbers, and hyphens; that is, it must match the regular expression:
-      `[a-zA-Z\\d-_]+`. The maximum length is 100 characters. Can be empty to
+      `[a-zA-Z\d-_]+`. The maximum length is 100 characters. Can be empty to
       allow the system to generate one.
   """
 
@@ -2844,7 +2844,7 @@ class GooglePrivacyDlpV2CreateStoredInfoTypeRequest(_messages.Message):
     locationId: Deprecated. This field has no effect.
     storedInfoTypeId: The storedInfoType ID can contain uppercase and
       lowercase letters, numbers, and hyphens; that is, it must match the
-      regular expression: `[a-zA-Z\\d-_]+`. The maximum length is 100
+      regular expression: `[a-zA-Z\d-_]+`. The maximum length is 100
       characters. Can be empty to allow the system to generate one.
   """
 

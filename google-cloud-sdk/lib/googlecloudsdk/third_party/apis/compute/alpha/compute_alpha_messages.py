@@ -1412,6 +1412,10 @@ class AttachedDisk(_messages.Message):
       InstanceTemplate, specify the disk name, not the URL for the disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
+    userLicenses: [Output Only] A list of user provided licenses. It
+      represents a list of URLs to the license resource. Unlike regular
+      licenses, user provided licenses can be modified after the disk is
+      created.
   """
 
   class InterfaceValueValuesEnum(_messages.Enum):
@@ -1481,6 +1485,7 @@ class AttachedDisk(_messages.Message):
   shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 14)
   source = _messages.StringField(15)
   type = _messages.EnumField('TypeValueValuesEnum', 16)
+  userLicenses = _messages.StringField(17, repeated=True)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -2696,10 +2701,9 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
       maintain. This must be a positive value. A utilization metric scales
       number of virtual machines handling requests to increase or decrease
       proportionally to the metric.  For example, a good metric to use as a
-      utilization_target is
-      compute.googleapis.com/instance/network/received_bytes_count. The
-      autoscaler will work to keep this value constant for each of the
-      instances.
+      utilization_target is https://www.googleapis.com/compute/v1/instance/net
+      work/received_bytes_count. The autoscaler will work to keep this value
+      constant for each of the instances.
     utilizationTargetType: Defines how target utilization value is expressed
       for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
       DELTA_PER_MINUTE.
@@ -3069,9 +3073,10 @@ class BackendBucketCdnPolicy(_messages.Message):
       "no-cache" directives in Cache-Control response headers. Warning: this
       may result in Cloud CDN caching private, per-user (user identifiable)
       content.  CACHE_ALL_STATIC Automatically cache static content, including
-      common image formats, media (video & audio), web assets (JavaScript &
-      CSS). Requests and responses that are marked as uncacheable, as well as
-      dynamic content (including HTML), will not be cached.
+      common image formats, media (video and audio), and web assets
+      (JavaScript and CSS). Requests and responses that are marked as
+      uncacheable, as well as dynamic content (including HTML), will not be
+      cached.
 
   Fields:
     bypassCacheOnRequestHeaders: Bypass the cache when the specified request
@@ -3088,8 +3093,8 @@ class BackendBucketCdnPolicy(_messages.Message):
       directives in Cache-Control response headers. Warning: this may result
       in Cloud CDN caching private, per-user (user identifiable) content.
       CACHE_ALL_STATIC Automatically cache static content, including common
-      image formats, media (video & audio), web assets (JavaScript & CSS).
-      Requests and responses that are marked as uncacheable, as well as
+      image formats, media (video and audio), and web assets (JavaScript and
+      CSS). Requests and responses that are marked as uncacheable, as well as
       dynamic content (including HTML), will not be cached.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
       from the TTL for Cloud CDN's edge caches. Leaving this empty will use
@@ -3161,9 +3166,10 @@ class BackendBucketCdnPolicy(_messages.Message):
     "private", "no-store" or "no-cache" directives in Cache-Control response
     headers. Warning: this may result in Cloud CDN caching private, per-user
     (user identifiable) content.  CACHE_ALL_STATIC Automatically cache static
-    content, including common image formats, media (video & audio), web assets
-    (JavaScript & CSS). Requests and responses that are marked as uncacheable,
-    as well as dynamic content (including HTML), will not be cached.
+    content, including common image formats, media (video and audio), and web
+    assets (JavaScript and CSS). Requests and responses that are marked as
+    uncacheable, as well as dynamic content (including HTML), will not be
+    cached.
 
     Values:
       CACHE_ALL_STATIC: <no description>
@@ -3912,9 +3918,10 @@ class BackendServiceCdnPolicy(_messages.Message):
       "no-cache" directives in Cache-Control response headers. Warning: this
       may result in Cloud CDN caching private, per-user (user identifiable)
       content.  CACHE_ALL_STATIC Automatically cache static content, including
-      common image formats, media (video & audio), web assets (JavaScript &
-      CSS). Requests and responses that are marked as uncacheable, as well as
-      dynamic content (including HTML), will not be cached.
+      common image formats, media (video and audio), and web assets
+      (JavaScript and CSS). Requests and responses that are marked as
+      uncacheable, as well as dynamic content (including HTML), will not be
+      cached.
 
   Fields:
     bypassCacheOnRequestHeaders: Bypass the cache when the specified request
@@ -3932,8 +3939,8 @@ class BackendServiceCdnPolicy(_messages.Message):
       directives in Cache-Control response headers. Warning: this may result
       in Cloud CDN caching private, per-user (user identifiable) content.
       CACHE_ALL_STATIC Automatically cache static content, including common
-      image formats, media (video & audio), web assets (JavaScript & CSS).
-      Requests and responses that are marked as uncacheable, as well as
+      image formats, media (video and audio), and web assets (JavaScript and
+      CSS). Requests and responses that are marked as uncacheable, as well as
       dynamic content (including HTML), will not be cached.
     clientTtl: Specifies a separate client (e.g. browser client) TTL, separate
       from the TTL for Cloud CDN's edge caches. Leaving this empty will use
@@ -4005,9 +4012,10 @@ class BackendServiceCdnPolicy(_messages.Message):
     "private", "no-store" or "no-cache" directives in Cache-Control response
     headers. Warning: this may result in Cloud CDN caching private, per-user
     (user identifiable) content.  CACHE_ALL_STATIC Automatically cache static
-    content, including common image formats, media (video & audio), web assets
-    (JavaScript & CSS). Requests and responses that are marked as uncacheable,
-    as well as dynamic content (including HTML), will not be cached.
+    content, including common image formats, media (video and audio), and web
+    assets (JavaScript and CSS). Requests and responses that are marked as
+    uncacheable, as well as dynamic content (including HTML), will not be
+    cached.
 
     Values:
       CACHE_ALL_STATIC: <no description>
@@ -7248,6 +7256,35 @@ class ComputeDisksTestIamPermissionsRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeDisksUpdateRequest(_messages.Message):
+  r"""A ComputeDisksUpdateRequest object.
+
+  Fields:
+    disk: The disk name for this request.
+    diskResource: A Disk resource to be passed as the request body.
+    paths: The set of field mask paths.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  diskResource = _messages.MessageField('Disk', 2)
+  paths = _messages.StringField(3, repeated=True)
+  project = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeExternalVpnGatewaysDeleteRequest(_messages.Message):
@@ -26191,6 +26228,12 @@ class Disk(_messages.Message):
     type: URL of the disk type resource describing which disk type to use to
       create the disk. Provide this when creating the disk. For example:
       projects/project/zones/zone/diskTypes/pd-standard  or pd-ssd
+    userLicenses: A list of publicly visible user-licenses. Unlike regular
+      licenses, user provided licenses can be modified after the disk is
+      created. This includes a list of URLs to the license resource. For
+      example, to provide a debian license:
+      https://www.googleapis.com/compute/v1/projects/debian-
+      cloud/global/licenses/debian-9-stretch
     users: [Output Only] Links to the users of the disk (attached instances)
       in form: projects/project/zones/zone/instances/instance
     zone: [Output Only] URL of the zone where the disk resides. You must
@@ -26307,8 +26350,9 @@ class Disk(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 40)
   storageType = _messages.EnumField('StorageTypeValueValuesEnum', 41)
   type = _messages.StringField(42)
-  users = _messages.StringField(43, repeated=True)
-  zone = _messages.StringField(44)
+  userLicenses = _messages.StringField(43, repeated=True)
+  users = _messages.StringField(44, repeated=True)
+  zone = _messages.StringField(45)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -32282,7 +32326,8 @@ class Instance(_messages.Message):
       default.
     StatusValueValuesEnum: [Output Only] The status of the instance. One of
       the following values: PROVISIONING, STAGING, RUNNING, STOPPING,
-      SUSPENDING, SUSPENDED, REPAIRING, and TERMINATED.
+      SUSPENDING, SUSPENDED, REPAIRING, and TERMINATED. For more information
+      about the status of the instance, see  Instance life cycle.
 
   Messages:
     LabelsValue: Labels to apply to this instance. These can be later modified
@@ -32415,7 +32460,8 @@ class Instance(_messages.Message):
       because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
       values: PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
-      REPAIRING, and TERMINATED.
+      REPAIRING, and TERMINATED. For more information about the status of the
+      instance, see  Instance life cycle.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
     tags: Tags to apply to this instance. Tags are used to identify valid
@@ -32458,7 +32504,8 @@ class Instance(_messages.Message):
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. One of the following values:
     PROVISIONING, STAGING, RUNNING, STOPPING, SUSPENDING, SUSPENDED,
-    REPAIRING, and TERMINATED.
+    REPAIRING, and TERMINATED. For more information about the status of the
+    instance, see  Instance life cycle.
 
     Values:
       DEPROVISIONING: <no description>
@@ -40581,6 +40628,10 @@ class NetworkEndpointWithHealthStatus(_messages.Message):
 class NetworkInterface(_messages.Message):
   r"""A network interface resource attached to an instance.
 
+  Enums:
+    NicTypeValueValuesEnum: The type of vNIC to be used on this interface.
+      This may be gVNIC or VirtioNet.
+
   Fields:
     accessConfigs: An array of configurations for this interface. Currently,
       only one access config, ONE_TO_ONE_NAT, is supported. If there are no
@@ -40610,6 +40661,8 @@ class NetworkInterface(_messages.Message):
     networkIP: An IPv4 internal IP address to assign to the instance for this
       network interface. If not specified by the user, an unused internal IP
       is assigned by the system.
+    nicType: The type of vNIC to be used on this interface. This may be gVNIC
+      or VirtioNet.
     queueCount: The networking queue count for the network interface. Both Rx
       and Tx queues will be set to this number. If it's not specified by the
       user, a default number of queues will be assigned. For Virtio-net, each
@@ -40625,6 +40678,19 @@ class NetworkInterface(_messages.Message):
       bnetworks/subnetwork  - regions/region/subnetworks/subnetwork
   """
 
+  class NicTypeValueValuesEnum(_messages.Enum):
+    r"""The type of vNIC to be used on this interface. This may be gVNIC or
+    VirtioNet.
+
+    Values:
+      GVNIC: <no description>
+      UNSPECIFIED_NIC_TYPE: <no description>
+      VIRTIO_NET: <no description>
+    """
+    GVNIC = 0
+    UNSPECIFIED_NIC_TYPE = 1
+    VIRTIO_NET = 2
+
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
   fingerprint = _messages.BytesField(3)
@@ -40633,8 +40699,9 @@ class NetworkInterface(_messages.Message):
   name = _messages.StringField(6)
   network = _messages.StringField(7)
   networkIP = _messages.StringField(8)
-  queueCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(10)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 9)
+  queueCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(11)
 
 
 class NetworkList(_messages.Message):
@@ -41225,7 +41292,8 @@ class NodeGroupAutoscalingPolicy(_messages.Message):
       ONLY_SCALE_OUT. For more information, see  Autoscaler modes.
 
   Fields:
-    maxNodes: The maximum number of nodes that the group should have.
+    maxNodes: The maximum number of nodes that the group should have. Must be
+      set if autoscaling is enabled. Maximum value allowed is 100.
     minNodes: The minimum number of nodes that the group should have.
     mode: The autoscaling mode. Set to one of: ON, OFF, or ONLY_SCALE_OUT. For
       more information, see  Autoscaler modes.
@@ -48594,22 +48662,24 @@ class ResourcePolicySnapshotSchedulePolicyRetentionPolicy(_messages.Message):
   r"""Policy for retention of scheduled snapshots.
 
   Enums:
-    OnPolicySwitchValueValuesEnum: Specifies the behavior to apply to
-      existing, scheduled snapshots snapshots if the policy is changed.
+    OnPolicySwitchValueValuesEnum: TODO(b/165626794): Remove this field
+      Specifies the behavior to apply to existing, scheduled snapshots
+      snapshots if the policy is changed.
     OnSourceDiskDeleteValueValuesEnum: Specifies the behavior to apply to
       scheduled snapshots when the source disk is deleted.
 
   Fields:
     maxRetentionDays: Maximum age of the snapshot that is allowed to be kept.
-    onPolicySwitch: Specifies the behavior to apply to existing, scheduled
-      snapshots snapshots if the policy is changed.
+    onPolicySwitch: TODO(b/165626794): Remove this field Specifies the
+      behavior to apply to existing, scheduled snapshots snapshots if the
+      policy is changed.
     onSourceDiskDelete: Specifies the behavior to apply to scheduled snapshots
       when the source disk is deleted.
   """
 
   class OnPolicySwitchValueValuesEnum(_messages.Enum):
-    r"""Specifies the behavior to apply to existing, scheduled snapshots
-    snapshots if the policy is changed.
+    r"""TODO(b/165626794): Remove this field Specifies the behavior to apply
+    to existing, scheduled snapshots snapshots if the policy is changed.
 
     Values:
       DO_NOT_RETROACTIVELY_APPLY: <no description>
@@ -49460,6 +49530,10 @@ class RouterBgpPeer(_messages.Message):
       use a different value.
     peerIpAddress: IP address of the BGP interface outside Google Cloud
       Platform. Only IPv4 is supported.
+    routerApplianceInstance: URI of the VM instance that is used as third
+      party router appliances such as Next Gen Firewalls, Virtual Routers, SD-
+      WAN. The VM instance must live in zones contained in the same region as
+      this Cloud Router. The VM instance is the peer side of the BGP session.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -49526,6 +49600,7 @@ class RouterBgpPeer(_messages.Message):
   name = _messages.StringField(10)
   peerAsn = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
   peerIpAddress = _messages.StringField(12)
+  routerApplianceInstance = _messages.StringField(13)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -49697,6 +49772,25 @@ class RouterInterface(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    privateIpAddress: The regional private internal IP address that will be
+      used to establish BGP session to a VM instance, which is used as third
+      party router appliances such as Next Gen Firewalls, Virtual Routers, SD-
+      WAN.
+    redundantInterface: Name of the interface that will be redundant with the
+      current interface you are creating. The redundantInterface must belong
+      to the same Cloud Router as the interface here. To establish the BGP
+      session to SD-WAN VM, you must create two BGP peers, and the two BGP
+      peers need to be attached to two separate interfaces that are redundant
+      with each other. The redundant_interface must be 1-63 characters long,
+      and comply with RFC1035. Specifically, the redundant_interface must be
+      1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
+    subnetwork: The URL of the subnetwork resource this interface belongs to,
+      it must be in the same region as the router. When you establish a BGP
+      session to a VM instance using this interface, the VM instance must
+      belong to the same subnetwork as the subnetwork specified here.
   """
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
@@ -49720,6 +49814,9 @@ class RouterInterface(_messages.Message):
   linkedVpnTunnel = _messages.StringField(3)
   managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 4)
   name = _messages.StringField(5)
+  privateIpAddress = _messages.StringField(6)
+  redundantInterface = _messages.StringField(7)
+  subnetwork = _messages.StringField(8)
 
 
 class RouterList(_messages.Message):
@@ -51833,7 +51930,12 @@ class Snapshot(_messages.Message):
   Fields:
     autoCreated: [Output Only] Set to true if snapshots are automatically
       created by applying resource policy on the target disk.
-    chainName: Chain name should conform to RFC1035.
+    chainName: Creates the new snapshot in the snapshot chain labeled with the
+      specified name. The chain name must be 1-63 characters long and comply
+      with RFC1035. This is an uncommon option only for advanced service
+      owners who needs to create separate snapshot chains, for example, for
+      chargeback tracking. When you describe your snapshot resource, this
+      field is visible only if it has a non-empty value.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -55125,6 +55227,18 @@ class TargetHttpsProxy(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    httpFilters: URLs to networkservices.HttpFilter resources enabled for xDS
+      clients using this configuration. For example, https://networkservices.g
+      oogleapis.com/beta/projects/project/locations/locationhttpFilters/httpFi
+      lter Only filters that handle outbound connection and stream events may
+      be specified. These filters work in conjunction with a default set of
+      HTTP filters that may already be configured by Traffic Director. Traffic
+      Director will determine the final location of these filters within xDS
+      configuration based on the name of the HTTP filter. If Traffic Director
+      positions multiple filters at the same location, those filters will be
+      in the same order as specified in this list. httpFilters only applies
+      for loadbalancers with loadBalancingScheme set to INTERNAL_SELF_MANAGED.
+      See ForwardingRule for more details.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#targetHttpsProxy for
@@ -55198,18 +55312,19 @@ class TargetHttpsProxy(_messages.Message):
   certificateMap = _messages.StringField(4)
   creationTimestamp = _messages.StringField(5)
   description = _messages.StringField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default='compute#targetHttpsProxy')
-  name = _messages.StringField(9)
-  proxyBind = _messages.BooleanField(10)
-  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 11)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  selfLinkWithId = _messages.StringField(14)
-  serverTlsPolicy = _messages.StringField(15)
-  sslCertificates = _messages.StringField(16, repeated=True)
-  sslPolicy = _messages.StringField(17)
-  urlMap = _messages.StringField(18)
+  httpFilters = _messages.StringField(7, repeated=True)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default='compute#targetHttpsProxy')
+  name = _messages.StringField(10)
+  proxyBind = _messages.BooleanField(11)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 12)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  selfLinkWithId = _messages.StringField(15)
+  serverTlsPolicy = _messages.StringField(16)
+  sslCertificates = _messages.StringField(17, repeated=True)
+  sslPolicy = _messages.StringField(18)
+  urlMap = _messages.StringField(19)
 
 
 class TargetHttpsProxyAggregatedList(_messages.Message):

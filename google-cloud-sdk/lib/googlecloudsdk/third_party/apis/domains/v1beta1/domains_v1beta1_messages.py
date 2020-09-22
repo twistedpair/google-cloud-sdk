@@ -431,7 +431,7 @@ class ContactSettings(_messages.Message):
       `Registration`. *Caution: Anyone with access to this email address,
       phone number, and/or postal address can take control of the domain.*
       *Warning: For new `Registration`s, the registrant will receive an email
-      confirmation that they must complete within 14 days to avoid domain
+      confirmation that they must complete within 15 days to avoid domain
       suspension.*
     technicalContact: Required. The technical contact for the `Registration`.
   """
@@ -1776,7 +1776,7 @@ class Registration(_messages.Message):
         `contact_settings.registrant_contact` field. To verify the email
         address, follow the instructions in the email the `registrant_contact`
         receives following registration. If you do not complete email
-        verification within 14 days of registration, the domain is suspended.
+        verification within 15 days of registration, the domain is suspended.
         To resend the verification email, call ConfigureContactSettings and
         provide the current `registrant_contact.email`.
     """

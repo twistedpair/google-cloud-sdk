@@ -475,7 +475,7 @@
           "type": "string"
         },
         "automaticScaling": {
-          "description": "Automatic scaling is based on request rate, response latencies, and other application metrics.",
+          "description": "Automatic scaling is based on request rate, response latencies, and other application metrics. Instances are dynamically created and destroyed as needed in order to handle traffic.",
           "$ref": "AutomaticScaling"
         },
         "basicScaling": {
@@ -483,7 +483,7 @@
           "$ref": "BasicScaling"
         },
         "manualScaling": {
-          "description": "A service with manual scaling runs continuously, allowing you to perform complex initialization and rely on the state of its memory over time.",
+          "description": "A service with manual scaling runs continuously, allowing you to perform complex initialization and rely on the state of its memory over time. Manually scaled versions are sometimes referred to as \"backends\".",
           "$ref": "ManualScaling"
         },
         "inboundServices": {
@@ -1521,19 +1521,23 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Full path to the Instance resource in the API. Example: apps\/myapp\/services\/default\/versions\/v1\/instances\/instance-1.@OutputOnly",
+          "description": "Output only. Full path to the Instance resource in the API. Example: apps\/myapp\/services\/default\/versions\/v1\/instances\/instance-1.",
+          "readOnly": true,
           "type": "string"
         },
         "id": {
-          "description": "Relative name of the instance within the version. Example: instance-1.@OutputOnly",
+          "description": "Output only. Relative name of the instance within the version. Example: instance-1.",
+          "readOnly": true,
           "type": "string"
         },
         "appEngineRelease": {
-          "description": "App Engine release this instance is running on.@OutputOnly",
+          "description": "Output only. App Engine release this instance is running on.",
+          "readOnly": true,
           "type": "string"
         },
         "availability": {
-          "description": "Availability of the instance.@OutputOnly",
+          "description": "Output only. Availability of the instance.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "",
@@ -1547,57 +1551,69 @@
           ]
         },
         "vmName": {
-          "description": "Name of the virtual machine where this instance lives. Only applicable for instances in App Engine flexible environment.@OutputOnly",
+          "description": "Output only. Name of the virtual machine where this instance lives. Only applicable for instances in App Engine flexible environment.",
+          "readOnly": true,
           "type": "string"
         },
         "vmZoneName": {
-          "description": "Zone where the virtual machine is located. Only applicable for instances in App Engine flexible environment.@OutputOnly",
+          "description": "Output only. Zone where the virtual machine is located. Only applicable for instances in App Engine flexible environment.",
+          "readOnly": true,
           "type": "string"
         },
         "vmId": {
-          "description": "Virtual machine ID of this instance. Only applicable for instances in App Engine flexible environment.@OutputOnly",
+          "description": "Output only. Virtual machine ID of this instance. Only applicable for instances in App Engine flexible environment.",
+          "readOnly": true,
           "type": "string"
         },
         "startTime": {
-          "description": "Time that this instance was started.@OutputOnly",
+          "description": "Output only. Time that this instance was started.@OutputOnly",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "requests": {
-          "description": "Number of requests since this instance was started.@OutputOnly",
+          "description": "Output only. Number of requests since this instance was started.",
+          "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "errors": {
-          "description": "Number of errors since this instance was started.@OutputOnly",
+          "description": "Output only. Number of errors since this instance was started.",
+          "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "qps": {
-          "description": "Average queries per second (QPS) over the last minute.@OutputOnly",
+          "description": "Output only. Average queries per second (QPS) over the last minute.",
+          "readOnly": true,
           "type": "number",
           "format": "float"
         },
         "averageLatency": {
-          "description": "Average latency (ms) over the last minute.@OutputOnly",
+          "description": "Output only. Average latency (ms) over the last minute.",
+          "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "memoryUsage": {
-          "description": "Total memory in use (bytes).@OutputOnly",
+          "description": "Output only. Total memory in use (bytes).",
+          "readOnly": true,
           "type": "string",
           "format": "int64"
         },
         "vmStatus": {
-          "description": "Status of the virtual machine where this instance lives. Only applicable for instances in App Engine flexible environment.@OutputOnly",
+          "description": "Output only. Status of the virtual machine where this instance lives. Only applicable for instances in App Engine flexible environment.",
+          "readOnly": true,
           "type": "string"
         },
         "vmDebugEnabled": {
-          "description": "Whether this instance is in debug mode. Only applicable for instances in App Engine flexible environment.@OutputOnly",
+          "description": "Output only. Whether this instance is in debug mode. Only applicable for instances in App Engine flexible environment.",
+          "readOnly": true,
           "type": "boolean"
         },
         "vmIp": {
-          "description": "The IP address of this instance. Only applicable for instances in App Engine flexible environment.@OutputOnly",
+          "description": "Output only. The IP address of this instance. Only applicable for instances in App Engine flexible environment.",
+          "readOnly": true,
           "type": "string"
         }
       }

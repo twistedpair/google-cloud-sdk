@@ -91,10 +91,14 @@ class GoogleCloudBillingBudgetsV1alpha1AllUpdatesRule(_messages.Message):
   and thresholds.
 
   Fields:
+    disableDefaultIamRecipients: Optional. When set to true, disables default
+      notifications sent when a threshold is exceeded. Recipients are those
+      with Billing Account Administrators and Billing Account Users IAM roles
+      for the target account.
     monitoringNotificationChannels: Optional. Targets to send notifications to
       when a threshold is exceeded. This is in addition to default recipients
-      who have billing account roles. The value is the full REST resource name
-      of a monitoring notification channel with the form
+      who have billing account IAM roles. The value is the full REST resource
+      name of a monitoring notification channel with the form
       `projects/{project_id}/notificationChannels/{channel_id}`. A maximum of
       5 channels are allowed. See https://cloud.google.com/billing/docs/how-
       to/budgets-notification-recipients for more details.
@@ -114,9 +118,10 @@ class GoogleCloudBillingBudgetsV1alpha1AllUpdatesRule(_messages.Message):
       programmatic-notifications#notification_format
   """
 
-  monitoringNotificationChannels = _messages.StringField(1, repeated=True)
-  pubsubTopic = _messages.StringField(2)
-  schemaVersion = _messages.StringField(3)
+  disableDefaultIamRecipients = _messages.BooleanField(1)
+  monitoringNotificationChannels = _messages.StringField(2, repeated=True)
+  pubsubTopic = _messages.StringField(3)
+  schemaVersion = _messages.StringField(4)
 
 
 class GoogleCloudBillingBudgetsV1alpha1Budget(_messages.Message):

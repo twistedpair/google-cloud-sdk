@@ -136,7 +136,7 @@ class RedisV1beta1(base_api.BaseApiClient):
     )
 
     def Failover(self, request, global_params=None):
-      r"""Initiates a failover of the master node to current replica node for a specific STANDARD tier Cloud Memorystore for Redis instance.
+      r"""Initiates a failover of the primary node to current replica node for a specific STANDARD tier Cloud Memorystore for Redis instance.
 
       Args:
         request: (RedisProjectsLocationsInstancesFailoverRequest) input message

@@ -7,7 +7,7 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Notebooks API",
-  "description": "AI Platform Notebooks API (beta) is used to manage notebook resources in Google Cloud. AI Platform Notebooks API is in a pre-release state and might change or have limited support. For more information, see the product launch stages.",
+  "description": "AI Platform Notebooks API is used to manage notebook resources in Google Cloud.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -316,7 +316,7 @@
           }
         },
         "serviceAccount": {
-          "description": "The service account on this instance, giving access to other Google Cloud services. You can use any service account within the same project, but you must have the service account user permission to use the instance. If not specified, the [Compute Engine default service account](\/compute\/docs\/access\/service-accounts#default_service_account) is used.",
+          "description": "The service account on this instance, giving access to other Google Cloud services. You can use any service account within the same project, but you must have the service account user permission to use the instance. If not specified, the [Compute Engine default service account](https:\/\/cloud.google.com\/compute\/docs\/access\/service-accounts#default_service_account) is used.",
           "type": "string"
         },
         "machineType": {
@@ -595,7 +595,7 @@
           ]
         },
         "coreCount": {
-          "description": "Required. Count of cores of this accelerator. Note that not all combinations of `type` and `core_count` are valid. Check [GPUs on Compute Engine](\/compute\/docs\/gpus\/#gpus-list) to find a valid combination. TPUs are not supported.",
+          "description": "Required. Count of cores of this accelerator. Note that not all combinations of `type` and `core_count` are valid. Check [GPUs on Compute Engine](https:\/\/cloud.google.com\/compute\/docs\/gpus\/#gpus-list) to find a valid combination. TPUs are not supported.",
           "type": "string",
           "format": "int64"
         }
@@ -607,7 +607,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "Required. The [Compute Engine machine type](\/compute\/docs\/machine-types).",
+          "description": "Required. The [Compute Engine machine type](https:\/\/cloud.google.com\/compute\/docs\/machine-types).",
           "type": "string"
         }
       }

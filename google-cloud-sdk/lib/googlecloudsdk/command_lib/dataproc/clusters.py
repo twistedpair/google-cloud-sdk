@@ -135,8 +135,8 @@ def ArgsForClusterRef(parser,
       '--image',
       metavar='IMAGE',
       help='The custom image used to create the cluster. It can '
-           'be the image name, the image URI, or the image family URI, which '
-           'selects the latest image from the family.')
+      'be the image name, the image URI, or the image family URI, which '
+      'selects the latest image from the family.')
   image_parser.add_argument(
       '--image-version',
       metavar='VERSION',
@@ -315,6 +315,13 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       (https://cloud.google.com/compute/docs/private-google-access).
       """)
 
+  parser.add_argument(
+      '--private-ipv6-google-access-type',
+      choices=['inherit-subnetwork', 'outbound', 'bidirectional'],
+      help="""\
+      The private IPv6 Google access type for the cluster.
+      """)
+
   boot_disk_type_detailed_help = """\
       The type of the boot disk. The value must be ``pd-standard'' or
       ``pd-ssd''.
@@ -340,6 +347,14 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       help="""\
         Enable access to the web UIs of selected components on the cluster
         through the component gateway.
+        """)
+  parser.add_argument(
+      '--node-group',
+      hidden=True,
+      help="""\
+        The name of the sole-tenant node group to create the cluster on. Can be
+        a short name ("node-group-name") or in the format
+        "projects/{project-id}/zones/{zone}/nodeGroups/{node-group-name}".
         """)
 
   autoscaling_group = parser.add_argument_group()
@@ -685,6 +700,8 @@ def GetClusterConfig(args,
       networkUri=network_ref and network_ref.SelfLink(),
       subnetworkUri=subnetwork_ref and subnetwork_ref.SelfLink(),
       internalIpOnly=args.no_address,
+      privateIpv6GoogleAccess=_GetPrivateIpv6GoogleAccess(
+          dataproc, args.private_ipv6_google_access_type),
       serviceAccount=args.service_account,
       serviceAccountScopes=expanded_scopes,
       zoneUri=properties.VALUES.compute.zone.GetOrFail())
@@ -772,6 +789,10 @@ def GetClusterConfig(args,
     cluster_config.autoscalingConfig = dataproc.messages.AutoscalingConfig(
         policyUri=args.CONCEPTS.autoscaling_policy.Parse().RelativeName())
 
+  if args.node_group:
+    gce_cluster_config.nodeGroupAffinity = dataproc.messages.NodeGroupAffinity(
+        nodeGroupUri=args.node_group)
+
   if beta:
     if args.dataproc_metastore:
       cluster_config.metastoreConfig = dataproc.messages.MetastoreConfig(
@@ -836,7 +857,8 @@ def GetClusterConfig(args,
                 num_secondary_worker_local_ssds,
             ),
             minCpuPlatform=args.worker_min_cpu_platform,
-            preemptibility=_GetType(dataproc, args.secondary_worker_type)))
+            preemptibility=_GetInstanceGroupPreemptibility(
+                dataproc, args.secondary_worker_type)))
 
   if args.enable_component_gateway:
     cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
@@ -864,12 +886,40 @@ def _FirstNonNone(first, second):
   return first if first is not None else second
 
 
-def _GetType(dataproc, secondary_worker_type):
+def _GetInstanceGroupPreemptibility(dataproc, secondary_worker_type):
   if secondary_worker_type == 'non-preemptible':
     return dataproc.messages.InstanceGroupConfig.PreemptibilityValueValuesEnum(
         'NON_PREEMPTIBLE')
-  else:
+  return None
+
+
+def _GetPrivateIpv6GoogleAccess(dataproc, private_ipv6_google_access_type):
+  """Get PrivateIpv6GoogleAccess enum value.
+
+  Converts private_ipv6_google_access_type argument value to
+  PrivateIpv6GoogleAccess API enum value.
+
+  Args:
+    dataproc: Dataproc API definition
+    private_ipv6_google_access_type: argument value
+
+  Returns:
+    PrivateIpv6GoogleAccess API enum value
+  """
+  if private_ipv6_google_access_type == 'inherit-subnetwork':
+    return dataproc.messages.GceClusterConfig.PrivateIpv6GoogleAccessValueValuesEnum(
+        'INHERIT_FROM_SUBNETWORK')
+  if private_ipv6_google_access_type == 'outbound':
+    return dataproc.messages.GceClusterConfig.PrivateIpv6GoogleAccessValueValuesEnum(
+        'OUTBOUND')
+  if private_ipv6_google_access_type == 'bidirectional':
+    return dataproc.messages.GceClusterConfig.PrivateIpv6GoogleAccessValueValuesEnum(
+        'BIDIRECTIONAL')
+  if private_ipv6_google_access_type is None:
     return None
+  raise exceptions.ArgumentError(
+      'Unsupported --private-ipv6-google-access-type flag value: ' +
+      private_ipv6_google_access_type)
 
 
 def GetDiskConfig(dataproc, boot_disk_type, boot_disk_size, num_local_ssds):

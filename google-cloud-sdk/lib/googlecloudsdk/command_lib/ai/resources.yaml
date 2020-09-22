@@ -1,0 +1,8 @@
+operation:
+  name: operation
+  collection: aiplatform.projects.locations.operations
+  attributes:
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: The name of the Google Cloud AI Platform operation.

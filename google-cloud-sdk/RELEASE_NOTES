@@ -6,6 +6,81 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 311.0.0 (2020-09-22)
+
+### Breaking Changes
+
+*   **(Assured Workloads)** Updated `gcloud assured workloads list` and `gcloud assured operations list`
+    commands to use separate flags for organization and location.
+
+
+### App Engine
+
+* Added `gcloud beta app services update` to allow management of incoming
+  traffic to an app on a per-service basis.
+* Promoted `--no-cache` flag of `gcloud app deploy` to GA. This flag disables
+  the build cache when deploying an app.
+* Added a warning that `<application>` or `<version>` elements
+  within appengine-web.xml are not respected.
+* Modified the behavior of `gcloud app deploy` with `--promote`.
+  Previously, attempting to deploy and promote a version that was already
+  deployed, but stopped, would result in an error. Now a stopped version will be
+  started before it is promoted.
+
+### App Engine Flexible Environment
+
+* Added `gcloud beta app services update` to allow management of incoming
+  traffic to an app on a per-service basis.
+* Promoted `--no-cache` flag of `gcloud app deploy` to GA. This flag disables
+  the build cache when deploying an app.
+* Modified the behavior of `gcloud app deploy` with `--promote`.
+  Previously, attempting to deploy and promote a version that was already
+  deployed, but stopped, would result in an error. Now a stopped version will be
+  started before it is promoted.
+
+### Assured Workloads
+
+*   Added multiple input format support to resource arguments for the following
+    commands: `gcloud assured workloads describe`, `gcloud assured workloads
+    delete`, `gcloud assured workloads update`, and `gcloud assured operations
+    describe`.
+
+### Cloud Dataproc
+
+*   Added `--private-ipv6-google-access-type` flag to `gcloud dataproc clusters
+    create` and `gcloud dataproc workflow-templates set-managed-cluster` to
+    allow users to configure the private IPv6 Google access type for the
+    cluster.
+
+### Cloud Resource Manager
+
+* Added `gcloud folders get-ancestors-iam-policy` for retrieving IAM policies for a given folder and its ancestors.
+
+### Identity Groups
+
+*   Promoted `gcloud identity` to GA.
+*   Promoted `gcloud identity groups delete` to GA.
+
+### Kpt
+
+* Updated kpt from v0.33.0 to v0.34.0.
+* Updated import of cli-utils from v0.18.1 to v0.20.1.
+* Updated import of kyaml from v0.6.0 to v0.8.0.
+* Updated import of cmd/config from v0.6.0 to v0.8.0.
+
+### Secret Manager
+
+* Promoted `gcloud secrets replication` command group to beta.
+* Added `--replication-policy-file` flag to `gcloud beta secrets create`
+  command to specify replication policy using a JSON or YAML file.
+* Added `--kms-key-name` flag to `gcloud beta secrets create`
+  command to specify a KMS key when creating an automatic secret.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 310.0.0 (2020-09-15)
 
 ### Assured Workloads

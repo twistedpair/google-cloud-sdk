@@ -13,6 +13,54 @@ from apitools.base.py import extra_types
 package = 'gkehub'
 
 
+class ApigeeFeatureSpec(_messages.Message):
+  r"""Feature spec for Apigee
+
+  Messages:
+    MembershipSpecsValue: Map of Hub-based Membership IDs to individual
+      membership spec. Membership IDs are in this format: `projects/[project-
+      number]/locations/global/memberships/[membership-name]`
+
+  Fields:
+    membershipSpecs: Map of Hub-based Membership IDs to individual membership
+      spec. Membership IDs are in this format: `projects/[project-
+      number]/locations/global/memberships/[membership-name]`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipSpecsValue(_messages.Message):
+    r"""Map of Hub-based Membership IDs to individual membership spec.
+    Membership IDs are in this format: `projects/[project-
+    number]/locations/global/memberships/[membership-name]`
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipSpecsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MembershipSpecsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipSpecsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A MembershipSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('MembershipSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 1)
+
+
+class ApigeeFeatureState(_messages.Message):
+  r"""An empty state for Apigee feature."""
+
+
 class AppDevExperienceFeatureSpec(_messages.Message):
   r"""Spec for App Dev Experience Feature."""
 
@@ -130,6 +178,55 @@ class AuthorizerFeatureState(_messages.Message):
   Authorizer Feature.
   """
 
+
+
+class BinauthzConfig(_messages.Message):
+  r"""Configuration for Binauthz
+
+  Fields:
+    enabled: Whether binauthz is enabled in this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class BinauthzState(_messages.Message):
+  r"""State for Binauthz
+
+  Enums:
+    WebhookValueValuesEnum: The state of the binauthz webhook.
+
+  Fields:
+    version: The version of binauthz that is installed.
+    webhook: The state of the binauthz webhook.
+  """
+
+  class WebhookValueValuesEnum(_messages.Enum):
+    r"""The state of the binauthz webhook.
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+
+  version = _messages.MessageField('BinauthzVersion', 1)
+  webhook = _messages.EnumField('WebhookValueValuesEnum', 2)
+
+
+class BinauthzVersion(_messages.Message):
+  r"""The version of binauthz.
+
+  Fields:
+    webhookVersion: The version of the binauthz webhook.
+  """
+
+  webhookVersion = _messages.StringField(1)
 
 
 class Binding(_messages.Message):
@@ -402,6 +499,7 @@ class ConfigManagementFeatureState(_messages.Message):
   r"""State for Anthos Config Management
 
   Fields:
+    binauthzState: Binauthz status
     clusterName: The user-defined name for the cluster used by
       ClusterSelectors to group clusters together. This should match
       Membership's membership_name, unless the user installed ACM on the
@@ -415,11 +513,12 @@ class ConfigManagementFeatureState(_messages.Message):
     policyControllerState: PolicyController status
   """
 
-  clusterName = _messages.StringField(1)
-  configSyncState = _messages.MessageField('ConfigSyncState', 2)
-  membershipConfig = _messages.MessageField('MembershipConfig', 3)
-  operatorState = _messages.MessageField('OperatorState', 4)
-  policyControllerState = _messages.MessageField('PolicyControllerState', 5)
+  binauthzState = _messages.MessageField('BinauthzState', 1)
+  clusterName = _messages.StringField(2)
+  configSyncState = _messages.MessageField('ConfigSyncState', 3)
+  membershipConfig = _messages.MessageField('MembershipConfig', 4)
+  operatorState = _messages.MessageField('OperatorState', 5)
+  policyControllerState = _messages.MessageField('PolicyControllerState', 6)
 
 
 class ConfigSync(_messages.Message):
@@ -689,6 +788,7 @@ class Feature(_messages.Message):
     LabelsValue: GCP labels for this feature.
 
   Fields:
+    apigeeFeatureSpec: Feature for Apigee.
     appdevexperienceFeatureSpec: Feature for App Dev Experience.
     authorizerFeatureSpec: The specification for the Authorizer Feature.
     cloudauditloggingFeatureSpec: Feature for Anthos Cloud Audit Logging.
@@ -735,22 +835,23 @@ class Feature(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
-  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 2)
-  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 3)
-  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 4)
-  createTime = _messages.StringField(5)
-  deleteTime = _messages.StringField(6)
-  description = _messages.StringField(7)
-  featureState = _messages.MessageField('FeatureState', 8)
-  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 11)
-  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 12)
-  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 13)
-  name = _messages.StringField(14)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 15)
-  updateTime = _messages.StringField(16)
+  apigeeFeatureSpec = _messages.MessageField('ApigeeFeatureSpec', 1)
+  appdevexperienceFeatureSpec = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
+  authorizerFeatureSpec = _messages.MessageField('AuthorizerFeatureSpec', 3)
+  cloudauditloggingFeatureSpec = _messages.MessageField('CloudAuditLoggingFeatureSpec', 4)
+  configmanagementFeatureSpec = _messages.MessageField('ConfigManagementFeatureSpec', 5)
+  createTime = _messages.StringField(6)
+  deleteTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  featureState = _messages.MessageField('FeatureState', 9)
+  helloworldFeatureSpec = _messages.MessageField('HelloWorldFeatureSpec', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  meteringFeatureSpec = _messages.MessageField('MeteringFeatureSpec', 12)
+  multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 13)
+  multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 14)
+  name = _messages.StringField(15)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 16)
+  updateTime = _messages.StringField(17)
 
 
 class FeatureState(_messages.Message):
@@ -841,6 +942,7 @@ class FeatureStateDetails(_messages.Message):
       of the feature. It also allows for an interpretation of the details.
 
   Fields:
+    apigeeFeatureState: State for the Apigee Feature.
     appdevexperienceFeatureState: A AppDevExperienceFeatureState attribute.
     authorizerFeatureState: State for the Authorizer Feature.
     cloudauditloggingFeatureState: The state of the Anthos Cloud Audit Logging
@@ -873,18 +975,19 @@ class FeatureStateDetails(_messages.Message):
     FAILED = 2
     WARNING = 3
 
-  appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 2)
-  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 3)
-  code = _messages.EnumField('CodeValueValuesEnum', 4)
-  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 5)
-  description = _messages.StringField(6)
-  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 7)
-  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 8)
-  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 9)
-  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 10)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 11)
-  updateTime = _messages.StringField(12)
+  apigeeFeatureState = _messages.MessageField('ApigeeFeatureState', 1)
+  appdevexperienceFeatureState = _messages.MessageField('AppDevExperienceFeatureState', 2)
+  authorizerFeatureState = _messages.MessageField('AuthorizerFeatureState', 3)
+  cloudauditloggingFeatureState = _messages.MessageField('CloudAuditLoggingFeatureState', 4)
+  code = _messages.EnumField('CodeValueValuesEnum', 5)
+  configmanagementFeatureState = _messages.MessageField('ConfigManagementFeatureState', 6)
+  description = _messages.StringField(7)
+  helloworldFeatureState = _messages.MessageField('HelloWorldFeatureState', 8)
+  meteringFeatureState = _messages.MessageField('MeteringFeatureState', 9)
+  multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 10)
+  multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 11)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 12)
+  updateTime = _messages.StringField(13)
 
 
 class FeatureTest(_messages.Message):
@@ -1517,14 +1620,33 @@ class MembershipConfig(_messages.Message):
   ConfigManagement CR.
 
   Fields:
+    binauthz: Binauthz conifguration for the cluster.
     configSync: Config Sync configuration for the cluster.
     policyController: Policy Controller configuration for the cluster.
     version: Version of ACM installed.
   """
 
-  configSync = _messages.MessageField('ConfigSync', 1)
-  policyController = _messages.MessageField('PolicyController', 2)
-  version = _messages.StringField(3)
+  binauthz = _messages.MessageField('BinauthzConfig', 1)
+  configSync = _messages.MessageField('ConfigSync', 2)
+  policyController = _messages.MessageField('PolicyController', 3)
+  version = _messages.StringField(4)
+
+
+class MembershipSpec(_messages.Message):
+  r"""Membership information
+
+  Fields:
+    location: Location of the cluster. This is used by Apigee management plane
+      for making location-based routing decisions.
+    organizationProjects: In Apigee hybrid install, a project can contain
+      memberships that serve multiple Apigee org projects. This is the list of
+      Apigee org projects that the membership serves. E.g., In order to get
+      the memberships that serve a specific organization project, Consumers
+      can filter based on this field.
+  """
+
+  location = _messages.StringField(1)
+  organizationProjects = _messages.StringField(2, repeated=True)
 
 
 class MeteringFeatureSpec(_messages.Message):

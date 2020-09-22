@@ -19,6 +19,38 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.assured import resource_args
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
+
+
+def AddListWorkloadsFlags(parser):
+  parser.add_argument(
+      '--location',
+      required=True,
+      help=('The location of the Assured Workloads environments. For a '
+            'current list of supported LOCATION values, see '
+            '[Assured Workloads locations]'
+            '(http://cloud/assured-workloads/docs/locations).'))
+  parser.add_argument(
+      '--organization',
+      required=True,
+      help=('The parent organization of the Assured Workloads environments, '
+            'provided as an organization ID.'))
+
+
+def AddListOperationsFlags(parser):
+  parser.add_argument(
+      '--location',
+      required=True,
+      help=('The location of the Assured Workloads operations. For a '
+            'current list of supported LOCATION values, see '
+            '[Assured Workloads locations]'
+            '(http://cloud/assured-workloads/docs/locations).'))
+  parser.add_argument(
+      '--organization',
+      required=True,
+      help=('The parent organization of the Assured Workloads operations, '
+            'provided as an organization ID.'))
 
 
 def AddCreateWorkloadFlags(parser):
@@ -74,12 +106,7 @@ def AddCreateWorkloadFlags(parser):
 
 
 def AddDeleteWorkloadFlags(parser):
-  parser.add_argument(
-      'resource',
-      help=('The Assured Workloads resource to delete, for example, '
-            'organizations/{ORG_ID}/locations/{LOCATION}/'
-            'workloads/{WORKLOAD_ID}.'))
-  # TODO(b/166449888): Add support for multiple resource formats
+  AddWorkloadResourceArgToParser(parser, verb='delete')
   parser.add_argument(
       '--etag',
       help=('The etag acquired by reading the Assured Workloads environment or '
@@ -87,20 +114,11 @@ def AddDeleteWorkloadFlags(parser):
 
 
 def AddDescribeWorkloadFlags(parser):
-  # TODO(b/166449888): add support for resources in multiple formats
-  parser.add_argument(
-      'resource',
-      help=('The Assured Workloads resource to describe, for example, '
-            'organizations/{ORG_ID}/locations/{LOCATION}/'
-            'workloads/{WORKLOAD_ID}.'))
+  AddWorkloadResourceArgToParser(parser, verb='describe')
 
 
 def AddUpdateWorkloadFlags(parser):
-  parser.add_argument(
-      'resource',
-      help=('The Assured Workloads environment resource to update, in the '
-            'form: organizations/{ORG_ID}/locations/{LOCATION}/'
-            'workloads/{WORKLOAD_ID}.'))
+  AddWorkloadResourceArgToParser(parser, verb='update')
   parser.add_argument(
       '--etag',
       help=('The etag acquired by reading the Assured Workloads environment '
@@ -120,8 +138,16 @@ def AddUpdateWorkloadFlags(parser):
 
 
 def AddDescribeOperationFlags(parser):
-  parser.add_argument(
-      'resource',
-      help=('The Assured Workloads operation resource to describe, for example,'
-            ' organizations/{ORG_ID}/locations/{LOCATION}/'
-            'operations/{OPERATION_ID}.'))
+  concept_parsers.ConceptParser.ForResource(
+      'operation',
+      resource_args.GetOperationResourceSpec(),
+      ('The Assured Workloads operation resource to describe.'),
+      required=True).AddToParser(parser)
+
+
+def AddWorkloadResourceArgToParser(parser, verb):
+  concept_parsers.ConceptParser.ForResource(
+      'workload',
+      resource_args.GetWorkloadResourceSpec(),
+      ('The Assured Workloads environment resource to {}.'.format(verb)),
+      required=True).AddToParser(parser)

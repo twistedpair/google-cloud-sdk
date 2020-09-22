@@ -76,6 +76,21 @@ class DisableVpcServiceControlsPermissionDeniedException(Error):
   pass
 
 
+class CreatePeeredDnsDomainPermissionDeniedException(Error):
+  """Permission denied exception for create peered dns domain command."""
+  pass
+
+
+class DeletePeeredDnsDomainPermissionDeniedException(Error):
+  """Permission denied exception for delete peered dns domain command."""
+  pass
+
+
+class ListPeeredDnsDomainsPermissionDeniedException(Error):
+  """Permission denied exception for list peered dns domains command."""
+  pass
+
+
 class GenerateServiceIdentityPermissionDeniedException(Error):
   """Permission denied exception for generate service identitiy command."""
   pass

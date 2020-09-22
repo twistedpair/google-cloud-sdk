@@ -1854,7 +1854,7 @@
       "type": "object",
       "properties": {
         "resourceContainer": {
-          "description": "The identifier of the parent of this resource instance. Must be in one of the following formats: - \u201Cprojects\/\u201D - \u201Cfolders\/\u201D - \u201Corganizations\/\u201D",
+          "description": "The identifier of the parent of this resource instance. Must be in one of the following formats: - `projects\/` - `folders\/` - `organizations\/`",
           "type": "string"
         },
         "resourceName": {
@@ -2466,7 +2466,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates description, labels and network config of a specific clusterGroup."
+                  "description": "Updates description, labels, and network config of a specific clusterGroup."
                 },
                 "delete": {
                   "id": "sddc.projects.locations.clusterGroups.delete",

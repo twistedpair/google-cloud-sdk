@@ -19,8 +19,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import requests
+from googlecloudsdk.core import transport as core_transport
 from googlecloudsdk.core.credentials import creds as core_creds
 from googlecloudsdk.core.credentials import transport
 
@@ -41,7 +43,8 @@ def GetSession(timeout='unset',
                ca_certs=None,
                enable_resource_quota=True,
                force_resource_quota=False,
-               allow_account_impersonation=True):
+               allow_account_impersonation=True,
+               session=None):
   """Get requests.Session object for working with the Google API.
 
   Args:
@@ -61,6 +64,8 @@ def GetSession(timeout='unset',
     allow_account_impersonation: bool, True to allow use of impersonated service
       account credentials for calls made with this client. If False, the active
       user credentials will always be used.
+    session: requests.Session instance. Otherwise, a new requests.Session will
+        be initialized.
 
   Returns:
     1. A regular requests.Session object if no credentials are available;
@@ -74,10 +79,14 @@ def GetSession(timeout='unset',
   """
   session = requests.GetSession(timeout=timeout,
                                 response_encoding=response_encoding,
-                                ca_certs=ca_certs)
-  session = RequestWrapper().WrapCredentials(
-      session, enable_resource_quota, force_resource_quota,
-      allow_account_impersonation)
+                                ca_certs=ca_certs,
+                                session=session)
+  request_wrapper = RequestWrapper()
+  session = request_wrapper.WrapQuota(session, enable_resource_quota,
+                                      force_resource_quota,
+                                      allow_account_impersonation, True)
+  session = request_wrapper.WrapCredentials(session,
+                                            allow_account_impersonation)
 
   if hasattr(session, '_googlecloudsdk_credentials'):
     creds = session._googlecloudsdk_credentials  # pylint: disable=protected-access
@@ -86,11 +95,12 @@ def GetSession(timeout='unset',
       raise UnsupportedCredentialsException(
           'Requests does not support credentials of this type: {}'.format(
               creds))
+
   return session
 
 
 class RequestWrapper(transport.CredentialWrappingMixin,
-                     requests.RequestWrapper):
+                     transport.QuotaHandlerMixin, requests.RequestWrapper):
   """Class for wrapping requests.Session requests."""
 
   def AuthorizeClient(self, http_client, creds):
@@ -104,6 +114,53 @@ class RequestWrapper(transport.CredentialWrappingMixin,
                           **kwargs)
 
     http_client.request = WrappedRequest
+    return http_client
+
+  def WrapQuota(self, http_client, enable_resource_quota, force_resource_quota,
+                allow_account_impersonation, use_google_auth):
+    """Returns an http_client with quota project handling."""
+    quota_project = self.QuotaProject(enable_resource_quota,
+                                      force_resource_quota,
+                                      allow_account_impersonation,
+                                      use_google_auth)
+    if not quota_project:
+      return http_client
+    orig_request = http_client.request
+    wrapped_request = self.QuotaWrappedRequest(http_client, quota_project)
+
+    def RequestWithRetry(*args, **kwargs):
+      """Retries the request after removing the quota project header.
+
+      Try the request with the X-Goog-User-Project header. If the account does
+      not have the permission to expense the quota of the user project in the
+      header, remove the header and retry.
+
+      Args:
+        *args: *args to send to requests.Session.request method.
+        **kwargs: **kwargs to send to requests.Session.request method.
+
+      Returns:
+        Response from requests.Session.request.
+      """
+      response = wrapped_request(*args, **kwargs)
+      if response.status_code != 403:
+        return response
+      old_encoding = response.encoding
+      response.encoding = response.encoding or core_transport.ENCODING
+      try:
+        err_msg = response.json()['error']['message']
+      except (KeyError, ValueError):
+        return response
+      finally:
+        response.encoding = old_encoding
+      if transport.USER_PROJECT_OVERRIDE_ERR_MSG not in err_msg:
+        return response
+      return orig_request(*args, **kwargs)
+
+    if base.UserProjectQuotaWithFallbackEnabled():
+      http_client.request = RequestWithRetry
+    else:
+      http_client.request = wrapped_request
     return http_client
 
 

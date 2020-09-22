@@ -55,6 +55,28 @@ class RequestConfig(object):
     self.predefined_acl_string = predefined_acl_string
 
 
+# TODO (b/168332070): Move to a private function for gcs_api.
+def ValidateObjectMetadata(metadata):
+  """Ensures metadata supplies the needed fields for copy and insert.
+
+  Args:
+    metadata (apitools.messages.Object | None): Apitools Object metadata to
+        validate.
+
+  Raises:
+    ValueError: Metadata is invalid.
+  """
+  if not metadata:
+    raise ValueError(
+        'No object metadata supplied for object.')
+  if not metadata.name:
+    raise ValueError(
+        'Object metadata supplied for object had no object name.')
+  if not metadata.bucket:
+    raise ValueError(
+        'Object metadata supplied for object had no bucket name.')
+
+
 class CloudApi(object):
   """Abstract base class for interacting with cloud storage providers.
 
@@ -259,7 +281,8 @@ class CloudApi(object):
       destination_object_metadata (apitools.messages.Object): Object metadata
           for new object. Must include bucket and object name.
       source_object_generation (string): Generation of the source object to
-          copy.
+          copy. Separate from source_object_metadata because Apitools wants
+          an int generation, but we need to support strings for AWS.
       progress_callback (function): Optional callback function for progress
           notifications. Receives calls with arguments (bytes_transferred,
           total_size).

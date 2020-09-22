@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2019 Google LLC. All Rights Reserved.
+# Copyright 2020 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 import collections
 
 from apitools.base.py import encoding
+from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.cloudresourcemanager import organizations
 from googlecloudsdk.api_lib.identity import cloudidentity_client as ci_client
@@ -108,7 +109,7 @@ def SetResourceName(unused_ref, args, request):
 
   if args.IsSpecified('email'):
     version = GetApiVersion(args)
-    request.name = ConvertEmailToResourceName(version, args.email, 'email')
+    request.name = ConvertEmailToResourceName(version, args.email, '--email')
 
   return request
 
@@ -372,16 +373,15 @@ def ConvertEmailToResourceName(version, email, arg_name):
     Group Id (e.g. groups/11zu0gzc3tkdgn2)
 
   """
-
-  lookup_group_name_resp = ci_client.LookupGroupName(version, email)
-
-  if 'name' in lookup_group_name_resp:
-    return lookup_group_name_resp['name']
-
-  # If there is no group exists (or deleted) for the given group email,
-  # print out an error message.
-  error_msg = 'There is no such a group associated with the specified argument:' + email
-  raise exceptions.InvalidArgumentException(arg_name, error_msg)
+  try:
+    return ci_client.LookupGroupName(version, email).name
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError):
+    # If there is no group exists (or deleted) for the given group email,
+    # print out an error message.
+    error_msg = ('There is no such a group associated with the specified '
+                 'argument:' + email)
+    raise exceptions.InvalidArgumentException(arg_name, error_msg)
 
 
 def FilterLabels(labels):
@@ -442,7 +442,7 @@ def GetApiVersion(args):
     args: The argparse namespace.
 
   Returns:
-    Release track (e.g. ALPHA or BETA)
+    Release track.
 
   Raises:
     UnsupportedReleaseTrackError: If invalid release track is input.
@@ -454,6 +454,8 @@ def GetApiVersion(args):
     return 'v1alpha1'
   elif release_track == base.ReleaseTrack.BETA:
     return 'v1beta1'
+  elif release_track == base.ReleaseTrack.GA:
+    return 'v1'
   else:
     raise UnsupportedReleaseTrackError(release_track)
 

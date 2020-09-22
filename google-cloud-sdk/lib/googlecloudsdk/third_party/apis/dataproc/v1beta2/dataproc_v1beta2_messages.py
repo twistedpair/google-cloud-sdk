@@ -2082,7 +2082,7 @@ class GceClusterConfig(_messages.Message):
         configuration inherited from subnetowrk configuration
       OUTBOUND: Enables outbound private IPv6 access to Google Services from
         Dataproc cluster
-      BIDIRECTIONAL: Enables bidirectionl private IPv6 access between Google
+      BIDIRECTIONAL: Enables bidirectional private IPv6 access between Google
         Services and Dataproc cluster
     """
     PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
@@ -2475,12 +2475,12 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
 
   Messages:
     ParametersValue: Optional. Map from parameter names to values that should
-      be used for those parameters. Values may not exceed 100 characters.
+      be used for those parameters. Values may not exceed 1000 characters.
 
   Fields:
     instanceId: Deprecated. Please use request_id field instead.
     parameters: Optional. Map from parameter names to values that should be
-      used for those parameters. Values may not exceed 100 characters.
+      used for those parameters. Values may not exceed 1000 characters.
     requestId: Optional. A tag that prevents multiple concurrent workflow
       instances with the same tag from running. This mitigates risk of
       concurrent instances started due to retries.It is recommended to always
@@ -2497,7 +2497,7 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
     r"""Optional. Map from parameter names to values that should be used for
-    those parameters. Values may not exceed 100 characters.
+    those parameters. Values may not exceed 1000 characters.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.

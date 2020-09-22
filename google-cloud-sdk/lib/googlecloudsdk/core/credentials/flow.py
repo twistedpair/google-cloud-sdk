@@ -29,6 +29,7 @@ from google_auth_oauthlib import flow as google_auth_flow
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import requests
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
 
@@ -269,6 +270,36 @@ class InstalledAppFlow(google_auth_flow.InstalledAppFlow):
   This class overrides base class's run_console() method so that the auth code
   fetching step can be easily mocked in login integration testing.
   """
+
+  def __init__(
+      self, oauth2session, client_type, client_config,
+      redirect_uri=None, code_verifier=None,
+      autogenerate_code_verifier=False):
+    """Initializes a google_auth_flow.InstalledAppFlow.
+
+    Args:
+        oauth2session (requests_oauthlib.OAuth2Session):
+            The OAuth 2.0 session from ``requests-oauthlib``.
+        client_type (str): The client type, either ``web`` or
+            ``installed``.
+        client_config (Mapping[str, Any]): The client
+            configuration in the Google `client secrets`_ format.
+        redirect_uri (str): The OAuth 2.0 redirect URI if known at flow
+            creation time. Otherwise, it will need to be set using
+            :attr:`redirect_uri`.
+        code_verifier (str): random string of 43-128 chars used to verify
+            the key exchange.using PKCE.
+        autogenerate_code_verifier (bool): If true, auto-generate a
+            code_verifier.
+    .. _client secrets:
+        https://developers.google.com/api-client-library/python/guide
+        /aaa_client_secrets
+    """
+    session = requests.GetSession(session=oauth2session)
+    super(InstalledAppFlow, self).__init__(
+        session, client_type, client_config,
+        redirect_uri, code_verifier,
+        autogenerate_code_verifier)
 
   def run_local_server(self,
                        host='localhost',

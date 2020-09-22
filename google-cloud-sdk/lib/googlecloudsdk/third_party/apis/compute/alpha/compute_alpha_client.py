@@ -1683,6 +1683,32 @@ Example request body:
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+
+      Args:
+        request: (ComputeDisksUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.disks.update',
+        ordered_params=['project', 'zone', 'disk'],
+        path_params=['disk', 'project', 'zone'],
+        query_params=['paths', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/disks/{disk}',
+        request_field='diskResource',
+        request_type_name='ComputeDisksUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ExternalVpnGatewaysService(base_api.BaseApiService):
     """Service class for the externalVpnGateways resource."""
 
@@ -5766,7 +5792,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ListReferrers(self, request, global_params=None):
-      r"""Retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed instance group, the referrers list includes the managed instance group. For more information, read Viewing Referrers to VM Instances.
+      r"""Retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed or unmanaged instance group, the referrers list includes the instance group. For more information, read Viewing referrers to VM instances.
 
       Args:
         request: (ComputeInstancesListReferrersRequest) input message

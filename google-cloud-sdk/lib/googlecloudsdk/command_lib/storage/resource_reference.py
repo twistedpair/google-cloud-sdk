@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import storage_url as storage_url_lib
 
 
@@ -63,48 +64,48 @@ class Resource(object):
     raise NotImplementedError('is_container must be overridden.')
 
 
-class BucketResource(Resource):
+class CloudResource(Resource):
+  """For Resource classes with CloudUrl's.
+
+  Attributes:
+    scheme (cloud_api.ProviderPrefix): Prefix indicating what cloud provider
+        hosts the bucket.
+  """
+
+  @property
+  def scheme(self):
+    # TODO(b/168690302): Stop using string scheme in storage_url.py.
+    return cloud_api.ProviderPrefix(self.storage_url.scheme)
+
+
+class BucketResource(CloudResource):
   """Class representing a bucket.
 
   Attributes:
     storage_url (StorageUrl): A StorageUrl object representing the bucket.
     name (str): Name of bucket.
+    scheme (cloud_api.ProviderPrefix): Prefix indicating what cloud provider
+        hosts the bucket.
     etag (str): HTTP version identifier.
     metadata (object | dict): Cloud-provider specific data type for holding
         bucket metadata.
-    metadata_object (messages.Bucket): For compatibility until b/167691513
-        refactors are complete.
   """
 
-  def __init__(self, storage_url, name, etag=None, metadata=None):
+  def __init__(self, storage_url, etag=None, metadata=None):
+    """Initializes resource. Args are a subset of attributes."""
     super(BucketResource, self).__init__(storage_url)
-    self.name = name
     self.etag = etag
     self.metadata = metadata
 
-    # TODO(b/167691513) Delete after refactors to not use this property are
-    # complete.
-    self.metadata_object = metadata
-
-  # TODO(b/167691513) Delete when refactors to
-  # change things to gcs_api._BucketResourceFromMetadata are complete.
-  @classmethod
-  def from_gcs_metadata_object(cls, provider, metadata_object):
-    """Helper method to generate the instance from GCS metadata_object."""
-    return cls(
-        storage_url_lib.CloudUrl(
-            scheme=provider,
-            bucket_name=metadata_object.name),
-        metadata_object.name,
-        metadata_object.etag,
-        metadata_object)
+  @property
+  def name(self):
+    return self.storage_url.bucket_name
 
   def __eq__(self, other):
     return (
         super(BucketResource, self).__eq__(other) and
-        self.metadata == other.metadata and
-        self.name == other.name and
-        self.etag == other.etag
+        self.etag == other.etag and
+        self.metadata == other.metadata
     )
 
   def is_container(self):
@@ -115,18 +116,23 @@ class ObjectResource(Resource):
   """Class representing a  cloud object.
 
   Attributes:
-    storage_url (StorageUrl): A StorageUrl object representing the object
-    metadata_object (apitools.messages.Object):
-    additional_metadata (dict): key-value pairs od additional_metadata.
-      This is needed for S3, where we want to preserve S3 metadata which
-      cannot be added to apitools.messages.Bucket
+    storage_url (StorageUrl): A StorageUrl object representing the object.
+    scheme (cloud_api.ProviderPrefix): Prefix indicating what cloud provider
+        hosts the object.
+    name (str): Name of object.
+    etag (str): HTTP version identifier.
+    generation (str): Generation (or "version") of the underlying object.
+    metadata (object | dict): Cloud-specific metadata type.
   """
 
-  def __init__(self, storage_url, metadata_object, additional_metadata=None):
+  def __init__(self, storage_url, etag=None, metadata=None):
+    """Initializes resource. Args are a subset of attributes."""
     super(ObjectResource, self).__init__(storage_url)
-    self.metadata_object = metadata_object
-    self.additional_metadata = additional_metadata
+    self.etag = etag
+    self.metadata = metadata
 
+  # TODO(b/167691513) Delete after refactors to not use this function are
+  # complete.
   @classmethod
   def from_gcs_metadata_object(cls, provider, metadata_object):
     """Helper method to generate the instance from metadata_object."""
@@ -135,13 +141,22 @@ class ObjectResource(Resource):
         bucket_name=metadata_object.bucket,
         object_name=metadata_object.name,
         generation=metadata_object.generation)
-    return cls(storage_url, metadata_object)
+    return cls(storage_url, metadata=metadata_object)
+
+  @property
+  def name(self):
+    return self.storage_url.object_name
+
+  @property
+  def generation(self):
+    return self.storage_url.generation
 
   def __eq__(self, other):
     return (
         super().__eq__(other) and
-        self.metadata_object == other.metadata_object and
-        self.additional_metadata == other.additional_metadata
+        self.etag == other.etag and
+        self.generation == other.generation and
+        self.metadata == other.metadata
     )
 
   def is_container(self):

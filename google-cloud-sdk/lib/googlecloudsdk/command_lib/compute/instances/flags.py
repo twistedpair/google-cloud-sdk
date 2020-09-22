@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import copy
 import functools
+import ipaddress
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import containers_utils
@@ -40,7 +41,7 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as core_resources
-import ipaddress
+
 import six
 
 ZONE_PROPERTY_EXPLANATION = """\
@@ -560,7 +561,8 @@ def AddCreateDiskArgs(parser,
                       image_csek=False,
                       include_name=True,
                       support_boot=False,
-                      support_multi_writer=False):
+                      support_multi_writer=False,
+                      support_replica_zones=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_device_name_help = _GetDiskDeviceNameHelp(
@@ -770,6 +772,14 @@ def AddCreateDiskArgs(parser,
       used with zonal SSD persistent disks. Disks in multi-writer mode do not
       support resize and snapshot operations. The default value is ``no''.
     """
+
+  if support_replica_zones:
+    disk_help += """
+      *replica-zones*::: If specified, the created disk is regional. The disk
+      will be replicated to the specified replica zone and the zone of the
+      newly created instance.
+      """
+    spec['replica-zones'] = arg_parsers.ArgList(max_length=1)
 
   parser.add_argument(
       '--create-disk',
@@ -2641,3 +2651,12 @@ def AddBulkCreateNetworkingArgs(parser):
       action='append',  # pylint:disable=protected-access
       metavar='PROPERTY=VALUE',
       help=network_interface_help)
+
+
+def AddNestedVirtualizationArgs(parser):
+  parser.add_argument(
+      '--enable-nested-virtualization',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      If set to true, enables nested virtualization for the instance.
+      """)

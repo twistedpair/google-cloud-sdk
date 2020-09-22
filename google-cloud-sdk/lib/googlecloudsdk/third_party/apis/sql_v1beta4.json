@@ -762,7 +762,7 @@
           ]
         },
         "appliesTo": {
-          "description": "The database version this flag applies to. Can be *MYSQL_5_5*, *MYSQL_5_6*, or *MYSQL_5_7*. *MYSQL_5_7* is applicable only to Second Generation instances.",
+          "description": "The database version this flag applies to. Can be *MYSQL_8_0*, *MYSQL_5_6*, or *MYSQL_5_7*.",
           "type": "array",
           "items": {
             "type": "string",
@@ -1049,7 +1049,7 @@
           ]
         },
         "databaseVersion": {
-          "description": "The database engine type and version. The *databaseVersion* field cannot be changed after instance creation. MySQL instances: *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default). SQL Server instances: *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.",
+          "description": "The database engine type and version. The *databaseVersion* field cannot be changed after instance creation. MySQL instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default). SQL Server instances: *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.",
           "type": "string",
           "enumDescriptions": [
             "This is an unknown database version.",
@@ -1408,11 +1408,11 @@
           "description": "The name of server Instance collation.",
           "type": "string"
         },
-        "maintenanceDenyPeriods": {
-          "description": "Maintenance deny periods",
+        "denyMaintenancePeriods": {
+          "description": "Deny maintenance periods",
           "type": "array",
           "items": {
-            "$ref": "MaintenanceDenyPeriod"
+            "$ref": "DenyMaintenancePeriod"
           }
         }
       }
@@ -1586,21 +1586,21 @@
         }
       }
     },
-    "MaintenanceDenyPeriod": {
-      "id": "MaintenanceDenyPeriod",
-      "description": "Maintenance Deny Periods. This specifies a date range during when all CSA rollout will be denied.",
+    "DenyMaintenancePeriod": {
+      "id": "DenyMaintenancePeriod",
+      "description": "Deny Maintenance Periods. This specifies a date range during when all CSA rollout will be denied.",
       "type": "object",
       "properties": {
         "startDate": {
-          "description": "\"maintenance deny period\" start date. If the year of the start date is empty, the year of the end date also must be empty. In this case, it means the no maintenance interval recurs every year. The date is in format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01",
+          "description": "\"deny maintenance period\" start date. If the year of the start date is empty, the year of the end date also must be empty. In this case, it means the deny maintenance period recurs every year. The date is in format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01",
           "type": "string"
         },
         "endDate": {
-          "description": "\"maintenance deny period\" end date. If the year of the end date is empty, the year of the start date also must be empty. In this case, it means the no maintenance interval recurs every year. The date is in format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01",
+          "description": "\"deny maintenance period\" end date. If the year of the end date is empty, the year of the start date also must be empty. In this case, it means the deny maintenance period recurs every year. The date is in format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01",
           "type": "string"
         },
         "time": {
-          "description": "Time in UTC when the \"no maintenance interval\" starts on start_date and ends on end_date. The time is in format: HH:mm:SS, i.e., 00:00:00",
+          "description": "Time in UTC when the \"deny maintenance period\" starts on start_date and ends on end_date. The time is in format: HH:mm:SS, i.e., 00:00:00",
           "type": "string"
         }
       }
@@ -2083,7 +2083,8 @@
             "The value of parameter rds.logical_replication is not set to 1.",
             "The primary instance logging setup doesn't allow EM sync.",
             "The primary instance database parameter setup doesn't allow EM sync.",
-            "The gtid_mode is not supported, applicable for MySQL."
+            "The gtid_mode is not supported, applicable for MySQL.",
+            "SQL Server Agent is not running."
           ],
           "enum": [
             "SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED",
@@ -2104,7 +2105,8 @@
             "INVALID_RDS_LOGICAL_REPLICATION",
             "INVALID_LOGGING_SETUP",
             "INVALID_DB_PARAM",
-            "UNSUPPORTED_GTID_MODE"
+            "UNSUPPORTED_GTID_MODE",
+            "SQLSERVER_AGENT_NOT_RUNNING"
           ]
         },
         "detail": {

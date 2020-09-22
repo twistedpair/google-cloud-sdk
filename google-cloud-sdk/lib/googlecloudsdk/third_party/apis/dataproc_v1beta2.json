@@ -461,7 +461,7 @@
             "Default value. Same as INHERIT_FROM_SUBNETWORK",
             "Private access to or from Google Services configuration inherited from subnetowrk configuration",
             "Enables outbound private IPv6 access to Google Services from Dataproc cluster",
-            "Enables bidirectionl private IPv6 access between Google Services and Dataproc cluster"
+            "Enables bidirectional private IPv6 access between Google Services and Dataproc cluster"
           ],
           "enum": [
             "PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED",
@@ -2084,7 +2084,7 @@
           "type": "string"
         },
         "parameters": {
-          "description": "Optional. Map from parameter names to values that should be used for those parameters. Values may not exceed 100 characters.",
+          "description": "Optional. Map from parameter names to values that should be used for those parameters. Values may not exceed 1000 characters.",
           "type": "object",
           "additionalProperties": {
             "type": "string"

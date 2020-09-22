@@ -1168,8 +1168,6 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChang
   hangeReportRequest object.
 
   Fields:
-    basepath: Base path where the API proxy revision should be deployed.
-      Defaults to '/' if not provided.
     name: Name of the API proxy revision deployment in the following format:
       `organizations/{org}/environments/{env}/apis/{api}/revisions/{rev}`
     override: Flag that specifies whether to force the deployment of the new
@@ -1177,9 +1175,8 @@ class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateDeployChang
       checks.
   """
 
-  basepath = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  override = _messages.BooleanField(3)
+  name = _messages.StringField(1, required=True)
+  override = _messages.BooleanField(2)
 
 
 class ApigeeOrganizationsEnvironmentsApisRevisionsDeploymentsGenerateUndeployChangeReportRequest(_messages.Message):
@@ -3373,7 +3370,6 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
 
   Fields:
     apiProxy: API proxy.
-    basePath: Base path for the deployment.
     deployStartTime: Time the API proxy was marked `deployed` in the control
       plane in millisconds since epoch.
     environment: Environment.
@@ -3410,15 +3406,14 @@ class GoogleCloudApigeeV1Deployment(_messages.Message):
     ERROR = 3
 
   apiProxy = _messages.StringField(1)
-  basePath = _messages.StringField(2)
-  deployStartTime = _messages.IntegerField(3)
-  environment = _messages.StringField(4)
-  errors = _messages.MessageField('GoogleRpcStatus', 5, repeated=True)
-  instances = _messages.MessageField('GoogleCloudApigeeV1InstanceDeploymentStatus', 6, repeated=True)
-  pods = _messages.MessageField('GoogleCloudApigeeV1PodStatus', 7, repeated=True)
-  revision = _messages.StringField(8)
-  routeConflicts = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict', 9, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  deployStartTime = _messages.IntegerField(2)
+  environment = _messages.StringField(3)
+  errors = _messages.MessageField('GoogleRpcStatus', 4, repeated=True)
+  instances = _messages.MessageField('GoogleCloudApigeeV1InstanceDeploymentStatus', 5, repeated=True)
+  pods = _messages.MessageField('GoogleCloudApigeeV1PodStatus', 6, repeated=True)
+  revision = _messages.StringField(7)
+  routeConflicts = _messages.MessageField('GoogleCloudApigeeV1DeploymentChangeReportRoutingConflict', 8, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class GoogleCloudApigeeV1DeploymentChangeReport(_messages.Message):

@@ -39,7 +39,7 @@ def CreateConnection(project_number, service, network, ranges):
         service.
 
   Returns:
-    The result of the peering operation
+    The result of the create connection operation.
   """
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
@@ -66,7 +66,7 @@ def UpdateConnection(project_number, service, network, ranges, force):
     service: The name of the service to peer with.
     network: The network in consumer project to peer with.
     ranges: The names of IP CIDR ranges for peering service to use.
-    force: update the connection even if the update can be destructive.
+    force: If true, update the connection even if the update can be destructive.
 
   Raises:
     exceptions.CreateConnectionsPermissionDeniedException: when the create
@@ -75,7 +75,7 @@ def UpdateConnection(project_number, service, network, ranges, force):
         service.
 
   Returns:
-    The result of the peering operation
+    The result of the update connection operation.
   """
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
@@ -110,7 +110,7 @@ def ListConnections(project_number, service, network):
         service.
 
   Returns:
-    The result of the peering operation
+    The list of connections.
   """
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
@@ -143,7 +143,7 @@ def EnableVpcServiceControls(project_number, service, network):
         service.
 
   Returns:
-    The result of the peering operation.
+    The result of the enable VPC service controls operation.
   """
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
@@ -197,6 +197,116 @@ def DisableVpcServiceControls(project_number, service, network):
         e, exceptions.DisableVpcServiceControlsPermissionDeniedException)
 
 
+def CreatePeeredDnsDomain(project_number, service, network, name, dns_suffix):
+  """Make API call to create a peered DNS domain for a specific connection.
+
+  Args:
+    project_number: The number of the project which is peered with the service.
+    service: The name of the service to create a peered DNS domain for.
+    network: The network in the consumer project peered with the service.
+    name: The name of the peered DNS domain.
+    dns_suffix: The DNS domain name suffix of the peered DNS domain.
+
+  Raises:
+    exceptions.CreatePeeredDnsDomainPermissionDeniedException: when the create
+    peered DNS domain API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the peering
+    service.
+
+  Returns:
+    The result of the create peered DNS domain operation.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  # the API only takes project number, so we cannot use resource parser.
+  request = messages.ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsCreateRequest(
+      parent='services/%s/projects/%s/global/networks/%s' %
+      (service, project_number, network),
+      peeredDnsDomain=messages.PeeredDnsDomain(dnsSuffix=dns_suffix, name=name),
+  )
+  try:
+    return client.services_projects_global_networks_peeredDnsDomains.Create(
+        request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e,
+        exceptions.CreatePeeredDnsDomainPermissionDeniedException,
+    )
+
+
+def DeletePeeredDnsDomain(project_number, service, network, name):
+  """Make API call to delete a peered DNS domain for a specific connection.
+
+  Args:
+    project_number: The number of the project which is peered with the service.
+    service: The name of the service to delete a peered DNS domain for.
+    network: The network in the consumer project peered with the service.
+    name: The name of the peered DNS domain.
+
+  Raises:
+    exceptions.DeletePeeredDnsDomainPermissionDeniedException: when the delete
+    peered DNS domain API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the peering
+    service.
+
+  Returns:
+    The result of the delete peered DNS domain operation.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  # the API only takes project number, so we cannot use resource parser.
+  request = messages.ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsDeleteRequest(
+      name='services/%s/projects/%s/global/networks/%s/peeredDnsDomains/%s' %
+      (service, project_number, network, name))
+  try:
+    return client.services_projects_global_networks_peeredDnsDomains.Delete(
+        request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e,
+        exceptions.DeletePeeredDnsDomainPermissionDeniedException,
+    )
+
+
+def ListPeeredDnsDomains(project_number, service, network):
+  """Make API call to list the peered DNS domains for a specific connection.
+
+  Args:
+    project_number: The number of the project which is peered with the service.
+    service: The name of the service to list the peered DNS domains for.
+    network: The network in the consumer project peered with the service.
+
+  Raises:
+    exceptions.ListPeeredDnsDomainsPermissionDeniedException: when the delete
+    peered DNS domain API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the peering
+    service.
+
+  Returns:
+    The list of peered DNS domains.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  # the API only takes project number, so we cannot use resource parser.
+  request = messages.ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsListRequest(
+      parent='services/%s/projects/%s/global/networks/%s' %
+      (service, project_number, network))
+  try:
+    return client.services_projects_global_networks_peeredDnsDomains.List(
+        request).peeredDnsDomains
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(
+        e,
+        exceptions.ListPeeredDnsDomainsPermissionDeniedException,
+    )
+
+
 def GetOperation(name):
   """Make API call to get an operation.
 
@@ -209,7 +319,7 @@ def GetOperation(name):
         service.
 
   Returns:
-    The result of the peering operation
+    The long running operation.
   """
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE

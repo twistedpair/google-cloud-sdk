@@ -161,6 +161,45 @@ class BigQueryDestination(_messages.Message):
       the table will be overwritten by the contents of assets snapshot. If the
       flag is `FALSE` or unset and the destination table already exists, the
       export call returns an INVALID_ARGUMEMT error.
+    partitionSpec: [partition_spec] determines whether to export to
+      partitioned table(s) and how to partition the data. If [partition_spec]
+      is unset or [partition_spec.partion_key] is unset or
+      `PARTITION_KEY_UNSPECIFIED`, the snapshot results will be exported to
+      non-partitioned table(s). [force] will decide whether to overwrite
+      existing table(s). If [partition_spec] is specified. First, the snapshot
+      results will be written to partitioned table(s) with two additional
+      timestamp columns, readTime and requestTime, one of which will be the
+      partition key. Secondly, in the case when any destination table already
+      exists, it will first try to update existing table's schema as necessary
+      by appending additional columns. Then, if [force] is `TRUE`, the
+      corresponding partition will be overwritten by the snapshot results
+      (data in different partitions will remain intact); if [force] is unset
+      or `FALSE`, it will append the data. An error will be returned if the
+      schema update or data appension fails.
+    separateTablesPerAssetType: If this flag is `TRUE`, the snapshot results
+      will be written to one or multiple tables, each of which contains
+      results of one asset type. The [force] and [partition_spec] fields will
+      apply to each of them. Field [table] will be concatenated with "_" and
+      the asset type names (see https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types for supported asset types) to
+      construct per-asset-type table names, in which all non-alphanumeric
+      characters like "." and "/" will be substituted by "_". Example: if
+      field [table] is "mytable" and snapshot results contain
+      "storage.googleapis.com/Bucket" assets, the corresponding table name
+      will be "mytable_storage_googleapis_com_Bucket". If any of these tables
+      does not exist, a new table with the concatenated name will be created.
+      When [content_type] in the ExportAssetsRequest is `RESOURCE`, the schema
+      of each table will include RECORD-type columns mapped to the nested
+      fields in the Asset.resource.data field of that asset type (up to the 15
+      nested level BigQuery supports
+      (https://cloud.google.com/bigquery/docs/nested-repeated#limitations)).
+      The fields in >15 nested levels will be stored in JSON format string as
+      a child column of its parent RECORD column. If error occurs when
+      exporting to any table, the whole export call will return an error but
+      the export results that already succeed will persist. Example: if
+      exporting to table_type_A succeeds when exporting to table_type_B fails
+      during one export call, the results in table_type_A will persist and
+      there will not be partial results persisting in a table.
     table: Required. The BigQuery table to which the snapshot result should be
       written. If this table does not exist, a new table with the given name
       will be created.
@@ -168,7 +207,9 @@ class BigQueryDestination(_messages.Message):
 
   dataset = _messages.StringField(1)
   force = _messages.BooleanField(2)
-  table = _messages.StringField(3)
+  partitionSpec = _messages.MessageField('PartitionSpec', 3)
+  separateTablesPerAssetType = _messages.BooleanField(4)
+  table = _messages.StringField(5)
 
 
 class Binding(_messages.Message):
@@ -1524,6 +1565,41 @@ class OutputConfig(_messages.Message):
 
   bigqueryDestination = _messages.MessageField('BigQueryDestination', 1)
   gcsDestination = _messages.MessageField('GcsDestination', 2)
+
+
+class PartitionSpec(_messages.Message):
+  r"""Specifications of BigQuery partitioned table as export destination.
+
+  Enums:
+    PartitionKeyValueValuesEnum: The partition key for BigQuery partitioned
+      table.
+
+  Fields:
+    partitionKey: The partition key for BigQuery partitioned table.
+  """
+
+  class PartitionKeyValueValuesEnum(_messages.Enum):
+    r"""The partition key for BigQuery partitioned table.
+
+    Values:
+      PARTITION_KEY_UNSPECIFIED: Unspecified partition key. If used, it means
+        using non-partitioned table.
+      READ_TIME: The time when the snapshot is taken. If specified as
+        partition key, the result table(s) is partitoned by the additional
+        timestamp column, readTime. If [read_time] in ExportAssetsRequest is
+        specified, the readTime column's value will be the same as it.
+        Otherwise, its value will be the current time that is used to take the
+        snapshot.
+      REQUEST_TIME: The time when the request is received and started to be
+        processed. If specified as partition key, the result table(s) is
+        partitoned by the requestTime column, an additional timestamp column
+        representing when the request was received.
+    """
+    PARTITION_KEY_UNSPECIFIED = 0
+    READ_TIME = 1
+    REQUEST_TIME = 2
+
+  partitionKey = _messages.EnumField('PartitionKeyValueValuesEnum', 1)
 
 
 class Permissions(_messages.Message):

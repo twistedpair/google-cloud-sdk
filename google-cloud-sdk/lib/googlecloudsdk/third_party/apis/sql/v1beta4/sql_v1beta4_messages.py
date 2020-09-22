@@ -300,10 +300,10 @@ class DatabaseInstance(_messages.Message):
       to determine the database type.
     DatabaseVersionValueValuesEnum: The database engine type and version. The
       *databaseVersion* field cannot be changed after instance creation. MySQL
-      instances: *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances:
-      *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default).
-      SQL Server instances: *SQLSERVER_2017_STANDARD* (default),
-      *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
+      instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*.
+      PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or
+      *POSTGRES_12* (default). SQL Server instances: *SQLSERVER_2017_STANDARD*
+      (default), *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
       *SQLSERVER_2017_WEB*.
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
       following. *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not
@@ -336,10 +336,10 @@ class DatabaseInstance(_messages.Message):
       Monitoring API instead. Please see this announcement for details.
     databaseVersion: The database engine type and version. The
       *databaseVersion* field cannot be changed after instance creation. MySQL
-      instances: *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances:
-      *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default).
-      SQL Server instances: *SQLSERVER_2017_STANDARD* (default),
-      *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
+      instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*.
+      PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or
+      *POSTGRES_12* (default). SQL Server instances: *SQLSERVER_2017_STANDARD*
+      (default), *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
       *SQLSERVER_2017_WEB*.
     diskEncryptionConfiguration: Disk encryption configuration specific to an
       instance. Applies only to Second Generation instances.
@@ -417,10 +417,10 @@ class DatabaseInstance(_messages.Message):
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
     r"""The database engine type and version. The *databaseVersion* field
-    cannot be changed after instance creation. MySQL instances: *MYSQL_5_7*
-    (default), or *MYSQL_5_6*. PostgreSQL instances: *POSTGRES_9_6*,
-    *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default). SQL Server
-    instances: *SQLSERVER_2017_STANDARD* (default),
+    cannot be changed after instance creation. MySQL instances: *MYSQL_8_0*,
+    *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances:
+    *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11* or *POSTGRES_12* (default).
+    SQL Server instances: *SQLSERVER_2017_STANDARD* (default),
     *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
     *SQLSERVER_2017_WEB*.
 
@@ -650,6 +650,28 @@ class DemoteMasterMySqlReplicaConfiguration(_messages.Message):
   username = _messages.StringField(6)
 
 
+class DenyMaintenancePeriod(_messages.Message):
+  r"""Deny Maintenance Periods. This specifies a date range during when all
+  CSA rollout will be denied.
+
+  Fields:
+    endDate: "deny maintenance period" end date. If the year of the end date
+      is empty, the year of the start date also must be empty. In this case,
+      it means the deny maintenance period recurs every year. The date is in
+      format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01
+    startDate: "deny maintenance period" start date. If the year of the start
+      date is empty, the year of the end date also must be empty. In this
+      case, it means the deny maintenance period recurs every year. The date
+      is in format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01
+    time: Time in UTC when the "deny maintenance period" starts on start_date
+      and ends on end_date. The time is in format: HH:mm:SS, i.e., 00:00:00
+  """
+
+  endDate = _messages.StringField(1)
+  startDate = _messages.StringField(2)
+  time = _messages.StringField(3)
+
+
 class DiskEncryptionConfiguration(_messages.Message):
   r"""Disk encryption configuration for an instance.
 
@@ -800,9 +822,8 @@ class Flag(_messages.Message):
       Can be combined with min_value and max_value to add additional values.
     allowedStringValues: For *STRING* flags, a list of strings that the value
       can be set to.
-    appliesTo: The database version this flag applies to. Can be *MYSQL_5_5*,
-      *MYSQL_5_6*, or *MYSQL_5_7*. *MYSQL_5_7* is applicable only to Second
-      Generation instances.
+    appliesTo: The database version this flag applies to. Can be *MYSQL_8_0*,
+      *MYSQL_5_6*, or *MYSQL_5_7*.
     inBeta: Whether or not the flag is considered in beta.
     kind: This is always *sql#flag*.
     maxValue: For *INTEGER* flags, the maximum allowed value.
@@ -1201,28 +1222,6 @@ class LocationPreference(_messages.Message):
   followGaeApplication = _messages.StringField(1)
   kind = _messages.StringField(2)
   zone = _messages.StringField(3)
-
-
-class MaintenanceDenyPeriod(_messages.Message):
-  r"""Maintenance Deny Periods. This specifies a date range during when all
-  CSA rollout will be denied.
-
-  Fields:
-    endDate: "maintenance deny period" end date. If the year of the end date
-      is empty, the year of the start date also must be empty. In this case,
-      it means the no maintenance interval recurs every year. The date is in
-      format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01
-    startDate: "maintenance deny period" start date. If the year of the start
-      date is empty, the year of the end date also must be empty. In this
-      case, it means the no maintenance interval recurs every year. The date
-      is in format yyyy-mm-dd i.e., 2020-11-01, or mm-dd, i.e., 11-01
-    time: Time in UTC when the "no maintenance interval" starts on start_date
-      and ends on end_date. The time is in format: HH:mm:SS, i.e., 00:00:00
-  """
-
-  endDate = _messages.StringField(1)
-  startDate = _messages.StringField(2)
-  time = _messages.StringField(3)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -1674,6 +1673,7 @@ class Settings(_messages.Message):
     databaseFlags: The database flags passed to the instance at startup.
     databaseReplicationEnabled: Configuration specific to read replica
       instances. Indicates whether replication is enabled or not.
+    denyMaintenancePeriods: Deny maintenance periods
     ipConfiguration: The settings for IP Management. This allows to enable or
       disable the instance IP and manage which external networks can connect
       to the instance. The IPv4 address cannot be disabled for Second
@@ -1683,7 +1683,6 @@ class Settings(_messages.Message):
       instance to be located as near as possible to either an App Engine app
       or Compute Engine zone for better performance. App Engine co-location
       was only applicable to First Generation instances.
-    maintenanceDenyPeriods: Maintenance deny periods
     maintenanceWindow: The maintenance window for this instance. This
       specifies when the instance can be restarted for maintenance purposes.
     pricingPlan: The pricing plan for this instance. This can be either
@@ -1827,10 +1826,10 @@ class Settings(_messages.Message):
   dataDiskType = _messages.EnumField('DataDiskTypeValueValuesEnum', 9)
   databaseFlags = _messages.MessageField('DatabaseFlags', 10, repeated=True)
   databaseReplicationEnabled = _messages.BooleanField(11)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 12)
-  kind = _messages.StringField(13)
-  locationPreference = _messages.MessageField('LocationPreference', 14)
-  maintenanceDenyPeriods = _messages.MessageField('MaintenanceDenyPeriod', 15, repeated=True)
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 12, repeated=True)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 13)
+  kind = _messages.StringField(14)
+  locationPreference = _messages.MessageField('LocationPreference', 15)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 16)
   pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 17)
   replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 18)
@@ -2032,6 +2031,7 @@ class SqlExternalSyncSettingError(_messages.Message):
         allow EM sync.
       UNSUPPORTED_GTID_MODE: The gtid_mode is not supported, applicable for
         MySQL.
+      SQLSERVER_AGENT_NOT_RUNNING: SQL Server Agent is not running.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2052,6 +2052,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     INVALID_LOGGING_SETUP = 16
     INVALID_DB_PARAM = 17
     UNSUPPORTED_GTID_MODE = 18
+    SQLSERVER_AGENT_NOT_RUNNING = 19
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

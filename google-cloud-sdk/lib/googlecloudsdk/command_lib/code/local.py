@@ -102,8 +102,15 @@ class ApplicationDefaultCredentialSetting(DataObject):
 
 
 class BuildpackBuilder(DataObject):
+  """Settings for building with a buildpack.
 
-  NAMES = ('builder',)
+    Attributes:
+      builder: Name of the builder.
+      trust: True if the lifecycle should trust this builder.
+      devmode: Build with devmode.
+  """
+
+  NAMES = ('builder', 'trust', 'devmode')
 
 
 class DockerfileBuilder(DataObject):
@@ -123,6 +130,18 @@ def _GaeBuilder(runtime):
   return 'gcr.io/gae-runtimes/buildpacks/%s/builder:argo_current' % runtime
 
 
+def _IsGcpBaseBuilder(builder):
+  """Return true if the builder is the GCP base builder.
+
+  Args:
+    builder: Name of the builder.
+
+  Returns:
+    True if the builder is the GCP base builder.
+  """
+  return builder == 'gcr.io/buildpack/builder:v1'
+
+
 class Settings(DataObject):
   """Settings for local development environments.
 
@@ -131,8 +150,8 @@ class Settings(DataObject):
       image: Docker image tag.
       credential: Credential setting for either service account or application
         default credential.
-      context: Path to directory to use as the current working
-        directory for the docker build.
+      context: Path to directory to use as the current working directory for the
+        docker build.
       builder: Buildpack builder.
       local_port: Local port to which to forward the service connection.
       env_vars: Container environment variables.
@@ -147,9 +166,8 @@ class Settings(DataObject):
 
   @classmethod
   def FromArgs(cls, args):
-    """Create a LocalRuntimeFiles object from an args object."""
+    """Create a Settings object from an args object."""
     project_name = properties.VALUES.core.project.Get()
-
     if args.IsSpecified('service_name'):
       service_name = args.service_name
     else:
@@ -175,7 +193,7 @@ class Settings(DataObject):
 
     context = os.path.abspath(args.source or files.GetCWD())
 
-    builder = cls._CreateBuilder(args, context)
+    builder = _CreateBuilder(args, context)
 
     return cls(
         service_name=service_name,
@@ -190,33 +208,45 @@ class Settings(DataObject):
         cpu=args.cpu,
         namespace=args.namespace if 'namespace' in args else None)
 
-  @classmethod
-  def _CreateBuilder(cls, args, context):
-    if args.IsSpecified('builder'):
-      return BuildpackBuilder(builder=args.builder)
-    elif args.IsSpecified('appengine'):
-      rel_path_to_app_yaml = os.path.relpath(os.path.join(context, 'app.yaml'))
-      # Undo __future__.unicode_literals so we get a str in py2:
-      app_yaml_str = six.ensure_str(rel_path_to_app_yaml)
-      service_config = yaml_parsing.ServiceYamlInfo.FromFile(app_yaml_str)
-      builder = _GaeBuilder(service_config.parsed.runtime)
-      return BuildpackBuilder(builder=builder)
-    else:
-      dockerfile = os.path.abspath(args.dockerfile)
-      return DockerfileBuilder(
-          dockerfile=cls._CheckDockerfilePath(dockerfile, context))
 
-  @staticmethod
-  def _CheckDockerfilePath(dockerfile, context):
-    if os.path.commonprefix([context, dockerfile]) != context:
-      raise InvalidLocationError(
-          'Invalid Dockerfile path. Dockerfile must be located in the build '
-          'context directory.\n'
-          'Dockerfile: {0}\n'
-          'Build Context Directory: {1}'.format(dockerfile, context))
-    if not os.path.exists(dockerfile):
-      raise InvalidLocationError(dockerfile + ' does not exist.')
-    return dockerfile
+def _CreateBuilder(args, context):
+  """Create a builder object depending on the args.
+
+  Args:
+    args: Args namespace.
+    context: Build context directory.
+  Returns:
+    A builder data object.
+  """
+  if args.IsSpecified('builder'):
+    is_gcp_base_builder = _IsGcpBaseBuilder(args.builder)
+    return BuildpackBuilder(
+        builder=args.builder,
+        trust=is_gcp_base_builder,
+        devmode=is_gcp_base_builder)
+  elif args.IsSpecified('appengine'):
+    rel_path_to_app_yaml = os.path.relpath(os.path.join(context, 'app.yaml'))
+    # Undo __future__.unicode_literals so we get a str in py2:
+    app_yaml_str = six.ensure_str(rel_path_to_app_yaml)
+    service_config = yaml_parsing.ServiceYamlInfo.FromFile(app_yaml_str)
+    builder = _GaeBuilder(service_config.parsed.runtime)
+    return BuildpackBuilder(builder=builder, trust=True, devmode=False)
+  else:
+    dockerfile = os.path.abspath(args.dockerfile)
+    return DockerfileBuilder(
+        dockerfile=_CheckDockerfilePath(dockerfile, context))
+
+
+def _CheckDockerfilePath(dockerfile, context):
+  if os.path.commonprefix([context, dockerfile]) != context:
+    raise InvalidLocationError(
+        'Invalid Dockerfile path. Dockerfile must be located in the build '
+        'context directory.\n'
+        'Dockerfile: {0}\n'
+        'Build Context Directory: {1}'.format(dockerfile, context))
+  if not os.path.exists(dockerfile):
+    raise InvalidLocationError(dockerfile + ' does not exist.')
+  return dockerfile
 
 
 _POD_TEMPLATE = """

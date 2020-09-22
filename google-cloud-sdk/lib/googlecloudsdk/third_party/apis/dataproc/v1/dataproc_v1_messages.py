@@ -1863,7 +1863,7 @@ class Expr(_messages.Message):
 
 class GceClusterConfig(_messages.Message):
   r"""Common config settings for resources of Compute Engine cluster
-  instances, applicable to all instances in the cluster. NEXT ID: 13
+  instances, applicable to all instances in the cluster. NEXT ID: 14
 
   Enums:
     PrivateIpv6GoogleAccessValueValuesEnum: Optional. The type of IPv6 access
@@ -1896,6 +1896,7 @@ class GceClusterConfig(_messages.Message):
       information).A full URL, partial URI, or short name are valid. Examples:
       https://www.googleapis.com/compute/v1/projects/[project_id]/regions/glob
       al/default projects/[project_id]/regions/global/default default
+    nodeGroupAffinity: Optional. Node Group Affinity for sole-tenant clusters.
     privateIpv6GoogleAccess: Optional. The type of IPv6 access for a cluster.
     reservationAffinity: Optional. Reservation Affinity for consuming Zonal
       reservation.
@@ -1949,7 +1950,7 @@ class GceClusterConfig(_messages.Message):
         configuration inherited from subnetowrk configuration
       OUTBOUND: Enables outbound private IPv6 access to Google Services from
         Dataproc cluster
-      BIDIRECTIONAL: Enables bidirectionl private IPv6 access between Google
+      BIDIRECTIONAL: Enables bidirectional private IPv6 access between Google
         Services and Dataproc cluster
     """
     PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
@@ -1987,13 +1988,14 @@ class GceClusterConfig(_messages.Message):
   internalIpOnly = _messages.BooleanField(1)
   metadata = _messages.MessageField('MetadataValue', 2)
   networkUri = _messages.StringField(3)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 4)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 5)
-  serviceAccount = _messages.StringField(6)
-  serviceAccountScopes = _messages.StringField(7, repeated=True)
-  subnetworkUri = _messages.StringField(8)
-  tags = _messages.StringField(9, repeated=True)
-  zoneUri = _messages.StringField(10)
+  nodeGroupAffinity = _messages.MessageField('NodeGroupAffinity', 4)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 5)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 6)
+  serviceAccount = _messages.StringField(7)
+  serviceAccountScopes = _messages.StringField(8, repeated=True)
+  subnetworkUri = _messages.StringField(9)
+  tags = _messages.StringField(10, repeated=True)
+  zoneUri = _messages.StringField(11)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -2331,11 +2333,11 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
 
   Messages:
     ParametersValue: Optional. Map from parameter names to values that should
-      be used for those parameters. Values may not exceed 100 characters.
+      be used for those parameters. Values may not exceed 1000 characters.
 
   Fields:
     parameters: Optional. Map from parameter names to values that should be
-      used for those parameters. Values may not exceed 100 characters.
+      used for those parameters. Values may not exceed 1000 characters.
     requestId: Optional. A tag that prevents multiple concurrent workflow
       instances with the same tag from running. This mitigates risk of
       concurrent instances started due to retries.It is recommended to always
@@ -2352,7 +2354,7 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
     r"""Optional. Map from parameter names to values that should be used for
-    those parameters. Values may not exceed 100 characters.
+    those parameters. Values may not exceed 1000 characters.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.
@@ -2921,6 +2923,18 @@ class ManagedGroupConfig(_messages.Message):
 
   instanceGroupManagerName = _messages.StringField(1)
   instanceTemplateName = _messages.StringField(2)
+
+
+class NodeGroupAffinity(_messages.Message):
+  r"""Node Group Affinity for clusters using sole-tenant node groups.
+
+  Fields:
+    nodeGroupUri: Optional. The name of a single node group
+      (https://cloud.google.com/compute/docs/reference/rest/v1/nodeGroups) a
+      cluster will be created on.
+  """
+
+  nodeGroupUri = _messages.StringField(1)
 
 
 class NodeInitializationAction(_messages.Message):

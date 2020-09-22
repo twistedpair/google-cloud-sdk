@@ -32,6 +32,7 @@ class OpsAgentPolicy(object):
     class Type(str, enum.Enum):
       LOGGING = 'logging'
       METRICS = 'metrics'
+      OPS_AGENT = 'ops-agent'
 
     class PackageState(str, enum.Enum):
       INSTALLED = 'installed'

@@ -27,7 +27,7 @@ from googlecloudsdk.core import yaml
 import six
 
 _SKAFFOLD_TEMPLATE = """
-apiVersion: skaffold/v2beta4
+apiVersion: skaffold/v2beta5
 kind: Config
 build:
   artifacts: []
@@ -109,11 +109,14 @@ class LocalRuntimeFiles(object):
         self._settings.context.encode('unicode_escape'))
 
     if isinstance(self._settings.builder, local.BuildpackBuilder):
-      artifact['buildpack'] = {
+      artifact['buildpacks'] = {
           'builder': self._settings.builder.builder,
-          'env': ['GOOGLE_DEVMODE=1'],
       }
-      artifact['sync'] = {'auto': {}}
+      if self._settings.builder.devmode:
+        artifact['buildpacks']['env'] = ['GOOGLE_DEVMODE=1']
+        artifact['sync'] = {'auto': {}}
+      if self._settings.builder.trust:
+        artifact['buildpacks']['trustBuilder'] = True
     else:
       artifact['docker'] = {
           'dockerfile':

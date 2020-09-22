@@ -531,6 +531,7 @@ class CreateClusterOptions(object):
       cluster_dns_domain=None,
       kubernetes_objects_changes_target=None,
       kubernetes_objects_snapshots_target=None,
+      enable_gcfs=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -662,6 +663,7 @@ class CreateClusterOptions(object):
     self.cluster_dns_domain = cluster_dns_domain
     self.kubernetes_objects_changes_target = kubernetes_objects_changes_target
     self.kubernetes_objects_snapshots_target = kubernetes_objects_snapshots_target
+    self.enable_gcfs = enable_gcfs
 
 
 class UpdateClusterOptions(object):
@@ -872,7 +874,8 @@ class CreateNodePoolOptions(object):
                system_config_from_file=None,
                reservation_affinity=None,
                reservation=None,
-               node_group=None):
+               node_group=None,
+               enable_gcfs=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -914,6 +917,7 @@ class CreateNodePoolOptions(object):
     self.reservation_affinity = reservation_affinity
     self.reservation = reservation
     self.node_group = node_group
+    self.enable_gcfs = enable_gcfs
 
 
 class UpdateNodePoolOptions(object):
@@ -1353,7 +1357,6 @@ class APIAdapter(object):
     if options.enable_confidential_nodes:
       cluster.confidentialNodes = self.messages.ConfidentialNodes(
           enabled=options.enable_confidential_nodes)
-
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -1394,6 +1397,10 @@ class APIAdapter(object):
 
     if options.min_cpu_platform is not None:
       node_config.minCpuPlatform = options.min_cpu_platform
+
+    if options.enable_gcfs:
+      gcfs_config = self.messages.GcfsConfig(enabled=options.enable_gcfs)
+      node_config.gcfsConfig = gcfs_config
 
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
@@ -2470,6 +2477,10 @@ class APIAdapter(object):
 
     if options.node_group is not None:
       node_config.nodeGroup = options.node_group
+
+    if options.enable_gcfs:
+      gcfs_config = self.messages.GcfsConfig(enabled=options.enable_gcfs)
+      node_config.gcfsConfig = gcfs_config
 
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)

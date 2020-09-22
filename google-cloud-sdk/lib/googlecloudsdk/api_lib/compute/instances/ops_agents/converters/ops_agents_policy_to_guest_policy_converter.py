@@ -144,6 +144,56 @@ _AGENT_RULE_TEMPLATES = {
             recipe_name='set-stackdriver-agent-version',
             current_major_version='6.*.*',
         ),
+    'ops-agent':
+        _AgentRuleTemplates(
+            yum_package=_PackageTemplates(
+                repo='google-cloud-ops-agent-el%s-x86_64-%s',
+                clear_prev_repo=(
+                    'sudo rm /etc/yum.repos.d/google-cloud-ops-agent.repo || '
+                    'true; find /var/cache/yum -name '
+                    "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"
+                ),
+                install_with_version=(
+                    "sudo yum remove -y google-cloud-ops-agent || true; "
+                    "sudo yum install -y 'google-cloud-ops-agent%s'"),
+            ),
+            zypper_package=_PackageTemplates(
+                repo='google-cloud-ops-agent-sles%s-x86_64-%s',
+                clear_prev_repo=(
+                    'sudo rm /etc/zypp/repos.d/google-cloud-ops-agent.repo || '
+                    'true; find /var/cache/zypp -name '
+                    "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"
+                ),
+                install_with_version=(
+                    "sudo zypper remove -y google-cloud-ops-agent || true; "
+                    "sudo zypper install -y 'google-cloud-ops-agent%s'"),
+            ),
+            apt_package=_PackageTemplates(
+                repo='google-cloud-ops-agent-%s-%s',
+                clear_prev_repo=(
+                    'sudo rm '
+                    '/etc/apt/sources.list.d/google-cloud-ops-agent.repo || '
+                    'true; find /var/cache/apt -name '
+                    "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"
+                ),
+                install_with_version=(
+                    "sudo apt-get remove -y google-cloud-ops-agent || true; "
+                    "sudo apt-get install -y 'google-cloud-ops-agent%s'"),
+            ),
+            repo_id='google-cloud-ops-agent',
+            display_name='Google Cloud Ops Agent Repository',
+            run_agent=textwrap.dedent("""\
+                    #!/bin/bash -e
+                    %(clear_prev_repo)s
+                    for i in {1..5}; do
+                      if (%(install)s; sudo service google-cloud-ops-agent start); then
+                        break
+                      fi
+                      sleep 1m
+                    done"""),
+            recipe_name='set-ops-agent-version',
+            current_major_version='0.*.*',
+        ),
 }
 
 _APT_CODENAMES = {
@@ -191,6 +241,12 @@ def _CreatePackages(messages, agent_rules, os_type):
             _CreatePackage(messages, 'stackdriver-agent-start-service',
                            agent_rule.package_state,
                            agent_rule.enable_autoupgrade))
+
+    if agent_rule.type is agent_policy.OpsAgentPolicy.AgentRule.Type.OPS_AGENT:
+      packages.append(
+          _CreatePackage(messages, 'google-cloud-ops-agent',
+                         agent_rule.package_state,
+                         agent_rule.enable_autoupgrade))
   return packages
 
 

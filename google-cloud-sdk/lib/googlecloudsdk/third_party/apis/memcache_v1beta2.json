@@ -1097,7 +1097,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists Instances in a given project and location."
+                  "description": "Lists Instances in a given location."
                 },
                 "get": {
                   "id": "memcache.projects.locations.instances.get",
@@ -1138,7 +1138,7 @@
                       "type": "string"
                     },
                     "instanceId": {
-                      "description": "Required. The logical name of the Memcached instance in the user project with the following restrictions: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-40 characters. * Must end with a number or a letter. * Must be unique within the user project \/ location",
+                      "description": "Required. The logical name of the Memcached instance in the user project with the following restrictions: * Must contain only lowercase letters, numbers, and hyphens. * Must start with a letter. * Must be between 1-40 characters. * Must end with a number or a letter. * Must be unique within the user project \/ location If any of the above are not met, will raise an invalid argument error.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1155,7 +1155,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Instance in a given project and location."
+                  "description": "Creates a new Instance in a given location."
                 },
                 "patch": {
                   "id": "memcache.projects.locations.instances.patch",
@@ -1270,7 +1270,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "ApplyParameters will update current set of Parameters to the set of specified nodes of the Memcached Instance."
+                  "description": "ApplyParameters will restart the set of specified nodes in order to update them to the current set of parameters for the Memcached Instance."
                 }
               }
             }

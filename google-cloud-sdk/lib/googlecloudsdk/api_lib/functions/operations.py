@@ -42,7 +42,7 @@ def OperationErrorToString(error):
       error.code, encoding.Decode(error.message))
 
 
-# TODO(b/139026575): Remove try_set_invoker option.
+# TODO(b/130604453): Remove try_set_invoker option.
 def _GetOperationStatus(client, get_request,
                         progress_tracker=None, try_set_invoker=None,
                         on_every_poll=None):

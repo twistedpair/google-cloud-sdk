@@ -66,6 +66,8 @@ def CredentialsFromAdcDict(json_key):
     raise BadCredentialJsonFileException(
         'The .json key file is not in a valid format.')
 
+  json_key['token_uri'] = c_creds.GetEffectiveTokenUri(json_key)
+
   creds = service_account.ServiceAccountCredentials.from_json_keyfile_dict(
       json_key, scopes=config.CLOUDSDK_SCOPES)
   # User agent needs to be set separately, see
@@ -90,8 +92,7 @@ def CredentialsFromAdcDictGoogleAuth(json_key):
   # 'token_uri' is required by google-auth credentails construction. However,
   # the service account keys generated before 2015 do not provide this field.
   # More details in http://shortn/_LtMjDvpgfh.
-  if not json_key.get('token_uri'):
-    json_key['token_uri'] = c_creds.TOKEN_URI
+  json_key['token_uri'] = c_creds.GetEffectiveTokenUri(json_key)
 
   service_account_credentials = (
       google_auth_service_account.Credentials.from_service_account_info)
@@ -129,7 +130,9 @@ def CredentialsFromP12Key(private_key, account, password=None):
         service_account_email=account,
         file_buffer=io.BytesIO(private_key),
         private_key_password=password,
-        scopes=config.CLOUDSDK_SCOPES)
+        scopes=config.CLOUDSDK_SCOPES,
+        token_uri=c_creds.GetEffectiveTokenUri({})
+    )
   except NotImplementedError:
     if not encoding.GetEncodedValue(os.environ, 'CLOUDSDK_PYTHON_SITEPACKAGES'):
       raise UnsupportedCredentialsType(

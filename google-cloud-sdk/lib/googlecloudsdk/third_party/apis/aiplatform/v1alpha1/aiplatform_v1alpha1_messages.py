@@ -326,7 +326,8 @@ class AiplatformProjectsLocationsDatasetsPatchRequest(_messages.Message):
     name: Output only. The resource name of the Dataset.
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see [FieldMask](https: //tinyurl.com/dev-google-
-      protobuf#google.protobuf.FieldMask).
+      protobuf#google.protobuf.FieldMask). Updatable fields: * `display_name`
+      * `description` * `labels`
   """
 
   googleCloudAiplatformV1alpha1Dataset = _messages.MessageField('GoogleCloudAiplatformV1alpha1Dataset', 1)
@@ -873,7 +874,7 @@ class AiplatformProjectsLocationsSpecialistPoolsListRequest(_messages.Message):
     pageSize: The standard list page size.
     pageToken: The standard list page token. Typically obtained by
       ListSpecialistPoolsResponse.next_page_token of the previous
-      [SpecialistPoolService.ListSpecialistPools] call. Return first page if
+      SpecialistPoolService.ListSpecialistPools call. Return first page if
       empty.
     parent: Required. The name of the SpecialistPool's parent resource.
       Format: `projects/{project}/locations/{location}`
@@ -1273,6 +1274,15 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       DeployedModel, and that need a higher degree of manual configuration.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
+    enableAccessLogging: These logs are like standard server access logs,
+      containing information like timestamp and latency for each prediction
+      request. Note that Stackdriver logs may incur a cost, especially if your
+      project receives prediction requests at a high queries per second rate
+      (QPS). Estimate your costs before enabling this option.
+    enableContainerLogging: If true, the container of the DeployedModel
+      instances will send `stderr` and `stdout` streams to Stackdriver
+      Logging. Only supported for custom-trained Models and AutoML Tables
+      Models.
     explanationSpec: Explanation configuration for this DeployedModel. When
       deploying a Model using EndpointService.DeployModel, this value
       overrides the value of Model.explanation_spec. All fields of
@@ -1280,7 +1290,7 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
       explanation_spec is not populated, the value of the same field of
       Model.explanation_spec is inherited. The corresponding
       Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed. Currently, only AutoML Tables Models have
+      Model is not allowed. Currently, only AutoML tabular Models support
       explanation_spec.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model this is the deployment of. Note
@@ -1321,12 +1331,14 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
   createTime = _messages.StringField(2)
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformUiDedicatedResources', 3)
   displayName = _messages.StringField(4)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformUiExplanationSpec', 5)
-  id = _messages.StringField(6)
-  model = _messages.StringField(7)
-  modelDisplayName = _messages.StringField(8)
-  modelObjective = _messages.StringField(9)
-  uiState = _messages.EnumField('UiStateValueValuesEnum', 10)
+  enableAccessLogging = _messages.BooleanField(5)
+  enableContainerLogging = _messages.BooleanField(6)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformUiExplanationSpec', 7)
+  id = _messages.StringField(8)
+  model = _messages.StringField(9)
+  modelDisplayName = _messages.StringField(10)
+  modelObjective = _messages.StringField(11)
+  uiState = _messages.EnumField('UiStateValueValuesEnum', 12)
 
 
 class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
@@ -1345,13 +1357,12 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
   Fields:
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
       Storage describing the format of the feature attributions. The schema is
-      defined as an OpenAPI 3.0.2 [Schema Object]( https:
-      //github.com/OAI/OpenAPI-Specification/b //
-      lob/master/versions/3.0.2.md#schema-object) AutoML Tables Models always
-      have this field populated by AI Platform. Note: The URI given on output
-      may be different, including the URI scheme, than the one given on input.
-      The output URI will point to a location where the user only has a read
-      access.
+      defined as an OpenAPI 3.0.2 [Schema
+      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
+      Models always have this field populated by AI Platform. Note: The URI
+      given on output may be different, including the URI scheme, than the one
+      given on input. The output URI will point to a location where the user
+      only has a read access.
     inputs: Required. Map from feature names to feature input metadata. Keys
       are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
@@ -1478,8 +1489,8 @@ class GoogleCloudAiplatformUiExplanationParameters(_messages.Message):
 
 
 class GoogleCloudAiplatformUiExplanationSpec(_messages.Message):
-  r"""Specification of Model explanation. Currently, only AutoML Tables Models
-  support explanation.
+  r"""Specification of Model explanation. Currently, only AutoML tabular
+  Models support explanation.
 
   Fields:
     metadata: Required. Metadata describing the Model's input and output for
@@ -2498,34 +2509,35 @@ class GoogleCloudAiplatformV1alpha1Attribution(_messages.Message):
     approximationError: Output only. Error of feature_attributions caused by
       approximation used in the explanation method. Lower value means more
       precise attributions. For Sampled Shapley attribution, increasing
-      path_count may reduce the error.
+      path_count might reduce the error.
     baselineOutputValue: Output only. Model predicted output if the input
       instance is constructed from the baselines of all the features defined
       in ExplanationMetadata.inputs. The field name of the output is
       determined by the key in ExplanationMetadata.outputs. If the Model
-      predicted output is a tensor value (i.e. an ndarray), this is the value
-      in the output located by output_index. If there are multiple baselines,
-      their output values are averaged.
+      predicted output is a tensor value (for example, an ndarray), this is
+      the value in the output located by output_index. If there are multiple
+      baselines, their output values are averaged.
     featureAttributions: Output only. Attributions of each explained feature.
       Features are extracted from the prediction instances according to
       explanation input metadata. The value is a struct, whose keys are the
       name of the feature. The values are how much the feature in the instance
       contributed to the predicted result. The format of the value is
-      determined by the feature's input format: - If the feature is a scalar
-      value, the attribution value is a floating number. - If the feature is
-      an array of scalar values, the attribution value is an array of . - If
-      the feature is a struct, the attribution value is a struct. The keys in
-      the attribution value struct are the same as the keys in the feature
-      struct. The formats of the values in the attribution struct are
-      determined by the formats of the values in the feature struct.
-      DeployedModel.explanation_config.feature_attributions_schema_uri points
+      determined by the feature's input format: * If the feature is a scalar
+      value, the attribution value is a floating number. * If the feature is
+      an array of scalar values, the attribution value is an array. * If the
+      feature is a struct, the attribution value is a struct. The keys in the
+      attribution value struct are the same as the keys in the feature struct.
+      The formats of the values in the attribution struct are determined by
+      the formats of the values in the feature struct. The
+      ExplanationMetadata.feature_attributions_schema_uri field, pointed to by
+      the ExplanationSpec field of the Endpoint.deployed_models object, points
       to the schema file that describes the features and their attribution
-      values if it's populated.
+      values (if it is populated).
     instanceOutputValue: Output only. Model predicted output on the
       corresponding explanation instance. The field name of the output is
       determined by the key in ExplanationMetadata.outputs. If the Model
-      predicted output is a tensor value (i.e. an ndarray), this is the value
-      in the output located by output_index.
+      predicted output is a tensor value (for example, an ndarray), this is
+      the value in the output located by output_index.
     outputDisplayName: Output only. The display name of the output identified
       by output_index, e.g. the predicted class name by a multi-classification
       Model. This field is only populated iff the Model predicts display names
@@ -2534,10 +2546,11 @@ class GoogleCloudAiplatformV1alpha1Attribution(_messages.Message):
       located using output_index.
     outputIndex: Output only. The index that locates the explained prediction
       output. If the prediction output is a scalar value, output_index is not
-      populated. If the prediction output is a tensor value (i.e. an ndarray),
-      the length of output_index is the same as the number of dimensions of
-      the output. The i-th element in output_index is the element index of the
-      i-th dimension of the output vector. Indexes start from 0.
+      populated. If the prediction output is a tensor value (for example, an
+      ndarray), the length of output_index is the same as the number of
+      dimensions of the output. The i-th element in output_index is the
+      element index of the i-th dimension of the output vector. Indexes start
+      from 0.
   """
 
   approximationError = _messages.FloatField(1)
@@ -2609,8 +2622,8 @@ class GoogleCloudAiplatformV1alpha1BatchMigrateResourcesRequest(_messages.Messag
 
   Fields:
     migrateResourceRequests: Required. The request messages specifying the
-      resources to migrate. They have to be in the same location as location.
-      Up to 50 resources can be migrated in one batch.
+      resources to migrate. They must be in the same location as the
+      destination. Up to 50 resources can be migrated in one batch.
   """
 
   migrateResourceRequests = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigrateResourceRequest', 1, repeated=True)
@@ -2657,13 +2670,13 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
     error: Output only. Only populated when the job's state is
       JOB_STATE_FAILED or JOB_STATE_CANCELLED.
     generateExplanation: Generate explanation along with the batch prediction
-      results. This can only be set to true for AutoML Tables Models, and only
-      when the output destination is BigQuery. When it's true, the batch
+      results. This can only be set to true for AutoML tabular Models, and
+      only when the output destination is BigQuery. When it's true, the batch
       prediction output will include a column named `feature_attributions`.
-      For AutoML Tables, the value of the `feature_attributions` column is a
-      struct that maps from string to number. The keys in the map are the
-      names of the features. The values in the map are the how much the
-      features contribute to the predicted result. Features are defined as
+      For AutoML tabular Models, the value of the `feature_attributions`
+      column is a struct that maps from string to number. The keys in the map
+      are the names of the features. The values in the map are the how much
+      the features contribute to the predicted result. Features are defined as
       follows: * A scalar column defines a feature of the same name as the
       column. * A struct column defines multiple features, one feature per
       leaf field. The feature name is the fully qualified path for the leaf
@@ -2723,8 +2736,8 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJob(_messages.Message):
       JOB_STATE_SUCCEEDED: The job completed successfully.
       JOB_STATE_FAILED: The job failed.
       JOB_STATE_CANCELLING: The job is being cancelled. From this state the
-        job may only go to either JOB_STATE_SUCCEEDED, JOB_STATE_FAILED or
-        JOB_STATE_CANCELLED.
+        job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or
+        `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
     """
@@ -3027,8 +3040,8 @@ class GoogleCloudAiplatformV1alpha1CustomJob(_messages.Message):
       JOB_STATE_SUCCEEDED: The job completed successfully.
       JOB_STATE_FAILED: The job failed.
       JOB_STATE_CANCELLING: The job is being cancelled. From this state the
-        job may only go to either JOB_STATE_SUCCEEDED, JOB_STATE_FAILED or
-        JOB_STATE_CANCELLED.
+        job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or
+        `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
     """
@@ -3384,7 +3397,7 @@ class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
       explanation_spec is not populated, the value of the same field of
       Model.explanation_spec is inherited. The corresponding
       Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed. Currently, only AutoML Tables Models have
+      Model is not allowed. Currently, only AutoML tabular Models support
       explanation_spec.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model this is the deployment of. Note
@@ -3581,16 +3594,16 @@ class GoogleCloudAiplatformV1alpha1ExplainResponse(_messages.Message):
 
 class GoogleCloudAiplatformV1alpha1Explanation(_messages.Message):
   r"""Explanation of a prediction produced by the Model on a given instance.
-  Currently, only AutoML Tables Models support explanation.
+  Currently, only AutoML tabular Models support explanation.
 
   Fields:
     attributions: Output only. Feature attributions grouped by predicted
-      outputs. For Models that predict only one output (e.g. regression Models
-      that predict only one score), there is only one attibution that explains
-      the predicted output. For Models that predict multiple outputs (e.g.
-      muticlass Models that predict multiple classes), each element explains
-      one particular item. Attribution.output_index can be used to identify
-      which output it's explaining.
+      outputs. For Models that predict only one output, such as regression
+      Models that predict only one score, there is only one attibution that
+      explains the predicted output. For Models that predict multiple outputs,
+      such as multiclass Models that predict multiple classes, each element
+      explains one specific item. Attribution.output_index can be used to
+      identify which output this attribution is explaining.
   """
 
   attributions = _messages.MessageField('GoogleCloudAiplatformV1alpha1Attribution', 1, repeated=True)
@@ -3612,13 +3625,12 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
   Fields:
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
       Storage describing the format of the feature attributions. The schema is
-      defined as an OpenAPI 3.0.2 [Schema Object]( https:
-      //github.com/OAI/OpenAPI-Specification/b //
-      lob/master/versions/3.0.2.md#schema-object) AutoML Tables Models always
-      have this field populated by AI Platform. Note: The URI given on output
-      may be different, including the URI scheme, than the one given on input.
-      The output URI will point to a location where the user only has a read
-      access.
+      defined as an OpenAPI 3.0.2 [Schema
+      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
+      Models always have this field populated by AI Platform. Note: The URI
+      given on output may be different, including the URI scheme, than the one
+      given on input. The output URI will point to a location where the user
+      only has a read access.
     inputs: Required. Map from feature names to feature input metadata. Keys
       are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
@@ -3746,8 +3758,8 @@ class GoogleCloudAiplatformV1alpha1ExplanationParameters(_messages.Message):
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationSpec(_messages.Message):
-  r"""Specification of Model explanation. Currently, only AutoML Tables Models
-  support explanation.
+  r"""Specification of Model explanation. Currently, only AutoML tabular
+  Models support explanation.
 
   Fields:
     metadata: Required. Metadata describing the Model's input and output for
@@ -3873,9 +3885,8 @@ class GoogleCloudAiplatformV1alpha1ExportEvaluatedDataItemsRequestOutputConfig(_
       as per the prediction schema. * Modle predicted results on the
       instances. The column names are in the format of `predicted_`.
       field_name is the corresponding field of the prediction as per
-      prediction schema. NOTE: For AutoML Tables, the ground truth is the
-      target column. There is only one prediction column, with the name
-      `predicted_`.
+      prediction schema. NOTE: For AutoML tabular Models, the ground truth is
+      the target column. There is one prediction column, named `predicted_`.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudAiplatformV1alpha1BigQueryDestination', 1)
@@ -3926,10 +3937,10 @@ class GoogleCloudAiplatformV1alpha1ExportModelRequestOutputConfig(_messages.Mess
       here, then the first from the list of the Model's supported formats is
       used by default.
     gcsDestination: The Google Cloud Storage location where the Model is to be
-      written to. Under the directory given as the destination a new one with
-      name "model-export--", where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ
-      ISO-8601 format, will be created. Inside, the Model and any of its
-      supporting files will be written.
+      written to. Under the specified destination directory, a new directory
+      is created with the name `model-export--`, where timestamp is in `YYYY-
+      MM-DDThh:mm:ss.sssZ` ISO-8601 format. The Model and all of its
+      supporting files are placed in the new directory.
   """
 
   exportFormatId = _messages.StringField(1)
@@ -3944,7 +3955,7 @@ class GoogleCloudAiplatformV1alpha1FilterSplit(_messages.Message):
   r"""Assigns input data to training, validation, and test sets based on the
   given filters, data pieces not matched by any filter are ignored. Currently
   only supported for Datasets containing DataItems. If any of the filters in
-  this message are to match nothing, then they can be set as '-' (i.e. a minus
+  this message are to match nothing, then they can be set as '-' (the minus
   sign).
 
   Fields:
@@ -4099,8 +4110,8 @@ class GoogleCloudAiplatformV1alpha1HyperparameterTuningJob(_messages.Message):
       JOB_STATE_SUCCEEDED: The job completed successfully.
       JOB_STATE_FAILED: The job failed.
       JOB_STATE_CANCELLING: The job is being cancelled. From this state the
-        job may only go to either JOB_STATE_SUCCEEDED, JOB_STATE_FAILED or
-        JOB_STATE_CANCELLED.
+        job may only go to either `JOB_STATE_SUCCEEDED`, `JOB_STATE_FAILED` or
+        `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
     """
@@ -4279,13 +4290,13 @@ class GoogleCloudAiplatformV1alpha1InputDataConfig(_messages.Message):
       Location which data will be used to train the Model. The Dataset must
       use schema compatible with Model being trained, and what is compatible
       should be described in the used TrainingPipeline's
-      training_task_definition. For structured Datasets, all their data is
+      training_task_definition. For tabular Datasets, all their data is
       exported to training, to pick and choose from.
     filterSplit: Split based on the provided filters for each set.
     fractionSplit: Split based on fractions defining the size of each set.
-    predefinedSplit: Only supported for structured Datasets. Split based on a
+    predefinedSplit: Supported only for tabular Datasets. Split based on a
       predefined key.
-    timestampSplit: Only supported for structured Datasets. Split based on the
+    timestampSplit: Supported only for tabular Datasets. Split based on the
       timestamp of the input data pieces.
   """
 
@@ -4803,8 +4814,8 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
       this Model. Model can be used for requesting explanation after being
       deployed iff it is populated. All fields of the explanation_spec can be
       overridden by explanation_spec of DeployModelRequest.deployed_model.
-      Currently only Models created by AutoML Tables have this field
-      populated. Specifying it with ModelService.UploadModel is not supported.
+      This field is populated only for tabular AutoML Models. Specifying it
+      with ModelService.UploadModel is not supported.
     labels: The labels with user-defined metadata to organize your Models.
       Label keys and values can be no longer than 64 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
@@ -4816,62 +4827,64 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
     metadataSchemaUri: Immutable. Points to a YAML file stored on Google Cloud
       Storage describing additional information about the Model, that is
       specific to it. Unset if the Model does not have any additional
-      information. The schema is defined as an OpenAPI 3.0.2 [Schema Object](
-      https: //github.com/OAI/OpenAPI-Specification/b //
-      lob/master/versions/3.0.2.md#schema-object) AutoML Models always have
-      this field populated by AI Platform, if no additional metadata is needed
-      this field is set to an empty string. Note: The URI given on output will
-      be immutable and probably different, including the URI scheme, than the
-      one given on input. The output URI will point to a location where the
-      user only has a read access.
+      information. The schema is defined as an OpenAPI 3.0.2 [Schema
+      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML Models
+      always have this field populated by AI Platform, if no additional
+      metadata is needed this field is set to an empty string. Note: The URI
+      given on output will be immutable and probably different, including the
+      URI scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
     name: The resource name of the Model.
     predictSchemata: The schemata that describe formats of the Model's
       predictions and explanations as given and returned via
       PredictionService.Predict and PredictionService.Explain.
     supportedDeploymentResourcesTypes: Output only. When this Model is
-      deployed, its prediction resources need to be described. They are being
-      described by DeployedModel's resources field. Because not all Models
-      support all resource configuration types, here all the configuration
-      types this Model supports are listed. If the Model has nothing listed
-      here, it means it cannot be deployed to an Endpoint and does not support
-      any methods in PredictionService. Such a Model may still be used via a
-      BatchPredictionJob, providing it has at least one entry each in
-      supported_input_storage_formats and supported_output_storage_formats.
+      deployed, its prediction resources are described by the
+      `prediction_resources` field of the Endpoint.deployed_models object.
+      Because not all Models support all resource configuration types, the
+      configuration types this Model supports are listed here. If no
+      configuration types are listed, the Model cannot be deployed to an
+      Endpoint and does not support online predictions
+      (PredictionService.Predict or PredictionService.Explain). Such a Model
+      can serve predictions by using a BatchPredictionJob, if it has at least
+      one entry each in supported_input_storage_formats and
+      supported_output_storage_formats.
     supportedExportFormats: Output only. The formats in which this Model may
       be exported. If empty, this Model is not avaiable for export.
     supportedInputStorageFormats: Output only. The formats this Model supports
-      in [BatchPredictionJob.input_config]. If
+      in BatchPredictionJob.input_config. If
       PredictSchemata.instance_schema_uri exists, the instances should be
-      given as per that schema. The possible formats are: "jsonl" The JSON
-      Lines format, where each instance is a single line. Uses GcsSource.
-      "csv" The CSV format, where each instance is a single comma-separated
+      given as per that schema. The possible formats are: * `jsonl` The JSON
+      Lines format, where each instance is a single line. Uses GcsSource. *
+      `csv` The CSV format, where each instance is a single comma-separated
       line. The first line in the file is the header, containing comma-
-      separated field names. Uses GcsSource. "tf-record" The TFRecord format,
-      where each instance is a single record in tfrecord syntax. Uses
-      GcsSource. "tf-record-gzip" As "tf-record", but the file is gzipped.
-      Uses GcsSource. "bigquery" Each instance is a single row in a BigQuery,
-      uses BigQuerySource. If this Model doesn't support any of these formats
-      it means it cannot be used with [BatchPredictionJob]. It may though have
-      a supported_deployment_resources_types and be available to use via
-      PredictionService.
+      separated field names. Uses GcsSource. * `tf-record` The TFRecord
+      format, where each instance is a single record in tfrecord syntax. Uses
+      GcsSource. * `tf-record-gzip` Similar to `tf-record`, but the file is
+      gzipped. Uses GcsSource. * `bigquery` Each instance is a single row in
+      BigQuery. Uses BigQuerySource. If this Model doesn't support any of
+      these formats it means it cannot be used with a BatchPredictionJob.
+      However, if it has supported_deployment_resources_types, it could serve
+      online predictions by using PredictionService.Predict or
+      PredictionService.Explain.
     supportedOutputStorageFormats: Output only. The formats this Model
-      supports in [BatchPredictionJob.output_config]. If both
+      supports in BatchPredictionJob.output_config. If both
       PredictSchemata.instance_schema_uri and
       PredictSchemata.prediction_schema_uri exist, the predictions are
-      returned together with their instances, i.e. each prediction has the
-      original instance data first, which is then followed by the actual
-      prediction content (as per the schema). The possible formats are:
-      "jsonl" The JSON Lines format, where each prediction is a single line.
-      Uses GcsDestination. "csv" The CSV format, where each prediction is a
+      returned together with their instances. In other words, the prediction
+      has the original instance data first, followed by the actual prediction
+      content (as per the schema). The possible formats are: * `jsonl` The
+      JSON Lines format, where each prediction is a single line. Uses
+      GcsDestination. * `csv` The CSV format, where each prediction is a
       single comma-separated line. The first line in the file is the header,
-      containing comma-separated field names. Uses GcsDestination. "bigquery"
-      Each prediction is a single row in a BigQuery table, uses
-      BigQueryDestination. If this Model doesn't support any of these formats
-      it means it cannot be used with [BatchPredictionJob]. It may though have
-      a supported_deployment_resources_types and be available to use via
-      PredictionService.
-    trainingPipeline: The resource name of the TrainingPipeline that uploaded
-      this Model, if any.
+      containing comma-separated field names. Uses GcsDestination. *
+      `bigquery` Each prediction is a single row in a BigQuery table, uses
+      BigQueryDestination . If this Model doesn't support any of these formats
+      it means it cannot be used with a BatchPredictionJob. However, if it has
+      supported_deployment_resources_types, it could serve online predictions
+      by using PredictionService.Predict or PredictionService.Explain.
+    trainingPipeline: Output only. The resource name of the TrainingPipeline
+      that uploaded this Model, if any.
     updateTime: Output only. Timestamp when this Model was most recently
       updated.
   """
@@ -4940,10 +4953,9 @@ class GoogleCloudAiplatformV1alpha1Model(_messages.Message):
 
 
 class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
-  r"""Specification of the container which is to be deployed for this Model.
-  The ModelContainerSpec is based on Kubernetes Container specification:
-  https: //kubernetes.io/docs/reference/generated // /kubernetes-
-  api/v1.10/#container-v1-core
+  r"""Specification of the container to be deployed for this Model. The
+  ModelContainerSpec is based on the Kubernetes Container
+  [specification](https://tinyurl.com/k8s-io-api/v1.10/#container-v1-core).
 
   Fields:
     args: Immutable. The arguments to the command. The Docker image's CMD is
@@ -4952,9 +4964,7 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       resolved, the reference in the input string will be unchanged. The
       $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME).
       Escaped references will never be expanded, regardless of whether the
-      variable exists or not. More info: https:
-      //kubernetes.io/docs/tasks/inject-data-a // pplication/define-command-
-      argument-container/#running-a-command-in-a-shell
+      variable exists or not. More info: https://tinyurl.com/y42hmlxe
     command: Immutable. The command with which the container is run. Not
       executed within a shell. The Docker image's ENTRYPOINT is used if this
       is not provided. Variable references $(VAR_NAME) are expanded using the
@@ -4962,9 +4972,7 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       in the input string will be unchanged. The $(VAR_NAME) syntax can be
       escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
       never be expanded, regardless of whether the variable exists or not.
-      More info: https: //kubernetes.io/docs/tasks/inject-data-a //
-      pplication/define-command-argument-container/#running-a-command-in-a-
-      shell
+      More info: https://tinyurl.com/y42hmlxe
     env: Immutable. The environment variables that are to be present in the
       container.
     healthRoute: Immutable. An HTTP path to send health check requests to the
@@ -5004,13 +5012,12 @@ class GoogleCloudAiplatformV1alpha1ModelEvaluation(_messages.Message):
       metrics is stored in metrics_schema_uri
     metricsSchemaUri: Output only. Points to a YAML file stored on Google
       Cloud Storage describing the metrics of this ModelEvaluation. The schema
-      is defined as an OpenAPI 3.0.2 [Schema Object]( https:
-      //github.com/OAI/OpenAPI-Specification/b //
-      lob/master/versions/3.0.2.md#schema-object)
+      is defined as an OpenAPI 3.0.2 [Schema
+      Object](https://tinyurl.com/y538mdwt#schema-object).
     modelExplanation: Output only. Aggregated explanation metrics for the
       Model's prediction output over the data this ModelEvaluation uses. This
-      field is populated iff the Model is evaluated with explanation.
-      Currently only AutoML Tables Models have this field populated.
+      field is populated only if the Model is evaluated with explanations, and
+      only for AutoML tabular Models.
     name: Output only. The resource name of the ModelEvaluation.
     sliceDimensions: Output only. All possible dimensions of
       ModelEvaluationSlices. The dimensions can be used as the filter of the
@@ -5037,9 +5044,8 @@ class GoogleCloudAiplatformV1alpha1ModelEvaluationSlice(_messages.Message):
       of the metrics is stored in metrics_schema_uri
     metricsSchemaUri: Output only. Points to a YAML file stored on Google
       Cloud Storage describing the metrics of this ModelEvaluationSlice. The
-      schema is defined as an OpenAPI 3.0.2 [Schema Object]( https:
-      //github.com/OAI/OpenAPI-Specification/b //
-      lob/master/versions/3.0.2.md#schema-object)
+      schema is defined as an OpenAPI 3.0.2 [Schema
+      Object](https://tinyurl.com/y538mdwt#schema-object).
     name: Output only. The resource name of the ModelEvaluationSlice.
     slice: Output only. The slice of the test data that is used to evaluate
       the Model.
@@ -5069,19 +5075,20 @@ class GoogleCloudAiplatformV1alpha1ModelEvaluationSliceSlice(_messages.Message):
 
 class GoogleCloudAiplatformV1alpha1ModelExplanation(_messages.Message):
   r"""Aggregated explanation metrics for a Model over a set of instances.
-  Currently, only AutoML Tables Models support aggregated explanation.
+  Currently, only AutoML tabular Models support aggregated explanation.
 
   Fields:
     meanAttributions: Output only. Aggregated attributions explaning the
       Model's prediction outputs over the set of instances. The attributions
-      are grouped by outputs. For Models that predict only one output (e.g.
-      regression Models that predict only one score), there is only one
+      are grouped by outputs. For Models that predict only one output, such as
+      regression Models that predict only one score, there is only one
       attibution that explains the predicted output. For Models that predict
-      multiple outputs (e.g. muticlass Models that predict multiple classes),
-      each element explains one particular output. Attribution.output_index
-      can be used to locate which output it's explaining. The baseline_score,
-      prediction_score and feature_attributions are averaged over the test
-      data. NOTE: Currently AutoML Tables classification Models only produce 1
+      multiple outputs, such as multiclass Models that predict multiple
+      classes, each element explains one specific item.
+      Attribution.output_index can be used to identify which output this
+      attribution is explaining. The baselineOutputValue, instanceOutputValue
+      and featureAttributions fields are averaged over the test data. NOTE:
+      Currently AutoML tabular classification Models produce only one
       attribution, which averages attributions over all the classes it
       predicts. Attribution.approximation_error is not populated.
   """
@@ -5095,13 +5102,13 @@ class GoogleCloudAiplatformV1alpha1ModelExportFormat(_messages.Message):
 
   Fields:
     id: Output only. The ID of the export format. The possible format IDs are:
-      "tflite" Used for Android mobile devices. "edgetpu-tflite" Used for
-      [Edge TPU](https://cloud.google.com/edge-tpu/) devices. "tf-saved-model"
-      A tensorflow model in SavedModel format. "tf-js" A
+      * `tflite` Used for Android mobile devices. * `edgetpu-tflite` Used for
+      [Edge TPU](https://cloud.google.com/edge-tpu/) devices. * `tf-saved-
+      model` A tensorflow model in SavedModel format. * `tf-js` A
       [TensorFlow.js](https://www.tensorflow.org/js) model that can be used in
-      the browser and in Node.js using JavaScript. "core-ml" Used for iOS
-      mobile devices. "custom-trained" A Model that was uploaded or trained by
-      custom code.
+      the browser and in Node.js using JavaScript. * `core-ml` Used for iOS
+      mobile devices. * `custom-trained` A Model that was uploaded or trained
+      by custom code.
   """
 
   id = _messages.StringField(1)
@@ -5120,15 +5127,15 @@ class GoogleCloudAiplatformV1alpha1Port(_messages.Message):
 
 class GoogleCloudAiplatformV1alpha1PredefinedSplit(_messages.Message):
   r"""Assigns input data to training, validation, and test sets based on the
-  value of a provided key. Currently only supported for structured Datasets.
+  value of a provided key. Supported only for tabular Datasets.
 
   Fields:
     key: Required. The key is a name of one of the Dataset's data columns. The
-      value of the key (i.e. either the labels value or value in the column)
-      must be one of {"training", "validation", "test"}, and it defines to
-      which set the given piece of data is assigned. If for a piece of data
-      the key is not present or has an invalid value, that piece is ignored by
-      the pipeline.
+      value of the key (either the label's value or value in the column) must
+      be one of {`training`, `validation`, `test`}, and it defines to which
+      set the given piece of data is assigned. If for a piece of data the key
+      is not present or has an invalid value, that piece is ignored by the
+      pipeline.
   """
 
   key = _messages.StringField(1)
@@ -5178,32 +5185,30 @@ class GoogleCloudAiplatformV1alpha1PredictSchemata(_messages.Message):
       Storage describing the format of a single instance, which are used in
       PredictRequest.instances, ExplainRequest.instances and
       BatchPredictionJob.input_config. The schema is defined as an OpenAPI
-      3.0.2 [Schema Object]( https: //github.com/OAI/OpenAPI-Specification/b
-      // lob/master/versions/3.0.2.md#schema-object) AutoML Models always have
-      this field populated by AI Platform. Note: The URI given on output will
-      be immutable and probably different, including the URI scheme, than the
-      one given on input. The output URI will point to a location where the
-      user only has a read access.
+      3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-object).
+      AutoML Models always have this field populated by AI Platform. Note: The
+      URI given on output will be immutable and probably different, including
+      the URI scheme, than the one given on input. The output URI will point
+      to a location where the user only has a read access.
     parametersSchemaUri: Immutable. Points to a YAML file stored on Google
       Cloud Storage describing the parameters of prediction and explanation
       via PredictRequest.parameters, ExplainRequest.parameters and
       BatchPredictionJob.model_parameters. The schema is defined as an OpenAPI
-      3.0.2 [Schema Object]( https: //github.com/OAI/OpenAPI-Specification/b
-      // lob/master/versions/3.0.2.md#schema-object) AutoML Models always have
-      this field populated by AI Platform, if no parameters are supported it
-      is set to an empty string. Note: The URI given on output will be
-      immutable and probably different, including the URI scheme, than the one
-      given on input. The output URI will point to a location where the user
-      only has a read access.
+      3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-object).
+      AutoML Models always have this field populated by AI Platform, if no
+      parameters are supported it is set to an empty string. Note: The URI
+      given on output will be immutable and probably different, including the
+      URI scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
     predictionSchemaUri: Immutable. Points to a YAML file stored on Google
       Cloud Storage describing the format of a single prediction produced by
       this Model, which are returned via PredictResponse.predictions,
-      ExplainResponse.predictions and BatchPredictionJob The schema is defined
-      as an OpenAPI 3.0.2 [Schema Object]( https: //github.com/OAI/OpenAPI-
-      Specification/b // lob/master/versions/3.0.2.md#schema-object) AutoML
-      Models always have this field populated by AI Platform. Note: The URI
-      given on output will be immutable and probably different, including the
-      URI scheme, than the one given on input. The output URI will point to a
+      ExplainResponse.explanations, and BatchPredictionJob.output_config. The
+      schema is defined as an OpenAPI 3.0.2 [Schema
+      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML Models
+      always have this field populated by AI Platform. Note: The URI given on
+      output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
       location where the user only has a read access.
   """
 
@@ -5265,10 +5270,14 @@ class GoogleCloudAiplatformV1alpha1Scheduling(_messages.Message):
   r"""All parameters related to queuing and scheduling of custom jobs.
 
   Fields:
+    restartJobOnWorkerRestart: Restarts the entire CustomJob if a worker gets
+      restarted. This feature can be used by distributed training jobs that
+      are not resilient to workers leaving and joining a job.
     timeout: The maximum job running time. The default is 7 days.
   """
 
-  timeout = _messages.StringField(1)
+  restartJobOnWorkerRestart = _messages.BooleanField(1)
+  timeout = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1alpha1SchemaAnnotationSpecColor(_messages.Message):
@@ -5672,8 +5681,7 @@ class GoogleCloudAiplatformV1alpha1SearchMigratableResourcesResponse(_messages.M
 
   Fields:
     migratableResources: All migratable resources that can be migrated to the
-      SearchMigratableResourcesRequest.location specified in
-      SearchMigratableResourcesRequest.
+      location specified in the request.
     nextPageToken: The standard next-page token. The migratable_resources may
       not fill page_size in SearchMigratableResourcesRequest even when there
       are subsequent pages.
@@ -5866,13 +5874,13 @@ class GoogleCloudAiplatformV1alpha1StudySpecParameterSpecIntegerValueSpec(_messa
 class GoogleCloudAiplatformV1alpha1TimestampSplit(_messages.Message):
   r"""Assigns input data to training, validation, and test sets based on a
   provided timestamps. The youngest data pieces are assigned to training set,
-  next to validation set, and the oldest to the test set. Currently only
-  supported for structured Datasets.
+  next to validation set, and the oldest to the test set. Supported only for
+  tabular Datasets.
 
   Fields:
     key: Required. The key is a name of one of the Dataset's data columns. The
-      values of the key (i.e. the values in the column) must be in RFC 3339
-      `date-time` format, where `time-offset` = `"Z"` (e.g.
+      values of the key (the values in the column) must be in RFC 3339 `date-
+      time` format, where `time-offset` = `"Z"` (e.g.
       1985-04-12T23:20:50.52Z). If for a piece of data the key is not present
       or has an invalid value, that piece is ignored by the pipeline.
     testFraction: The fraction of the input data that is to be used to
@@ -5913,7 +5921,7 @@ class GoogleCloudAiplatformV1alpha1TrainingPipeline(_messages.Message):
       following states: `PIPELINE_STATE_SUCCEEDED`, `PIPELINE_STATE_FAILED`,
       `PIPELINE_STATE_CANCELLED`.
     error: Output only. Only populated when the pipeline's state is
-      PIPELINE_STATE_FAILED or PIPELINE_STATE_CANCELLED.
+      `PIPELINE_STATE_FAILED` or `PIPELINE_STATE_CANCELLED`.
     inputDataConfig: Specifies AI Platform owned input data that may be used
       for training the Model. The TrainingPipeline's training_task_definition
       should make clear whether this config is used and if there are any
@@ -5935,7 +5943,7 @@ class GoogleCloudAiplatformV1alpha1TrainingPipeline(_messages.Message):
       field should not be filled and the training task either uploads the
       Model without a need of this information, or that training task does not
       support uploading a Model as part of the pipeline. When the Pipeline's
-      state becomes PIPELINE_STATE_SUCCEEDED and the trained Model had been
+      state becomes `PIPELINE_STATE_SUCCEEDED` and the trained Model had been
       uploaded into AI Platform, then the model_to_upload's resource name is
       populated. The Model is always uploaded into the Project and Location in
       which this pipeline is.
@@ -6402,6 +6410,15 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       DeployedModel, and that need a higher degree of manual configuration.
     displayName: The display name of the DeployedModel. If not provided upon
       creation, the Model's display_name is used.
+    enableAccessLogging: These logs are like standard server access logs,
+      containing information like timestamp and latency for each prediction
+      request. Note that Stackdriver logs may incur a cost, especially if your
+      project receives prediction requests at a high queries per second rate
+      (QPS). Estimate your costs before enabling this option.
+    enableContainerLogging: If true, the container of the DeployedModel
+      instances will send `stderr` and `stdout` streams to Stackdriver
+      Logging. Only supported for custom-trained Models and AutoML Tables
+      Models.
     explanationSpec: Explanation configuration for this DeployedModel. When
       deploying a Model using EndpointService.DeployModel, this value
       overrides the value of Model.explanation_spec. All fields of
@@ -6409,7 +6426,7 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
       explanation_spec is not populated, the value of the same field of
       Model.explanation_spec is inherited. The corresponding
       Model.explanation_spec must be populated, otherwise explanation for this
-      Model is not allowed. Currently, only AutoML Tables Models have
+      Model is not allowed. Currently, only AutoML tabular Models support
       explanation_spec.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model this is the deployment of. Note
@@ -6421,9 +6438,11 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
   createTime = _messages.StringField(2)
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1DedicatedResources', 3)
   displayName = _messages.StringField(4)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 5)
-  id = _messages.StringField(6)
-  model = _messages.StringField(7)
+  enableAccessLogging = _messages.BooleanField(5)
+  enableContainerLogging = _messages.BooleanField(6)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 7)
+  id = _messages.StringField(8)
+  model = _messages.StringField(9)
 
 
 class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
@@ -6442,13 +6461,12 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
   Fields:
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
       Storage describing the format of the feature attributions. The schema is
-      defined as an OpenAPI 3.0.2 [Schema Object]( https:
-      //github.com/OAI/OpenAPI-Specification/b //
-      lob/master/versions/3.0.2.md#schema-object) AutoML Tables Models always
-      have this field populated by AI Platform. Note: The URI given on output
-      may be different, including the URI scheme, than the one given on input.
-      The output URI will point to a location where the user only has a read
-      access.
+      defined as an OpenAPI 3.0.2 [Schema
+      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
+      Models always have this field populated by AI Platform. Note: The URI
+      given on output may be different, including the URI scheme, than the one
+      given on input. The output URI will point to a location where the user
+      only has a read access.
     inputs: Required. Map from feature names to feature input metadata. Keys
       are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
@@ -6575,8 +6593,8 @@ class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ExplanationSpec(_messages.Message):
-  r"""Specification of Model explanation. Currently, only AutoML Tables Models
-  support explanation.
+  r"""Specification of Model explanation. Currently, only AutoML tabular
+  Models support explanation.
 
   Fields:
     metadata: Required. Metadata describing the Model's input and output for
@@ -6611,36 +6629,6 @@ class GoogleCloudAiplatformV1beta1ExportDataResponse(_messages.Message):
   """
 
   exportedFiles = _messages.StringField(1, repeated=True)
-
-
-class GoogleCloudAiplatformV1beta1ExportEvaluatedDataItemsOperationMetadata(_messages.Message):
-  r"""Details of ModelService.ExportEvaluatedDataItems operation.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-    outputInfo: Output only. Information further describing the output of this
-      operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportEvaluatedDataItemsOperationMetadataOutputInfo', 2)
-
-
-class GoogleCloudAiplatformV1beta1ExportEvaluatedDataItemsOperationMetadataOutputInfo(_messages.Message):
-  r"""Further describes this operation's output. Supplements
-  ExportEvaluatedDataItemsRequest.output_config.
-
-  Fields:
-    bigqueryOutputDataset: Output only. The path of the BigQuery dataset
-      created, in bq://projectId.bqDatasetId.tableId format, into which the
-      evaluated DataItems are exported.
-  """
-
-  bigqueryOutputDataset = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1beta1ExportEvaluatedDataItemsOperationResponse(_messages.Message):
-  r"""Response of ModelService.ExportEvaluatedDataItems operation."""
 
 
 class GoogleCloudAiplatformV1beta1ExportModelOperationMetadata(_messages.Message):

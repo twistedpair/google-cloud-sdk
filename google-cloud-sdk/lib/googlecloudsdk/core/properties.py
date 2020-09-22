@@ -299,6 +299,8 @@ class _Sections(object):
       Cloud SDK.
     interactive: Section, The section containing interactive properties for the
       Cloud SDK.
+    kuberun: Section, The section containing kuberun properties for the Cloud
+      SDK.
     lifesciences: Section, The section containing lifesciencs properties for the
       Cloud SDK.
     memcache: Section, The section containing memcache properties for the Cloud
@@ -371,6 +373,7 @@ class _Sections(object):
     self.gcloudignore = _SectionGcloudignore()
     self.healthcare = _SectionHealthcare()
     self.interactive = _SectionInteractive()
+    self.kuberun = _SectionKubeRun()
     self.lifesciences = _SectionLifeSciences()
     self.memcache = _SectionMemcache()
     self.metastore = _SectionMetastore()
@@ -424,6 +427,7 @@ class _Sections(object):
         self.gcloudignore,
         self.healthcare,
         self.interactive,
+        self.kuberun,
         self.lifesciences,
         self.memcache,
         self.metastore,
@@ -749,6 +753,18 @@ class _Section(object):
       # Always include if value is set (even if hidden)
       result[prop.name] = value
     return result
+
+
+class _SectionKubeRun(_Section):
+  """Contains the properties for the 'kuberun' section."""
+
+  def __init__(self):
+    super(_SectionKubeRun, self).__init__('kuberun')
+    self.enable_experimental_commands = self._AddBool(
+        'enable_experimental_commands',
+        help_text='If True, experimental KubeRun commands will not prompt to '
+        'continue.',
+        hidden=True)
 
 
 class _SectionRun(_Section):
@@ -1398,13 +1414,15 @@ class _SectionScc(_Section):
 
 class _SectionAuth(_Section):
   """Contains the properties for the 'auth' section."""
+  DEFAULT_AUTH_HOST = 'https://accounts.google.com/o/oauth2/auth'
+  DEFAULT_TOKEN_HOST = 'https://oauth2.googleapis.com/token'
 
   def __init__(self):
     super(_SectionAuth, self).__init__('auth')
     self.auth_host = self._Add(
         'auth_host',
         hidden=True,
-        default='https://accounts.google.com/o/oauth2/auth')
+        default=self.DEFAULT_AUTH_HOST)
     self.disable_credentials = self._AddBool(
         'disable_credentials',
         default=False,
@@ -1414,7 +1432,7 @@ class _SectionAuth(_Section):
     self.token_host = self._Add(
         'token_host',
         hidden=True,
-        default='https://www.googleapis.com/oauth2/v4/token')
+        default=self.DEFAULT_TOKEN_HOST)
     self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(
@@ -1467,6 +1485,7 @@ class _SectionBilling(_Section):
 
   LEGACY = 'LEGACY'
   CURRENT_PROJECT = 'CURRENT_PROJECT'
+  CURRENT_PROJECT_WITH_FALLBACK = 'CURRENT_PROJECT_WITH_FALLBACK'
 
   def __init__(self):
     super(_SectionBilling, self).__init__('billing')
@@ -1916,6 +1935,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.metastore = self._Add('metastore')
     self.ml = self._Add('ml')
     self.monitoring = self._Add('monitoring')
+    self.networkconnectivity = self._Add('networkconnectivity')
     self.networkmanagement = self._Add('networkmanagement')
     self.networkservices = self._Add('networkservices')
     self.networksecurity = self._Add('networksecurity')

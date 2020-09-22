@@ -18,8 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as api_exceptions
+
+from googlecloudsdk.api_lib.cloudresourcemanager import organizations
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.command_lib.resource_manager import exceptions
 from googlecloudsdk.core import resources
 
 FOLDERS_API_VERSION = 'v2'
@@ -86,3 +90,35 @@ def GetUri(resource):
       params={'foldersId': folder_id},
       collection='cloudresourcemanager.folders')
   return folder_ref.SelfLink()
+
+
+def GetAncestorsIamPolicy(folder_id):
+  """Gets IAM policies for given folder and its ancestors."""
+  policies = []
+  resource = GetFolder(folder_id)
+
+  try:
+    while resource is not None:
+      resource_id = resource.name.split('/')[1]
+      policies.append({
+          'type': 'folder',
+          'id': resource_id,
+          'policy': GetIamPolicy(resource_id),
+      })
+
+      parent_id = resource.parent.split('/')[1]
+      if resource.parent.startswith('folder'):
+        resource = GetFolder(parent_id)
+      else:
+        policies.append({
+            'type': 'organization',
+            'id': resource_id,
+            'policy': organizations.Client().GetIamPolicy(parent_id),
+        })
+        resource = None
+  except api_exceptions.HttpForbiddenError:
+    raise exceptions.AncestorsIamPolicyAccessDeniedError(
+        'User is not permitted to access IAM policy for one or more of the'
+        ' ancestors')
+
+  return policies

@@ -942,7 +942,7 @@ image's default Cmd is used.
 Container ports to receive requests at. Must be a number between 1 and 65535,
 inclusive.
 """)
-  route_group = container_group.add_argument_group(
+  route_group = parser.add_argument_group(
       help='Flags to control the paths that requests and health checks are '
       'sent to.')
   route_group.add_argument(

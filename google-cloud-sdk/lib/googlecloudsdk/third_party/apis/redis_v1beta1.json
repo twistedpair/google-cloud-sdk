@@ -255,7 +255,7 @@
       "type": "object",
       "properties": {
         "instances": {
-          "description": "A list of Redis instances in the project in the specified location, or across all locations. If the `location_id` in the parent field of the request is \"-\", all regions available to the project are queried, and the results aggregated. If in such an aggregated query a location is unavailable, a dummy Redis entry is included in the response with the `name` field set to a value of the form `projects\/{project_id}\/locations\/{location_id}\/instances\/`- and the `status` field set to ERROR and `status_message` field set to \"location not available for ListInstances\".",
+          "description": "A list of Redis instances in the project in the specified location, or across all locations. If the `location_id` in the parent field of the request is \"-\", all regions available to the project are queried, and the results aggregated. If in such an aggregated query a location is unavailable, a placeholder Redis entry is included in the response with the `name` field set to a value of the form `projects\/{project_id}\/locations\/{location_id}\/instances\/`- and the `status` field set to ERROR and `status_message` field set to \"location not available for ListInstances\".",
           "type": "array",
           "items": {
             "$ref": "Instance"
@@ -502,7 +502,7 @@
           "type": "string",
           "enumDescriptions": [
             "Defaults to LIMITED_DATA_LOSS if a data protection mode is not specified.",
-            "Instance failover will be protected with data loss control. More specifically, the failover will only be performed if the current replication offset diff between master and replica is under a certain threshold.",
+            "Instance failover will be protected with data loss control. More specifically, the failover will only be performed if the current replication offset diff between primary and replica is under a certain threshold.",
             "Instance failover will be performed without data loss control."
           ],
           "enum": [
@@ -1007,7 +1007,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Initiates a failover of the master node to current replica node for a specific STANDARD tier Cloud Memorystore for Redis instance."
+                  "description": "Initiates a failover of the primary node to current replica node for a specific STANDARD tier Cloud Memorystore for Redis instance."
                 },
                 "delete": {
                   "id": "redis.projects.locations.instances.delete",

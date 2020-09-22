@@ -1145,9 +1145,15 @@ class GoogleAppsCloudidentityDevicesV1ClientState(_messages.Message):
       storing the data. For partners belonging to the "BeyondCorp Alliance",
       this is the partner ID specified to you by Google. For all other
       callers, this is a string of the form: `{customer_id}-suffix`, where
-      `customer_id` is your customer id. The suffix is any string the caller
+      `customer_id` is your customer ID. The *suffix* is any string the caller
       specifies. This string will be displayed verbatim in the administration
-      console.
+      console. This suffix is used in setting up Custom Access Levels in
+      Context-Aware Access. Your organization's customer ID can be obtained
+      from the URL: `GET
+      https://www.googleapis.com/admin/directory/v1/customers/my_customer` The
+      `id` field in the response contains the customer ID starting with the
+      letter 'C'. The customer ID to be used in this API is the string after
+      the letter 'C' (not including 'C')
     ownerType: Output only. The owner of the ClientState
     scoreReason: A descriptive cause of the health score.
   """

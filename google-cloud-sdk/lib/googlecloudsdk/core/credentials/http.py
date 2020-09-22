@@ -19,12 +19,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import google_auth_httplib2
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import http
 from googlecloudsdk.core.credentials import creds as core_creds
 from googlecloudsdk.core.credentials import transport
+
+import six
 
 
 def Http(timeout='unset',
@@ -73,9 +76,16 @@ def Http(timeout='unset',
 
   if use_google_auth is None:
     use_google_auth = base.UseGoogleAuth()
-  http_client = RequestWrapper().WrapCredentials(
-      http_client, enable_resource_quota, force_resource_quota,
-      allow_account_impersonation, use_google_auth)
+  request_wrapper = RequestWrapper()
+  http_client = request_wrapper.WrapQuota(
+      http_client,
+      enable_resource_quota,
+      force_resource_quota,
+      allow_account_impersonation,
+      use_google_auth)
+  http_client = request_wrapper.WrapCredentials(http_client,
+                                                allow_account_impersonation,
+                                                use_google_auth)
 
   if hasattr(http_client, '_googlecloudsdk_credentials'):
     creds = http_client._googlecloudsdk_credentials  # pylint: disable=protected-access
@@ -86,6 +96,7 @@ def Http(timeout='unset',
     # apitools needs this attribute to do credential refreshes during batch API
     # requests.
     setattr(http_client.request, 'credentials', apitools_creds)
+
   return http_client
 
 
@@ -98,7 +109,8 @@ class _GoogleAuthApitoolsCredentials():
     self.credentials.refresh(http.GoogleAuthRequest(http_client))
 
 
-class RequestWrapper(transport.CredentialWrappingMixin, http.RequestWrapper):
+class RequestWrapper(transport.CredentialWrappingMixin,
+                     transport.QuotaHandlerMixin, http.RequestWrapper):
   """Class for wrapping httplib.Httplib2 requests."""
 
   def AuthorizeClient(self, http_client, creds):
@@ -107,4 +119,54 @@ class RequestWrapper(transport.CredentialWrappingMixin, http.RequestWrapper):
       http_client = google_auth_httplib2.AuthorizedHttp(creds, http_client)
     else:
       http_client = creds.authorize(http_client)
+    return http_client
+
+  def WrapQuota(self,
+                http_client,
+                enable_resource_quota,
+                force_resource_quota,
+                allow_account_impersonation,
+                use_google_auth):
+    """Returns an http_client with quota project handling."""
+    quota_project = self.QuotaProject(enable_resource_quota,
+                                      force_resource_quota,
+                                      allow_account_impersonation,
+                                      use_google_auth)
+    if not quota_project:
+      return http_client
+    orig_request = http_client.request
+    wrapped_request = self.QuotaWrappedRequest(
+        http_client, quota_project)
+
+    def RequestWithRetry(*args, **kwargs):
+      """Retries the request after removing the quota project header.
+
+      Try the request with the X-Goog-User-Project header. If the account does
+      not have the permission to expense the quota of the user project in the
+      header, remove the header and retry.
+
+      Args:
+        *args: *args to send to httplib2.Http.request method.
+        **kwargs: **kwargs to send to httplib2.Http.request method.
+
+      Returns:
+        Response from httplib2.Http.request.
+      """
+      response, content = wrapped_request(*args, **kwargs)
+      if response.status != 403:
+        return response, content
+      content_text = six.ensure_text(content)
+      try:
+        err_msg = json.loads(content_text)['error']['message']
+      except (KeyError, json.JSONDecodeError):
+        return response, content
+
+      if transport.USER_PROJECT_OVERRIDE_ERR_MSG not in err_msg:
+        return response, content
+      return orig_request(*args, **kwargs)
+
+    if base.UserProjectQuotaWithFallbackEnabled():
+      http_client.request = RequestWithRetry
+    else:
+      http_client.request = wrapped_request
     return http_client

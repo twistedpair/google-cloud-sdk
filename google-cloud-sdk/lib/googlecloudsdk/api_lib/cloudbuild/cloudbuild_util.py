@@ -47,7 +47,14 @@ _ALPHA_API_VERSION = 'v1alpha2'
 #      requests from confused users to random URLs.
 # With only these two alternatives, it is preferable to hardcode the endpoints
 # in gcloud, even though this forces users to update gcloud to use new regions.
-SERVICE_REGIONS = ['us-central1']
+SERVICE_REGIONS = [
+    'asia-east1',
+    'asia-southeast1',
+    'europe-west1',
+    'europe-west4',
+    'us-central1',
+    'us-east1',
+]
 
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.GA: _GA_API_VERSION,

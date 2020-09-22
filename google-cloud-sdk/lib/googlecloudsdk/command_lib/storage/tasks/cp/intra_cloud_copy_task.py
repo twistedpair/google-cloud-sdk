@@ -58,8 +58,6 @@ class IntraCloudCopyTask(task.Task):
     # TODO(b/161900052): Support all of CopyObject's parameters
     provider = cloud_api.ProviderPrefix(
         self._source_resource.storage_url.scheme)
+    # TODO(b/166278596) Get metadata if the destination is an UnknownResource.
     api_factory.get_api(provider).CopyObject(
-        self._source_resource.metadata_object,
-        # TODO(b/166278596) Get an object message if the destination is an
-        #   UnknownResource.
-        self._destination_resource.metadata_object)
+        self._source_resource.metadata, self._destination_resource.metadata)

@@ -1632,7 +1632,7 @@ class GoogleCloudDatacatalogV1beta1SearchCatalogResponse(_messages.Message):
       from those locations. Users can get additional information on the error
       by repeating the search request with a more restrictive parameter --
       setting the value for
-      `SearchDataCatalogRequest.scope.include_locations`.
+      `SearchDataCatalogRequest.scope.restricted_locations`.
   """
 
   nextPageToken = _messages.StringField(1)

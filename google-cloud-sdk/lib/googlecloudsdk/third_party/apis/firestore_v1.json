@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20200902",
+  "revision": "20200911",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -827,7 +827,7 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified. This value must not be used.",
-            "The time at which the server processed the request, with millisecond precision."
+            "The time at which the server processed the request, with millisecond precision. If used on multiple fields (same or different documents) in a transaction, all the fields will get the same server timestamp."
           ],
           "enum": [
             "SERVER_VALUE_UNSPECIFIED",

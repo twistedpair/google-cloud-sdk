@@ -44,8 +44,6 @@ DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 DEFAULT_NUM_RETRIES = 23
 
 
- # TODO(b/167691513): Replace all BucketResource.from_gcs_metadata_object
- # instances with this.
 def _BucketResourceFromMetadata(metadata):
   """Helper method to generate the Bucket instance from GCS metadata.
 
@@ -58,32 +56,12 @@ def _BucketResourceFromMetadata(metadata):
   url = storage_url.CloudUrl(scheme=cloud_api.ProviderPrefix.GCS.value,
                              bucket_name=metadata.name)
   return resource_reference.BucketResource(
-      url, metadata.name, metadata.etag, metadata)
+      url, etag=metadata.etag, metadata=metadata)
 
 
 # Disable Apitools' default print callbacks.
 def _NoOpCallback(unused_response, unused_object):
   pass
-
-
-def _ValidateObjectMetadata(metadata):
-  """Ensures metadata supplies the needed fields for copy and insert.
-
-  Args:
-    metadata (apitools.messages.Object): Apitools Object metadata to validate.
-
-  Raises:
-    ValueError: Metadata is invalid.
-  """
-  if not metadata:
-    raise ValueError(
-        'No object metadata supplied for object.')
-  if not metadata.name:
-    raise ValueError(
-        'Object metadata supplied for object had no object name.')
-  if not metadata.bucket:
-    raise ValueError(
-        'Object metadata supplied for object had no bucket name.')
 
 
 class GcsRequestConfig(cloud_api.RequestConfig):
@@ -133,17 +111,15 @@ class GcsApi(cloud_api.CloudApi):
     self.client = core_apis.GetClientInstance('storage', 'v1')
     self.messages = core_apis.GetMessagesModule('storage', 'v1')
 
-  def _GetGlobalParamsAndProjection(self, fields_scope, message_class):
-    """Generate query projection and fields from fields_scope.
+  def _GetProjection(self, fields_scope, message_class):
+    """Generate query projection from fields_scope.
 
     Args:
-      fields_scope (FieldsScope): Used to determine projection and fields to
-          return.
+      fields_scope (FieldsScope): Used to determine projection to return.
       message_class (object): Apitools message object that contains a projection
           enum.
 
     Returns:
-      global_params (object): API query parameters used across calls.
       projection (ProjectionValueValuesEnum): Determines if ACL properties
           should be returned.
 
@@ -154,34 +130,24 @@ class GcsApi(cloud_api.CloudApi):
       raise ValueError('Invalid fields_scope.')
     projection_enum = message_class.ProjectionValueValuesEnum
 
-    global_params = self.messages.StandardQueryParameters()
-    projection = None
-
-    if fields_scope == cloud_api.FieldsScope.SHORT:
-      global_params.fields = ','.join(['name', 'size'])
-      projection = projection_enum.noAcl
-    elif fields_scope == cloud_api.FieldsScope.NO_ACL:
-      projection = projection_enum.noAcl
-    elif fields_scope == cloud_api.FieldsScope.FULL:
-      projection = projection_enum.full
-
-    return (global_params, projection)
+    if fields_scope == cloud_api.FieldsScope.FULL:
+      return projection_enum.full
+    return projection_enum.noAcl
 
   @cloud_errors.catch_http_error_raise_gcs_api_error()
   def CreateBucket(self,
                    metadata,
                    fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
-    global_params, projection = self._GetGlobalParamsAndProjection(
-        fields_scope, self.messages.StorageBucketsInsertRequest)
+    projection = self._GetProjection(fields_scope,
+                                     self.messages.StorageBucketsInsertRequest)
 
     request = self.messages.StorageBucketsInsertRequest(
         bucket=metadata,
         project=properties.VALUES.core.project.GetOrFail(),
         projection=projection)
 
-    created_bucket_metadata = self.client.buckets.Insert(
-        request, global_params=global_params)
+    created_bucket_metadata = self.client.buckets.Insert(request)
     return _BucketResourceFromMetadata(created_bucket_metadata)
 
   @cloud_errors.catch_http_error_raise_gcs_api_error()
@@ -201,23 +167,27 @@ class GcsApi(cloud_api.CloudApi):
   @cloud_errors.catch_http_error_raise_gcs_api_error()
   def GetBucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
-    global_params, projection = self._GetGlobalParamsAndProjection(
+    projection = self._GetProjection(
         fields_scope, self.messages.StorageBucketsGetRequest)
     request = self.messages.StorageBucketsGetRequest(
         bucket=bucket_name,
         projection=projection)
 
-    metadata = self.client.buckets.Get(request, global_params=global_params)
+    metadata = self.client.buckets.Get(request)
     return _BucketResourceFromMetadata(metadata)
 
   def ListBuckets(self, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
-    global_params, projection = self._GetGlobalParamsAndProjection(
+    projection = self._GetProjection(
         fields_scope, self.messages.StorageBucketsListRequest)
     request = self.messages.StorageBucketsListRequest(
         project=properties.VALUES.core.project.GetOrFail(),
         projection=projection)
 
+    global_params = None
+    if fields_scope == cloud_api.FieldsScope.SHORT:
+      global_params = self.messages.StandardQueryParameters()
+      global_params.fields = 'items/name'
     # TODO(b/160238394) Decrypt metadata fields if necessary.
     bucket_iter = list_pager.YieldFromList(
         self.client.buckets,
@@ -237,8 +207,12 @@ class GcsApi(cloud_api.CloudApi):
                   all_versions=None,
                   fields_scope=cloud_api.FieldsScope.NO_ACL):
     """See super class."""
-    global_params, projection = self._GetGlobalParamsAndProjection(
+    projection = self._GetProjection(
         fields_scope, self.messages.StorageObjectsListRequest)
+    global_params = None
+    if fields_scope == cloud_api.FieldsScope.SHORT:
+      global_params = self.messages.StandardQueryParameters()
+      global_params.fields = 'prefixes,items/name,items/size,items/generation'
 
     object_list = None
     while True:
@@ -260,6 +234,7 @@ class GcsApi(cloud_api.CloudApi):
       # Yield objects.
       # TODO(b/160238394) Decrypt metadata fields if necessary.
       for obj in object_list.items:
+        obj.bucket = bucket_name
         yield resource_reference.ObjectResource.from_gcs_metadata_object(
             provider=cloud_api.ProviderPrefix.GCS.value,
             metadata_object=obj
@@ -311,7 +286,7 @@ class GcsApi(cloud_api.CloudApi):
     if generation:
       generation = int(generation)
 
-    global_params, projection = self._GetGlobalParamsAndProjection(
+    projection = self._GetProjection(
         fields_scope, self.messages.StorageObjectsGetRequest)
 
     # TODO(b/160238394) Decrypt metadata fields if necessary.
@@ -321,8 +296,7 @@ class GcsApi(cloud_api.CloudApi):
               bucket=bucket_name,
               object=object_name,
               generation=generation,
-              projection=projection),
-          global_params=global_params)
+              projection=projection))
     except apitools_exceptions.HttpNotFoundError:
       raise cloud_errors.NotFoundError(
           'Object not found: {}'.format(storage_url.CloudUrl(
@@ -353,7 +327,7 @@ class GcsApi(cloud_api.CloudApi):
                                PredefinedAclValueValuesEnum,
                                request_config.predefined_acl_string)
 
-    global_params, projection = self._GetGlobalParamsAndProjection(
+    projection = self._GetProjection(
         fields_scope, self.messages.StorageObjectsPatchRequest)
 
     request = self.messages.StorageObjectsPatchRequest(
@@ -367,8 +341,7 @@ class GcsApi(cloud_api.CloudApi):
         projection=projection
     )
 
-    object_metadata = self.client.objects.Patch(request,
-                                                global_params=global_params)
+    object_metadata = self.client.objects.Patch(request)
     return resource_reference.ObjectResource.from_gcs_metadata_object(
         cloud_api.ProviderPrefix.GCS.value, object_metadata)
 
@@ -385,8 +358,8 @@ class GcsApi(cloud_api.CloudApi):
     # TODO(b/161898251): Implement encryption and decryption.
     if not getattr(source_object_metadata, 'etag', None):
       raise ValueError('Etag is required for source objects in copy.')
-    _ValidateObjectMetadata(source_object_metadata)
-    _ValidateObjectMetadata(destination_object_metadata)
+    cloud_api.ValidateObjectMetadata(source_object_metadata)
+    cloud_api.ValidateObjectMetadata(destination_object_metadata)
 
     # S3 requires a string, but GCS uses an int for generation.
     if source_object_generation:
@@ -545,7 +518,7 @@ class GcsApi(cloud_api.CloudApi):
     Returns:
       Uploaded object metadata as an Apitools message Object.
     """
-    _ValidateObjectMetadata(object_metadata)
+    cloud_api.ValidateObjectMetadata(object_metadata)
 
     predefined_acl = None
     if request_config.predefined_acl_string:

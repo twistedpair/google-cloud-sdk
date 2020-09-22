@@ -24,6 +24,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.privateca import flags
 from googlecloudsdk.command_lib.privateca import resource_args as privateca_resource_args
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
 
@@ -134,8 +135,7 @@ def CreateCAFromArgs(args, is_subordinate):
       args, messages.CertificateAuthority.LabelsValue)
 
   new_ca = messages.CertificateAuthority(
-      # TODO(b/156664858): Use the tier provided in the commandline.
-      tier=messages.CertificateAuthority.TierValueValuesEnum.ENTERPRISE,
+      tier=flags.ParseTierFlag(args),
       type=messages.CertificateAuthority.TypeValueValuesEnum.SUBORDINATE
       if is_subordinate else
       messages.CertificateAuthority.TypeValueValuesEnum.SELF_SIGNED,
@@ -150,3 +150,15 @@ def CreateCAFromArgs(args, is_subordinate):
       labels=labels)
 
   return (new_ca, ca_ref, issuer_ref)
+
+
+_BETA_RESOURCE_DELETION_DISCLAIMER = """CA Service is currently in preview.
+
+Please remember that all resources created during preview will be deleted
+when CA service transitions to General Availability (GA). Relying on these
+{resource_type} for production traffic is discouraged."""
+
+
+def PrintBetaResourceDeletionDisclaimer(resource_type_plural):
+  log.warning(_BETA_RESOURCE_DELETION_DISCLAIMER.format(
+      resource_type=resource_type_plural))

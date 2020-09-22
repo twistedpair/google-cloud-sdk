@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
+
 from googlecloudsdk.api_lib.identity import cloudidentity_client as ci_client
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.identity.groups import hooks as groups_hooks
@@ -106,7 +108,7 @@ def SetMembershipParent(unused_ref, args, request):
   if args.IsSpecified('group_email'):
     # Resource name example: groups/03qco8b4452k99t
     request.parent = groups_hooks.ConvertEmailToResourceName(
-        version, args.group_email, 'group_email')
+        version, args.group_email, '--group-email')
 
   return request
 
@@ -128,10 +130,10 @@ def SetMembershipResourceName(unused_ref, args, request):
   name = ''
   if args.IsSpecified('group_email') and args.IsSpecified('member_email'):
     name = ConvertEmailToMembershipResourceName(
-        version, args, 'group_email', 'member_email')
+        version, args, '--group-email', '--member-email')
   else:
     raise exceptions.InvalidArgumentException(
-        'Must specify group-email and member-email argument.')
+        'Must specify `--group-email` and `--member-email` argument.')
 
   request.name = name
 
@@ -311,19 +313,18 @@ def ConvertEmailToMembershipResourceName(
   group_id = groups_hooks.ConvertEmailToResourceName(
       version, args.group_email, group_arg_name)
 
-  lookup_membership_name_resp = ci_client.LookupMembershipName(
-      version, group_id, args.member_email)
+  try:
+    return ci_client.LookupMembershipName(
+        version, group_id, args.member_email).name
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError):
+    # If there is no group exists (or deleted) for the given group email,
+    # print out an error message.
+    parameter_name = group_arg_name + ', ' + member_arg_name
+    error_msg = ('There is no such a membership associated with the specified '
+                 'arguments:{}, {}').format(args.group_email, args.member_email)
 
-  if 'name' in lookup_membership_name_resp:
-    return lookup_membership_name_resp['name']
-
-  # If there is no group exists (or deleted) for the given group email,
-  # print out an error message.
-  parameter_name = group_arg_name + ', ' + member_arg_name
-  error_msg = ('There is no such a membership associated with the specified '
-               'arguments:{}, {}').format(args.group_email, args.member_email)
-
-  raise exceptions.InvalidArgumentException(parameter_name, error_msg)
+    raise exceptions.InvalidArgumentException(parameter_name, error_msg)
 
 
 def ReformatExpiryDetail(version, expiration):
@@ -443,6 +444,12 @@ def AddExpiryDetailInMembershipRoles(version, request, expiration):
     InvalidArgumentException: If 'expiration' is specified without MEMBER role.
 
   """
+
+  # When setting 'expiration', a single role should be input.
+  if len(request.membership.roles) > 1:
+    raise exceptions.InvalidArgumentException(
+        'roles',
+        'When setting "expiration", a single role should be input.')
 
   messages = ci_client.GetMessages(version)
   roles = []

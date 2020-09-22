@@ -39,11 +39,11 @@ class DnsUpdateMask(object):
   """Class with information which parts of dns_settings should be updated."""
 
   def __init__(self,
-               dns_provider=False,
+               name_servers=False,
                glue_records=False,
                google_domains_dnssec=False,
                custom_dnssec=False):
-    self.dns_provider = dns_provider
+    self.name_servers = name_servers
     self.glue_records = glue_records
     self.google_domains_dnssec = google_domains_dnssec
     self.custom_dnssec = custom_dnssec
@@ -99,7 +99,7 @@ def _CustomNameServers(name_servers, ds_records=None):
     if not util.ValidateDomainName(normalized):
       raise exceptions.Error('Invalid name server: \'{}\'.'.format(ns))
   messages = registrations.GetMessagesModule()
-  update_mask = DnsUpdateMask(dns_provider=True)
+  update_mask = DnsUpdateMask(name_servers=True, custom_dnssec=True)
   dns_settings = messages.DnsSettings(
       customDns=messages.CustomDns(
           nameServers=normalized_name_servers, dsRecords=ds_records))
@@ -107,9 +107,10 @@ def _CustomNameServers(name_servers, ds_records=None):
 
 
 def _GoogleDomainsNameServers(enable_dnssec):
+  """Enable Google Domains name servers and returns (dns_settings, update_mask)."""
   messages = registrations.GetMessagesModule()
 
-  update_mask = DnsUpdateMask(dns_provider=True)
+  update_mask = DnsUpdateMask(name_servers=True, google_domains_dnssec=True)
   ds_state = messages.GoogleDomainsDns.DsStateValueValuesEnum.DS_RECORDS_PUBLISHED
   if not enable_dnssec:
     ds_state = messages.GoogleDomainsDns.DsStateValueValuesEnum.DS_RECORDS_UNPUBLISHED
@@ -135,7 +136,18 @@ def _ParseDnsSettingsFromFile(path):
   if not dns_settings:
     return None, None
 
-  return dns_settings, DnsUpdateMask(dns_provider=True, glue_records=True)
+  update_mask = None
+  if dns_settings.googleDomainsDns is not None:
+    update_mask = DnsUpdateMask(
+        name_servers=True, google_domains_dnssec=True, glue_records=True)
+  elif dns_settings.customDns is not None:
+    update_mask = DnsUpdateMask(
+        name_servers=True, custom_dnssec=True, glue_records=True)
+  else:
+    raise exceptions.Error(
+        'dnsProvider is not present in DNS settings file \'{}\'.'.format(path))
+
+  return dns_settings, update_mask
 
 
 def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
@@ -147,7 +159,7 @@ def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
     enable_dnssec: If true, try to read DNSSEC information from the Zone.
 
   Returns:
-    A pair: List of name servers and a list of Ds reocrds (or [] if e.g. the
+    A pair: List of name servers and a list of Ds records (or [] if e.g. the
     Zone is not signed).
   """
   # Get the managed-zone.

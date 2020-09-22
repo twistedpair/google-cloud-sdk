@@ -51,7 +51,7 @@ def contains_wildcard(url_string):
 
 
 def get_wildcard_iterator(
-    url_str, all_versions=False, fields_scope=cloud_api.FieldsScope.SHORT):
+    url_str, all_versions=False, fields_scope=cloud_api.FieldsScope.NO_ACL):
   """Instantiate a WildcardIterator for the given URL string.
 
   Args:
@@ -99,12 +99,13 @@ class FileWildcardIterator(WildcardIterator):
 
   def __iter__(self):
     recursion_needed = '**' in self._path
-    for index, path in enumerate(glob.iglob(self._path,
-                                            recursive=recursion_needed)):
-      # For pattern like foo/bar/**, glob returns first path as 'foo/bar/'.
-      # This gets returned even when foo/bar does not exist.
-      # Hence, ignore the first path if the request endswith '**'.
-      if index == 0 and self._path.endswith('**') and path.endswith(os.sep):
+    for path in glob.iglob(self._path, recursive=recursion_needed):
+      # For pattern like foo/bar/**, glob returns first path as 'foo/bar/'
+      # even when foo/bar does not exist. So we skip non-existing paths.
+      # Glob also returns intermediate directories if called with **. We skip
+      # them to be consistent with CloudWildcardIterator.
+      if self._path.endswith('**') and (not os.path.exists(path)
+                                        or os.path.isdir(path)):
         continue
 
       file_url = storage_url.FileUrl(path)
@@ -118,7 +119,7 @@ class CloudWildcardIterator(WildcardIterator):
   """Class to iterate over Cloud Storage strings containing wildcards."""
 
   def __init__(
-      self, url, all_versions=False, fields_scope=cloud_api.FieldsScope.SHORT):
+      self, url, all_versions=False, fields_scope=cloud_api.FieldsScope.NO_ACL):
     """Instantiates an iterator that matches the wildcard URL.
 
     Args:
@@ -260,8 +261,7 @@ class CloudWildcardIterator(WildcardIterator):
       return  [self._client.GetBucket(
           self._url.bucket_name, self._fields_scope)]
     else:
-      return [resource_reference.BucketResource(
-          self._url, self._url.bucket_name)]
+      return [resource_reference.BucketResource(self._url)]
 
   def _expand_bucket_wildcards(self, bucket_name):
     """Expand bucket names with wildcard.
@@ -275,7 +275,7 @@ class CloudWildcardIterator(WildcardIterator):
     regex = fnmatch.translate(bucket_name)
     bucket_pattern = re.compile(regex)
     for bucket_resource in self._client.ListBuckets(self._fields_scope):
-      if bucket_pattern.match(bucket_resource.metadata_object.name):
+      if bucket_pattern.match(bucket_resource.name):
         yield bucket_resource
 
 

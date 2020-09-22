@@ -2254,8 +2254,8 @@ class ResourceInfo(_messages.Message):
 
   Fields:
     resourceContainer: The identifier of the parent of this resource instance.
-      Must be in one of the following formats: - "projects/" - "folders/" -
-      "organizations/"
+      Must be in one of the following formats: - `projects/` - `folders/` -
+      `organizations/`
     resourceLocation: The location of the resource. If not empty, the resource
       will be checked against location policy. The value must be a valid zone,
       region or multiregion. For example: "europe-west4" or "northamerica-

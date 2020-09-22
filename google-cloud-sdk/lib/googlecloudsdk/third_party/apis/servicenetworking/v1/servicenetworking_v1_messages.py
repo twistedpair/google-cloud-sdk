@@ -139,11 +139,6 @@ class AddSubnetworkRequest(_messages.Message):
       range. Use CIDR range notation, such as `30` to provision a subnet with
       an `x.x.x.x/30` CIDR range. The IP address range is drawn from a pool of
       available ranges in the service consumer's allocated range.
-    privateIpv6GoogleAccess: Optional. The private IPv6 google access type for
-      the VMs in this subnet. For information about the access types that can
-      be set using this field, see
-      [subnetwork](/compute/docs/reference/rest/v1/subnetworks) in the Compute
-      API documentation.
     region: Required. The name of a [region](/compute/docs/regions-zones) for
       the subnet, such `europe-west1`.
     requestedAddress: Optional. The starting address of a range. The address
@@ -163,11 +158,10 @@ class AddSubnetworkRequest(_messages.Message):
   consumerNetwork = _messages.StringField(2)
   description = _messages.StringField(3)
   ipPrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  privateIpv6GoogleAccess = _messages.StringField(5)
-  region = _messages.StringField(6)
-  requestedAddress = _messages.StringField(7)
-  subnetwork = _messages.StringField(8)
-  subnetworkUsers = _messages.StringField(9, repeated=True)
+  region = _messages.StringField(5)
+  requestedAddress = _messages.StringField(6)
+  subnetwork = _messages.StringField(7)
+  subnetworkUsers = _messages.StringField(8, repeated=True)
 
 
 class Api(_messages.Message):

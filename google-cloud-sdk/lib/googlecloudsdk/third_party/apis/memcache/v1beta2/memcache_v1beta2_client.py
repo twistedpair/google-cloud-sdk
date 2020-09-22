@@ -55,7 +55,7 @@ class MemcacheV1beta2(base_api.BaseApiClient):
           }
 
     def ApplyParameters(self, request, global_params=None):
-      r"""ApplyParameters will update current set of Parameters to the set of specified nodes of the Memcached Instance.
+      r"""ApplyParameters will restart the set of specified nodes in order to update them to the current set of parameters for the Memcached Instance.
 
       Args:
         request: (MemcacheProjectsLocationsInstancesApplyParametersRequest) input message
@@ -82,7 +82,7 @@ class MemcacheV1beta2(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Instance in a given project and location.
+      r"""Creates a new Instance in a given location.
 
       Args:
         request: (MemcacheProjectsLocationsInstancesCreateRequest) input message
@@ -163,7 +163,7 @@ class MemcacheV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Instances in a given project and location.
+      r"""Lists Instances in a given location.
 
       Args:
         request: (MemcacheProjectsLocationsInstancesListRequest) input message

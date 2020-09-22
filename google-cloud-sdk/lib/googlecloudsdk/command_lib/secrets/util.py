@@ -82,16 +82,16 @@ def _ParseUserManagedPolicy(user_managed_policy):
       raise exceptions.BadFileException(
           'Failed to find a location in all replicas.')
     locations.append(replica['location'])
-    if 'customer_managed_encryption' in replica:
-      if 'kms_key_name' in replica['customer_managed_encryption']:
-        keys.append(replica['customer_managed_encryption']['kms_key_name'])
+    if 'customerManagedEncryption' in replica:
+      if 'kmsKeyName' in replica['customerManagedEncryption']:
+        keys.append(replica['customerManagedEncryption']['kmsKeyName'])
       else:
         raise exceptions.BadFileException(
-            'Failed to find a kms_key_name in customer_managed_encryption for '
+            'Failed to find a kmsKeyName in customerManagedEncryption for '
             'replica at least one replica.')
     if keys and len(keys) != len(locations):
       raise exceptions.BadFileException(
-          'Only some replicas have customer_managed_encryption. Please either '
+          'Only some replicas have customerManagedEncryption. Please either '
           'add the missing field to the remaining replicas or remove it from '
           'all replicas.')
   return 'user-managed', locations, keys
@@ -110,15 +110,15 @@ def _ParseAutomaticPolicy(automatic_policy):
   """
   if not automatic_policy:
     return 'automatic', [], []
-  if 'customer_managed_encryption' not in automatic_policy:
+  if 'customerManagedEncryption' not in automatic_policy:
     raise exceptions.BadFileException(
         'Failed to parse replication policy. Expected automatic to contain '
-        'either nothing or customer_managed_encryption.')
-  cmek = automatic_policy['customer_managed_encryption']
-  if 'kms_key_name' not in cmek:
+        'either nothing or customerManagedEncryption.')
+  cmek = automatic_policy['customerManagedEncryption']
+  if 'kmsKeyName' not in cmek:
     raise exceptions.BadFileException(
-        'Failed to find a kms_key_name in customer_managed_encryption.')
-  return 'automatic', [], [cmek['kms_key_name']]
+        'Failed to find a kmsKeyName in customerManagedEncryption.')
+  return 'automatic', [], [cmek['kmsKeyName']]
 
 
 def _ParseReplicationDict(replication_policy):

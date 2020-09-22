@@ -7,7 +7,7 @@
   "version": "v1beta",
   "revision": "0",
   "title": "Workflows API",
-  "description": "",
+  "description": "Orchestrate Workflows consisting of Google Cloud APIs, SaaS APIs or private API endpoints.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

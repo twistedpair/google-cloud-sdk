@@ -353,6 +353,9 @@ def AddBindingToIamPolicy(binding_message_type, policy, member, role):
     policy: IAM policy to which we want to add the bindings.
     member: The member to add to IAM policy.
     role: The role the member should have.
+
+  Returns:
+    boolean, whether or not the policy was updated.
   """
 
   # First check all bindings to see if the member is already in a binding with
@@ -362,7 +365,7 @@ def AddBindingToIamPolicy(binding_message_type, policy, member, role):
   for binding in policy.bindings:
     if binding.role == role:
       if member in binding.members:
-        return  # Nothing to do. Member already has the role.
+        return False  # Nothing to do. Member already has the role.
 
   # Second step: check to see if a binding already exists with the same role and
   # add the member to this binding. This is to not create new bindings with
@@ -370,11 +373,12 @@ def AddBindingToIamPolicy(binding_message_type, policy, member, role):
   for binding in policy.bindings:
     if binding.role == role:
       binding.members.append(member)
-      return
+      return True
 
   # Third step: no binding was found that has the same role. Create a new one.
   policy.bindings.append(binding_message_type(
       members=[member], role='{0}'.format(role)))
+  return True
 
 
 def _IsNoneCondition(condition):

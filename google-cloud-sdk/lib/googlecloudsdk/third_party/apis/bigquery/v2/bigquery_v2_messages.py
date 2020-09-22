@@ -1480,6 +1480,25 @@ class JobConfigurationLoad(_messages.Message):
       returned in the job result. The default value is CREATE_IF_NEEDED.
       Creation, truncation and append actions occur as one atomic update upon
       job completion.
+    decimalTargetTypes: [Trusted Tester] Defines the list of possible SQL data
+      types to which the source decimal values are converted. This list and
+      the precision and the scale parameters of the decimal field determine
+      the target type. In the order of NUMERIC, BIGNUMERIC, and STRING, a type
+      is picked if it is in the specified list and if it supports the
+      precision and the scale. STRING supports all precision and scale values.
+      If none of the listed types supports the precision and the scale, the
+      type supporting the widest range in the specified list is picked, and if
+      a value exceeds the supported range when reading the data, an error will
+      be thrown. For example: suppose decimal_target_type = ["NUMERIC",
+      "BIGNUMERIC"]. Then if (precision,scale) is: * (38,9) -> NUMERIC; *
+      (39,9) -> BIGNUMERIC (NUMERIC cannot hold 30 integer digits); * (38,10)
+      -> BIGNUMERIC (NUMERIC cannot hold 10 fractional digits); * (76,38) ->
+      BIGNUMERIC; * (77,38) -> BIGNUMERIC (error if value exeeds supported
+      range). For duplicated types in this field, only one will be considered
+      and the rest will be ignored. The order of the types in this field is
+      ignored. For example, ["BIGNUMERIC", "NUMERIC"] is the same as
+      ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes precedence over
+      BIGNUMERIC.
     destinationEncryptionConfiguration: Custom encryption configuration (e.g.,
       Cloud KMS keys).
     destinationTable: [Required] The destination table to load the data into.
@@ -1590,28 +1609,29 @@ class JobConfigurationLoad(_messages.Message):
   autodetect = _messages.BooleanField(3)
   clustering = _messages.MessageField('Clustering', 4)
   createDisposition = _messages.StringField(5)
-  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 6)
-  destinationTable = _messages.MessageField('TableReference', 7)
-  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 8)
-  encoding = _messages.StringField(9)
-  fieldDelimiter = _messages.StringField(10)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 11)
-  ignoreUnknownValues = _messages.BooleanField(12)
-  maxBadRecords = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(14)
-  projectionFields = _messages.StringField(15, repeated=True)
-  quote = _messages.StringField(16, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 17)
-  schema = _messages.MessageField('TableSchema', 18)
-  schemaInline = _messages.StringField(19)
-  schemaInlineFormat = _messages.StringField(20)
-  schemaUpdateOptions = _messages.StringField(21, repeated=True)
-  skipLeadingRows = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(23)
-  sourceUris = _messages.StringField(24, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 25)
-  useAvroLogicalTypes = _messages.BooleanField(26)
-  writeDisposition = _messages.StringField(27)
+  decimalTargetTypes = _messages.StringField(6, repeated=True)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 7)
+  destinationTable = _messages.MessageField('TableReference', 8)
+  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 9)
+  encoding = _messages.StringField(10)
+  fieldDelimiter = _messages.StringField(11)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 12)
+  ignoreUnknownValues = _messages.BooleanField(13)
+  maxBadRecords = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(15)
+  projectionFields = _messages.StringField(16, repeated=True)
+  quote = _messages.StringField(17, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 18)
+  schema = _messages.MessageField('TableSchema', 19)
+  schemaInline = _messages.StringField(20)
+  schemaInlineFormat = _messages.StringField(21)
+  schemaUpdateOptions = _messages.StringField(22, repeated=True)
+  skipLeadingRows = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(24)
+  sourceUris = _messages.StringField(25, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 26)
+  useAvroLogicalTypes = _messages.BooleanField(27)
+  writeDisposition = _messages.StringField(28)
 
 
 class JobConfigurationQuery(_messages.Message):

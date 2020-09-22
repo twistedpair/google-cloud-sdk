@@ -310,6 +310,13 @@ def CreateConfidentialInstanceMessage(messages, enable_confidential_compute):
   return confidential_instance_config
 
 
+def CreateAdvancedMachineFeaturesMessage(messages,
+                                         enable_nested_virtualization=None):
+  """Create AdvancedMachineFeatures message for an Instance."""
+  return messages.AdvancedMachineFeatures(
+      enableNestedVirtualization=enable_nested_virtualization)
+
+
 def ParseDiskResource(resources, name, project, zone, type_):
   """Parses disk resources.
 

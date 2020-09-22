@@ -155,10 +155,10 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
   r"""Options for automatically scaling a model.
 
   Fields:
-    maxNodes: Optional. The maximum number of nodes to scale this model under
-      load. The actual value will depend on resource quota and availability.
-    metrics: Optional. MetricSpec contains the specifications to use to
-      calculate the desired nodes count.
+    maxNodes: The maximum number of nodes to scale this model under load. The
+      actual value will depend on resource quota and availability.
+    metrics: MetricSpec contains the specifications to use to calculate the
+      desired nodes count.
     minNodes: Optional. The minimum number of nodes to allocate for this
       model. These nodes are always up, starting from the time the model is
       deployed. Therefore, the cost of operating this model will be at least
@@ -1357,13 +1357,44 @@ class GoogleCloudMlV1NasJobOutputMultiTrialJobOutput(_messages.Message):
 class GoogleCloudMlV1NasJobOutputMultiTrialJobOutputNasParameterMetric(_messages.Message):
   r"""An observed value of a metric of the trial.
 
+  Messages:
+    MetricsValue: Reported metrics other than objective and model_flops
+
   Fields:
+    metrics: Reported metrics other than objective and model_flops
+    modelFlops: The model flops associated with the `objective_value`.
     objectiveValue: The objective value at this training step.
     trainingStep: The global training step for this metric.
   """
 
-  objectiveValue = _messages.FloatField(1)
-  trainingStep = _messages.IntegerField(2)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetricsValue(_messages.Message):
+    r"""Reported metrics other than objective and model_flops
+
+    Messages:
+      AdditionalProperty: An additional property for a MetricsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetricsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetricsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A number attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.FloatField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metrics = _messages.MessageField('MetricsValue', 1)
+  modelFlops = _messages.FloatField(2)
+  objectiveValue = _messages.FloatField(3)
+  trainingStep = _messages.IntegerField(4)
 
 
 class GoogleCloudMlV1NasJobOutputMultiTrialJobOutputs(_messages.Message):
