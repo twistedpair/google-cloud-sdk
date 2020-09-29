@@ -40,10 +40,9 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_global_hubs = self.ProjectsLocationsGlobalHubsService(self)
+    self.projects_locations_global_policyBasedRoutes = self.ProjectsLocationsGlobalPolicyBasedRoutesService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
-    self.projects_locations_hubs = self.ProjectsLocationsHubsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
-    self.projects_locations_policyBasedRoutes = self.ProjectsLocationsPolicyBasedRoutesService(self)
     self.projects_locations_privateRanges = self.ProjectsLocationsPrivateRangesService(self)
     self.projects_locations_spokes = self.ProjectsLocationsSpokesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -66,7 +65,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -82,7 +81,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/hubs',
         request_field='hub',
         request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -93,7 +92,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsGlobalHubsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -109,7 +108,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -137,6 +136,33 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsGetRequest',
         response_type_name='Hub',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/hubs/{hubsId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.hubs.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -174,7 +200,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -190,7 +216,287 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='hub',
         request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/hubs/{hubsId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.hubs.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/hubs/{hubsId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.hubs.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalPolicyBasedRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_policyBasedRoutes resource."""
+
+    _NAME = 'projects_locations_global_policyBasedRoutes'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1alpha1.ProjectsLocationsGlobalPolicyBasedRoutesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new PolicyBasedRoute in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['policyBasedRouteId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/policyBasedRoutes',
+        request_field='policyBasedRoute',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single PolicyBasedRoute.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single PolicyBasedRoute.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PolicyBasedRoute) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest',
+        response_type_name='PolicyBasedRoute',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PolicyBasedRoutes in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPolicyBasedRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/policyBasedRoutes',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest',
+        response_type_name='ListPolicyBasedRoutesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single PolicyBasedRoute.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='policyBasedRoute',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -203,97 +509,6 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
       super(NetworkconnectivityV1alpha1.ProjectsLocationsGlobalService, self).__init__(client)
       self._upload_configs = {
           }
-
-  class ProjectsLocationsHubsService(base_api.BaseApiService):
-    """Service class for the projects_locations_hubs resource."""
-
-    _NAME = 'projects_locations_hubs'
-
-    def __init__(self, client):
-      super(NetworkconnectivityV1alpha1.ProjectsLocationsHubsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsHubsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/hubs/{hubsId}:getIamPolicy',
-        http_method='GET',
-        method_id='networkconnectivity.projects.locations.hubs.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1alpha1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='NetworkconnectivityProjectsLocationsHubsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsHubsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/hubs/{hubsId}:setIamPolicy',
-        http_method='POST',
-        method_id='networkconnectivity.projects.locations.hubs.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='NetworkconnectivityProjectsLocationsHubsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsHubsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/hubs/{hubsId}:testIamPermissions',
-        http_method='POST',
-        method_id='networkconnectivity.projects.locations.hubs.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='NetworkconnectivityProjectsLocationsHubsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
@@ -326,7 +541,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha1/{+name}:cancel',
-        request_field='cancelOperationRequest',
+        request_field='googleLongrunningCancelOperationRequest',
         request_type_name='NetworkconnectivityProjectsLocationsOperationsCancelRequest',
         response_type_name='Empty',
         supports_download=False,
@@ -366,7 +581,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsOperationsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -382,7 +597,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsOperationsGetRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -393,7 +608,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsOperationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListOperationsResponse) The response message.
+        (GoogleLongrunningListOperationsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -409,233 +624,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}/operations',
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsOperationsListRequest',
-        response_type_name='ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsPolicyBasedRoutesService(base_api.BaseApiService):
-    """Service class for the projects_locations_policyBasedRoutes resource."""
-
-    _NAME = 'projects_locations_policyBasedRoutes'
-
-    def __init__(self, client):
-      super(NetworkconnectivityV1alpha1.ProjectsLocationsPolicyBasedRoutesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new PolicyBasedRoute in a given project and location.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsPolicyBasedRoutesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes',
-        http_method='POST',
-        method_id='networkconnectivity.projects.locations.policyBasedRoutes.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['policyBasedRouteId', 'requestId'],
-        relative_path='v1alpha1/{+parent}/policyBasedRoutes',
-        request_field='policyBasedRoute',
-        request_type_name='NetworkconnectivityProjectsLocationsPolicyBasedRoutesCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single PolicyBasedRoute.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsPolicyBasedRoutesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}',
-        http_method='DELETE',
-        method_id='networkconnectivity.projects.locations.policyBasedRoutes.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='NetworkconnectivityProjectsLocationsPolicyBasedRoutesDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single PolicyBasedRoute.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsPolicyBasedRoutesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (PolicyBasedRoute) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}',
-        http_method='GET',
-        method_id='networkconnectivity.projects.locations.policyBasedRoutes.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='NetworkconnectivityProjectsLocationsPolicyBasedRoutesGetRequest',
-        response_type_name='PolicyBasedRoute',
-        supports_download=False,
-    )
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsPolicyBasedRoutesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}:getIamPolicy',
-        http_method='GET',
-        method_id='networkconnectivity.projects.locations.policyBasedRoutes.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1alpha1/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='NetworkconnectivityProjectsLocationsPolicyBasedRoutesGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists PolicyBasedRoutes in a given project and location.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsPolicyBasedRoutesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListPolicyBasedRoutesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes',
-        http_method='GET',
-        method_id='networkconnectivity.projects.locations.policyBasedRoutes.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/policyBasedRoutes',
-        request_field='',
-        request_type_name='NetworkconnectivityProjectsLocationsPolicyBasedRoutesListRequest',
-        response_type_name='ListPolicyBasedRoutesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single PolicyBasedRoute.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsPolicyBasedRoutesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}',
-        http_method='PATCH',
-        method_id='networkconnectivity.projects.locations.policyBasedRoutes.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='policyBasedRoute',
-        request_type_name='NetworkconnectivityProjectsLocationsPolicyBasedRoutesPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsPolicyBasedRoutesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}:setIamPolicy',
-        http_method='POST',
-        method_id='networkconnectivity.projects.locations.policyBasedRoutes.setIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha1/{+resource}:setIamPolicy',
-        request_field='setIamPolicyRequest',
-        request_type_name='NetworkconnectivityProjectsLocationsPolicyBasedRoutesSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsPolicyBasedRoutesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/policyBasedRoutes/{policyBasedRoutesId}:testIamPermissions',
-        http_method='POST',
-        method_id='networkconnectivity.projects.locations.policyBasedRoutes.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='NetworkconnectivityProjectsLocationsPolicyBasedRoutesTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 
@@ -656,7 +645,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsPrivateRangesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -672,7 +661,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/privateRanges',
         request_field='privateRange',
         request_type_name='NetworkconnectivityProjectsLocationsPrivateRangesCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -683,7 +672,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsPrivateRangesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -699,7 +688,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsPrivateRangesDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -791,7 +780,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsPrivateRangesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -807,7 +796,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='privateRange',
         request_type_name='NetworkconnectivityProjectsLocationsPrivateRangesPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -882,7 +871,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsSpokesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -898,7 +887,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/spokes',
         request_field='spoke',
         request_type_name='NetworkconnectivityProjectsLocationsSpokesCreateRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -909,7 +898,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsSpokesDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -925,7 +914,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='NetworkconnectivityProjectsLocationsSpokesDeleteRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1017,7 +1006,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         request: (NetworkconnectivityProjectsLocationsSpokesPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (GoogleLongrunningOperation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -1033,7 +1022,7 @@ class NetworkconnectivityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}',
         request_field='spoke',
         request_type_name='NetworkconnectivityProjectsLocationsSpokesPatchRequest',
-        response_type_name='Operation',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

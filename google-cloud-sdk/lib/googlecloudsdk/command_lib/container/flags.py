@@ -2099,7 +2099,6 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
       '--addons',
       type=arg_parsers.ArgList(choices=addon_options),
       metavar='ADDON',
-      # TODO(b/65264376): Replace the doc link when a better doc is ready.
       help="""\
 Addons
 (https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters#Cluster.AddonsConfig)
@@ -3259,14 +3258,17 @@ either a node-pool upgrade or node-pool creation.
 def AddEnableConfidentialNodesFlag(parser):
   """Adds a --enable-confidential-nodes flag to the given parser."""
   help_text = """
-Enable Confidential Nodes for this cluster. Enabling Confidential Nodes will create nodes using confidential vm.
+Enable Confidential Nodes for this cluster. Enabling Confidential Nodes will
+create nodes on Confidential VM https://cloud.google.com/compute/confidential-vm/docs/about-cvm.
+Note that, this flag needs to be used together with --machine-type with a
+N2D machine type https://cloud.google.com/compute/docs/machine-types#n2d_machine_types.
 """
 
   parser.add_argument(
       '--enable-confidential-nodes',
       help=help_text,
       default=None,
-      hidden=True,
+      hidden=False,
       action='store_true')
 
 

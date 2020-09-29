@@ -52,7 +52,7 @@ def CheckCreateCertificateAuthorityPermissions(project_ref, kms_key_ref):
 
   Args:
     project_ref: The project where the new CA will be created.
-    kms_key_ref: The KMS key that will be used by the CA.
+    kms_key_ref: optional, The KMS key that will be used by the CA.
 
   Raises:
     InsufficientPermissionException: If the user is missing permissions.
@@ -61,10 +61,11 @@ def CheckCreateCertificateAuthorityPermissions(project_ref, kms_key_ref):
       projects_api.TestIamPermissions(
           project_ref, _CA_CREATE_PERMISSIONS_ON_PROJECT).permissions,
       _CA_CREATE_PERMISSIONS_ON_PROJECT, 'project')
-  _CheckAllPermissions(
-      kms_iam.TestCryptoKeyIamPermissions(
-          kms_key_ref, _CA_CREATE_PERMISSIONS_ON_KEY).permissions,
-      _CA_CREATE_PERMISSIONS_ON_KEY, 'KMS key')
+  if kms_key_ref:
+    _CheckAllPermissions(
+        kms_iam.TestCryptoKeyIamPermissions(
+            kms_key_ref, _CA_CREATE_PERMISSIONS_ON_KEY).permissions,
+        _CA_CREATE_PERMISSIONS_ON_KEY, 'KMS key')
 
 
 def CheckCreateCertificatePermissions(issuing_ca_ref):

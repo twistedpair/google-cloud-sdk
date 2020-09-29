@@ -71,19 +71,23 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
       LABEL_DETECTION: Label detection. Detect objects, such as dog or flower.
       SHOT_CHANGE_DETECTION: Shot change detection.
       EXPLICIT_CONTENT_DETECTION: Explicit content detection.
+      FACE_DETECTION: Human face detection.
       SPEECH_TRANSCRIPTION: Speech transcription.
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
       LOGO_RECOGNITION: Logo detection, tracking, and recognition.
+      PERSON_DETECTION: Person detection.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
     SHOT_CHANGE_DETECTION = 2
     EXPLICIT_CONTENT_DETECTION = 3
-    SPEECH_TRANSCRIPTION = 4
-    TEXT_DETECTION = 5
-    OBJECT_TRACKING = 6
-    LOGO_RECOGNITION = 7
+    FACE_DETECTION = 4
+    SPEECH_TRANSCRIPTION = 5
+    TEXT_DETECTION = 6
+    OBJECT_TRACKING = 7
+    LOGO_RECOGNITION = 8
+    PERSON_DETECTION = 9
 
   features = _messages.EnumField('FeaturesValueListEntryValuesEnum', 1, repeated=True)
   inputContent = _messages.BytesField(2)
@@ -213,6 +217,34 @@ class GoogleCloudVideointelligenceV1ExplicitContentFrame(_messages.Message):
 
   pornographyLikelihood = _messages.EnumField('PornographyLikelihoodValueValuesEnum', 1)
   timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1FaceDetectionAnnotation(_messages.Message):
+  r"""Face detection annotation.
+
+  Fields:
+    version: Feature version.
+  """
+
+  version = _messages.StringField(1)
+
+
+class GoogleCloudVideointelligenceV1FaceDetectionConfig(_messages.Message):
+  r"""Config for FACE_DETECTION.
+
+  Fields:
+    includeAttributes: Whether to enable face attributes detection, such as
+      glasses, dark_glasses, mouth_open etc. Ignored if
+      'include_bounding_boxes' is set to false.
+    includeBoundingBoxes: Whether bounding boxes are included in the face
+      annotation output.
+    model: Model to use for face detection. Supported values: "builtin/stable"
+      (the default if unset) and "builtin/latest".
+  """
+
+  includeAttributes = _messages.BooleanField(1)
+  includeBoundingBoxes = _messages.BooleanField(2)
+  model = _messages.StringField(3)
 
 
 class GoogleCloudVideointelligenceV1LabelAnnotation(_messages.Message):
@@ -433,6 +465,37 @@ class GoogleCloudVideointelligenceV1ObjectTrackingFrame(_messages.Message):
 
   normalizedBoundingBox = _messages.MessageField('GoogleCloudVideointelligenceV1NormalizedBoundingBox', 1)
   timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1PersonDetectionAnnotation(_messages.Message):
+  r"""Person detection annotation per video.
+
+  Fields:
+    tracks: The detected tracks of a person.
+    version: Feature version.
+  """
+
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1Track', 1, repeated=True)
+  version = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1PersonDetectionConfig(_messages.Message):
+  r"""Config for PERSON_DETECTION.
+
+  Fields:
+    includeAttributes: Whether to enable person attributes detection, such as
+      cloth color (black, blue, etc), type (coat, dress, etc), pattern (plain,
+      floral, etc), hair, etc. Ignored if 'include_bounding_boxes' is set to
+      false.
+    includeBoundingBoxes: Whether bounding boxes are included in the person
+      detection annotation output.
+    includePoseLandmarks: Whether to enable pose landmarks detection. Ignored
+      if 'include_bounding_boxes' is set to false.
+  """
+
+  includeAttributes = _messages.BooleanField(1)
+  includeBoundingBoxes = _messages.BooleanField(2)
+  includePoseLandmarks = _messages.BooleanField(3)
 
 
 class GoogleCloudVideointelligenceV1ShotChangeDetectionConfig(_messages.Message):
@@ -684,19 +747,23 @@ class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
       LABEL_DETECTION: Label detection. Detect objects, such as dog or flower.
       SHOT_CHANGE_DETECTION: Shot change detection.
       EXPLICIT_CONTENT_DETECTION: Explicit content detection.
+      FACE_DETECTION: Human face detection.
       SPEECH_TRANSCRIPTION: Speech transcription.
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
       LOGO_RECOGNITION: Logo detection, tracking, and recognition.
+      PERSON_DETECTION: Person detection.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
     SHOT_CHANGE_DETECTION = 2
     EXPLICIT_CONTENT_DETECTION = 3
-    SPEECH_TRANSCRIPTION = 4
-    TEXT_DETECTION = 5
-    OBJECT_TRACKING = 6
-    LOGO_RECOGNITION = 7
+    FACE_DETECTION = 4
+    SPEECH_TRANSCRIPTION = 5
+    TEXT_DETECTION = 6
+    OBJECT_TRACKING = 7
+    LOGO_RECOGNITION = 8
+    PERSON_DETECTION = 9
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   inputUri = _messages.StringField(2)
@@ -713,6 +780,7 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
     error: If set, indicates an error. Note that for a single
       `AnnotateVideoRequest` some videos may succeed and some may fail.
     explicitAnnotation: Explicit content annotation.
+    faceDetectionAnnotations: Face detection annotations.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
     inputUri: Video file location in [Cloud
@@ -721,6 +789,7 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
       tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
+    personDetectionAnnotations: Person detection annotations.
     segment: Video segment on which the annotation is run.
     segmentLabelAnnotations: Topical label annotations on video level or user-
       specified segment level. There is exactly one element for each unique
@@ -750,18 +819,20 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
   explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1ExplicitContentAnnotation', 2)
-  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 3, repeated=True)
-  inputUri = _messages.StringField(4)
-  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LogoRecognitionAnnotation', 5, repeated=True)
-  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1ObjectTrackingAnnotation', 6, repeated=True)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 7)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 8, repeated=True)
-  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 9, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 10, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 11, repeated=True)
-  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 12, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1SpeechTranscription', 13, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1TextAnnotation', 14, repeated=True)
+  faceDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1FaceDetectionAnnotation', 3, repeated=True)
+  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 4, repeated=True)
+  inputUri = _messages.StringField(5)
+  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LogoRecognitionAnnotation', 6, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1ObjectTrackingAnnotation', 7, repeated=True)
+  personDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1PersonDetectionAnnotation', 8, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 9)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 10, repeated=True)
+  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 11, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 12, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 13, repeated=True)
+  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1LabelAnnotation', 14, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1SpeechTranscription', 15, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1TextAnnotation', 16, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
@@ -769,8 +840,10 @@ class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
 
   Fields:
     explicitContentDetectionConfig: Config for EXPLICIT_CONTENT_DETECTION.
+    faceDetectionConfig: Config for FACE_DETECTION.
     labelDetectionConfig: Config for LABEL_DETECTION.
     objectTrackingConfig: Config for OBJECT_TRACKING.
+    personDetectionConfig: Config for PERSON_DETECTION.
     segments: Video segments to annotate. The segments may overlap and are not
       required to be contiguous or span the whole video. If unspecified, each
       video is treated as a single segment.
@@ -780,12 +853,14 @@ class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
   """
 
   explicitContentDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1ExplicitContentDetectionConfig', 1)
-  labelDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1LabelDetectionConfig', 2)
-  objectTrackingConfig = _messages.MessageField('GoogleCloudVideointelligenceV1ObjectTrackingConfig', 3)
-  segments = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 4, repeated=True)
-  shotChangeDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1ShotChangeDetectionConfig', 5)
-  speechTranscriptionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1SpeechTranscriptionConfig', 6)
-  textDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1TextDetectionConfig', 7)
+  faceDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1FaceDetectionConfig', 2)
+  labelDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1LabelDetectionConfig', 3)
+  objectTrackingConfig = _messages.MessageField('GoogleCloudVideointelligenceV1ObjectTrackingConfig', 4)
+  personDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1PersonDetectionConfig', 5)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1VideoSegment', 6, repeated=True)
+  shotChangeDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1ShotChangeDetectionConfig', 7)
+  speechTranscriptionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1SpeechTranscriptionConfig', 8)
+  textDetectionConfig = _messages.MessageField('GoogleCloudVideointelligenceV1TextDetectionConfig', 9)
 
 
 class GoogleCloudVideointelligenceV1VideoSegment(_messages.Message):
@@ -961,6 +1036,16 @@ class GoogleCloudVideointelligenceV1beta2ExplicitContentFrame(_messages.Message)
   timeOffset = _messages.StringField(2)
 
 
+class GoogleCloudVideointelligenceV1beta2FaceDetectionAnnotation(_messages.Message):
+  r"""Face detection annotation.
+
+  Fields:
+    version: Feature version.
+  """
+
+  version = _messages.StringField(1)
+
+
 class GoogleCloudVideointelligenceV1beta2LabelAnnotation(_messages.Message):
   r"""Label annotation.
 
@@ -1116,6 +1201,18 @@ class GoogleCloudVideointelligenceV1beta2ObjectTrackingFrame(_messages.Message):
   timeOffset = _messages.StringField(2)
 
 
+class GoogleCloudVideointelligenceV1beta2PersonDetectionAnnotation(_messages.Message):
+  r"""Person detection annotation per video.
+
+  Fields:
+    tracks: The detected tracks of a person.
+    version: Feature version.
+  """
+
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1beta2Track', 1, repeated=True)
+  version = _messages.StringField(2)
+
+
 class GoogleCloudVideointelligenceV1beta2SpeechRecognitionAlternative(_messages.Message):
   r"""Alternative hypotheses (a.k.a. n-best list).
 
@@ -1265,19 +1362,23 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationProgress(_messages.Messa
       LABEL_DETECTION: Label detection. Detect objects, such as dog or flower.
       SHOT_CHANGE_DETECTION: Shot change detection.
       EXPLICIT_CONTENT_DETECTION: Explicit content detection.
+      FACE_DETECTION: Human face detection.
       SPEECH_TRANSCRIPTION: Speech transcription.
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
       LOGO_RECOGNITION: Logo detection, tracking, and recognition.
+      PERSON_DETECTION: Person detection.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
     SHOT_CHANGE_DETECTION = 2
     EXPLICIT_CONTENT_DETECTION = 3
-    SPEECH_TRANSCRIPTION = 4
-    TEXT_DETECTION = 5
-    OBJECT_TRACKING = 6
-    LOGO_RECOGNITION = 7
+    FACE_DETECTION = 4
+    SPEECH_TRANSCRIPTION = 5
+    TEXT_DETECTION = 6
+    OBJECT_TRACKING = 7
+    LOGO_RECOGNITION = 8
+    PERSON_DETECTION = 9
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   inputUri = _messages.StringField(2)
@@ -1294,6 +1395,7 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
     error: If set, indicates an error. Note that for a single
       `AnnotateVideoRequest` some videos may succeed and some may fail.
     explicitAnnotation: Explicit content annotation.
+    faceDetectionAnnotations: Face detection annotations.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
     inputUri: Video file location in [Cloud
@@ -1302,6 +1404,7 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
       tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
+    personDetectionAnnotations: Person detection annotations.
     segment: Video segment on which the annotation is run.
     segmentLabelAnnotations: Topical label annotations on video level or user-
       specified segment level. There is exactly one element for each unique
@@ -1331,18 +1434,20 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
   explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1beta2ExplicitContentAnnotation', 2)
-  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 3, repeated=True)
-  inputUri = _messages.StringField(4)
-  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LogoRecognitionAnnotation', 5, repeated=True)
-  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2ObjectTrackingAnnotation', 6, repeated=True)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 7)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 8, repeated=True)
-  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 9, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 10, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 11, repeated=True)
-  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 12, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1beta2SpeechTranscription', 13, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2TextAnnotation', 14, repeated=True)
+  faceDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2FaceDetectionAnnotation', 3, repeated=True)
+  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 4, repeated=True)
+  inputUri = _messages.StringField(5)
+  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LogoRecognitionAnnotation', 6, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2ObjectTrackingAnnotation', 7, repeated=True)
+  personDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2PersonDetectionAnnotation', 8, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 9)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 10, repeated=True)
+  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 11, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2VideoSegment', 12, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 13, repeated=True)
+  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2LabelAnnotation', 14, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1beta2SpeechTranscription', 15, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1beta2TextAnnotation', 16, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1beta2VideoSegment(_messages.Message):
@@ -1518,6 +1623,16 @@ class GoogleCloudVideointelligenceV1p1beta1ExplicitContentFrame(_messages.Messag
   timeOffset = _messages.StringField(2)
 
 
+class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAnnotation(_messages.Message):
+  r"""Face detection annotation.
+
+  Fields:
+    version: Feature version.
+  """
+
+  version = _messages.StringField(1)
+
+
 class GoogleCloudVideointelligenceV1p1beta1LabelAnnotation(_messages.Message):
   r"""Label annotation.
 
@@ -1673,6 +1788,18 @@ class GoogleCloudVideointelligenceV1p1beta1ObjectTrackingFrame(_messages.Message
   timeOffset = _messages.StringField(2)
 
 
+class GoogleCloudVideointelligenceV1p1beta1PersonDetectionAnnotation(_messages.Message):
+  r"""Person detection annotation per video.
+
+  Fields:
+    tracks: The detected tracks of a person.
+    version: Feature version.
+  """
+
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1Track', 1, repeated=True)
+  version = _messages.StringField(2)
+
+
 class GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative(_messages.Message):
   r"""Alternative hypotheses (a.k.a. n-best list).
 
@@ -1822,19 +1949,23 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Mes
       LABEL_DETECTION: Label detection. Detect objects, such as dog or flower.
       SHOT_CHANGE_DETECTION: Shot change detection.
       EXPLICIT_CONTENT_DETECTION: Explicit content detection.
+      FACE_DETECTION: Human face detection.
       SPEECH_TRANSCRIPTION: Speech transcription.
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
       LOGO_RECOGNITION: Logo detection, tracking, and recognition.
+      PERSON_DETECTION: Person detection.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
     SHOT_CHANGE_DETECTION = 2
     EXPLICIT_CONTENT_DETECTION = 3
-    SPEECH_TRANSCRIPTION = 4
-    TEXT_DETECTION = 5
-    OBJECT_TRACKING = 6
-    LOGO_RECOGNITION = 7
+    FACE_DETECTION = 4
+    SPEECH_TRANSCRIPTION = 5
+    TEXT_DETECTION = 6
+    OBJECT_TRACKING = 7
+    LOGO_RECOGNITION = 8
+    PERSON_DETECTION = 9
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   inputUri = _messages.StringField(2)
@@ -1851,6 +1982,7 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
     error: If set, indicates an error. Note that for a single
       `AnnotateVideoRequest` some videos may succeed and some may fail.
     explicitAnnotation: Explicit content annotation.
+    faceDetectionAnnotations: Face detection annotations.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
     inputUri: Video file location in [Cloud
@@ -1859,6 +1991,7 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
       tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
+    personDetectionAnnotations: Person detection annotations.
     segment: Video segment on which the annotation is run.
     segmentLabelAnnotations: Topical label annotations on video level or user-
       specified segment level. There is exactly one element for each unique
@@ -1888,18 +2021,20 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
   explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ExplicitContentAnnotation', 2)
-  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 3, repeated=True)
-  inputUri = _messages.StringField(4)
-  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LogoRecognitionAnnotation', 5, repeated=True)
-  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ObjectTrackingAnnotation', 6, repeated=True)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 7)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 8, repeated=True)
-  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 9, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 10, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 11, repeated=True)
-  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 12, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechTranscription', 13, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1TextAnnotation', 14, repeated=True)
+  faceDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1FaceDetectionAnnotation', 3, repeated=True)
+  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 4, repeated=True)
+  inputUri = _messages.StringField(5)
+  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LogoRecognitionAnnotation', 6, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ObjectTrackingAnnotation', 7, repeated=True)
+  personDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1PersonDetectionAnnotation', 8, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 9)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 10, repeated=True)
+  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 11, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 12, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 13, repeated=True)
+  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 14, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechTranscription', 15, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1TextAnnotation', 16, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p1beta1VideoSegment(_messages.Message):
@@ -2075,6 +2210,16 @@ class GoogleCloudVideointelligenceV1p2beta1ExplicitContentFrame(_messages.Messag
   timeOffset = _messages.StringField(2)
 
 
+class GoogleCloudVideointelligenceV1p2beta1FaceDetectionAnnotation(_messages.Message):
+  r"""Face detection annotation.
+
+  Fields:
+    version: Feature version.
+  """
+
+  version = _messages.StringField(1)
+
+
 class GoogleCloudVideointelligenceV1p2beta1LabelAnnotation(_messages.Message):
   r"""Label annotation.
 
@@ -2230,6 +2375,18 @@ class GoogleCloudVideointelligenceV1p2beta1ObjectTrackingFrame(_messages.Message
   timeOffset = _messages.StringField(2)
 
 
+class GoogleCloudVideointelligenceV1p2beta1PersonDetectionAnnotation(_messages.Message):
+  r"""Person detection annotation per video.
+
+  Fields:
+    tracks: The detected tracks of a person.
+    version: Feature version.
+  """
+
+  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1Track', 1, repeated=True)
+  version = _messages.StringField(2)
+
+
 class GoogleCloudVideointelligenceV1p2beta1SpeechRecognitionAlternative(_messages.Message):
   r"""Alternative hypotheses (a.k.a. n-best list).
 
@@ -2379,19 +2536,23 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationProgress(_messages.Mes
       LABEL_DETECTION: Label detection. Detect objects, such as dog or flower.
       SHOT_CHANGE_DETECTION: Shot change detection.
       EXPLICIT_CONTENT_DETECTION: Explicit content detection.
+      FACE_DETECTION: Human face detection.
       SPEECH_TRANSCRIPTION: Speech transcription.
       TEXT_DETECTION: OCR text detection and tracking.
       OBJECT_TRACKING: Object detection and tracking.
       LOGO_RECOGNITION: Logo detection, tracking, and recognition.
+      PERSON_DETECTION: Person detection.
     """
     FEATURE_UNSPECIFIED = 0
     LABEL_DETECTION = 1
     SHOT_CHANGE_DETECTION = 2
     EXPLICIT_CONTENT_DETECTION = 3
-    SPEECH_TRANSCRIPTION = 4
-    TEXT_DETECTION = 5
-    OBJECT_TRACKING = 6
-    LOGO_RECOGNITION = 7
+    FACE_DETECTION = 4
+    SPEECH_TRANSCRIPTION = 5
+    TEXT_DETECTION = 6
+    OBJECT_TRACKING = 7
+    LOGO_RECOGNITION = 8
+    PERSON_DETECTION = 9
 
   feature = _messages.EnumField('FeatureValueValuesEnum', 1)
   inputUri = _messages.StringField(2)
@@ -2408,6 +2569,7 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
     error: If set, indicates an error. Note that for a single
       `AnnotateVideoRequest` some videos may succeed and some may fail.
     explicitAnnotation: Explicit content annotation.
+    faceDetectionAnnotations: Face detection annotations.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
     inputUri: Video file location in [Cloud
@@ -2416,6 +2578,7 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
       tracked and recognized in video.
     objectAnnotations: Annotations for list of objects detected and tracked in
       video.
+    personDetectionAnnotations: Person detection annotations.
     segment: Video segment on which the annotation is run.
     segmentLabelAnnotations: Topical label annotations on video level or user-
       specified segment level. There is exactly one element for each unique
@@ -2445,18 +2608,20 @@ class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Mess
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
   explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ExplicitContentAnnotation', 2)
-  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 3, repeated=True)
-  inputUri = _messages.StringField(4)
-  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LogoRecognitionAnnotation', 5, repeated=True)
-  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ObjectTrackingAnnotation', 6, repeated=True)
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 7)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 8, repeated=True)
-  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 9, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 10, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 11, repeated=True)
-  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 12, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1SpeechTranscription', 13, repeated=True)
-  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextAnnotation', 14, repeated=True)
+  faceDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1FaceDetectionAnnotation', 3, repeated=True)
+  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 4, repeated=True)
+  inputUri = _messages.StringField(5)
+  logoRecognitionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LogoRecognitionAnnotation', 6, repeated=True)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ObjectTrackingAnnotation', 7, repeated=True)
+  personDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1PersonDetectionAnnotation', 8, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 9)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 10, repeated=True)
+  segmentPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 11, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 12, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 13, repeated=True)
+  shotPresenceLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 14, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1SpeechTranscription', 15, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextAnnotation', 16, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p2beta1VideoSegment(_messages.Message):
@@ -2681,14 +2846,10 @@ class GoogleCloudVideointelligenceV1p3beta1FaceDetectionAnnotation(_messages.Mes
   r"""Face detection annotation.
 
   Fields:
-    thumbnail: The thumbnail of a person's face.
-    tracks: The face tracks with attributes.
     version: Feature version.
   """
 
-  thumbnail = _messages.BytesField(1)
-  tracks = _messages.MessageField('GoogleCloudVideointelligenceV1p3beta1Track', 2, repeated=True)
-  version = _messages.StringField(3)
+  version = _messages.StringField(1)
 
 
 class GoogleCloudVideointelligenceV1p3beta1LabelAnnotation(_messages.Message):

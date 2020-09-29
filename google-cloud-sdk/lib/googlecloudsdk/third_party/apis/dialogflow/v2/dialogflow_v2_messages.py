@@ -6564,6 +6564,26 @@ class GoogleCloudDialogflowV3alpha1ExportAgentResponse(_messages.Message):
   agentUri = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowV3alpha1ExportTestCasesMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.ExportTestCases long running
+  operation.
+  """
+
+
+
+class GoogleCloudDialogflowV3alpha1ExportTestCasesResponse(_messages.Message):
+  r"""The response message for TestCases.ExportTestCases.
+
+  Fields:
+    content: Uncompressed raw byte content for test cases.
+    gcsUri: The URI to a file containing the exported test cases. This field
+      is populated only if `gcs_uri` is specified in ExportTestCasesRequest.
+  """
+
+  content = _messages.BytesField(1)
+  gcsUri = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV3alpha1ImportAgentResponse(_messages.Message):
   r"""The response message for Agents.ImportAgent.
 
@@ -6573,6 +6593,24 @@ class GoogleCloudDialogflowV3alpha1ImportAgentResponse(_messages.Message):
   """
 
   agent = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV3alpha1ImportTestCasesMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.ImportTestCases long running
+  operation.
+  """
+
+
+
+class GoogleCloudDialogflowV3alpha1ImportTestCasesResponse(_messages.Message):
+  r"""The response message for TestCases.ImportTestCases.
+
+  Fields:
+    names: The unique identifiers of the new test cases. Format:
+      `projects//locations//agents//testCases/`.
+  """
+
+  names = _messages.StringField(1, repeated=True)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):

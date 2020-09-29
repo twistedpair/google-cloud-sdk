@@ -412,6 +412,21 @@
             "DIRECT_PEERING",
             "PRIVATE_SERVICE_ACCESS"
           ]
+        },
+        "authEnabled": {
+          "description": "Optional. Indicates whether OSS Redis AUTH is enabled for the instance. If set to \"true\" AUTH is enabled on the instance. Default value is \"false\" meaning AUTH is disabled.",
+          "type": "boolean"
+        }
+      }
+    },
+    "InstanceAuthString": {
+      "id": "InstanceAuthString",
+      "description": "Instance AUTH string details.",
+      "type": "object",
+      "properties": {
+        "authString": {
+          "description": "AUTH string set on the instance.",
+          "type": "string"
         }
       }
     },
@@ -829,6 +844,31 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Gets the details of a specific Redis instance."
+                },
+                "getAuthString": {
+                  "id": "redis.projects.locations.instances.getAuthString",
+                  "path": "v1beta1/{+name}/authString",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/authString",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Redis instance resource name using the form: `projects\/{project_id}\/locations\/{location_id}\/instances\/{instance_id}` where `location_id` refers to a GCP region.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "InstanceAuthString"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the AUTH string for a Redis instance. If AUTH is not enabled for the instance the response will be empty. This information is not included in the details returned to GetInstance."
                 },
                 "create": {
                   "id": "redis.projects.locations.instances.create",

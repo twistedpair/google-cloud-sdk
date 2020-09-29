@@ -42,11 +42,16 @@ class NotFoundError(CloudApiError):
 
 
 class S3ApiError(CloudApiError):
+  # TODO(b/169133490): Add docstring describing error and error_format.
 
   def __init__(self, error, error_format=None):
     super().__init__(str(error))
     self.error = error
     self.error_format = error_format
+
+  def __eq__(self, other):
+    return (str(self.error) == str(other.error) and
+            self.error_format == other.error_format)
 
 
 # Modified version of api_lib.util.exceptions.CatchHTTPErrorRaiseHTTPException

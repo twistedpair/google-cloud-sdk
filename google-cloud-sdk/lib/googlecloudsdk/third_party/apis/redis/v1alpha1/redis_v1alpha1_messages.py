@@ -163,7 +163,7 @@ class Instance(_messages.Message):
       two zones. If provided, it must be a different zone from the one
       provided in [location_id].
     authEnabled: Optional. Indicates whether OSS Redis AUTH is enabled for the
-      instance. If set to "true" AUTH will be enabled on the instance. Default
+      instance. If set to "true" AUTH is enabled on the instance. Default
       value is "false" meaning AUTH is disabled.
     authorizedNetwork: Optional. The full name of the Google Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the

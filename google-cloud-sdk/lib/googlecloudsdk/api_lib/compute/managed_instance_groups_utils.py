@@ -966,19 +966,6 @@ def BuildScaleIn(args, messages):
     messages: module containing message classes.
   Returns:
     AutoscalingPolicyScaleInControl message object.
-
-  if args.IsSpecified('scale_in_control'):
-    replicas_arg = args.scale_in_control.get('max-scaled-in-replicas')
-
-    if replicas_arg.endswith('%'):
-      max_replicas = messages.FixedOrPercent(
-          percent=int(replicas_arg[:-1]))
-    else:
-      max_replicas = messages.FixedOrPercent(fixed=int(replicas_arg))
-
-    return messages.AutoscalingPolicyScaleInControl(
-        maxScaledInReplicas=max_replicas,
-        timeWindowSec=args.scale_in_control.get('time-window'))
   Raises:
     InvalidArgumentError:  if both max-scaled-in-replicas and
       max-scaled-in-replicas-percent are specified.
@@ -1009,55 +996,6 @@ def BuildScheduled(args, messages):
     messages: module containing message classes.
   Returns:
     Dict containing an AutoscalingPolicyScalingSchedule message object.
-
-  if getattr(args, 'enable_schedule', None) is not None:
-    return messages.AutoscalingPolicy.ScalingSchedulesValue(
-        additionalProperties=[
-            scaling_schedule_wrapper(
-                key=args.enable_schedule,
-                value=messages.AutoscalingPolicyScalingSchedule(
-                    disabled=False))])
-  if getattr(args, 'disable_schedule', None) is not None:
-    return messages.AutoscalingPolicy.ScalingSchedulesValue(
-        additionalProperties=[
-            scaling_schedule_wrapper(
-                key=args.disable_schedule,
-                value=messages.AutoscalingPolicyScalingSchedule(
-                    disabled=True))])
-  if getattr(args, 'remove_schedule', None) is not None:
-    return messages.AutoscalingPolicy.ScalingSchedulesValue(
-        additionalProperties=[
-            scaling_schedule_wrapper(
-                key=args.remove_schedule,
-                value=messages.AutoscalingPolicyScalingSchedule())])
-  if getattr(args, 'set_schedule', None) is not None:
-    policy_name = args.set_schedule
-    required = {'schedule_cron', 'schedule_duration_sec',
-                'schedule_min_required_replicas'}
-    # Set-shedule should clear pre-existing fields, so we set them to None.
-    scaling_schedule = {field: None for field in field_mapping.values()}
-  else:
-    policy_name = args.update_schedule
-    required = set()
-    scaling_schedule = {}
-
-  for arg_attr, field in six.iteritems(field_mapping):
-    arg = getattr(args, arg_attr, None)
-    if arg is not None:
-      scaling_schedule[field] = arg
-    elif arg_attr in required:
-      raise InvalidArgumentError(
-          '--set-schedule argument requires --schedule-duration-sec, '
-          '--schedule-cron, and --schedule-min-required-replicas to be '
-          'specified.')
-
-  return messages.AutoscalingPolicy.ScalingSchedulesValue(
-      additionalProperties=[
-          scaling_schedule_wrapper(
-              key=policy_name,
-              value=messages.AutoscalingPolicyScalingSchedule(
-                  **scaling_schedule))])
-
   Raises:
     InvalidArgumentError:  if more than one of --scaling-schedule,
     --update-schedule, --remove-schedule,

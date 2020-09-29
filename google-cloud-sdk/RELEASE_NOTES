@@ -6,6 +6,117 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
+## 312.0.0 (2020-09-29)
+
+### Breaking Changes
+
+*   **(Stackdriver Debugger)** Removed `gcloud beta debug source upload` command.
+
+
+### Cloud SDK
+
+*   Modified the `--billing-project` flag and `billing/quota_project` property
+    to accept service accounts when specifying a Google Cloud project for
+    billing and quota purposes.
+
+### AI
+
+* Added `gcloud ai` surface to beta which provides access to manage entities in AI Platform.
+* Added `gcloud ai custom-jobs` command group which provides access to custom jobs in AI Platform.
+* Added `gcloud ai hp-tuning-jobs` command group which provides access to hyperparameter tuning jobs in AI Platform.
+* Added `gcloud ai endpoints` command group which provides access to endpoints in AI Platform.
+* Added `gcloud ai models` command group which provides access to models in AI Platform.
+
+### Artifact Registry
+
+*   Added `--labels` flag to `gcloud beta artifacts repositories create` to
+    allow labels to be added to a repository during creation.
+
+### Assured Workloads
+
+*   Removed option limitations for `--location` flag of `gcloud assured
+    workloads create`.
+
+### BigQuery
+
+* Fixed 'RedirectMissingLocation' issue.
+
+### Cloud Asset Inventory
+
+* Added `--partition-key` and `--per-asset-type` flags to `gcloud asset export` to support partitioned per-type BigQuery export.
+* Removed `gcloud alpha asset analyze-iam-policy`. Please use `gcloud beta asset
+  analyzer-iam-policy` instead.
+
+### Cloud Billing
+
+* Added `gcloud beta billing accounts add-iam-policy-binding` and `gcloud beta
+  billing accounts remove-iam-policy-binding` commands to manage IAM policy
+  bindings on a Cloud Billing account.
+
+### Cloud Dataflow
+
+* Modified `gcloud dataflow sql query` to allow "project.dataset.table" and "dataset.table" formats for `--bigquery-table` argument.
+
+### Cloud Dataproc
+
+*   Added `--node-group` flag to `gcloud dataproc clusters create`
+    to allow clusters to be created on a Compute Engine sole-tenant node group.
+*   Added `--node-group` flag to `gcloud dataproc
+    workflow-templates set-managed-cluster` to allow managed clusters to be
+    created on a Compute Engine sole-tenant node group.
+
+### Cloud Healthcare
+
+* Promoted `gcloud healthcare consent-stores` to beta.
+
+### Cloud Pub/Sub
+
+* Promoted `--enable-message-ordering` flag of `gcloud pubsub subscriptions
+  create` and `--ordering-key` flag of `gcloud pubsub topics publish` to GA.
+
+### Cloud Workflows
+
+*   Added `gcloud beta workflows executions wait` which allows the user to wait for a workflow execution to complete.
+
+### Compute Engine
+
+* Modified `gcloud compute os-login` to use the current `gcloud` project for
+  quota by default. See help for `billing/quota_project` property or
+  `--billing-project` flag for more details on how to control this behavior.
+* Added ubuntu-2004 option of `--os` flag for `gcloud compute images import` in GA,
+  `gcloud compute instances import` in GA, and `gcloud compute machine-images import` in beta.
+* Promoted `--service-proxy` and `--service-proxy-labels` flags to GA for `gcloud compute instance-templates create`.
+
+### Events
+
+* Allow non-default brokers for `events brokers create` command.
+* Added brokers describe/list/delete commands.
+
+### GKE Hub
+
+* Promoted `gcloud container hub memberships <register|unregister>` commands to beta. Modified command to unsupport manage-workload-identity-bucket flag.
+
+### Identity Groups
+
+*   Promoted `gcloud identity groups describe` to GA.
+
+### Identity Groups Memberships
+
+*   Added `--update-roles-params` to `gcloud beta identity groups memberships modify-membership-roles`.
+*   Promoted `gcloud identity groups memberships delete` to GA.
+*   Promoted `gcloud identity groups memberships list` to GA.
+
+### Kubernetes Engine
+
+* Promoted `--validate` flag of `gcloud container binauthz attestations
+  create` and `gcloud container binauthz attestations sign-and-create` to GA
+  and beta, respectively.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
+
 ## 311.0.0 (2020-09-22)
 
 ### Breaking Changes

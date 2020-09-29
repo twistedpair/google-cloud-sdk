@@ -45,7 +45,7 @@ DEFAULT_NUM_RETRIES = 23
 
 
 def _BucketResourceFromMetadata(metadata):
-  """Helper method to generate the Bucket instance from GCS metadata.
+  """Helper method to generate a BucketResource instance from GCS metadata.
 
   Args:
     metadata (messages.Bucket): Extract resource properties from this.
@@ -56,6 +56,24 @@ def _BucketResourceFromMetadata(metadata):
   url = storage_url.CloudUrl(scheme=cloud_api.ProviderPrefix.GCS.value,
                              bucket_name=metadata.name)
   return resource_reference.BucketResource(
+      url, etag=metadata.etag, metadata=metadata)
+
+
+def _ObjectResourceFromMetadata(metadata):
+  """Helper method to generate a ObjectResource instance from GCS metadata.
+
+  Args:
+    metadata (messages.Object): Extract resource properties from this.
+
+  Returns:
+    ObjectResource with properties populated by metadata.
+  """
+  url = storage_url.CloudUrl(
+      scheme=cloud_api.ProviderPrefix.GCS.value,
+      bucket_name=metadata.bucket,
+      object_name=metadata.name,
+      generation=getattr(metadata, 'generation', None))
+  return resource_reference.ObjectResource(
       url, etag=metadata.etag, metadata=metadata)
 
 
@@ -233,12 +251,9 @@ class GcsApi(cloud_api.CloudApi):
 
       # Yield objects.
       # TODO(b/160238394) Decrypt metadata fields if necessary.
-      for obj in object_list.items:
-        obj.bucket = bucket_name
-        yield resource_reference.ObjectResource.from_gcs_metadata_object(
-            provider=cloud_api.ProviderPrefix.GCS.value,
-            metadata_object=obj
-        )
+      for object_metadata in object_list.items:
+        object_metadata.bucket = bucket_name
+        yield _ObjectResourceFromMetadata(object_metadata)
 
       # Yield prefixes.
       for prefix_string in object_list.prefixes:
@@ -302,8 +317,7 @@ class GcsApi(cloud_api.CloudApi):
           'Object not found: {}'.format(storage_url.CloudUrl(
               'gs', bucket_name, object_name, generation).url_string)
       )
-    return resource_reference.ObjectResource.from_gcs_metadata_object(
-        cloud_api.ProviderPrefix.GCS.value, object_metadata)
+    return _ObjectResourceFromMetadata(object_metadata)
 
   @cloud_errors.catch_http_error_raise_gcs_api_error()
   def PatchObjectMetadata(self,
@@ -342,8 +356,7 @@ class GcsApi(cloud_api.CloudApi):
     )
 
     object_metadata = self.client.objects.Patch(request)
-    return resource_reference.ObjectResource.from_gcs_metadata_object(
-        cloud_api.ProviderPrefix.GCS.value, object_metadata)
+    return _ObjectResourceFromMetadata(object_metadata)
 
   # pylint: disable=unused-argument
   @cloud_errors.catch_http_error_raise_gcs_api_error()
@@ -371,8 +384,7 @@ class GcsApi(cloud_api.CloudApi):
             sourceObject=source_object_metadata.name,
             destinationBucket=destination_object_metadata.bucket,
             destinationObject=destination_object_metadata.name))
-    return resource_reference.ObjectResource.from_gcs_metadata_object(
-        cloud_api.ProviderPrefix.GCS.value, object_metadata)
+    return _ObjectResourceFromMetadata(object_metadata)
 
   # pylint: disable=unused-argument
   def _DownloadObject(self,
@@ -557,8 +569,7 @@ class GcsApi(cloud_api.CloudApi):
 
       object_metadata = self.client.objects.Insert(request,
                                                    upload=apitools_upload)
-      return resource_reference.ObjectResource.from_gcs_metadata_object(
-          cloud_api.ProviderPrefix.GCS.value, object_metadata)
+      return _ObjectResourceFromMetadata(object_metadata)
     else:
       # TODO(b/160998556): Implement resumable upload.
       pass

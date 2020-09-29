@@ -179,6 +179,22 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
   parent = _messages.StringField(4, required=True)
 
 
+class CloudcommerceconsumerprocurementBillingAccountsOrdersMigrateRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersMigrateRequest
+  object.
+
+  Fields:
+    googleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest: A
+      GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest
+      resource to be passed as the request body.
+    name: Required. Name of the order to migrate. This field is in this form:
+      billingAccounts/{billing-account-id}/orders/{order-id}.
+  """
+
+  googleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudcommerceconsumerprocurementBillingAccountsOrdersModifyRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersModifyRequest
   object.
@@ -951,7 +967,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo(_messages.Message):
-  r"""Line item information. Next Id: 13
+  r"""Line item information. Next Id: 14
 
   Messages:
     SystemPropertiesValue: Output only. System provided key value pairs.
@@ -964,6 +980,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo(_messages.Messa
     entitlementInfo: Output only. Entitlement info associated with this line
       item.
     flavorExternalName: External name of the flavor being purchased.
+    offer: Optional. The name of the offer is accepted in either of these
+      formats: 'billingAccounts/{billing_account}/offers/{offer}', or
+      'projects/{consumer_project}/services/{service}/standardOffers/{offer}'.
     parameters: Optional. User provided parameters.
     pricePlanVersion: The price plan version being purchased.
     productExternalName: External name of the product being purchased.
@@ -1004,12 +1023,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo(_messages.Messa
   customPricing = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing', 2)
   entitlementInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementInfo', 3)
   flavorExternalName = _messages.StringField(4)
-  parameters = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Parameter', 5, repeated=True)
-  pricePlanVersion = _messages.StringField(6)
-  productExternalName = _messages.StringField(7)
-  quoteExternalName = _messages.StringField(8)
-  subscription = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Subscription', 9)
-  systemProperties = _messages.MessageField('SystemPropertiesValue', 10)
+  offer = _messages.StringField(5)
+  parameters = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Parameter', 6, repeated=True)
+  pricePlanVersion = _messages.StringField(7)
+  productExternalName = _messages.StringField(8)
+  quoteExternalName = _messages.StringField(9)
+  subscription = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Subscription', 10)
+  systemProperties = _messages.MessageField('SystemPropertiesValue', 11)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ListAccountsResponse(_messages.Message):
@@ -1072,8 +1092,20 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrdersResponse(_messages
   orders = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Order', 2, repeated=True)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest(_messages.Message):
+  r"""Request message for ConsumerProcurementService.MigrateOrder.
+
+  Fields:
+    newParent: Required. Destination billing account where the order will be
+      migrated to. This field is of the form: 'billingAccounts/{billing-
+      account-id}.
+  """
+
+  newParent = _messages.StringField(1)
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 6
+  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 7
 
   Fields:
     displayName: Optional. Updated display name of the order, leave as empty
@@ -1081,6 +1113,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages
     etag: The weak etag, which can be optionally populated, of the order that
       this modify request is based on. Validation checking will only happen if
       the invoker supplies this field.
+    modifications: Optional. Modifications for an existing Order created by an
+      Offer. Required when Offer based Order is being modified.
     modifyProductsOrderRequest: Required. Modifies an existing order for non-
       quote products.
     modifyQuoteOrderRequest: Required. Modifies an existing order for quote.
@@ -1088,8 +1122,49 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages
 
   displayName = _messages.StringField(1)
   etag = _messages.StringField(2)
-  modifyProductsOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest', 3)
-  modifyQuoteOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ModifyQuoteOrderRequest', 4)
+  modifications = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification', 3, repeated=True)
+  modifyProductsOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest', 4)
+  modifyQuoteOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1ModifyQuoteOrderRequest', 5)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification(_messages.Message):
+  r"""Modifications to make on the order.
+
+  Enums:
+    ChangeTypeValueValuesEnum: Required. Type of change to make.
+
+  Fields:
+    changeType: Required. Type of change to make.
+    lineItemId: ID of the existing line item to make change to. Required when
+      change type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or
+      [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CANCEL].
+    newLineItemInfo: The line item to update to. Required when change_type is
+      [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or
+      [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].
+  """
+
+  class ChangeTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of change to make.
+
+    Values:
+      LINE_ITEM_CHANGE_TYPE_UNSPECIFIED: Sentinel value. Do not use.
+      LINE_ITEM_CHANGE_TYPE_CREATE: The change is to create a new line item.
+      LINE_ITEM_CHANGE_TYPE_UPDATE: The change is to update an existing line
+        item.
+      LINE_ITEM_CHANGE_TYPE_CANCEL: The change is to cancel an existing line
+        item.
+      LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION: The change is to revert a
+        cancellation.
+    """
+    LINE_ITEM_CHANGE_TYPE_UNSPECIFIED = 0
+    LINE_ITEM_CHANGE_TYPE_CREATE = 1
+    LINE_ITEM_CHANGE_TYPE_UPDATE = 2
+    LINE_ITEM_CHANGE_TYPE_CANCEL = 3
+    LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION = 4
+
+  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 1)
+  lineItemId = _messages.StringField(2)
+  newLineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 3)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest(_messages.Message):
@@ -1383,7 +1458,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ParameterValue(_messages.Mes
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 10
+  r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 11
 
   Enums:
     AutoRenewalBehaviorValueValuesEnum: Optional. Auto renewal behavior of the
@@ -1398,8 +1473,11 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
       associated with the order.
     displayName: Required. The user-specified name of the order being placed.
       Must be unique within a billing account.
-    placeProductsOrderRequest: Required. Places order for non-quote products.
-    placeQuoteOrderRequest: Required. Places order for quote.
+    lineItemInfo: Optional. Places order for offer. Required when offer based
+      order is being placed. Setting `line_item_info` will take precedence to
+      place offer order if request is also set.
+    placeProductsOrderRequest: Optional. Places order for non-quote products.
+    placeQuoteOrderRequest: Optional. Places order for quote.
     provider: Required. Provider of the items being purchased. Provider has
       the format of `providers/{provider_id}`.
     requestId: Optional. A unique identifier for this request. The server will
@@ -1428,10 +1506,11 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.
   account = _messages.StringField(1)
   autoRenewalBehavior = _messages.EnumField('AutoRenewalBehaviorValueValuesEnum', 2)
   displayName = _messages.StringField(3)
-  placeProductsOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest', 4)
-  placeQuoteOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest', 5)
-  provider = _messages.StringField(6)
-  requestId = _messages.StringField(7)
+  lineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 4, repeated=True)
+  placeProductsOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest', 5)
+  placeQuoteOrderRequest = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest', 6)
+  provider = _messages.StringField(7)
+  requestId = _messages.StringField(8)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest(_messages.Message):

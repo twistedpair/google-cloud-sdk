@@ -24,6 +24,7 @@ import sys
 from googlecloudsdk.command_lib.code import run_subprocess
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import platforms
 import six
 
 DEFAULT_CLUSTER_NAME = 'gcloud-local-dev'
@@ -258,6 +259,9 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
             if (_MINIKUBE_NOT_ENOUGH_CPU_FRAGMENT in data['message'] and
                 data['exitcode'] == '64'):
               msg = 'Not enough CPUs. Cloud Run Emulator requires 2 CPUs.'
+              if (platforms.OperatingSystem.Current() !=
+                  platforms.OperatingSystem.LINUX):
+                msg += ' Increase Docker VM CPUs to 2.'
             elif data['exitcode'] == '69':
               msg = 'Cannot reach docker daemon.'
             else:

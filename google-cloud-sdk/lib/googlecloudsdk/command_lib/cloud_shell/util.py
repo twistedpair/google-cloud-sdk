@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import argparse
 import base64
 import datetime
 
@@ -67,6 +68,18 @@ def ParseCommonArgs(parser):
       session.
       """,
       action='store_true')
+
+
+def AddSshArgFlag(parser):
+  parser.add_argument(
+      'ssh_args',
+      nargs=argparse.REMAINDER,
+      help="""\
+          Flags and positionals passed to the underlying ssh implementation.
+          """,
+      example="""\
+        $ {command} -- -vvv
+      """)
 
 
 def PrepareV1Environment(args):

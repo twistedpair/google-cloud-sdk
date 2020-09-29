@@ -97,6 +97,6 @@ def AddBuildEnvVarsFlags(parser):
   map_util.AddUpdateMapFlags(
       parser,
       'build-env-vars',
-      long_name='Build environment variables',
+      long_name='build environment variables',
       key_type=BuildEnvVarKeyType,
       value_type=BuildEnvVarValueType)

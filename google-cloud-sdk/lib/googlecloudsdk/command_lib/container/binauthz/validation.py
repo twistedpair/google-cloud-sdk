@@ -39,10 +39,10 @@ def validate_attestation(occurrence,
   """
   client = attestations.Client(api_version)
   validation_response = client.Test(occurrence, attestor_ref)
-  if validation_response.result == client.messages.TestAttestationOccurrenceResponse.ResultValueValuesEnum.VERIFIED:
+  if validation_response.result == client.messages.ValidateAttestationOccurrenceResponse.ResultValueValuesEnum.VERIFIED:
     log.info('Attestation was successfully validated')
     return
-  elif validation_response.result == client.messages.TestAttestationOccurrenceResponse.ResultValueValuesEnum.ATTESTATION_NOT_VERIFIABLE:
+  elif validation_response.result == client.messages.ValidateAttestationOccurrenceResponse.ResultValueValuesEnum.ATTESTATION_NOT_VERIFIABLE:
     log.warning('Attestation could not be validated! ({})'.format(
         validation_response.denialReason))
   else:

@@ -28,8 +28,8 @@ properties:
   metadataLabelMatchCriteria:
     description: |-
       Specifies how matching should be done. Supported values are: MATCH_ANY: At
-      least one of the Labels specified in the   matcher should match the
-      metadata presented by xDS client.
+      least one of the Labels specified in the matcher should match the metadata
+      presented by xDS client.
     type: string
     enum:
     - MATCH_ALL

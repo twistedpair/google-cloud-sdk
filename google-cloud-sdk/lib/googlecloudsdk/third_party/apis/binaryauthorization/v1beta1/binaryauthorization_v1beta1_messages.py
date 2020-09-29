@@ -90,6 +90,38 @@ class AdmissionWhitelistPattern(_messages.Message):
   namePattern = _messages.StringField(1)
 
 
+class AttestationOccurrence(_messages.Message):
+  r"""Occurrence that represents a single "attestation". The authenticity of
+  an attestation can be verified using the attached signature. If the verifier
+  trusts the public key of the signer, then verifying the signature is
+  sufficient to establish trust. In this circumstance, the authority to which
+  this attestation is attached is primarily useful for lookup (how to find
+  this attestation if you already know the authority and artifact to be
+  verified) and intent (for which authority this attestation was intended to
+  sign.
+
+  Fields:
+    jwts: One or more JWTs encoding a self-contained attestation. Each JWT
+      encodes the payload that it verifies within the JWT itself. Verifier
+      implementation SHOULD ignore the `serialized_payload` field when
+      verifying these JWTs. If only JWTs are present on this
+      AttestationOccurrence, then the `serialized_payload` SHOULD be left
+      empty. Each JWT SHOULD encode a claim specific to the `resource_uri` of
+      this Occurrence, but this is not validated by Grafeas metadata API
+      implementations. The JWT itself is opaque to Grafeas.
+    serializedPayload: Required. The serialized payload that is verified by
+      one or more `signatures`.
+    signatures: One or more signatures over `serialized_payload`. Verifier
+      implementations should consider this attestation message verified if at
+      least one `signature` verifies `serialized_payload`. See `Signature` in
+      common.proto for more details on signature structure and verification.
+  """
+
+  jwts = _messages.MessageField('Jwt', 1, repeated=True)
+  serializedPayload = _messages.BytesField(2)
+  signatures = _messages.MessageField('Signature', 3, repeated=True)
+
+
 class Attestor(_messages.Message):
   r"""An attestor that attests to container image artifacts. An existing
   attestor cannot be modified except where indicated.
@@ -246,6 +278,23 @@ class BinaryauthorizationProjectsAttestorsTestIamPermissionsRequest(_messages.Me
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest(_messages.Message):
+  r"""A
+  BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest
+  object.
+
+  Fields:
+    attestor: Required. The resource name of the Attestor of the occurrence,
+      in the format `projects/*/attestors/*`.
+    validateAttestationOccurrenceRequest: A
+      ValidateAttestationOccurrenceRequest resource to be passed as the
+      request body.
+  """
+
+  attestor = _messages.StringField(1, required=True)
+  validateAttestationOccurrenceRequest = _messages.MessageField('ValidateAttestationOccurrenceRequest', 2)
 
 
 class BinaryauthorizationProjectsGetPolicyRequest(_messages.Message):
@@ -481,6 +530,18 @@ class IamPolicy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class Jwt(_messages.Message):
+  r"""A Jwt object.
+
+  Fields:
+    compactJwt: The compact encoding of a JWS, which is always three base64
+      encoded strings joined by periods. For details, see:
+      https://tools.ietf.org/html/rfc7515.html#section-3.1
+  """
+
+  compactJwt = _messages.StringField(1)
+
+
 class ListAttestorsResponse(_messages.Message):
   r"""Response message for BinauthzManagementService.ListAttestors.
 
@@ -675,6 +736,51 @@ class SetIamPolicyRequest(_messages.Message):
   policy = _messages.MessageField('IamPolicy', 1)
 
 
+class Signature(_messages.Message):
+  r"""Verifiers (e.g. Kritis implementations) MUST verify signatures with
+  respect to the trust anchors defined in policy (e.g. a Kritis policy).
+  Typically this means that the verifier has been configured with a map from
+  `public_key_id` to public key material (and any required parameters, e.g.
+  signing algorithm). In particular, verification implementations MUST NOT
+  treat the signature `public_key_id` as anything more than a key lookup hint.
+  The `public_key_id` DOES NOT validate or authenticate a public key; it only
+  provides a mechanism for quickly selecting a public key ALREADY CONFIGURED
+  on the verifier through a trusted channel. Verification implementations MUST
+  reject signatures in any of the following circumstances: * The
+  `public_key_id` is not recognized by the verifier. * The public key that
+  `public_key_id` refers to does not verify the signature with respect to the
+  payload. The `signature` contents SHOULD NOT be "attached" (where the
+  payload is included with the serialized `signature` bytes). Verifiers MUST
+  ignore any "attached" payload and only verify signatures with respect to
+  explicitly provided payload (e.g. a `payload` field on the proto message
+  that holds this Signature, or the canonical serialization of the proto
+  message that holds this signature).
+
+  Fields:
+    publicKeyId: The identifier for the public key that verifies this
+      signature. * The `public_key_id` is required. * The `public_key_id`
+      SHOULD be an RFC3986 conformant URI. * When possible, the
+      `public_key_id` SHOULD be an immutable reference, such as a
+      cryptographic digest. Examples of valid `public_key_id`s: OpenPGP V4
+      public key fingerprint: *
+      "openpgp4fpr:74FAF3B861BDA0870C7B6DEF607E48D2A663AEEA" See
+      https://www.iana.org/assignments/uri-schemes/prov/openpgp4fpr for more
+      details on this scheme. RFC6920 digest-named SubjectPublicKeyInfo
+      (digest of the DER serialization): *
+      "ni:///sha-256;cD9o9Cq6LG3jD0iKXqEi_vdjJGecm_iXkbqVoScViaU" * "nih:///sh
+      a-256;703f68f42aba2c6de30f488a5ea122fef76324679c9bf89791ba95a1271589a5"
+    signature: The content of the signature, an opaque bytestring. The payload
+      that this signature verifies MUST be unambiguously provided with the
+      Signature during verification. A wrapper message might provide the
+      payload explicitly. Alternatively, a message might have a canonical
+      serialization that can always be unambiguously computed to derive the
+      payload.
+  """
+
+  publicKeyId = _messages.StringField(1)
+  signature = _messages.BytesField(2)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -793,6 +899,54 @@ class UserOwnedDrydockNote(_messages.Message):
   delegationServiceAccountEmail = _messages.StringField(1)
   noteReference = _messages.StringField(2)
   publicKeys = _messages.MessageField('AttestorPublicKey', 3, repeated=True)
+
+
+class ValidateAttestationOccurrenceRequest(_messages.Message):
+  r"""Request message for ValidationHelperV1.ValidateAttestationOccurrence.
+
+  Fields:
+    attestation: Required. An AttestationOccurrence to be checked that it can
+      be verified by the Attestor. It does not have to be an existing entity
+      in Container Analysis. It must otherwise be a valid
+      AttestationOccurrence.
+    occurrenceNote: Required. The resource name of the Note to which the
+      containing Occurrence is associated.
+    occurrenceResourceUri: Required. The URI of the artifact (e.g. container
+      image) that is the subject of the containing Occurrence.
+  """
+
+  attestation = _messages.MessageField('AttestationOccurrence', 1)
+  occurrenceNote = _messages.StringField(2)
+  occurrenceResourceUri = _messages.StringField(3)
+
+
+class ValidateAttestationOccurrenceResponse(_messages.Message):
+  r"""Response message for ValidationHelperV1.ValidateAttestationOccurrence.
+
+  Enums:
+    ResultValueValuesEnum: The result of the Attestation validation.
+
+  Fields:
+    denialReason: The reason for denial if the Attestation couldn't be
+      validated.
+    result: The result of the Attestation validation.
+  """
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The result of the Attestation validation.
+
+    Values:
+      RESULT_UNSPECIFIED: Unspecified.
+      VERIFIED: The Attestation was able to verified by the Attestor.
+      ATTESTATION_NOT_VERIFIABLE: The Attestation was not able to verified by
+        the Attestor.
+    """
+    RESULT_UNSPECIFIED = 0
+    VERIFIED = 1
+    ATTESTATION_NOT_VERIFIABLE = 2
+
+  denialReason = _messages.StringField(1)
+  result = _messages.EnumField('ResultValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

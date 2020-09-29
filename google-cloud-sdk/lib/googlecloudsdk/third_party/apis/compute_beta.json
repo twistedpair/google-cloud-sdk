@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20200911",
+ "revision": "20200918",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -635,7 +635,7 @@
     },
     "purpose": {
      "type": "string",
-     "description": "The purpose of this resource, which can be one of the following values:  \n- `GCE_ENDPOINT` for addresses that are used by VM instances, alias IP ranges, internal load balancers, and similar resources. \n- `DNS_RESOLVER` for a DNS resolver address in a subnetwork \n- `VPC_PEERING` for addresses that are reserved for VPC peer networks. \n- `NAT_AUTO` for addresses that are external IP addresses automatically reserved for Cloud NAT.",
+     "description": "The purpose of this resource, which can be one of the following values:  \n- `GCE_ENDPOINT` for addresses that are used by VM instances, alias IP ranges, internal load balancers, and similar resources. \n- `DNS_RESOLVER` for a DNS resolver address in a subnetwork \n- `VPC_PEERING` for addresses that are reserved for VPC peer networks. \n- `NAT_AUTO` for addresses that are external IP addresses automatically reserved for Cloud NAT. \n- `IPSEC_INTERCONNECT` for addresses created from a private IP range reserved for a VLAN attachment in an IPsec over Interconnect configuration. These addresses are regional resources.",
      "enum": [
       "DNS_RESOLVER",
       "GCE_ENDPOINT",
@@ -14619,7 +14619,7 @@
    "properties": {
     "service": {
      "type": "string",
-     "description": "Optional serving service.\n\nThe service name must be 1-63 characters long, and comply with RFC1035.\n\nExample value: \"default\", \"my-service\"."
+     "description": "Optional serving service.\n\nThe service name is case-sensitive and must be 1-63 characters long.\n\nExample value: \"default\", \"my-service\"."
     },
     "urlMask": {
      "type": "string",
@@ -14627,7 +14627,7 @@
     },
     "version": {
      "type": "string",
-     "description": "Optional serving version.\n\nThe version must be 1-63 characters long, and comply with RFC1035.\n\nExample value: \"v1\", \"v2\"."
+     "description": "Optional serving version.\n\nThe version name is case-sensitive and must be 1-100 characters long.\n\nExample value: \"v1\", \"v2\"."
     }
    }
   },

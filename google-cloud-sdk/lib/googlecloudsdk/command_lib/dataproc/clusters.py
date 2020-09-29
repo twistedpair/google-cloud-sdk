@@ -350,7 +350,6 @@ If you want to enable all scopes use the 'cloud-platform' scope.
         """)
   parser.add_argument(
       '--node-group',
-      hidden=True,
       help="""\
         The name of the sole-tenant node group to create the cluster on. Can be
         a short name ("node-group-name") or in the format

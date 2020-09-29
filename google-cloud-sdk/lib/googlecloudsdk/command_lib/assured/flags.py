@@ -57,10 +57,6 @@ def AddCreateWorkloadFlags(parser):
   parser.add_argument(
       '--location',
       required=True,
-      choices=[
-          'us-central1', 'us-east1', 'us-east4', 'us-west1', 'us-west2',
-          'us-west3', 'us-west4'
-      ],
       help=('The location of the new Assured Workloads environment. For a '
             'current list of supported LOCATION values, see '
             '[Assured Workloads locations]'

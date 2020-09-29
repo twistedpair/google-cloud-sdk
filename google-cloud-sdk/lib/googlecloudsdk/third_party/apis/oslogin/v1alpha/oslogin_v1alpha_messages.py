@@ -24,7 +24,7 @@ class Empty(_messages.Message):
 
 
 class ImportSshPublicKeyResponse(_messages.Message):
-  r"""A response message from importing an SSH public key.
+  r"""A response message for importing an SSH public key.
 
   Fields:
     details: Detailed information about import results.
@@ -44,7 +44,7 @@ class LoginProfile(_messages.Message):
       associated key object.
 
   Fields:
-    name: A unique user ID.
+    name: Required. A unique user ID.
     posixAccounts: The list of POSIX accounts associated with the user.
     sshPublicKeys: A map from SSH public key fingerprint to the associated key
       object.
@@ -88,7 +88,7 @@ class OsloginUsersGetLoginProfileRequest(_messages.Message):
       associated with the account.
 
   Fields:
-    name: The unique ID for the user in format `users/{user}`.
+    name: Required. The unique ID for the user in format `users/{user}`.
     operatingSystemType: The type of operating system associated with the
       account.
     projectId: The project ID of the Google Cloud Platform project.
@@ -136,9 +136,9 @@ class OsloginUsersProjectsDeleteRequest(_messages.Message):
       associated with the account.
 
   Fields:
-    name: A reference to the POSIX account to update. POSIX accounts are
-      identified by the project ID they are associated with. A reference to
-      the POSIX account is in format `users/{user}/projects/{project}`.
+    name: Required. A reference to the POSIX account to update. POSIX accounts
+      are identified by the project ID they are associated with. A reference
+      to the POSIX account is in format `users/{user}/projects/{project}`.
     operatingSystemType: The type of operating system associated with the
       account.
   """
@@ -164,9 +164,9 @@ class OsloginUsersSshPublicKeysDeleteRequest(_messages.Message):
   r"""A OsloginUsersSshPublicKeysDeleteRequest object.
 
   Fields:
-    name: The fingerprint of the public key to update. Public keys are
-      identified by their SHA-256 fingerprint. The fingerprint of the public
-      key is in format `users/{user}/sshPublicKeys/{fingerprint}`.
+    name: Required. The fingerprint of the public key to update. Public keys
+      are identified by their SHA-256 fingerprint. The fingerprint of the
+      public key is in format `users/{user}/sshPublicKeys/{fingerprint}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -176,9 +176,9 @@ class OsloginUsersSshPublicKeysGetRequest(_messages.Message):
   r"""A OsloginUsersSshPublicKeysGetRequest object.
 
   Fields:
-    name: The fingerprint of the public key to retrieve. Public keys are
-      identified by their SHA-256 fingerprint. The fingerprint of the public
-      key is in format `users/{user}/sshPublicKeys/{fingerprint}`.
+    name: Required. The fingerprint of the public key to retrieve. Public keys
+      are identified by their SHA-256 fingerprint. The fingerprint of the
+      public key is in format `users/{user}/sshPublicKeys/{fingerprint}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -188,9 +188,9 @@ class OsloginUsersSshPublicKeysPatchRequest(_messages.Message):
   r"""A OsloginUsersSshPublicKeysPatchRequest object.
 
   Fields:
-    name: The fingerprint of the public key to update. Public keys are
-      identified by their SHA-256 fingerprint. The fingerprint of the public
-      key is in format `users/{user}/sshPublicKeys/{fingerprint}`.
+    name: Required. The fingerprint of the public key to update. Public keys
+      are identified by their SHA-256 fingerprint. The fingerprint of the
+      public key is in format `users/{user}/sshPublicKeys/{fingerprint}`.
     sshPublicKey: A SshPublicKey resource to be passed as the request body.
     updateMask: Mask to control which fields get updated. Updates all if not
       present.

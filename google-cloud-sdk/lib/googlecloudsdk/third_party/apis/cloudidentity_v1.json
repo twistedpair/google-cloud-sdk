@@ -2642,6 +2642,10 @@
               "response": {
                 "$ref": "ModifyMembershipRolesResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-identity.groups",
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Modifies the `MembershipRole`s of a `Membership`."
             }
           }

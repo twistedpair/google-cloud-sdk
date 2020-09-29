@@ -2064,6 +2064,10 @@
         "identityProvider": {
           "description": "identity provider is the third party identity provider.",
           "type": "string"
+        },
+        "issuingCertificateAuthority": {
+          "description": "issuing_certificate_authority controls issuance of workload mTLS certificates. If non-empty, it must be a Private CA resource URL of the form \"\/\/privateca.googleapis.com\/projects\/{project}\/locations\/{location}\/certificateAuthorities\/{name}\". If non-empty, Workload Identity (standard or Hub) must be active (workload_pool must be non-empty).",
+          "type": "string"
         }
       }
     },

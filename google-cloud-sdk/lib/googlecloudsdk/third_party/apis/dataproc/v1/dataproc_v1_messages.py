@@ -1863,7 +1863,7 @@ class Expr(_messages.Message):
 
 class GceClusterConfig(_messages.Message):
   r"""Common config settings for resources of Compute Engine cluster
-  instances, applicable to all instances in the cluster. NEXT ID: 14
+  instances, applicable to all instances in the cluster.
 
   Enums:
     PrivateIpv6GoogleAccessValueValuesEnum: Optional. The type of IPv6 access
@@ -1944,14 +1944,16 @@ class GceClusterConfig(_messages.Message):
     r"""Optional. The type of IPv6 access for a cluster.
 
     Values:
-      PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED: Default value. Same as
-        INHERIT_FROM_SUBNETWORK
-      INHERIT_FROM_SUBNETWORK: Private access to or from Google Services
-        configuration inherited from subnetowrk configuration
+      PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED: If unspecified, Compute Engine
+        default behavior will apply, which is the same as
+        INHERIT_FROM_SUBNETWORK.
+      INHERIT_FROM_SUBNETWORK: Private access to and from Google Services
+        configuration inherited from the subnetwork configuration. This is the
+        default Compute Engine behavior.
       OUTBOUND: Enables outbound private IPv6 access to Google Services from
-        Dataproc cluster
+        the Dataproc cluster.
       BIDIRECTIONAL: Enables bidirectional private IPv6 access between Google
-        Services and Dataproc cluster
+        Services and the Dataproc cluster.
     """
     PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
     INHERIT_FROM_SUBNETWORK = 1
@@ -2929,7 +2931,7 @@ class NodeGroupAffinity(_messages.Message):
   r"""Node Group Affinity for clusters using sole-tenant node groups.
 
   Fields:
-    nodeGroupUri: Optional. The name of a single node group
+    nodeGroupUri: Required. The name of a single node group
       (https://cloud.google.com/compute/docs/reference/rest/v1/nodeGroups) a
       cluster will be created on.
   """

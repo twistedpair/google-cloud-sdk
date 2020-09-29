@@ -338,7 +338,7 @@ class PrivatecaV1beta1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update a Certificate.
+      r"""Update a Certificate. Currently, the only field you can update is the labels field.
 
       Args:
         request: (PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesPatchRequest) input message

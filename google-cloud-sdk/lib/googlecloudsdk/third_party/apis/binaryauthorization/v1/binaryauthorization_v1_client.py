@@ -269,6 +269,33 @@ class BinaryauthorizationV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ValidateAttestationOccurrence(self, request, global_params=None):
+      r"""Returns whether the given Attestation for the given image URI was signed by the given Attestor.
+
+      Args:
+        request: (BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateAttestationOccurrenceResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateAttestationOccurrence')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateAttestationOccurrence.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/attestors/{attestorsId}:validateAttestationOccurrence',
+        http_method='POST',
+        method_id='binaryauthorization.projects.attestors.validateAttestationOccurrence',
+        ordered_params=['attestor'],
+        path_params=['attestor'],
+        query_params=[],
+        relative_path='v1/{+attestor}:validateAttestationOccurrence',
+        request_field='validateAttestationOccurrenceRequest',
+        request_type_name='BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest',
+        response_type_name='ValidateAttestationOccurrenceResponse',
+        supports_download=False,
+    )
+
   class ProjectsPolicyService(base_api.BaseApiService):
     """Service class for the projects_policy resource."""
 

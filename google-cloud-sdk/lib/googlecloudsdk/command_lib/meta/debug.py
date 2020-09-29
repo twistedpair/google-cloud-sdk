@@ -27,7 +27,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import code
-import pdb
 # `site` initializes the interactive mode (defines `exit`/`quit`, sets up
 # copyright notice, etc.).
 import site  # pylint: disable=unused-import
@@ -80,12 +79,35 @@ def _PythonConsole():
 
 def _PdbConsole():
   """Run a console based on the built-in pdb."""
+  import pdb  # pylint: disable=g-import-not-at-top
   pdb.set_trace()
+
+
+def _IpdbConsole():
+  """Run a console based on IPython's ipdb."""
+  try:
+    import ipdb  # pylint: disable=g-import-not-at-top
+    ipdb.set_trace()
+  except ImportError:
+    log.error('Could not start the ipdb debugger. Please ensure that it is '
+              'installed, or try the default debugger with `--mode=python`.')
+
+
+def _PudbConsole():
+  """Run a console based on PuDB."""
+  try:
+    import pudb  # pylint: disable=g-import-not-at-top
+    pudb.set_trace()
+  except ImportError:
+    log.error('Could not start the PuDB debugger. Please ensure that it is '
+              'installed, or try the default debugger with `--mode=python`.')
 
 
 CONSOLES = {
     'python': _PythonConsole,
     'pdb': _PdbConsole,
+    'ipdb': _IpdbConsole,
+    'pudb': _PudbConsole,
 }
 
 

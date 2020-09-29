@@ -24,6 +24,7 @@ import functools
 import random
 
 from apitools.base.py import exceptions as api_exceptions
+from googlecloudsdk.api_lib.events import broker
 from googlecloudsdk.api_lib.events import cloud_run
 from googlecloudsdk.api_lib.events import configmap
 from googlecloudsdk.api_lib.events import custom_resource_definition
@@ -83,7 +84,7 @@ def Connect(conn_info):
     An AnthosEventsOperation instance.
   """
   # pylint: disable=protected-access
-  client = apis_internal._GetClientInstance(
+  v1beta1_client = apis_internal._GetClientInstance(
       _ANTHOS_EVENTS_CLIENT_NAME,
       _ANTHOS_EVENTS_CLIENT_VERSION,
 
@@ -94,19 +95,19 @@ def Connect(conn_info):
 
   # This client is used for working with core resources (e.g. Secrets) in
   # Cloud Run for Anthos.
-  core_client = apis_internal._GetClientInstance(
+  v1_client = apis_internal._GetClientInstance(
       _ANTHOS_EVENTS_CLIENT_NAME,
       _CORE_CLIENT_VERSION,
       http_client=conn_info.HttpClient())
 
-  operator_client = apis_internal._GetClientInstance(
+  v1alpha1_client = apis_internal._GetClientInstance(
       _ANTHOS_EVENTS_CLIENT_NAME,
       _OPERATOR_CLIENT_VERSION,
       http_client=conn_info.HttpClient())
 
   # pylint: enable=protected-access
-  return AnthosEventsOperations(client, conn_info.api_version, conn_info.region,
-                                core_client, client, operator_client)
+  return AnthosEventsOperations(conn_info.api_version, conn_info.region,
+                                v1_client, v1alpha1_client, v1beta1_client)
 
 
 # TODO(b/149793348): Remove this grace period
@@ -200,6 +201,10 @@ class TimeLockedUnfailingConditionPoller(serverless_operations.ConditionPoller):
                    self)._PossiblyFailStage(condition, message)
 
 
+class BrokerConditionPoller(TimeLockedUnfailingConditionPoller):
+  """A ConditionPoller for brokers."""
+
+
 class TriggerConditionPoller(TimeLockedUnfailingConditionPoller):
   """A ConditionPoller for triggers."""
 
@@ -215,33 +220,33 @@ class CloudRunConditionPoller(TimeLockedUnfailingConditionPoller):
 class AnthosEventsOperations(object):
   """Client used by Eventflow to communicate with the actual API."""
 
-  def __init__(self, client, api_version, region, core_client, crd_client,
-               operator_client):
+  def __init__(self, api_version, region, v1_client, v1alpha1_client,
+               v1beta1_client):
     """Inits EventflowOperations with given API clients.
 
     Args:
-      client: The API client for interacting with Kubernetes Cloud Run APIs.
       api_version: Version of resources & clients (v1alpha1, v1beta1)
       region: str, The region of the control plane if operating against
         hosted Cloud Run, else None.
-      core_client: The API client for queries against core resources if
-        operating against Cloud Run for Anthos, else None.
-      crd_client: The API client for querying for CRDs
-      operator_client: The API client for enabling the operator.
+      v1_client: The API client for interacting with Kubernetes Cloud Run APIs.
+      v1alpha1_client: The v1alpha1 API client
+      v1beta1_client: The v1beta1 API client
     """
 
     self._api_version = api_version
 
     # used for triggers and sources
-    self._client = client
+    self._client = v1beta1_client
 
-    self._operator_client = operator_client
+    # used for operator
+    self._operator_client = v1alpha1_client
 
-    # used for namespaces
-    self._core_client = core_client
+    # used for namespaces and secrets
+    self._core_client = v1_client
 
     # used for customresourcedefinition
-    self._crd_client = crd_client
+    self._crd_client = v1_client
+
     self._region = region
 
   def IsCluster(self):
@@ -271,7 +276,7 @@ class AnthosEventsOperations(object):
     return trigger.Trigger(response, self.messages)
 
   def CreateTrigger(self, trigger_ref, source_obj, event_type, trigger_filters,
-                    target_service, broker):
+                    target_service, broker_name):
     """Create a trigger that sends events to the target service.
 
     Args:
@@ -281,7 +286,7 @@ class AnthosEventsOperations(object):
       event_type: str, the event type the source will filter by.
       trigger_filters: collections.OrderedDict()
       target_service: str, name of the Cloud Run service to subscribe.
-      broker: str, name of the broker to act as a sink for the source.
+      broker_name: str, name of the broker to act as a sink for the source.
 
     Returns:
       trigger.Trigger of the created trigger.
@@ -299,7 +304,7 @@ class AnthosEventsOperations(object):
     trigger_obj.filter_attributes.update(trigger_filters)
 
     trigger_obj.subscriber = target_service
-    trigger_obj.broker = broker
+    trigger_obj.broker = broker_name
     request = self.messages.AnthoseventsNamespacesTriggersCreateRequest(
         trigger=trigger_obj.Message(),
         parent=trigger_ref.Parent().RelativeName())
@@ -385,7 +390,7 @@ class AnthosEventsOperations(object):
     return source.Source(response, self.messages, source_crd.source_kind)
 
   def CreateSource(self, source_obj, source_crd, owner_trigger, namespace_ref,
-                   broker, parameters):
+                   broker_name, parameters):
     """Create an source with the specified event type and owner trigger.
 
     Args:
@@ -395,7 +400,7 @@ class AnthosEventsOperations(object):
       owner_trigger: trigger.Trigger, trigger to associate as an owner of the
         source.
       namespace_ref: googlecloudsdk.core.resources.Resource, namespace resource.
-      broker: str, name of the broker to act as a sink.
+      broker_name: str, name of the broker to act as a sink.
       parameters: dict, additional parameters to set on the source spec.
 
     Returns:
@@ -410,7 +415,7 @@ class AnthosEventsOperations(object):
             name=owner_trigger.name,
             uid=owner_trigger.uid,
             controller=True))
-    source_obj.set_sink(broker, self._api_version)
+    source_obj.set_sink(broker_name, self._api_version)
     arg_utils.ParseStaticFieldsIntoMessage(source_obj.spec, parameters)
 
     request_method = self.SourceCreateMethod(source_crd)
@@ -475,54 +480,74 @@ class AnthosEventsOperations(object):
     # Only include CRDs for source kinds that are defined in the api.
     return [s for s in source_crds if hasattr(self.messages, s.source_kind)]
 
-  def UpdateNamespaceWithLabels(self, namespace_ref, labels):
-    """Updates an existing namespace with the labels provided.
+  def CreateBroker(self, namespace_name, broker_name):
+    """Creates a broker."""
 
-    If a label already exists, this will replace that label with the value
-    provided. This is akin to specifying --overwrite with kubectl.
+    messages = self._client.MESSAGES_MODULE
+
+    broker_obj = broker.Broker.New(self._client, namespace_name)
+    broker_obj.name = broker_name
+
+    # Validation webhook requires a spec to be provided
+    broker_obj.spec = messages.BrokerSpec()
+
+    namespace_full_name = 'namespaces/' + namespace_name
+
+    request = messages.AnthoseventsNamespacesBrokersCreateRequest(
+        broker=broker_obj.Message(), parent=namespace_full_name)
+    try:
+      response = self._client.namespaces_brokers.Create(request)
+    except api_exceptions.HttpConflictError:
+      raise exceptions.BrokerAlreadyExists(
+          'Broker [{}] already exists.'.format(broker_name))
+    return response
+
+  def PollBroker(self, broker_full_name, tracker):
+    """Wait for broker to be Ready == True."""
+    broker_getter = functools.partial(self.GetBroker, broker_full_name)
+    poller = BrokerConditionPoller(
+        broker_getter, tracker, grace_period=datetime.timedelta(seconds=300))
+    util.WaitForCondition(poller, exceptions.BrokerCreationError)
+
+  def GetBroker(self, broker_full_name):
+    """Returns the referenced broker.
 
     Args:
-      namespace_ref: googlecloudsdk.core.resources.Resource, namespace resource.
-        Note that this should be of the collection "run.api.v1.namespaces" and
-        *not* "run.namespaces".
-      labels: map[str, str] of label keys and values to patch.
-
-    Returns:
-      Namespace that was patched.
+      broker_full_name: name of broker to fetch in the form of
+        'namespaces/<namespace>/brokers/<broker>'
     """
-    messages = self._core_client.MESSAGES_MODULE
-    namespace = messages.Namespace()
-    arg_utils.SetFieldInMessage(namespace, _METADATA_LABELS_FIELD, labels)
-
-    old_additional_headers = {}
+    messages = self._client.MESSAGES_MODULE
+    request = messages.AnthoseventsNamespacesBrokersGetRequest(
+        name=broker_full_name)
     try:
-      # We need to specify a special content-type for k8s to accept our PATCH.
-      # However, this appears to only be settable at the client level, not at
-      # the request level. So we'll update the client for our request, and the
-      # set it back to the old value afterwards.
-      old_additional_headers = self._core_client.additional_http_headers
-      additional_headers = old_additional_headers.copy()
-      additional_headers['content-type'] = 'application/merge-patch+json'
-      self._core_client.additional_http_headers = additional_headers
-    except AttributeError:
-      # TODO(b/150229881): Remove this try/except block and below.
-      # The mocked test client does not have an additional_http_headers attr
-      # So we won't be able to test this part.
-      pass
-    with metrics.RecordDuration(metric_names.UPDATE_NAMESPACE):
-      try:
-        request = messages.AnthoseventsApiV1NamespacesPatchRequest(
-            name=namespace_ref.RelativeName(),
-            namespace=namespace,
-            updateMask=_METADATA_LABELS_FIELD)
-        response = self._core_client.api_v1_namespaces.Patch(request)
-      finally:
-        try:
-          self._core_client.additional_http_headers = old_additional_headers
-        except AttributeError:
-          # The mocked test client does not have an additional_http_headers attr
-          pass
-    return response
+      response = self._client.namespaces_brokers.Get(request)
+    except api_exceptions.HttpNotFoundError:
+      return None
+    return broker.Broker(response, messages)
+
+  def ListBrokers(self, namespace_full_name):
+    """Returns a list of existing brokers in the given namespace."""
+    messages = self._client.MESSAGES_MODULE
+    request = messages.AnthoseventsNamespacesBrokersListRequest(
+        parent=namespace_full_name)
+    response = self._client.namespaces_brokers.List(request)
+    return [broker.Broker(item, messages) for item in response.items]
+
+  def DeleteBroker(self, namespace_name, broker_name):
+    """Deletes the referenced broker."""
+
+    # represents namespaces/<namespace_name>/brokers/<broker_name>
+    broker_full_name = 'namespaces/{}/brokers/{}'.format(
+        namespace_name, broker_name)
+
+    messages = self._client.MESSAGES_MODULE
+    request = self.messages.AnthoseventsNamespacesBrokersDeleteRequest(
+        name=broker_full_name)
+    try:
+      self._client.namespaces_brokers.Delete(request)
+    except api_exceptions.HttpNotFoundError:
+      raise exceptions.BrokerNotFound(
+          'Broker [{}] not found.'.format(broker_name))
 
   def CreateOrReplaceSourcesSecret(self, namespace_ref):
     """Create or replace the namespaces' sources secret.

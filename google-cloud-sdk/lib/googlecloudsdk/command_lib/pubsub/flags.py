@@ -232,20 +232,18 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 
 def AddSubscriptionSettingsFlags(parser,
                                  is_update=False,
-                                 support_message_ordering=False,
                                  support_filtering=False):
   """Adds the flags for creating or updating a subscription.
 
   Args:
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
-    support_message_ordering: Whether or not flags for ordering should be added.
     support_filtering: Whether or not flags for filtering should be added.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(parser)
   AddMessageRetentionFlags(parser, is_update)
-  if support_message_ordering and not is_update:
+  if not is_update:
     parser.add_argument(
         '--enable-message-ordering',
         action='store_true',
@@ -335,15 +333,12 @@ def AddSubscriptionSettingsFlags(parser,
           assumed.""")
 
 
-def AddPublishMessageFlags(parser,
-                           add_deprecated=False,
-                           support_message_ordering=False):
+def AddPublishMessageFlags(parser, add_deprecated=False):
   """Adds the flags for building a PubSub message to the parser.
 
   Args:
     parser: The argparse parser.
     add_deprecated: Whether or not to add the deprecated flags.
-    support_message_ordering: Whether or not flags for ordering should be added.
   """
   message_help_text = """\
       The body of the message to publish to the given topic name.
@@ -366,12 +361,11 @@ def AddPublishMessageFlags(parser,
            'name="value". You can specify up to {0} attributes.'.format(
                MAX_ATTRIBUTES))
 
-  if support_message_ordering:
-    parser.add_argument(
-        '--ordering-key',
-        help="""The key for ordering delivery to subscribers. All messages with
-            the same ordering key are sent to subscribers in the order that
-            Pub/Sub receives them.""")
+  parser.add_argument(
+      '--ordering-key',
+      help="""The key for ordering delivery to subscribers. All messages with
+          the same ordering key are sent to subscribers in the order that
+          Pub/Sub receives them.""")
 
 
 def ParseMessageBody(args):

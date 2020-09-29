@@ -21,7 +21,6 @@ class AccessLevel(_messages.Message):
 
   Fields:
     basic: A `BasicLevel` composed of `Conditions`.
-    createTime: Output only. Time the `AccessLevel` was created in UTC.
     custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
@@ -30,16 +29,13 @@ class AccessLevel(_messages.Message):
       '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
       maximum length of the `short_name` component is 50 characters.
     title: Human readable title. Must be unique within the Policy.
-    updateTime: Output only. Time the `AccessLevel` was updated in UTC.
   """
 
   basic = _messages.MessageField('BasicLevel', 1)
-  createTime = _messages.StringField(2)
-  custom = _messages.MessageField('CustomLevel', 3)
-  description = _messages.StringField(4)
-  name = _messages.StringField(5)
-  title = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  custom = _messages.MessageField('CustomLevel', 2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  title = _messages.StringField(5)
 
 
 class AccessPolicy(_messages.Message):
@@ -50,7 +46,6 @@ class AccessPolicy(_messages.Message):
   the restrictions it specifies apply to all projects within an organization.
 
   Fields:
-    createTime: Output only. Time the `AccessPolicy` was created in UTC.
     etag: Output only. An opaque identifier for the current version of the
       `AccessPolicy`. This will always be a strongly validated etag, meaning
       that two Access Polices will be identical if and only if their etags are
@@ -61,15 +56,12 @@ class AccessPolicy(_messages.Message):
       Hierarchy. Currently immutable once created. Format:
       `organizations/{organization_id}`
     title: Required. Human readable title. Does not affect behavior.
-    updateTime: Output only. Time the `AccessPolicy` was updated in UTC.
   """
 
-  createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  title = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):
@@ -78,7 +70,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Mess
   Fields:
     accessLevel: A AccessLevel resource to be passed as the request body.
     parent: Required. Resource name for the access policy which owns this
-      Access Level.  Format: `accessPolicies/{policy_id}`
+      Access Level. Format: `accessPolicies/{policy_id}`
   """
 
   accessLevel = _messages.MessageField('AccessLevel', 1)
@@ -89,7 +81,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest(_messages.Mess
   r"""A AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest object.
 
   Fields:
-    name: Required. Resource name for the Access Level.  Format:
+    name: Required. Resource name for the Access Level. Format:
       `accessPolicies/{policy_id}/accessLevels/{access_level_id}`
   """
 
@@ -114,7 +106,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest(_messages.Message
       `CustomLevels` based on how they were created. If set to CEL, all Access
       Levels are returned as `CustomLevels`. In the CEL case, `BasicLevels`
       are translated to equivalent `CustomLevels`.
-    name: Required. Resource name for the Access Level.  Format:
+    name: Required. Resource name for the Access Level. Format:
       `accessPolicies/{policy_id}/accessLevels/{access_level_id}`
   """
 
@@ -127,9 +119,11 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest(_messages.Message
     equivalent `CustomLevels`.
 
     Values:
-      LEVEL_FORMAT_UNSPECIFIED: <no description>
-      AS_DEFINED: <no description>
-      CEL: <no description>
+      LEVEL_FORMAT_UNSPECIFIED: The format was not specified.
+      AS_DEFINED: Uses the format the resource was defined in. BasicLevels are
+        returned as BasicLevels, CustomLevels are returned as CustomLevels.
+      CEL: Use Cloud Common Expression Language when returning the resource.
+        Both BasicLevels and CustomLevels are returned as CustomLevels.
     """
     LEVEL_FORMAT_UNSPECIFIED = 0
     AS_DEFINED = 1
@@ -156,7 +150,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsListRequest(_messages.Messag
     pageToken: Next page token for the next batch of Access Level instances.
       Defaults to the first page of results.
     parent: Required. Resource name for the access policy to list Access
-      Levels from.  Format: `accessPolicies/{policy_id}`
+      Levels from. Format: `accessPolicies/{policy_id}`
   """
 
   class AccessLevelFormatValueValuesEnum(_messages.Enum):
@@ -165,9 +159,11 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsListRequest(_messages.Messag
     returning `AccessLevels` in the format they were defined.
 
     Values:
-      LEVEL_FORMAT_UNSPECIFIED: <no description>
-      AS_DEFINED: <no description>
-      CEL: <no description>
+      LEVEL_FORMAT_UNSPECIFIED: The format was not specified.
+      AS_DEFINED: Uses the format the resource was defined in. BasicLevels are
+        returned as BasicLevels, CustomLevels are returned as CustomLevels.
+      CEL: Use Cloud Common Expression Language when returning the resource.
+        Both BasicLevels and CustomLevels are returned as CustomLevels.
     """
     LEVEL_FORMAT_UNSPECIFIED = 0
     AS_DEFINED = 1
@@ -203,7 +199,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsReplaceAllRequest(_messages.
 
   Fields:
     parent: Required. Resource name for the access policy which owns these
-      Access Levels.  Format: `accessPolicies/{policy_id}`
+      Access Levels. Format: `accessPolicies/{policy_id}`
     replaceAccessLevelsRequest: A ReplaceAccessLevelsRequest resource to be
       passed as the request body.
   """
@@ -216,7 +212,7 @@ class AccesscontextmanagerAccessPoliciesDeleteRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesDeleteRequest object.
 
   Fields:
-    name: Required. Resource name for the access policy to delete.  Format
+    name: Required. Resource name for the access policy to delete. Format
       `accessPolicies/{policy_id}`
   """
 
@@ -227,7 +223,7 @@ class AccesscontextmanagerAccessPoliciesGetRequest(_messages.Message):
   r"""A AccesscontextmanagerAccessPoliciesGetRequest object.
 
   Fields:
-    name: Required. Resource name for the access policy to get.  Format
+    name: Required. Resource name for the access policy to get. Format
       `accessPolicies/{policy_id}`
   """
 
@@ -243,7 +239,7 @@ class AccesscontextmanagerAccessPoliciesListRequest(_messages.Message):
     pageToken: Next page token for the next batch of AccessPolicy instances.
       Defaults to the first page of results.
     parent: Required. Resource name for the container to list AccessPolicy
-      instances from.  Format: `organizations/{org_id}`
+      instances from. Format: `organizations/{org_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -275,7 +271,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersCommitRequest(_messages
     commitServicePerimetersRequest: A CommitServicePerimetersRequest resource
       to be passed as the request body.
     parent: Required. Resource name for the parent Access Policy which owns
-      all Service Perimeters in scope for the commit operation.  Format:
+      all Service Perimeters in scope for the commit operation. Format:
       `accessPolicies/{policy_id}`
   """
 
@@ -289,7 +285,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersCreateRequest(_messages
 
   Fields:
     parent: Required. Resource name for the access policy which owns this
-      Service Perimeter.  Format: `accessPolicies/{policy_id}`
+      Service Perimeter. Format: `accessPolicies/{policy_id}`
     servicePerimeter: A ServicePerimeter resource to be passed as the request
       body.
   """
@@ -303,7 +299,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersDeleteRequest(_messages
   object.
 
   Fields:
-    name: Required. Resource name for the Service Perimeter.  Format:
+    name: Required. Resource name for the Service Perimeter. Format:
       `accessPolicies/{policy_id}/servicePerimeters/{service_perimeter_id}`
   """
 
@@ -314,7 +310,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest(_messages.Me
   r"""A AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest object.
 
   Fields:
-    name: Required. Resource name for the Service Perimeter.  Format:
+    name: Required. Resource name for the Service Perimeter. Format:
       `accessPolicies/{policy_id}/servicePerimeters/{service_perimeters_id}`
   """
 
@@ -330,7 +326,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersListRequest(_messages.M
     pageToken: Next page token for the next batch of Service Perimeter
       instances. Defaults to the first page of results.
     parent: Required. Resource name for the access policy to list Service
-      Perimeters from.  Format: `accessPolicies/{policy_id}`
+      Perimeters from. Format: `accessPolicies/{policy_id}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -343,7 +339,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest(_messages.
   object.
 
   Fields:
-    name: Required. Resource name for the ServicePerimeter.  The `short_name`
+    name: Required. Resource name for the ServicePerimeter. The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
     servicePerimeter: A ServicePerimeter resource to be passed as the request
@@ -363,7 +359,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersReplaceAllRequest(_mess
 
   Fields:
     parent: Required. Resource name for the access policy which owns these
-      Service Perimeters.  Format: `accessPolicies/{policy_id}`
+      Service Perimeters. Format: `accessPolicies/{policy_id}`
     replaceServicePerimetersRequest: A ReplaceServicePerimetersRequest
       resource to be passed as the request body.
   """
@@ -419,6 +415,85 @@ class AccesscontextmanagerOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsCreateRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsCreateRequest
+  object.
+
+  Fields:
+    gcpUserAccessBinding: A GcpUserAccessBinding resource to be passed as the
+      request body.
+    parent: Required. Example: "organizations/256"
+  """
+
+  gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsDeleteRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Example:
+      "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsGetRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsGetRequest
+  object.
+
+  Fields:
+    name: Required. Example:
+      "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsListRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. Maximum number of items to return. The server may
+      return fewer items. If left blank, the server may return any number of
+      items.
+    pageToken: Optional. If left blank, returns the first page. To enumerate
+      all items, use the next_page_token from your previous list operation.
+    parent: Required. Example: "organizations/256"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messages.Message):
+  r"""A AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest
+  object.
+
+  Fields:
+    gcpUserAccessBinding: A GcpUserAccessBinding resource to be passed as the
+      request body.
+    name: Immutable. Assigned by the server during creation. The last segment
+      has an arbitrary length and has only URI unreserved characters (as
+      defined by [RFC 3986 Section
+      2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
+      specified by the client during creation. Example:
+      "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+    updateMask: Required. Only the fields specified in this mask are updated.
+      Because name and group_key cannot be changed, update_mask is required
+      and must always be: update_mask { paths: "access_levels" }
+  """
+
+  gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class BasicLevel(_messages.Message):
@@ -581,10 +656,15 @@ class DevicePolicy(_messages.Message):
     r"""AllowedDeviceManagementLevelsValueListEntryValuesEnum enum type.
 
     Values:
-      MANAGEMENT_UNSPECIFIED: <no description>
-      NONE: <no description>
-      BASIC: <no description>
-      COMPLETE: <no description>
+      MANAGEMENT_UNSPECIFIED: The device's management level is not specified
+        or not known.
+      NONE: The device is not managed.
+      BASIC: Basic management is enabled, which is generally limited to
+        monitoring and wiping the corporate account.
+      COMPLETE: Complete device management. This includes more thorough
+        monitoring and the ability to directly manage the device (such as
+        remote wiping). This can be enabled through the Android Enterprise
+        Platform.
     """
     MANAGEMENT_UNSPECIFIED = 0
     NONE = 1
@@ -595,10 +675,12 @@ class DevicePolicy(_messages.Message):
     r"""AllowedEncryptionStatusesValueListEntryValuesEnum enum type.
 
     Values:
-      ENCRYPTION_UNSPECIFIED: <no description>
-      ENCRYPTION_UNSUPPORTED: <no description>
-      UNENCRYPTED: <no description>
-      ENCRYPTED: <no description>
+      ENCRYPTION_UNSPECIFIED: The encryption status of the device is not
+        specified or not known.
+      ENCRYPTION_UNSUPPORTED: The device does not support encryption.
+      UNENCRYPTED: The device supports encryption, but is currently
+        unencrypted.
+      ENCRYPTED: The device is encrypted.
     """
     ENCRYPTION_UNSPECIFIED = 0
     ENCRYPTION_UNSUPPORTED = 1
@@ -616,9 +698,9 @@ class DevicePolicy(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -626,20 +708,20 @@ class Empty(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -657,6 +739,35 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GcpUserAccessBinding(_messages.Message):
+  r"""Restricts access to Cloud Console and Google Cloud APIs for a set of
+  users using Context-Aware Access.
+
+  Fields:
+    accessLevels: Required. Access level that a user must have to be granted
+      access. Only one access level is supported, not multiple. This repeated
+      field must have exactly one element. Example:
+      "accessPolicies/9522/accessLevels/device_trusted"
+    groupKey: Required. Immutable. Google Group id whose members are subject
+      to this binding's restrictions. See "id" in the [G Suite Directory API's
+      Groups resource] (https://developers.google.com/admin-
+      sdk/directory/v1/reference/groups#resource). If a group's email
+      address/alias is changed, this resource will continue to point at the
+      changed group. This field does not accept group email addresses or
+      aliases. Example: "01d520gv4vjcrht"
+    name: Immutable. Assigned by the server during creation. The last segment
+      has an arbitrary length and has only URI unreserved characters (as
+      defined by [RFC 3986 Section
+      2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
+      specified by the client during creation. Example:
+      "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+  """
+
+  accessLevels = _messages.StringField(1, repeated=True)
+  groupKey = _messages.StringField(2)
+  name = _messages.StringField(3)
 
 
 class ListAccessLevelsResponse(_messages.Message):
@@ -682,6 +793,19 @@ class ListAccessPoliciesResponse(_messages.Message):
   """
 
   accessPolicies = _messages.MessageField('AccessPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListGcpUserAccessBindingsResponse(_messages.Message):
+  r"""Response of ListGcpUserAccessBindings.
+
+  Fields:
+    gcpUserAccessBindings: GcpUserAccessBinding
+    nextPageToken: Token to get the next page of items. If blank, there are no
+      more items.
+  """
+
+  gcpUserAccessBindings = _messages.MessageField('GcpUserAccessBinding', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -716,17 +840,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -735,29 +859,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -783,12 +907,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -945,10 +1069,9 @@ class ServicePerimeter(_messages.Message):
       be empty.
 
   Fields:
-    createTime: Output only. Time the `ServicePerimeter` was created in UTC.
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
-    name: Required. Resource name for the ServicePerimeter.  The `short_name`
+    name: Required. Resource name for the ServicePerimeter. The `short_name`
       component must begin with a letter and only include alphanumeric and
       '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
     perimeterType: Perimeter type indicator. A single project is allowed to be
@@ -964,9 +1087,8 @@ class ServicePerimeter(_messages.Message):
       resources, restricted services and access levels that determine
       perimeter content and boundaries.
     title: Human readable title. Must be unique within the Policy.
-    updateTime: Output only. Time the `ServicePerimeter` was updated in UTC.
     useExplicitDryRunSpec: Use explicit dry run spec flag. Ordinarily, a dry-
-      run spec implicitly exists  for all Service Perimeters, and that spec is
+      run spec implicitly exists for all Service Perimeters, and that spec is
       identical to the status for those Service Perimeters. When this flag is
       set, it inhibits the generation of the implicit spec, thereby allowing
       the user to explicitly provide a configuration ("spec") to use in a dry-
@@ -992,15 +1114,13 @@ class ServicePerimeter(_messages.Message):
     PERIMETER_TYPE_REGULAR = 0
     PERIMETER_TYPE_BRIDGE = 1
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 4)
-  spec = _messages.MessageField('ServicePerimeterConfig', 5)
-  status = _messages.MessageField('ServicePerimeterConfig', 6)
-  title = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  useExplicitDryRunSpec = _messages.BooleanField(9)
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  perimeterType = _messages.EnumField('PerimeterTypeValueValuesEnum', 3)
+  spec = _messages.MessageField('ServicePerimeterConfig', 4)
+  status = _messages.MessageField('ServicePerimeterConfig', 5)
+  title = _messages.StringField(6)
+  useExplicitDryRunSpec = _messages.BooleanField(7)
 
 
 class ServicePerimeterConfig(_messages.Message):
@@ -1100,7 +1220,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1109,7 +1229,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1153,7 +1273,10 @@ class VpcAccessibleServices(_messages.Message):
 
   Fields:
     allowedServices: The list of APIs usable within the Service Perimeter.
-      Must be empty unless 'enable_restriction' is True.
+      Must be empty unless 'enable_restriction' is True. You can specify a
+      list of individual services, as well as include the 'RESTRICTED-
+      SERVICES' value, which automatically includes all of the services
+      protected by the perimeter.
     enableRestriction: Whether to restrict API calls within the Service
       Perimeter to the list of APIs specified in 'allowed_services'.
   """

@@ -254,10 +254,10 @@ class Certificate(_messages.Message):
       require X.509 or ASN.1.
     createTime: Output only. The time at which this Certificate was created.
     labels: Optional. Labels with user-defined metadata.
-    lifetime: Required. The desired lifetime of a certificate. Used to create
-      the "not_before_time" and "not_after_time" fields inside an X.509
-      certificate. Note that the lifetime may be truncated if it would extend
-      past the life of any certificate authority in the issuing chain.
+    lifetime: Required. Immutable. The desired lifetime of a certificate. Used
+      to create the "not_before_time" and "not_after_time" fields inside an
+      X.509 certificate. Note that the lifetime may be truncated if it would
+      extend past the life of any certificate authority in the issuing chain.
     name: Output only. The resource path for this Certificate in the format
       `projects/*/locations/*/certificateAuthorities/*/certificates/*`.
     pemCertificate: Output only. The pem-encoded, signed X.509 certificate.
@@ -880,19 +880,19 @@ class KeyVersionSpec(_messages.Message):
 
     Values:
       SIGN_HASH_ALGORITHM_UNSPECIFIED: Not specified.
-      RSA_PSS_2048_SHA_256: maps to
+      RSA_PSS_2048_SHA256: maps to
         CryptoKeyVersionAlgorithm.RSA_SIGN_PSS_2048_SHA256
-      RSA_PSS_3072_SHA_256: maps to CryptoKeyVersionAlgorithm.
+      RSA_PSS_3072_SHA256: maps to CryptoKeyVersionAlgorithm.
         RSA_SIGN_PSS_3072_SHA256
-      RSA_PSS_4096_SHA_256: maps to
+      RSA_PSS_4096_SHA256: maps to
         CryptoKeyVersionAlgorithm.RSA_SIGN_PSS_4096_SHA256
       EC_P256_SHA256: maps to CryptoKeyVersionAlgorithm.EC_SIGN_P256_SHA256
       EC_P384_SHA384: maps to CryptoKeyVersionAlgorithm.EC_SIGN_P384_SHA384
     """
     SIGN_HASH_ALGORITHM_UNSPECIFIED = 0
-    RSA_PSS_2048_SHA_256 = 1
-    RSA_PSS_3072_SHA_256 = 2
-    RSA_PSS_4096_SHA_256 = 3
+    RSA_PSS_2048_SHA256 = 1
+    RSA_PSS_3072_SHA256 = 2
+    RSA_PSS_4096_SHA256 = 3
     EC_P256_SHA256 = 4
     EC_P384_SHA384 = 5
 
@@ -1318,7 +1318,7 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesCertificateRevocationLists
     certificateRevocationList: A CertificateRevocationList resource to be
       passed as the request body.
     certificateRevocationListId: Required. It must be unique within a location
-      and match the regular expression `[a-zA-Z0-9-]{1,63}`
+      and match the regular expression `[a-zA-Z0-9_-]{1,63}`
     parent: Required. The resource name of the location and
       CertificateAuthority associated with the CertificateRevocationList, in
       the format `projects/*/locations/*/certificateAuthorities/*`.
@@ -1471,7 +1471,7 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesCertificatesCreateRequest(
   Fields:
     certificate: A Certificate resource to be passed as the request body.
     certificateId: Optional. It must be unique within a location and match the
-      regular expression `[a-zA-Z0-9-]{1,63}`. This field is required when
+      regular expression `[a-zA-Z0-9_-]{1,63}`. This field is required when
       using a CertificateAuthority in the Enterprise
       CertificateAuthority.Tier, but is optional and its value is ignored
       otherwise.
@@ -1587,7 +1587,7 @@ class PrivatecaProjectsLocationsCertificateAuthoritiesCreateRequest(_messages.Me
     certificateAuthority: A CertificateAuthority resource to be passed as the
       request body.
     certificateAuthorityId: Required. It must be unique within a location and
-      match the regular expression `[a-zA-Z0-9-]{1,63}`
+      match the regular expression `[a-zA-Z0-9_-]{1,63}`
     parent: Required. The resource name of the location associated with the
       CertificateAuthorities, in the format `projects/*/locations/*`.
     requestId: Optional. An ID to identify requests. Specify a unique request
@@ -1891,7 +1891,7 @@ class PrivatecaProjectsLocationsReusableConfigsCreateRequest(_messages.Message):
     reusableConfig: A ReusableConfig resource to be passed as the request
       body.
     reusableConfigId: Required. It must be unique within a location and match
-      the regular expression `[a-zA-Z0-9-]{1,63}`
+      the regular expression `[a-zA-Z0-9_-]{1,63}`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -2157,8 +2157,7 @@ class ReusableConfigValues(_messages.Message):
     keyUsage: Optional. Indicates the intended use for keys that correspond to
       a certificate.
     policyIds: Optional. Describes the X.509 certificate policy object
-      identifiers, per
-      https://tools.ietf.org/html/rfc5280#section-4.2.1.4rfc5280
+      identifiers, per https://tools.ietf.org/html/rfc5280#section-4.2.1.4.
   """
 
   additionalExtensions = _messages.MessageField('X509Extension', 1, repeated=True)

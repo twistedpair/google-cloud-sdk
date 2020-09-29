@@ -110,6 +110,58 @@
     }
   },
   "schemas": {
+    "GoogleCloudLocationListLocationsResponse": {
+      "id": "GoogleCloudLocationListLocationsResponse",
+      "description": "The response message for Locations.ListLocations.",
+      "type": "object",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudLocationLocation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudLocationLocation": {
+      "id": "GoogleCloudLocationLocation",
+      "description": "A resource that represents Google Cloud Platform location.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects\/example-project\/locations\/us-east1\"`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com\/region\": \"us-east1\"}",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "metadata": {
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
     "GoogleLongrunningListOperationsResponse": {
       "id": "GoogleLongrunningListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -348,7 +400,7 @@
       "type": "object",
       "properties": {
         "gcsDestination": {
-          "description": "The Google Cloud Storage location where the output is to be written to. In the given directory a new directory will be created with name: export-data-- where timestamp is in YYYYMMDDHHMMSS format. All export output will be written into that directory. Inside that directory, annotations with the same schema will be grouped into sub directories which are named with the corresponding annotations' schema title. Inside these sub directories, a schema.yaml will be created to describe the output format.",
+          "description": "The Google Cloud Storage location where the output is to be written to. In the given directory a new directory will be created with name: `export-data--` where timestamp is in YYYYMMDDHHMMSS format. All export output will be written into that directory. Inside that directory, annotations with the same schema will be grouped into sub directories which are named with the corresponding annotations' schema title. Inside these sub directories, a schema.yaml will be created to describe the output format.",
           "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
         },
         "annotationsFilter": {
@@ -1661,7 +1713,7 @@
       "type": "object",
       "properties": {
         "gcsDestination": {
-          "description": "The Google Cloud Storage location of the directory where the output is to be written to. In the given directory a new directory is created. Its name is \"prediction--\", where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. Inside of it files predictions_0001., predictions_0002., ..., predictions_N. are created where depends on chosen predictions_format, and N may equal 0001 and depends on the total number of successfully predicted instances. If the Model has both instance and prediction schemata defined then each such file contains predictions as per the predictions_format. If prediction for any instance failed (partially or completely), then an additional `errors_0001.`, `errors_0002.`,..., `errors_N.` files are created (N depends on total number of failed predictions). These files contain the failed instances, as per their schema, followed by an additional `error` field which as value has [`google.rpc.Status`](Status) containing only `code` and `message` fields.",
+          "description": "The Google Cloud Storage location of the directory where the output is to be written to. In the given directory a new directory is created. Its name is `prediction--`, where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. Inside of it files `predictions_0001.`, `predictions_0002.`, ..., `predictions_N.` are created where `` depends on chosen predictions_format, and N may equal 0001 and depends on the total number of successfully predicted instances. If the Model has both instance and prediction schemata defined then each such file contains predictions as per the predictions_format. If prediction for any instance failed (partially or completely), then an additional `errors_0001.`, `errors_0002.`,..., `errors_N.` files are created (N depends on total number of failed predictions). These files contain the failed instances, as per their schema, followed by an additional `error` field which as value has [`google.rpc.Status`](Status) containing only `code` and `message` fields.",
           "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
         },
         "bigqueryDestination": {
@@ -2572,7 +2624,7 @@
       "type": "object",
       "properties": {
         "bigqueryDestination": {
-          "description": "Required. The BigQuery location where the output is to be written to. In the given project a new dataset will be created with name `export_evaluated_dataitems__` where will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores), and timestamp will be in YYYY_MM_DDThh_mm_ss_sssZ \"based on ISO-8601\" format. In the dataset an `evaluated_dataitems` table will be created. If the Model has both instance and prediction schemata defined, the table will have columns that include: * Instances of the test data, as per the instance schema. * Ground truth of the test data, as per the prediction schema. * Modle predicted results on the instances. The column names are in the format of `predicted_`. field_name is the corresponding field of the prediction as per prediction schema. NOTE: For AutoML tabular Models, the ground truth is the target column. There is one prediction column, named `predicted_`.",
+          "description": "Required. The BigQuery location where the output is to be written to. In the given project a new dataset will be created with name `export_evaluated_dataitems__` where `` will be made BigQuery-dataset-name compatible (e.g. most special characters will become underscores), and timestamp will be in YYYY_MM_DDThh_mm_ss_sssZ \"based on ISO-8601\" format. In the dataset an `evaluated_dataitems` table will be created. If the Model has both instance and prediction schemata defined, the table will have columns that include: * Instances of the test data, as per the instance schema. * Ground truth of the test data, as per the prediction schema. * Modle predicted results on the instances. The column names are in the format of `predicted_`. field_name is the corresponding field of the prediction as per prediction schema. NOTE: For AutoML tabular Models, the ground truth is the target column. There is one prediction column, named `predicted_`.",
           "$ref": "GoogleCloudAiplatformV1alpha1BigQueryDestination"
         }
       }
@@ -4300,6 +4352,60 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadata",
+      "description": "The metadata of Datasets that contain time series data.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataInputConfig"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The column name of the time series identifier column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The column name of the time column that identifies time order in the time series.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataInputConfig": {
+      "id": "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataInputConfig",
+      "description": "The time series Dataset's data source. The Dataset doesn't store the data directly, but only pointer(s) to its data.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataGcsSource"
+        },
+        "bigquerySource": {
+          "$ref": "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataBigQuerySource"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataGcsSource": {
+      "id": "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataGcsSource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataBigQuerySource": {
+      "id": "GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataBigQuerySource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The URI of a BigQuery table.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiSchemaVideoActionRecognitionAnnotation": {
       "id": "GoogleCloudAiplatformUiSchemaVideoActionRecognitionAnnotation",
       "description": "Annotation details specific to video action recognition.",
@@ -5071,6 +5177,60 @@
           "description": "The maximum sentiment of sentiment Anntoation in this SavedQuery.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadata": {
+      "id": "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadata",
+      "description": "The metadata of Datasets that contain time series data.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "$ref": "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The column name of the time series identifier column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The column name of the time column that identifies time order in the time series.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig": {
+      "id": "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig",
+      "description": "The time series Dataset's data source. The Dataset doesn't store the data directly, but only pointer(s) to its data.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "$ref": "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource"
+        },
+        "bigquerySource": {
+          "$ref": "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySource"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource": {
+      "id": "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySource": {
+      "id": "GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The URI of a BigQuery table.",
+          "type": "string"
         }
       }
     },
@@ -6164,6 +6324,60 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadata",
+      "description": "The metadata of Datasets that contain time series data.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataInputConfig"
+        },
+        "timeSeriesIdentifierColumn": {
+          "description": "The column name of the time series identifier column that identifies the time series.",
+          "type": "string"
+        },
+        "timeColumn": {
+          "description": "The column name of the time column that identifies time order in the time series.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataInputConfig": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataInputConfig",
+      "description": "The time series Dataset's data source. The Dataset doesn't store the data directly, but only pointer(s) to its data.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataGcsSource"
+        },
+        "bigquerySource": {
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataBigQuerySource"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataGcsSource": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataGcsSource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI to a input file, only .csv file is supported.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataBigQuerySource": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataBigQuerySource",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "The URI of a BigQuery table.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1SchemaVideoActionRecognitionAnnotation": {
       "id": "GoogleCloudAiplatformV1beta1SchemaVideoActionRecognitionAnnotation",
       "description": "Annotation details specific to video action recognition.",
@@ -6323,6 +6537,75 @@
     "projects": {
       "resources": {
         "locations": {
+          "methods": {
+            "list": {
+              "id": "aiplatform.projects.locations.list",
+              "path": "v1alpha1/{+name}/locations",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The resource that owns the locations collection, if applicable.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The standard list filter.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The standard list page size.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The standard list page token.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudLocationListLocationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists information about the supported locations for this service."
+            },
+            "get": {
+              "id": "aiplatform.projects.locations.get",
+              "path": "v1alpha1/{+name}",
+              "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name for the location.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleCloudLocationLocation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets information about a location."
+            }
+          }
+          ,
           "resources": {
             "operations": {
               "methods": {

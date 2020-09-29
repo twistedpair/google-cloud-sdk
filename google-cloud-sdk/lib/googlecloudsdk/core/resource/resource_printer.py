@@ -174,18 +174,26 @@ _FORMATTERS = {
     'yaml': yaml_printer.YamlPrinter,
 }
 
+_HIDDEN_FORMATTERS = {}
 
-def RegisterFormatter(format_name, printer):
+
+def RegisterFormatter(format_name, printer, hidden=False):
   _FORMATTERS[format_name] = printer
+  if hidden:
+    _HIDDEN_FORMATTERS[format_name] = True
 
 
-def GetFormatRegistry():
+def GetFormatRegistry(hidden=False):
   """Returns the (format-name => Printer) format registry dictionary.
+
+  Args:
+    hidden: bool, if True, include the hidden formatters.
 
   Returns:
     The (format-name => Printer) format registry dictionary.
   """
-  return _FORMATTERS
+  return {format_name: _FORMATTERS[format_name] for format_name in
+          _FORMATTERS if hidden or format_name not in _HIDDEN_FORMATTERS}
 
 
 def SupportedFormats():

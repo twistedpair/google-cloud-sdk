@@ -473,13 +473,6 @@
           "$ref": "Environment"
         }
       }
-    },
-    "UpdateEnvironmentMetadata": {
-      "id": "UpdateEnvironmentMetadata",
-      "description": "Message included in the metadata field of operations returned from UpdateEnvironment.",
-      "type": "object",
-      "properties": {
-      }
     }
   },
   "resources": {

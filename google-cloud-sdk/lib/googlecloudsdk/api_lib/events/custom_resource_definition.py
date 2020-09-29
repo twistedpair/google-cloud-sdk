@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.run import k8s_object
 
 # Identify parameters that are used to set secret values
 _SECRET_PROPERTY_PATTERN = '^.*[sS]ecret$'
+_SOURCE_CUSTOM_RESOURCE_DEFINITION_VERSION = 'v1'
 
 
 def _IsSecretProperty(property_name, property_type):
@@ -68,7 +69,7 @@ class EventType(object):
 
   @property
   def crd(self):
-    """Returns the source crd."""
+    """Returns a SourceCustomResourceDefinition."""
     return self._crd
 
   @property
@@ -90,7 +91,12 @@ class EventType(object):
 
 
 class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
-  """Wraps an Source CRD message, making fields more convenient."""
+  """Wraps an Source CRD message, making fields more convenient.
+
+  Defined at
+  https://github.com/google/knative-gcp/blob/master/config/core/resources/cloudpubsubsource.yaml
+  self._m is a CustomResourceDefinition
+  """
 
   API_CATEGORY = 'apiextensions.k8s.io'
   KIND = 'CustomResourceDefinition'
@@ -115,11 +121,34 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
 
   @property
   def source_version(self):
-    return self._m.spec.version
+    try:
+      # Only exists in custom resource definition version v1beta1
+      return self._m.spec.version
+    except AttributeError:
+      return _SOURCE_CUSTOM_RESOURCE_DEFINITION_VERSION
 
   @property
   def schema(self):
-    return JsonSchemaPropsWrapper(self._m.spec.validation.openAPIV3Schema)
+    """Returns the SourceCustomResourceDefinition schema.
+
+    Returns:
+      k8s_object.ListAsReadOnlyDictionaryWrapper
+    """
+    # CustomResourceDefinition validation only exists in v1alpha1 and v1beta1
+    # Under v1, validation now exists under spec.versions
+    if self.source_version == 'v1alpha1' or self.source_version == 'v1beta1':
+      return JsonSchemaPropsWrapper(self._m.spec.validation.openAPIV3Schema)
+
+    # While the list CustomResourceDefinition is v1, the source itself could be
+    # either v1 or v1beta1, therefore check for both possibilities that exist
+    # under CustomResourceDefinitionVersions
+    for crdv in self._m.spec.versions:
+      if crdv.name == _SOURCE_CUSTOM_RESOURCE_DEFINITION_VERSION:
+        return JsonSchemaPropsWrapper(crdv.schema.openAPIV3Schema)
+    for crdv in self._m.spec.versions:
+      if crdv.name == 'v1beta1':
+        return JsonSchemaPropsWrapper(crdv.schema.openAPIV3Schema)
+    raise AttributeError('CustomResourceDefinitionVersion not found')
 
   @property
   def event_types(self):

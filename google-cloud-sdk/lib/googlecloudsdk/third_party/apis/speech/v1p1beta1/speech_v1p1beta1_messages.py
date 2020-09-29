@@ -24,6 +24,34 @@ class ClassItem(_messages.Message):
   value = _messages.StringField(1)
 
 
+class CreateCustomClassRequest(_messages.Message):
+  r"""Message sent by the client for the `CreateCustomClass` method.
+
+  Fields:
+    customClass: Required. The custom class to create.
+    customClassId: The ID to use for the custom class, which will become the
+      final component of the custom class' resource name. This value should be
+      4-63 characters, and valid characters are /a-z-/.
+  """
+
+  customClass = _messages.MessageField('CustomClass', 1)
+  customClassId = _messages.StringField(2)
+
+
+class CreatePhraseSetRequest(_messages.Message):
+  r"""Message sent by the client for the `CreatePhraseSet` method.
+
+  Fields:
+    phraseSet: Required. The phrase set to create.
+    phraseSetId: The ID to use for the phrase set, which will become the final
+      component of the phrase set's resource name. This value should be 4-63
+      characters, and valid characters are /a-z-/.
+  """
+
+  phraseSet = _messages.MessageField('PhraseSet', 1)
+  phraseSetId = _messages.StringField(2)
+
+
 class CustomClass(_messages.Message):
   r"""A set of words or phrases that represents a common concept likely to
   appear in your audio, for example a list of passenger ship names.
@@ -1144,18 +1172,15 @@ class SpeechProjectsLocationsCustomClassesCreateRequest(_messages.Message):
   r"""A SpeechProjectsLocationsCustomClassesCreateRequest object.
 
   Fields:
-    customClass: A CustomClass resource to be passed as the request body.
-    customClassId: The ID to use for the custom class, which will become the
-      final component of the custom class' resource name. This value should be
-      4-63 characters, and valid characters are /a-z-/.
+    createCustomClassRequest: A CreateCustomClassRequest resource to be passed
+      as the request body.
     parent: Required. The parent resource where this custom class will be
       created. Format:
       {api_version}/projects/{project}/locations/{location}/customClasses
   """
 
-  customClass = _messages.MessageField('CustomClass', 1)
-  customClassId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  createCustomClassRequest = _messages.MessageField('CreateCustomClassRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class SpeechProjectsLocationsCustomClassesDeleteRequest(_messages.Message):
@@ -1422,18 +1447,15 @@ class SpeechProjectsLocationsPhraseSetsCreateRequest(_messages.Message):
   r"""A SpeechProjectsLocationsPhraseSetsCreateRequest object.
 
   Fields:
+    createPhraseSetRequest: A CreatePhraseSetRequest resource to be passed as
+      the request body.
     parent: Required. The parent resource where this phrase set will be
       created. Format:
       {api_version}/projects/{project}/locations/{location}/phraseSets
-    phraseSet: A PhraseSet resource to be passed as the request body.
-    phraseSetId: The ID to use for the phrase set, which will become the final
-      component of the phrase set's resource name. This value should be 4-63
-      characters, and valid characters are /a-z-/.
   """
 
-  parent = _messages.StringField(1, required=True)
-  phraseSet = _messages.MessageField('PhraseSet', 2)
-  phraseSetId = _messages.StringField(3)
+  createPhraseSetRequest = _messages.MessageField('CreatePhraseSetRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class SpeechProjectsLocationsPhraseSetsDeleteRequest(_messages.Message):

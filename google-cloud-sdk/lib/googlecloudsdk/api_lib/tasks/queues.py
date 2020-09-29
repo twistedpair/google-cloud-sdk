@@ -165,14 +165,19 @@ class BetaQueues(BaseQueues):
             retry_config=None,
             rate_limits=None,
             app_engine_routing_override=None,
-            stackdriver_logging_config=None):
+            stackdriver_logging_config=None,
+            queue_type=None):
     """Prepares and sends a Patch request for modifying a queue."""
+    # The following block is necessary to modify pull queue attributes without
+    # explicitly setting type to 'pull' during CLI invocation.
+    if queue_type and queue_type != queue_type.PULL:
+      queue_type = None
 
     if not any([retry_config, rate_limits, app_engine_routing_override,
                 stackdriver_logging_config]):
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
 
-    queue = self.messages.Queue(name=queue_ref.RelativeName())
+    queue = self.messages.Queue(name=queue_ref.RelativeName(), type=queue_type)
 
     if retry_config is not None:
       queue.retryConfig = retry_config

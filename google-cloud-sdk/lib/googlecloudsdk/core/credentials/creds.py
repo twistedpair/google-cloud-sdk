@@ -860,6 +860,12 @@ def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
   return CredentialStoreWithCache(credential_store, access_token_cache)
 
 
+def _QuotaProjectIsCurrentProject(quota_project):
+  return quota_project in (
+      properties.VALUES.billing.CURRENT_PROJECT,
+      properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK)
+
+
 def GetQuotaProject(credentials, force_resource_quota):
   """Gets the value to use for the X-Goog-User-Project header.
 
@@ -873,13 +879,16 @@ def GetQuotaProject(credentials, force_resource_quota):
     str, The project id to send in the header or None to not populate the
     header.
   """
-  if not IsUserAccountCredentials(credentials):
+  if credentials is None:
     return None
 
   quota_project = properties.VALUES.billing.quota_project.Get()
-  if quota_project in (properties.VALUES.billing.CURRENT_PROJECT,
-                       properties.VALUES.billing.CURRENT_PROJECT_WITH_FALLBACK):
-    return properties.VALUES.core.project.Get()
+  if _QuotaProjectIsCurrentProject(quota_project):
+    if IsUserAccountCredentials(credentials):
+      return properties.VALUES.core.project.Get()
+    else:
+      # for service account, don't return if flag or property are not set
+      return None
   elif quota_project == properties.VALUES.billing.LEGACY:
     if force_resource_quota:
       return properties.VALUES.core.project.Get()

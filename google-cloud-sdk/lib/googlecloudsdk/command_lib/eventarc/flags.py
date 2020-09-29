@@ -34,8 +34,9 @@ def LocationAttributeConfig():
       fallthroughs=[
           deps.PropertyFallthrough(properties.FromString('eventarc/location'))
       ],
-      help_text='The location for the Eventarc resource. Alternatively, set '
-      'the [eventarc/location] property.')
+      help_text="The location for the Eventarc {resource}, which should be "
+      "either ``global'' or one of the supported regions. Alternatively, set "
+      "the [eventarc/location] property.")
 
 
 def TriggerAttributeConfig():

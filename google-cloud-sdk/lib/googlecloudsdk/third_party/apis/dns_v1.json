@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20200911",
+ "revision": "20200918",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -804,6 +804,9 @@
    "id": "Quota",
    "type": "object",
    "properties": {
+    "allowManualDnssec": {
+     "type": "boolean"
+    },
     "dnsKeysPerManagedZone": {
      "type": "integer",
      "format": "int32"

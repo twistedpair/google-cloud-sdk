@@ -625,6 +625,33 @@ class ContaineranalysisV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetVulnerabilitySummary(self, request, global_params=None):
+      r"""Gets a summary of the number and severity of occurrences.
+
+      Args:
+        request: (ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VulnerabilityOccurrencesSummary) The response message.
+      """
+      config = self.GetMethodConfig('GetVulnerabilitySummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVulnerabilitySummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/occurrences:vulnerabilitySummary',
+        http_method='GET',
+        method_id='containeranalysis.projects.occurrences.getVulnerabilitySummary',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter'],
+        relative_path='v1/{+parent}/occurrences:vulnerabilitySummary',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest',
+        response_type_name='VulnerabilityOccurrencesSummary',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists occurrences for the specified project.
 

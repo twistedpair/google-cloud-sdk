@@ -365,8 +365,13 @@ class ListLogEntriesRequest(_messages.Message):
     resourceNames: Required. Names of one or more parent resources from which
       to retrieve log entries: "projects/[PROJECT_ID]"
       "organizations/[ORGANIZATION_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]"
-      "folders/[FOLDER_ID]" Projects listed in the project_ids field are added
-      to this list.
+      "folders/[FOLDER_ID]" May alternatively be one or more views projects/PR
+      OJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID organizat
+      ion/ORGANIZATION_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_I
+      D billingAccounts/BILLING_ACCOUNT_ID/locations/LOCATION_ID/buckets/BUCKE
+      T_ID/views/VIEW_ID folders/FOLDER_ID/locations/LOCATION_ID/buckets/BUCKE
+      T_ID/views/VIEW_IDProjects listed in the project_ids field are added to
+      this list.
   """
 
   filter = _messages.StringField(1)
@@ -1220,7 +1225,7 @@ class LogSink(_messages.Message):
 
 
 class LogView(_messages.Message):
-  r"""Describes a view over logs in a bucket
+  r"""Describes a view over logs in a bucket.
 
   Fields:
     createTime: Output only. The creation timestamp of the view.

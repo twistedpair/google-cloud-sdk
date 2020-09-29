@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.cloudkms import iam as kms_iam
 from googlecloudsdk.api_lib.util import apis
@@ -95,6 +96,17 @@ def DeletePackage(client, messages, package):
   return client.projects_locations_repositories_packages.Delete(delete_pkg_req)
 
 
+def GetVersion(client, messages, version):
+  """Gets a version by its name."""
+  client = GetClient()
+  messages = GetMessages()
+  get_ver_req = (
+      messages
+      .ArtifactregistryProjectsLocationsRepositoriesPackagesTagsGetRequest(
+          name=version))
+  return client.projects_locations_repositories_packages_tags.Get(get_ver_req)
+
+
 def GetVersionFromTag(client, messages, tag):
   """Gets a version name by a tag name."""
   get_tag_req = messages.ArtifactregistryProjectsLocationsRepositoriesPackagesTagsGetRequest(
@@ -107,73 +119,71 @@ def GetVersionFromTag(client, messages, tag):
   return get_tag_res.version.split("/")[-1]
 
 
-def ListTags(client,
-             messages,
-             package,
-             page_size=None,
-             page_token=None,
-             res=None):
+def ListTags(client, messages, package, page_size=None):
   """Lists all tags under a package with the given package name."""
-  if not res:
-    res = []
   list_tags_req = messages.ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(
-      parent=package, pageSize=page_size, pageToken=page_token)
-  list_tags_res = client.projects_locations_repositories_packages_tags.List(
-      list_tags_req)
-  res.extend(list_tags_res.tags)
-  if list_tags_res.nextPageToken:
-    ListTags(client, messages, package, page_size, list_tags_res.nextPageToken,
-             res)
-  return res
+      parent=package)
+  return list(
+      list_pager.YieldFromList(
+          client.projects_locations_repositories_packages_tags,
+          list_tags_req,
+          batch_size=page_size,
+          batch_size_attribute="pageSize",
+          field="tags"))
 
 
-def ListVersionTags(client, messages, package, version):
+def ListVersionTags(client, messages, package, version, page_size=None):
   """Lists tags associated with the given version."""
   list_tags_req = messages.ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(
       parent=package, filter="version=\"{}\"".format(version))
-  list_tags_res = client.projects_locations_repositories_packages_tags.List(
-      list_tags_req)
-  return list_tags_res.tags
+  return list(
+      list_pager.YieldFromList(
+          client.projects_locations_repositories_packages_tags,
+          list_tags_req,
+          batch_size=page_size,
+          batch_size_attribute="pageSize",
+          field="tags"))
 
 
-def ListPackages(client, messages, repo):
+def ListPackages(client, messages, repo, page_size=None):
   """Lists all packages under a repository."""
   list_pkgs_req = messages.ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(
       parent=repo)
-  list_pkgs_res = client.projects_locations_repositories_packages.List(
-      list_pkgs_req)
-  return list_pkgs_res.packages
+  return list(
+      list_pager.YieldFromList(
+          client.projects_locations_repositories_packages,
+          list_pkgs_req,
+          batch_size=page_size,
+          batch_size_attribute="pageSize",
+          field="packages"))
 
 
-def ListVersions(client,
-                 messages,
-                 pkg,
-                 version_view,
-                 page_size=None,
-                 page_token=None,
-                 res=None):
+def ListVersions(client, messages, pkg, version_view, page_size=None):
   """Lists all versions under a package."""
-  if not res:
-    res = []
   list_vers_req = messages.ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(
-      parent=pkg, view=version_view, pageSize=page_size, pageToken=page_token)
-  list_vers_res = client.projects_locations_repositories_packages_versions.List(
-      list_vers_req)
-  res.extend(list_vers_res.versions)
-  if list_vers_res.nextPageToken:
-    ListVersions(client, messages, pkg, version_view, page_size,
-                 list_vers_res.nextPageToken, res)
-  return res
+      parent=pkg, view=version_view)
+  return list(
+      list_pager.YieldFromList(
+          client.projects_locations_repositories_packages_versions,
+          list_vers_req,
+          batch_size=page_size,
+          batch_size_attribute="pageSize",
+          field="versions"))
 
 
-def ListRepositories(project):
+def ListRepositories(project, page_size=None):
   """Lists all repositories under a project."""
   client = GetClient()
   messages = GetMessages()
   list_repos_req = messages.ArtifactregistryProjectsLocationsRepositoriesListRequest(
       parent=project)
-  list_repos_res = client.projects_locations_repositories.List(list_repos_req)
-  return list_repos_res.repositories
+  return list(
+      list_pager.YieldFromList(
+          client.projects_locations_repositories,
+          list_repos_req,
+          batch_size=page_size,
+          batch_size_attribute="pageSize",
+          field="repositories"))
 
 
 def GetRepository(repo):
@@ -186,19 +196,30 @@ def GetRepository(repo):
   return get_repo_res
 
 
-def ListLocations(project_id, page_size=None, page_token=None, res=None):
+def GetPackage(package):
+  """Gets the package given its name."""
+  client = GetClient()
+  messages = GetMessages()
+  get_package_req = messages.ArtifactregistryProjectsLocationsRepositoriesPackagesGetRequest(
+      name=package)
+  get_package_res = client.projects_locations_repositories_packages.Get(
+      get_package_req)
+  return get_package_res
+
+
+def ListLocations(project_id, page_size=None):
   """Lists all locations for a given project."""
-  if not res:
-    res = []
   client = GetClient()
   messages = GetMessages()
   list_locs_req = messages.ArtifactregistryProjectsLocationsListRequest(
-      name="projects/" + project_id, pageSize=page_size, pageToken=page_token)
-  list_locs_res = client.projects_locations.List(list_locs_req)
-  res.extend(list_locs_res.locations)
-  if list_locs_res.nextPageToken:
-    ListLocations(project_id, page_size, list_locs_res.nextPageToken, res)
-  return sorted([loc.locationId for loc in res])
+      name="projects/" + project_id)
+  locations = list_pager.YieldFromList(
+      client.projects_locations,
+      list_locs_req,
+      batch_size=page_size,
+      batch_size_attribute="pageSize",
+      field="locations")
+  return sorted([loc.locationId for loc in locations])
 
 
 def TestStorageIAMPermission(bucket, project):

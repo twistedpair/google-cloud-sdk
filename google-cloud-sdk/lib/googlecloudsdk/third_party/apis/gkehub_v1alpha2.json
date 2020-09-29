@@ -391,7 +391,7 @@
           }
         },
         "resourceOptions": {
-          "description": "Optional. The options for generat Kubernetes resources other than the default value supplied by the Hub API. Empty or unset fields will use the default value.",
+          "description": "Optional. The options to generate Kubernetes resources other than the default value supplied by the Hub API. Empty or unset fields will use the default value.",
           "$ref": "ResourceOptions"
         }
       }

@@ -113,12 +113,7 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
   if repo_format == messages.Repository.FormatValueValuesEnum.APT:
     log.status.Print("Note: APT package support is in Alpha.\n")
 
-  repo = messages.Repository(
-      name=repo_ref.RelativeName(),
-      description=repo_args.description,
-      format=repo_format,
-      kmsKeyName=repo_args.kms_key)
-  request.repository = repo
+  request.repository.name = repo_ref.RelativeName()
   request.repositoryId = repo_ref.repositoriesId
   return request
 
@@ -312,9 +307,12 @@ def ListRepositories(args):
 
   pool_size = len(loc_paths) if loc_paths else 1
   pool = parallel.GetPool(pool_size)
+  page_size = args.page_size
   try:
     pool.Start()
-    results = pool.Map(ar_requests.ListRepositories, loc_paths)
+    results = pool.Map(
+        lambda x: ar_requests.ListRepositories(x, page_size=page_size),
+        loc_paths)
   except parallel.MultiError as e:
     error_set = set(err.content for err in e.errors)
     msg = "\n".join(error_set)

@@ -33,3 +33,7 @@ class MapObject(object):
     if name in ('__iter__', 'next', '__next__', 'items'):
       raise AttributeError
     return self._props.get(name)
+
+  @property
+  def props(self):
+    return self._props

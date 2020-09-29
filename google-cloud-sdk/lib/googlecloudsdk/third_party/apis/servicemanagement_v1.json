@@ -2595,17 +2595,6 @@
         }
       }
     },
-    "DisableServiceRequest": {
-      "id": "DisableServiceRequest",
-      "description": "Request message for DisableService method.",
-      "type": "object",
-      "properties": {
-        "consumerId": {
-          "description": "Required. The identity of consumer resource which service disablement will be applied to. The Google Service Management implementation accepts the following forms: - \"project:\" Note: this is made compatible with google.api.servicecontrol.v1.Operation.consumer_id.",
-          "type": "string"
-        }
-      }
-    },
     "QueryUserAccessResponse": {
       "id": "QueryUserAccessResponse",
       "description": "Request message for QueryUserAccess method.",
@@ -3356,34 +3345,6 @@
             "https://www.googleapis.com/auth/service.management"
           ],
           "description": "Enables a service for a project, so it can be used for the project. See [Cloud Auth Guide](https:\/\/cloud.google.com\/docs\/authentication) for more information. Operation"
-        },
-        "disable": {
-          "id": "servicemanagement.services.disable",
-          "path": "v1/services/{serviceName}:disable",
-          "flatPath": "v1/services/{serviceName}:disable",
-          "httpMethod": "POST",
-          "parameters": {
-            "serviceName": {
-              "description": "Required. Name of the service to disable. Specifying an unknown service name will cause the request to fail.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "serviceName"
-          ],
-          "request": {
-            "$ref": "DisableServiceRequest"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
-          ],
-          "description": "Disables a service for a project, so it can no longer be be used for the project. It prevents accidental usage that may cause unexpected billing charges or security leaks. Operation"
         },
         "setIamPolicy": {
           "id": "servicemanagement.services.setIamPolicy",

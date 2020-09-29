@@ -103,6 +103,14 @@ def ContentTypeTranslation(content_type):
   return 'CONTENT_TYPE_UNSPECIFIED'
 
 
+def PartitionKeyTranslation(partition_key):
+  if partition_key == 'read-time':
+    return 'READ_TIME'
+  if partition_key == 'request-time':
+    return 'REQUEST_TIME'
+  return 'PARTITION_KEY_UNSPECIFIED'
+
+
 def MakeGetAssetsHistoryHttpRequests(args, api_version=DEFAULT_API_VERSION):
   """Manually make the get assets history request."""
   http_client = http.Http()
@@ -318,6 +326,10 @@ class AssetExportClient(object):
     content_type = getattr(
         self.message_module.ExportAssetsRequest.ContentTypeValueValuesEnum,
         content_type)
+    partition_key = PartitionKeyTranslation(args.partition_key)
+    partition_key = getattr(
+        self.message_module.PartitionSpec.PartitionKeyValueValuesEnum,
+        partition_key)
     if args.output_path or args.output_path_prefix:
       output_config = self.message_module.OutputConfig(
           gcsDestination=self.message_module.GcsDestination(
@@ -329,7 +341,10 @@ class AssetExportClient(object):
               dataset='projects/' + source_ref.projectId + '/datasets/' +
               source_ref.datasetId,
               table=source_ref.tableId,
-              force=args.force_))
+              force=args.force_,
+              partitionSpec=self.message_module.PartitionSpec(
+                  partitionKey=partition_key),
+              separateTablesPerAssetType=args.per_type_))
     snapshot_time = None
     if args.snapshot_time:
       snapshot_time = times.FormatDateTime(args.snapshot_time)

@@ -856,8 +856,8 @@ class TranscoderProjectsLocationsJobTemplatesCreateRequest(_messages.Message):
     jobTemplate: A JobTemplate resource to be passed as the request body.
     jobTemplateId: Required. The ID to use for the job template, which will
       become the final component of the job template's resource name. This
-      value should be 4-63 characters, and valid characters are
-      `/[a-zA-Z0-9_-_]/`.
+      value should be 4-63 characters, and valid characters must match the
+      regular expression `a-zA-Z*`.
     parent: Required. The parent location to create this job template. Format:
       `projects/{project}/locations/{location}`
   """

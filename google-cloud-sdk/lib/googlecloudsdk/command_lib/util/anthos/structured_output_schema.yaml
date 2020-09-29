@@ -14,6 +14,7 @@
 $schema: "http://json-schema.org/draft-07/schema#"
 title: OutputMessage
 type: object
+additionalProperties: false
 description: |-
   The specification for a structured output message. Binaries that want to have
   more control over how their output is rendered in gcloud should wrap all
@@ -32,10 +33,15 @@ definitions:
       context:
         type: string
         description: Any stack-trace or additional error context.
-required:
-- version
-- timestamp
-- body
+oneOf:
+# version, timestamp, body required & error_details NOT specified.
+- required: [version, timestamp, body]
+  not:
+    required: [error_details]
+# OR version, timestamp, error_details required & body, resource_body NOT specfied.
+- required: [version, timestamp, error_details]
+  not:
+    required: [body, resource_body]
 properties:
   version:
     type: string
@@ -54,7 +60,9 @@ properties:
       assumed to be resource content otherwise it will be assumed to be
       plain text.
   resource_body:
-    type: string
+    oneOf:
+    - {type: object}
+    - {type: array}
     description: |-
       Structured resource/resource list content e.g. YAML or JSON serializable
       content representing some resource or set of resources.

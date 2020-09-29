@@ -916,7 +916,7 @@ class KubernetesResource(_messages.Message):
       but not in standalone Get/ListMembership requests. To get the resource
       manifest after the initial registration, the caller could make an
       UpdateMembership call with an empty field mask.
-    resourceOptions: Optional. The options for generat Kubernetes resources
+    resourceOptions: Optional. The options to generate Kubernetes resources
       other than the default value supplied by the Hub API. Empty or unset
       fields will use the default value.
   """

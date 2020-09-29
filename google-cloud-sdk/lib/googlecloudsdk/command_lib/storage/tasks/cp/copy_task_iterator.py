@@ -34,7 +34,7 @@ class CopyTaskIterator:
 
     Args:
       source_name_iterator (name_expansion.NameExpansionIterator):
-        yields resource_reference.Resource objects with expanded source urls.
+        yields resource_reference.Resource objects with expanded source URLs.
       destination_string (str): The copy destination path/url.
     """
     self._source_name_iterator = (
@@ -45,10 +45,9 @@ class CopyTaskIterator:
 
   def __iter__(self):
     raw_destination = self._get_raw_destination()
-    for source_resource in self._source_name_iterator:
-      destination_resource = self._get_copy_destination(raw_destination,
-                                                        source_resource)
-      yield copy_task_factory.get_copy_task(source_resource,
+    for source in self._source_name_iterator:
+      destination_resource = self._get_copy_destination(raw_destination, source)
+      yield copy_task_factory.get_copy_task(source.resource,
                                             destination_resource)
 
   def _get_raw_destination(self):
@@ -110,13 +109,16 @@ class CopyTaskIterator:
     if not destination_iterator.is_empty():
       return next(destination_iterator)
 
-  def _get_copy_destination(self, raw_destination, source_resource):
+  def _get_copy_destination(self, raw_destination, source):
+    """Returns the final destination StorageUrl instance."""
     completion_is_necessary = (
         self._destination_is_container(raw_destination) or
-        self._multiple_sources)
+        self._multiple_sources or
+        source.resource.storage_url != source.expanded_url  # Recursion case.
+    )
 
     if completion_is_necessary:
-      return self._complete_destination(raw_destination, source_resource)
+      return self._complete_destination(raw_destination, source)
     else:
       return raw_destination
 
@@ -132,7 +134,7 @@ class CopyTaskIterator:
               isinstance(destination_url, storage_url.CloudUrl) and
               destination_url.is_bucket()))
 
-  def _complete_destination(self, destination_container, source_resource):
+  def _complete_destination(self, destination_container, source):
     """Gets a valid copy destination incorporating part of the source's name.
 
     When given a source file or object and a destination resource that should
@@ -145,22 +147,75 @@ class CopyTaskIterator:
     Args:
       destination_container (resource_reference.Resource): The destination
         container.
-      source_resource (resource_reference.Resource): The copy source.
+      source (NameExpansionResult): Represents the source resource and the
+        expanded parent url in case of recursion.
 
     Returns:
       The completed destination, a resource_reference.Resource.
     """
     destination_url = destination_container.storage_url
-    source_url = source_resource.storage_url
+    source_url = source.resource.storage_url
+    if source_url != source.expanded_url:
+      # In case of recursion, the expanded_url can be the expanded wildcard URL
+      # representing the container, and the source url can be the file/object.
+      destination_suffix = self._get_destination_suffix_for_recursion(
+          destination_container, source)
+    else:
+      # Schema might give us incorrect suffix for Windows.
+      # TODO(b/169093672) This will not be required if we get rid of file://
+      schemaless_url = source_url.versionless_url_string.rpartition(
+          source_url.scheme + '://')[2]
 
-    container_string = storage_url.rstrip_one_delimiter(
-        destination_url.url_string, delimiter=destination_url.delimiter)
+      destination_suffix = schemaless_url.rpartition(source_url.delimiter)[2]
 
-    new_destination_string = (
-        container_string +
-        destination_url.delimiter +
-        source_url.url_string.rpartition(source_url.delimiter)[2])
-
-    new_destination_url = storage_url.storage_url_from_string(
-        new_destination_string)
+    new_destination_url = destination_url.join(destination_suffix)
     return resource_reference.UnknownResource(new_destination_url)
+
+  def _get_destination_suffix_for_recursion(self, destination_container,
+                                            source):
+    """Returns the suffix required to complete the destination URL.
+
+    Let's assume the following:
+      User command => cp -r */base_dir gs://dest/existing_prefix
+      source.resource.storage_url => a/base_dir/c/d.txt
+      source.expanded_url => a/base_dir
+      destination_container.storage_url => gs://dest/existing_prefix
+
+    If the destination container exists, the entire directory gets copied:
+    Result => gs://dest/existing_prefix/base_dir/c/d.txt
+
+    On the other hand, if the destination container does not exist, the
+    top-level dir does not get copied over.
+    Result => gs://dest/existing_prefix/c/d.txt
+
+    Args:
+      destination_container (resource_reference.Resource): The destination
+        container.
+      source (NameExpansionResult): Represents the source resource and the
+        expanded parent url in case of recursion.
+
+    Returns:
+      (str) The suffix to be appended to the destination container.
+    """
+    source_prefix_to_ignore = storage_url.rstrip_one_delimiter(
+        source.expanded_url.versionless_url_string)
+    if (not isinstance(destination_container,
+                       resource_reference.UnknownResource) and
+        destination_container.is_container()):
+      # Destination container exists. This means we need to preserve the
+      # top-level source directory.
+      # Remove the leaf name so that it gets added to the destination.
+      source_prefix_to_ignore = source_prefix_to_ignore.rpartition(
+          source.expanded_url.delimiter)[0]
+
+    full_source_url = source.resource.storage_url.versionless_url_string
+    suffix_for_destination = full_source_url.split(source_prefix_to_ignore)[1]
+
+    # Windows uses \ as a delimiter. Force the suffix to use the same
+    # delimiter used by the destination container.
+    source_delimiter = source.resource.storage_url.delimiter
+    destination_delimiter = destination_container.storage_url.delimiter
+    if source_delimiter != destination_delimiter:
+      return suffix_for_destination.replace(source_delimiter,
+                                            destination_delimiter)
+    return suffix_for_destination

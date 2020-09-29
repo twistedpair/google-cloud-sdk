@@ -722,13 +722,6 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class UpdateEnvironmentMetadata(_messages.Message):
-  r"""Message included in the metadata field of operations returned from
-  UpdateEnvironment.
-  """
-
-
-
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

@@ -107,43 +107,47 @@ class S3Api(cloud_api.CloudApi):
       etag = object_dict['CopyObjectResult']['ETag']
 
     return resource_reference.ObjectResource(
-        object_url, etag, metadata=object_dict)
+        object_url, etag=etag, metadata=object_dict)
 
   def GetBucket(self, bucket_name, fields_scope=cloud_api.FieldsScope.SHORT):
     """See super class."""
-    bucket_metadata = {'Name': bucket_name}
+    metadata = {'Name': bucket_name}
     # TODO (b/168716392): As new commands are implemented, they may want
-    # specific error data about a failed API call. Use individual try-excepts
-    # for these cases.
+    # specific error handling for different methods.
     try:
       # Low-bandwidth way to determine if bucket exists for FieldsScope.SHORT.
-      bucket_metadata.update(self.client.get_bucket_location(
+      metadata.update(self.client.get_bucket_location(
           Bucket=bucket_name))
-
-      if fields_scope is not cloud_api.FieldsScope.SHORT:
-        # Data for FieldsScope.NO_ACL.
-        for api_call in [
-            self.client.get_bucket_cors,
-            self.client.get_bucket_logging,
-            self.client.get_bucket_request_payment]:
-          bucket_metadata.update(api_call(Bucket=bucket_name))
-        # Response fields aren't descriptive keys, so we need to add key.
-        for key, api_call in [
-            ('LifecycleConfiguration',
-             self.client.get_bucket_lifecycle_configuration),
-            ('Versioning', self.client.get_bucket_versioning),
-            ('Website', self.client.get_bucket_website)]:
-          bucket_metadata[key] = api_call(Bucket=bucket_name)
-
-        # User requested ACL's with FieldsScope.FULL.
-        if fields_scope is cloud_api.FieldsScope.FULL:
-          bucket_metadata.update(self.client.get_bucket_acl(Bucket=bucket_name))
     except botocore.exceptions.ClientError as error:
-      core_exceptions.reraise(errors.S3ApiError(error))
+      metadata['LocationConstraint'] = errors.S3ApiError(error)
+
+    if fields_scope is not cloud_api.FieldsScope.SHORT:
+      # Data for FieldsScope.NO_ACL.
+      for key, api_call, result_has_key in [
+          ('CORSRules', self.client.get_bucket_cors, True),
+          ('LifecycleConfiguration',
+           self.client.get_bucket_lifecycle_configuration, False),
+          ('LoggingEnabled', self.client.get_bucket_logging, True),
+          ('Payer', self.client.get_bucket_request_payment, True),
+          ('Versioning', self.client.get_bucket_versioning, False),
+          ('Website', self.client.get_bucket_website, False)]:
+        try:
+          api_result = api_call(Bucket=bucket_name)
+          # Some results are wrapped in dictionaries with keys matching "key".
+          metadata[key] = api_result[key] if result_has_key else api_result
+        except botocore.exceptions.ClientError as error:
+          metadata[key] = errors.S3ApiError(error)
+
+      # User requested ACL's with FieldsScope.FULL.
+      if fields_scope is cloud_api.FieldsScope.FULL:
+        try:
+          metadata['ACL'] = self.client.get_bucket_acl(Bucket=bucket_name)
+        except botocore.exceptions.ClientError as error:
+          metadata['ACL'] = errors.S3ApiError(error)
 
     return resource_reference.BucketResource(
         storage_url.CloudUrl(cloud_api.ProviderPrefix.S3.value, bucket_name),
-        metadata=bucket_metadata)
+        metadata=metadata)
 
   def ListBuckets(self, fields_scope=None):
     """See super class."""

@@ -581,7 +581,9 @@ class Address(_messages.Message):
       resources.  - `DNS_RESOLVER` for a DNS resolver address in a subnetwork
       - `VPC_PEERING` for addresses that are reserved for VPC peer networks.
       - `NAT_AUTO` for addresses that are external IP addresses automatically
-      reserved for Cloud NAT.
+      reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
+      from a private IP range reserved for a VLAN attachment in an IPsec over
+      Interconnect configuration. These addresses are regional resources.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -642,7 +644,9 @@ class Address(_messages.Message):
       `DNS_RESOLVER` for a DNS resolver address in a subnetwork  -
       `VPC_PEERING` for addresses that are reserved for VPC peer networks.  -
       `NAT_AUTO` for addresses that are external IP addresses automatically
-      reserved for Cloud NAT.
+      reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
+      from a private IP range reserved for a VLAN attachment in an IPsec over
+      Interconnect configuration. These addresses are regional resources.
     region: [Output Only] The URL of the region where the regional address
       resides. This field is not applicable to global addresses. You must
       specify this field as part of the HTTP request URL.
@@ -710,7 +714,9 @@ class Address(_messages.Message):
     `DNS_RESOLVER` for a DNS resolver address in a subnetwork  - `VPC_PEERING`
     for addresses that are reserved for VPC peer networks.  - `NAT_AUTO` for
     addresses that are external IP addresses automatically reserved for Cloud
-    NAT.
+    NAT.  - `IPSEC_INTERCONNECT` for addresses created from a private IP range
+    reserved for a VLAN attachment in an IPsec over Interconnect
+    configuration. These addresses are regional resources.
 
     Values:
       DNS_RESOLVER: <no description>
@@ -35563,9 +35569,8 @@ class NetworkEndpointGroupAppEngine(_messages.Message):
   project and located in the same region as the Serverless NEG.
 
   Fields:
-    service: Optional serving service.  The service name must be 1-63
-      characters long, and comply with RFC1035.  Example value: "default",
-      "my-service".
+    service: Optional serving service.  The service name is case-sensitive and
+      must be 1-63 characters long.  Example value: "default", "my-service".
     urlMask: A template to parse service and version fields from a request
       URL. URL mask allows for routing to multiple App Engine services without
       having to create multiple Network Endpoint Groups and backend services.
@@ -35574,8 +35579,8 @@ class NetworkEndpointGroupAppEngine(_messages.Message):
       NEG with URL mask "-dot-appname.appspot.com/". The URL mask will parse
       them to { service = "foo1", version = "v1" } and { service = "foo1",
       version = "v2" } respectively.
-    version: Optional serving version.  The version must be 1-63 characters
-      long, and comply with RFC1035.  Example value: "v1", "v2".
+    version: Optional serving version.  The version name is case-sensitive and
+      must be 1-100 characters long.  Example value: "v1", "v2".
   """
 
   service = _messages.StringField(1)

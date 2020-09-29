@@ -43,6 +43,12 @@ def WorkflowAttributeConfig():
       name='workflow', help_text='Workflow for the {resource}.')
 
 
+def ExecutionAttributeConfig():
+  """Builds an AttributeConfig for the execution resource."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='execution', help_text='Execution for the {resource}.')
+
+
 def GetWorkflowResourceSpec():
   """Builds a ResourceSpec for the workflow resource."""
   return concepts.ResourceSpec(
@@ -51,6 +57,17 @@ def GetWorkflowResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       workflowsId=WorkflowAttributeConfig())
+
+
+def GetExecutionResourceSpec():
+  """Builds a ResourceSpec for the execution resource."""
+  return concepts.ResourceSpec(
+      'workflowexecutions.projects.locations.workflows.executions',
+      resource_name='execution',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      workflowsId=WorkflowAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      executionsId=ExecutionAttributeConfig())
 
 
 def AddWorkflowResourceArg(parser, verb):
@@ -64,6 +81,20 @@ def AddWorkflowResourceArg(parser, verb):
       'workflow',
       GetWorkflowResourceSpec(),
       'Name of the workflow {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddExecutionResourceArg(parser, verb):
+  """Add a resource argument for a Cloud Workflows execution.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'execution',
+      GetExecutionResourceSpec(),
+      'Name of the execution {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -85,10 +116,16 @@ def AddDescriptionArg(parser):
 def AddServiceAccountArg(parser):
   """Adds argument for specifying service account used by the workflow."""
   parser.add_argument(
-      '--service-account', help='The service account that should be used as '
+      '--service-account',
+      help='The service account that should be used as '
       'the workflow identity. "projects/PROJECT_ID/serviceAccounts/" prefix '
       'may be skipped from the full resource name, in that case '
       '"projects/-/serviceAccounts/" is prepended to the service account ID.')
+
+
+def ParseExecution(args):
+  """Get and validate execution from the args."""
+  return args.CONCEPTS.execution.Parse()
 
 
 def ParseWorkflow(args):
@@ -139,8 +176,8 @@ def SetServiceAccount(args, workflow, updated_fields):
   Args:
     args: args passed to the command.
     workflow: the workflow in which to set the service account.
-    updated_fields: a list to which a service_account field will be added
-    if needed.
+    updated_fields: a list to which a service_account field will be added if
+      needed.
   """
   if args.service_account is not None:
     prefix = ''

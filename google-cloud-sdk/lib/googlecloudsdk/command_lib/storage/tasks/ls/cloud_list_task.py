@@ -29,11 +29,17 @@ import enum
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
+from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.core.util import scaled_integer
 
 import six
+
+
+LONG_LIST_ROW_FORMAT = ('{size:>10}  {creation_time:>19}  {url}{metageneration}'
+                        '{etag}')
 
 
 class DisplayDetail(enum.Enum):
@@ -51,25 +57,15 @@ _DISPLAY_DETAIL_TO_FIELDS_SCOPE = {
 
 
 class _BaseFormatWrapper(six.with_metaclass(abc.ABCMeta)):
-  """For formatting how items are printed when listed."""
+  """For formatting how items are printed when listed.
+
+  Attributes:
+    resource (resource_reference.Resource): Item to be formatted for printing.
+  """
 
   def __init__(self, resource):
-    """Initializes wrapper class.
-
-    Args:
-      resource (resource_reference.Resource): Item to be formatted for printing.
-    """
-    self._resource = resource
-    super().__init__()
-
-
-class _ResourceFormatWrapper(_BaseFormatWrapper):
-  """For formatting how resources print when listed."""
-
-  def __str__(self):
-    # We can be confident versionless_url_string exists because all
-    # storage_url's will be CloudUrl's.
-    return self._resource.storage_url.versionless_url_string
+    """Initializes wrapper instance."""
+    self.resource = resource
 
 
 class _HeaderFormatWrapper(_BaseFormatWrapper):
@@ -77,7 +73,67 @@ class _HeaderFormatWrapper(_BaseFormatWrapper):
 
   def __str__(self):
     # This will print as "gs://bucket:" or "gs://bucket/prefix/:".
-    return '\n{}:'.format(str(self._resource.storage_url))
+    return '\n{}:'.format(self.resource.storage_url.versionless_url_string)
+
+
+class _ResourceFormatWrapper(_BaseFormatWrapper):
+  """For formatting how resources print when listed."""
+
+  def __init__(self, resource, all_versions=False,
+               display_detail=DisplayDetail.SHORT, include_etag=False):
+    """Initializes wrapper instance.
+
+    Args:
+      resource (resource_reference.Resource): Item to be formatted for printing.
+      all_versions (bool): Display information about all versions of resource.
+      display_detail (DisplayDetail): Level of metadata detail for printing.
+      include_etag (bool): Display etag string of resource.
+    """
+    self._all_versions = all_versions
+    self._display_detail = display_detail
+    self._include_etag = include_etag
+    super().__init__(resource)
+
+  def _format_for_list_long(self):
+    """Returns string of select properties from resource."""
+    if isinstance(self.resource, resource_reference.PrefixResource):
+      # Align PrefixResource URLs with ObjectResource URLs.
+      return LONG_LIST_ROW_FORMAT.format(
+          size='', creation_time='',
+          url=self.resource.storage_url.url_string, metageneration='',
+          etag='')
+
+    creation_time = ('None' if not self.resource.creation_time else
+                     self.resource.creation_time.strftime('%Y-%m-%d %H:%M:%S'))
+
+    if self._all_versions:
+      url_string = self.resource.storage_url.url_string
+      metageneration_string = '  metageneration={}'.format(
+          str(self.resource.metageneration))
+    else:
+      url_string = self.resource.storage_url.versionless_url_string
+      metageneration_string = ''
+
+    if self._include_etag:
+      etag_string = '  etag={}'.format(str(self.resource.etag))
+    else:
+      etag_string = ''
+
+    # Full example (add 9 spaces of padding to the left):
+    # 8  2020-07-27T20:58:25Z  gs://b/o  metageneration=4  etag=CJqt6aup7uoCEAQ=
+    return LONG_LIST_ROW_FORMAT.format(
+        size=str(self.resource.size), creation_time=creation_time,
+        url=url_string, metageneration=metageneration_string, etag=etag_string)
+
+  def __str__(self):
+    if self._display_detail == DisplayDetail.LONG and (
+        isinstance(self.resource, resource_reference.ObjectResource) or
+        isinstance(self.resource, resource_reference.PrefixResource)):
+      return self._format_for_list_long()
+    if self._all_versions:
+      # Include generation in URL.
+      return self.resource.storage_url.url_string
+    return self.resource.storage_url.versionless_url_string
 
 
 class CloudListTask(task.Task):
@@ -88,6 +144,7 @@ class CloudListTask(task.Task):
       cloud_url,
       all_versions=False,
       display_detail=DisplayDetail.SHORT,
+      include_etag=False,
       recursion_flag=False):
     """Initializes task.
 
@@ -96,6 +153,8 @@ class CloudListTask(task.Task):
       all_versions (bool): Determine whether or not to return all versions of
           listed objects.
       display_detail (DisplayDetail): Determines level of metadata printed.
+      include_etag (bool): Print etag string of resource, depending on other
+          settings.
       recursion_flag (bool): Recurse through all containers and format all
           container headers.
     """
@@ -104,6 +163,7 @@ class CloudListTask(task.Task):
     self._cloud_url = cloud_url
     self._all_versions = all_versions
     self._display_detail = display_detail
+    self._include_etag = include_etag
     self._recursion_flag = recursion_flag
 
   def execute(self, callback=None):
@@ -118,24 +178,34 @@ class CloudListTask(task.Task):
       raise errors.InvalidUrlError('One or more URLs matched no objects.')
     if self._cloud_url.is_provider():
       # Received a provider URL ("gs://"). List bucket names with no formatting.
-      resources = self._recursion_helper(resources, recursion_level=0)
+      resources_wrappers = self._recursion_helper(resources, recursion_level=0)
     # "**" overrides recursive flag.
     elif self._recursion_flag and '**' not in self._cloud_url.url_string:
-      resources = self._recursion_helper(resources, float('inf'))
+      resources_wrappers = self._recursion_helper(resources, float('inf'))
     elif not resources.is_plural() and resources.peek().is_container():
       # One container was returned by the query, in which case we show
       # its contents.
-      resources = self._get_container_iterator(
+      resources_wrappers = self._get_container_iterator(
           resources.peek().storage_url, recursion_level=0)
     else:
-      resources = self._recursion_helper(resources, recursion_level=1)
+      resources_wrappers = self._recursion_helper(resources, recursion_level=1)
 
-    for i, resource in enumerate(resources):
-      if i == 0 and resource and str(resource)[0] == '\n':
+    object_count = total_bytes = 0
+    for i, resource_wrapper in enumerate(resources_wrappers):
+      if i == 0 and resource_wrapper and str(resource_wrapper)[0] == '\n':
         # First print should not begin with a line break.
-        print(str(resource)[1:])
+        print(str(resource_wrapper)[1:])
       else:
-        print(resource)
+        print(resource_wrapper)
+      # For printing long listing data summary.
+      if isinstance(resource_wrapper.resource,
+                    resource_reference.ObjectResource):
+        object_count += 1
+        total_bytes += resource_wrapper.resource.size or 0
+    if self._display_detail == DisplayDetail.LONG:
+      print('TOTAL: {} objects, {} bytes ({})'.format(
+          object_count, int(total_bytes),
+          scaled_integer.FormatBinaryNumber(total_bytes, decimal_places=2)))
 
     if callback:
       callback()
@@ -188,4 +258,7 @@ class CloudListTask(task.Task):
 
       else:
         # Resource wasn't a container we can recurse into, so just yield it.
-        yield _ResourceFormatWrapper(resource)
+        yield _ResourceFormatWrapper(resource,
+                                     all_versions=self._all_versions,
+                                     display_detail=self._display_detail,
+                                     include_etag=self._include_etag)

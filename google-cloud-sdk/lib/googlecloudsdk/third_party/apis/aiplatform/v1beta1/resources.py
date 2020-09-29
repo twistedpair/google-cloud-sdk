@@ -33,9 +33,12 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
-      'projects/{projectsId}/locations/{locationsId}',
-      {},
-      ['projectsId', 'locationsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_BATCHPREDICTIONJOBS = (
@@ -93,6 +96,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ENDPOINTS_OPERATIONS = (
+      'projects.locations.endpoints.operations',
+      'projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/'
+      'operations/{operationsId}',
+      {},
+      ['projectsId', 'locationsId', 'endpointsId', 'operationsId'],
+      True
+  )
   PROJECTS_LOCATIONS_HYPERPARAMETERTUNINGJOBS = (
       'projects.locations.hyperparameterTuningJobs',
       '{+name}',
@@ -135,6 +146,14 @@ class Collections(enum.Enum):
               '{modelsId}/evaluations/{evaluationsId}/slices/{slicesId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MODELS_OPERATIONS = (
+      'projects.locations.models.operations',
+      'projects/{projectsId}/locations/{locationsId}/models/{modelsId}/'
+      'operations/{operationsId}',
+      {},
+      ['projectsId', 'locationsId', 'modelsId', 'operationsId'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (

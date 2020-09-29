@@ -180,7 +180,7 @@ def _PrintUrl(service_name, events_port, stop):
         if stop.is_set():
           return
         con = console_attr.GetConsoleAttr()
-        msg = 'Service available at {bold}{url}{normal}'.format(
+        msg = 'Service URL: {bold}{url}{normal}'.format(
             bold=con.GetFontCode(bold=True),
             url='http://localhost:%s/' % port,
             normal=con.GetFontCode())

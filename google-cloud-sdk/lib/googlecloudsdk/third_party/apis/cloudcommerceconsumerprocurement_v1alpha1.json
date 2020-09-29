@@ -304,7 +304,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest",
-      "description": "Request message for ConsumerProcurementService.PlaceOrder. Next Id: 10",
+      "description": "Request message for ConsumerProcurementService.PlaceOrder. Next Id: 11",
       "type": "object",
       "properties": {
         "displayName": {
@@ -320,12 +320,19 @@
           "type": "string"
         },
         "placeProductsOrderRequest": {
-          "description": "Required. Places order for non-quote products.",
+          "description": "Optional. Places order for non-quote products.",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceProductsOrderRequest"
         },
         "placeQuoteOrderRequest": {
-          "description": "Required. Places order for quote.",
+          "description": "Optional. Places order for quote.",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest"
+        },
+        "lineItemInfo": {
+          "description": "Optional. Places order for offer. Required when offer based order is being placed. Setting `line_item_info` will take precedence to place offer order if request is also set.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
+          }
         },
         "requestId": {
           "description": "Optional. A unique identifier for this request. The server will ignore subsequent requests that provide a duplicate request ID for at least 120 minutes after the first request. The request ID must be a valid [UUID](https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier#Format).",
@@ -363,7 +370,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo",
-      "description": "Line item information. Next Id: 13",
+      "description": "Line item information. Next Id: 14",
       "type": "object",
       "properties": {
         "productExternalName": {
@@ -376,6 +383,10 @@
         },
         "pricePlanVersion": {
           "description": "The price plan version being purchased.",
+          "type": "string"
+        },
+        "offer": {
+          "description": "Optional. The name of the offer is accepted in either of these formats: 'billingAccounts\/{billing_account}\/offers\/{offer}', or 'projects\/{consumer_project}\/services\/{service}\/standardOffers\/{offer}'.",
           "type": "string"
         },
         "quoteExternalName": {
@@ -735,9 +746,16 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest",
-      "description": "Request message for ConsumerProcurementService.ModifyOrder. Next Id: 6",
+      "description": "Request message for ConsumerProcurementService.ModifyOrder. Next Id: 7",
       "type": "object",
       "properties": {
+        "modifications": {
+          "description": "Optional. Modifications for an existing Order created by an Offer. Required when Offer based Order is being modified.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification"
+          }
+        },
         "modifyProductsOrderRequest": {
           "description": "Required. Modifies an existing order for non-quote products.",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest"
@@ -753,6 +771,39 @@
         "etag": {
           "description": "The weak etag, which can be optionally populated, of the order that this modify request is based on. Validation checking will only happen if the invoker supplies this field.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModification",
+      "description": "Modifications to make on the order.",
+      "type": "object",
+      "properties": {
+        "lineItemId": {
+          "description": "ID of the existing line item to make change to. Required when change type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CANCEL].",
+          "type": "string"
+        },
+        "changeType": {
+          "description": "Required. Type of change to make.",
+          "type": "string",
+          "enumDescriptions": [
+            "Sentinel value. Do not use.",
+            "The change is to create a new line item.",
+            "The change is to update an existing line item.",
+            "The change is to cancel an existing line item.",
+            "The change is to revert a cancellation."
+          ],
+          "enum": [
+            "LINE_ITEM_CHANGE_TYPE_UNSPECIFIED",
+            "LINE_ITEM_CHANGE_TYPE_CREATE",
+            "LINE_ITEM_CHANGE_TYPE_UPDATE",
+            "LINE_ITEM_CHANGE_TYPE_CANCEL",
+            "LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION"
+          ]
+        },
+        "newLineItemInfo": {
+          "description": "The line item to update to. Required when change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].",
+          "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
         }
       }
     },
@@ -879,6 +930,17 @@
             "CANCELLATION_POLICY_CANCEL_IMMEDIATELY",
             "CANCELLATION_POLICY_CANCEL_AT_TERM_END"
           ]
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest",
+      "description": "Request message for ConsumerProcurementService.MigrateOrder.",
+      "type": "object",
+      "properties": {
+        "newParent": {
+          "description": "Required. Destination billing account where the order will be migrated to. This field is of the form: 'billingAccounts\/{billing-account-id}.",
+          "type": "string"
         }
       }
     },
@@ -1651,6 +1713,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Cancels an existing Order. Every product procured in the Order will be cancelled."
+            },
+            "migrate": {
+              "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.migrate",
+              "path": "v1alpha1/{+name}:migrate",
+              "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders/{ordersId}:migrate",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. Name of the order to migrate. This field is in this form: billingAccounts\/{billing-account-id}\/orders\/{order-id}.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest"
+              },
+              "response": {
+                "$ref": "GoogleLongrunningOperation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Migrates an existing Order resource to a different billing account."
             }
           }
           ,

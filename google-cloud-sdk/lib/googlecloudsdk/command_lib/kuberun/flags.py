@@ -17,6 +17,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
+
 _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
     'external': 'Visible from outside the cluster.',
@@ -32,8 +34,7 @@ def AddAllNamespacesFlag(parser):
 
 
 def AddNamespaceFlag(parser):
-  parser.add_argument(
-      '--namespace', help='Specify the namespace to operate in.')
+  parser.add_argument('--namespace', help='Kubernetes namespace to operate in.')
 
 
 def AddNamespaceFlagsMutexGroup(parser):
@@ -49,7 +50,7 @@ def AddClusterConnectionFlags(parser):
     Kubernetes cluster.
 
   Args:
-    parser: The ParserData instance that will have the arguments added to.
+    parser: ParserData instance that will have the arguments added to.
   """
   mutex_group = parser.add_mutually_exclusive_group()
   gke_group = mutex_group.add_group()
@@ -68,12 +69,12 @@ def AddClusterConnectionFlags(parser):
   cluster_group = mutex_group.add_group()
   cluster_group.add_argument(
       '--context',
-      help='The name of the context in your kubectl config file to use for '
+      help='Name of the context in your kubectl config file to use for '
       'connecting. Cannot be specified together with --cluster and '
       '--cluster-location.')
   cluster_group.add_argument(
       '--kubeconfig',
-      help='The absolute path to your kubectl config file. If not specified, '
+      help='Absolute path to your kubectl config file. If not specified, '
       'the colon- or semicolon-delimited list of paths specified by '
       '$KUBECONFIG will be used. If $KUBECONFIG is unset, this defaults to '
       '~/.kube/config. Cannot be specified together with --cluster and '
@@ -81,16 +82,23 @@ def AddClusterConnectionFlags(parser):
 
 
 def AddTrafficFlags(parser):
+  """Adds flags to configure traffic routes to the service.
+
+  Args:
+    parser: ParserData instance that will have the arguments added to.
+  """
   mutex_group = parser.add_mutually_exclusive_group(required=True)
   mutex_group.add_argument(
       '--to-latest',
-      help='True to assign 100 percent of traffic to the \'latest\' revision '
+      default=False,
+      action='store_true',
+      help='If true, assign 100 percent of traffic to the \'latest\' revision '
       'of this service. Note that when a new revision is created, it will '
       'become the \'latest\' and traffic will be directed to it. Defaults to '
-      'False. Synonymous with \'--to-revisions=LATEST=100\'.')
+      'False. Synonymous with `--to-revisions=LATEST=100`.')
   mutex_group.add_argument(
       '--to-revisions',
-      help='Comma separated list of traffic assignments in the form '
+      help='Comma-separated list of traffic assignments in the form '
       'REVISION-NAME=PERCENTAGE. REVISION-NAME must be the name for a revision '
       'for the service as returned by \'gcloud kuberun clusters revisions list\'. '
       'PERCENTAGE must be an integer percentage between 0 and 100 inclusive. '
@@ -127,18 +135,47 @@ def TranslateClusterConnectionFlags(args):
   return exec_args
 
 
-def AddImageFlag(parser):
+def AddCommonServiceFlags(parser, is_deploy=False):
+  """Adds flags common to services deploy and update.
+
+  Args:
+    parser: ParserData instance that will have the arguments added to.
+    is_deploy: whether the flags are being added to the deploy command.
+  """
+  AddNamespaceFlag(parser)
+  AddImageFlag(parser, required=is_deploy)
+  AddResourcesFlags(parser)
+  AddPortFlag(parser)
+  AddHttp2Flag(parser)
+  AddConcurrencyFlag(parser)
+  AddEntrypointFlags(parser)
+  AddScalingFlags(parser)
+  AddLabelsFlags(parser)
+  AddConfigMapFlags(parser)
+  AddSecretsFlags(parser)
+  AddEnvVarsFlags(parser)
+  AddConnectivityFlag(parser)
+  AddServiceAccountFlag(parser)
+  AddRevisionSuffixFlag(parser)
+  AddTimeoutFlag(parser)
+  AddAsyncFlag(parser)
+
+
+def AddImageFlag(parser, required=False):
   parser.add_argument(
-      '--image', required=True,
+      '--image',
+      required=required,
       help='Name of the container image to deploy '
       '(e.g. gcr.io/cloudrun/hello:latest).')
 
 
 def AddResourcesFlags(parser):
   parser.add_argument(
-      '--cpu', help='Set a CPU limit in Kubernetes cpu units. Ex: .5, 500m, 2.')
+      '--cpu',
+      help='CPU limit, in Kubernetes cpu units, for the resource.'
+      'Ex: .5, 500m, 2.')
   parser.add_argument(
-      '--memory', help='Set a memory limit. Ex: 1Gi, 512Mi.')
+      '--memory', help='Memory limit for the resource. Ex: 1Gi, 512Mi.')
 
 
 def AddPortFlag(parser):
@@ -149,11 +186,18 @@ def AddPortFlag(parser):
       'To unset this field, pass the special value "default".')
 
 
+def AddHttp2Flag(parser):
+  parser.add_argument(
+      '--use-http2',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='If true, uses HTTP/2 for connections to the service.')
+
+
 def AddConcurrencyFlag(parser):
   parser.add_argument(
       '--concurrency',
-      help='Set the maximum number of concurrent requests allowed per '
-      'container instance. If concurrency is unspecified, any number of '
+      help='Maximum number of concurrent requests allowed per container '
+      'instance. If concurrency is unspecified, any number of '
       'concurrent requests are allowed. To unset this field, provide the '
       'special value "default".')
 
@@ -176,11 +220,11 @@ def AddEntrypointFlags(parser):
 def AddScalingFlags(parser):
   parser.add_argument(
       '--min-instances',
-      help="The minimum number of container instances of the Service to run "
+      help='Minimum number of container instances of the Service to run '
       "or 'default' to remove any minimum.")
   parser.add_argument(
       '--max-instances',
-      help="The maximum number of container instances of the Service to run. "
+      help='Maximum number of container instances of the Service to run. '
       "Use 'default' to unset the limit and use the platform default.")
 
 
@@ -188,15 +232,16 @@ def AddLabelsFlags(parser):
   """Adds flags to configure label of the service.
 
   Args:
-    parser: The ParserData instance that will have the arguments added to.
+    parser: ParserData instance that will have the arguments added to.
   """
   # TODO(b/166474467): revisit if no-opt flags should be kept for deploy
   mutex_group = parser.add_mutually_exclusive_group()
   mutex_group.add_argument(
-      '--clear-labels', default=False,
+      '--clear-labels',
+      default=False,
       action='store_true',
-      help='Remove all labels. If --update-labels is also specified then '
-      '--clear-labels is applied first.')
+      help='If true, removes all labels. If --update-labels is also specified '
+      'then --clear-labels is applied first.')
   mutex_group.add_argument(
       '--labels',
       help='List of label KEY=VALUE pairs to add. An alias to --update-labels.')
@@ -216,25 +261,27 @@ def AddConfigMapFlags(parser):
   """Adds flags to configure config maps mounting.
 
   Args:
-    parser: The ParserData instance that will have the arguments added to.
+    parser: ParserData instance that will have the arguments added to.
   """
   # TODO(b/166474467): revisit if no-opt flags should be kept for deploy
   mutex_group = parser.add_mutually_exclusive_group(
-      help="Specify config map to mount or provide as environment variables. "
+      help='Config map to mount or provide as environment variables. '
       "Keys starting with a forward slash '/' are mount paths. All other keys "
       "correspond to environment variables. The values associated with each of "
       "these should be in the form CONFIG_MAP_NAME:KEY_IN_CONFIG_MAP; you may "
       "omit the key within the config map to specify a mount of all keys "
       "within the config map. For example: "
-      "'--update-config-maps=/my/path=myconfig,ENV=otherconfig:key.json' "
+      '`--update-config-maps=/my/path=myconfig,ENV=otherconfig:key.json` '
       "will create a volume with config map 'myconfig' and mount that volume "
       "at '/my/path'. Because no config map key was specified, all keys in "
       "'myconfig' will be included. An environment variable named ENV will "
       "also be created whose value is the value of 'key.json' in 'otherconfig'."
   )
   mutex_group.add_argument(
-      '--clear-config-maps', default=False,
-      action='store_true', help='Remove all config-maps.')
+      '--clear-config-maps',
+      default=False,
+      action='store_true',
+      help='If true, removes all config-maps.')
   mutex_group.add_argument(
       '--set-config-maps',
       help='List of key-value pairs to set as config-maps. All existing '
@@ -256,22 +303,21 @@ def AddSecretsFlags(parser):
   """Adds flags to configure secrets mounting.
 
   Args:
-    parser: The ParserData instance that will have the arguments added to.
+    parser: ParserData instance that will have the arguments added to.
   """
   # TODO(b/166474467): revisit if no-opt flags should be kept for deploy
   mutex_group = parser.add_mutually_exclusive_group(
-      help="Specify secrets to mount or provide as environment variables. Keys "
+      help='Secrets to mount or provide as environment variables. Keys '
       "starting with a forward slash '/' are mount paths. All other keys "
       "correspond to environment variables. The values associated with each "
       "of these should be in the form SECRET_NAME:KEY_IN_SECRET; you may omit "
       "the key within the secret to specify a mount of all keys within the "
       "secret. For example: "
-      "'--update-secrets=/my/path=mysecret,ENV=othersecret:key.json' will "
+      '`--update-secrets=/my/path=mysecret,ENV=othersecret:key.json` will '
       "create a volume with secret 'mysecret' and mount that volume at "
       "'/my/path'. Because no secret key was specified, all keys in 'mysecret' "
       "will be included. An environment variable named ENV will also be "
-      "created whose value is the value of 'key.json' in 'othersecret'."
-  )
+      "created whose value is the value of 'key.json' in 'othersecret'.")
   mutex_group.add_argument(
       '--clear-secrets', default=False,
       action='store_true', help='Remove all secrets.')
@@ -294,12 +340,14 @@ def AddEnvVarsFlags(parser):
   """Adds flags to configure environment variables.
 
   Args:
-    parser: The ParserData instance that will have the arguments added to.
+    parser: ParserData instance that will have the arguments added to.
   """
   mutex_group = parser.add_mutually_exclusive_group()
   mutex_group.add_argument(
-      '--clear-env-vars', default=False,
-      action='store_true', help='Remove all environment variables.')
+      '--clear-env-vars',
+      default=False,
+      action='store_true',
+      help='If true, removes all environment variables.')
   mutex_group.add_argument(
       '--set-env-vars', help='List of key-value pairs to set as environment '
       'variables. All existing environment variables will be removed first.')
@@ -319,7 +367,7 @@ def AddConnectivityFlag(parser):
   """Adds flags to configure connectivity.
 
   Args:
-    parser: The ParserData instance that will have the arguments added to.
+    parser: ParserData instance that will have the arguments added to.
   """
   parser.add_argument(
       '--connectivity',
@@ -329,11 +377,28 @@ def AddConnectivityFlag(parser):
             'network.')
 
 
+def AddNoTrafficFlag(parser):
+  """Adds flag to configure no traffic.
+
+  Args:
+    parser: ParserData instance that will have the arguments added to.
+  """
+  parser.add_argument(
+      '--no-traffic',
+      default=False,
+      action='store_true',
+      help='If set, any traffic assigned to the LATEST revision will be '
+      'assigned to the specific revision bound to LATEST before the '
+      'deployment. This means the revision being deployed will not receive '
+      'traffic. After a deployment with this flag, the LATEST revision will '
+      'not receive traffic on future deployments.')
+
+
 def AddServiceAccountFlag(parser):
   """Adds flags to configure service account.
 
   Args:
-    parser: The ParserData instance that will have the arguments added to.
+    parser: ParserData instance that will have the arguments added to.
   """
   parser.add_argument(
       '--service-account',
@@ -345,18 +410,39 @@ def AddServiceAccountFlag(parser):
       'namespace service account.')
 
 
+def AddTimeoutFlag(parser):
+  # Use arg_parsers.Duration to parse duration string into second, so that
+  # it can be passed on directly
+  parser.add_argument(
+      '--timeout',
+      type=arg_parsers.Duration(lower_bound='1s', parsed_unit='s'),
+      help='Maximum request execution time (timeout). It is specified '
+      'as a duration; for example, "10m5s" is ten minutes and five seconds. '
+      'If you don\'t specify a unit, seconds is assumed. For example, "10" is '
+      '10 seconds.')
+
+
 def AddRevisionSuffixFlag(parser):
   """Adds flags to configure revision suffix.
 
   Args:
-    parser: The ParserData instance that will have the arguments added to.
+    parser: ParserData instance that will have the arguments added to.
   """
   parser.add_argument(
       '--revision-suffix',
-      help="Specify the suffix of the revision name. Revision names always "
-      "start with the service name automatically. For example, specifying "
-      "[--revision-suffix=v1] for a service named 'helloworld', would lead "
+      help='Suffix of the revision name. Revision names always start with the '
+      'service name automatically. For example, specifying '
+      "`--revision-suffix=v1` for a service named 'helloworld', would lead "
       "to a revision named 'helloworld-v1'.")
+
+
+def AddAsyncFlag(parser):
+  parser.add_argument(
+      '--async',
+      default=False,
+      action='store_true',
+      help='Return immediately, without waiting for the operation in progress '
+      'to complete.')
 
 
 def ParsePassThroughBoolFlags(args):
@@ -365,14 +451,12 @@ def ParsePassThroughBoolFlags(args):
   Args:
     args: arguments object the calling command received in Command.Run(args).
   """
-  bool_flags = ['--clear-labels', '--clear-secrets', '--clear-config-maps',
-                '--clear-env-vars']
-  results = []
-  for f in bool_flags:
-    dest = GetDestNameForFlag(f)
-    if args.IsSpecified(dest):
-      results.append(f)
-  return results
+  bool_flags = [
+      '--clear-labels', '--clear-secrets', '--clear-config-maps',
+      '--clear-env-vars', '--use-http2', '--no-use-http2', '--async',
+      '--no-traffic'
+  ]
+  return [f for f in bool_flags if f in args.GetSpecifiedArgNames()]
 
 
 def ParsePassThroughStringFlags(args):
@@ -388,7 +472,7 @@ def ParsePassThroughStringFlags(args):
       '--remove-config-maps', '--update-config-maps', '--set-config-maps',
       '--remove-secrets', '--update-secrets', '--set-secrets',
       '--remove-env-vars', '--update-env-vars', '--set-env-vars',
-      '--connectivity', '--service-account', '--revision-suffix'
+      '--connectivity', '--service-account', '--revision-suffix', '--timeout'
   ]
   results = []
   for f in string_flags:

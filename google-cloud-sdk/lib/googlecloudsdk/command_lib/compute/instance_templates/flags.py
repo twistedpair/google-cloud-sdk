@@ -74,7 +74,7 @@ def AddServiceProxyConfigArgs(parser, hide_arguments=False):
       hidden=hide_arguments,
       help="""\
       Controls whether the Traffic Director service proxy (Envoy) and agent are installed and configured on the VM.
-      "cloud-platform" scope will be enabled to allow connections to the Traffic Director API.
+      "cloud-platform" scope is enabled automatically to allow connections to the Traffic Director API.
       Do not use the --no-scopes flag.
 
       *enabled*::: If specified, the service-proxy software will be installed when the instance is created.

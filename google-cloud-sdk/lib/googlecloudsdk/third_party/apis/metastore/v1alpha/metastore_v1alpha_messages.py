@@ -1109,6 +1109,8 @@ class Service(_messages.Message):
     tier: The tier of the service.
     updateTime: Output only. The time when the metastore service was last
       updated.
+    uuid: Output only. The globally unique resource identifier of the
+      metastore service.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1186,6 +1188,7 @@ class Service(_messages.Message):
   stateMessage = _messages.StringField(11)
   tier = _messages.EnumField('TierValueValuesEnum', 12)
   updateTime = _messages.StringField(13)
+  uuid = _messages.StringField(14)
 
 
 class SetIamPolicyRequest(_messages.Message):

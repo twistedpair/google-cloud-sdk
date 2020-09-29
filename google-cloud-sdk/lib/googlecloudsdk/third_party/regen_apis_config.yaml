@@ -59,9 +59,19 @@ apis:
   aiplatform:
     v1alpha1:
       discovery_doc: aiplatform_v1alpha1.json
+      resources:
+        projects.locations.models.operations:
+          path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}
+        projects.locations.endpoints.operations:
+          path: projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/operations/{operationsId}
     v1beta1:
       default: true
       discovery_doc: aiplatform_v1beta1.json
+      resources:
+        projects.locations.models.operations:
+          path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}
+        projects.locations.endpoints.operations:
+          path: projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/operations/{operationsId}
   anthosevents:
     v1:
       discovery_doc: anthosevents_v1.json

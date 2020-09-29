@@ -4476,13 +4476,20 @@ class WorkloadIdentityConfig(_messages.Message):
     identityNamespace: IAM Identity Namespace to attach all k8s Service
       Accounts to.
     identityProvider: identity provider is the third party identity provider.
+    issuingCertificateAuthority: issuing_certificate_authority controls
+      issuance of workload mTLS certificates. If non-empty, it must be a
+      Private CA resource URL of the form "//privateca.googleapis.com/projects
+      /{project}/locations/{location}/certificateAuthorities/{name}". If non-
+      empty, Workload Identity (standard or Hub) must be active (workload_pool
+      must be non-empty).
     workloadPool: The workload pool to attach all Kubernetes service accounts
       to.
   """
 
   identityNamespace = _messages.StringField(1)
   identityProvider = _messages.StringField(2)
-  workloadPool = _messages.StringField(3)
+  issuingCertificateAuthority = _messages.StringField(3)
+  workloadPool = _messages.StringField(4)
 
 
 class WorkloadMetadataConfig(_messages.Message):

@@ -4378,6 +4378,50 @@
         }
       }
     },
+    "GoogleCloudDialogflowV3alpha1ExportTestCasesResponse": {
+      "id": "GoogleCloudDialogflowV3alpha1ExportTestCasesResponse",
+      "description": "The response message for TestCases.ExportTestCases.",
+      "type": "object",
+      "properties": {
+        "gcsUri": {
+          "description": "The URI to a file containing the exported test cases. This field is populated only if `gcs_uri` is specified in ExportTestCasesRequest.",
+          "type": "string"
+        },
+        "content": {
+          "description": "Uncompressed raw byte content for test cases.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV3alpha1ImportTestCasesResponse": {
+      "id": "GoogleCloudDialogflowV3alpha1ImportTestCasesResponse",
+      "description": "The response message for TestCases.ImportTestCases.",
+      "type": "object",
+      "properties": {
+        "names": {
+          "description": "The unique identifiers of the new test cases. Format: `projects\/\/locations\/\/agents\/\/testCases\/`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowV3alpha1ExportTestCasesMetadata": {
+      "id": "GoogleCloudDialogflowV3alpha1ExportTestCasesMetadata",
+      "description": "Metadata returned for the TestCases.ExportTestCases long running operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDialogflowV3alpha1ImportTestCasesMetadata": {
+      "id": "GoogleCloudDialogflowV3alpha1ImportTestCasesMetadata",
+      "description": "Metadata returned for the TestCases.ImportTestCases long running operation.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata": {
       "id": "GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata",
       "description": "Metadata associated with the long running operation for Versions.CreateVersion.",

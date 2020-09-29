@@ -244,6 +244,7 @@ class _Sections(object):
       manager properties for the Cloud SDK.
     accessibility: Section, The section containing accessibility properties for
       the Cloud SDK.
+    ai: Section, The section containing ai properties for the Cloud SDK.
     api_client_overrides: Section, The section containing API client override
       properties for the Cloud SDK.
     api_endpoint_overrides: Section, The section containing API endpoint
@@ -343,6 +344,7 @@ class _Sections(object):
   def __init__(self):
     self.access_context_manager = _SectionAccessContextManager()
     self.accessibility = _SectionAccessibility()
+    self.ai = _SectionAi()
     self.api_client_overrides = _SectionApiClientOverrides()
     self.api_endpoint_overrides = _SectionApiEndpointOverrides()
     self.app = _SectionApp()
@@ -397,6 +399,7 @@ class _Sections(object):
     sections = [
         self.access_context_manager,
         self.accessibility,
+        self.ai,
         self.api_client_overrides,
         self.api_endpoint_overrides,
         self.app,
@@ -2085,9 +2088,10 @@ class _SectionEventarc(_Section):
     super(_SectionEventarc, self).__init__('eventarc', hidden=True)
     self.location = self._Add(
         'location',
-        help_text='The default location to use when working with Eventarc '
-        'resources. When a `--location` flag is required but not provided, the '
-        'command will fall back to this value, if set.')
+        help_text="The default location to use when working with Eventarc "
+        "resources. This should be either ``global'' or one of the supported "
+        "regions. When a `--location` flag is required but not provided, the "
+        "command will fall back to this value, if set.")
 
 
 class _SectionMemcache(_Section):
@@ -2192,6 +2196,18 @@ class _SectionWorkflows(_Section):
         default='us-central1',
         help_text='The default region to use when working with Cloud '
         'Workflows resources. When a `--location` flag is required '
+        'but not provided, the command will fall back to this value, if set.')
+
+
+class _SectionAi(_Section):
+  """Contains the properties for the command group 'ai' section."""
+
+  def __init__(self):
+    super(_SectionAi, self).__init__('ai')
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with'
+        'AI Platform resources. When a `--region` flag is required '
         'but not provided, the command will fall back to this value, if set.')
 
 

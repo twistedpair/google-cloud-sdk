@@ -23,11 +23,14 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.ai import constants
 
 
-def GetMessagesModule(version=constants.AI_PLATFORM_API_VERSION):
+def GetMessagesModule(
+    version=constants.AI_PLATFORM_API_VERSION[constants.BETA_VERSION]):
   return apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME, version)
 
 
-def GetClientInstance(version=constants.AI_PLATFORM_API_VERSION, no_http=False):
+def GetClientInstance(
+    version=constants.AI_PLATFORM_API_VERSION[constants.BETA_VERSION],
+    no_http=False):
   return apis.GetClientInstance(
       constants.AI_PLATFORM_API_NAME, version, no_http=no_http)
 

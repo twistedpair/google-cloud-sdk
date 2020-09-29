@@ -435,15 +435,15 @@ class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
 
 
 class GoogleCloudSecuritycenterV1Resource(_messages.Message):
-  r""" Information related to the Google Cloud resource.
+  r"""Information related to the Google Cloud resource.
 
   Fields:
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     parent: The full resource name of resource's parent.
-    parentDisplayName:  The human readable name of resource's parent.
+    parentDisplayName: The human readable name of resource's parent.
     project: The full resource name of project that the resource belongs to.
-    projectDisplayName:  The human readable name of project that the resource
+    projectDisplayName: The human readable name of project that the resource
       belongs to.
   """
 
@@ -516,77 +516,6 @@ class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Messag
   state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
-class GoogleCloudSecuritycenterV1p1beta1Asset(_messages.Message):
-  r"""Security Command Center representation of a Google Cloud resource. The
-  Asset is a Security Command Center resource that captures information about
-  a single Google Cloud resource. All modifications to an Asset are only
-  within the context of Security Command Center and don't affect the
-  referenced Google Cloud resource.
-
-  Messages:
-    ResourcePropertiesValue: Resource managed properties. These properties are
-      managed and defined by the Google Cloud resource and cannot be modified
-      by the user.
-
-  Fields:
-    createTime: The time at which the asset was created in Security Command
-      Center.
-    iamPolicy: Cloud IAM Policy information associated with the Google Cloud
-      resource described by the Security Command Center asset. This
-      information is managed and defined by the Google Cloud resource and
-      cannot be modified by the user.
-    name: The relative resource name of this asset. See:
-      https://cloud.google.com/apis/design/resource_names#relative_resource_na
-      me Example: "organizations/{organization_id}/assets/{asset_id}".
-    resourceProperties: Resource managed properties. These properties are
-      managed and defined by the Google Cloud resource and cannot be modified
-      by the user.
-    securityCenterProperties: Security Command Center managed properties.
-      These properties are managed by Security Command Center and cannot be
-      modified by the user.
-    securityMarks: User specified security marks. These marks are entirely
-      managed by the user and come from the SecurityMarks resource that
-      belongs to the asset.
-    updateTime: The time at which the asset was last updated, added, or
-      deleted in Cloud SCC.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ResourcePropertiesValue(_messages.Message):
-    r"""Resource managed properties. These properties are managed and defined
-    by the Google Cloud resource and cannot be modified by the user.
-
-    Messages:
-      AdditionalProperty: An additional property for a ResourcePropertiesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        ResourcePropertiesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ResourcePropertiesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  iamPolicy = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1IamPolicy', 2)
-  name = _messages.StringField(3)
-  resourceProperties = _messages.MessageField('ResourcePropertiesValue', 4)
-  securityCenterProperties = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1SecurityCenterProperties', 5)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1SecurityMarks', 6)
-  updateTime = _messages.StringField(7)
-
-
 class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
   r"""Security Command Center finding. A finding is a record of assessment
   data (security, risk, health or privacy) ingested into Security Command
@@ -595,7 +524,8 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
   is a finding.
 
   Enums:
-    SeverityValueValuesEnum: The severity of the finding.
+    SeverityValueValuesEnum: The severity of the finding. This field is
+      managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
 
   Messages:
@@ -638,7 +568,8 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
     securityMarks: Output only. User specified security marks. These marks are
       entirely managed by the user and come from the SecurityMarks resource
       that belongs to the finding.
-    severity: The severity of the finding.
+    severity: The severity of the finding. This field is managed by the source
+      that writes the finding.
     sourceProperties: Source specific properties. These properties are managed
       by the source that writes the finding. The key names in the
       source_properties map must be between 1 and 255 characters, and must
@@ -648,7 +579,8 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    r"""The severity of the finding.
+    r"""The severity of the finding. This field is managed by the source that
+    writes the finding.
 
     Values:
       SEVERITY_UNSPECIFIED: No severity specified. The default value.
@@ -718,20 +650,6 @@ class GoogleCloudSecuritycenterV1p1beta1Finding(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
-class GoogleCloudSecuritycenterV1p1beta1IamPolicy(_messages.Message):
-  r"""Cloud IAM Policy information associated with the Google Cloud resource
-  described by the Security Command Center asset. This information is managed
-  and defined by the Google Cloud resource and cannot be modified by the user.
-
-  Fields:
-    policyBlob: The JSON representation of the Policy associated with the
-      asset. See https://cloud.google.com/iam/docs/reference/rest/v1/Policy
-      for format details.
-  """
-
-  policyBlob = _messages.StringField(1)
-
-
 class GoogleCloudSecuritycenterV1p1beta1NotificationMessage(_messages.Message):
   r"""Security Command Center's Notification
 
@@ -741,26 +659,23 @@ class GoogleCloudSecuritycenterV1p1beta1NotificationMessage(_messages.Message):
     notificationConfigName: Name of the notification config that generated
       current notification.
     resource: The Cloud resource tied to the notification.
-    temporalAsset: If it's an asset based notification config, this field will
-      be populated.
   """
 
   finding = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1Finding', 1)
   notificationConfigName = _messages.StringField(2)
   resource = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1Resource', 3)
-  temporalAsset = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1TemporalAsset', 4)
 
 
 class GoogleCloudSecuritycenterV1p1beta1Resource(_messages.Message):
-  r""" Information related to the Google Cloud resource.
+  r"""Information related to the Google Cloud resource.
 
   Fields:
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     parent: The full resource name of resource's parent.
-    parentDisplayName:  The human readable name of resource's parent.
+    parentDisplayName: The human readable name of resource's parent.
     project: The full resource name of project that the resource belongs to.
-    projectDisplayName:  The human readable name of project that the resource
+    projectDisplayName: The human readable name of project that the resource
       belongs to.
   """
 
@@ -800,42 +715,6 @@ class GoogleCloudSecuritycenterV1p1beta1RunAssetDiscoveryResponse(_messages.Mess
 
   duration = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
-
-
-class GoogleCloudSecuritycenterV1p1beta1SecurityCenterProperties(_messages.Message):
-  r"""Security Command Center managed properties. These properties are managed
-  by Security Command Center and cannot be modified by the user.
-
-  Fields:
-    resourceDisplayName: The user defined display name for this resource.
-    resourceName: The full resource name of the Google Cloud resource this
-      asset represents. This field is immutable after create time. See:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name
-    resourceOwners: Owners of the Google Cloud resource.
-    resourceParent: The full resource name of the immediate parent of the
-      resource. See:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name
-    resourceParentDisplayName: The user defined display name for the parent of
-      this resource.
-    resourceProject: The full resource name of the project the resource
-      belongs to. See:
-      https://cloud.google.com/apis/design/resource_names#full_resource_name
-    resourceProjectDisplayName: The user defined display name for the project
-      of this resource.
-    resourceType: The type of the Google Cloud resource. Examples include:
-      APPLICATION, PROJECT, and ORGANIZATION. This is a case insensitive field
-      defined by Security Command Center and/or the producer of the resource
-      and is immutable after create time.
-  """
-
-  resourceDisplayName = _messages.StringField(1)
-  resourceName = _messages.StringField(2)
-  resourceOwners = _messages.StringField(3, repeated=True)
-  resourceParent = _messages.StringField(4)
-  resourceParentDisplayName = _messages.StringField(5)
-  resourceProject = _messages.StringField(6)
-  resourceProjectDisplayName = _messages.StringField(7)
-  resourceType = _messages.StringField(8)
 
 
 class GoogleCloudSecuritycenterV1p1beta1SecurityMarks(_messages.Message):
@@ -898,38 +777,6 @@ class GoogleCloudSecuritycenterV1p1beta1SecurityMarks(_messages.Message):
 
   marks = _messages.MessageField('MarksValue', 1)
   name = _messages.StringField(2)
-
-
-class GoogleCloudSecuritycenterV1p1beta1TemporalAsset(_messages.Message):
-  r"""Wrapper over asset object that also captures the state change for the
-  asset e.g. if it was a newly created asset vs updated or deleted asset.
-
-  Enums:
-    ChangeTypeValueValuesEnum: Represents if the asset was
-      created/updated/deleted.
-
-  Fields:
-    asset: Asset data that includes attributes, properties and marks about the
-      asset.
-    changeType: Represents if the asset was created/updated/deleted.
-  """
-
-  class ChangeTypeValueValuesEnum(_messages.Enum):
-    r"""Represents if the asset was created/updated/deleted.
-
-    Values:
-      CHANGE_TYPE_UNSPECIFIED: Unspecified or default.
-      CREATED: Newly created Asset
-      UPDATED: Asset was updated.
-      DELETED: Asset was deleted.
-    """
-    CHANGE_TYPE_UNSPECIFIED = 0
-    CREATED = 1
-    UPDATED = 2
-    DELETED = 3
-
-  asset = _messages.MessageField('GoogleCloudSecuritycenterV1p1beta1Asset', 1)
-  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 2)
 
 
 class GroupAssetsRequest(_messages.Message):

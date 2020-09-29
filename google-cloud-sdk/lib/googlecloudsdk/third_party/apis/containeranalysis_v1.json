@@ -1953,6 +1953,61 @@
         }
       }
     },
+    "VulnerabilityOccurrencesSummary": {
+      "id": "VulnerabilityOccurrencesSummary",
+      "description": "A summary of how many vulnerability occurrences there are per resource and severity type.",
+      "type": "object",
+      "properties": {
+        "counts": {
+          "description": "A listing by resource of the number of fixable and total vulnerabilities.",
+          "type": "array",
+          "items": {
+            "$ref": "FixableTotalByDigest"
+          }
+        }
+      }
+    },
+    "FixableTotalByDigest": {
+      "id": "FixableTotalByDigest",
+      "description": "Per resource and severity counts of fixable and total vulnerabilities.",
+      "type": "object",
+      "properties": {
+        "resourceUri": {
+          "description": "The affected resource.",
+          "type": "string"
+        },
+        "severity": {
+          "description": "The severity for this count. SEVERITY_UNSPECIFIED indicates total across all severities.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown.",
+            "Minimal severity.",
+            "Low severity.",
+            "Medium severity.",
+            "High severity.",
+            "Critical severity."
+          ],
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "MINIMAL",
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "fixableCount": {
+          "description": "The number of fixable vulnerabilities associated with this resource.",
+          "type": "string",
+          "format": "int64"
+        },
+        "totalCount": {
+          "description": "The total number of vulnerabilities associated with this resource.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ListOperationsResponse": {
       "id": "ListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -2325,6 +2380,36 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Returns the permissions that a caller has on the specified note or occurrence. Requires list permission on the project (for example, `containeranalysis.notes.list`). The resource takes the format `projects\/[PROJECT_ID]\/notes\/[NOTE_ID]` for notes and `projects\/[PROJECT_ID]\/occurrences\/[OCCURRENCE_ID]` for occurrences."
+            },
+            "getVulnerabilitySummary": {
+              "id": "containeranalysis.projects.occurrences.getVulnerabilitySummary",
+              "path": "v1/{+parent}/occurrences:vulnerabilitySummary",
+              "flatPath": "v1/projects/{projectsId}/occurrences:vulnerabilitySummary",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The name of the project to get a vulnerability summary for in the form of `projects\/[PROJECT_ID]`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "filter": {
+                  "description": "The filter expression.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "VulnerabilityOccurrencesSummary"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets a summary of the number and severity of occurrences."
             }
           }
         },

@@ -45,6 +45,10 @@ class StorageUrl(six.with_metaclass(abc.ABCMeta)):
   def url_string(self):
     """Returns the string representation of the instance."""
 
+  @abc.abstractproperty
+  def versionless_url_string(self):
+    """Returns the string representation of the instance without the version."""
+
   def join(self, part):
     """Appends part at the end of url_string.
 
@@ -130,7 +134,13 @@ class FileUrl(StorageUrl):
 
   @property
   def url_string(self):
+    """Returns the string representation of the instance."""
     return '%s://%s' % (self.scheme, self.object_name)
+
+  @property
+  def versionless_url_string(self):
+    """Returns the string representation of the instance without the version."""
+    return self.url_string
 
 
 class CloudUrl(StorageUrl):

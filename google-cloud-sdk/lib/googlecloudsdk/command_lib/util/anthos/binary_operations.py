@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Library for defining Binary backed operations."""
 
 from __future__ import absolute_import
@@ -23,6 +22,7 @@ import abc
 import collections
 import os
 
+from googlecloudsdk.command_lib.util.anthos import structured_messages as sm
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import execution_utils as exec_utils
@@ -35,27 +35,43 @@ from googlecloudsdk.core.util import platforms
 
 import six
 
-
 _DEFAULT_FAILURE_ERROR_MESSAGE = (
     'Error executing command [{command}] (with context [{context}]). '
     'Process exited with code {exit_code}')
 
 _DEFAULT_MISSING_EXEC_MESSAGE = 'Executable [{}] not found.'
 
+_STRUCTURED_TEXT_EXPECTED_ERROR = ('Expected structured message, '
+                                   'logging as raw text:{}')
 
-def _LogDefaultFailure(result_object):
-  log.error(_DEFAULT_FAILURE_ERROR_MESSAGE.format(
-      command=result_object.executed_command,
-      context=result_object.context,
-      exit_code=result_object.exit_code))
+
+def _LogDefaultOperationFailure(result_object):
+  log.error(
+      _DEFAULT_FAILURE_ERROR_MESSAGE.format(
+          command=result_object.executed_command,
+          context=result_object.context,
+          exit_code=result_object.exit_code))
 
 
 class BinaryOperationError(core_exceptions.Error):
   """Base class for binary operation errors."""
 
 
+class BinaryExecutionError(BinaryOperationError):
+  """Raised if there is an error executing the executable."""
+
+  def __init__(self, original_error, context):
+    super(BinaryExecutionError,
+          self).__init__('Error executing binary on [{}]: [{}]'.format(
+              context, original_error))
+
+
 class InvalidOperationForBinary(BinaryOperationError):
   """Raised when an invalid Operation is invoked on a binary."""
+
+
+class StructuredOutputError(BinaryOperationError):
+  """Raised when there is a problem processing as sturctured message."""
 
 
 class MissingExecutableException(BinaryOperationError):
@@ -94,19 +110,23 @@ class ArgumentError(BinaryOperationError):
 
 def DefaultStdOutHandler(result_holder):
   """Default processing for stdout from subprocess."""
+
   def HandleStdOut(stdout):
+    stdout = stdout.rstrip()
     if stdout:
-      stdout.rstrip()
-    result_holder.stdout = stdout
+      result_holder.stdout = stdout
+
   return HandleStdOut
 
 
 def DefaultStdErrHandler(result_holder):
   """Default processing for stderr from subprocess."""
+
   def HandleStdErr(stderr):
+    stderr = stderr.rstrip()
     if stderr:
-      stderr.rstrip()
-    result_holder.stderr = stderr
+      result_holder.stderr = stderr
+
   return HandleStdErr
 
 
@@ -115,32 +135,238 @@ def DefaultFailureHandler(result_holder, show_exec_error=False):
   if result_holder.exit_code != 0:
     result_holder.failed = True
   if show_exec_error and result_holder.failed:
-    _LogDefaultFailure(result_holder)
+    _LogDefaultOperationFailure(result_holder)
 
 
-def DefaultStreamOutHandler(result_holder, do_capture=False):
+def DefaultStreamOutHandler(result_holder, capture_output=False):
   """Default processing for streaming stdout from subprocess."""
+
   def HandleStdOut(line):
     if line:
       line.rstrip()
       log.Print(line)
-    if do_capture:
+    if capture_output:
       if not result_holder.stdout:
         result_holder.stdout = []
       result_holder.stdout.append(line)
   return HandleStdOut
 
 
-def DefaultStreamErrHandler(result_holder, do_capture=False):
+def DefaultStreamErrHandler(result_holder, capture_output=False):
   """Default processing for streaming stderr from subprocess."""
+
   def HandleStdErr(line):
     if line:
       log.status.Print(line)
-    if do_capture:
+    if capture_output:
       if not result_holder.stderr:
         result_holder.stderr = []
       result_holder.stderr.append(line)
   return HandleStdErr
+
+
+def ReadStructuredOutput(msg_string, as_json=True):
+  """Process a line of structured output into an OutputMessgage.
+
+  Args:
+    msg_string: string, line JSON/YAML formatted raw output text.
+    as_json: boolean, if True set default string representation for parsed
+      message to JSON. If False (default) use YAML.
+
+  Returns:
+    OutputMessage, parsed Message
+
+  Raises: StructuredOutputError is msg_string can not be parsed as an
+    OutputMessage.
+
+  """
+  try:
+    return sm.OutputMessage.FromString(msg_string.strip(), as_json=as_json)
+  except (sm.MessageParsingError, sm.InvalidMessageError) as e:
+    raise StructuredOutputError('Error processing message '
+                                '[{msg}] as an OutputMessage: '
+                                '{error}'.format(msg=msg_string, error=e))
+
+
+def _LogStructuredStdOut(line):
+  """Parse and log stdout text as an OutputMessage.
+
+  Attempts to parse line into an OutputMessage and log any resource output or
+  status messages accordingly. If message can not be parsed, raises a
+  StructuredOutputError.
+
+  Args:
+    line: string, line of output read from stdout.
+
+
+  Returns:
+    Tuple: (str, object): Tuple of parsed OutputMessage body and
+       processed resources or None.
+
+  Raises: StructuredOutputError, if line can not be parsed.
+  """
+  msg = None
+  resources = None
+  if line:
+    msg_rec = line.strip()
+    msg = ReadStructuredOutput(msg_rec)
+    # if there are resources, log the message body to stderr
+    # process message resource_body with any supplied resource_processors
+    # then log the processed message resource_body to stdout
+    if msg.resource_body:
+      log.status.Print(msg.body)
+      log.Print(msg.resource_body)
+    else:  # Otherwise just log the message body to stdout
+      log.Print(msg.body)
+
+  return (msg.body, resources)
+
+
+def _CaptureStdOut(result_holder, output_message=None,
+                   resource_output=None, raw_output=None):
+  """Update OperationResult from OutputMessage or plain text."""
+  if not result_holder.stdout:
+    result_holder.stdout = []
+
+  if output_message:
+    result_holder.stdout.append(output_message)
+  if resource_output:
+    result_holder.stdout.append(resource_output)
+  if raw_output:
+    result_holder.stdout.append(raw_output)
+
+
+def DefaultStreamStructuredOutHandler(result_holder,
+                                      capture_output=False,
+                                      warn_if_not_stuctured=True):
+  """Default processing for structured stdout from threaded subprocess."""
+
+  def HandleStdOut(line):
+    """Process structured stdout."""
+    if line:
+      msg_rec = line.strip()
+      try:
+        msg, resources = _LogStructuredStdOut(msg_rec)
+        if capture_output:
+          _CaptureStdOut(result_holder,
+                         output_message=msg,
+                         resource_output=resources)
+      except StructuredOutputError as sme:
+        if warn_if_not_stuctured:
+          log.warning(_STRUCTURED_TEXT_EXPECTED_ERROR.format(sme))
+        log.out.Print(msg_rec)
+        _CaptureStdOut(result_holder, raw_output=msg_rec)
+
+  return HandleStdOut
+
+
+def ProcessStructuredOut(result_holder):
+  """Default processing for structured stdout from a non-threaded subprocess.
+
+  Attempts to parse result_holder.stdstdout into an OutputMessage and return
+  a tuple of output messages and resource content.
+
+  Args:
+    result_holder:  OperationResult
+
+  Returns:
+    ([str], [JSON]), Tuple of output messages and resource content.
+  Raises:
+    StructuredOutputError if result_holder can not be processed.
+  """
+  if result_holder.stdout:
+    all_msg = (result_holder.stdout if
+               yaml.list_like(result_holder.stdout) else
+               result_holder.stdout.strip().split('\n'))
+    msgs = []
+    resources = []
+    for msg_rec in all_msg:
+      msg = ReadStructuredOutput(msg_rec)
+      msgs.append(msg.body)
+      if msg.resource_body:
+        resources.append(msg.resource_body)
+
+    return msgs, resources
+  return None, None
+
+
+def _CaptureStdErr(result_holder, output_message=None, raw_output=None):
+  """Update OperationResult either from OutputMessage or plain text."""
+  if not result_holder.stderr:
+    result_holder.stderr = []
+  if output_message:
+    if output_message.body:
+      result_holder.stderr.append(output_message.body)
+    if output_message.IsError():
+      result_holder.stderr.append(output_message.error_details.Format())
+  elif raw_output:
+    result_holder.stderr.append(raw_output)
+
+
+def DefaultStreamStructuredErrHandler(result_holder,
+                                      capture_output=False,
+                                      warn_if_not_stuctured=True):
+  """Default processing for structured stderr from threaded subprocess."""
+
+  def HandleStdErr(line):
+    """Handle line as a structured message.
+
+    Attempts to parse line into an OutputMessage and log any errors or warnings
+    accordingly. If line cannot be parsed as an OutputMessage, logs it as plain
+    text to stderr. If capture_output is True will capture any logged text to
+    result_holder.
+
+    Args:
+      line: string, line of output read from stderr.
+    """
+    if line:
+      msg_rec = line.strip()
+      try:
+        msg = ReadStructuredOutput(line)
+        if msg.IsError():
+          log.error(msg.error_details.Format())
+        else:
+          log.status.Print(msg.body)
+        if capture_output:
+          _CaptureStdErr(result_holder, output_message=msg)
+      except StructuredOutputError as sme:
+        if warn_if_not_stuctured:
+          log.warning(_STRUCTURED_TEXT_EXPECTED_ERROR.format(sme))
+        log.status.Print(msg_rec)
+        if capture_output:
+          _CaptureStdErr(result_holder, raw_output=msg_rec)
+
+  return HandleStdErr
+
+
+def ProcessStructuredErr(result_holder):
+  """Default processing for structured stderr from non-threaded subprocess.
+
+  Attempts to parse result_holder.stderr into an OutputMessage and return any
+  status messages or raised errors.
+
+  Args:
+    result_holder:  OperationResult
+  Returns:
+    ([status messages], [errors]), Tuple of status messages and errors.
+  Raises:
+    StructuredOutputError if result_holder can not be processed.
+  """
+  if result_holder.stderr:
+    all_msg = (
+        result_holder.stderr
+        if yaml.list_like(result_holder.stderr) else
+        result_holder.stderr.strip().split('\n'))
+    messages = []
+    errors = []
+    for msg_rec in all_msg:
+      msg = ReadStructuredOutput(msg_rec)
+      if msg.IsError():
+        errors.append(msg.error_details.Format())
+      else:
+        messages.append(msg.body)
+    return messages, errors
+  return None, None
 
 
 # Some golang binary commands (e.g. kubectl diff) behave this way
@@ -165,7 +391,7 @@ def NonZeroSuccessFailureHandler(result_holder, show_exec_error=False):
   if result_holder.exit_code != 0 and not result_holder.stdout:
     result_holder.failed = True
   if show_exec_error and result_holder.failed:
-    _LogDefaultFailure(result_holder)
+    _LogDefaultOperationFailure(result_holder)
 
 
 def CheckBinaryComponentInstalled(component_name):
@@ -247,8 +473,16 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
                 self.context == other.context)
       return False
 
-  def __init__(self, binary, binary_version=None, std_out_func=None,
-               std_err_func=None, failure_func=None, default_args=None,
+    def __repr__(self):
+      return self.__str__()
+
+  def __init__(self,
+               binary,
+               binary_version=None,
+               std_out_func=None,
+               std_err_func=None,
+               failure_func=None,
+               default_args=None,
                custom_errors=None):
     """Creates the Binary Operation.
 
@@ -256,10 +490,10 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
       binary: executable, the name of binary containing the underlying
         operations that this class will invoke.
       binary_version: string, version of the wrapped binary.
-      std_out_func: callable(str), function to call to process stdout from
-        executable
-      std_err_func: callable(str), function to call to process stderr from
-        executable
+      std_out_func: callable(OperationResult, **kwargs), returns a function to
+        call to process stdout from executable and build OperationResult
+      std_err_func: callable(OperationResult, **kwargs), returns a function to
+        call to process stderr from executable and build OperationResult
       failure_func: callable(OperationResult), function to call to determine if
         the operation result is a failure. Useful for cases where underlying
         binary can exit with non-zero error code yet still succeed.
@@ -274,9 +508,9 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
     self._binary = binary
     self._version = binary_version
     self._default_args = default_args
-    self.std_out_handler = std_out_func
-    self.std_err_handler = std_err_func
-    self.set_failure_status = failure_func
+    self.std_out_handler = std_out_func or DefaultStdOutHandler
+    self.std_err_handler = std_err_func or DefaultStdErrHandler
+    self.set_failure_status = failure_func or DefaultFailureHandler
 
   @property
   def binary_name(self):
@@ -311,16 +545,16 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
       ArgumentError, if there is an error parsing the supplied arguments.
       BinaryOperationError, if there is an error executing the binary.
     """
-    op_context = {'env': env, 'stdin': stdin,
-                  'exec_dir': kwargs.get('execution_dir')}
-    result_holder = self.OperationResult(command_str=cmd,
-                                         execution_context=op_context)
+    op_context = {
+        'env': env,
+        'stdin': stdin,
+        'exec_dir': kwargs.get('execution_dir')
+    }
+    result_holder = self.OperationResult(
+        command_str=cmd, execution_context=op_context)
 
-    std_out_handler = (self.std_out_handler or
-                       DefaultStdOutHandler(result_holder))
-    std_err_handler = (self.std_out_handler or
-                       DefaultStdErrHandler(result_holder))
-    failure_handler = (self.set_failure_status or DefaultFailureHandler)
+    std_out_handler = self.std_out_handler(result_holder)
+    std_err_handler = self.std_err_handler(result_holder)
     short_cmd_name = os.path.basename(cmd[0])  # useful for error messages
 
     try:
@@ -328,17 +562,18 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
       if working_dir and not os.path.isdir(working_dir):
         raise InvalidWorkingDirectoryError(short_cmd_name, working_dir)
 
-      exit_code = exec_utils.Exec(args=cmd,
-                                  no_exit=True,
-                                  out_func=std_out_handler,
-                                  err_func=std_err_handler,
-                                  in_str=stdin,
-                                  cwd=working_dir,
-                                  env=env)
+      exit_code = exec_utils.Exec(
+          args=cmd,
+          no_exit=True,
+          out_func=std_out_handler,
+          err_func=std_err_handler,
+          in_str=stdin,
+          cwd=working_dir,
+          env=env)
     except (exec_utils.PermissionError, exec_utils.InvalidCommandError) as e:
       raise ExecutionError(short_cmd_name, e)
     result_holder.exit_code = exit_code
-    failure_handler(result_holder, kwargs.get('show_exec_error', False))
+    self.set_failure_status(result_holder, kwargs.get('show_exec_error', False))
     return result_holder
 
   @abc.abstractmethod
@@ -367,21 +602,33 @@ class BinaryBackedOperation(six.with_metaclass(abc.ABCMeta, object)):
     return self._Execute(cmd, **kwargs)
 
 
-class StreamingBinaryBackedOperation(six.with_metaclass(abc.ABCMeta,
-                                                        BinaryBackedOperation)):
+class StreamingBinaryBackedOperation(
+    six.with_metaclass(abc.ABCMeta, BinaryBackedOperation)):
   """Extend Binary Operations for binaries which require streaming output."""
 
-  def __init__(self, binary, binary_version=None, std_out_func=None,
-               std_err_func=None, failure_func=None, default_args=None,
-               custom_errors=None, capture_output=False):
-    super(StreamingBinaryBackedOperation, self).__init__(binary,
-                                                         binary_version,
-                                                         std_out_func,
-                                                         std_err_func,
-                                                         failure_func,
-                                                         default_args,
-                                                         custom_errors)
+  def __init__(self,
+               binary,
+               binary_version=None,
+               std_out_func=None,
+               std_err_func=None,
+               failure_func=None,
+               default_args=None,
+               custom_errors=None,
+               capture_output=False,
+               structured_output=False):
+    super(StreamingBinaryBackedOperation,
+          self).__init__(binary, binary_version, std_out_func, std_err_func,
+                         failure_func, default_args, custom_errors)
     self.capture_output = capture_output
+    if structured_output:
+      default_out_handler = DefaultStreamStructuredOutHandler
+      default_err_handler = DefaultStreamStructuredErrHandler
+    else:
+      default_out_handler = DefaultStreamOutHandler
+      default_err_handler = DefaultStreamErrHandler
+    self.std_out_handler = std_out_func or default_out_handler
+    self.std_err_handler = std_err_func or default_err_handler
+    self.structured_output = structured_output
 
   def _Execute(self, cmd, stdin=None, env=None, **kwargs):
     """Execute binary and return operation result.
@@ -404,33 +651,34 @@ class StreamingBinaryBackedOperation(six.with_metaclass(abc.ABCMeta,
       ArgumentError, if there is an error parsing the supplied arguments.
       BinaryOperationError, if there is an error executing the binary.
     """
-    op_context = {'env': env, 'stdin': stdin,
-                  'exec_dir': kwargs.get('execution_dir')}
-    result_holder = self.OperationResult(command_str=cmd,
-                                         execution_context=op_context)
+    op_context = {
+        'env': env,
+        'stdin': stdin,
+        'exec_dir': kwargs.get('execution_dir')
+    }
+    result_holder = self.OperationResult(
+        command_str=cmd, execution_context=op_context)
 
-    std_out_handler = (self.std_out_handler or
-                       DefaultStreamOutHandler(result_holder,
-                                               self.capture_output))
-    std_err_handler = (self.std_out_handler or
-                       DefaultStreamErrHandler(result_holder,
-                                               self.capture_output))
-    failure_handler = (self.set_failure_status or DefaultFailureHandler)
+    std_out_handler = self.std_out_handler(result_holder=result_holder,
+                                           capture_output=self.capture_output)
+    std_err_handler = self.std_err_handler(result_holder=result_holder,
+                                           capture_output=self.capture_output)
     short_cmd_name = os.path.basename(cmd[0])  # useful for error messages
 
     try:
       working_dir = kwargs.get('execution_dir')
       if working_dir and not os.path.isdir(working_dir):
         raise InvalidWorkingDirectoryError(short_cmd_name, working_dir)
-      exit_code = exec_utils.ExecWithStreamingOutput(args=cmd,
-                                                     no_exit=True,
-                                                     out_func=std_out_handler,
-                                                     err_func=std_err_handler,
-                                                     in_str=stdin,
-                                                     cwd=working_dir,
-                                                     env=env)
+      exit_code = exec_utils.ExecWithStreamingOutput(
+          args=cmd,
+          no_exit=True,
+          out_func=std_out_handler,
+          err_func=std_err_handler,
+          in_str=stdin,
+          cwd=working_dir,
+          env=env)
     except (exec_utils.PermissionError, exec_utils.InvalidCommandError) as e:
       raise ExecutionError(short_cmd_name, e)
     result_holder.exit_code = exit_code
-    failure_handler(result_holder, kwargs.get('show_exec_error', False))
+    self.set_failure_status(result_holder, kwargs.get('show_exec_error', False))
     return result_holder

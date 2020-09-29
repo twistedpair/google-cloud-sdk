@@ -265,3 +265,8 @@ def AddMtu(parser):
       through this interconnect attachment. Only 1440 and 1500 are allowed.
       If not specified, the value will default to 1440.
       """)
+
+
+def GetAdminEnabledFlag(args):
+  """Determines value of admin_enabled/enable_admin flag."""
+  return args.enable_admin if args.enable_admin is not None else args.admin_enabled

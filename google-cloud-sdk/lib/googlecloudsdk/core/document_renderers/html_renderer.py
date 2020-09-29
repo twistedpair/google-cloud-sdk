@@ -435,7 +435,7 @@ class HTMLRenderer(renderer.Renderer):
     line = re.sub(r'(<code>)([-a-z0-9\[\]]+)(</code>)',
                   r'\1<a href="#\2">\2</a>\3',
                   line)
-    line = re.sub('href="#--no-', 'href=#--', line)
+    line = re.sub('href="#--no-', 'href="#--', line)
 
     # Add positional local links.
 

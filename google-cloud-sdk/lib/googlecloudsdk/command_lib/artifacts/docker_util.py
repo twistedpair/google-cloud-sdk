@@ -76,11 +76,20 @@ A valid Docker tag has the format of
   LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
 """
 
-DOCKER_REPO_REGEX = r"^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)"
+_DOCKER_IMAGE_NOT_FOUND = """Image not found.
+
+A valid container image can be referenced by tag or digest, has the format of
+  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
+  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
+"""
+
+DOCKER_REPO_REGEX = (
+    r"^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)")
 
 DOCKER_IMG_BY_TAG_REGEX = r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*):(?P<tag>.*)"
 
-DOCKER_IMG_BY_DIGEST_REGEX = r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)@(?P<digest>sha256:.*)"
+DOCKER_IMG_BY_DIGEST_REGEX = (
+    r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)@(?P<digest>sha256:.*)")
 
 DOCKER_IMG_REGEX = r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)"
 
@@ -213,8 +222,8 @@ def _GetDockerPackagesAndVersions(docker_repo,
   client = ar_requests.GetClient()
   messages = ar_requests.GetMessages()
   img_list = []
-  for pkg in ar_requests.ListPackages(client, messages,
-                                      docker_repo.GetRepositoryName()):
+  for pkg in ar_requests.ListPackages(
+      client, messages, docker_repo.GetRepositoryName(), page_size=page_size):
     parts = pkg.name.split("/")
     if len(parts) != 8:
       raise ar_exceptions.ArtifactRegistryError(
@@ -368,10 +377,11 @@ class DockerImage(object):
                                    self.pkg.replace("/", "%2F"))
 
   def GetDockerString(self):
-    return "{}-docker.pkg.dev/{}/{}/{}".format(self.docker_repo.location,
-                                               self.docker_repo.project,
-                                               self.docker_repo.repo,
-                                               self.pkg.replace("%2F", "/"))
+    return "{}-docker.pkg.dev/{}/{}/{}".format(
+        self.docker_repo.location,
+        self.docker_repo.project,
+        self.docker_repo.repo,
+        self.pkg.replace("%2F", "/"))
 
 
 class DockerTag(object):
@@ -478,6 +488,61 @@ def WaitForOperation(operation, message):
   waiter.WaitFor(poller, op_resource, message)
 
 
+def DescribeDockerImage(args):
+  """Retrieves information about a docker image based on the fully-qualified name.
+
+  Args:
+    args: user input arguments.
+
+  Returns:
+    A dictionary of information about the given docker image.
+  """
+  image, version_or_tag = _ParseDockerImage(args.IMAGE, _INVALID_IMAGE_ERROR)
+  _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
+
+  result = {}
+  result["image_summary"] = _GetDockerDigest(version_or_tag)
+  return result
+
+
+def _GetDockerDigest(version_or_tag):
+  """Retrieves the docker digest information.
+
+  Args:
+    version_or_tag: an object of DockerVersion or DockerTag
+
+  Returns:
+    A dictionary of information about the given docker image.
+  """
+  docker_version = version_or_tag
+  try:
+    if isinstance(version_or_tag, DockerVersion):
+      # We have all the information about the docker digest.
+      # Call the API to make sure it exists.
+      ar_requests.GetVersion(ar_requests.GetClient(), ar_requests.GetMessages(),
+                             version_or_tag.GetVersionName())
+    elif isinstance(version_or_tag, DockerTag):
+      digest = ar_requests.GetVersionFromTag(
+          ar_requests.GetClient(),
+          ar_requests.GetMessages(),
+          version_or_tag.GetTagName())
+      docker_version = DockerVersion(version_or_tag.image, digest)
+    else:
+      raise ar_exceptions.InvalidInputValueError(_INVALID_DOCKER_IMAGE_ERROR)
+  except api_exceptions.HttpNotFoundError:
+    raise ar_exceptions.InvalidInputValueError(_DOCKER_IMAGE_NOT_FOUND)
+  return {
+      "digest":
+          docker_version.digest,
+      "fully_qualified_digest":
+          docker_version.GetDockerString(),
+      "registry":
+          "{}-docker.pkg.dev".format(docker_version.image.docker_repo.location),
+      "repository":
+          docker_version.image.docker_repo.repo,
+  }
+
+
 def DeleteDockerImage(args):
   """Deletes a Docker digest or image.
 
@@ -534,6 +599,23 @@ def DeleteDockerImage(args):
       ar_requests.DeleteTag(client, messages, tag.GetTagName())
     return ar_requests.DeleteVersion(client, messages,
                                      docker_version.GetVersionName())
+
+
+def GetDockerImage(image_url):
+  """Gets a Docker image.
+
+  Args:
+    image_url (str): path to a Docker image.
+
+  Returns:
+    package: Docker image package
+
+  Throws:
+    HttpNotFoundError: if repo or image path are invalid
+  """
+  image, _ = _ParseDockerImage(image_url, _INVALID_IMAGE_ERROR)
+  _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
+  return ar_requests.GetPackage(image.GetPackageName())
 
 
 def AddDockerTag(args):

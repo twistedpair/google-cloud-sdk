@@ -12,7 +12,7 @@ class BinaryauthorizationV1alpha2(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = 'https://binaryauthorization.googleapis.com/'
-  MTLS_BASE_URL = ''
+  MTLS_BASE_URL = 'https://binaryauthorization.mtls.googleapis.com/'
 
   _PACKAGE = 'binaryauthorization'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
@@ -55,9 +55,7 @@ class BinaryauthorizationV1alpha2(base_api.BaseApiClient):
           }
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsAttestationsGetIamPolicyRequest) input message
@@ -84,10 +82,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsAttestationsSetIamPolicyRequest) input message
@@ -114,13 +109,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsAttestationsTestIamPermissionsRequest) input message
@@ -157,10 +146,7 @@ may "fail open" without warning.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an attestor, and returns a copy of the new.
-attestor. Returns NOT_FOUND if the project does not exist,
-INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the
-attestor already exists.
+      r"""Creates an attestor, and returns a copy of the new attestor. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the attestor already exists.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsCreateRequest) input message
@@ -187,8 +173,7 @@ attestor already exists.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an attestor. Returns NOT_FOUND if the.
-attestor does not exist.
+      r"""Deletes an attestor. Returns NOT_FOUND if the attestor does not exist.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsDeleteRequest) input message
@@ -215,8 +200,7 @@ attestor does not exist.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets an attestor.
-Returns NOT_FOUND if the attestor does not exist.
+      r"""Gets an attestor. Returns NOT_FOUND if the attestor does not exist.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsGetRequest) input message
@@ -243,9 +227,7 @@ Returns NOT_FOUND if the attestor does not exist.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsGetIamPolicyRequest) input message
@@ -272,8 +254,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists attestors.
-Returns INVALID_ARGUMENT if the project does not exist.
+      r"""Lists attestors. Returns INVALID_ARGUMENT if the project does not exist.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsListRequest) input message
@@ -300,10 +281,7 @@ Returns INVALID_ARGUMENT if the project does not exist.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsSetIamPolicyRequest) input message
@@ -330,8 +308,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     )
 
     def TestAttestationOccurrence(self, request, global_params=None):
-      r"""Returns whether the given Attestation for the given image URI.
-was signed by the given Attestor
+      r"""Returns whether the given Attestation for the given image URI was signed by the given Attestor.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsTestAttestationOccurrenceRequest) input message
@@ -358,13 +335,7 @@ was signed by the given Attestor
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (BinaryauthorizationProjectsAttestorsTestIamPermissionsRequest) input message
@@ -391,8 +362,7 @@ may "fail open" without warning.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an attestor.
-Returns NOT_FOUND if the attestor does not exist.
+      r"""Updates an attestor. Returns NOT_FOUND if the attestor does not exist.
 
       Args:
         request: (Attestor) input message
@@ -429,9 +399,7 @@ Returns NOT_FOUND if the attestor does not exist.
           }
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
-set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (BinaryauthorizationProjectsPolicyGetIamPolicyRequest) input message
@@ -458,10 +426,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
-
-Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
         request: (BinaryauthorizationProjectsPolicySetIamPolicyRequest) input message
@@ -488,13 +453,7 @@ Can return Public Errors: NOT_FOUND, INVALID_ARGUMENT and PERMISSION_DENIED
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
-permissions, not a NOT_FOUND error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (BinaryauthorizationProjectsPolicyTestIamPermissionsRequest) input message
@@ -531,13 +490,7 @@ may "fail open" without warning.
           }
 
     def GetPolicy(self, request, global_params=None):
-      r"""A policy specifies the attestors that must attest to.
-a container image, before the project is allowed to deploy that
-image. There is at most one policy per project. All image admission
-requests are permitted if a project has no policy.
-
-Gets the policy for this project. Returns a default
-policy if the project does not have one.
+      r"""A policy specifies the attestors that must attest to a container image, before the project is allowed to deploy that image. There is at most one policy per project. All image admission requests are permitted if a project has no policy. Gets the policy for this project. Returns a default policy if the project does not have one.
 
       Args:
         request: (BinaryauthorizationProjectsGetPolicyRequest) input message
@@ -564,11 +517,7 @@ policy if the project does not have one.
     )
 
     def UpdatePolicy(self, request, global_params=None):
-      r"""Creates or updates a project's policy, and returns a copy of the.
-new policy. A policy is always updated as a whole, to avoid race
-conditions with concurrent policy enforcement (or management!)
-requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT
-if the request is malformed.
+      r"""Creates or updates a project's policy, and returns a copy of the new policy. A policy is always updated as a whole, to avoid race conditions with concurrent policy enforcement (or management!) requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is malformed.
 
       Args:
         request: (Policy) input message

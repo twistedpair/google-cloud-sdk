@@ -435,7 +435,7 @@
     },
     "GceClusterConfig": {
       "id": "GceClusterConfig",
-      "description": "Common config settings for resources of Compute Engine cluster instances, applicable to all instances in the cluster. NEXT ID: 14",
+      "description": "Common config settings for resources of Compute Engine cluster instances, applicable to all instances in the cluster.",
       "type": "object",
       "properties": {
         "zoneUri": {
@@ -458,10 +458,10 @@
           "description": "Optional. The type of IPv6 access for a cluster.",
           "type": "string",
           "enumDescriptions": [
-            "Default value. Same as INHERIT_FROM_SUBNETWORK",
-            "Private access to or from Google Services configuration inherited from subnetowrk configuration",
-            "Enables outbound private IPv6 access to Google Services from Dataproc cluster",
-            "Enables bidirectional private IPv6 access between Google Services and Dataproc cluster"
+            "If unspecified, Compute Engine default behavior will apply, which is the same as INHERIT_FROM_SUBNETWORK.",
+            "Private access to and from Google Services configuration inherited from the subnetwork configuration. This is the default Compute Engine behavior.",
+            "Enables outbound private IPv6 access to Google Services from the Dataproc cluster.",
+            "Enables bidirectional private IPv6 access between Google Services and the Dataproc cluster."
           ],
           "enum": [
             "PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED",
@@ -545,7 +545,7 @@
       "type": "object",
       "properties": {
         "nodeGroupUri": {
-          "description": "Optional. The name of a single node group (https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/nodeGroups) a cluster will be created on.",
+          "description": "Required. The name of a single node group (https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/nodeGroups) a cluster will be created on.",
           "type": "string"
         }
       }

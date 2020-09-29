@@ -77,13 +77,16 @@ def AddNatNameArg(parser, operation_type='operate on', plural=False):
 
 
 def AddCommonNatArgs(parser,
-                     for_create=False):
+                     for_create=False,
+                     with_endpoint_independent_mapping=False):
   """Adds common arguments for creating and updating NATs."""
   _AddIpAllocationArgs(parser, for_create)
   _AddSubnetworkArgs(parser, for_create)
   _AddTimeoutsArgs(parser, for_create)
   _AddMinPortsPerVmArg(parser, for_create)
   _AddLoggingArgs(parser)
+  if with_endpoint_independent_mapping:
+    _AddEndpointIndependentMappingArg(parser)
   if not for_create:
     _AddDrainNatIpsArgument(parser)
 
@@ -220,6 +223,21 @@ def _AddDrainNatIpsArgument(parser):
       action='store_true',
       default=False,
       help='Clear the drained NAT IPs')
+
+
+def _AddEndpointIndependentMappingArg(parser):
+  help_text = textwrap.dedent("""\
+  Enable endpoint-independent mapping for the NAT (as defined in RFC 5128).
+
+  If not specified, NATs have endpoint-independent mapping enabled by default.
+
+  Use `--no-enable-endpoint-independent-mapping` to disable endpoint-independent
+  mapping.
+  """)
+  parser.add_argument('--enable-endpoint-independent-mapping',
+                      action='store_true',
+                      default=None,
+                      help=help_text)
 
 
 def _AddClearableArgument(parser,

@@ -252,45 +252,29 @@ def UpdateRoles(unused_ref, args, request):
   return request
 
 
-# processor hooks
-def UpdateRolesParamsToUpdate(arg_dict):
-  """Update roles params to update to modifyMembershipRolesRequest.updateRolesParams.
-
-  Note: This method should be used in ALPHA release only.
+def SetUpdateRolesParams(unused_ref, args, request):
+  """Update 'MembershipRoles' to request.modifyMembershipRolesRequest.
 
   Args:
-    arg_dict: ArgDicts, RolesParams to update.
-    (e.g. OrderedDict([(u'OWNER', u'expiration=4d')]))
+    unused_ref: A string representing the operation reference. Unused and may
+      be None.
+    args: The argparse namespace.
+    request: The request to modify.
+
   Returns:
-    List of updateRolesParams to update.
+    The updated request.
+
   """
 
-  roles_params = []
-  # TODO(b/147011481): Remove hard coded version info if necessary.
-  messages = ci_client.GetMessages('v1alpha1')
-  arg_name = '--update-roles-params'
-  for role, params in arg_dict.items():
-    # Tokenize params to name and value
-    # Example params: expiration=6m
-    # ==> name: expiration, value: 6m
-    # TODO(b/142829363): Implement to support multiple params if necessary.
-    param_name, param_value = TokenizeParams(params, arg_name)
+  if hasattr(args,
+             'update_roles_params') and args.IsSpecified('update_roles_params'):
+    version = groups_hooks.GetApiVersion(args)
+    messages = ci_client.GetMessages(version)
+    request.modifyMembershipRolesRequest = messages.ModifyMembershipRolesRequest(
+        updateRolesParams=ReformatUpdateRolesParams(
+            args, args.update_roles_params))
 
-    # Instantiate MembershipRole object.
-    # TODO(b/147011481): Remove hard coded version info if necessary.
-    expiry_detail = ReformatExpiryDetail('v1alpha1', param_value)
-    membership_role = messages.MembershipRole(
-        name=role, expiryDetail=expiry_detail)
-
-    # Create 'update_mask' string
-    update_mask = GetUpdateMask(param_name, arg_name)
-
-    update_membership_roles_params = messages.UpdateMembershipRolesParams(
-        fieldMask=update_mask, membershipRole=membership_role)
-
-    roles_params.append(update_membership_roles_params)
-
-  return roles_params
+  return request
 
 
 # private methods
@@ -321,7 +305,7 @@ def ConvertEmailToMembershipResourceName(
     # If there is no group exists (or deleted) for the given group email,
     # print out an error message.
     parameter_name = group_arg_name + ', ' + member_arg_name
-    error_msg = ('There is no such a membership associated with the specified '
+    error_msg = ('There is no such membership associated with the specified '
                  'arguments:{}, {}').format(args.group_email, args.member_email)
 
     raise exceptions.InvalidArgumentException(parameter_name, error_msg)
@@ -420,15 +404,6 @@ def FormatDateTime(duration):
       times.ParseDateTime(duration, tzinfo=times.UTC), fmt=fmt)
 
 
-def TokenizeParams(params, arg_name):
-  token_list = params.split('=')
-  if len(token_list) == 2:
-    return token_list[0], token_list[1]
-
-  raise exceptions.InvalidArgumentException(
-      arg_name, 'Invalid format of params: ' + params)
-
-
 def AddExpiryDetailInMembershipRoles(version, request, expiration):
   """Add an expiration in request.membership.roles.
 
@@ -469,3 +444,76 @@ def AddExpiryDetailInMembershipRoles(version, request, expiration):
         'expiration', 'Expiration date can be set with a MEMBER role only.')
 
   return roles
+
+
+def ReformatUpdateRolesParams(args, update_roles_params):
+  """Reformat update_roles_params string.
+
+  Reformatting update_roles_params will be done by following steps,
+  1. Split the comma separated string to a list of strings.
+  2. Convert the splitted string to UpdateMembershipRolesParams message.
+
+  Args:
+    args: The argparse namespace.
+    update_roles_params: A comma separated string.
+
+  Returns:
+    A list of reformatted 'UpdateMembershipRolesParams'.
+
+  Raises:
+    InvalidArgumentException: If invalid update_roles_params string is input.
+  """
+
+  # Split a comma separated 'update_roles_params' string.
+  update_roles_params_list = update_roles_params.split(',')
+
+  version = groups_hooks.GetApiVersion(args)
+  messages = ci_client.GetMessages(version)
+  roles_params = []
+  arg_name = '--update-roles-params'
+  for update_roles_param in update_roles_params_list:
+    role, param_key, param_value = TokenizeUpdateRolesParams(
+        update_roles_param, arg_name)
+
+    # Membership expiry is supported only on a MEMBER role.
+    if param_key == 'expiration' and role != 'MEMBER':
+      error_msg = ('Membership Expiry is not supported on a specified role: {}.'
+                   ).format(role)
+      raise exceptions.InvalidArgumentException(arg_name, error_msg)
+
+    # Instantiate MembershipRole object.
+    expiry_detail = ReformatExpiryDetail(version, param_value)
+    membership_role = messages.MembershipRole(
+        name=role, expiryDetail=expiry_detail)
+
+    update_mask = GetUpdateMask(param_key, arg_name)
+
+    update_membership_roles_params = messages.UpdateMembershipRolesParams(
+        fieldMask=update_mask, membershipRole=membership_role)
+
+    roles_params.append(update_membership_roles_params)
+
+  return roles_params
+
+
+def TokenizeUpdateRolesParams(update_roles_param, arg_name):
+  """Tokenize update_roles_params string.
+
+  Args:
+    update_roles_param: 'update_roles_param' string (e.g. MEMBER=expiration=3d)
+    arg_name: The argument name
+
+  Returns:
+    Tokenized strings: role (e.g. MEMBER), param_key (e.g. expiration), and
+    param_value (e.g. 3d)
+
+  Raises:
+    InvalidArgumentException: If invalid update_roles_param string is input.
+  """
+
+  token_list = update_roles_param.split('=')
+  if len(token_list) == 3:
+    return token_list[0], token_list[1], token_list[2]
+
+  raise exceptions.InvalidArgumentException(
+      arg_name, 'Invalid format: ' + update_roles_param)

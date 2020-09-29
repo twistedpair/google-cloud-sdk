@@ -622,32 +622,6 @@ class ServicemanagementV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Disable(self, request, global_params=None):
-      r"""Disables a service for a project, so it can no longer be be used for the project. It prevents accidental usage that may cause unexpected billing charges or security leaks. Operation.
-
-      Args:
-        request: (ServicemanagementServicesDisableRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Disable')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Disable.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='servicemanagement.services.disable',
-        ordered_params=['serviceName'],
-        path_params=['serviceName'],
-        query_params=[],
-        relative_path='v1/services/{serviceName}:disable',
-        request_field='disableServiceRequest',
-        request_type_name='ServicemanagementServicesDisableRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Enable(self, request, global_params=None):
       r"""Enables a service for a project, so it can be used for the project. See [Cloud Auth Guide](https://cloud.google.com/docs/authentication) for more information. Operation.
 

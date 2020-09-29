@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import cloud_api
-from googlecloudsdk.command_lib.storage import storage_url as storage_url_lib
 
 
 class Resource(object):
@@ -117,31 +116,26 @@ class ObjectResource(Resource):
 
   Attributes:
     storage_url (StorageUrl): A StorageUrl object representing the object.
+    creation_time (datetime|None): Time the object was created.
     scheme (cloud_api.ProviderPrefix): Prefix indicating what cloud provider
         hosts the object.
     name (str): Name of object.
-    etag (str): HTTP version identifier.
-    generation (str): Generation (or "version") of the underlying object.
-    metadata (object | dict): Cloud-specific metadata type.
+    etag (str|None): HTTP version identifier.
+    generation (str|None): Generation (or "version") of the underlying object.
+    metageneration (int|None): Generation object's metadata.
+    metadata (object|dict|None): Cloud-specific metadata type.
+    size (int|None): Size of object in bytes.
   """
 
-  def __init__(self, storage_url, etag=None, metadata=None):
+  def __init__(self, storage_url, creation_time=None, etag=None, metadata=None,
+               metageneration=None, size=None):
     """Initializes resource. Args are a subset of attributes."""
     super(ObjectResource, self).__init__(storage_url)
+    self.creation_time = creation_time
     self.etag = etag
+    self.metageneration = metageneration
     self.metadata = metadata
-
-  # TODO(b/167691513) Delete after refactors to not use this function are
-  # complete.
-  @classmethod
-  def from_gcs_metadata_object(cls, provider, metadata_object):
-    """Helper method to generate the instance from metadata_object."""
-    storage_url = storage_url_lib.CloudUrl(
-        scheme=provider,
-        bucket_name=metadata_object.bucket,
-        object_name=metadata_object.name,
-        generation=metadata_object.generation)
-    return cls(storage_url, metadata=metadata_object)
+    self.size = size
 
   @property
   def name(self):

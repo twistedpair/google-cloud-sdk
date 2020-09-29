@@ -3232,6 +3232,10 @@
         "deltaPresenceEstimationResult": {
           "description": "Delta-presence result",
           "$ref": "GooglePrivacyDlpV2DeltaPresenceEstimationResult"
+        },
+        "requestedOptions": {
+          "description": "The configuration used for this job.",
+          "$ref": "GooglePrivacyDlpV2RequestedRiskAnalysisOptions"
         }
       }
     },
@@ -3871,6 +3875,39 @@
         }
       }
     },
+    "GooglePrivacyDlpV2RequestedRiskAnalysisOptions": {
+      "id": "GooglePrivacyDlpV2RequestedRiskAnalysisOptions",
+      "description": "Risk analysis options.",
+      "type": "object",
+      "properties": {
+        "jobConfig": {
+          "description": "The job config for the risk job.",
+          "$ref": "GooglePrivacyDlpV2RiskAnalysisJobConfig"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2RiskAnalysisJobConfig": {
+      "id": "GooglePrivacyDlpV2RiskAnalysisJobConfig",
+      "description": "Configuration for a risk analysis job. See https:\/\/cloud.google.com\/dlp\/docs\/concepts-risk-analysis to learn more.",
+      "type": "object",
+      "properties": {
+        "privacyMetric": {
+          "description": "Privacy metric to compute.",
+          "$ref": "GooglePrivacyDlpV2PrivacyMetric"
+        },
+        "sourceTable": {
+          "description": "Input dataset to compute metrics over.",
+          "$ref": "GooglePrivacyDlpV2BigQueryTable"
+        },
+        "actions": {
+          "description": "Actions to execute at the completion of the job. Are executed in the order provided.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2Action"
+          }
+        }
+      }
+    },
     "GooglePrivacyDlpV2InspectDataSourceDetails": {
       "id": "GooglePrivacyDlpV2InspectDataSourceDetails",
       "description": "The results of an inspect DataSource job.",
@@ -3987,28 +4024,6 @@
         "locationId": {
           "description": "Deprecated. This field has no effect.",
           "type": "string"
-        }
-      }
-    },
-    "GooglePrivacyDlpV2RiskAnalysisJobConfig": {
-      "id": "GooglePrivacyDlpV2RiskAnalysisJobConfig",
-      "description": "Configuration for a risk analysis job. See https:\/\/cloud.google.com\/dlp\/docs\/concepts-risk-analysis to learn more.",
-      "type": "object",
-      "properties": {
-        "privacyMetric": {
-          "description": "Privacy metric to compute.",
-          "$ref": "GooglePrivacyDlpV2PrivacyMetric"
-        },
-        "sourceTable": {
-          "description": "Input dataset to compute metrics over.",
-          "$ref": "GooglePrivacyDlpV2BigQueryTable"
-        },
-        "actions": {
-          "description": "Actions to execute at the completion of the job. Are executed in the order provided.",
-          "type": "array",
-          "items": {
-            "$ref": "GooglePrivacyDlpV2Action"
-          }
         }
       }
     },
@@ -4283,7 +4298,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -4311,7 +4326,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -4339,7 +4354,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -4373,7 +4388,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4401,7 +4416,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4429,7 +4444,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4461,7 +4476,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4493,7 +4508,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4574,7 +4589,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4649,7 +4664,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4730,7 +4745,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4805,7 +4820,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -4914,7 +4929,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5022,7 +5037,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5050,7 +5065,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5254,7 +5269,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5335,7 +5350,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -5412,7 +5427,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5444,7 +5459,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5525,7 +5540,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5600,7 +5615,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5681,7 +5696,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5756,7 +5771,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5837,7 +5852,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5945,7 +5960,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -5973,7 +5988,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -6121,7 +6136,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -6202,7 +6217,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -6370,7 +6385,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -6451,7 +6466,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -6528,7 +6543,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6609,7 +6624,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6684,7 +6699,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6765,7 +6780,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6840,7 +6855,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6921,7 +6936,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                      "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                       "location": "path",
                       "required": true,
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
@@ -6998,7 +7013,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -7079,7 +7094,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -7154,7 +7169,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",
@@ -7235,7 +7250,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
+                  "description": "Required. Parent resource name. The format of this value varies depending on the scope of the request (project or organization) and whether you have [specified a processing location](https:\/\/cloud.google.com\/dlp\/docs\/specifying-location): + Projects scope, location specified: `projects\/`PROJECT_ID`\/locations\/`LOCATION_ID + Projects scope, no location specified (defaults to global): `projects\/`PROJECT_ID + Organizations scope, location specified: `organizations\/`ORG_ID`\/locations\/`LOCATION_ID + Organizations scope, no location specified (defaults to global): `organizations\/`ORG_ID The following example `parent` string specifies a parent project with the identifier `example-project`, and specifies the `europe-west3` location for processing data: parent=projects\/example-project\/locations\/europe-west3",
                   "location": "path",
                   "required": true,
                   "pattern": "^organizations\/[^\/]+$",

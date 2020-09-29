@@ -160,6 +160,24 @@ def AddOutputPathBigQueryArgs(parser):
           'the table will be overwritten by the contents of assets snapshot. '
           'If the flag is not specified and the destination table already exists, '
           'the export call returns an error.')).AddToParser(bigquery_group)
+  base.Argument(
+      '--per-asset-type',
+      action='store_true',
+      dest='per_type_',
+      default=False,
+      required=False,
+      help=('If the flag is specified, the snapshot results will be written to '
+            'one or more tables, each of which contains results of one '
+            'asset type.')).AddToParser(bigquery_group)
+  base.ChoiceArgument(
+      '--partition-key',
+      required=False,
+      choices=['read-time', 'request-time'],
+      help_str=(
+          'If specified. the snapshot results will be written to partitioned '
+          'table(s) with two additional timestamp columns, readTime and '
+          'requestTime, one of which will be the partition key.'
+      )).AddToParser(bigquery_group)
 
 
 def AddDestinationArgs(parser):

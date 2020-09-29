@@ -307,8 +307,10 @@ def GetSpecifiedFieldsMask(args, queue_type,
       args, updatable_config.AllConfigs(), clear_args=True)
 
   args_to_mask = updatable_config.GetConfigToUpdateMaskMapping()
-
-  return sorted(set([args_to_mask[arg] for arg in specified_args]))
+  masks_field = [args_to_mask[arg] for arg in specified_args]
+  if hasattr(args, 'type') and args.type == constants.PULL_TASK:
+    masks_field.append('type')
+  return sorted(set(masks_field))
 
 
 def _SpecifiedArgs(specified_args_object, args_list, clear_args=False):
@@ -384,10 +386,10 @@ def _ParseRateLimitsArgs(args, queue_type, messages, is_update):
         maxConcurrentDispatches=args.max_concurrent_dispatches)
 
 
-def _ParseStackdriverLoggingConfigArgs(args, queue_type, messages, is_update):
+def _ParseStackdriverLoggingConfigArgs(args, unused_queue_type, messages,
+                                       is_update):
   """Parses the attributes of 'args' for Queue.stackdriverLoggingConfig."""
-  if (queue_type == constants.PUSH_QUEUE and _AnyArgsSpecified(
-      args, ['log_sampling_ratio'], clear_args=is_update)):
+  if _AnyArgsSpecified(args, ['log_sampling_ratio'], clear_args=is_update):
     return messages.StackdriverLoggingConfig(
         samplingRatio=args.log_sampling_ratio)
 
@@ -398,9 +400,12 @@ def _ParsePullTargetArgs(unused_args, queue_type, messages, is_update):
     return messages.PullTarget()
 
 
-def _ParseQueueType(unused_args, queue_type, messages, is_update):
+def _ParseQueueType(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.type."""
-  if queue_type == constants.PULL_QUEUE and not is_update:
+  if (
+      (hasattr(args, 'type') and args.type == constants.PULL_QUEUE) or
+      (queue_type == constants.PULL_QUEUE and not is_update)
+  ):
     return messages.Queue.TypeValueValuesEnum.PULL
   return messages.Queue.TypeValueValuesEnum.PUSH
 

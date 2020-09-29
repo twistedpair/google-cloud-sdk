@@ -235,6 +235,60 @@ class CloudassetV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AnalyzeIamPolicy(self, request, global_params=None):
+      r"""Analyzes IAM policies to answer which identities have what accesses on which resources.
+
+      Args:
+        request: (CloudassetAnalyzeIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnalyzeIamPolicyResponse) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}:analyzeIamPolicy',
+        http_method='GET',
+        method_id='cloudasset.analyzeIamPolicy',
+        ordered_params=['scope'],
+        path_params=['scope'],
+        query_params=['analysisQuery_accessSelector_permissions', 'analysisQuery_accessSelector_roles', 'analysisQuery_identitySelector_identity', 'analysisQuery_options_analyzeServiceAccountImpersonation', 'analysisQuery_options_expandGroups', 'analysisQuery_options_expandResources', 'analysisQuery_options_expandRoles', 'analysisQuery_options_outputGroupEdges', 'analysisQuery_options_outputResourceEdges', 'analysisQuery_resourceSelector_fullResourceName', 'executionTimeout'],
+        relative_path='v1/{+scope}:analyzeIamPolicy',
+        request_field='',
+        request_type_name='CloudassetAnalyzeIamPolicyRequest',
+        response_type_name='AnalyzeIamPolicyResponse',
+        supports_download=False,
+    )
+
+    def AnalyzeIamPolicyLongrunning(self, request, global_params=None):
+      r"""Analyzes IAM policies asynchronously to answer which identities have what accesses on which resources, and writes the analysis results to a Google Cloud Storage or a BigQuery destination. For Cloud Storage destination, the output format is the JSON format that represents a AnalyzeIamPolicyResponse. This method implements the google.longrunning.Operation, which allows you to track the operation status. We recommend intervals of at least 2 seconds with exponential backoff retry to poll the operation result. The metadata contains the request to help callers to map responses to requests.
+
+      Args:
+        request: (CloudassetAnalyzeIamPolicyLongrunningRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeIamPolicyLongrunning')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeIamPolicyLongrunning.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}:analyzeIamPolicyLongrunning',
+        http_method='POST',
+        method_id='cloudasset.analyzeIamPolicyLongrunning',
+        ordered_params=['scope'],
+        path_params=['scope'],
+        query_params=[],
+        relative_path='v1/{+scope}:analyzeIamPolicyLongrunning',
+        request_field='analyzeIamPolicyLongrunningRequest',
+        request_type_name='CloudassetAnalyzeIamPolicyLongrunningRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def BatchGetAssetsHistory(self, request, global_params=None):
       r"""Batch gets the update history of assets that overlap a time window. For IAM_POLICY content, this API outputs history when the asset and its attached IAM POLICY both exist. This can create gaps in the output history. Otherwise, this API outputs history with asset in both non-delete or deleted status. If a specified asset does not exist, this API returns an INVALID_ARGUMENT error.
 

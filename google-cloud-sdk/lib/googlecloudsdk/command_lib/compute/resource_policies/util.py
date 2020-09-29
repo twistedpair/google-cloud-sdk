@@ -145,14 +145,22 @@ def MakeDiskSnapshotSchedulePolicy(policy_ref, args, messages):
 
 def MakeInstanceSchedulePolicy(policy_ref, args, messages):
   """Creates an Instance Schedule Policy message from args."""
-  vm_start_schedule = messages.ResourcePolicyInstanceSchedulePolicySchedule(
-      schedule=args.vm_start_schedule)
-  vm_stop_schedule = messages.ResourcePolicyInstanceSchedulePolicySchedule(
-      schedule=args.vm_stop_schedule)
+
+  vm_start_schedule = None
+  if args.vm_start_schedule:
+    vm_start_schedule = messages.ResourcePolicyInstanceSchedulePolicySchedule(
+        schedule=args.vm_start_schedule)
+
+  vm_stop_schedule = None
+  if args.vm_stop_schedule:
+    vm_stop_schedule = messages.ResourcePolicyInstanceSchedulePolicySchedule(
+        schedule=args.vm_stop_schedule)
+
   instance_schedule_policy = messages.ResourcePolicyInstanceSchedulePolicy(
       timeZone=args.timezone,
       vmStartSchedule=vm_start_schedule,
       vmStopSchedule=vm_stop_schedule)
+
   return messages.ResourcePolicy(
       name=policy_ref.Name(),
       description=args.description,

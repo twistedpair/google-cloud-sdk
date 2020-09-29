@@ -32,9 +32,9 @@ def GetSuccessMessageForSynchronousDeploy(service):
   msg = ('Service [{{bold}}{serv}{{reset}}] '
          'revision [{{bold}}{rev}{{reset}}] '
          'has been deployed and is serving '
-         '{{bold}}{latest_percent_traffic}{{reset}} percent of traffic')
+         '{{bold}}{latest_percent_traffic}{{reset}} percent of traffic.')
   if latest_percent_traffic:
-    msg += (' at {{bold}}{url}{{reset}}')
+    msg += '\nService URL: {{bold}}{url}{{reset}}'
   latest_url = service.latest_url
   tag_url_message = ''
   if latest_url:

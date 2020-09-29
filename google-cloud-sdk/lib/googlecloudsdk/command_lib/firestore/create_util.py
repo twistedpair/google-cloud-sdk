@@ -94,14 +94,13 @@ def create(args, product_name, enum_value):
     api_client.UpdateDatabaseType(enum_value)
   else:
     log.status.Print(
-        'Success! The {product_name} database was already created'
-        ' for {project}'.format(
+        'Success! Confirmed selection of a {product_name} database for {project}'
+        .format(
             product_name=product_name,
             project=properties.VALUES.core.project.Get(required=True)))
     return
 
   log.status.Print(
-      'Success! The {product_name} database has been '
-      'created for {project}'.format(
+      'Success! Selected {product_name} database for {project}'.format(
           product_name=product_name,
           project=properties.VALUES.core.project.Get(required=True)))

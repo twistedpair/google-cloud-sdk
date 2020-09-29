@@ -52,10 +52,8 @@ class FileUploadTask(task.Task):
     destination_url = self._destination_resource.storage_url
     provider = cloud_api.ProviderPrefix(destination_url.scheme)
 
-    object_metadata = getattr(
-        self._destination_resource, 'metadata_object', None)
+    object_metadata = getattr(self._destination_resource, 'metadata', None)
     if not object_metadata:
-      # TODO(b/167691513) Make API-agnostic.
       messages = core_apis.GetMessagesModule('storage', 'v1')
       object_metadata = messages.Object(bucket=destination_url.bucket_name,
                                         name=destination_url.object_name,

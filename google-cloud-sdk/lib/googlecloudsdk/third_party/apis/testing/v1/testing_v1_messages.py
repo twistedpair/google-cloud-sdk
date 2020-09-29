@@ -740,6 +740,23 @@ class IosDeviceCatalog(_messages.Message):
   xcodeVersions = _messages.MessageField('XcodeVersion', 4, repeated=True)
 
 
+class IosDeviceFile(_messages.Message):
+  r"""A file or directory to install on the device before the test starts.
+
+  Fields:
+    bundleId: The bundle id of the app where this file lives. iOS apps sandbox
+      their own filesystem, so app files must specify which app installed on
+      the device.
+    content: The source file
+    devicePath: Location of the file on the device, inside the app's sandboxed
+      filesystem
+  """
+
+  bundleId = _messages.StringField(1)
+  content = _messages.MessageField('FileReference', 2)
+  devicePath = _messages.StringField(3)
+
+
 class IosDeviceList(_messages.Message):
   r"""A list of iOS device configurations in which the test is to be executed.
 
@@ -839,10 +856,18 @@ class IosTestSetup(_messages.Message):
       Available network profiles can be queried by using the
       NETWORK_CONFIGURATION environment type when calling
       TestEnvironmentDiscoveryService.GetTestEnvironmentCatalog.
+    pullDirectories: List of directories on the device to upload to Cloud
+      Storage at the end of the test. Directories should either be in a shared
+      directory (e.g. /private/var/mobile/Media) or within an accessible
+      directory inside the app's filesystem (e.g. /Documents) by specifying
+      the bundle id.
+    pushFiles: List of files to push to the device before starting the test.
   """
 
   additionalIpas = _messages.MessageField('FileReference', 1, repeated=True)
   networkProfile = _messages.StringField(2)
+  pullDirectories = _messages.MessageField('IosDeviceFile', 3, repeated=True)
+  pushFiles = _messages.MessageField('IosDeviceFile', 4, repeated=True)
 
 
 class IosVersion(_messages.Message):

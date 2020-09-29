@@ -14,6 +14,54 @@ from apitools.base.py import extra_types
 package = 'cloudasset'
 
 
+class AccessSelector(_messages.Message):
+  r"""Specifies roles and/or permissions to analyze, to determine both the
+  identities possessing them and the resources they control. If multiple
+  values are specified, results will include roles or permissions matching any
+  of them. The total number of roles and permissions should be equal or less
+  than 10.
+
+  Fields:
+    permissions: Optional. The permissions to appear in result.
+    roles: Optional. The roles to appear in result.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  roles = _messages.StringField(2, repeated=True)
+
+
+class AnalyzeIamPolicyLongrunningRequest(_messages.Message):
+  r"""A request message for AssetService.AnalyzeIamPolicyLongrunning.
+
+  Fields:
+    analysisQuery: Required. The request query.
+    outputConfig: Required. Output configuration indicating where the results
+      will be output to.
+  """
+
+  analysisQuery = _messages.MessageField('IamPolicyAnalysisQuery', 1)
+  outputConfig = _messages.MessageField('IamPolicyAnalysisOutputConfig', 2)
+
+
+class AnalyzeIamPolicyResponse(_messages.Message):
+  r"""A response message for AssetService.AnalyzeIamPolicy.
+
+  Fields:
+    fullyExplored: Represents whether all entries in the main_analysis and
+      service_account_impersonation_analysis have been fully explored to
+      answer the query in the request.
+    mainAnalysis: The main analysis that matches the original request.
+    serviceAccountImpersonationAnalysis: The service account impersonation
+      analysis if
+      AnalyzeIamPolicyRequest.analyze_service_account_impersonation is
+      enabled.
+  """
+
+  fullyExplored = _messages.BooleanField(1)
+  mainAnalysis = _messages.MessageField('IamPolicyAnalysis', 2)
+  serviceAccountImpersonationAnalysis = _messages.MessageField('IamPolicyAnalysis', 3, repeated=True)
+
+
 class Asset(_messages.Message):
   r"""An asset in Google Cloud. An asset can be any resource in the Google
   Cloud [resource hierarchy](https://cloud.google.com/resource-
@@ -262,6 +310,136 @@ class Binding(_messages.Message):
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class CloudassetAnalyzeIamPolicyLongrunningRequest(_messages.Message):
+  r"""A CloudassetAnalyzeIamPolicyLongrunningRequest object.
+
+  Fields:
+    analyzeIamPolicyLongrunningRequest: A AnalyzeIamPolicyLongrunningRequest
+      resource to be passed as the request body.
+    scope: Required. The relative name of the root asset. Only resources and
+      IAM policies within the scope will be analyzed. This can only be an
+      organization number (such as "organizations/123"), a folder number (such
+      as "folders/123"), a project ID (such as "projects/my-project-id"), or a
+      project number (such as "projects/12345"). To know how to get
+      organization id, visit [here ](https://cloud.google.com/resource-
+      manager/docs/creating-managing-
+      organization#retrieving_your_organization_id). To know how to get folder
+      or project id, visit [here ](https://cloud.google.com/resource-
+      manager/docs/creating-managing-
+      folders#viewing_or_listing_folders_and_projects).
+  """
+
+  analyzeIamPolicyLongrunningRequest = _messages.MessageField('AnalyzeIamPolicyLongrunningRequest', 1)
+  scope = _messages.StringField(2, required=True)
+
+
+class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
+  r"""A CloudassetAnalyzeIamPolicyRequest object.
+
+  Fields:
+    analysisQuery_accessSelector_permissions: Optional. The permissions to
+      appear in result.
+    analysisQuery_accessSelector_roles: Optional. The roles to appear in
+      result.
+    analysisQuery_identitySelector_identity: Required. The identity appear in
+      the form of members in [IAM policy
+      binding](https://cloud.google.com/iam/reference/rest/v1/Binding). The
+      examples of supported forms are: "user:mike@example.com",
+      "group:admins@example.com", "domain:google.com", "serviceAccount:my-
+      project-id@appspot.gserviceaccount.com". Notice that wildcard characters
+      (such as * and ?) are not supported. You must give a specific identity.
+    analysisQuery_options_analyzeServiceAccountImpersonation: Optional. If
+      true, the response will include access analysis from identities to
+      resources via service account impersonation. This is a very expensive
+      operation, because many derived queries will be executed. We highly
+      recommend you use AssetService.AnalyzeIamPolicyLongrunning rpc instead.
+      For example, if the request analyzes for which resources user A has
+      permission P, and there's an IAM policy states user A has
+      iam.serviceAccounts.getAccessToken permission to a service account SA,
+      and there's another IAM policy states service account SA has permission
+      P to a GCP folder F, then user A potentially has access to the GCP
+      folder F. And those advanced analysis results will be included in
+      AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Another
+      example, if the request analyzes for who has permission P to a GCP
+      folder F, and there's an IAM policy states user A has
+      iam.serviceAccounts.actAs permission to a service account SA, and
+      there's another IAM policy states service account SA has permission P to
+      the GCP folder F, then user A potentially has access to the GCP folder
+      F. And those advanced analysis results will be included in
+      AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Default
+      is false.
+    analysisQuery_options_expandGroups: Optional. If true, the identities
+      section of the result will expand any Google groups appearing in an IAM
+      policy binding. If IamPolicyAnalysisQuery.identity_selector is
+      specified, the identity in the result will be determined by the
+      selector, and this flag is not allowed to set. Default is false.
+    analysisQuery_options_expandResources: Optional. If true and
+      IamPolicyAnalysisQuery.resource_selector is not specified, the resource
+      section of the result will expand any resource attached to an IAM policy
+      to include resources lower in the resource hierarchy. For example, if
+      the request analyzes for which resources user A has permission P, and
+      the results include an IAM policy with P on a GCP folder, the results
+      will also include resources in that folder with permission P. If true
+      and IamPolicyAnalysisQuery.resource_selector is specified, the resource
+      section of the result will expand the specified resource to include
+      resources lower in the resource hierarchy. Only project or lower
+      resources are supported. Folder and organization resource cannot be used
+      together with this option. For example, if the request analyzes for
+      which users have permission P on a GCP project with this option enabled,
+      the results will include all users who have permission P on that project
+      or any lower resource. Default is false.
+    analysisQuery_options_expandRoles: Optional. If true, the access section
+      of result will expand any roles appearing in IAM policy bindings to
+      include their permissions. If IamPolicyAnalysisQuery.access_selector is
+      specified, the access section of the result will be determined by the
+      selector, and this flag is not allowed to set. Default is false.
+    analysisQuery_options_outputGroupEdges: Optional. If true, the result will
+      output group identity edges, starting from the binding's group members,
+      to any expanded identities. Default is false.
+    analysisQuery_options_outputResourceEdges: Optional. If true, the result
+      will output resource edges, starting from the policy attached resource,
+      to any expanded resources. Default is false.
+    analysisQuery_resourceSelector_fullResourceName: Required. The [full
+      resource name] (https://cloud.google.com/asset-inventory/docs/resource-
+      name-format) of a resource of [supported resource
+      types](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types#analyzable_asset_types).
+    executionTimeout: Optional. Amount of time executable has to complete. See
+      JSON representation of
+      [Duration](https://developers.google.com/protocol-
+      buffers/docs/proto3#json). If this field is set with a value less than
+      the RPC deadline, and the execution of your query hasn't finished in the
+      specified execution timeout, you will get a response with partial
+      result. Otherwise, your query's execution will continue until the RPC
+      deadline. If it's not finished until then, you will get a
+      DEADLINE_EXCEEDED error. Default is empty.
+    scope: Required. The relative name of the root asset. Only resources and
+      IAM policies within the scope will be analyzed. This can only be an
+      organization number (such as "organizations/123"), a folder number (such
+      as "folders/123"), a project ID (such as "projects/my-project-id"), or a
+      project number (such as "projects/12345"). To know how to get
+      organization id, visit [here ](https://cloud.google.com/resource-
+      manager/docs/creating-managing-
+      organization#retrieving_your_organization_id). To know how to get folder
+      or project id, visit [here ](https://cloud.google.com/resource-
+      manager/docs/creating-managing-
+      folders#viewing_or_listing_folders_and_projects).
+  """
+
+  analysisQuery_accessSelector_permissions = _messages.StringField(1, repeated=True)
+  analysisQuery_accessSelector_roles = _messages.StringField(2, repeated=True)
+  analysisQuery_identitySelector_identity = _messages.StringField(3)
+  analysisQuery_options_analyzeServiceAccountImpersonation = _messages.BooleanField(4)
+  analysisQuery_options_expandGroups = _messages.BooleanField(5)
+  analysisQuery_options_expandResources = _messages.BooleanField(6)
+  analysisQuery_options_expandRoles = _messages.BooleanField(7)
+  analysisQuery_options_outputGroupEdges = _messages.BooleanField(8)
+  analysisQuery_options_outputResourceEdges = _messages.BooleanField(9)
+  analysisQuery_resourceSelector_fullResourceName = _messages.StringField(10)
+  executionTimeout = _messages.StringField(11)
+  scope = _messages.StringField(12, required=True)
 
 
 class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
@@ -808,6 +986,181 @@ class GcsDestination(_messages.Message):
 
   uri = _messages.StringField(1)
   uriPrefix = _messages.StringField(2)
+
+
+class GoogleCloudAssetV1Access(_messages.Message):
+  r"""An IAM role or permission under analysis.
+
+  Fields:
+    analysisState: The analysis state of this access.
+    permission: The permission.
+    role: The role.
+  """
+
+  analysisState = _messages.MessageField('IamPolicyAnalysisState', 1)
+  permission = _messages.StringField(2)
+  role = _messages.StringField(3)
+
+
+class GoogleCloudAssetV1AccessControlList(_messages.Message):
+  r"""An access control list, derived from the above IAM policy binding, which
+  contains a set of resources and accesses. May include one item from each set
+  to compose an access control entry. NOTICE that there could be multiple
+  access control lists for one IAM policy binding. The access control lists
+  are created based on resource and access combinations. For example, assume
+  we have the following cases in one IAM policy binding: - Permission P1 and
+  P2 apply to resource R1 and R2; - Permission P3 applies to resource R2 and
+  R3; This will result in the following access control lists: -
+  AccessControlList 1: [R1, R2], [P1, P2] - AccessControlList 2: [R2, R3],
+  [P3]
+
+  Fields:
+    accesses: The accesses that match one of the following conditions: - The
+      access_selector, if it is specified in request; - Otherwise, access
+      specifiers reachable from the policy binding's role.
+    resourceEdges: Resource edges of the graph starting from the policy
+      attached resource to any descendant resources. The Edge.source_node
+      contains the full resource name of a parent resource and
+      Edge.target_node contains the full resource name of a child resource.
+      This field is present only if the output_resource_edges option is
+      enabled in request.
+    resources: The resources that match one of the following conditions: - The
+      resource_selector, if it is specified in request; - Otherwise, resources
+      reachable from the policy attached resource.
+  """
+
+  accesses = _messages.MessageField('GoogleCloudAssetV1Access', 1, repeated=True)
+  resourceEdges = _messages.MessageField('GoogleCloudAssetV1Edge', 2, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssetV1Resource', 3, repeated=True)
+
+
+class GoogleCloudAssetV1BigQueryDestination(_messages.Message):
+  r"""A BigQuery destination.
+
+  Enums:
+    PartitionKeyValueValuesEnum: The partition key for BigQuery partitioned
+      table.
+
+  Fields:
+    dataset: Required. The BigQuery dataset in format
+      "projects/projectId/datasets/datasetId", to which the analysis results
+      should be exported. If this dataset does not exist, the export call will
+      return an INVALID_ARGUMENT error.
+    partitionKey: The partition key for BigQuery partitioned table.
+    tablePrefix: Required. The prefix of the BigQuery tables to which the
+      analysis results will be written. Tables will be created based on this
+      table_prefix if not exist: * _analysis table will contain export
+      operation's metadata. * _analysis_result will contain all the
+      IamPolicyAnalysisResult. When [partition_key] is specified, both tables
+      will be partitioned based on the [partition_key].
+    writeDisposition: Optional. Specifies the action that occurs if the
+      destination table or partition already exists. The following values are
+      supported: * WRITE_TRUNCATE: If the table or partition already exists,
+      BigQuery overwrites the entire table or all the partitions data. *
+      WRITE_APPEND: If the table or partition already exists, BigQuery appends
+      the data to the table or the latest partition. * WRITE_EMPTY: If the
+      table already exists and contains data, an error is returned. The
+      default value is WRITE_APPEND. Each action is atomic and only occurs if
+      BigQuery is able to complete the job successfully. Details are at
+      https://cloud.google.com/bigquery/docs/loading-data-
+      local#appending_to_or_overwriting_a_table_using_a_local_file.
+  """
+
+  class PartitionKeyValueValuesEnum(_messages.Enum):
+    r"""The partition key for BigQuery partitioned table.
+
+    Values:
+      PARTITION_KEY_UNSPECIFIED: Unspecified partition key. Tables won't be
+        partitioned using this option.
+      REQUEST_TIME: The time when the request is received. If specified as
+        partition key, the result table(s) is partitoned by the RequestTime
+        column, an additional timestamp column representing when the request
+        was received.
+    """
+    PARTITION_KEY_UNSPECIFIED = 0
+    REQUEST_TIME = 1
+
+  dataset = _messages.StringField(1)
+  partitionKey = _messages.EnumField('PartitionKeyValueValuesEnum', 2)
+  tablePrefix = _messages.StringField(3)
+  writeDisposition = _messages.StringField(4)
+
+
+class GoogleCloudAssetV1Edge(_messages.Message):
+  r"""A directional edge.
+
+  Fields:
+    sourceNode: The source node of the edge. For example, it could be a full
+      resource name for a resource node or an email of an identity.
+    targetNode: The target node of the edge. For example, it could be a full
+      resource name for a resource node or an email of an identity.
+  """
+
+  sourceNode = _messages.StringField(1)
+  targetNode = _messages.StringField(2)
+
+
+class GoogleCloudAssetV1GcsDestination(_messages.Message):
+  r"""A Cloud Storage location.
+
+  Fields:
+    uri: Required. The uri of the Cloud Storage object. It's the same uri that
+      is used by gsutil. For example: "gs://bucket_name/object_name". See
+      [Viewing and Editing Object
+      Metadata](https://cloud.google.com/storage/docs/viewing-editing-
+      metadata) for more information.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudAssetV1Identity(_messages.Message):
+  r"""An identity under analysis.
+
+  Fields:
+    analysisState: The analysis state of this identity.
+    name: The identity name in any form of members appear in [IAM policy
+      binding](https://cloud.google.com/iam/reference/rest/v1/Binding), such
+      as: - user:foo@google.com - group:group1@google.com -
+      serviceAccount:s1@prj1.iam.gserviceaccount.com -
+      projectOwner:some_project_id - domain:google.com - allUsers - etc.
+  """
+
+  analysisState = _messages.MessageField('IamPolicyAnalysisState', 1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudAssetV1IdentityList(_messages.Message):
+  r"""The identities and group edges.
+
+  Fields:
+    groupEdges: Group identity edges of the graph starting from the binding's
+      group members to any node of the identities. The Edge.source_node
+      contains a group, such as `group:parent@google.com`. The
+      Edge.target_node contains a member of the group, such as
+      `group:child@google.com` or `user:foo@google.com`. This field is present
+      only if the output_group_edges option is enabled in request.
+    identities: Only the identities that match one of the following conditions
+      will be presented: - The identity_selector, if it is specified in
+      request; - Otherwise, identities reachable from the policy binding's
+      members.
+  """
+
+  groupEdges = _messages.MessageField('GoogleCloudAssetV1Edge', 1, repeated=True)
+  identities = _messages.MessageField('GoogleCloudAssetV1Identity', 2, repeated=True)
+
+
+class GoogleCloudAssetV1Resource(_messages.Message):
+  r"""A Google Cloud resource under analysis.
+
+  Fields:
+    analysisState: The analysis state of this resource.
+    fullResourceName: The [full resource name](https://cloud.google.com/asset-
+      inventory/docs/resource-name-format)
+  """
+
+  analysisState = _messages.MessageField('IamPolicyAnalysisState', 1)
+  fullResourceName = _messages.StringField(2)
 
 
 class GoogleCloudOrgpolicyV1BooleanPolicy(_messages.Message):
@@ -1398,6 +1751,226 @@ class GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices(_messages.Messag
   enableRestriction = _messages.BooleanField(2)
 
 
+class IamPolicyAnalysis(_messages.Message):
+  r"""An analysis message to group the query and results.
+
+  Fields:
+    analysisQuery: The analysis query.
+    analysisResults: A list of IamPolicyAnalysisResult that matches the
+      analysis query, or empty if no result is found.
+    fullyExplored: Represents whether all entries in the analysis_results have
+      been fully explored to answer the query.
+    nonCriticalErrors: A list of non-critical errors happened during the query
+      handling.
+  """
+
+  analysisQuery = _messages.MessageField('IamPolicyAnalysisQuery', 1)
+  analysisResults = _messages.MessageField('IamPolicyAnalysisResult', 2, repeated=True)
+  fullyExplored = _messages.BooleanField(3)
+  nonCriticalErrors = _messages.MessageField('IamPolicyAnalysisState', 4, repeated=True)
+
+
+class IamPolicyAnalysisOutputConfig(_messages.Message):
+  r"""Output configuration for export IAM policy analysis destination.
+
+  Fields:
+    bigqueryDestination: Destination on BigQuery.
+    gcsDestination: Destination on Cloud Storage.
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudAssetV1BigQueryDestination', 1)
+  gcsDestination = _messages.MessageField('GoogleCloudAssetV1GcsDestination', 2)
+
+
+class IamPolicyAnalysisQuery(_messages.Message):
+  r"""IAM policy analysis query message.
+
+  Fields:
+    accessSelector: Optional. Specifies roles or permissions for analysis.
+      This is optional.
+    identitySelector: Optional. Specifies an identity for analysis.
+    options: Optional. The query options.
+    resourceSelector: Optional. Specifies a resource for analysis.
+    scope: Required. The relative name of the root asset. Only resources and
+      IAM policies within the scope will be analyzed. This can only be an
+      organization number (such as "organizations/123"), a folder number (such
+      as "folders/123"), a project ID (such as "projects/my-project-id"), or a
+      project number (such as "projects/12345"). To know how to get
+      organization id, visit [here ](https://cloud.google.com/resource-
+      manager/docs/creating-managing-
+      organization#retrieving_your_organization_id). To know how to get folder
+      or project id, visit [here ](https://cloud.google.com/resource-
+      manager/docs/creating-managing-
+      folders#viewing_or_listing_folders_and_projects).
+  """
+
+  accessSelector = _messages.MessageField('AccessSelector', 1)
+  identitySelector = _messages.MessageField('IdentitySelector', 2)
+  options = _messages.MessageField('Options', 3)
+  resourceSelector = _messages.MessageField('ResourceSelector', 4)
+  scope = _messages.StringField(5)
+
+
+class IamPolicyAnalysisResult(_messages.Message):
+  r"""IAM Policy analysis result, consisting of one IAM policy binding and
+  derived access control lists.
+
+  Fields:
+    accessControlLists: The access control lists derived from the iam_binding
+      that match or potentially match resource and access selectors specified
+      in the request.
+    attachedResourceFullName: The [full resource
+      name](https://cloud.google.com/asset-inventory/docs/resource-name-
+      format) of the resource to which the iam_binding policy attaches.
+    fullyExplored: Represents whether all analyses on the iam_binding have
+      successfully finished.
+    iamBinding: The Cloud IAM policy binding under analysis.
+    identityList: The identity list derived from members of the iam_binding
+      that match or potentially match identity selector specified in the
+      request.
+  """
+
+  accessControlLists = _messages.MessageField('GoogleCloudAssetV1AccessControlList', 1, repeated=True)
+  attachedResourceFullName = _messages.StringField(2)
+  fullyExplored = _messages.BooleanField(3)
+  iamBinding = _messages.MessageField('Binding', 4)
+  identityList = _messages.MessageField('GoogleCloudAssetV1IdentityList', 5)
+
+
+class IamPolicyAnalysisState(_messages.Message):
+  r"""Represents the detailed state of an entity under analysis, such as a
+  resource, an identity or an access.
+
+  Enums:
+    CodeValueValuesEnum: The Google standard error code that best describes
+      the state. For example: - OK means the analysis on this entity has been
+      successfully finished; - PERMISSION_DENIED means an access denied error
+      is encountered; - DEADLINE_EXCEEDED means the analysis on this entity
+      hasn't been started in time;
+
+  Fields:
+    cause: The human-readable description of the cause of failure.
+    code: The Google standard error code that best describes the state. For
+      example: - OK means the analysis on this entity has been successfully
+      finished; - PERMISSION_DENIED means an access denied error is
+      encountered; - DEADLINE_EXCEEDED means the analysis on this entity
+      hasn't been started in time;
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The Google standard error code that best describes the state. For
+    example: - OK means the analysis on this entity has been successfully
+    finished; - PERMISSION_DENIED means an access denied error is encountered;
+    - DEADLINE_EXCEEDED means the analysis on this entity hasn't been started
+    in time;
+
+    Values:
+      OK: Not an error; returned on success HTTP Mapping: 200 OK
+      CANCELLED: The operation was cancelled, typically by the caller. HTTP
+        Mapping: 499 Client Closed Request
+      UNKNOWN: Unknown error. For example, this error may be returned when a
+        `Status` value received from another address space belongs to an error
+        space that is not known in this address space. Also errors raised by
+        APIs that do not return enough error information may be converted to
+        this error. HTTP Mapping: 500 Internal Server Error
+      INVALID_ARGUMENT: The client specified an invalid argument. Note that
+        this differs from `FAILED_PRECONDITION`. `INVALID_ARGUMENT` indicates
+        arguments that are problematic regardless of the state of the system
+        (e.g., a malformed file name). HTTP Mapping: 400 Bad Request
+      DEADLINE_EXCEEDED: The deadline expired before the operation could
+        complete. For operations that change the state of the system, this
+        error may be returned even if the operation has completed
+        successfully. For example, a successful response from a server could
+        have been delayed long enough for the deadline to expire. HTTP
+        Mapping: 504 Gateway Timeout
+      NOT_FOUND: Some requested entity (e.g., file or directory) was not
+        found. Note to server developers: if a request is denied for an entire
+        class of users, such as gradual feature rollout or undocumented
+        allowlist, `NOT_FOUND` may be used. If a request is denied for some
+        users within a class of users, such as user-based access control,
+        `PERMISSION_DENIED` must be used. HTTP Mapping: 404 Not Found
+      ALREADY_EXISTS: The entity that a client attempted to create (e.g., file
+        or directory) already exists. HTTP Mapping: 409 Conflict
+      PERMISSION_DENIED: The caller does not have permission to execute the
+        specified operation. `PERMISSION_DENIED` must not be used for
+        rejections caused by exhausting some resource (use
+        `RESOURCE_EXHAUSTED` instead for those errors). `PERMISSION_DENIED`
+        must not be used if the caller can not be identified (use
+        `UNAUTHENTICATED` instead for those errors). This error code does not
+        imply the request is valid or the requested entity exists or satisfies
+        other pre-conditions. HTTP Mapping: 403 Forbidden
+      UNAUTHENTICATED: The request does not have valid authentication
+        credentials for the operation. HTTP Mapping: 401 Unauthorized
+      RESOURCE_EXHAUSTED: Some resource has been exhausted, perhaps a per-user
+        quota, or perhaps the entire file system is out of space. HTTP
+        Mapping: 429 Too Many Requests
+      FAILED_PRECONDITION: The operation was rejected because the system is
+        not in a state required for the operation's execution. For example,
+        the directory to be deleted is non-empty, an rmdir operation is
+        applied to a non-directory, etc. Service implementors can use the
+        following guidelines to decide between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
+        retry just the failing call. (b) Use `ABORTED` if the client should
+        retry at a higher level (e.g., when a client-specified test-and-set
+        fails, indicating the client should restart a read-modify-write
+        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. E.g., if an
+        "rmdir" fails because the directory is non-empty,
+        `FAILED_PRECONDITION` should be returned since the client should not
+        retry unless the files are deleted from the directory. HTTP Mapping:
+        400 Bad Request
+      ABORTED: The operation was aborted, typically due to a concurrency issue
+        such as a sequencer check failure or transaction abort. See the
+        guidelines above for deciding between `FAILED_PRECONDITION`,
+        `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 409 Conflict
+      OUT_OF_RANGE: The operation was attempted past the valid range. E.g.,
+        seeking or reading past end-of-file. Unlike `INVALID_ARGUMENT`, this
+        error indicates a problem that may be fixed if the system state
+        changes. For example, a 32-bit file system will generate
+        `INVALID_ARGUMENT` if asked to read at an offset that is not in the
+        range [0,2^32-1], but it will generate `OUT_OF_RANGE` if asked to read
+        from an offset past the current file size. There is a fair bit of
+        overlap between `FAILED_PRECONDITION` and `OUT_OF_RANGE`. We recommend
+        using `OUT_OF_RANGE` (the more specific error) when it applies so that
+        callers who are iterating through a space can easily look for an
+        `OUT_OF_RANGE` error to detect when they are done. HTTP Mapping: 400
+        Bad Request
+      UNIMPLEMENTED: The operation is not implemented or is not
+        supported/enabled in this service. HTTP Mapping: 501 Not Implemented
+      INTERNAL: Internal errors. This means that some invariants expected by
+        the underlying system have been broken. This error code is reserved
+        for serious errors. HTTP Mapping: 500 Internal Server Error
+      UNAVAILABLE: The service is currently unavailable. This is most likely a
+        transient condition, which can be corrected by retrying with a
+        backoff. Note that it is not always safe to retry non-idempotent
+        operations. See the guidelines above for deciding between
+        `FAILED_PRECONDITION`, `ABORTED`, and `UNAVAILABLE`. HTTP Mapping: 503
+        Service Unavailable
+      DATA_LOSS: Unrecoverable data loss or corruption. HTTP Mapping: 500
+        Internal Server Error
+    """
+    OK = 0
+    CANCELLED = 1
+    UNKNOWN = 2
+    INVALID_ARGUMENT = 3
+    DEADLINE_EXCEEDED = 4
+    NOT_FOUND = 5
+    ALREADY_EXISTS = 6
+    PERMISSION_DENIED = 7
+    UNAUTHENTICATED = 8
+    RESOURCE_EXHAUSTED = 9
+    FAILED_PRECONDITION = 10
+    ABORTED = 11
+    OUT_OF_RANGE = 12
+    UNIMPLEMENTED = 13
+    INTERNAL = 14
+    UNAVAILABLE = 15
+    DATA_LOSS = 16
+
+  cause = _messages.StringField(1)
+  code = _messages.EnumField('CodeValueValuesEnum', 2)
+
+
 class IamPolicySearchResult(_messages.Message):
   r"""A result of IAM Policy search, containing information of an IAM policy.
 
@@ -1434,6 +2007,23 @@ class IamPolicySearchResult(_messages.Message):
   policy = _messages.MessageField('Policy', 2)
   project = _messages.StringField(3)
   resource = _messages.StringField(4)
+
+
+class IdentitySelector(_messages.Message):
+  r"""Specifies an identity for which to determine resource access, based on
+  roles assigned either directly to them or to the groups they belong to,
+  directly or indirectly.
+
+  Fields:
+    identity: Required. The identity appear in the form of members in [IAM
+      policy binding](https://cloud.google.com/iam/reference/rest/v1/Binding).
+      The examples of supported forms are: "user:mike@example.com",
+      "group:admins@example.com", "domain:google.com", "serviceAccount:my-
+      project-id@appspot.gserviceaccount.com". Notice that wildcard characters
+      (such as * and ?) are not supported. You must give a specific identity.
+  """
+
+  identity = _messages.StringField(1)
 
 
 class ListFeedsResponse(_messages.Message):
@@ -1552,6 +2142,71 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class Options(_messages.Message):
+  r"""Contains query options.
+
+  Fields:
+    analyzeServiceAccountImpersonation: Optional. If true, the response will
+      include access analysis from identities to resources via service account
+      impersonation. This is a very expensive operation, because many derived
+      queries will be executed. We highly recommend you use
+      AssetService.AnalyzeIamPolicyLongrunning rpc instead. For example, if
+      the request analyzes for which resources user A has permission P, and
+      there's an IAM policy states user A has
+      iam.serviceAccounts.getAccessToken permission to a service account SA,
+      and there's another IAM policy states service account SA has permission
+      P to a GCP folder F, then user A potentially has access to the GCP
+      folder F. And those advanced analysis results will be included in
+      AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Another
+      example, if the request analyzes for who has permission P to a GCP
+      folder F, and there's an IAM policy states user A has
+      iam.serviceAccounts.actAs permission to a service account SA, and
+      there's another IAM policy states service account SA has permission P to
+      the GCP folder F, then user A potentially has access to the GCP folder
+      F. And those advanced analysis results will be included in
+      AnalyzeIamPolicyResponse.service_account_impersonation_analysis. Default
+      is false.
+    expandGroups: Optional. If true, the identities section of the result will
+      expand any Google groups appearing in an IAM policy binding. If
+      IamPolicyAnalysisQuery.identity_selector is specified, the identity in
+      the result will be determined by the selector, and this flag is not
+      allowed to set. Default is false.
+    expandResources: Optional. If true and
+      IamPolicyAnalysisQuery.resource_selector is not specified, the resource
+      section of the result will expand any resource attached to an IAM policy
+      to include resources lower in the resource hierarchy. For example, if
+      the request analyzes for which resources user A has permission P, and
+      the results include an IAM policy with P on a GCP folder, the results
+      will also include resources in that folder with permission P. If true
+      and IamPolicyAnalysisQuery.resource_selector is specified, the resource
+      section of the result will expand the specified resource to include
+      resources lower in the resource hierarchy. Only project or lower
+      resources are supported. Folder and organization resource cannot be used
+      together with this option. For example, if the request analyzes for
+      which users have permission P on a GCP project with this option enabled,
+      the results will include all users who have permission P on that project
+      or any lower resource. Default is false.
+    expandRoles: Optional. If true, the access section of result will expand
+      any roles appearing in IAM policy bindings to include their permissions.
+      If IamPolicyAnalysisQuery.access_selector is specified, the access
+      section of the result will be determined by the selector, and this flag
+      is not allowed to set. Default is false.
+    outputGroupEdges: Optional. If true, the result will output group identity
+      edges, starting from the binding's group members, to any expanded
+      identities. Default is false.
+    outputResourceEdges: Optional. If true, the result will output resource
+      edges, starting from the policy attached resource, to any expanded
+      resources. Default is false.
+  """
+
+  analyzeServiceAccountImpersonation = _messages.BooleanField(1)
+  expandGroups = _messages.BooleanField(2)
+  expandResources = _messages.BooleanField(3)
+  expandRoles = _messages.BooleanField(4)
+  outputGroupEdges = _messages.BooleanField(5)
+  outputResourceEdges = _messages.BooleanField(6)
 
 
 class OutputConfig(_messages.Message):
@@ -1926,6 +2581,21 @@ class ResourceSearchResult(_messages.Message):
   name = _messages.StringField(7)
   networkTags = _messages.StringField(8, repeated=True)
   project = _messages.StringField(9)
+
+
+class ResourceSelector(_messages.Message):
+  r"""Specifies the resource to analyze for access policies, which may be set
+  directly on the resource, or on ancestors such as organizations, folders or
+  projects.
+
+  Fields:
+    fullResourceName: Required. The [full resource name]
+      (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
+      a resource of [supported resource types](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#analyzable_asset_types).
+  """
+
+  fullResourceName = _messages.StringField(1)
 
 
 class SearchAllIamPoliciesResponse(_messages.Message):

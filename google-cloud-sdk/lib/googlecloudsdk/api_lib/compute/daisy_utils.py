@@ -18,21 +18,27 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import random
+import string
 import time
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py.exceptions import HttpError
+from apitools.base.py.exceptions import HttpNotFoundError
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.services import enable_api as services_api
+from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.artifacts import docker_util
 from googlecloudsdk.command_lib.cloudbuild import execution
 from googlecloudsdk.command_lib.compute.sole_tenancy import util as sole_tenancy_util
 from googlecloudsdk.command_lib.projects import util as projects_util
@@ -45,10 +51,13 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 import six
 
-_IMAGE_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_import:{}'
-_IMAGE_EXPORT_BUILDER = 'gcr.io/compute-image-tools/gce_vm_image_export:{}'
-_OVF_IMPORT_BUILDER = 'gcr.io/compute-image-tools/gce_ovf_import:{}'
-_OS_UPGRADE_BUILDER = 'gcr.io/compute-image-tools/gce_windows_upgrade:{}'
+_DEFAULT_BUILDER_DOCKER_PATTERN = 'gcr.io/compute-image-tools/{executable}:{docker_image_tag}'
+_REGIONALIZED_BUILDER_DOCKER_PATTERN = '{region}-docker.pkg.dev/compute-image-tools/wrappers/{executable}:{docker_image_tag}'
+
+_IMAGE_IMPORT_BUILDER_EXECUTABLE = 'gce_vm_image_import'
+_IMAGE_EXPORT_BUILDER_EXECUTABLE = 'gce_vm_image_export'
+_OVF_IMPORT_BUILDER_EXECUTABLE = 'gce_ovf_import'
+_OS_UPGRADE_BUILDER_EXECUTABLE = 'gce_windows_upgrade'
 
 _DEFAULT_BUILDER_VERSION = 'release'
 
@@ -92,6 +101,9 @@ OS_UPGRADE_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT = frozenset({
     ROLE_IAM_SERVICE_ACCOUNT_TOKEN_CREATOR,
     ROLE_IAM_SERVICE_ACCOUNT_USER,
 })
+
+# Used for unit testing as api_tools mocks can only assert on exact matches
+bucket_random_suffix_override = None
 
 
 class FilteredLogTailer(cb_logs.LogTailer):
@@ -170,6 +182,10 @@ class FailedBuildException(exceptions.Error):
 
 class SubnetException(exceptions.Error):
   """Exception for subnet related errors."""
+
+
+class DaisyBucketCreationException(exceptions.Error):
+  """Exception for Daisy creation related errors."""
 
 
 class ImageOperation(object):
@@ -465,6 +481,67 @@ def _GetSafeBucketName(bucket_name):
   return bucket_name
 
 
+def CreateDaisyBucketInProject(bucket_location, storage_client):
+  """Creates Daisy bucket in current project.
+
+  Args:
+    bucket_location: str, specified bucket location.
+    storage_client: storage client
+
+  Returns:
+    str, Daisy bucket.
+
+  Raises:
+    DaisyBucketCreationException: if unable to create Daisy Bucket in current
+      project.
+  """
+  bucket_name = GetDaisyBucketName(bucket_location)
+  storage_client.CreateBucketIfNotExists(
+      bucket_name, location=bucket_location)
+
+  if not _BucketIsInProject(storage_client, bucket_name):
+    # A bucket already exists under the same name but in a different project.
+    # Concatenate a random 8 character suffix to the bucket name and try a
+    # couple more times.
+    letters = string.ascii_lowercase
+    bucket_in_project_created_or_found = False
+    for _ in range(10):
+      random_suffix = bucket_random_suffix_override or ''.join(
+          random.choice(letters) for i in range(8))
+      randomized_bucket_name = '{0}-{1}'.format(bucket_name, random_suffix)
+      storage_client.CreateBucketIfNotExists(
+          randomized_bucket_name, location=bucket_location)
+      if _BucketIsInProject(storage_client, randomized_bucket_name):
+        bucket_in_project_created_or_found = True
+        bucket_name = randomized_bucket_name
+        break
+
+    if not bucket_in_project_created_or_found:
+      # Give up attempting to create a Daisy scratch bucket
+      raise DaisyBucketCreationException(
+          'Unable to create a temporary bucket `{0}` needed for the operation to proceed as it exists in another project.'
+          .format(bucket_name))
+  return bucket_name
+
+
+def _BucketIsInProject(storage_client, bucket_name):
+  """Returns true if the provided bucket is in the user's project, else False.
+
+  Args:
+    storage_client: Client used to make calls to Google Storage.
+    bucket_name: Bucket name to check.
+
+  Returns:
+    True or False.
+  """
+  project = properties.VALUES.core.project.Get(required=True)
+  bucket_list_req = storage_client.messages.StorageBucketsListRequest(
+      project=project, prefix=bucket_name)
+  bucket_list = storage_client.client.buckets.List(bucket_list_req)
+  return any(
+      bucket.id == bucket_name for bucket in bucket_list.items)
+
+
 def GetSubnetRegion():
   """Gets region from global properties/args that should be used for subnet arg.
 
@@ -499,6 +576,7 @@ def RunImageImport(args,
                    import_args,
                    tags,
                    output_filter,
+                   release_track,
                    docker_image_tag=_DEFAULT_BUILDER_VERSION):
   """Run a build over gce_vm_image_import on Google Cloud Builder.
 
@@ -510,6 +588,8 @@ def RunImageImport(args,
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
+    release_track: release track of the command used. One of - "alpha", "beta"
+      or "ga"
     docker_image_tag: Specified docker image tag.
 
   Returns:
@@ -519,17 +599,123 @@ def RunImageImport(args,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  builder = _IMAGE_IMPORT_BUILDER.format(docker_image_tag)
   AppendArg(import_args, 'client_version', config.CLOUD_SDK_VERSION)
+
+  builder = _GetBuilder(args, _IMAGE_IMPORT_BUILDER_EXECUTABLE,
+                        docker_image_tag, release_track, _GetImageImportRegion)
   return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
                             IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
                             IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+
+
+def _GetBuilder(args, executable, docker_image_tag, release_track,
+                region_getter):
+  """Returns a path to a builder Docker images.
+
+  If a region can be determined from region_getter and if regionalized builder
+  repos are enabled, a regionalized builder is returned. Otherwise, the default
+  builder is returned.
+
+  Args:
+    args: An argparse namespace. All the arguments that were provided to this
+      command invocation.
+    executable: name of builder executable to run
+    docker_image_tag: tag for Docker builder images (e.g. 'release')
+    release_track: release track of the command used. One of - "alpha", "beta"
+      or "ga"
+    region_getter: method that returns desired region based on args
+
+  Returns:
+    str: a path to a builder Docker images.
+  """
+  if release_track != 'ga':
+    # Use regionalized wrapper image for Alpha and Beta
+    regionalized_builder = _GetRegionalizedBuilder(args, executable,
+                                                   region_getter,
+                                                   docker_image_tag)
+    if regionalized_builder:
+      return regionalized_builder
+  return _DEFAULT_BUILDER_DOCKER_PATTERN.format(
+      executable=executable, docker_image_tag=docker_image_tag)
+
+
+def _GetRegionalizedBuilder(args, executable, region_getter, docker_image_tag):
+  """Return Docker image path for regionalized builder wrapper.
+
+  Args:
+    args: gcloud command args
+    executable: name of builder executable to run
+    region_getter: method that returns desired region based on args
+    docker_image_tag: tag for Docker builder images (e.g. 'release')
+
+  Returns:
+    str: path to Docker images for regionalized builder.
+  """
+  try:
+    region = region_getter(args)
+  except HttpError:
+    region = ''
+
+  if not region:
+    return ''
+
+  regionalized_builder = _REGIONALIZED_BUILDER_DOCKER_PATTERN.format(
+      executable=executable,
+      region=region,
+      docker_image_tag=docker_image_tag)
+
+  # Verify builder image exists. Some situations when a repo won't exist:
+  # - new region wrappers are not deployed to
+  # - Artifact registry not in a region (e.g. us-west3/us-west4)
+  try:
+    docker_util.GetDockerImage(regionalized_builder)
+    return regionalized_builder
+  except HttpNotFoundError:
+    # We're sure here that repo or image don't exist
+    return ''
+  except HttpError:
+    # For other HTTP errors, such as no permission to check if the repo exists
+    # return the builder path and let Cloud Build run method handle potential
+    # failures due to missing repo
+    return regionalized_builder
+
+
+def _GetImageImportRegion(args):
+  """Return region to run image import in.
+
+  Args:
+    args: command args
+
+  Returns:
+    str: region. Can be empty.
+  """
+  zone = properties.VALUES.compute.zone.Get()
+  if zone:
+    return utils.ZoneNameToRegionName(zone)
+  elif args.storage_location:
+    return args.storage_location.lower()
+  elif args.source_file and not IsLocalFile(args.source_file):
+    try:
+      bucket = storage_api.StorageClient().GetBucket(
+          storage_util.ObjectReference.FromUrl(MakeGcsUri(
+              args.source_file)).bucket)
+      if bucket and bucket.location:
+        return bucket.location.lower()
+    except storage_api.BucketNotFoundError:
+      return ''
+  return ''
+
+
+def GetRegionFromZone(zone):
+  """Returns the GCP region that the input zone is in."""
+  return '-'.join(zone.split('-')[:-1]).lower()
 
 
 def RunImageExport(args,
                    export_args,
                    tags,
                    output_filter,
+                   release_track,
                    docker_image_tag=_DEFAULT_BUILDER_VERSION):
   """Run a build over gce_vm_image_export on Google Cloud Builder.
 
@@ -541,6 +727,8 @@ def RunImageExport(args,
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
+    release_track: release track of the command used. One of - "alpha", "beta"
+      or "ga"
     docker_image_tag: Specified docker image tag.
 
   Returns:
@@ -550,11 +738,26 @@ def RunImageExport(args,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  builder = _IMAGE_EXPORT_BUILDER.format(docker_image_tag)
+
   AppendArg(export_args, 'client_version', config.CLOUD_SDK_VERSION)
+  builder = _GetBuilder(args, _IMAGE_EXPORT_BUILDER_EXECUTABLE,
+                        docker_image_tag, release_track, _GetImageExportRegion)
   return RunImageCloudBuild(args, builder, export_args, tags, output_filter,
                             EXPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
                             EXPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+
+
+def _GetImageExportRegion(args):  # pylint:disable=unused-argument
+  """Return region to run image export in.
+
+  Args:
+    args: command args
+
+  Returns:
+    str: region. Can be empty.
+  """
+  # TODO(b/168663236)
+  return ''
 
 
 def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
@@ -565,7 +768,7 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
   Args:
     args: An argparse namespace. All the arguments that were provided to this
       command invocation.
-    builder: Path to builder image.
+    builder: A path to builder image.
     builder_args: A list of key-value pairs to pass to builder.
     tags: A list of strings for adding tags to the Argo build.
     output_filter: A list of strings indicating what lines from the log should
@@ -612,7 +815,7 @@ def _RunCloudBuild(args,
   Args:
     args: an argparse namespace. All the arguments that were provided to this
       command invocation.
-    builder: path to builder image
+    builder: A paths to builder Docker image.
     build_args: args to be sent to builder
     build_tags: tags to be attached to the build
     output_filter: A list of strings indicating what lines from the log should
@@ -682,7 +885,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
                       description, labels, machine_type, network, network_tier,
                       subnet, private_network_ip, no_restart_on_failure, os,
                       tags, zone, project, output_filter,
-                      compute_release_track, hostname):
+                      release_track, hostname):
   """Run a OVF into VM instance import build on Google Cloud Build.
 
   Args:
@@ -714,8 +917,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
-    compute_release_track: release track to be used for Compute API calls. One
-      of - "alpha", "beta" or ""
+    release_track: release track of the command used. One of - "alpha", "beta"
+      or "ga"
     hostname: hostname of the instance to be imported
 
   Returns:
@@ -757,8 +960,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
   AppendArg(ovf_importer_args, 'timeout', GetDaisyTimeout(args), '-{0}={1}s')
   AppendArg(ovf_importer_args, 'project', project)
   _AppendNodeAffinityLabelArgs(ovf_importer_args, args, compute_client.messages)
-  if compute_release_track:
-    AppendArg(ovf_importer_args, 'release-track', compute_release_track)
+  if release_track:
+    AppendArg(ovf_importer_args, 'release-track', release_track)
   AppendArg(ovf_importer_args, 'hostname', hostname)
   AppendArg(ovf_importer_args, 'client-version', config.CLOUD_SDK_VERSION)
 
@@ -766,12 +969,34 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
 
-  return _RunCloudBuild(args, _OVF_IMPORT_BUILDER.format(args.docker_image_tag),
-                        ovf_importer_args, build_tags, output_filter,
-                        backoff=backoff, log_location=args.log_location)
+  builder = _GetBuilder(args, _OVF_IMPORT_BUILDER_EXECUTABLE,
+                        args.docker_image_tag, release_track,
+                        _GetOVFImportRegion)
+  return _RunCloudBuild(
+      args,
+      builder,
+      ovf_importer_args,
+      build_tags,
+      output_filter,
+      backoff=backoff,
+      log_location=args.log_location)
 
 
-def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
+def _GetOVFImportRegion(args):  # pylint:disable=unused-argument
+  """Return region to run OVF import in.
+
+  Args:
+    args: command args
+
+  Returns:
+    str: region. Can be empty.
+  """
+  # TODO(b/168663237)
+  # TODO(b/168663402)
+  return ''
+
+
+def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   """Run a OVF into VM instance import build on Google Cloud Builder.
 
   Args:
@@ -780,8 +1005,8 @@ def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
-    compute_release_track: release track to be used for Compute API calls. One
-      of - "alpha", "beta" or ""
+    release_track: release track of the command used. One of - "alpha", "beta"
+      or "ga"
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -830,20 +1055,28 @@ def RunMachineImageOVFImportBuild(args, output_filter, compute_release_track):
   AppendArg(ovf_importer_args, 'zone', properties.VALUES.compute.zone.Get())
   AppendArg(ovf_importer_args, 'timeout', GetDaisyTimeout(args), '-{0}={1}s')
   AppendArg(ovf_importer_args, 'project', args.project)
-  if compute_release_track:
-    AppendArg(ovf_importer_args, 'release-track', compute_release_track)
+  if release_track:
+    AppendArg(ovf_importer_args, 'release-track', release_track)
   AppendArg(ovf_importer_args, 'client-version', config.CLOUD_SDK_VERSION)
 
   build_tags = ['gce-daisy', 'gce-ovf-machine-image-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
 
-  return _RunCloudBuild(args, _OVF_IMPORT_BUILDER.format(args.docker_image_tag),
-                        ovf_importer_args, build_tags, output_filter,
-                        backoff=backoff, log_location=args.log_location)
+  builder = _GetBuilder(args, _OVF_IMPORT_BUILDER_EXECUTABLE,
+                        args.docker_image_tag, release_track,
+                        _GetOVFImportRegion)
+  return _RunCloudBuild(
+      args,
+      builder,
+      ovf_importer_args,
+      build_tags,
+      output_filter,
+      backoff=backoff,
+      log_location=args.log_location)
 
 
-def RunOsUpgradeBuild(args, output_filter, instance_uri):
+def RunOsUpgradeBuild(args, output_filter, instance_uri, release_track):
   """Run a OS Upgrade on Google Cloud Builder.
 
   Args:
@@ -853,6 +1086,8 @@ def RunOsUpgradeBuild(args, output_filter, instance_uri):
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
     instance_uri: instance to be upgraded.
+    release_track: release track of the command used. One of - "alpha", "beta"
+      or "ga"
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -889,9 +1124,24 @@ def RunOsUpgradeBuild(args, output_filter, instance_uri):
 
   build_tags = ['gce-os-upgrade']
 
-  return _RunCloudBuild(args, _OS_UPGRADE_BUILDER.format(args.docker_image_tag),
-                        os_upgrade_args, build_tags, output_filter,
-                        args.log_location)
+  builder = _GetBuilder(args, _OS_UPGRADE_BUILDER_EXECUTABLE,
+                        args.docker_image_tag, release_track,
+                        _GetOSUpgradeRegion)
+  return _RunCloudBuild(args, builder, os_upgrade_args, build_tags,
+                        output_filter, args.log_location)
+
+
+def _GetOSUpgradeRegion(args):  # pylint:disable=unused-argument
+  """Return region to run OS upgrade in.
+
+  Args:
+    args: command args
+
+  Returns:
+    str: region. Can be empty.
+  """
+  # TODO(b/168663050)
+  return ''
 
 
 def _AppendNodeAffinityLabelArgs(
@@ -984,3 +1234,8 @@ def ValidateZone(args, compute_client):
     compute_client.MakeRequests(requests)
   except calliope_exceptions.ToolException:
     raise calliope_exceptions.InvalidArgumentException('--zone', args.zone)
+
+
+def IsLocalFile(file_name):
+  return not (file_name.lower().startswith('gs://') or
+              file_name.lower().startswith('https://'))

@@ -284,8 +284,6 @@ def SetDynamicUserQuery(unused_ref, args, request):
 
   if args.IsSpecified('dynamic_user_query'):
     dg_user_query = args.dynamic_user_query
-
-    # TODO(b/147011481): Remove hard coded version info if necessary.
     version = GetApiVersion(args)
     messages = ci_client.GetMessages(version)
     resource_type = messages.DynamicGroupQuery.ResourceTypeValueValuesEnum

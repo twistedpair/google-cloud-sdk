@@ -848,19 +848,6 @@ class Diagnostic(_messages.Message):
   message = _messages.StringField(3)
 
 
-class DisableServiceRequest(_messages.Message):
-  r"""Request message for DisableService method.
-
-  Fields:
-    consumerId: Required. The identity of consumer resource which service
-      disablement will be applied to. The Google Service Management
-      implementation accepts the following forms: - "project:" Note: this is
-      made compatible with google.api.servicecontrol.v1.Operation.consumer_id.
-  """
-
-  consumerId = _messages.StringField(1)
-
-
 class DisableServiceResponse(_messages.Message):
   r"""Operation payload for DisableService method."""
 
@@ -3743,20 +3730,6 @@ class ServicemanagementServicesDeleteRequest(_messages.Message):
   """
 
   serviceName = _messages.StringField(1, required=True)
-
-
-class ServicemanagementServicesDisableRequest(_messages.Message):
-  r"""A ServicemanagementServicesDisableRequest object.
-
-  Fields:
-    disableServiceRequest: A DisableServiceRequest resource to be passed as
-      the request body.
-    serviceName: Required. Name of the service to disable. Specifying an
-      unknown service name will cause the request to fail.
-  """
-
-  disableServiceRequest = _messages.MessageField('DisableServiceRequest', 1)
-  serviceName = _messages.StringField(2, required=True)
 
 
 class ServicemanagementServicesEnableRequest(_messages.Message):

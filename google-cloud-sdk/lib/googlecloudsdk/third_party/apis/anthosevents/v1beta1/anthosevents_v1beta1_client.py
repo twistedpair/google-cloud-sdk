@@ -40,6 +40,7 @@ class AnthoseventsV1beta1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.customresourcedefinitions = self.CustomresourcedefinitionsService(self)
+    self.namespaces_brokers = self.NamespacesBrokersService(self)
     self.namespaces_cloudauditlogssources = self.NamespacesCloudauditlogssourcesService(self)
     self.namespaces_cloudpubsubsources = self.NamespacesCloudpubsubsourcesService(self)
     self.namespaces_cloudschedulersources = self.NamespacesCloudschedulersourcesService(self)
@@ -81,6 +82,124 @@ class AnthoseventsV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AnthoseventsCustomresourcedefinitionsListRequest',
         response_type_name='ListCustomResourceDefinitionsResponse',
+        supports_download=False,
+    )
+
+  class NamespacesBrokersService(base_api.BaseApiService):
+    """Service class for the namespaces_brokers resource."""
+
+    _NAME = 'namespaces_brokers'
+
+    def __init__(self, client):
+      super(AnthoseventsV1beta1.NamespacesBrokersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Rpc to create a new broker.
+
+      Args:
+        request: (AnthoseventsNamespacesBrokersCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Broker) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/brokers',
+        http_method='POST',
+        method_id='anthosevents.namespaces.brokers.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='apis/eventing.knative.dev/v1beta1/{+parent}/brokers',
+        request_field='broker',
+        request_type_name='AnthoseventsNamespacesBrokersCreateRequest',
+        response_type_name='Broker',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a broker.
+
+      Args:
+        request: (AnthoseventsNamespacesBrokersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/brokers/{brokersId}',
+        http_method='DELETE',
+        method_id='anthosevents.namespaces.brokers.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/eventing.knative.dev/v1beta1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesBrokersDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a Broker.
+
+      Args:
+        request: (AnthoseventsNamespacesBrokersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Broker) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/brokers/{brokersId}',
+        http_method='GET',
+        method_id='anthosevents.namespaces.brokers.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/eventing.knative.dev/v1beta1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesBrokersGetRequest',
+        response_type_name='Broker',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list brokers.
+
+      Args:
+        request: (AnthoseventsNamespacesBrokersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBrokersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/eventing.knative.dev/v1beta1/namespaces/{namespacesId}/brokers',
+        http_method='GET',
+        method_id='anthosevents.namespaces.brokers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/eventing.knative.dev/v1beta1/{+parent}/brokers',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesBrokersListRequest',
+        response_type_name='ListBrokersResponse',
         supports_download=False,
     )
 
@@ -203,14 +322,7 @@ class AnthoseventsV1beta1(base_api.BaseApiClient):
     )
 
     def ReplaceCloudAuditLogsSource(self, request, global_params=None):
-      r"""Rpc to replace a cloudauditlogssource.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a cloudauditlogssource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (AnthoseventsNamespacesCloudauditlogssourcesReplaceCloudAuditLogsSourceRequest) input message
@@ -355,14 +467,7 @@ optimistic concurrency control.
     )
 
     def ReplaceCloudPubSubSource(self, request, global_params=None):
-      r"""Rpc to replace a cloudpubsubsource.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a cloudpubsubsource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (AnthoseventsNamespacesCloudpubsubsourcesReplaceCloudPubSubSourceRequest) input message
@@ -507,14 +612,7 @@ optimistic concurrency control.
     )
 
     def ReplaceCloudSchedulerSource(self, request, global_params=None):
-      r"""Rpc to replace a cloudschedulersource.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a cloudschedulersource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (AnthoseventsNamespacesCloudschedulersourcesReplaceCloudSchedulerSourceRequest) input message
@@ -659,14 +757,7 @@ optimistic concurrency control.
     )
 
     def ReplaceCloudStorageSource(self, request, global_params=None):
-      r"""Rpc to replace a cloudstoragesource.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a cloudstoragesource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (AnthoseventsNamespacesCloudstoragesourcesReplaceCloudStorageSourceRequest) input message
@@ -848,14 +939,7 @@ optimistic concurrency control.
     )
 
     def ReplaceTrigger(self, request, global_params=None):
-      r"""Rpc to replace a trigger.
-
-Only the spec and metadata labels and annotations are modifiable. After
-the Update request, Events for Cloud Run will work to make the 'status'
-match the requested 'spec'.
-
-May provide metadata.resourceVersion to enforce update from last read for
-optimistic concurrency control.
+      r"""Rpc to replace a trigger. Only the spec and metadata labels and annotations are modifiable. After the Update request, Events for Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (AnthoseventsNamespacesTriggersReplaceTriggerRequest) input message

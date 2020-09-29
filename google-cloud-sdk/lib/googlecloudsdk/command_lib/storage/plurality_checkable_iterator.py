@@ -30,6 +30,14 @@ BufferedException = collections.namedtuple(
 )
 
 
+def _get_item_or_raise_exception(item):
+  """Detects and raises BufferedException's or simply returns item."""
+  if isinstance(item, BufferedException):
+    exceptions.reraise(item.exception, tb=item.stack_trace)
+  else:
+    return item
+
+
 class PluralityCheckableIterator:
   """Iterator that can check if no items or more than one item can be yielded.
 
@@ -59,11 +67,7 @@ class PluralityCheckableIterator:
   def __next__(self):
     self._populate_buffer()
     if self._buffer:
-      item = self._buffer.pop(0)
-      if isinstance(item, BufferedException):
-        exceptions.reraise(item.exception, tb=item.stack_trace)
-      else:
-        return item
+      return _get_item_or_raise_exception(self._buffer.pop(0))
     else:
       raise StopIteration
 
@@ -83,7 +87,7 @@ class PluralityCheckableIterator:
     """
     self._populate_buffer(num_elements=1)
     if self._buffer:
-      return self._buffer[0]
+      return _get_item_or_raise_exception(self._buffer[0])
     return None
 
   def _populate_buffer(self, num_elements=1):

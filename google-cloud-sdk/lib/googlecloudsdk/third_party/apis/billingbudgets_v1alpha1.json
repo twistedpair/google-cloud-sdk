@@ -305,7 +305,7 @@
           }
         },
         "disableDefaultIamRecipients": {
-          "description": "Optional. When set to true, disables default notifications sent when a threshold is exceeded. Recipients are those with Billing Account Administrators and Billing Account Users IAM roles for the target account.",
+          "description": "Optional. When set to true, disables default notifications sent when a threshold is exceeded. Default notifications are sent to those with Billing Account Administrator and Billing Account User IAM roles for the target account.",
           "type": "boolean"
         }
       }

@@ -190,6 +190,21 @@
         }
       }
     },
+    "CreatePhraseSetRequest": {
+      "id": "CreatePhraseSetRequest",
+      "description": "Message sent by the client for the `CreatePhraseSet` method.",
+      "type": "object",
+      "properties": {
+        "phraseSetId": {
+          "description": "The ID to use for the phrase set, which will become the final component of the phrase set's resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+          "type": "string"
+        },
+        "phraseSet": {
+          "description": "Required. The phrase set to create.",
+          "$ref": "PhraseSet"
+        }
+      }
+    },
     "PhraseSet": {
       "id": "PhraseSet",
       "description": "Provides \"hints\" to the speech recognizer to favor specific words and phrases in the results.",
@@ -252,6 +267,21 @@
       "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
+      }
+    },
+    "CreateCustomClassRequest": {
+      "id": "CreateCustomClassRequest",
+      "description": "Message sent by the client for the `CreateCustomClass` method.",
+      "type": "object",
+      "properties": {
+        "customClassId": {
+          "description": "The ID to use for the custom class, which will become the final component of the custom class' resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
+          "type": "string"
+        },
+        "customClass": {
+          "description": "Required. The custom class to create.",
+          "$ref": "CustomClass"
+        }
       }
     },
     "CustomClass": {
@@ -1370,18 +1400,13 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
-                    },
-                    "phraseSetId": {
-                      "description": "The ID to use for the phrase set, which will become the final component of the phrase set's resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
                     "parent"
                   ],
                   "request": {
-                    "$ref": "PhraseSet"
+                    "$ref": "CreatePhraseSetRequest"
                   },
                   "response": {
                     "$ref": "PhraseSet"
@@ -1527,18 +1552,13 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
-                    },
-                    "customClassId": {
-                      "description": "The ID to use for the custom class, which will become the final component of the custom class' resource name. This value should be 4-63 characters, and valid characters are \/a-z-\/.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
                     "parent"
                   ],
                   "request": {
-                    "$ref": "CustomClass"
+                    "$ref": "CreateCustomClassRequest"
                   },
                   "response": {
                     "$ref": "CustomClass"

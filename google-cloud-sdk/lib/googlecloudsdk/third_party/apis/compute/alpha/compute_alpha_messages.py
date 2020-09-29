@@ -489,6 +489,13 @@ class AccessConfig(_messages.Message):
       option is ONE_TO_ONE_NAT.
 
   Fields:
+    externalIpv6: [Output Only] The first IPv6 address of the external IPv6
+      range associated with this instance, prefix length is stored in
+      externalIpv6PrefixLength in ipv6AccessConfig. The field is output only,
+      an IPv6 address from a subnetwork associated with the instance will be
+      allocated dynamically.
+    externalIpv6PrefixLength: [Output Only] The prefix length of the external
+      IPv6 range.
     kind: [Output Only] Type of the resource. Always compute#accessConfig for
       access configs.
     name: The name of this access configuration. The default and recommended
@@ -544,15 +551,17 @@ class AccessConfig(_messages.Message):
     """
     ONE_TO_ONE_NAT = 0
 
-  kind = _messages.StringField(1, default='compute#accessConfig')
-  name = _messages.StringField(2)
-  natIP = _messages.StringField(3)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 4)
-  publicDnsName = _messages.StringField(5)
-  publicPtrDomainName = _messages.StringField(6)
-  setPublicDns = _messages.BooleanField(7)
-  setPublicPtr = _messages.BooleanField(8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9, default='ONE_TO_ONE_NAT')
+  externalIpv6 = _messages.StringField(1)
+  externalIpv6PrefixLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  kind = _messages.StringField(3, default='compute#accessConfig')
+  name = _messages.StringField(4)
+  natIP = _messages.StringField(5)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 6)
+  publicDnsName = _messages.StringField(7)
+  publicPtrDomainName = _messages.StringField(8)
+  setPublicDns = _messages.BooleanField(9)
+  setPublicPtr = _messages.BooleanField(10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11, default='ONE_TO_ONE_NAT')
 
 
 class Address(_messages.Message):
@@ -591,7 +600,10 @@ class Address(_messages.Message):
       resources.  - `DNS_RESOLVER` for a DNS resolver address in a subnetwork
       - `VPC_PEERING` for addresses that are reserved for VPC peer networks.
       - `NAT_AUTO` for addresses that are external IP addresses automatically
-      reserved for Cloud NAT.
+      reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
+      from a private IP range that are reserved for a VLAN attachment in an
+      IPsec encrypted Interconnect configuration. These addresses are regional
+      resources.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -652,7 +664,10 @@ class Address(_messages.Message):
       `DNS_RESOLVER` for a DNS resolver address in a subnetwork  -
       `VPC_PEERING` for addresses that are reserved for VPC peer networks.  -
       `NAT_AUTO` for addresses that are external IP addresses automatically
-      reserved for Cloud NAT.
+      reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
+      from a private IP range that are reserved for a VLAN attachment in an
+      IPsec encrypted Interconnect configuration. These addresses are regional
+      resources.
     region: [Output Only] The URL of the region where the regional address
       resides. This field is not applicable to global addresses. You must
       specify this field as part of the HTTP request URL.
@@ -726,7 +741,9 @@ class Address(_messages.Message):
     `DNS_RESOLVER` for a DNS resolver address in a subnetwork  - `VPC_PEERING`
     for addresses that are reserved for VPC peer networks.  - `NAT_AUTO` for
     addresses that are external IP addresses automatically reserved for Cloud
-    NAT.
+    NAT.  - `IPSEC_INTERCONNECT` for addresses created from a private IP range
+    that are reserved for a VLAN attachment in an IPsec encrypted Interconnect
+    configuration. These addresses are regional resources.
 
     Values:
       DNS_RESOLVER: <no description>
@@ -1285,6 +1302,11 @@ class AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk(_me
 class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Message):
   r"""Properties of the SKU instances being reserved. Next ID: 9
 
+  Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
+      stable fleet VM. Setting this to "Periodic" designates this VM as a
+      Stable Fleet VM.  See go/stable-fleet-ug for more details.
+
   Fields:
     guestAccelerators: Specifies accelerator type and count.
     localSsds: Specifies amount of local ssd to reserve with each instance.
@@ -1299,15 +1321,29 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     maintenanceFreezeDurationHours: Specifies the number of hours after
       reservation creation where instances using the reservation won't be
       scheduled for maintenance.
+    maintenanceInterval: Specifies whether this VM may be a stable fleet VM.
+      Setting this to "Periodic" designates this VM as a Stable Fleet VM.  See
+      go/stable-fleet-ug for more details.
     minCpuPlatform: Minimum cpu platform the reservation.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies whether this VM may be a stable fleet VM. Setting this to
+    "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
+    ug for more details.
+
+    Values:
+      PERIODIC: <no description>
+    """
+    PERIODIC = 0
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
   locationHint = _messages.StringField(3)
   machineType = _messages.StringField(4)
   maintenanceFreezeDurationHours = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  minCpuPlatform = _messages.StringField(6)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 6)
+  minCpuPlatform = _messages.StringField(7)
 
 
 class AllocationSpecificSKUReservation(_messages.Message):
@@ -4785,6 +4821,7 @@ class BulkInsertInstanceResource(_messages.Message):
     instance: A Instance attribute.
     instanceProperties: The instance properties for the request. Required if
       sourceInstanceTemplate is not provided.
+    locationPolicy: A LocationPolicy attribute.
     minCount: The minimum number of instances to create. If no min_count is
       specified then count is used as the default value. If min_count
       instances cannot be created, then no instances will be created.
@@ -4804,9 +4841,10 @@ class BulkInsertInstanceResource(_messages.Message):
   count = _messages.IntegerField(1)
   instance = _messages.MessageField('Instance', 2)
   instanceProperties = _messages.MessageField('InstanceProperties', 3)
-  minCount = _messages.IntegerField(4)
-  predefinedNames = _messages.StringField(5, repeated=True)
-  sourceInstanceTemplate = _messages.StringField(6)
+  locationPolicy = _messages.MessageField('LocationPolicy', 4)
+  minCount = _messages.IntegerField(5)
+  predefinedNames = _messages.StringField(6, repeated=True)
+  sourceInstanceTemplate = _messages.StringField(7)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -11339,11 +11377,11 @@ class ComputeInstancesInsertRequest(_messages.Message):
       plates/instanceTemplate  -
       projects/project/global/instanceTemplates/instanceTemplate  -
       global/instanceTemplates/instanceTemplate
-    sourceMachineImage: Specifies instance machine to create the instance.
-      This field is optional. It can be a full or partial URL. For example,
-      the following are all valid URLs to an instance template:   - https://ww
-      w.googleapis.com/compute/v1/projects/project/global/global/machineImages
-      /machineImage  -
+    sourceMachineImage: Specifies the machine image to use to create the
+      instance.  This field is optional. It can be a full or partial URL. For
+      example, the following are all valid URLs to a machine image:   - https:
+      //www.googleapis.com/compute/v1/projects/project/global/global/machineIm
+      ages/machineImage  -
       projects/project/global/global/machineImages/machineImage  -
       global/machineImages/machineImage
     zone: The name of the zone for this request.
@@ -15228,7 +15266,8 @@ class ComputeOrganizationSecurityPoliciesAddAssociationRequest(_messages.Message
   Fields:
     replaceExistingAssociation: Indicates whether or not to replace it if an
       association of the attachment already exists. This is false by default,
-      in which case an error will be returned if an assocation already exists.
+      in which case an error will be returned if an association already
+      exists.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
@@ -28481,6 +28520,14 @@ class FirewallPolicyRule(_messages.Message):
       applies. This field allows you to control which network?s VMs get this
       rule. If this field is left blank, all VMs within the organization will
       receive the rule.
+    targetSecureLabels: A list of secure labels that controls which instances
+      the firewall rule applies to. If targetSecureLabel are specified, then
+      the firewall rule applies only to instances in the VPC network that have
+      one of those secure labels. targetSecureLabel may not be set at the same
+      time as targetServiceAccounts. If neither targetServiceAccounts nor
+      targetSecureLabel are specified, the firewall rule applies to all
+      instances on the specified network. Maximum number of target label
+      values allowed is 256.
     targetServiceAccounts: A list of service accounts indicating the sets of
       instances that are applied with this rule.
   """
@@ -28507,7 +28554,8 @@ class FirewallPolicyRule(_messages.Message):
   priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   ruleTupleCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   targetResources = _messages.StringField(10, repeated=True)
-  targetServiceAccounts = _messages.StringField(11, repeated=True)
+  targetSecureLabels = _messages.StringField(11, repeated=True)
+  targetServiceAccounts = _messages.StringField(12, repeated=True)
 
 
 class FirewallPolicyRuleMatcher(_messages.Message):
@@ -28520,11 +28568,15 @@ class FirewallPolicyRuleMatcher(_messages.Message):
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
       ranges allowed is 256.
+    srcSecureLabels: List of firewall label values, which should be matched at
+      the source of the traffic. Maximum number of source label values allowed
+      is 256.
   """
 
   destIpRanges = _messages.StringField(1, repeated=True)
   layer4Configs = _messages.MessageField('FirewallPolicyRuleMatcherLayer4Config', 2, repeated=True)
   srcIpRanges = _messages.StringField(3, repeated=True)
+  srcSecureLabels = _messages.StringField(4, repeated=True)
 
 
 class FirewallPolicyRuleMatcherLayer4Config(_messages.Message):
@@ -29884,12 +29936,15 @@ class HealthCheck(_messages.Message):
   Health Check resources:  *
   [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) *
   [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)
-  Internal HTTP(S) load balancers must use regional health checks. Internal
-  TCP/UDP load balancers can use either regional or global health checks. All
-  other types of GCP load balancers and managed instance group auto-healing
-  must use global health checks. For more information, read Health Check
-  Concepts.  To perform health checks on network load balancers, you must use
-  either httpHealthChecks or httpsHealthChecks.
+  Internal HTTP(S) load balancers must use regional health checks
+  (`compute.v1.regionHealthChecks`).  Traffic Director must use global health
+  checks (`compute.v1.HealthChecks`).  Internal TCP/UDP load balancers can use
+  either regional or global health checks (`compute.v1.regionHealthChecks` or
+  `compute.v1.HealthChecks`).  External HTTP(S), TCP proxy, and SSL proxy load
+  balancers as well as managed instance group auto-healing must use global
+  health checks (`compute.v1.HealthChecks`).  Network load balancers must use
+  legacy HTTP health checks (httpHealthChecks).  For more information, see
+  Health checks overview.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -36276,7 +36331,13 @@ class InterconnectAttachment(_messages.Message):
       specified domain. If not specified, the value will default to
       AVAILABILITY_DOMAIN_ANY.
     EncryptionValueValuesEnum: Indicates the user-supplied encryption option
-      of this interconnect attachment.
+      of this interconnect attachment:  - NONE is the default value, which
+      means that the attachment carries unencrypted traffic. VMs can send
+      traffic to, or receive traffic from, this type of attachment.  - IPSEC
+      indicates that the attachment carries only traffic encrypted by an IPsec
+      device such as an HA VPN gateway. VMs cannot directly send traffic to,
+      or receive traffic from, such an attachment. To use IPsec over
+      Interconnect, create the attachment using this option.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional, which can
       take one of the following values:  - OS_ACTIVE: The attachment has been
@@ -36349,7 +36410,13 @@ class InterconnectAttachment(_messages.Message):
       specified domain. If not specified, the value will default to
       AVAILABILITY_DOMAIN_ANY.
     encryption: Indicates the user-supplied encryption option of this
-      interconnect attachment.
+      interconnect attachment:  - NONE is the default value, which means that
+      the attachment carries unencrypted traffic. VMs can send traffic to, or
+      receive traffic from, this type of attachment.  - IPSEC indicates that
+      the attachment carries only traffic encrypted by an IPsec device such as
+      an HA VPN gateway. VMs cannot directly send traffic to, or receive
+      traffic from, such an attachment. To use IPsec over Interconnect, create
+      the attachment using this option.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues. [Deprecated] This field is not used.
@@ -36508,7 +36575,13 @@ class InterconnectAttachment(_messages.Message):
 
   class EncryptionValueValuesEnum(_messages.Enum):
     r"""Indicates the user-supplied encryption option of this interconnect
-    attachment.
+    attachment:  - NONE is the default value, which means that the attachment
+    carries unencrypted traffic. VMs can send traffic to, or receive traffic
+    from, this type of attachment.  - IPSEC indicates that the attachment
+    carries only traffic encrypted by an IPsec device such as an HA VPN
+    gateway. VMs cannot directly send traffic to, or receive traffic from,
+    such an attachment. To use IPsec over Interconnect, create the attachment
+    using this option.
 
     Values:
       IPSEC: <no description>
@@ -38409,6 +38482,76 @@ class LocalDisk(_messages.Message):
   diskType = _messages.StringField(3)
 
 
+class LocationPolicy(_messages.Message):
+  r"""Configuration for location policy among multiple possible locations
+  (e.g. preferences for zone selection among zones in a single region). Note
+  that this message has a copy in logs/proto/bigcluster/bulk_apis.proto.
+
+  Messages:
+    LocationsValue: Location configurations mapped by location name. Currently
+      only zone names are supported and must be represented as valid internal
+      URLs, like: zones/us-central1-a.
+
+  Fields:
+    locations: Location configurations mapped by location name. Currently only
+      zone names are supported and must be represented as valid internal URLs,
+      like: zones/us-central1-a.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LocationsValue(_messages.Message):
+    r"""Location configurations mapped by location name. Currently only zone
+    names are supported and must be represented as valid internal URLs, like:
+    zones/us-central1-a.
+
+    Messages:
+      AdditionalProperty: An additional property for a LocationsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LocationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LocationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A LocationPolicyLocation attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('LocationPolicyLocation', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  locations = _messages.MessageField('LocationsValue', 1)
+
+
+class LocationPolicyLocation(_messages.Message):
+  r"""A LocationPolicyLocation object.
+
+  Enums:
+    PreferenceValueValuesEnum:
+
+  Fields:
+    preference: A PreferenceValueValuesEnum attribute.
+  """
+
+  class PreferenceValueValuesEnum(_messages.Enum):
+    r"""PreferenceValueValuesEnum enum type.
+
+    Values:
+      ALLOW: <no description>
+      DENY: <no description>
+      PREFERENCE_UNSPECIFIED: <no description>
+    """
+    ALLOW = 0
+    DENY = 1
+    PREFERENCE_UNSPECIFIED = 2
+
+  preference = _messages.EnumField('PreferenceValueValuesEnum', 1)
+
+
 class LogConfig(_messages.Message):
   r"""Specifies what kind of log the caller must write
 
@@ -40084,9 +40227,8 @@ class NetworkEndpointGroupAppEngine(_messages.Message):
   project and located in the same region as the Serverless NEG.
 
   Fields:
-    service: Optional serving service.  The service name must be 1-63
-      characters long, and comply with RFC1035.  Example value: "default",
-      "my-service".
+    service: Optional serving service.  The service name is case-sensitive and
+      must be 1-63 characters long.  Example value: "default", "my-service".
     urlMask: A template to parse service and version fields from a request
       URL. URL mask allows for routing to multiple App Engine services without
       having to create multiple Network Endpoint Groups and backend services.
@@ -40095,8 +40237,8 @@ class NetworkEndpointGroupAppEngine(_messages.Message):
       NEG with URL mask "-dot-appname.appspot.com/". The URL mask will parse
       them to { service = "foo1", version = "v1" } and { service = "foo1",
       version = "v2" } respectively.
-    version: Optional serving version.  The version must be 1-63 characters
-      long, and comply with RFC1035.  Example value: "v1", "v2".
+    version: Optional serving version.  The version name is case-sensitive and
+      must be 1-100 characters long.  Example value: "v1", "v2".
   """
 
   service = _messages.StringField(1)
@@ -40631,6 +40773,10 @@ class NetworkInterface(_messages.Message):
   Enums:
     NicTypeValueValuesEnum: The type of vNIC to be used on this interface.
       This may be gVNIC or VirtioNet.
+    StackTypeValueValuesEnum: The stack type for this network interface to
+      identify whether the IPv6 feature is enabled or not. If not specified,
+      IPV4_ONLY will be used.  This field can be both set at instance creation
+      and update network interface operations.
 
   Fields:
     accessConfigs: An array of configurations for this interface. Currently,
@@ -40644,6 +40790,8 @@ class NetworkInterface(_messages.Message):
       adding a NetworkInterface. An up-to-date fingerprint must be provided in
       order to update the NetworkInterface, otherwise the request will fail
       with error 412 conditionNotMet.
+    internalIpv6PrefixLength: [Output Only] The prefix length of the primary
+      internal IPv6 range.
     ipv6Address: [Output Only] An IPv6 internal network address for this
       network interface.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
@@ -40668,6 +40816,10 @@ class NetworkInterface(_messages.Message):
       user, a default number of queues will be assigned. For Virtio-net, each
       interface will get (min(#vCPU, 32) / #vNIC) queues. For gVNIC, each
       interface will get (min(#vCPU / 2, 16) / #vNIC) qeueus.
+    stackType: The stack type for this network interface to identify whether
+      the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be
+      used.  This field can be both set at instance creation and update
+      network interface operations.
     subnetwork: The URL of the Subnetwork resource for this instance. If the
       network resource is in legacy mode, do not specify this field. If the
       network is in auto subnet mode, specifying the subnetwork is optional.
@@ -40691,17 +40843,34 @@ class NetworkInterface(_messages.Message):
     UNSPECIFIED_NIC_TYPE = 1
     VIRTIO_NET = 2
 
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""The stack type for this network interface to identify whether the IPv6
+    feature is enabled or not. If not specified, IPV4_ONLY will be used.  This
+    field can be both set at instance creation and update network interface
+    operations.
+
+    Values:
+      IPV4_IPV6: <no description>
+      IPV4_ONLY: <no description>
+      UNSPECIFIED_STACK_TYPE: <no description>
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
+    UNSPECIFIED_STACK_TYPE = 2
+
   accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
   fingerprint = _messages.BytesField(3)
-  ipv6Address = _messages.StringField(4)
-  kind = _messages.StringField(5, default='compute#networkInterface')
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  networkIP = _messages.StringField(8)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 9)
-  queueCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(11)
+  internalIpv6PrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  ipv6Address = _messages.StringField(5)
+  kind = _messages.StringField(6, default='compute#networkInterface')
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  networkIP = _messages.StringField(9)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 10)
+  queueCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 12)
+  subnetwork = _messages.StringField(13)
 
 
 class NetworkList(_messages.Message):
@@ -49193,6 +49362,9 @@ class Router(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    encryptedInterconnectRouter: Field to indicate if a router is dedicated to
+      use with encrypted Interconnect Attachment (Encrypted Interconnect
+      feature).
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     interfaces: Router interfaces. Each interface requires either one linked
@@ -49220,15 +49392,16 @@ class Router(_messages.Message):
   bgpPeers = _messages.MessageField('RouterBgpPeer', 2, repeated=True)
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  interfaces = _messages.MessageField('RouterInterface', 6, repeated=True)
-  kind = _messages.StringField(7, default='compute#router')
-  name = _messages.StringField(8)
-  nats = _messages.MessageField('RouterNat', 9, repeated=True)
-  network = _messages.StringField(10)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  selfLinkWithId = _messages.StringField(13)
+  encryptedInterconnectRouter = _messages.BooleanField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  interfaces = _messages.MessageField('RouterInterface', 7, repeated=True)
+  kind = _messages.StringField(8, default='compute#router')
+  name = _messages.StringField(9)
+  nats = _messages.MessageField('RouterNat', 10, repeated=True)
+  network = _messages.StringField(11)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  selfLinkWithId = _messages.StringField(14)
 
 
 class RouterAdvertisedIpRange(_messages.Message):
@@ -50733,6 +50906,9 @@ class Scheduling(_messages.Message):
   r"""Sets the scheduling options for an Instance. NextID: 13
 
   Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies whether this VM may be a
+      stable fleet VM. Setting this to "Periodic" designates this VM as a
+      Stable Fleet VM.  See go/stable-fleet-ug for more details.
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
       this instance. For standard instances, the default behavior is MIGRATE.
       For preemptible instances, the default and only possible behavior is
@@ -50755,6 +50931,9 @@ class Scheduling(_messages.Message):
       public API.
     maintenanceFreezeDurationHours: Specifies the number of hours after
       instance creation where the instance won't be scheduled for maintenance.
+    maintenanceInterval: Specifies whether this VM may be a stable fleet VM.
+      Setting this to "Periodic" designates this VM as a Stable Fleet VM.  See
+      go/stable-fleet-ug for more details.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
@@ -50769,6 +50948,16 @@ class Scheduling(_messages.Message):
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
       information on the possible instance states.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies whether this VM may be a stable fleet VM. Setting this to
+    "Periodic" designates this VM as a Stable Fleet VM.  See go/stable-fleet-
+    ug for more details.
+
+    Values:
+      PERIODIC: <no description>
+    """
+    PERIODIC = 0
 
   class OnHostMaintenanceValueValuesEnum(_messages.Enum):
     r"""Defines the maintenance behavior for this instance. For standard
@@ -50787,10 +50976,11 @@ class Scheduling(_messages.Message):
   latencyTolerant = _messages.BooleanField(2)
   locationHint = _messages.StringField(3)
   maintenanceFreezeDurationHours = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  minNodeCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 6, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 7)
-  preemptible = _messages.BooleanField(8)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 5)
+  minNodeCpus = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 7, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 8)
+  preemptible = _messages.BooleanField(9)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -50871,9 +51061,9 @@ class SecurityPoliciesWafConfig(_messages.Message):
 
 
 class SecurityPolicy(_messages.Message):
-  r"""Represents a Cloud Armor Security Policy resource.  Only external
-  backend services that use load balancers can reference a Security Policy.
-  For more information, read  Cloud Armor Security Policy Concepts. (==
+  r"""Represents a Google Cloud Armor security policy resource.  Only external
+  backend services that use load balancers can reference a security policy.
+  For more information, see  Google Cloud Armor security policy overview. (==
   resource_for {$api_version}.securityPolicies ==)
 
   Enums:
@@ -53071,10 +53261,10 @@ class SslPoliciesListAvailableFeaturesResponse(_messages.Message):
 
 
 class SslPolicy(_messages.Message):
-  r"""Represents a Cloud Armor Security Policy resource.  Only external
+  r"""Represents a Google Cloud Armor security policy resource.  Only external
   backend services used by HTTP or HTTPS load balancers can reference a
-  Security Policy. For more information, read read  Cloud Armor Security
-  Policy Concepts. (== resource_for {$api_version}.sslPolicies ==)
+  security policy. For more information, see  Google Cloud Armor security
+  policy overview. (== resource_for {$api_version}.sslPolicies ==)
 
   Enums:
     MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can
@@ -53429,6 +53619,10 @@ class Subnetwork(_messages.Message):
       an interval of 5 seconds per connection. Valid values: INTERVAL_5_SEC,
       INTERVAL_30_SEC, INTERVAL_1_MIN, INTERVAL_5_MIN, INTERVAL_10_MIN,
       INTERVAL_15_MIN.
+    Ipv6AccessTypeValueValuesEnum: The access type of IPv6 address this subnet
+      holds. It's immutable and can only be specified during creation or the
+      first time the subnet is updated into IPV4_IPV6 dual stack. If the
+      ipv6_type is EXTERNAL then this subnet cannot enable direct path.
     MetadataValueValuesEnum: Can only be specified if VPC flow logging for
       this subnetwork is enabled. Configures whether metadata fields should be
       added to the reported VPC flow logs. Options are INCLUDE_ALL_METADATA,
@@ -53452,6 +53646,10 @@ class Subnetwork(_messages.Message):
       used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one
       that is ready to be promoted to ACTIVE or is currently draining. This
       field can be updated with a patch request.
+    StackTypeValueValuesEnum: The stack type for this subnet to identify
+      whether the IPv6 feature is enabled or not. If not specified IPV4_ONLY
+      will be used.  This field can be both set at resource creation time and
+      updated using patch.
     StateValueValuesEnum: [Output Only] The state of the subnetwork, which can
       be one of READY or DRAINING. A subnetwork that is READY is ready to be
       used. The state of DRAINING is only applicable to subnetworks that have
@@ -53491,6 +53689,8 @@ class Subnetwork(_messages.Message):
       PrivateIpv6GoogleAccess. Whether the VMs in this subnet can directly
       access Google services via internal IPv6 addresses. This field can be
       both set at resource creation time and updated using patch.
+    externalIpv6Prefix: [Output Only] The range of external IPv6 addresses
+      that are owned by this subnetwork.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
@@ -53513,6 +53713,10 @@ class Subnetwork(_messages.Message):
       at resource creation time. This may be a RFC 1918 IP range, or a
       privately routed, non-RFC 1918 IP range, not belonging to Google. The
       range can be expanded after creation using expandIpCidrRange.
+    ipv6AccessType: The access type of IPv6 address this subnet holds. It's
+      immutable and can only be specified during creation or the first time
+      the subnet is updated into IPV4_IPV6 dual stack. If the ipv6_type is
+      EXTERNAL then this subnet cannot enable direct path.
     ipv6CidrRange: [Output Only] The range of internal IPv6 addresses that are
       owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
@@ -53572,6 +53776,10 @@ class Subnetwork(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    stackType: The stack type for this subnet to identify whether the IPv6
+      feature is enabled or not. If not specified IPV4_ONLY will be used.
+      This field can be both set at resource creation time and updated using
+      patch.
     state: [Output Only] The state of the subnetwork, which can be one of
       READY or DRAINING. A subnetwork that is READY is ready to be used. The
       state of DRAINING is only applicable to subnetworks that have the
@@ -53602,6 +53810,21 @@ class Subnetwork(_messages.Message):
     INTERVAL_30_SEC = 3
     INTERVAL_5_MIN = 4
     INTERVAL_5_SEC = 5
+
+  class Ipv6AccessTypeValueValuesEnum(_messages.Enum):
+    r"""The access type of IPv6 address this subnet holds. It's immutable and
+    can only be specified during creation or the first time the subnet is
+    updated into IPV4_IPV6 dual stack. If the ipv6_type is EXTERNAL then this
+    subnet cannot enable direct path.
+
+    Values:
+      EXTERNAL: <no description>
+      INTERNAL: <no description>
+      UNSPECIFIED_IPV6_ACCESS_TYPE: <no description>
+    """
+    EXTERNAL = 0
+    INTERNAL = 1
+    UNSPECIFIED_IPV6_ACCESS_TYPE = 2
 
   class MetadataValueValuesEnum(_messages.Enum):
     r"""Can only be specified if VPC flow logging for this subnetwork is
@@ -53671,6 +53894,20 @@ class Subnetwork(_messages.Message):
     ACTIVE = 0
     BACKUP = 1
 
+  class StackTypeValueValuesEnum(_messages.Enum):
+    r"""The stack type for this subnet to identify whether the IPv6 feature is
+    enabled or not. If not specified IPV4_ONLY will be used.  This field can
+    be both set at resource creation time and updated using patch.
+
+    Values:
+      IPV4_IPV6: <no description>
+      IPV4_ONLY: <no description>
+      UNSPECIFIED_STACK_TYPE: <no description>
+    """
+    IPV4_IPV6 = 0
+    IPV4_ONLY = 1
+    UNSPECIFIED_STACK_TYPE = 2
+
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The state of the subnetwork, which can be one of READY
     or DRAINING. A subnetwork that is READY is ready to be used. The state of
@@ -53692,27 +53929,30 @@ class Subnetwork(_messages.Message):
   description = _messages.StringField(4)
   enableFlowLogs = _messages.BooleanField(5)
   enablePrivateV6Access = _messages.BooleanField(6)
-  fingerprint = _messages.BytesField(7)
-  flowSampling = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
-  gatewayAddress = _messages.StringField(9)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(11)
-  ipv6CidrRange = _messages.StringField(12)
-  kind = _messages.StringField(13, default='compute#subnetwork')
-  logConfig = _messages.MessageField('SubnetworkLogConfig', 14)
-  metadata = _messages.EnumField('MetadataValueValuesEnum', 15)
-  name = _messages.StringField(16)
-  network = _messages.StringField(17)
-  privateIpGoogleAccess = _messages.BooleanField(18)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 19)
-  privateIpv6GoogleAccessServiceAccounts = _messages.StringField(20, repeated=True)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 21)
-  region = _messages.StringField(22)
-  role = _messages.EnumField('RoleValueValuesEnum', 23)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 24, repeated=True)
-  selfLink = _messages.StringField(25)
-  selfLinkWithId = _messages.StringField(26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
+  externalIpv6Prefix = _messages.StringField(7)
+  fingerprint = _messages.BytesField(8)
+  flowSampling = _messages.FloatField(9, variant=_messages.Variant.FLOAT)
+  gatewayAddress = _messages.StringField(10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(12)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 13)
+  ipv6CidrRange = _messages.StringField(14)
+  kind = _messages.StringField(15, default='compute#subnetwork')
+  logConfig = _messages.MessageField('SubnetworkLogConfig', 16)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 17)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  privateIpGoogleAccess = _messages.BooleanField(20)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 21)
+  privateIpv6GoogleAccessServiceAccounts = _messages.StringField(22, repeated=True)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 23)
+  region = _messages.StringField(24)
+  role = _messages.EnumField('RoleValueValuesEnum', 25)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 26, repeated=True)
+  selfLink = _messages.StringField(27)
+  selfLinkWithId = _messages.StringField(28)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
 
 
 class SubnetworkAggregatedList(_messages.Message):

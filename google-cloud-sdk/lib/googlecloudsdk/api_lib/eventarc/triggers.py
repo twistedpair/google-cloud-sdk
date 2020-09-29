@@ -23,6 +23,10 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import iso_duration
+from googlecloudsdk.core.util import times
+
+MAX_READY_LATENCY_MINUTES = 10
 
 _API_NAME = 'eventarc'
 _API_VERSION = 'v1beta1'
@@ -69,6 +73,21 @@ def GetTriggerURI(resource):
   trigger = resources.REGISTRY.ParseRelativeName(
       resource.name, collection='eventarc.projects.locations.triggers')
   return trigger.SelfLink()
+
+
+def RecentlyModified(update_time):
+  """Checks if the trigger with the given update_time was recently modified.
+
+  Args:
+    update_time: str, the time when the trigger was last modified.
+
+  Returns:
+    True if the trigger was recently modified and might not be ready for use.
+  """
+  update_dt = times.ParseDateTime(update_time)
+  max_duration = iso_duration.Duration(minutes=MAX_READY_LATENCY_MINUTES)
+  ready_dt = times.GetDateTimePlusDuration(update_dt, max_duration)
+  return times.Now() < ready_dt
 
 
 class TriggersClient(object):

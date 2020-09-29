@@ -58,11 +58,14 @@ def AddCreatePullQueueFlags(parser):
     flag.AddToParser(parser)
 
 
-def AddCreatePushQueueFlags(parser, release_track=base.ReleaseTrack.GA):
+def AddCreatePushQueueFlags(
+    parser, release_track=base.ReleaseTrack.GA, app_engine_queue=False):
   if release_track == base.ReleaseTrack.ALPHA:
     flags = _AlphaPushQueueFlags()
   else:
     flags = _PushQueueFlags(release_track)
+    if release_track == base.ReleaseTrack.BETA and not app_engine_queue:
+      AddQueueTypeFlag(parser)
   for flag in flags:
     flag.AddToParser(parser)
 
@@ -72,11 +75,14 @@ def AddUpdatePullQueueFlags(parser):
     _AddFlagAndItsClearEquivalent(flag, parser)
 
 
-def AddUpdatePushQueueFlags(parser, release_track=base.ReleaseTrack.GA):
+def AddUpdatePushQueueFlags(
+    parser, release_track=base.ReleaseTrack.GA, app_engine_queue=False):
   if release_track == base.ReleaseTrack.ALPHA:
     flags = _AlphaPushQueueFlags()
   else:
     flags = _PushQueueFlags(release_track)
+    if release_track == base.ReleaseTrack.BETA and not app_engine_queue:
+      AddQueueTypeFlag(parser)
   for flag in flags:
     _AddFlagAndItsClearEquivalent(flag, parser)
 
@@ -125,6 +131,17 @@ def AddMaxTasksToLeaseFlag(parser):
       help="""\
       The maximum number of tasks to lease. The maximum that can be requested is
       1000.
+      """).AddToParser(parser)
+
+
+def AddQueueTypeFlag(parser):
+  base.Argument(
+      '--type',
+      type=_GetQueueTypeArgValidator(),
+      default='push',
+      help="""\
+      Specifies the type of queue. Only available options are 'push' and
+      'pull'. The default option is 'push'.
       """).AddToParser(parser)
 
 
@@ -177,6 +194,8 @@ def _PullQueueFlags():
           help="""\
           The maximum number of attempts per task in the queue.
           """),
+      # This is actually a push-queue and not a pull-queue flag. However, the
+      # way this argument is being currently used does not impact funtionality.
       base.Argument(
           '--max-retry-duration',
           help="""\
@@ -452,6 +471,13 @@ def _GetAppEngineRoutingKeysValidator():
       lambda k: k in constants.APP_ENGINE_ROUTING_KEYS,
       'Only the following keys are valid for routing: [{}].'.format(
           ', '.join(constants.APP_ENGINE_ROUTING_KEYS)))
+
+
+def _GetQueueTypeArgValidator():
+  return arg_parsers.CustomFunctionValidator(
+      lambda k: k in constants.VALID_QUEUE_TYPES,
+      'Only the following queue types are valid: [{}].'.format(
+          ', '.join(constants.VALID_QUEUE_TYPES)))
 
 
 def _GetHeaderArgValidator():

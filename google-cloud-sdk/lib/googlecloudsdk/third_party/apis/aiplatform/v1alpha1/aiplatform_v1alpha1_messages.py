@@ -483,6 +483,16 @@ class AiplatformProjectsLocationsEndpointsUndeployModelRequest(_messages.Message
   googleCloudAiplatformV1alpha1UndeployModelRequest = _messages.MessageField('GoogleCloudAiplatformV1alpha1UndeployModelRequest', 2)
 
 
+class AiplatformProjectsLocationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsGetRequest object.
+
+  Fields:
+    name: Resource name for the location.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AiplatformProjectsLocationsHyperparameterTuningJobsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsHyperparameterTuningJobsCancelRequest
   object.
@@ -567,6 +577,22 @@ class AiplatformProjectsLocationsHyperparameterTuningJobsListRequest(_messages.M
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class AiplatformProjectsLocationsMigratableResourcesBatchMigrateRequest(_messages.Message):
@@ -2176,6 +2202,64 @@ class GoogleCloudAiplatformUiSchemaTimeSegment(_messages.Message):
   startTimeOffset = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadata(_messages.Message):
+  r"""The metadata of Datasets that contain time series data.
+
+  Fields:
+    inputConfig: A
+      GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataInputConfig
+      attribute.
+    timeColumn: The column name of the time column that identifies time order
+      in the time series.
+    timeSeriesIdentifierColumn: The column name of the time series identifier
+      column that identifies the time series.
+  """
+
+  inputConfig = _messages.MessageField('GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataInputConfig', 1)
+  timeColumn = _messages.StringField(2)
+  timeSeriesIdentifierColumn = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataBigQuerySource(_messages.Message):
+  r"""A GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataBigQuerySource
+  object.
+
+  Fields:
+    uri: The URI of a BigQuery table.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataGcsSource(_messages.Message):
+  r"""A GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataGcsSource
+  object.
+
+  Fields:
+    uri: Google Cloud Storage URI to a input file, only .csv file is
+      supported.
+  """
+
+  uri = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataInputConfig(_messages.Message):
+  r"""The time series Dataset's data source. The Dataset doesn't store the
+  data directly, but only pointer(s) to its data.
+
+  Fields:
+    bigquerySource: A
+      GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataBigQuerySource
+      attribute.
+    gcsSource: A
+      GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataGcsSource
+      attribute.
+  """
+
+  bigquerySource = _messages.MessageField('GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataBigQuerySource', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataGcsSource', 2)
+
+
 class GoogleCloudAiplatformUiSchemaVideoActionRecognitionAnnotation(_messages.Message):
   r"""Annotation details specific to video action recognition.
 
@@ -2843,19 +2927,20 @@ class GoogleCloudAiplatformV1alpha1BatchPredictionJobOutputConfig(_messages.Mess
       containing only `code` and `message`.
     gcsDestination: The Google Cloud Storage location of the directory where
       the output is to be written to. In the given directory a new directory
-      is created. Its name is "prediction--", where timestamp is in YYYY-MM-
-      DDThh:mm:ss.sssZ ISO-8601 format. Inside of it files predictions_0001.,
-      predictions_0002., ..., predictions_N. are created where depends on
-      chosen predictions_format, and N may equal 0001 and depends on the total
-      number of successfully predicted instances. If the Model has both
-      instance and prediction schemata defined then each such file contains
-      predictions as per the predictions_format. If prediction for any
-      instance failed (partially or completely), then an additional
-      `errors_0001.`, `errors_0002.`,..., `errors_N.` files are created (N
-      depends on total number of failed predictions). These files contain the
-      failed instances, as per their schema, followed by an additional `error`
-      field which as value has [`google.rpc.Status`](Status) containing only
-      `code` and `message` fields.
+      is created. Its name is `prediction--`, where timestamp is in YYYY-MM-
+      DDThh:mm:ss.sssZ ISO-8601 format. Inside of it files
+      `predictions_0001.`, `predictions_0002.`, ..., `predictions_N.` are
+      created where `` depends on chosen predictions_format, and N may equal
+      0001 and depends on the total number of successfully predicted
+      instances. If the Model has both instance and prediction schemata
+      defined then each such file contains predictions as per the
+      predictions_format. If prediction for any instance failed (partially or
+      completely), then an additional `errors_0001.`, `errors_0002.`,...,
+      `errors_N.` files are created (N depends on total number of failed
+      predictions). These files contain the failed instances, as per their
+      schema, followed by an additional `error` field which as value has
+      [`google.rpc.Status`](Status) containing only `code` and `message`
+      fields.
     predictionsFormat: Required. The format in which AI Platform gives the
       predictions, must be one of the Model's
       supported_output_storage_formats.
@@ -3783,7 +3868,7 @@ class GoogleCloudAiplatformV1alpha1ExportDataConfig(_messages.Message):
       as in ListAnnotations.
     gcsDestination: The Google Cloud Storage location where the output is to
       be written to. In the given directory a new directory will be created
-      with name: export-data-- where timestamp is in YYYYMMDDHHMMSS format.
+      with name: `export-data--` where timestamp is in YYYYMMDDHHMMSS format.
       All export output will be written into that directory. Inside that
       directory, annotations with the same schema will be grouped into sub
       directories which are named with the corresponding annotations' schema
@@ -3875,7 +3960,7 @@ class GoogleCloudAiplatformV1alpha1ExportEvaluatedDataItemsRequestOutputConfig(_
   Fields:
     bigqueryDestination: Required. The BigQuery location where the output is
       to be written to. In the given project a new dataset will be created
-      with name `export_evaluated_dataitems__` where will be made BigQuery-
+      with name `export_evaluated_dataitems__` where `` will be made BigQuery-
       dataset-name compatible (e.g. most special characters will become
       underscores), and timestamp will be in YYYY_MM_DDThh_mm_ss_sssZ "based
       on ISO-8601" format. In the dataset an `evaluated_dataitems` table will
@@ -5548,6 +5633,65 @@ class GoogleCloudAiplatformV1alpha1SchemaTimeSegment(_messages.Message):
   startTimeOffset = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadata(_messages.Message):
+  r"""The metadata of Datasets that contain time series data.
+
+  Fields:
+    inputConfig: A
+      GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig
+      attribute.
+    timeColumn: The column name of the time column that identifies time order
+      in the time series.
+    timeSeriesIdentifierColumn: The column name of the time series identifier
+      column that identifies the time series.
+  """
+
+  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig', 1)
+  timeColumn = _messages.StringField(2)
+  timeSeriesIdentifierColumn = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySource(_messages.Message):
+  r"""A
+  GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySource
+  object.
+
+  Fields:
+    uri: The URI of a BigQuery table.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource(_messages.Message):
+  r"""A GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource
+  object.
+
+  Fields:
+    uri: Google Cloud Storage URI to a input file, only .csv file is
+      supported.
+  """
+
+  uri = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig(_messages.Message):
+  r"""The time series Dataset's data source. The Dataset doesn't store the
+  data directly, but only pointer(s) to its data.
+
+  Fields:
+    bigquerySource: A
+      GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySour
+      ce attribute.
+    gcsSource: A
+      GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource
+      attribute.
+  """
+
+  bigquerySource = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySource', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource', 2)
+
+
 class GoogleCloudAiplatformV1alpha1SchemaVideoActionRecognitionAnnotation(_messages.Message):
   r"""Annotation details specific to video action recognition.
 
@@ -7144,6 +7288,65 @@ class GoogleCloudAiplatformV1beta1SchemaTimeSegment(_messages.Message):
   startTimeOffset = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadata(_messages.Message):
+  r"""The metadata of Datasets that contain time series data.
+
+  Fields:
+    inputConfig: A
+      GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataInputConfig
+      attribute.
+    timeColumn: The column name of the time column that identifies time order
+      in the time series.
+    timeSeriesIdentifierColumn: The column name of the time series identifier
+      column that identifies the time series.
+  """
+
+  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataInputConfig', 1)
+  timeColumn = _messages.StringField(2)
+  timeSeriesIdentifierColumn = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataBigQuerySource(_messages.Message):
+  r"""A
+  GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataBigQuerySource
+  object.
+
+  Fields:
+    uri: The URI of a BigQuery table.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataGcsSource(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataGcsSource
+  object.
+
+  Fields:
+    uri: Google Cloud Storage URI to a input file, only .csv file is
+      supported.
+  """
+
+  uri = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataInputConfig(_messages.Message):
+  r"""The time series Dataset's data source. The Dataset doesn't store the
+  data directly, but only pointer(s) to its data.
+
+  Fields:
+    bigquerySource: A
+      GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataBigQuerySourc
+      e attribute.
+    gcsSource: A
+      GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataGcsSource
+      attribute.
+  """
+
+  bigquerySource = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataBigQuerySource', 1)
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataGcsSource', 2)
+
+
 class GoogleCloudAiplatformV1beta1SchemaVideoActionRecognitionAnnotation(_messages.Message):
   r"""Annotation details specific to video action recognition.
 
@@ -7336,6 +7539,99 @@ class GoogleCloudAiplatformV1beta1UploadModelResponse(_messages.Message):
   """
 
   model = _messages.StringField(1)
+
+
+class GoogleCloudLocationListLocationsResponse(_messages.Message):
+  r"""The response message for Locations.ListLocations.
+
+  Fields:
+    locations: A list of locations that matches the specified filter in the
+      request.
+    nextPageToken: The standard List next-page token.
+  """
+
+  locations = _messages.MessageField('GoogleCloudLocationLocation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudLocationLocation(_messages.Message):
+  r"""A resource that represents Google Cloud Platform location.
+
+  Messages:
+    LabelsValue: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    MetadataValue: Service-specific metadata. For example the available
+      capacity at the given location.
+
+  Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
+    labels: Cross-service attributes for the location. For example
+      {"cloud.googleapis.com/region": "us-east1"}
+    locationId: The canonical id for this location. For example: `"us-east1"`.
+    metadata: Service-specific metadata. For example the available capacity at
+      the given location.
+    name: Resource name for the location, which may vary between
+      implementations. For example: `"projects/example-project/locations/us-
+      east1"`
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cross-service attributes for the location. For example
+    {"cloud.googleapis.com/region": "us-east1"}
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata. For example the available capacity at the
+    given location.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):

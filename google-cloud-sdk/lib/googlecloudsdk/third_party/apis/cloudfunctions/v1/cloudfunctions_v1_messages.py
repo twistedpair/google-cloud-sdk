@@ -208,7 +208,14 @@ class CloudFunction(_messages.Message):
       traffic can reach it.
     labels: Labels associated with this Cloud Function.
     maxInstances: The limit on the maximum number of function instances that
-      may coexist at a given time.
+      may coexist at a given time. In some cases, such as rapid traffic
+      surges, Cloud Functions may, for a short period of time, create more
+      instances than the specified max instances limit. If your function
+      cannot tolerate this temporary behavior, you may want to factor in a
+      safety margin and set a lower max instances value than your function can
+      tolerate. See the [Max
+      Instances](https://cloud.google.com/functions/docs/max-instances) Guide
+      for more details.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
     network: The VPC Network that this cloud function can connect to. It can

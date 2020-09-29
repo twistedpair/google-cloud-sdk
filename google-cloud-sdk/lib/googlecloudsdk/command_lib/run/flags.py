@@ -281,9 +281,11 @@ def AddNoTrafficFlag(parser):
       help='True to avoid sending traffic to the revision being deployed. '
       'Setting this flag assigns any traffic assigned to the LATEST revision '
       'to the specific revision bound to LATEST before the deployment. The '
-      'effect is that the revision being deployed will not receive traffic. '
+      'effect is that the revision being deployed will not receive traffic.\n\n'
       'After a deployment with this flag the LATEST revision will not receive '
-      'traffic on future deployments.')
+      'traffic on future deployments. To restore sending traffic to the LATEST '
+      'revision by default, run the `gcloud run service update-traffic` '
+      'command with `--to-latest`.')
 
 
 def AddDeployTagFlag(parser):

@@ -275,7 +275,7 @@
           "$ref": "CertificateConfig"
         },
         "lifetime": {
-          "description": "Required. The desired lifetime of a certificate. Used to create the \"not_before_time\" and \"not_after_time\" fields inside an X.509 certificate. Note that the lifetime may be truncated if it would extend past the life of any certificate authority in the issuing chain.",
+          "description": "Required. Immutable. The desired lifetime of a certificate. Used to create the \"not_before_time\" and \"not_after_time\" fields inside an X.509 certificate. Note that the lifetime may be truncated if it would extend past the life of any certificate authority in the issuing chain.",
           "type": "string",
           "format": "google-duration"
         },
@@ -502,7 +502,7 @@
           "$ref": "CaOptions"
         },
         "policyIds": {
-          "description": "Optional. Describes the X.509 certificate policy object identifiers, per https:\/\/tools.ietf.org\/html\/rfc5280#section-4.2.1.4rfc5280",
+          "description": "Optional. Describes the X.509 certificate policy object identifiers, per https:\/\/tools.ietf.org\/html\/rfc5280#section-4.2.1.4.",
           "type": "array",
           "items": {
             "$ref": "ObjectId"
@@ -1071,9 +1071,9 @@
           ],
           "enum": [
             "SIGN_HASH_ALGORITHM_UNSPECIFIED",
-            "RSA_PSS_2048_SHA_256",
-            "RSA_PSS_3072_SHA_256",
-            "RSA_PSS_4096_SHA_256",
+            "RSA_PSS_2048_SHA256",
+            "RSA_PSS_3072_SHA256",
+            "RSA_PSS_4096_SHA256",
             "EC_P256_SHA256",
             "EC_P384_SHA384"
           ]
@@ -1958,7 +1958,7 @@
                       "type": "string"
                     },
                     "certificateAuthorityId": {
-                      "description": "Required. It must be unique within a location and match the regular expression `[a-zA-Z0-9-]{1,63}`",
+                      "description": "Required. It must be unique within a location and match the regular expression `[a-zA-Z0-9_-]{1,63}`",
                       "location": "query",
                       "type": "string"
                     },
@@ -2335,7 +2335,7 @@
                           "type": "string"
                         },
                         "certificateId": {
-                          "description": "Optional. It must be unique within a location and match the regular expression `[a-zA-Z0-9-]{1,63}`. This field is required when using a CertificateAuthority in the Enterprise CertificateAuthority.Tier, but is optional and its value is ignored otherwise.",
+                          "description": "Optional. It must be unique within a location and match the regular expression `[a-zA-Z0-9_-]{1,63}`. This field is required when using a CertificateAuthority in the Enterprise CertificateAuthority.Tier, but is optional and its value is ignored otherwise.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2495,7 +2495,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Update a Certificate."
+                      "description": "Update a Certificate. Currently, the only field you can update is the labels field."
                     }
                   }
                 },
@@ -2515,7 +2515,7 @@
                           "type": "string"
                         },
                         "certificateRevocationListId": {
-                          "description": "Required. It must be unique within a location and match the regular expression `[a-zA-Z0-9-]{1,63}`",
+                          "description": "Required. It must be unique within a location and match the regular expression `[a-zA-Z0-9_-]{1,63}`",
                           "location": "query",
                           "type": "string"
                         },
@@ -2756,7 +2756,7 @@
                       "type": "string"
                     },
                     "reusableConfigId": {
-                      "description": "Required. It must be unique within a location and match the regular expression `[a-zA-Z0-9-]{1,63}`",
+                      "description": "Required. It must be unique within a location and match the regular expression `[a-zA-Z0-9_-]{1,63}`",
                       "location": "query",
                       "type": "string"
                     },

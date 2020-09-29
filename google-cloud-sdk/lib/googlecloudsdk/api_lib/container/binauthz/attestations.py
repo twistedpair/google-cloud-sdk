@@ -32,8 +32,6 @@ class Client(object):
 
   def Test(self, occurrence, attestor_ref):
     """Validates a v1 Occurrence using the TestAttestationOccurrence RPC endpoint."""
-    assert self.api_version == apis.V1_ALPHA2
-
     # The AttestationOccurrence being passed in is an instance of the message
     # type from the Container Analysis API but the
     # TestAttestationOccurrenceRequest method generated in the Binary
@@ -41,15 +39,15 @@ class Client(object):
     binauthz_attestation = encoding.JsonToMessage(
         self.messages.AttestationOccurrence,
         encoding.MessageToJson(occurrence.attestation))
-    test_attestation_request = self.messages.TestAttestationOccurrenceRequest(
+    test_attestation_request = self.messages.ValidateAttestationOccurrenceRequest(
         attestation=binauthz_attestation,
-        occurrenceNoteName=occurrence.noteName,
+        occurrenceNote=occurrence.noteName,
         occurrenceResourceUri=occurrence.resourceUri,
     )
-    validation_request = self.messages.BinaryauthorizationProjectsAttestorsTestAttestationOccurrenceRequest(
-        name=attestor_ref.RelativeName(),
-        testAttestationOccurrenceRequest=test_attestation_request)
-    validation_response = self.client.projects_attestors.TestAttestationOccurrence(
+    validation_request = self.messages.BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest(
+        attestor=attestor_ref.RelativeName(),
+        validateAttestationOccurrenceRequest=test_attestation_request)
+    validation_response = self.client.projects_attestors.ValidateAttestationOccurrence(
         validation_request)
 
     return validation_response

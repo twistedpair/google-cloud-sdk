@@ -36,6 +36,7 @@ OS_CHOICES_IMAGE_IMPORT_GA = [
     'ubuntu-1404',
     'ubuntu-1604',
     'ubuntu-1804',
+    'ubuntu-2004',
     'windows-2008r2',
     'windows-2008r2-byol',
     'windows-2012',

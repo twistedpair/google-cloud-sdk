@@ -333,7 +333,12 @@ class StorageClient(object):
   def CreateBucketIfNotExists(self, bucket, project=None, location=None):
     """Create a bucket if it does not already exist.
 
-    If it already exists and is owned by the creator, no problem.
+    If it already exists and is accessible by the current user, this method
+    returns.
+
+    Note that ownership is not checked by this method (an existing
+    bucket could belong to a malicious user so the client code needs to perform
+    ownership check if appropriate).
 
     Args:
       bucket: str, The storage bucket to be created.
@@ -342,8 +347,8 @@ class StorageClient(object):
       location: str, The bucket location/region.
 
     Raises:
-      api_exceptions.HttpError: If the bucket is owned by someone else
-          or is otherwise not able to be created.
+      api_exceptions.HttpError: If the bucket is not able to be created or is
+        not accessible due to permissions.
     """
     project = project or properties.VALUES.core.project.Get(required=True)
 

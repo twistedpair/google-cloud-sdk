@@ -818,6 +818,20 @@ class ContaineranalysisProjectsOccurrencesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest
+  object.
+
+  Fields:
+    filter: The filter expression.
+    parent: The name of the project to get a vulnerability summary for in the
+      form of `projects/[PROJECT_ID]`.
+  """
+
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+
+
 class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
   r"""A ContaineranalysisProjectsOccurrencesListRequest object.
 
@@ -1206,6 +1220,48 @@ class Fingerprint(_messages.Message):
   v1Name = _messages.StringField(1)
   v2Blob = _messages.StringField(2, repeated=True)
   v2Name = _messages.StringField(3)
+
+
+class FixableTotalByDigest(_messages.Message):
+  r"""Per resource and severity counts of fixable and total vulnerabilities.
+
+  Enums:
+    SeverityValueValuesEnum: The severity for this count. SEVERITY_UNSPECIFIED
+      indicates total across all severities.
+
+  Fields:
+    fixableCount: The number of fixable vulnerabilities associated with this
+      resource.
+    resourceUri: The affected resource.
+    severity: The severity for this count. SEVERITY_UNSPECIFIED indicates
+      total across all severities.
+    totalCount: The total number of vulnerabilities associated with this
+      resource.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity for this count. SEVERITY_UNSPECIFIED indicates total
+    across all severities.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unknown.
+      MINIMAL: Minimal severity.
+      LOW: Low severity.
+      MEDIUM: Medium severity.
+      HIGH: High severity.
+      CRITICAL: Critical severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    MINIMAL = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+    CRITICAL = 5
+
+  fixableCount = _messages.IntegerField(1)
+  resourceUri = _messages.StringField(2)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 3)
+  totalCount = _messages.IntegerField(4)
 
 
 class GerritSourceContext(_messages.Message):
@@ -2441,6 +2497,18 @@ class VulnerabilityOccurrence(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 7)
   shortDescription = _messages.StringField(8)
   type = _messages.StringField(9)
+
+
+class VulnerabilityOccurrencesSummary(_messages.Message):
+  r"""A summary of how many vulnerability occurrences there are per resource
+  and severity type.
+
+  Fields:
+    counts: A listing by resource of the number of fixable and total
+      vulnerabilities.
+  """
+
+  counts = _messages.MessageField('FixableTotalByDigest', 1, repeated=True)
 
 
 class WindowsDetail(_messages.Message):

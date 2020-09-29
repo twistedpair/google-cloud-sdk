@@ -37,7 +37,8 @@ properties:
       This field specifies the URL of AuthorizationPolicy resource that applies
       authorization policies to the inbound traffic at the matched endpoints.
       Refer to Authorization. If this field is not specified, authorization is
-      disabled(no authz checks) for this endpoint.
+      disabled(no authz checks) for this endpoint. Applicable only when
+      EndpointConfigSelectorType is SIDECAR_PROXY.
     type: string
   clientTlsPolicy:
     description: |-
@@ -59,7 +60,9 @@ properties:
       A matcher that selects endpoints to which the policies should be applied.
     $ref: EndpointMatcher.yaml
   httpFilters:
-    description: HTTP filters configuration for the endpoint.
+    description: |-
+      HTTP filters configuration for the endpoint. Applicable only when
+      EndpointConfigSelectorType is SIDECAR_PROXY.
     $ref: HttpFilters.yaml
   labels:
     description: |-
@@ -68,8 +71,7 @@ properties:
   name:
     description: |-
       Name of the EndpointConfigSelector resource. It matches pattern
-      `projects/*/locations/global/endpointConfigSelectors/<endpoint_c
-      onfig_selector>`.
+      `projects/*/locations/global/endpointConfigSelectors/`.
     type: string
   serverTlsPolicy:
     description: |-
@@ -90,4 +92,5 @@ properties:
     type: string
     enum:
     - ENDPOINT_CONFIG_SELECTOR_TYPE_UNSPECIFIED
+    - GRPC_SERVER
     - SIDECAR_PROXY

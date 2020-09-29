@@ -760,8 +760,8 @@ class PrivateEnvironmentConfig(_messages.Message):
       tenant project will be reserved for Cloud SQL. Needs to be disjoint from
       web_server_ipv4_cidr_block
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
-      environment is created. If this field is true, `use_ip_aliases` must be
-      true.
+      environment is created. If this field is set to true,
+      `IPAllocationPolicy.use_ip_aliases` must be set to true.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
     webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for

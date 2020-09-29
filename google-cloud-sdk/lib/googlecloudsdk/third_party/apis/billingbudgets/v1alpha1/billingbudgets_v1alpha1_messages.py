@@ -92,9 +92,9 @@ class GoogleCloudBillingBudgetsV1alpha1AllUpdatesRule(_messages.Message):
 
   Fields:
     disableDefaultIamRecipients: Optional. When set to true, disables default
-      notifications sent when a threshold is exceeded. Recipients are those
-      with Billing Account Administrators and Billing Account Users IAM roles
-      for the target account.
+      notifications sent when a threshold is exceeded. Default notifications
+      are sent to those with Billing Account Administrator and Billing Account
+      User IAM roles for the target account.
     monitoringNotificationChannels: Optional. Targets to send notifications to
       when a threshold is exceeded. This is in addition to default recipients
       who have billing account IAM roles. The value is the full REST resource

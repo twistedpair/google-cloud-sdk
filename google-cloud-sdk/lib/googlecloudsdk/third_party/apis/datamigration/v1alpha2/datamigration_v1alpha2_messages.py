@@ -48,8 +48,8 @@ class CloudSqlSettings(_messages.Message):
       off; it is not activated, even if a connection request arrives.
     DataDiskTypeValueValuesEnum: The type of storage: `PD_SSD` (default) or
       `PD_HDD`.
-    DatabaseVersionValueValuesEnum: The database engine type and version
-      (`MYSQL_5_7` or `MYSQL_5_6`).
+    DatabaseVersionValueValuesEnum: The database engine type and version (such
+      as `MYSQL_5_7` / `POSTGRES_9_6`).
 
   Messages:
     DatabaseFlagsValue: The database flags passed to the Cloud SQL instance at
@@ -78,8 +78,8 @@ class CloudSqlSettings(_messages.Message):
     databaseFlags: The database flags passed to the Cloud SQL instance at
       startup. An object containing a list of "key": value pairs. Example: {
       "name": "wrench", "mass": "1.3kg", "count": "3" }.
-    databaseVersion: The database engine type and version (`MYSQL_5_7` or
-      `MYSQL_5_6`).
+    databaseVersion: The database engine type and version (such as `MYSQL_5_7`
+      / `POSTGRES_9_6`).
     hasRootPassword: Output only. Indicates If this connection profile root
       password is stored.
     ipConfig: The settings for IP Management. This allows to enable or disable
@@ -133,7 +133,8 @@ class CloudSqlSettings(_messages.Message):
     PD_HDD = 2
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""The database engine type and version (`MYSQL_5_7` or `MYSQL_5_6`).
+    r"""The database engine type and version (such as `MYSQL_5_7` /
+    `POSTGRES_9_6`).
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: Unspecified version.
@@ -142,6 +143,7 @@ class CloudSqlSettings(_messages.Message):
       POSTGRES_9_6: PostgreSQL 9.6.
       POSTGRES_11: PostgreSQL 11.
       POSTGRES_10: PostgreSQL 10.
+      MYSQL_8_0: MySQL 8.0.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_6 = 1
@@ -149,6 +151,7 @@ class CloudSqlSettings(_messages.Message):
     POSTGRES_9_6 = 3
     POSTGRES_11 = 4
     POSTGRES_10 = 5
+    MYSQL_8_0 = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DatabaseFlagsValue(_messages.Message):

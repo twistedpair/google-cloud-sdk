@@ -44,7 +44,9 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args, compute_holder):
+def CreateNatMessage(args,
+                     compute_holder,
+                     with_endpoint_independent_mapping=False):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
@@ -69,12 +71,18 @@ def CreateNatMessage(args, compute_holder):
 
     params['logConfig'] = log_config
 
+  if (with_endpoint_independent_mapping and
+      args.enable_endpoint_independent_mapping is not None):
+    params['enableEndpointIndependentMapping'] = (
+        args.enable_endpoint_independent_mapping)
+
   return compute_holder.client.messages.RouterNat(**params)
 
 
 def UpdateNatMessage(nat,
                      args,
-                     compute_holder):
+                     compute_holder,
+                     with_endpoint_independent_mapping=False):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
@@ -134,6 +142,11 @@ def UpdateNatMessage(nat,
     nat.logConfig.enable = args.enable_logging
   if args.log_filter is not None:
     nat.logConfig.filter = _TranslateLogFilter(args.log_filter, compute_holder)
+
+  if (with_endpoint_independent_mapping and
+      args.enable_endpoint_independent_mapping is not None):
+    nat.enableEndpointIndependentMapping = (
+        args.enable_endpoint_independent_mapping)
 
   return nat
 

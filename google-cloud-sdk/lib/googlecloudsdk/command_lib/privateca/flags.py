@@ -527,6 +527,23 @@ _TIER_MAPPER = arg_utils.ChoiceEnumMapper(
     .TierValueValuesEnum,
     custom_mappings=_TIER_MAPPING)
 
+_KEY_ALGORITHM_MAPPING = {
+    'RSA_PSS_2048_SHA256': 'rsa-pss-2048-sha256',
+    'RSA_PSS_3072_SHA256': 'rsa-pss-3078-sha256',
+    'RSA_PSS_4096_SHA256': 'rsa-pss-4096-sha256',
+    'EC_P256_SHA256': 'ec-p256-sha256',
+    'EC_P384_SHA384': 'ec-p384-sha384',
+}
+
+_KEY_ALGORITHM_MAPPER = arg_utils.ChoiceEnumMapper(
+    arg_name='--key-algorithm',
+    default='rsa-pss-4096-sha256',
+    help_str='The crypto algorithm to use for creating a managed KMS key for '
+    'the Certificate Authority.',
+    message_enum=privateca_base.GetMessagesModule().KeyVersionSpec
+    .AlgorithmValueValuesEnum,
+    custom_mappings=_KEY_ALGORITHM_MAPPING)
+
 
 def AddRevocationReasonFlag(parser):
   """Add a revocation reason enum flag to the parser.
@@ -560,3 +577,19 @@ def AddTierFlag(parser):
 
 def ParseTierFlag(args):
   return _TIER_MAPPER.GetEnumForChoice(args.tier)
+
+
+def AddKeyAlgorithmFlag(parser_group):
+  _KEY_ALGORITHM_MAPPER.choice_arg.AddToParser(parser_group)
+
+
+def ParseKeySpec(args):
+  """Parses a specified KMS key version or algorithm to get a KeyVersionSpec."""
+  messages = privateca_base.GetMessagesModule()
+  if args.IsSpecified('kms_key_version'):
+    kms_key_version_ref = args.CONCEPTS.kms_key_version.Parse()
+    return messages.KeyVersionSpec(
+        cloudKmsKeyVersion=kms_key_version_ref.RelativeName())
+
+  return messages.KeyVersionSpec(
+      algorithm=_KEY_ALGORITHM_MAPPER.GetEnumForChoice(args.key_algorithm))
