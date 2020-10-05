@@ -15,4 +15,4 @@ jobs:
     - name: Push Releases 
       run: ./.github/workflows/push_results_github.sh
       env:
-        GITHUB_PUSH_TOKEN: ${{ secrets.GITHUB_PUSH_TOKEN }}
+        GITHUB_PUSH_TOKEN: ${{ secrets.MY_GITHUB_PUSH_TOKEN }}
