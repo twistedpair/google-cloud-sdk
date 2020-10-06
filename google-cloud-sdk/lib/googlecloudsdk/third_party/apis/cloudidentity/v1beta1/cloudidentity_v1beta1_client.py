@@ -878,7 +878,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
           }
 
     def CheckTransitiveMembership(self, request, global_params=None):
-      r"""Check a potential member for membership in a group.
+      r"""Check a potential member for membership in a group. A member has membership to a group as long as there is a single viewable transitive membership between the group and the member. The actor must have view permissions to at least one transitive membership between the member and group.
 
       Args:
         request: (CloudidentityGroupsMembershipsCheckTransitiveMembershipRequest) input message
@@ -986,7 +986,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     )
 
     def GetMembershipGraph(self, request, global_params=None):
-      r"""Get a membership graph of a member or member/group.
+      r"""Get a membership graph of just a member or both a member and a group. Given a member, the response will contain all membership paths from the member. Given both a group and a member, the response will contain all membership paths between the group and the member.
 
       Args:
         request: (CloudidentityGroupsMembershipsGetMembershipGraphRequest) input message
@@ -1121,7 +1121,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     )
 
     def SearchTransitiveGroups(self, request, global_params=None):
-      r"""Search transitive groups of a member.
+      r"""Search transitive groups of a member. A transitive group is any group that has a direct or indirect membership to the member. Actor must have view permissions all transitive groups.
 
       Args:
         request: (CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest) input message
@@ -1148,7 +1148,7 @@ class CloudidentityV1beta1(base_api.BaseApiClient):
     )
 
     def SearchTransitiveMemberships(self, request, global_params=None):
-      r"""Search transitive memberships of a group.
+      r"""Search transitive memberships of a group. A transitive membership is any direct or indirect membership of a group. Actor must have view permissions to all transitive memberships.
 
       Args:
         request: (CloudidentityGroupsMembershipsSearchTransitiveMembershipsRequest) input message

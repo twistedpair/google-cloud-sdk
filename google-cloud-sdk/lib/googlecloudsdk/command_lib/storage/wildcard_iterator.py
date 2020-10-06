@@ -133,7 +133,7 @@ class CloudWildcardIterator(WildcardIterator):
     self._url = url
     self._all_versions = all_versions
     self._fields_scope = fields_scope
-    self._client = api_factory.get_api(cloud_api.ProviderPrefix(url.scheme))
+    self._client = api_factory.get_api(url.scheme)
 
     if url.url_string.endswith(url.delimiter):
       # Forces the API to return prefixes instead of their contents.

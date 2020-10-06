@@ -34,6 +34,12 @@ from googlecloudsdk.core.util import files
 from ruamel import yaml
 import six
 
+try:
+  # Python 3.3 and above.
+  collections_abc = collections.abc
+except AttributeError:
+  collections_abc = collections
+
 
 VERSION_1_1 = '1.1'
 VERSION_1_2 = '1.2'
@@ -285,12 +291,12 @@ def convert_to_block_text(data):
 
 def list_like(item):
   """Return True if the item is like a list: a MutableSequence."""
-  return isinstance(item, collections.MutableSequence)
+  return isinstance(item, collections_abc.MutableSequence)
 
 
 def dict_like(item):
   """Return True if the item is like a dict: a MutableMapping."""
-  return isinstance(item, collections.MutableMapping)
+  return isinstance(item, collections_abc.MutableMapping)
 
 
 def strip_locations(obj):

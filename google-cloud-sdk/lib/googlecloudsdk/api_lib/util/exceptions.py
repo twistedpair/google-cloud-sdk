@@ -297,14 +297,7 @@ class HttpErrorPayload(string.Formatter):
     instance_name = resource_parts[1]
 
     self.instance_name = instance_name.split('?')[0]
-    if self.resource_name.endswith('s'):
-      # Singular form for formatting message text. This will result in:
-      #   Project [foo] not found.
-      # instead of
-      #   Projects [foo] not found.
-      self.resource_item = self.resource_name[:-1]
-    else:
-      self.resource_item = self.resource_name
+    self.resource_item = '{} instance'.format(self.resource_name)
 
   def _MakeGenericMessage(self):
     """Makes a generic human readable message from the HttpError."""
@@ -325,8 +318,8 @@ class HttpErrorPayload(string.Formatter):
         return '{0} [{1}] not found'.format(
             self.resource_item.capitalize(), self.instance_name)
       if self.status_code == 409:
-        if self.resource_item == 'project':
-          return ('Resource in project [{0}] '
+        if self.resource_name == 'projects':
+          return ('Resource in projects [{0}] '
                   'is the subject of a conflict').format(self.instance_name)
         else:
           return '{0} [{1}] is the subject of a conflict'.format(

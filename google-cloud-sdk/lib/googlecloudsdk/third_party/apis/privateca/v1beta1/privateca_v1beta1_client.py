@@ -880,60 +880,6 @@ class PrivatecaV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Create a new ReusableConfig in a given Project and Location.
-
-      Args:
-        request: (PrivatecaProjectsLocationsReusableConfigsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reusableConfigs',
-        http_method='POST',
-        method_id='privateca.projects.locations.reusableConfigs.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId', 'reusableConfigId'],
-        relative_path='v1beta1/{+parent}/reusableConfigs',
-        request_field='reusableConfig',
-        request_type_name='PrivatecaProjectsLocationsReusableConfigsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""DeleteReusableConfig deletes a ReusableConfig.
-
-      Args:
-        request: (PrivatecaProjectsLocationsReusableConfigsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}',
-        http_method='DELETE',
-        method_id='privateca.projects.locations.reusableConfigs.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1beta1/{+name}',
-        request_field='',
-        request_type_name='PrivatecaProjectsLocationsReusableConfigsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Returns a ReusableConfig.
 
@@ -1012,33 +958,6 @@ class PrivatecaV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='PrivatecaProjectsLocationsReusableConfigsListRequest',
         response_type_name='ListReusableConfigsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Update a ReusableConfig.
-
-      Args:
-        request: (PrivatecaProjectsLocationsReusableConfigsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}',
-        http_method='PATCH',
-        method_id='privateca.projects.locations.reusableConfigs.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1beta1/{+name}',
-        request_field='reusableConfig',
-        request_type_name='PrivatecaProjectsLocationsReusableConfigsPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

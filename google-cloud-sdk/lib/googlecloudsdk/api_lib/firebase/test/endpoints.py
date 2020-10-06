@@ -38,7 +38,8 @@ def ValidateTestServiceEndpoints():
   toolresults_url = properties.VALUES.api_endpoint_overrides.toolresults.Get()
   log.info('Test Service endpoint: [{0}]'.format(testing_url))
   log.info('Tool Results endpoint: [{0}]'.format(toolresults_url))
-  if ((toolresults_url is None or 'sandbox' not in toolresults_url) !=
-      (testing_url is None or 'sandbox' not in testing_url)):
+  if ((toolresults_url is None or 'https://www.googleapis' in toolresults_url or
+       'https://toolresults' in toolresults_url) !=
+      (testing_url is None or 'https://testing' in testing_url)):
     raise exceptions.IncompatibleApiEndpointsError(
         testing_url, toolresults_url)

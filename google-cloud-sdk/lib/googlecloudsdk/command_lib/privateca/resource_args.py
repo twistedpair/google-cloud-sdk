@@ -60,10 +60,14 @@ def CertificateAttributeConfig(fallthroughs=None):
       name='certificate', fallthroughs=fallthroughs or [])
 
 
-def CertificateAuthorityAttributeConfig(arg_name='certificate_authority'):
+def CertificateAuthorityAttributeConfig(arg_name='certificate_authority',
+                                        fallthroughs=None):
+  fallthroughs = fallthroughs or []
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
-      help_text='The issuing certificate authority of the {resource}.')
+      help_text='The issuing certificate authority of the {resource}.' +
+      _GetFallthroughsSummary(fallthroughs),
+      fallthroughs=fallthroughs)
 
 
 def LocationAttributeConfig(arg_name='location', fallthroughs=None):
@@ -149,13 +153,14 @@ def CreateReusableConfigResourceSpec(location_fallthroughs=None):
 def CreateCertificateAuthorityResourceSpec(
     display_name,
     certificate_authority_attribute='certificate_authority',
-    location_attribute='location'):
+    location_attribute='location',
+    ca_id_fallthroughs=None):
   return concepts.ResourceSpec(
       'privateca.projects.locations.certificateAuthorities',
       # This will be formatted and used as {resource} in the help text.
       resource_name=display_name,
       certificateAuthoritiesId=CertificateAuthorityAttributeConfig(
-          certificate_authority_attribute),
+          certificate_authority_attribute, fallthroughs=ca_id_fallthroughs),
       locationsId=LocationAttributeConfig(location_attribute),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 

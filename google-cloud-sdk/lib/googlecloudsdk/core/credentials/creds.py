@@ -78,11 +78,30 @@ def IsGoogleAuthCredentials(creds):
   return isinstance(creds, google_auth_creds.Credentials)
 
 
+def _IsUserAccountCredentialsOauth2client(creds):
+  if CredentialType.FromCredentials(creds).is_user:
+    return True
+  if c_devshell.IsDevshellEnvironment():
+    return CredentialType.FromCredentials(creds) == CredentialType.GCE
+  else:
+    return False
+
+
+def _IsUserAccountCredentialsGoogleAuth(creds):
+  if CredentialTypeGoogleAuth.FromCredentials(creds).is_user:
+    return True
+  if c_devshell.IsDevshellEnvironment():
+    return CredentialTypeGoogleAuth.FromCredentials(
+        creds) == CredentialTypeGoogleAuth.GCE
+  else:
+    return False
+
+
 def IsUserAccountCredentials(creds):
   if IsOauth2ClientCredentials(creds):
-    return CredentialType.FromCredentials(creds).is_user
+    return _IsUserAccountCredentialsOauth2client(creds)
   else:
-    return CredentialTypeGoogleAuth.FromCredentials(creds).is_user
+    return _IsUserAccountCredentialsGoogleAuth(creds)
 
 
 def GetEffectiveTokenUri(cred_json, key='token_uri'):

@@ -1094,7 +1094,7 @@ class MembershipEndpoint(_messages.Message):
 
   Fields:
     gkeCluster: If this Membership is a Kubernetes API server hosted on GKE,
-      this is a self link to its GCP resource.
+      this field will be populated and contain GKE-specific information.
   """
 
   gkeCluster = _messages.MessageField('GkeCluster', 1)

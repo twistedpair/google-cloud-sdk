@@ -1845,6 +1845,14 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v1alpha':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.spanner.v1alpha',
+                client_classpath='spanner_v1alpha_client.SpannerV1alpha',
+                messages_modulepath='spanner_v1alpha_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'speech': {
         'v1':

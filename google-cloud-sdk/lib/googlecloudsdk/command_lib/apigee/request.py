@@ -27,10 +27,12 @@ from __future__ import unicode_literals
 import collections
 import json
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.apigee import errors
 from googlecloudsdk.command_lib.apigee import resource_args
-from googlecloudsdk.core import credentials
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.credentials import requests
 from six.moves import urllib
 
 
@@ -57,6 +59,26 @@ def _ResourceIdentifier(identifiers, entity_path):
       raise errors.MissingIdentifierError(entity.singular)
     resource_identifier[entity] = identifiers[id_key]
   return resource_identifier
+
+
+def _Communicate(url, method, body, headers):
+  """Returns HTTP status, reason, and response body for a given HTTP request."""
+  status = None
+  reason = None
+  data = None
+  if base.UseRequests():
+    response = requests.GetSession().request(
+        method, url, data=body, headers=headers, stream=True)
+    status = response.status_code
+    reason = response.reason
+    data = response.content
+  else:
+    response, data = http.Http().request(
+        url, method, body=body, headers=headers)
+    status = response.status
+    reason = response.reason
+
+  return status, reason, data
 
 
 def ResponseToApiRequest(identifiers,
@@ -93,8 +115,6 @@ def ResponseToApiRequest(identifiers,
       `identifiers`.
     RequestError: if the request itself fails.
   """
-  connection = credentials.http.Http()
-
   headers = {}
   if body:
     headers["Content-Type"] = body_mimetype
@@ -126,13 +146,13 @@ def ResponseToApiRequest(identifiers,
     method = "POST"
   url = urllib.parse.urlunparse((scheme, host, url_path, "", query_string, ""))
 
-  response, body = connection.request(url, method, body=body, headers=headers)
+  status, reason, response = _Communicate(url, method, body, headers)
 
-  if response.status >= 400:
+  if status >= 400:
     resource_type = entity_collection or entity_path[-1]
-    if response.status == 404:
+    if status == 404:
       exception_class = errors.EntityNotFoundError
-    elif response.status in (401, 403):
+    elif status in (401, 403):
       exception_class = errors.UnauthorizedRequestError
     else:
       exception_class = errors.RequestError
@@ -140,15 +160,15 @@ def ResponseToApiRequest(identifiers,
         (key.singular, value) for key, value in resource_identifier.items()
     ])
     raise exception_class(resource_type, error_identifier, method,
-                          response.reason, body)
+                          reason, response)
 
   if accept_mimetype is None:
     try:
       # In older versions of Python 3, the built-in JSON library will only
       # accept strings, not bytes.
-      if not isinstance(body, str) and hasattr(body, "decode"):
-        body = body.decode()
-      body = json.loads(body)
+      if not isinstance(response, str) and hasattr(response, "decode"):
+        response = response.decode()
+      response = json.loads(response)
     except ValueError as error:
       resource_type = (
           entity_collection if entity_collection else entity_path[-1])
@@ -156,6 +176,6 @@ def ResponseToApiRequest(identifiers,
           (key.singular, value) for key, value in resource_identifier.items()
       ])
       raise errors.ResponseNotJSONError(error, resource_type, error_identifier,
-                                        body)
+                                        response)
 
-  return body
+  return response

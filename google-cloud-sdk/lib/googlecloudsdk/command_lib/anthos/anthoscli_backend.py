@@ -22,6 +22,7 @@ import copy
 import json
 import os
 
+from googlecloudsdk.command_lib.anthos import flags
 from googlecloudsdk.command_lib.anthos.common import file_parsers
 from googlecloudsdk.command_lib.anthos.common import messages
 from googlecloudsdk.command_lib.util.anthos import binary_operations
@@ -32,7 +33,10 @@ from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
+import requests
 import six
+from six.moves import urllib
+
 
 DEFAULT_ENV_ARGS = {'COBRA_SILENCE_USAGE': 'true'}
 
@@ -214,6 +218,7 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
                       ldap_user=None,
                       ldap_pass=None,
                       dry_run=None,
+                      preferred_auth=None,
                       **kwargs):
     del kwargs  # Not Used Here
     exec_args = ['login']
@@ -232,6 +237,8 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
     if ldap_pass and ldap_user:
       exec_args.extend(['--ldap-username', ldap_user,
                         '--ldap-password', ldap_pass])
+    if preferred_auth:
+      exec_args.extend(['--preferred-auth', preferred_auth])
 
     return exec_args
 
@@ -294,12 +301,76 @@ def _GetLdapUserAndPass(cluster_config, auth_name, cluster):
   return _Base64EncodeLdap(ldap_user, ldap_pass)
 
 
-def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
-  """Get preferredAuthentication value for cluster."""
-  if not (cluster and config_file):
+def GetFileOrURL(cluster_config, certificate_file=True):
+  """Parses config input to determine whether URL or File logic should execute.
+
+     Determines whether the cluster_config is a file or URL. If it's a URL, it
+     then pulls the contents of the file using a GET request. If it's a
+     file, then it expands the file path and returns its contents.
+
+  Args:
+    cluster_config: str, A file path or URL for the login-config.
+    certificate_file: str, Optional file path to the CA certificate to use
+      with the GET request to the URL.
+
+  Raises:
+    AnthosAuthException: If the data could not be pulled from the URL.
+
+  Returns:
+    parsed_config_fileOrURL, config_contents, and is_url
+    parsed_config_fileOrURL: str, returns either the URL that was passed or an
+      expanded file path if a file was passed.
+      config_contents: str, returns the contents of the file or URL.
+    is_url: bool, True if the provided cluster_config input was a URL.
+  """
+
+  if not cluster_config:
     return None, None, None
-  configs = file_parsers.YamlConfigFile(config_file,
-                                        file_parsers.LoginConfigObject)
+
+  # Handle if input is URL.
+  config_url = urllib.parse.urlparse(cluster_config)
+  is_url = config_url.scheme == 'http' or config_url.scheme == 'https'
+  if is_url:
+    response = requests.get(cluster_config, verify=certificate_file or True)
+    if response.status_code != requests.codes.ok:
+      raise AnthosAuthException('Request to login-config URL failed with'
+                                'response code [{}] and text [{}]: '
+                                .format(response.status_code, response.text))
+    return cluster_config, response.text, is_url
+
+  # Handle if input is file.
+  expanded_config_path = flags.ExpandLocalDirAndVersion(cluster_config)
+  contents = files.ReadFileContents(expanded_config_path)
+  return expanded_config_path, contents, is_url
+
+
+def GetPreferredAuthForCluster(
+    cluster,
+    login_config,
+    config_contents=None,
+    force_update=False,
+    is_url=False):
+  """Get preferredAuthentication value for cluster."""
+  if not (cluster and login_config):
+    return None, None, None
+
+  configs = None
+  # If URL, then pass contents directly.
+  if is_url:
+    if not config_contents:
+      raise AnthosAuthException(
+          'Config contents were not passed with URL [{}]'
+          .format(login_config))
+    configs = file_parsers.YamlConfigFile(
+        file_contents=config_contents,
+        item_type=file_parsers.LoginConfigObject)
+  # If file, pass contents and location for updating.
+  else:
+    configs = file_parsers.YamlConfigFile(
+        file_contents=config_contents,
+        file_path=login_config,
+        item_type=file_parsers.LoginConfigObject)
+
   cluster_config = _GetClusterConfig(configs, cluster)
 
   try:
@@ -314,7 +385,7 @@ def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
     providers = cluster_config.GetAuthProviders()
     if not providers:
       raise AnthosAuthException(
-          'No Authentication Providers found in [{}]'.format(config_file))
+          'No Authentication Providers found in [{}]'.format(login_config))
     if len(providers) == 1:
       auth_method = providers.pop()
     else:  # do the prompting
@@ -322,7 +393,8 @@ def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
                         'for cluster [{}]'.format(cluster))
       override_warning = ('. Note: This will overwrite current preferred auth '
                           'method [{}] in config file.')
-      if auth_method and force_update:
+      # Only print override warning in certain cases.
+      if auth_method and force_update and not is_url:
         prompt_message = prompt_message + override_warning.format(auth_method)
       index = console_io.PromptChoice(providers,
                                       message=prompt_message,
@@ -332,7 +404,9 @@ def GetPreferredAuthForCluster(cluster, config_file, force_update=False):
     log.status.Print(
         'Setting Preferred Authentication option to [{}]'.format(auth_method))
     cluster_config.SetPreferredAuth(auth_method)
-    configs.WriteToDisk()
+    # Only save to disk if file is specified. Don't want URL failure.
+    if login_config and not is_url:
+      configs.WriteToDisk()
 
   ldap_user, ldap_pass = _GetLdapUserAndPass(cluster_config,
                                              auth_method,

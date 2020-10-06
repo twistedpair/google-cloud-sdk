@@ -149,6 +149,7 @@ class KubeconfigProcessor(object):
     if not c_util.CheckKubectlInstalled():
       raise exceptions.Error('kubectl not installed.')
     self.gke_cluster_self_link = None
+    self.gke_cluster_uri = None
 
   def GetKubeconfigAndContext(self, flags, temp_kubeconfig_dir):
     """Gets the kubeconfig, cluster context and resource link from arguments and defaults.
@@ -176,7 +177,7 @@ class KubeconfigProcessor(object):
         cluster_project = properties.VALUES.core.project.GetOrFail()
         location, name = _ParseGKECluster(flags.gke_cluster)
 
-      self.gke_cluster_self_link = api_util.GetEffectiveResourceEndpoint(
+      self.gke_cluster_self_link, self.gke_cluster_uri = api_util.GetGKEURIAndResourceName(
           cluster_project, location, name)
       return _GetGKEKubeconfig(cluster_project, location, name,
                                temp_kubeconfig_dir), None
@@ -367,11 +368,13 @@ class KubernetesClient(object):
     self.kubeconfig, self.context = self.processor.GetKubeconfigAndContext(
         flags, self.temp_kubeconfig_dir)
 
-    # If --public-issuer-url is set, we must not attempt to construct the
-    # cluster client, because it may use a kubeconfig that we don't fully
-    # support yet. See: b/152465794.
+    # If --public-issuer-url is set or if gke_cluster_uri is set, we must not
+    # attempt to construct the cluster client, because it may use a kubeconfig
+    # that we don't fully support yet. See: b/152465794.
     # TODO(b/149872627): Switch to official client to fully support kubeconfig.
-    if hasattr(flags, 'public_issuer_url') and flags.public_issuer_url:
+    if (hasattr(flags, 'public_issuer_url') and
+        flags.public_issuer_url) or (hasattr(flags, 'enable_workload_identity')
+                                     and self.processor.gke_cluster_uri):
       return
 
     # Due to an issue between the gcloud third_party yaml library, which the

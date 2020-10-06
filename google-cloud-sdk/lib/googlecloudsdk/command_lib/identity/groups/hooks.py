@@ -34,7 +34,8 @@ def SetParent(unused_ref, args, request):
   """Set obfuscated customer id to request.group.parent or request.parent.
 
   Args:
-    unused_ref: unused.
+    unused_ref: A string representing the operation reference. Unused and may
+      be None.
     args: The argparse namespace.
     request: The request to modify.
 
@@ -42,12 +43,13 @@ def SetParent(unused_ref, args, request):
     The updated request.
   """
 
-  if args.IsSpecified('organization'):
-    customer_id = ConvertOrgIdToObfuscatedCustomerId(args.organization)
-    if hasattr(request, 'group'):
-      request.group.parent = 'customerId/' + customer_id
-    else:
-      request.parent = 'customerId/' + customer_id
+  version = GetApiVersion(args)
+  messages = ci_client.GetMessages(version)
+
+  if not hasattr(request, 'group'):
+    request.group = messages.Group()
+
+  request.group.parent = GetCustomerId(args)
 
   return request
 
@@ -456,6 +458,23 @@ def GetApiVersion(args):
     return 'v1'
   else:
     raise UnsupportedReleaseTrackError(release_track)
+
+
+def GetCustomerId(args):
+  """Return customer_id.
+
+  Args:
+    args: The argparse namespace.
+
+  Returns:
+    customer_id.
+
+  """
+
+  if hasattr(args, 'customer') and args.IsSpecified('customer'):
+    return 'customerId/' + args.customer
+  elif hasattr(args, 'organization') and args.IsSpecified('organization'):
+    return 'customerId/' + ConvertOrgIdToObfuscatedCustomerId(args.organization)
 
 
 class UnsupportedReleaseTrackError(Exception):

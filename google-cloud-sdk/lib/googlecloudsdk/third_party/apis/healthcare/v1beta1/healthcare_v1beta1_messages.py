@@ -216,8 +216,9 @@ class AttributeDefinition(_messages.Message):
       value of this field cannot be changed after creation.
 
   Fields:
-    allowedValues: Required. Possible values for the attribute. An empty list
-      is invalid. The list can only be expanded after creation.
+    allowedValues: Required. Possible values for the attribute. The number of
+      allowed values must not exceed 100. An empty list is invalid. The list
+      can only be expanded after creation.
     category: Required. The category of the attribute. The value of this field
       cannot be changed after creation.
     consentDefaultValues: Default values of the attribute in consents. If no
@@ -239,7 +240,7 @@ class AttributeDefinition(_messages.Message):
     Values:
       CATEGORY_UNSPECIFIED: No category specified. This option is invalid.
       RESOURCE: Specify when this attribute captures properties of data
-        resources. For example, data anonmity or data type.
+        resources. For example, data anonymity or data type.
       REQUEST: Specify when this attribute captures properties of access
         requests. For example, requester's role or requester's organization.
     """
@@ -879,22 +880,6 @@ class DeidentifyDicomStoreRequest(_messages.Message):
   filterConfig = _messages.MessageField('DicomFilterConfig', 3)
 
 
-class DeidentifyErrorDetails(_messages.Message):
-  r"""Deprecated. Contains the status of the Deidentify operation.
-
-  Fields:
-    failureResourceCount: Number of resources that failed to process.
-    failureStoreCount: Number of stores that failed to process.
-    successResourceCount: Number of resources successfully processed.
-    successStoreCount: Number of stores successfully processed.
-  """
-
-  failureResourceCount = _messages.IntegerField(1)
-  failureStoreCount = _messages.IntegerField(2)
-  successResourceCount = _messages.IntegerField(3)
-  successStoreCount = _messages.IntegerField(4)
-
-
 class DeidentifyFhirStoreRequest(_messages.Message):
   r"""Creates a new FHIR store with sensitive information de-identified.
 
@@ -918,19 +903,7 @@ class DeidentifyFhirStoreRequest(_messages.Message):
 
 
 class DeidentifySummary(_messages.Message):
-  r"""Contains a detailed summary of the Deidentify operation.
-
-  Fields:
-    failureResourceCount: Number of resources that failed to process. The
-      failures might be caused by: * Invalid user input data * Transient
-      errors that could be skipped
-    successResourceCount: Number of resources successfully processed.
-    successStoreCount: Number of stores successfully processed.
-  """
-
-  failureResourceCount = _messages.IntegerField(1)
-  successResourceCount = _messages.IntegerField(2)
-  successStoreCount = _messages.IntegerField(3)
+  r"""Contains a detailed summary of the Deidentify operation."""
 
 
 class Detail(_messages.Message):
@@ -1147,9 +1120,6 @@ class EvaluateAnnotationStoreRequest(_messages.Message):
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/ann
       otationStores/{annotation_store_id}`.
     infoTypeConfig: A InfoTypeConfig attribute.
-    name: The Annotation store to compare against `golden_store`, in the
-      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
-      et_id}/annotationStores/{annotation_store_id}`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1217,32 +1187,13 @@ class EvaluateAnnotationStoreRequest(_messages.Message):
   goldenInfoTypeMapping = _messages.MessageField('GoldenInfoTypeMappingValue', 3)
   goldenStore = _messages.StringField(4)
   infoTypeConfig = _messages.MessageField('InfoTypeConfig', 5)
-  name = _messages.StringField(6)
 
 
 class EvaluateAnnotationStoreResponse(_messages.Message):
   r"""Response for successful Annotation store evaluation operations. This
   structure is included in the response upon operation completion.
-
-  Fields:
-    evalStore: The evaluated Annotation store, in the format of `projects/{pro
-      ject_id}/locations/{location_id}/datasets/{dataset_id}/annotationStores/
-      {annotation_store_id}`.
-    goldenCount: The number of Annotations in the ground truth Annotation
-      store successfully processed.
-    goldenStore: The ground truth Annotation store, in the format of `projects
-      /{project_id}/locations/{location_id}/datasets/{dataset_id}/annotationSt
-      ores/{annotation_store_id}`.
-    matchedCount: The number of Annotations in the eval store that match with
-      corresponding annotations in the ground truth Annotation store. Two
-      matched annotations both annotate the same resource defined in
-      AnnotationSource.
   """
 
-  evalStore = _messages.StringField(1)
-  goldenCount = _messages.IntegerField(2)
-  goldenStore = _messages.StringField(3)
-  matchedCount = _messages.IntegerField(4)
 
 
 class EvaluateUserConsentsRequest(_messages.Message):
@@ -1369,23 +1320,6 @@ class EvaluateUserConsentsResponse(_messages.Message):
   results = _messages.MessageField('Result', 2, repeated=True)
 
 
-class ExportAnnotationsErrorDetails(_messages.Message):
-  r"""Deprecated. Response for failed annotation export operations. This
-  structure is included in error details upon operation completion.
-
-  Fields:
-    annotationStore: The annotation_store used for the export operation, in
-      the format of `projects/{project_id}/locations/{location_id}/datasets/{d
-      ataset_id}/annotationStores/{annotation_store_id}`.
-    errorCount: The number of annotations that had error.
-    successCount: The number of annotations successfully exported.
-  """
-
-  annotationStore = _messages.StringField(1)
-  errorCount = _messages.IntegerField(2)
-  successCount = _messages.IntegerField(3)
-
-
 class ExportAnnotationsRequest(_messages.Message):
   r"""Request to export Annotations. The export operation is not atomic. If a
   failure occurs, any annotations already exported are not removed.
@@ -1395,29 +1329,17 @@ class ExportAnnotationsRequest(_messages.Message):
       IAM roles: `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`.
     gcsDestination: The Cloud Storage destination, which requires the
       `roles/storage.objectAdmin` Cloud IAM role.
-    name: The name of the Annotation store to export annotations to, in the
-      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
-      et_id}/annotationStores/{annotation_store_id}`.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1AnnotationBigQueryDestination', 1)
   gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1AnnotationGcsDestination', 2)
-  name = _messages.StringField(3)
 
 
 class ExportAnnotationsResponse(_messages.Message):
   r"""Response for successful annotation export operations. This structure is
   included in response upon operation completion.
-
-  Fields:
-    annotationStore: The annotation_store used for the export operation, in
-      the format of `projects/{project_id}/locations/{location_id}/datasets/{d
-      ataset_id}/annotationStores/{annotation_store_id}`.
-    successCount: The total number of annotations successfully exported.
   """
 
-  annotationStore = _messages.StringField(1)
-  successCount = _messages.IntegerField(2)
 
 
 class ExportDicomDataRequest(_messages.Message):
@@ -1430,10 +1352,12 @@ class ExportDicomDataRequest(_messages.Message):
   Fields:
     bigqueryDestination: The BigQuery output destination. You can only export
       to a BigQuery dataset that's in the same project as the DICOM store
-      you're exporting from. The BigQuery location requires two IAM roles:
-      `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`.
-    gcsDestination: The Cloud Storage output destination. The Cloud Storage
-      location requires the `roles/storage.objectAdmin` Cloud IAM role.
+      you're exporting from. The Cloud Healthcare Service Agent requires two
+      IAM roles on the BigQuery location: `roles/bigquery.dataEditor` and
+      `roles/bigquery.jobUser`.
+    gcsDestination: The Cloud Storage output destination. The Cloud Healthcare
+      Service Agent requires the `roles/storage.objectAdmin` Cloud IAM roles
+      on the Cloud Storage location.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomBigQueryDestination', 1)
@@ -1448,22 +1372,23 @@ class ExportDicomDataResponse(_messages.Message):
 
 
 class ExportResourcesRequest(_messages.Message):
-  r""" Request to export resources.
+  r"""Request to export resources.
 
   Fields:
-    bigqueryDestination: The BigQuery output destination. The BigQuery
-      location requires two IAM roles: `roles/bigquery.dataEditor` and
-      `roles/bigquery.jobUser`. The output is one BigQuery table per resource
-      type.
-    gcsDestination: The Cloud Storage output destination. The Cloud Storage
-      location requires the `roles/storage.objectAdmin` Cloud IAM role. The
-      exported outputs are organized by FHIR resource types. The server
-      creates one object per resource type. Each object contains newline
-      delimited JSON, and each line is a FHIR resource.
+    bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
+      Service Agent requires two IAM roles on the BigQuery location:
+      `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
+      one BigQuery table per resource type.
+    gcsDestination: The Cloud Storage output destination. The Cloud Healthcare
+      Service Agent requires the `roles/storage.objectAdmin` Cloud IAM roles
+      on the Cloud Storage location. The exported outputs are organized by
+      FHIR resource types. The server creates one object per resource type.
+      Each object contains newline delimited JSON, and each line is a FHIR
+      resource.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirBigQueryDestination', 1)
-  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirRestGcsDestination', 2)
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirGcsDestination', 2)
 
 
 class Expr(_messages.Message):
@@ -1575,11 +1500,10 @@ class FhirStore(_messages.Message):
       determines if the client can use an Update operation to create a new
       resource with a client-specified ID. If false, all IDs are server-
       assigned through the Create operation and attempts to update a non-
-      existent resource return errors. Please treat the audit logs with
-      appropriate levels of care if client-specified resource IDs contain
-      sensitive data such as patient identifiers, those IDs are part of the
-      FHIR resource path recorded in Cloud audit logs and Cloud Pub/Sub
-      notifications.
+      existent resource return errors. Be careful with the audit logs if
+      client-specified resource IDs contain sensitive data such as patient
+      identifiers, those IDs are part of the FHIR resource path recorded in
+      Cloud audit logs and Cloud Pub/Sub notifications.
     labels: User-supplied key-value pairs used to organize FHIR stores. Label
       keys must be between 1 and 63 characters long, have a UTF-8 encoding of
       maximum 128 bytes, and must conform to the following PCRE regular
@@ -1802,15 +1726,21 @@ class GoogleCloudHealthcareV1beta1AnnotationBigQueryDestination(_messages.Messag
 
   Enums:
     SchemaTypeValueValuesEnum: Specifies the schema format to export.
+    WriteDispositionValueValuesEnum: Determines whether existing tables in the
+      destination dataset are overwritten or appended to. If a
+      write_disposition is specified, the `force` parameter is ignored.
 
   Fields:
-    force: If the destination table already exists and this flag is `TRUE`,
-      the table is overwritten by the contents of the input store. If the flag
-      is not set and the destination table already exists, the export call
-      returns an error.
+    force: Use `write_disposition` instead. If `write_disposition` is
+      specified, this parameter is ignored. force=false is equivalent to
+      write_disposition=WRITE_EMPTY and force=true is equivalent to
+      write_disposition=WRITE_TRUNCATE.
     schemaType: Specifies the schema format to export.
     tableUri: BigQuery URI to a table, up to 2000 characters long, must be of
       the form bq://projectId.bqDatasetId.tableId.
+    writeDisposition: Determines whether existing tables in the destination
+      dataset are overwritten or appended to. If a write_disposition is
+      specified, the `force` parameter is ignored.
   """
 
   class SchemaTypeValueValuesEnum(_messages.Enum):
@@ -1823,9 +1753,28 @@ class GoogleCloudHealthcareV1beta1AnnotationBigQueryDestination(_messages.Messag
     SCHEMA_TYPE_UNSPECIFIED = 0
     SIMPLE = 1
 
+  class WriteDispositionValueValuesEnum(_messages.Enum):
+    r"""Determines whether existing tables in the destination dataset are
+    overwritten or appended to. If a write_disposition is specified, the
+    `force` parameter is ignored.
+
+    Values:
+      WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
+        WRITE_EMPTY.
+      WRITE_EMPTY: Only export data if the destination table is empty.
+      WRITE_TRUNCATE: Erase all existing data in a table before writing the
+        instances.
+      WRITE_APPEND: Append data to the existing table.
+    """
+    WRITE_DISPOSITION_UNSPECIFIED = 0
+    WRITE_EMPTY = 1
+    WRITE_TRUNCATE = 2
+    WRITE_APPEND = 3
+
   force = _messages.BooleanField(1)
   schemaType = _messages.EnumField('SchemaTypeValueValuesEnum', 2)
   tableUri = _messages.StringField(3)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 4)
 
 
 class GoogleCloudHealthcareV1beta1AnnotationGcsDestination(_messages.Message):
@@ -1885,7 +1834,10 @@ class GoogleCloudHealthcareV1beta1ConsentPolicy(_messages.Message):
   accessed and under what conditions.
 
   Fields:
-    authorizationRule: The request conditions to meet to grant access.
+    authorizationRule: The request conditions to meet to grant access. In
+      addition to any supported comparison operators, authorization rules may
+      have `IN` operator as well as at most 10 logical operators that are
+      limited to `AND` (`&&`), `OR` (`||`).
     resourceAttributes: The data resources that this policy applies to. A data
       resource is a match if it matches all the attributes listed here.
   """
@@ -1895,41 +1847,54 @@ class GoogleCloudHealthcareV1beta1ConsentPolicy(_messages.Message):
 
 
 class GoogleCloudHealthcareV1beta1DeidentifyDeidentifyDicomStoreSummary(_messages.Message):
-  r"""Contains a summary of the DeidentifyDicomStore operation.
-
-  Fields:
-    failureResourceCount: Number of objects that processing failed for.
-    successResourceCount: Number of objects successfully processed.
-  """
-
-  failureResourceCount = _messages.IntegerField(1)
-  successResourceCount = _messages.IntegerField(2)
+  r"""Contains a summary of the DeidentifyDicomStore operation."""
 
 
 class GoogleCloudHealthcareV1beta1DeidentifyDeidentifyFhirStoreSummary(_messages.Message):
-  r"""Contains a summary of the DeidentifyFhirStore operation.
-
-  Fields:
-    successResourceCount: Number of resources successfully processed.
-  """
-
-  successResourceCount = _messages.IntegerField(1)
+  r"""Contains a summary of the DeidentifyFhirStore operation."""
 
 
 class GoogleCloudHealthcareV1beta1DicomBigQueryDestination(_messages.Message):
   r"""The BigQuery table where the server writes output.
 
+  Enums:
+    WriteDispositionValueValuesEnum: Determines whether the existing table in
+      the destination is to be overwritten or appended to. If a
+      write_disposition is specified, the `force` parameter is ignored.
+
   Fields:
-    force: If the destination table already exists and this flag is `TRUE`,
-      the table is overwritten by the contents of the DICOM store. If the flag
-      is not set and the destination table already exists, the export call
-      returns an error.
+    force: Use `write_disposition` instead. If `write_disposition` is
+      specified, this parameter is ignored. force=false is equivalent to
+      write_disposition=WRITE_EMPTY and force=true is equivalent to
+      write_disposition=WRITE_TRUNCATE.
     tableUri: BigQuery URI to a table, up to 2000 characters long, in the
       format `bq://projectId.bqDatasetId.tableId`
+    writeDisposition: Determines whether the existing table in the destination
+      is to be overwritten or appended to. If a write_disposition is
+      specified, the `force` parameter is ignored.
   """
+
+  class WriteDispositionValueValuesEnum(_messages.Enum):
+    r"""Determines whether the existing table in the destination is to be
+    overwritten or appended to. If a write_disposition is specified, the
+    `force` parameter is ignored.
+
+    Values:
+      WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
+        WRITE_EMPTY.
+      WRITE_EMPTY: Only export data if the destination table is empty.
+      WRITE_TRUNCATE: Erase all existing data in a table before writing the
+        instances.
+      WRITE_APPEND: Append data to the existing table.
+    """
+    WRITE_DISPOSITION_UNSPECIFIED = 0
+    WRITE_EMPTY = 1
+    WRITE_TRUNCATE = 2
+    WRITE_APPEND = 3
 
   force = _messages.BooleanField(1)
   tableUri = _messages.StringField(2)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 3)
 
 
 class GoogleCloudHealthcareV1beta1DicomGcsDestination(_messages.Message):
@@ -2027,19 +1992,97 @@ class GoogleCloudHealthcareV1beta1DicomStreamConfig(_messages.Message):
 class GoogleCloudHealthcareV1beta1FhirBigQueryDestination(_messages.Message):
   r"""The configuration for exporting to BigQuery.
 
+  Enums:
+    WriteDispositionValueValuesEnum: Determines whether existing tables in the
+      destination dataset are overwritten or appended to. If a
+      write_disposition is specified, the `force` parameter is ignored.
+
   Fields:
     datasetUri: BigQuery URI to an existing dataset, up to 2000 characters
       long, in the format `bq://projectId.bqDatasetId`.
-    force: If this flag is `TRUE`, all tables will be deleted from the dataset
-      before the new exported tables are written. If the flag is not set and
-      the destination dataset contains tables, the export call returns an
-      error. This option is not used for the streaming export.
+    force: Use `write_disposition` instead. If `write_disposition` is
+      specified, this parameter is ignored. force=false is equivalent to
+      write_disposition=WRITE_EMPTY and force=true is equivalent to
+      write_disposition=WRITE_TRUNCATE.
     schemaConfig: The configuration for the exported BigQuery schema.
+    writeDisposition: Determines whether existing tables in the destination
+      dataset are overwritten or appended to. If a write_disposition is
+      specified, the `force` parameter is ignored.
   """
+
+  class WriteDispositionValueValuesEnum(_messages.Enum):
+    r"""Determines whether existing tables in the destination dataset are
+    overwritten or appended to. If a write_disposition is specified, the
+    `force` parameter is ignored.
+
+    Values:
+      WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
+        WRITE_EMPTY.
+      WRITE_EMPTY: Only export data if the destination tables are empty.
+      WRITE_TRUNCATE: Erase all existing data in a tables before writing the
+        instances.
+      WRITE_APPEND: Append data to the existing tables.
+    """
+    WRITE_DISPOSITION_UNSPECIFIED = 0
+    WRITE_EMPTY = 1
+    WRITE_TRUNCATE = 2
+    WRITE_APPEND = 3
 
   datasetUri = _messages.StringField(1)
   force = _messages.BooleanField(2)
   schemaConfig = _messages.MessageField('SchemaConfig', 3)
+  writeDisposition = _messages.EnumField('WriteDispositionValueValuesEnum', 4)
+
+
+class GoogleCloudHealthcareV1beta1FhirExportResourcesResponse(_messages.Message):
+  r"""Response when all resources export successfully. This structure is
+  included in the response to describe the detailed outcome after the
+  operation finishes successfully.
+  """
+
+
+
+class GoogleCloudHealthcareV1beta1FhirGcsDestination(_messages.Message):
+  r"""The configuration for exporting to Cloud Storage.
+
+  Fields:
+    uriPrefix: URI for a Cloud Storage directory where result files should be
+      written (in the format `gs://{bucket-id}/{path/to/destination/dir}`). If
+      there is no trailing slash, the service appends one when composing the
+      object path. The Cloud Storage bucket referenced in `uri_prefix` must
+      exist or an error occurs.
+  """
+
+  uriPrefix = _messages.StringField(1)
+
+
+class GoogleCloudHealthcareV1beta1FhirGcsSource(_messages.Message):
+  r"""Specifies the configuration for importing data from Cloud Storage.
+
+  Fields:
+    uri: Points to a Cloud Storage URI containing file(s) to import. The URI
+      must be in the following format: `gs://{bucket_id}/{object_id}`. The URI
+      can include wildcards in `object_id` and thus identify multiple files.
+      Supported wildcards: * `*` to match 0 or more non-separator characters *
+      `**` to match 0 or more characters (including separators). Must be used
+      at the end of a path and with no other wildcards in the path. Can also
+      be used with a file extension (such as .ndjson), which imports all files
+      with the extension in the specified directory and its sub-directories.
+      For example, `gs://my-bucket/my-directory/**.ndjson` imports all files
+      with `.ndjson` extensions in `my-directory/` and its sub-directories. *
+      `?` to match 1 character Files matching the wildcard are expected to
+      contain content only, no metadata.
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleCloudHealthcareV1beta1FhirImportResourcesResponse(_messages.Message):
+  r"""Final response of importing resources. This structure is included in the
+  response to describe the detailed outcome after the operation finishes
+  successfully.
+  """
+
 
 
 class GoogleCloudHealthcareV1beta1FhirRestExportResourcesErrorDetails(_messages.Message):
@@ -2078,41 +2121,6 @@ class GoogleCloudHealthcareV1beta1FhirRestExportResourcesResponse(_messages.Mess
 
   fhirStore = _messages.StringField(1)
   resourceCount = _messages.IntegerField(2)
-
-
-class GoogleCloudHealthcareV1beta1FhirRestGcsDestination(_messages.Message):
-  r""" The configuration for exporting to Cloud Storage.
-
-  Fields:
-    uriPrefix: URI for a Cloud Storage directory where result files should be
-      written (in the format `gs://{bucket-id}/{path/to/destination/dir}`). If
-      there is no trailing slash, the service appends one when composing the
-      object path. The user is responsible for creating the Cloud Storage
-      bucket referenced in `uri_prefix`.
-  """
-
-  uriPrefix = _messages.StringField(1)
-
-
-class GoogleCloudHealthcareV1beta1FhirRestGcsSource(_messages.Message):
-  r""" Specifies the configuration for importing data from Cloud Storage.
-
-  Fields:
-    uri: Points to a Cloud Storage URI containing file(s) to import. The URI
-      must be in the following format: `gs://{bucket_id}/{object_id}`. The URI
-      can include wildcards in `object_id` and thus identify multiple files.
-      Supported wildcards: * `*` to match 0 or more non-separator characters *
-      `**` to match 0 or more characters (including separators). Must be used
-      at the end of a path and with no other wildcards in the path. Can also
-      be used with a file extension (such as .ndjson), which imports all files
-      with the extension in the specified directory and its sub-directories.
-      For example, `gs://my-bucket/my-directory/**.ndjson` imports all files
-      with `.ndjson` extensions in `my-directory/` and its sub-directories. *
-      `?` to match 1 character Files matching the wildcard are expected to
-      contain content only, no metadata.
-  """
-
-  uri = _messages.StringField(1)
 
 
 class GoogleCloudHealthcareV1beta1FhirRestImportResourcesErrorDetails(_messages.Message):
@@ -2303,15 +2311,15 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest(_messag
   object.
 
   Fields:
-    evalStore: The Annotation store to compare against `golden_store`, in the
-      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
-      et_id}/annotationStores/{annotation_store_id}`.
     evaluateAnnotationStoreRequest: A EvaluateAnnotationStoreRequest resource
       to be passed as the request body.
+    name: The Annotation store to compare against `golden_store`, in the
+      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
+      et_id}/annotationStores/{annotation_store_id}`.
   """
 
-  evalStore = _messages.StringField(1, required=True)
-  evaluateAnnotationStoreRequest = _messages.MessageField('EvaluateAnnotationStoreRequest', 2)
+  evaluateAnnotationStoreRequest = _messages.MessageField('EvaluateAnnotationStoreRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest(_messages.Message):
@@ -2319,15 +2327,15 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest(_messages
   object.
 
   Fields:
-    annotationStore: The name of the Annotation store to export annotations
-      to, in the format of `projects/{project_id}/locations/{location_id}/data
-      sets/{dataset_id}/annotationStores/{annotation_store_id}`.
     exportAnnotationsRequest: A ExportAnnotationsRequest resource to be passed
       as the request body.
+    name: The name of the Annotation store to export annotations to, in the
+      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
+      et_id}/annotationStores/{annotation_store_id}`.
   """
 
-  annotationStore = _messages.StringField(1, required=True)
-  exportAnnotationsRequest = _messages.MessageField('ExportAnnotationsRequest', 2)
+  exportAnnotationsRequest = _messages.MessageField('ExportAnnotationsRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsAnnotationStoresGetIamPolicyRequest(_messages.Message):
@@ -2367,15 +2375,15 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest(_messages
   object.
 
   Fields:
-    annotationStore: The name of the Annotation store to which the server
-      imports annotations, in the format `projects/{project_id}/locations/{loc
-      ation_id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
     importAnnotationsRequest: A ImportAnnotationsRequest resource to be passed
       as the request body.
+    name: The name of the Annotation store to which the server imports
+      annotations, in the format `projects/{project_id}/locations/{location_id
+      }/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
   """
 
-  annotationStore = _messages.StringField(1, required=True)
-  importAnnotationsRequest = _messages.MessageField('ImportAnnotationsRequest', 2)
+  importAnnotationsRequest = _messages.MessageField('ImportAnnotationsRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest(_messages.Message):
@@ -2528,10 +2536,10 @@ class HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsPatchR
     updateMask: The update mask that applies to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask. The `description`,
-      `possible_values`, `consent_default_values`, and
+      `allowed_values`, `consent_default_values`, and
       `data_mapping_default_value` fields are allowed to be updated. The
-      updated `possible_values` must contain all values from the previous
-      `possible_values`.
+      updated `allowed_values` must contain all values from the previous
+      `allowed_values`.
   """
 
   attributeDefinition = _messages.MessageField('AttributeDefinition', 1)
@@ -4872,24 +4880,6 @@ class ImageConfig(_messages.Message):
   textRedactionMode = _messages.EnumField('TextRedactionModeValueValuesEnum', 1)
 
 
-class ImportAnnotationsErrorDetails(_messages.Message):
-  r"""Deprecated. Final response of importing Annotations in partial or total
-  failure case. This structure is included in the error details. It is only
-  included when the operation finishes.
-
-  Fields:
-    annotationStore: The annotation_store that the annotations were imported
-      to. The name is in the format `projects/{project_id}/locations/{location
-      _id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
-    errorCount: The number of annotations that had errors.
-    successCount: The number of annotations that have been imported.
-  """
-
-  annotationStore = _messages.StringField(1)
-  errorCount = _messages.IntegerField(2)
-  successCount = _messages.IntegerField(3)
-
-
 class ImportAnnotationsRequest(_messages.Message):
   r"""Request to import Annotations. The Annotations to be imported must have
   client-supplied resource names which indicate the annotation resource. The
@@ -4898,30 +4888,17 @@ class ImportAnnotationsRequest(_messages.Message):
 
   Fields:
     gcsSource: A GoogleCloudHealthcareV1beta1AnnotationGcsSource attribute.
-    name: The name of the Annotation store to which the server imports
-      annotations, in the format `projects/{project_id}/locations/{location_id
-      }/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
   """
 
   gcsSource = _messages.MessageField('GoogleCloudHealthcareV1beta1AnnotationGcsSource', 1)
-  name = _messages.StringField(2)
 
 
 class ImportAnnotationsResponse(_messages.Message):
   r"""Final response of importing Annotations in successful case. This
   structure is included in the response. It is only included when the
   operation finishes.
-
-  Fields:
-    annotationStore: The annotation_store that the annotations were imported
-      to, in the format `projects/{project_id}/locations/{location_id}/dataset
-      s/{dataset_id}/annotationStores/{annotation_store_id}`.
-    successCount: The number of the input annotations. All input have been
-      imported successfully.
   """
 
-  annotationStore = _messages.StringField(1)
-  successCount = _messages.IntegerField(2)
 
 
 class ImportDicomDataErrorDetails(_messages.Message):
@@ -4944,8 +4921,9 @@ class ImportDicomDataRequest(_messages.Message):
 
   Fields:
     gcsSource: Cloud Storage source data location and import configuration.
-      The Cloud Storage location requires the `roles/storage.objectViewer`
-      Cloud IAM role.
+      The Cloud Healthcare Service Agent requires the
+      `roles/storage.objectViewer` Cloud IAM roles on the Cloud Storage
+      location.
   """
 
   gcsSource = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomGcsSource', 1)
@@ -4963,8 +4941,9 @@ class ImportMessagesRequest(_messages.Message):
 
   Fields:
     gcsSource: Cloud Storage source data location and import configuration.
-      The Cloud Storage location requires the `roles/storage.objectViewer`
-      Cloud IAM role.
+      The Cloud Healthcare Service Agent requires the
+      `roles/storage.objectViewer` Cloud IAM roles on the Cloud Storage
+      location.
   """
 
   gcsSource = _messages.MessageField('GcsSource', 1)
@@ -4979,7 +4958,7 @@ class ImportMessagesResponse(_messages.Message):
 
 
 class ImportResourcesRequest(_messages.Message):
-  r""" Request to import resources.
+  r"""Request to import resources.
 
   Enums:
     ContentStructureValueValuesEnum: The content structure in the source
@@ -4990,9 +4969,10 @@ class ImportResourcesRequest(_messages.Message):
     contentStructure: The content structure in the source location. If not
       specified, the server treats the input source files as BUNDLE.
     gcsSource: Cloud Storage source data location and import configuration.
-      The Cloud Storage location requires the `roles/storage.objectViewer`
-      Cloud IAM role. Each Cloud Storage object should be a text file that
-      contains the format specified in ContentStructure.
+      The Cloud Healthcare Service Agent requires the
+      `roles/storage.objectViewer` Cloud IAM roles on the Cloud Storage
+      location. The Healthcare Service Agent Each Cloud Storage object should
+      be a text file that contains the format specified in ContentStructure.
   """
 
   class ContentStructureValueValuesEnum(_messages.Enum):
@@ -5020,7 +5000,7 @@ class ImportResourcesRequest(_messages.Message):
     RESOURCE_PRETTY = 4
 
   contentStructure = _messages.EnumField('ContentStructureValueValuesEnum', 1)
-  gcsSource = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirRestGcsSource', 2)
+  gcsSource = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirGcsSource', 2)
 
 
 class InfoTypeConfig(_messages.Message):

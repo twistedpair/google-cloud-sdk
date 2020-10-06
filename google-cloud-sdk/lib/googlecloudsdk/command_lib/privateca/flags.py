@@ -531,6 +531,9 @@ _KEY_ALGORITHM_MAPPING = {
     'RSA_PSS_2048_SHA256': 'rsa-pss-2048-sha256',
     'RSA_PSS_3072_SHA256': 'rsa-pss-3078-sha256',
     'RSA_PSS_4096_SHA256': 'rsa-pss-4096-sha256',
+    'RSA_PKCS1_2048_SHA256': 'rsa-pkcs1-2048-sha256',
+    'RSA_PKCS1_3072_SHA256': 'rsa-pkcs1-3072-sha256',
+    'RSA_PKCS1_4096_SHA256': 'rsa-pkcs1-4096-sha256',
     'EC_P256_SHA256': 'ec-p256-sha256',
     'EC_P384_SHA384': 'ec-p384-sha384',
 }

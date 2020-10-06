@@ -125,6 +125,232 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsPatchRequest(_messages.Mess
   updateMask = _messages.StringField(3)
 
 
+class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Message):
+  r"""Operation metadata to give request details of CreateWorkload.
+
+  Enums:
+    ComplianceRegimeValueValuesEnum: Optional. Compliance controls that should
+      be applied to the resources managed by the workload.
+
+  Fields:
+    complianceRegime: Optional. Compliance controls that should be applied to
+      the resources managed by the workload.
+    createTime: Optional. Time when the operation was created.
+    displayName: Optional. The display name of the workload.
+    parent: Optional. The parent of the workload.
+  """
+
+  class ComplianceRegimeValueValuesEnum(_messages.Enum):
+    r"""Optional. Compliance controls that should be applied to the resources
+    managed by the workload.
+
+    Values:
+      COMPLIANCE_REGIME_UNSPECIFIED: Unknown compliance regime.
+      IL4: Information protection as per DoD IL4 requirements.
+      CJIS: Criminal Justice Information Services (CJIS) Security policies.
+      FEDRAMP_HIGH: FedRAMP High data protection controls
+      FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
+    """
+    COMPLIANCE_REGIME_UNSPECIFIED = 0
+    IL4 = 1
+    CJIS = 2
+    FEDRAMP_HIGH = 3
+    FEDRAMP_MODERATE = 4
+
+  complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  parent = _messages.StringField(4)
+
+
+class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
+  r"""An Workload object for managing highly regulated workloads of cloud
+  customers.
+
+  Enums:
+    ComplianceRegimeValueValuesEnum: Required. Immutable. Compliance Regime
+      associated with this workload.
+
+  Messages:
+    LabelsValue: Optional. Labels applied to the workload.
+
+  Fields:
+    billingAccount: Required. Input only. The billing account used for the
+      resources which are direct children of workload. This billing account is
+      initially associated with the resources created as part of Workload
+      creation. After the initial creation of these resources, the customer
+      can change the assigned billing account. The resource name has the form
+      `billingAccounts/{billing_account_id}`. For example,
+      `billingAccounts/012345-567890-ABCDEF`.
+    cjisSettings: Required. Input only. Immutable. Settings specific to
+      resources needed for CJIS.
+    complianceRegime: Required. Immutable. Compliance Regime associated with
+      this workload.
+    createTime: Output only. Immutable. The Workload creation timestamp.
+    displayName: Required. The user-assigned display name of the Workload.
+      When present it must be between 4 to 30 characters. Allowed characters
+      are: lowercase and uppercase letters, numbers, hyphen, and spaces.
+      Example: My Workload
+    etag: Optional. ETag of the workload, it is calculated on the basis of the
+      Workload contents. It will be used in Update & Delete operations.
+    fedrampHighSettings: Required. Input only. Immutable. Settings specific to
+      resources needed for FedRAMP High.
+    fedrampModerateSettings: Required. Input only. Immutable. Settings
+      specific to resources needed for FedRAMP Moderate.
+    il4Settings: Required. Input only. Immutable. Settings specific to
+      resources needed for IL4.
+    labels: Optional. Labels applied to the workload.
+    name: Optional. The resource name of the workload. Format:
+      organizations/{organization}/locations/{location}/workloads/{workload}
+      Read-only.
+    resources: Output only. The resources associated with this workload. These
+      resources will be created when creating the workload. If any of the
+      projects already exist, the workload creation will fail. Always read
+      only.
+  """
+
+  class ComplianceRegimeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. Compliance Regime associated with this workload.
+
+    Values:
+      COMPLIANCE_REGIME_UNSPECIFIED: Unknown compliance regime.
+      IL4: Information protection as per DoD IL4 requirements.
+      CJIS: Criminal Justice Information Services (CJIS) Security policies.
+      FEDRAMP_HIGH: FedRAMP High data protection controls
+      FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
+    """
+    COMPLIANCE_REGIME_UNSPECIFIED = 0
+    IL4 = 1
+    CJIS = 2
+    FEDRAMP_HIGH = 3
+    FEDRAMP_MODERATE = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels applied to the workload.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  billingAccount = _messages.StringField(1)
+  cjisSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadCJISSettings', 2)
+  complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 3)
+  createTime = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings', 7)
+  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings', 8)
+  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadIL4Settings', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 12, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1WorkloadCJISSettings(_messages.Message):
+  r"""Settings specific to resources needed for CJIS.
+
+  Fields:
+    kmsSettings: Required. Input only. Immutable. Settings used to create a
+      CMEK crypto key.
+  """
+
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 1)
+
+
+class GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings(_messages.Message):
+  r"""Settings specific to resources needed for FedRAMP High.
+
+  Fields:
+    kmsSettings: Required. Input only. Immutable. Settings used to create a
+      CMEK crypto key.
+  """
+
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 1)
+
+
+class GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings(_messages.Message):
+  r"""Settings specific to resources needed for FedRAMP Moderate.
+
+  Fields:
+    kmsSettings: Required. Input only. Immutable. Settings used to create a
+      CMEK crypto key.
+  """
+
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 1)
+
+
+class GoogleCloudAssuredworkloadsV1WorkloadIL4Settings(_messages.Message):
+  r"""Settings specific to resources needed for IL4.
+
+  Fields:
+    kmsSettings: Required. Input only. Immutable. Settings used to create a
+      CMEK crypto key.
+  """
+
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadKMSSettings', 1)
+
+
+class GoogleCloudAssuredworkloadsV1WorkloadKMSSettings(_messages.Message):
+  r"""Settings specific to the Key Management Service.
+
+  Fields:
+    nextRotationTime: Required. Input only. Immutable. The time at which the
+      Key Management Service will automatically create a new version of the
+      crypto key and mark it as the primary.
+    rotationPeriod: Required. Input only. Immutable. [next_rotation_time] will
+      be advanced by this period when the Key Management Service automatically
+      rotates a key. Must be at least 24 hours and at most 876,000 hours.
+  """
+
+  nextRotationTime = _messages.StringField(1)
+  rotationPeriod = _messages.StringField(2)
+
+
+class GoogleCloudAssuredworkloadsV1WorkloadResourceInfo(_messages.Message):
+  r"""Represent the resources that are children of this Workload.
+
+  Enums:
+    ResourceTypeValueValuesEnum: Indicates the type of resource.
+
+  Fields:
+    resourceId: Resource identifier. For a project this represents
+      project_number.
+    resourceType: Indicates the type of resource.
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""Indicates the type of resource.
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
+      CONSUMER_PROJECT: Consumer project.
+      ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    CONSUMER_PROJECT = 1
+    ENCRYPTION_KEYS_PROJECT = 2
+
+  resourceId = _messages.IntegerField(1)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
+
+
 class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_messages.Message):
   r"""Operation metadata to give request details of CreateWorkload.
 

@@ -264,6 +264,9 @@ class TemplateArguments(object):
   service_account_email = None
   worker_region = None
   worker_zone = None
+  enable_streaming_engine = None
+  additional_experiments = None
+  additional_user_labels = None
 
   def __init__(self,
                project_id=None,
@@ -282,7 +285,10 @@ class TemplateArguments(object):
                parameters=None,
                service_account_email=None,
                worker_region=None,
-               worker_zone=None):
+               worker_zone=None,
+               enable_streaming_engine=None,
+               additional_experiments=None,
+               additional_user_labels=None):
     self.project_id = project_id
     self.region_id = region_id
     self.job_name = job_name
@@ -300,6 +306,9 @@ class TemplateArguments(object):
     self.service_account_email = service_account_email
     self.worker_region = worker_region
     self.worker_zone = worker_zone
+    self.enable_streaming_engine = enable_streaming_engine
+    self.additional_experiments = additional_experiments
+    self.additional_user_labels = additional_user_labels
 
 
 class Templates(object):
@@ -310,8 +319,12 @@ class Templates(object):
   LAUNCH_TEMPLATE_PARAMETERS_VALUE = LAUNCH_TEMPLATE_PARAMETERS.ParametersValue
   LAUNCH_FLEX_TEMPLATE_REQUEST = GetMessagesModule().LaunchFlexTemplateRequest
   PARAMETERS_VALUE = CREATE_REQUEST.ParametersValue
+  FLEX_TEMPLATE_ENVIRONMENT = GetMessagesModule().FlexTemplateRuntimeEnvironment
+  FLEX_TEMPLATE_USER_LABELS_VALUE = FLEX_TEMPLATE_ENVIRONMENT.AdditionalUserLabelsValue
   FLEX_TEMPLATE_PARAMETER = GetMessagesModule().LaunchFlexTemplateParameter
   FLEX_TEMPLATE_PARAMETERS_VALUE = FLEX_TEMPLATE_PARAMETER.ParametersValue
+  IP_CONFIGURATION_ENUM_VALUE = GetMessagesModule(
+      ).FlexTemplateRuntimeEnvironment.IpConfigurationValueValuesEnum
   TEMPLATE_METADATA = GetMessagesModule().TemplateMetadata
   SDK_INFO = GetMessagesModule().SDKInfo
   SDK_LANGUAGE = GetMessagesModule().SDKInfo.LanguageValueValuesEnum
@@ -461,54 +474,22 @@ class Templates(object):
       raise exceptions.HttpException(error)
 
   @staticmethod
-  def __ConvertArgumentsParameters(template_args):
-    """Converts template arguments to parameters.
+  def __ConvertDictArguments(arguments, value_message):
+    """Convert dictionary arguments to parameter list .
 
     Args:
-      template_args: Arguments for create job using template.
+      arguments: Arguments for create job using template.
+      value_message: the value message of the arguments
 
     Returns:
-      List of Templates.FLEX_TEMPLATE_PARAMETERS_VALUE.AdditionalProperty
+      List of value_message.AdditionalProperty
     """
     params_list = []
-    parameters = template_args.parameters
-    for k, v in six.iteritems(parameters) if parameters else {}:
-      params_list.append(
-          Templates.FLEX_TEMPLATE_PARAMETERS_VALUE.AdditionalProperty(
-              key=k, value=v))
+    if arguments:
+      for k, v in six.iteritems(arguments):
+        params_list.append(value_message.AdditionalProperty(key=k, value=v))
 
     return params_list
-
-  @staticmethod
-  def __ValidateFlexTemplateArgs(template_args):
-    """Validates flex template arguments.
-
-    Args:
-      template_args: Arguments for create job using template.
-
-    Returns:
-      True if the arguments are valid and False otherwise. For flex templates
-      all the pipeline options should be passed via parameters because they
-      can vary across languages and sdk versions.
-    """
-    error = None
-
-    if (template_args.zone or template_args.max_workers or
-        template_args.num_workers or template_args.network or
-        template_args.subnetwork or template_args.worker_machine_type or
-        template_args.staging_location or template_args.kms_key_name or
-        template_args.service_account_email or
-        template_args.disable_public_ips or template_args.worker_region or
-        template_args.worker_zone):
-      error = (
-          'All pipeline options should be passed via parameters flag for '
-          'Flex templates. Use right casing format according to the sdk. '
-          'Example: --parameters=maxNumWorkers=5 for java sdk 1.X and '
-          '--parameters=max_num_workers=5 for python sdk.\n'
-          'For all the parameter options please refer '
-          'https://cloud.google.com/dataflow/docs/guides/specifying-exec-params'
-      )
-    return error
 
   @staticmethod
   def _BuildDockerfile(flex_template_base_image, jar_paths, env,
@@ -771,19 +752,43 @@ class Templates(object):
     Returns:
       (Job)
     """
-    validation_error = Templates.__ValidateFlexTemplateArgs(template_args)
-    if validation_error:
-      raise ValueError(validation_error)
 
-    params_list = Templates.__ConvertArgumentsParameters(template_args)
+    params_list = Templates.__ConvertDictArguments(
+        template_args.parameters, Templates.FLEX_TEMPLATE_PARAMETERS_VALUE)
+    user_labels_list = Templates.__ConvertDictArguments(
+        template_args.additional_user_labels,
+        Templates.FLEX_TEMPLATE_USER_LABELS_VALUE)
 
     # TODO(b/139889563): Remove default when args region is changed to required
     region_id = template_args.region_id or DATAFLOW_API_DEFAULT_REGION
+
+    ip_private = Templates.IP_CONFIGURATION_ENUM_VALUE.WORKER_IP_PRIVATE
+    ip_configuration = ip_private if template_args.disable_public_ips else None
 
     body = Templates.LAUNCH_FLEX_TEMPLATE_REQUEST(
         launchParameter=Templates.FLEX_TEMPLATE_PARAMETER(
             jobName=template_args.job_name,
             containerSpecGcsPath=template_args.gcs_location,
+            environment=Templates.FLEX_TEMPLATE_ENVIRONMENT(
+                serviceAccountEmail=template_args.service_account_email,
+                maxWorkers=template_args.max_workers,
+                numWorkers=template_args.num_workers,
+                network=template_args.network,
+                subnetwork=template_args.subnetwork,
+                machineType=template_args.worker_machine_type,
+                tempLocation=template_args.staging_location,
+                kmsKeyName=template_args.kms_key_name,
+                ipConfiguration=ip_configuration,
+                workerRegion=template_args.worker_region,
+                workerZone=template_args.worker_zone,
+                enableStreamingEngine=template_args.enable_streaming_engine,
+                additionalExperiments=(
+                    template_args.additional_experiments
+                    if template_args.additional_experiments
+                    else []),
+                additionalUserLabels=Templates.FLEX_TEMPLATE_USER_LABELS_VALUE(
+                    additionalProperties=user_labels_list
+                ) if user_labels_list else None),
             parameters=Templates.FLEX_TEMPLATE_PARAMETERS_VALUE(
                 additionalProperties=params_list) if params_list else None))
     request = GetMessagesModule(

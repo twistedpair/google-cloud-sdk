@@ -448,13 +448,20 @@ class IDPReferenceOIDC(_messages.Message):
       tolerated). - If max_token_lifetime_seconds is set: "exp" - "iat" <
       max_token_lifetime_seconds will be checked - The default is otherwise to
       accept a max_token_lifetime_seconds of 3600 (1 hour)
+    oidcJwks: Optional. OIDC verification keys in JWKS format (RFC 7517). It
+      contains a list of OIDC verification keys that can be used to verify
+      OIDC JWTs. When OIDC verification key is provided, it will be directly
+      used to verify the OIDC JWT asserted by the IDP.
     url: The OpenID Connect URL. To use this Identity Binding, JWT 'iss' field
-      should match this field.
+      should match this field. When URL is set, public keys will be fetched
+      from the provided URL for credentials verification unless `oidc_jwks`
+      field is set.
   """
 
   audience = _messages.StringField(1)
   maxTokenLifetimeSeconds = _messages.IntegerField(2)
-  url = _messages.StringField(3)
+  oidcJwks = _messages.BytesField(3)
+  url = _messages.StringField(4)
 
 
 class IamOrganizationsRolesCreateRequest(_messages.Message):

@@ -54,6 +54,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
     self.projects_locations_services_dataEnclave_enclaves = self.ProjectsLocationsServicesDataEnclaveEnclavesService(self)
     self.projects_locations_services_dataEnclave = self.ProjectsLocationsServicesDataEnclaveService(self)
+    self.projects_locations_services_nlp = self.ProjectsLocationsServicesNlpService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -139,10 +140,10 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:evaluate',
         http_method='POST',
         method_id='healthcare.projects.locations.datasets.annotationStores.evaluate',
-        ordered_params=['evalStore'],
-        path_params=['evalStore'],
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path='v1alpha2/{+evalStore}:evaluate',
+        relative_path='v1alpha2/{+name}:evaluate',
         request_field='evaluateAnnotationStoreRequest',
         request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest',
         response_type_name='Operation',
@@ -166,10 +167,10 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:export',
         http_method='POST',
         method_id='healthcare.projects.locations.datasets.annotationStores.export',
-        ordered_params=['annotationStore'],
-        path_params=['annotationStore'],
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path='v1alpha2/{+annotationStore}:export',
+        relative_path='v1alpha2/{+name}:export',
         request_field='exportAnnotationsRequest',
         request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest',
         response_type_name='Operation',
@@ -247,10 +248,10 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:import',
         http_method='POST',
         method_id='healthcare.projects.locations.datasets.annotationStores.import',
-        ordered_params=['annotationStore'],
-        path_params=['annotationStore'],
+        ordered_params=['name'],
+        path_params=['name'],
         query_params=[],
-        relative_path='v1alpha2/{+annotationStore}:import',
+        relative_path='v1alpha2/{+name}:import',
         request_field='importAnnotationsRequest',
         request_type_name='HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest',
         response_type_name='Operation',
@@ -831,7 +832,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha2/{+name}:archive',
-        request_field='',
+        request_field='archiveUserDataMappingRequest',
         request_type_name='HealthcareProjectsLocationsDatasetsConsentStoresUserDataMappingsArchiveRequest',
         response_type_name='ArchiveUserDataMappingResponse',
         supports_download=False,
@@ -1715,7 +1716,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Export(self, request, global_params=None):
-      r""" Export resources from the FHIR store to the specified destination. This method returns an Operation that can be used to track the status of the export by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)). Otherwise, when the operation finishes, a detailed response of type ExportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
+      r"""Export resources from the FHIR store to the specified destination. This method returns an Operation that can be used to track the status of the export by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing error logs in Cloud Logging](/healthcare/docs/how-tos/logging)). Otherwise, when the operation finishes, a detailed response of type ExportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresExportRequest) input message
@@ -1796,7 +1797,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      r""" Import resources to the FHIR store by loading data from the specified sources. This method is optimized to load large quantities of data using import semantics that ignore some FHIR store configuration options and are not suitable for all use cases. It is primarily intended to load data into an empty FHIR store that is not being used by other clients. In cases where this method is not appropriate, consider using ExecuteBundle to load data. Every resource in the input must contain a client-supplied ID. Each resource is stored using the supplied ID regardless of the enable_update_create setting on the FHIR store. The import process does not enforce referential integrity, regardless of the disable_referential_integrity setting on the FHIR store. This allows the import of resources with arbitrary interdependencies without considering grouping or ordering, but if the input data contains invalid references or if some resources fail to be imported, the FHIR store might be left in a state that violates referential integrity. The import process does not trigger Cloud Pub/Sub notification or BigQuery streaming update, regardless of how those are configured on the FHIR store. If a resource with the specified ID already exists, the most recent version of the resource is overwritten without creating a new historical version, regardless of the disable_resource_versioning setting on the FHIR store. If transient failures occur during the import, successfully imported resources could be overwritten more than once. The import operation is idempotent unless the input data contains multiple valid resources with the same ID but different contents. In that case, after the import completes, the store contains exactly one resource with that ID but there is no ordering guarantee on which version of the contents it has. The operation result counters do not count duplicate IDs as an error and count one success for each resource in the input, which might result in a success count larger than the number of resources in the FHIR store. This often occurs when importing data organized in bundles produced by Patient-everything where each bundle contains its own copy of a resource such as Practitioner that might be referred to by many patients. If some resources fail to import, for example due to parsing errors, successfully imported resources are not rolled back. The location and format of the input data is specified by the parameters below. Note that if no format is specified, this method assumes the `BUNDLE` format. When using the `BUNDLE` format this method ignores the `Bundle.type` field, except that `history` bundles are rejected, and does not apply any of the bundle processing semantics for batch or transaction bundles. Unlike in ExecuteBundle, transaction bundles are not executed as a single transaction and bundle-internal references are not rewritten. The bundle is treated as a collection of resources to be written as provided in `Bundle.entry.resource`, ignoring `Bundle.entry.request`. As an example, this allows the import of `searchset` bundles produced by a FHIR search or Patient-everything operation. This method returns an Operation that can be used to track the status of the import by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)). Otherwise, when the operation finishes, a detailed response of type ImportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
+      r"""Import resources to the FHIR store by loading data from the specified sources. This method is optimized to load large quantities of data using import semantics that ignore some FHIR store configuration options and are not suitable for all use cases. It is primarily intended to load data into an empty FHIR store that is not being used by other clients. In cases where this method is not appropriate, consider using ExecuteBundle to load data. Every resource in the input must contain a client-supplied ID. Each resource is stored using the supplied ID regardless of the enable_update_create setting on the FHIR store. The import process does not enforce referential integrity, regardless of the disable_referential_integrity setting on the FHIR store. This allows the import of resources with arbitrary interdependencies without considering grouping or ordering, but if the input data contains invalid references or if some resources fail to be imported, the FHIR store might be left in a state that violates referential integrity. The import process does not trigger Pub/Sub notification or BigQuery streaming update, regardless of how those are configured on the FHIR store. If a resource with the specified ID already exists, the most recent version of the resource is overwritten without creating a new historical version, regardless of the disable_resource_versioning setting on the FHIR store. If transient failures occur during the import, successfully imported resources could be overwritten more than once. The import operation is idempotent unless the input data contains multiple valid resources with the same ID but different contents. In that case, after the import completes, the store contains exactly one resource with that ID but there is no ordering guarantee on which version of the contents it has. The operation result counters do not count duplicate IDs as an error and count one success for each resource in the input, which might result in a success count larger than the number of resources in the FHIR store. This often occurs when importing data organized in bundles produced by Patient-everything where each bundle contains its own copy of a resource such as Practitioner that might be referred to by many patients. If some resources fail to import, for example due to parsing errors, successfully imported resources are not rolled back. The location and format of the input data are specified by the parameters in ImportResourcesRequest. Note that if no format is specified, this method assumes the `BUNDLE` format. When using the `BUNDLE` format this method ignores the `Bundle.type` field, except that `history` bundles are rejected, and does not apply any of the bundle processing semantics for batch or transaction bundles. Unlike in ExecuteBundle, transaction bundles are not executed as a single transaction and bundle-internal references are not rewritten. The bundle is treated as a collection of resources to be written as provided in `Bundle.entry.resource`, ignoring `Bundle.entry.request`. As an example, this allows the import of `searchset` bundles produced by a FHIR search or Patient-everything operation. This method returns an Operation that can be used to track the status of the import by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)). Otherwise, when the operation finishes, a detailed response of type ImportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsFhirStoresImportRequest) input message
@@ -2691,6 +2692,43 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
       super(HealthcareV1alpha2.ProjectsLocationsServicesDataEnclaveService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ProjectsLocationsServicesNlpService(base_api.BaseApiService):
+    """Service class for the projects_locations_services_nlp resource."""
+
+    _NAME = 'projects_locations_services_nlp'
+
+    def __init__(self, client):
+      super(HealthcareV1alpha2.ProjectsLocationsServicesNlpService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AnalyzeEntities(self, request, global_params=None):
+      r"""Analyze heathcare entity in a document. Its response includes the recognized entity mentions and the relationships between them. AnalyzeEntities uses context aware models to detect entities.
+
+      Args:
+        request: (HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnalyzeEntitiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeEntities')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeEntities.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/services/nlp:analyzeEntities',
+        http_method='POST',
+        method_id='healthcare.projects.locations.services.nlp.analyzeEntities',
+        ordered_params=['nlpService'],
+        path_params=['nlpService'],
+        query_params=[],
+        relative_path='v1alpha2/{+nlpService}:analyzeEntities',
+        request_field='analyzeEntitiesRequest',
+        request_type_name='HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest',
+        response_type_name='AnalyzeEntitiesResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsServicesService(base_api.BaseApiService):
     """Service class for the projects_locations_services resource."""

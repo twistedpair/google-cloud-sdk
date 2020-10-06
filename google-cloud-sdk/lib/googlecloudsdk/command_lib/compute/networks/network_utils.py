@@ -84,9 +84,9 @@ def AddMtuArg(parser):
   parser.add_argument(
       '--mtu',
       type=int,
-      help="""Maximum transmission unit(MTU) is the size of the largest frame
-              that can be transmitted on this network. Default value is
-              1460 bytes, the maximum is 1500 bytes. The MTU advertised
+      help="""Maximum transmission unit (MTU) is the size of the largest
+              IP packet that can be transmitted on this network. Default value
+              is 1460 bytes, and the maximum is 1500 bytes. The MTU advertised
               via DHCP to all instances attached to this network.""")
 
 
@@ -119,12 +119,13 @@ def AddUpdateArgs(parser):
       metavar='MODE',
       help="""The target BGP routing mode for this network.""")
 
+  AddMtuArg(parser)
+
 
 def AddUpdateArgsAlpha(parser):
-  """Adds arguments for updating a network."""
+  """Adds alpha arguments for updating a network."""
 
   AddUpdateArgs(parser)
-  AddMtuArg(parser)
 
 
 def CheckRangeLegacyModeOrRaise(args):

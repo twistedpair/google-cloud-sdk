@@ -29,9 +29,19 @@ class NoFieldsSpecified(exceptions.Error):
   """Error for calling update command with no args that represent fields."""
 
 
-def CheckFieldsSpecified(unused_instance_ref, args, patch_request):
-  """Checks if fields to update are registered."""
+def CheckFieldsSpecifiedGA(unused_instance_ref, args, patch_request):
+  """Checks if fields to update are registered for GA track."""
   return CheckFieldsSpecifiedCommon(args, patch_request, [])
+
+
+def CheckFieldsSpecifiedBeta(unused_instance_ref, args, patch_request):
+  """Checks if fields to update are registered for BETA track."""
+  return CheckFieldsSpecifiedCommon(args, patch_request, ['enable_auth'])
+
+
+def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
+  """Checks if fields to update are registered for ALPHA track."""
+  return CheckFieldsSpecifiedCommon(args, patch_request, ['enable_auth'])
 
 
 def CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args):
@@ -130,4 +140,12 @@ def AddNewRedisConfigs(instance_ref, redis_configs_dict, patch_request):
                                                       messages)
   patch_request.instance.redisConfigs = new_redis_configs
   patch_request = AddFieldToUpdateMask('redis_configs', patch_request)
+  return patch_request
+
+
+def UpdateAuthEnabled(unused_instance_ref, args, patch_request):
+  """Hook to add auth_enabled to the update mask of the request."""
+  if args.IsSpecified('enable_auth'):
+    util.WarnOnAuthEnabled(args.enable_auth)
+    patch_request = AddFieldToUpdateMask('auth_enabled', patch_request)
   return patch_request

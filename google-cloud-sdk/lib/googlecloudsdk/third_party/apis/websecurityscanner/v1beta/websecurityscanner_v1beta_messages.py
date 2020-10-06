@@ -721,12 +721,15 @@ class ScanRunWarningTrace(_messages.Message):
         URLs, increasing the QPS rate, or narrowing down the scope of the scan
         using the excluded patterns.
       BLOCKED_BY_IAP: Indicates that a scan is blocked by IAP.
+      NO_STARTING_URL_FOUND_FOR_MANAGED_SCAN: Indicates that no seed is found
+        for a scan
     """
     CODE_UNSPECIFIED = 0
     INSUFFICIENT_CRAWL_RESULTS = 1
     TOO_MANY_CRAWL_RESULTS = 2
     TOO_MANY_FUZZ_TASKS = 3
     BLOCKED_BY_IAP = 4
+    NO_STARTING_URL_FOUND_FOR_MANAGED_SCAN = 5
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
 

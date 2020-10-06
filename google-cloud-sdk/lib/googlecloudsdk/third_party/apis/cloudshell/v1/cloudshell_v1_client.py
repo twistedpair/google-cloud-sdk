@@ -225,60 +225,6 @@ class CloudshellV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Create(self, request, global_params=None):
-      r"""Creates a new environment.
-
-      Args:
-        request: (CloudshellUsersEnvironmentsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/users/{usersId}/environments',
-        http_method='POST',
-        method_id='cloudshell.users.environments.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['environmentId'],
-        relative_path='v1/{+parent}/environments',
-        request_field='environment',
-        request_type_name='CloudshellUsersEnvironmentsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes an existing environment. Any connections to that environment will be terminated.
-
-      Args:
-        request: (CloudshellUsersEnvironmentsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/users/{usersId}/environments/{environmentsId}',
-        http_method='DELETE',
-        method_id='cloudshell.users.environments.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='CloudshellUsersEnvironmentsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets an environment. Returns NOT_FOUND if the environment does not exist.
 
@@ -303,60 +249,6 @@ class CloudshellV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudshellUsersEnvironmentsGetRequest',
         response_type_name='Environment',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists all of a user's environments.
-
-      Args:
-        request: (CloudshellUsersEnvironmentsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListEnvironmentsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/users/{usersId}/environments',
-        http_method='GET',
-        method_id='cloudshell.users.environments.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1/{+parent}/environments',
-        request_field='',
-        request_type_name='CloudshellUsersEnvironmentsListRequest',
-        response_type_name='ListEnvironmentsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates an existing environment.
-
-      Args:
-        request: (CloudshellUsersEnvironmentsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/users/{usersId}/environments/{environmentsId}',
-        http_method='PATCH',
-        method_id='cloudshell.users.environments.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1/{+name}',
-        request_field='environment',
-        request_type_name='CloudshellUsersEnvironmentsPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

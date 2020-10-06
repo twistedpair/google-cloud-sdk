@@ -380,6 +380,209 @@
         }
       }
     },
+    "GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata": {
+      "id": "GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata",
+      "description": "Operation metadata to give request details of CreateWorkload.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Optional. Time when the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "displayName": {
+          "description": "Optional. The display name of the workload.",
+          "type": "string"
+        },
+        "parent": {
+          "description": "Optional. The parent of the workload.",
+          "type": "string"
+        },
+        "complianceRegime": {
+          "description": "Optional. Compliance controls that should be applied to the resources managed by the workload.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown compliance regime.",
+            "Information protection as per DoD IL4 requirements.",
+            "Criminal Justice Information Services (CJIS) Security policies.",
+            "FedRAMP High data protection controls",
+            "FedRAMP Moderate data protection controls"
+          ],
+          "enum": [
+            "COMPLIANCE_REGIME_UNSPECIFIED",
+            "IL4",
+            "CJIS",
+            "FEDRAMP_HIGH",
+            "FEDRAMP_MODERATE"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1Workload": {
+      "id": "GoogleCloudAssuredworkloadsV1Workload",
+      "description": "An Workload object for managing highly regulated workloads of cloud customers.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Optional. The resource name of the workload. Format: organizations\/{organization}\/locations\/{location}\/workloads\/{workload} Read-only.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The user-assigned display name of the Workload. When present it must be between 4 to 30 characters. Allowed characters are: lowercase and uppercase letters, numbers, hyphen, and spaces. Example: My Workload",
+          "type": "string"
+        },
+        "resources": {
+          "description": "Output only. The resources associated with this workload. These resources will be created when creating the workload. If any of the projects already exist, the workload creation will fail. Always read only.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAssuredworkloadsV1WorkloadResourceInfo"
+          }
+        },
+        "complianceRegime": {
+          "description": "Required. Immutable. Compliance Regime associated with this workload.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown compliance regime.",
+            "Information protection as per DoD IL4 requirements.",
+            "Criminal Justice Information Services (CJIS) Security policies.",
+            "FedRAMP High data protection controls",
+            "FedRAMP Moderate data protection controls"
+          ],
+          "enum": [
+            "COMPLIANCE_REGIME_UNSPECIFIED",
+            "IL4",
+            "CJIS",
+            "FEDRAMP_HIGH",
+            "FEDRAMP_MODERATE"
+          ]
+        },
+        "createTime": {
+          "description": "Output only. Immutable. The Workload creation timestamp.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "billingAccount": {
+          "description": "Required. Input only. The billing account used for the resources which are direct children of workload. This billing account is initially associated with the resources created as part of Workload creation. After the initial creation of these resources, the customer can change the assigned billing account. The resource name has the form `billingAccounts\/{billing_account_id}`. For example, `billingAccounts\/012345-567890-ABCDEF`.",
+          "type": "string"
+        },
+        "il4Settings": {
+          "description": "Required. Input only. Immutable. Settings specific to resources needed for IL4.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadIL4Settings"
+        },
+        "cjisSettings": {
+          "description": "Required. Input only. Immutable. Settings specific to resources needed for CJIS.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadCJISSettings"
+        },
+        "fedrampHighSettings": {
+          "description": "Required. Input only. Immutable. Settings specific to resources needed for FedRAMP High.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings"
+        },
+        "fedrampModerateSettings": {
+          "description": "Required. Input only. Immutable. Settings specific to resources needed for FedRAMP Moderate.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings"
+        },
+        "etag": {
+          "description": "Optional. ETag of the workload, it is calculated on the basis of the Workload contents. It will be used in Update & Delete operations.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. Labels applied to the workload.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1WorkloadResourceInfo": {
+      "id": "GoogleCloudAssuredworkloadsV1WorkloadResourceInfo",
+      "description": "Represent the resources that are children of this Workload.",
+      "type": "object",
+      "properties": {
+        "resourceId": {
+          "description": "Resource identifier. For a project this represents project_number.",
+          "type": "string",
+          "format": "int64"
+        },
+        "resourceType": {
+          "description": "Indicates the type of resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown resource type.",
+            "Consumer project.",
+            "Consumer project containing encryption keys."
+          ],
+          "enum": [
+            "RESOURCE_TYPE_UNSPECIFIED",
+            "CONSUMER_PROJECT",
+            "ENCRYPTION_KEYS_PROJECT"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1WorkloadIL4Settings": {
+      "id": "GoogleCloudAssuredworkloadsV1WorkloadIL4Settings",
+      "description": "Settings specific to resources needed for IL4.",
+      "type": "object",
+      "properties": {
+        "kmsSettings": {
+          "description": "Required. Input only. Immutable. Settings used to create a CMEK crypto key.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings": {
+      "id": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings",
+      "description": "Settings specific to the Key Management Service.",
+      "type": "object",
+      "properties": {
+        "nextRotationTime": {
+          "description": "Required. Input only. Immutable. The time at which the Key Management Service will automatically create a new version of the crypto key and mark it as the primary.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "rotationPeriod": {
+          "description": "Required. Input only. Immutable. [next_rotation_time] will be advanced by this period when the Key Management Service automatically rotates a key. Must be at least 24 hours and at most 876,000 hours.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1WorkloadCJISSettings": {
+      "id": "GoogleCloudAssuredworkloadsV1WorkloadCJISSettings",
+      "description": "Settings specific to resources needed for CJIS.",
+      "type": "object",
+      "properties": {
+        "kmsSettings": {
+          "description": "Required. Input only. Immutable. Settings used to create a CMEK crypto key.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings": {
+      "id": "GoogleCloudAssuredworkloadsV1WorkloadFedrampHighSettings",
+      "description": "Settings specific to resources needed for FedRAMP High.",
+      "type": "object",
+      "properties": {
+        "kmsSettings": {
+          "description": "Required. Input only. Immutable. Settings used to create a CMEK crypto key.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
+        }
+      }
+    },
+    "GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings": {
+      "id": "GoogleCloudAssuredworkloadsV1WorkloadFedrampModerateSettings",
+      "description": "Settings specific to resources needed for FedRAMP Moderate.",
+      "type": "object",
+      "properties": {
+        "kmsSettings": {
+          "description": "Required. Input only. Immutable. Settings used to create a CMEK crypto key.",
+          "$ref": "GoogleCloudAssuredworkloadsV1WorkloadKMSSettings"
+        }
+      }
+    },
     "GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata": {
       "id": "GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata",
       "description": "Operation metadata to give request details of CreateWorkload.",

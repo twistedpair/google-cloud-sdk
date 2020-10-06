@@ -12,6 +12,39 @@ from apitools.base.py import encoding
 package = 'anthosevents'
 
 
+class APIVersionKind(_messages.Message):
+  r"""APIVersionKind is an APIVersion and Kind tuple.
+
+  Fields:
+    apiVersion: APIVersion - the API version of the resource to watch.
+    kind: Kind of the resource to watch. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#types-kinds
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+
+
+class APIVersionKindSelector(_messages.Message):
+  r"""APIVersionKindSelector is an APIVersion Kind tuple with a LabelSelector.
+
+  Fields:
+    apiVersion: APIVersion - the API version of the resource to watch.
+    kind: Kind of the resource to watch. More info:
+      https://git.k8s.io/community/contributors/devel/sig-architecture/api-
+      conventions.md#types-kinds
+    selector: LabelSelector filters this source to objects to those resources
+      pass the label selector. More info:
+      http://kubernetes.io/docs/concepts/overview/working-with-
+      objects/labels/#label-selectors
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  selector = _messages.MessageField('LabelSelector', 3)
+
+
 class Addressable(_messages.Message):
   r"""From
   https://github.com/knative/pkg/blob/master/apis/duck/v1/addressable_types.go
@@ -55,6 +88,100 @@ class AnthoseventsCustomresourcedefinitionsListRequest(_messages.Message):
   parent = _messages.StringField(6)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
+
+
+class AnthoseventsNamespacesApiserversourcesCreateRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesApiserversourcesCreateRequest object.
+
+  Fields:
+    apiServerSource: A ApiServerSource resource to be passed as the request
+      body.
+    parent: The project ID or project number in which this apiserversource
+      should be created.
+  """
+
+  apiServerSource = _messages.MessageField('ApiServerSource', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AnthoseventsNamespacesApiserversourcesDeleteRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesApiserversourcesDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: The name of the apiserversource being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class AnthoseventsNamespacesApiserversourcesGetRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesApiserversourcesGetRequest object.
+
+  Fields:
+    name: The name of the apiserversource being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    region: The region in which this resource exists.
+  """
+
+  name = _messages.StringField(1, required=True)
+  region = _messages.StringField(2)
+
+
+class AnthoseventsNamespacesApiserversourcesListRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesApiserversourcesListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the apiserversources
+      should be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class AnthoseventsNamespacesApiserversourcesReplaceApiServerSourceRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesApiserversourcesReplaceApiServerSourceRequest
+  object.
+
+  Fields:
+    apiServerSource: A ApiServerSource resource to be passed as the request
+      body.
+    name: The name of the apiserversource being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    region: The region in which this resource exists.
+  """
+
+  apiServerSource = _messages.MessageField('ApiServerSource', 1)
+  name = _messages.StringField(2, required=True)
+  region = _messages.StringField(3)
 
 
 class AnthoseventsNamespacesBrokersCreateRequest(_messages.Message):
@@ -492,6 +619,94 @@ class AnthoseventsNamespacesCustomresourcedefinitionsGetRequest(_messages.Messag
   name = _messages.StringField(1, required=True)
 
 
+class AnthoseventsNamespacesPingsourcesCreateRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesPingsourcesCreateRequest object.
+
+  Fields:
+    parent: The namespace name.
+    pingSource: A PingSource resource to be passed as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  pingSource = _messages.MessageField('PingSource', 2)
+
+
+class AnthoseventsNamespacesPingsourcesDeleteRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesPingsourcesDeleteRequest object.
+
+  Fields:
+    apiVersion: Cloud Run currently ignores this parameter.
+    kind: Cloud Run currently ignores this parameter.
+    name: The name of the pingsource being deleted. If needed, replace
+      {namespace_id} with the project ID.
+    propagationPolicy: Specifies the propagation policy of delete. Cloud Run
+      currently ignores this setting, and deletes in the background. Please
+      see kubernetes.io/docs/concepts/workloads/controllers/garbage-
+      collection/ for more information.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  propagationPolicy = _messages.StringField(4)
+
+
+class AnthoseventsNamespacesPingsourcesGetRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesPingsourcesGetRequest object.
+
+  Fields:
+    name: The name of the pingsource being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    region: The region in which this resource exists.
+  """
+
+  name = _messages.StringField(1, required=True)
+  region = _messages.StringField(2)
+
+
+class AnthoseventsNamespacesPingsourcesListRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesPingsourcesListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. Send this in a query string format. i.e.
+      'metadata.name%3Dlorem'. Not currently used by Cloud Run.
+    includeUninitialized: Not currently used by Cloud Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the pingsources should
+      be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start. Not currently used by Cloud Run.
+    watch: Flag that indicates that the client expects to watch this resource
+      as well. Not currently used by Cloud Run.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class AnthoseventsNamespacesPingsourcesReplacePingSourceRequest(_messages.Message):
+  r"""A AnthoseventsNamespacesPingsourcesReplacePingSourceRequest object.
+
+  Fields:
+    name: The name of the pingsource being retrieved. If needed, replace
+      {namespace_id} with the project ID.
+    pingSource: A PingSource resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pingSource = _messages.MessageField('PingSource', 2)
+
+
 class AnthoseventsNamespacesTriggersCreateRequest(_messages.Message):
   r"""A AnthoseventsNamespacesTriggersCreateRequest object.
 
@@ -582,6 +797,111 @@ class AnthoseventsNamespacesTriggersReplaceTriggerRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   trigger = _messages.MessageField('Trigger', 2)
+
+
+class ApiServerSource(_messages.Message):
+  r"""A ApiServerSource object.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "sources.knative.dev/v1beta1".
+    kind: The kind of resource, in this case "ApiServerSource".
+    metadata: Metadata associated with this ApiServerSource.
+    spec: Spec defines the desired state of the ApiServerSource.
+    status: Status represents the current state of the ApiServerSource. This
+      data may be out of date. +optional
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('ApiServerSourceSpec', 4)
+  status = _messages.MessageField('ApiServerSourceStatus', 5)
+
+
+class ApiServerSourceSpec(_messages.Message):
+  r"""The desired state of the ApiServerSource.
+
+  Fields:
+    ceOverrides: CloudEventOverrides defines overrides to control the output
+      format and modifications of the event sent to the sink.
+    mode: EventMode controls the format of the event. `Reference` sends a
+      dataref event type for the resource under watch. `Resource` send the
+      full resource lifecycle event. Defaults to `Reference`
+    owner: ResourceOwner is an additional filter to only track resources that
+      are owned by a specific resource type. If ResourceOwner matches
+      Resources[n] then Resources[n] is allowed to pass the ResourceOwner
+      filter.
+    resources: Resource are the resources this source will track and send
+      related lifecycle events from the Kubernetes ApiServer, with an optional
+      label selector to help filter.
+    serviceAccountName: ServiceAccountName is the k8s service account which
+      binds to a google service account. This google service account has
+      required permissions to poll from a Cloud Pub/Sub subscription. If not
+      specified, defaults to use secret.
+    sink: Sink is a reference to an object that will resolve to a uri to use
+      as the sink.
+  """
+
+  ceOverrides = _messages.MessageField('CloudEventOverrides', 1)
+  mode = _messages.StringField(2)
+  owner = _messages.MessageField('APIVersionKind', 3)
+  resources = _messages.MessageField('APIVersionKindSelector', 4, repeated=True)
+  serviceAccountName = _messages.StringField(5)
+  sink = _messages.MessageField('Destination', 6)
+
+
+class ApiServerSourceStatus(_messages.Message):
+  r"""ApiServerSourceStatus represents the current state of a ApiServerSource.
+
+  Messages:
+    AnnotationsValue: Annotations is additional Status fields for the Resource
+      to save some additional State as well as convey more information to the
+      user. This is roughly akin to Annotations on any k8s resource, just the
+      reconciler conveying richer information outwards.
+
+  Fields:
+    annotations: Annotations is additional Status fields for the Resource to
+      save some additional State as well as convey more information to the
+      user. This is roughly akin to Annotations on any k8s resource, just the
+      reconciler conveying richer information outwards.
+    conditions: Conditions the latest available observations of a resource's
+      current state.
+    observedGeneration: ObservedGeneration is the 'Generation' of the
+      CloudPubSubSource that was last processed by the controller.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations is additional Status fields for the Resource to save some
+    additional State as well as convey more information to the user. This is
+    roughly akin to Annotations on any k8s resource, just the reconciler
+    conveying richer information outwards.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  observedGeneration = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Broker(_messages.Message):
@@ -1774,6 +2094,97 @@ class KReference(_messages.Message):
   namespace = _messages.StringField(4)
 
 
+class LabelSelector(_messages.Message):
+  r"""A label selector is a label query over a set of resources. The result of
+  matchLabels and matchExpressions are ANDed. An empty label selector matches
+  all objects. A null label selector matches no objects.
+
+  Messages:
+    MatchLabelsValue: match_labels is a map of {key,value} pairs. A single
+      {key,value} in the matchLabels map is equivalent to an element of
+      matchExpressions, whose key field is "key", the operator is "In", and
+      the values array contains only "value". The requirements are ANDed.
+
+  Fields:
+    matchExpressions: match_expressions is a list of label selector
+      requirements. The requirements are ANDed.
+    matchLabels: match_labels is a map of {key,value} pairs. A single
+      {key,value} in the matchLabels map is equivalent to an element of
+      matchExpressions, whose key field is "key", the operator is "In", and
+      the values array contains only "value". The requirements are ANDed.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MatchLabelsValue(_messages.Message):
+    r"""match_labels is a map of {key,value} pairs. A single {key,value} in
+    the matchLabels map is equivalent to an element of matchExpressions, whose
+    key field is "key", the operator is "In", and the values array contains
+    only "value". The requirements are ANDed.
+
+    Messages:
+      AdditionalProperty: An additional property for a MatchLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MatchLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MatchLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  matchExpressions = _messages.MessageField('LabelSelectorRequirement', 1, repeated=True)
+  matchLabels = _messages.MessageField('MatchLabelsValue', 2)
+
+
+class LabelSelectorRequirement(_messages.Message):
+  r"""A label selector requirement is a selector that contains values, a key,
+  and an operator that relates the key and values.
+
+  Fields:
+    key: key is the label key that the selector applies to. +patchMergeKey=key
+      +patchStrategy=merge
+    operator: operator represents a key's relationship to a set of values.
+      Valid operators are In, NotIn, Exists and DoesNotExist.
+    values: values is an array of string values. If the operator is In or
+      NotIn, the values array must be non-empty. If the operator is Exists or
+      DoesNotExist, the values array must be empty. This array is replaced
+      during a strategic merge patch. +optional
+  """
+
+  key = _messages.StringField(1)
+  operator = _messages.StringField(2)
+  values = _messages.StringField(3)
+
+
+class ListApiServerSourcesResponse(_messages.Message):
+  r"""ListApiServerSourcesResponse is a list of ApiServerSource resources.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "sources.knative.dev/v1beta1".
+    items: List of ApiServerSources.
+    kind: The kind of this resource, in this case "ApiServerSourceList".
+    metadata: Metadata associated with this ApiServerSource list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('ApiServerSource', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
+
+
 class ListBrokersResponse(_messages.Message):
   r"""A ListBrokersResponse object.
 
@@ -1919,6 +2330,25 @@ class ListMeta(_messages.Message):
   continue_ = _messages.StringField(1)
   resourceVersion = _messages.StringField(2)
   selfLink = _messages.StringField(3)
+
+
+class ListPingSourcesResponse(_messages.Message):
+  r"""ListPingSourcesResponse is a list of PingSource resources.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "sources.knative.dev/v1beta1".
+    items: List of PingSources.
+    kind: The kind of this resource, in this case "PingSourceList".
+    metadata: Metadata associated with this PingSource list.
+    unreachable: Locations that could not be reached.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('PingSource', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class ListTriggersResponse(_messages.Message):
@@ -2216,6 +2646,123 @@ class OwnerReference(_messages.Message):
   kind = _messages.StringField(4)
   name = _messages.StringField(5)
   uid = _messages.StringField(6)
+
+
+class PingSource(_messages.Message):
+  r"""A PingSource object.
+
+  Fields:
+    apiVersion: The API version for this call such as
+      "sources.knative.dev/v1beta1".
+    kind: The kind of resource, in this case "PingSource".
+    metadata: Metadata associated with this PingSource.
+    spec: Spec defines the desired state of the PingSource.
+    status: Status represents the current state of the PingSource. This data
+      may be out of date.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('PingSourceSpec', 4)
+  status = _messages.MessageField('PingSourceStatus', 5)
+
+
+class PingSourceSpec(_messages.Message):
+  r"""The desired state of the PingSource.
+
+  Fields:
+    ceOverrides: CloudEventOverrides defines overrides to control the output
+      format and modifications of the event sent to the sink.
+    jsonData: JsonData is json encoded data used as the body of the event
+      posted to the sink. Default is empty. If set, datacontenttype will also
+      be set to "application/json".
+    schedule: Schedule is the cronjob schedule. Defaults to `* * * * *`.
+    sink: Sink is a reference to an object that will resolve to a uri to use
+      as the sink.
+    timezone: Timezone modifies the actual time relative to the specified
+      timezone. Defaults to the system time zone. More general information
+      about time zones: https://www.iana.org/time-zones List of valid timezone
+      values: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  """
+
+  ceOverrides = _messages.MessageField('CloudEventOverrides', 1)
+  jsonData = _messages.StringField(2)
+  schedule = _messages.StringField(3)
+  sink = _messages.MessageField('Destination', 4)
+  timezone = _messages.StringField(5)
+
+
+class PingSourceStatus(_messages.Message):
+  r"""PingSourceStatus represents the current state of a PingSource.
+
+  Messages:
+    AnnotationsValue: Annotations is additional Status fields for the Resource
+      to save some additional State as well as convey more information to the
+      user. This is roughly akin to Annotations on any k8s resource, just the
+      reconciler conveying richer information outwards.
+
+  Fields:
+    annotations: Annotations is additional Status fields for the Resource to
+      save some additional State as well as convey more information to the
+      user. This is roughly akin to Annotations on any k8s resource, just the
+      reconciler conveying richer information outwards.
+    ceAttributes: CloudEventAttributes are the specific attributes that the
+      Source uses as part of its CloudEvents.
+    conditions: Conditions the latest available observations of a resource's
+      current state.
+    observedGeneration: ObservedGeneration is the 'Generation' of the
+      CloudPubSubSource that was last processed by the controller.
+    projectId: ProjectID is the project ID of the Topic, might have been
+      resolved.
+    serviceAccountName: ServiceAccountName is the k8s service account
+      associated with Google service account.
+    sinkUri: SinkURI is the current active sink URI that has been configured
+      for the Source.
+    stackDriverSink: ID of the Stackdriver sink used to publish audit log
+      messages.
+    subscriptionId: SubscriptionID is the created subscription ID.
+    topicId: TopicID where the notifications are sent to.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations is additional Status fields for the Resource to save some
+    additional State as well as convey more information to the user. This is
+    roughly akin to Annotations on any k8s resource, just the reconciler
+    conveying richer information outwards.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  ceAttributes = _messages.MessageField('CloudEventAttributes', 2, repeated=True)
+  conditions = _messages.MessageField('Condition', 3, repeated=True)
+  observedGeneration = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(5)
+  serviceAccountName = _messages.StringField(6)
+  sinkUri = _messages.StringField(7)
+  stackDriverSink = _messages.StringField(8)
+  subscriptionId = _messages.StringField(9)
+  topicId = _messages.StringField(10)
 
 
 class SecretKeySelector(_messages.Message):

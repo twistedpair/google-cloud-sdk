@@ -379,7 +379,7 @@
           "format": "int64"
         },
         "minimumPublishTime": {
-          "description": "The minimum publish timestamp across these messages. Note that publish timestamps within a partition are non-decreasing. The timestamp will be unset if there are no messages.",
+          "description": "The minimum publish timestamp across these messages. Note that publish timestamps within a partition are not guaranteed to be non-decreasing. The timestamp will be unset if there are no messages.",
           "type": "string",
           "format": "google-datetime"
         },

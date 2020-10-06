@@ -410,8 +410,16 @@ class Cluster(_messages.Message):
       [region](/compute/docs/regions-zones/regions-zones#available) in which
       the cluster resides.
     locations: The list of Google Compute Engine
-      [zones](/compute/docs/zones#available) in which the cluster's nodes
-      should be located.
+      [zones](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster's nodes should be located. This field provides a default
+      value if [NodePool.Locations](https://cloud.google.com/kubernetes-engine
+      /docs/reference/rest/v1/projects.locations.clusters.nodePools#NodePool.F
+      IELDS.locations) are not specified during node pool creation. Warning:
+      changing cluster locations will update the
+      [NodePool.Locations](https://cloud.google.com/kubernetes-engine/docs/ref
+      erence/rest/v1/projects.locations.clusters.nodePools#NodePool.FIELDS.loc
+      ations) of all node pools and will result in nodes being added and/or
+      removed.
     loggingService: The logging service the cluster should use to write logs.
       Currently available options: * `logging.googleapis.com/kubernetes` - The
       Cloud Logging service with a Kubernetes-native resource model *
@@ -766,11 +774,11 @@ class ClusterUpdate(_messages.Message):
     desiredL4ilbSubsettingConfig: The desired L4 Internal Load Balancer
       Subsetting configuration.
     desiredLocations: The desired list of Google Compute Engine
-      [zones](/compute/docs/zones#available) in which the cluster's nodes
-      should be located. Changing the locations a cluster is in will result in
-      nodes being either created or removed from the cluster, depending on
-      whether locations are being added or removed. This list must always
-      include the cluster's primary zone.
+      [zones](https://cloud.google.com/compute/docs/zones#available) in which
+      the cluster's nodes should be located. This list must always include the
+      cluster's primary zone. Warning: changing cluster locations will update
+      the locations of all node pools and will result in nodes being added
+      and/or removed.
     desiredLoggingService: The logging service the cluster should use to write
       logs. Currently available options: * `logging.googleapis.com/kubernetes`
       - The Cloud Logging service with a Kubernetes-native resource model *
@@ -2839,8 +2847,13 @@ class NodePool(_messages.Message):
       instance groups](/compute/docs/instance-groups/creating-groups-of-
       managed-instances) associated with this node pool.
     locations: The list of Google Compute Engine
-      [zones](/compute/docs/zones#available) in which the NodePool's nodes
-      should be located.
+      [zones](https://cloud.google.com/compute/docs/zones#available) in which
+      the NodePool's nodes should be located. If this value is unspecified
+      during node pool creation, the
+      [Cluster.Locations](https://cloud.google.com/kubernetes-engine/docs/refe
+      rence/rest/v1/projects.locations.clusters#Cluster.FIELDS.locations)
+      value will be used, instead. Warning: changing node pool locations will
+      result in nodes being added and/or removed.
     management: NodeManagement configuration for this NodePool.
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.

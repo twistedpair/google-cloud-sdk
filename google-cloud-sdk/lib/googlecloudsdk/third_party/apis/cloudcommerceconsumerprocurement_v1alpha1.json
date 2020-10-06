@@ -804,6 +804,20 @@
         "newLineItemInfo": {
           "description": "The line item to update to. Required when change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].",
           "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo"
+        },
+        "autoRenewalBehavior": {
+          "description": "Auto renewal behavior of the subscription for the update. Applied when change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows plan default config when this field is not specified.",
+          "type": "string",
+          "enumDescriptions": [
+            "If unspecified, the auto renewal behavior will follow the default config.",
+            "Auto Renewal will be enabled on subscription.",
+            "Auto Renewal will be disabled on subscription."
+          ],
+          "enum": [
+            "AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED",
+            "AUTO_RENEWAL_BEHAVIOR_ENABLE",
+            "AUTO_RENEWAL_BEHAVIOR_DISABLE"
+          ]
         }
       }
     },

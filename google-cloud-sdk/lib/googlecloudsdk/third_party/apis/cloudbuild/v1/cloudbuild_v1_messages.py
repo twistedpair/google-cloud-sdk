@@ -1181,14 +1181,15 @@ class CloudbuildProjectsLocationsBuildsCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsBuildsCreateRequest object.
 
   Fields:
-    createBuildRequest: A CreateBuildRequest resource to be passed as the
-      request body.
+    build: A Build resource to be passed as the request body.
     parent: The parent resource where this build will be created. Format:
       `projects/{project}/locations/{location}`
+    projectId: Required. ID of the project.
   """
 
-  createBuildRequest = _messages.MessageField('CreateBuildRequest', 1)
+  build = _messages.MessageField('Build', 1)
   parent = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3)
 
 
 class CloudbuildProjectsLocationsBuildsGetRequest(_messages.Message):
@@ -1339,18 +1340,6 @@ class ClusterOptions(_messages.Message):
   """
 
   name = _messages.StringField(1)
-
-
-class CreateBuildRequest(_messages.Message):
-  r"""Request to create a new build.
-
-  Fields:
-    build: Required. Build resource to create.
-    projectId: Required. ID of the project.
-  """
-
-  build = _messages.MessageField('Build', 1)
-  projectId = _messages.StringField(2)
 
 
 class CronConfig(_messages.Message):

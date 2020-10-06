@@ -4888,6 +4888,80 @@
           "format": "int32"
         }
       }
+    },
+    "GoogleCloudDialogflowV2beta1BatchUpdateSmartMessagingEntriesResponse": {
+      "id": "GoogleCloudDialogflowV2beta1BatchUpdateSmartMessagingEntriesResponse",
+      "description": "Response message for [Documents.BatchUpdateSmartMessagingEntries]",
+      "type": "object",
+      "properties": {
+        "smartMessagingEntries": {
+          "description": "List of updated smart message entries.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowV2beta1SmartMessagingEntry"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2beta1SmartMessagingEntry": {
+      "id": "GoogleCloudDialogflowV2beta1SmartMessagingEntry",
+      "description": "Smart Messaging Entry resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The unique identifier of this message entry. Required for [Documents.GetSmartMessagingEntry], [Documents.CreateSmartMessagingEntry], [Documents.UpdateSmartMessagingEntry], and [Documents.DeleteSmartMessagingEntry]. Format: `projects\/\/knowledgeBases\/\/documents\/\/smartMessagingEntries\/`",
+          "type": "string"
+        },
+        "rawText": {
+          "description": "Required. The raw text of the message.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Required. Smart Messaging Entry's enabled\/disabled state.",
+          "type": "string",
+          "enumDescriptions": [
+            "State unspecified.",
+            "This smart reply message is enabled and used when generating suggestions.",
+            "This smart reply message is disabled and is not used when generating suggestions."
+          ],
+          "enum": [
+            "SMART_MESSAGING_ENTRY_STATE_UNSPECIFIED",
+            "ENABLED",
+            "DISABLED"
+          ]
+        },
+        "messageInfo": {
+          "description": "Output only. Metadata of the message entry",
+          "$ref": "GoogleCloudDialogflowV2beta1SmartMessagingEntryInfo"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2beta1SmartMessagingEntryInfo": {
+      "id": "GoogleCloudDialogflowV2beta1SmartMessagingEntryInfo",
+      "description": "Smart messaging entry info.",
+      "type": "object",
+      "properties": {
+        "occurrenceCount": {
+          "description": "The number of times an entry's message text has been uttered",
+          "type": "integer",
+          "format": "int32"
+        },
+        "creationMethod": {
+          "description": "Output only. Method of how the smart messaging entry was created. When the smart messaging entry was generated from GenerateDocument, the value is AUTOMATIC; when the entry was manually added through CreateSmartMessagingEntry, the value is MANUAL.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The creation method of the smart messaging entry is unspecified. The value is unused.",
+            "The smart messaging entry was generated automatically from backend pipeline.",
+            "The smart messaging entry was added manually."
+          ],
+          "enum": [
+            "CREATION_METHOD_UNSPECIFIED",
+            "AUTOMATIC",
+            "MANUAL"
+          ]
+        }
+      }
     }
   },
   "resources": {

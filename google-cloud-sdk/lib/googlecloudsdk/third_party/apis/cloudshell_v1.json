@@ -204,24 +204,6 @@
       "properties": {
       }
     },
-    "ListEnvironmentsResponse": {
-      "id": "ListEnvironmentsResponse",
-      "description": "Response message for ListEnvironments.",
-      "type": "object",
-      "properties": {
-        "environments": {
-          "description": "Requested user's environments.",
-          "type": "array",
-          "items": {
-            "$ref": "Environment"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
     "Environment": {
       "id": "Environment",
       "description": "A Cloud Shell environment, which is defined as the combination of a Docker image specifying what is installed on the environment and a home directory containing the user's data that will remain across sessions. Each user has at least an environment with the ID \"default\".",
@@ -287,34 +269,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "temporary": {
-          "description": "Immutable. If true, indicates that this environment is intended for one-time use and will be deleted automatically the next time that the user's session is terminated. Specifically, the environment will be deleted the next time its state changes from RUNNING to DISABLED.",
-          "type": "boolean"
-        },
-        "trusted": {
-          "description": "Immutable. Indicates whether this environment is trusted. Trusted environments will be automatically authenticated with the user's credentials. Untrusted environments will not receive authentication credentials.",
-          "type": "boolean"
-        },
-        "size": {
-          "description": "Indicates the size of the backing VM running the environment. If set to something other than DEFAULT, it will be reverted to the default VM size after vm_size_expire_time.",
-          "type": "string",
-          "enumDescriptions": [
-            "The VM size is unknown.",
-            "The default VM size.",
-            "The boosted VM size."
-          ],
-          "enum": [
-            "VM_SIZE_UNSPECIFIED",
-            "DEFAULT",
-            "BOOSTED"
-          ]
-        },
-        "vmSizeExpireTime": {
-          "description": "Output only. The time when the Environment will expire back to the default VM size.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -603,42 +557,6 @@
       "resources": {
         "environments": {
           "methods": {
-            "list": {
-              "id": "cloudshell.users.environments.list",
-              "path": "v1/{+parent}/environments",
-              "flatPath": "v1/users/{usersId}/environments",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Parent resource name, e.g. `users\/me` or `users\/someone@example.com`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^users\/[^\/]+$",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Maximum number of items to return.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "next_page_token value returned from a previous List request, if any.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListEnvironmentsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Lists all of a user's environments."
-            },
             "get": {
               "id": "cloudshell.users.environments.get",
               "path": "v1/{+name}",
@@ -663,98 +581,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Gets an environment. Returns NOT_FOUND if the environment does not exist."
-            },
-            "create": {
-              "id": "cloudshell.users.environments.create",
-              "path": "v1/{+parent}/environments",
-              "flatPath": "v1/users/{usersId}/environments",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "Required. Parent resource name, e.g. `users\/me` or `users\/someone@example.com`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^users\/[^\/]+$",
-                  "type": "string"
-                },
-                "environmentId": {
-                  "description": "The ID to use for the environment, which will become the final component of the environment's resource name. This value should be 4-32 characters, and valid characters are \/a-z-\/.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "Environment"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Creates a new environment."
-            },
-            "patch": {
-              "id": "cloudshell.users.environments.patch",
-              "path": "v1/{+name}",
-              "flatPath": "v1/users/{usersId}/environments/{environmentsId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Immutable. Full name of this resource, in the format `users\/{owner_email}\/environments\/{environment_id}`. `{owner_email}` is the email address of the user to whom this environment belongs, and `{environment_id}` is the identifier of this environment. For example, `users\/someone@example.com\/environments\/default`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "Required. Mask specifying which fields in the environment should be updated.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "Environment"
-              },
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Updates an existing environment."
-            },
-            "delete": {
-              "id": "cloudshell.users.environments.delete",
-              "path": "v1/{+name}",
-              "flatPath": "v1/users/{usersId}/environments/{environmentsId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "Name of the resource to be deleted, for example `users\/me\/environments\/default` or `users\/someone@example.com\/environments\/default`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Operation"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Deletes an existing environment. Any connections to that environment will be terminated."
             },
             "start": {
               "id": "cloudshell.users.environments.start",

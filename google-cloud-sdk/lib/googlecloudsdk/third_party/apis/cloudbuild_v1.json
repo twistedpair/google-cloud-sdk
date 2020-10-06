@@ -1041,21 +1041,6 @@
         }
       }
     },
-    "CreateBuildRequest": {
-      "id": "CreateBuildRequest",
-      "description": "Request to create a new build.",
-      "type": "object",
-      "properties": {
-        "projectId": {
-          "description": "Required. ID of the project.",
-          "type": "string"
-        },
-        "build": {
-          "description": "Required. Build resource to create.",
-          "$ref": "Build"
-        }
-      }
-    },
     "ListBuildsResponse": {
       "id": "ListBuildsResponse",
       "description": "Response including listed builds.",
@@ -1938,13 +1923,18 @@
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "type": "string"
+                    },
+                    "projectId": {
+                      "description": "Required. ID of the project.",
+                      "location": "query",
+                      "type": "string"
                     }
                   },
                   "parameterOrder": [
                     "parent"
                   ],
                   "request": {
-                    "$ref": "CreateBuildRequest"
+                    "$ref": "Build"
                   },
                   "response": {
                     "$ref": "Operation"

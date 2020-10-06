@@ -150,7 +150,7 @@ class DnsChangesCreateRequest(_messages.Message):
       identifier specified by the client. Must be unique for operation
       resources in the Operations collection.
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     project: Identifies the project addressed by this request.
   """
 
@@ -170,7 +170,7 @@ class DnsChangesGetRequest(_messages.Message):
       identifier specified by the client. Must be unique for operation
       resources in the Operations collection.
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     project: Identifies the project addressed by this request.
   """
 
@@ -189,7 +189,7 @@ class DnsChangesListRequest(_messages.Message):
 
   Fields:
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     maxResults: Optional. Maximum number of results to be returned. If
       unspecified, the server will decide how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
@@ -227,7 +227,7 @@ class DnsDnsKeysGetRequest(_messages.Message):
       type will be computed and displayed.
     dnsKeyId: The identifier of the requested DnsKey.
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     project: Identifies the project addressed by this request.
   """
 
@@ -246,7 +246,7 @@ class DnsDnsKeysListRequest(_messages.Message):
       and display for key signing keys. If omitted, the recommended digest
       type will be computed and displayed.
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     maxResults: Optional. Maximum number of results to be returned. If
       unspecified, the server will decide how many results to return.
     pageToken: Optional. A tag returned by a previous list request that was
@@ -543,7 +543,7 @@ class DnsManagedZonesDeleteRequest(_messages.Message):
       identifier specified by the client. Must be unique for operation
       resources in the Operations collection.
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     project: Identifies the project addressed by this request.
   """
 
@@ -564,7 +564,7 @@ class DnsManagedZonesGetRequest(_messages.Message):
       identifier specified by the client. Must be unique for operation
       resources in the Operations collection.
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     project: Identifies the project addressed by this request.
   """
 
@@ -599,7 +599,7 @@ class DnsManagedZonesPatchRequest(_messages.Message):
       identifier specified by the client. Must be unique for operation
       resources in the Operations collection.
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     managedZoneResource: A ManagedZone resource to be passed as the request
       body.
     project: Identifies the project addressed by this request.
@@ -619,7 +619,7 @@ class DnsManagedZonesUpdateRequest(_messages.Message):
       identifier specified by the client. Must be unique for operation
       resources in the Operations collection.
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     managedZoneResource: A ManagedZone resource to be passed as the request
       body.
     project: Identifies the project addressed by this request.
@@ -754,7 +754,7 @@ class DnsResourceRecordSetsListRequest(_messages.Message):
 
   Fields:
     managedZone: Identifies the managed zone addressed by this request. Can be
-      the managed zone name or id.
+      the managed zone name or ID.
     maxResults: Optional. Maximum number of results to be returned. If
       unspecified, the server will decide how many results to return.
     name: Restricts the list to return only records with this fully qualified
@@ -1045,12 +1045,31 @@ class ManagedZonePrivateVisibilityConfig(_messages.Message):
   r"""A ManagedZonePrivateVisibilityConfig object.
 
   Fields:
+    gkeClusters: The list of Google Kubernetes Engine clusters that can see
+      this zone.
     kind: A string attribute.
     networks: The list of VPC networks that can see this zone.
   """
 
-  kind = _messages.StringField(1, default='dns#managedZonePrivateVisibilityConfig')
-  networks = _messages.MessageField('ManagedZonePrivateVisibilityConfigNetwork', 2, repeated=True)
+  gkeClusters = _messages.MessageField('ManagedZonePrivateVisibilityConfigGKECluster', 1, repeated=True)
+  kind = _messages.StringField(2, default='dns#managedZonePrivateVisibilityConfig')
+  networks = _messages.MessageField('ManagedZonePrivateVisibilityConfigNetwork', 3, repeated=True)
+
+
+class ManagedZonePrivateVisibilityConfigGKECluster(_messages.Message):
+  r"""A ManagedZonePrivateVisibilityConfigGKECluster object.
+
+  Fields:
+    gkeClusterName: The resource name of the cluster to retrieve. This should
+      be specified in the format like: projects/*/locations/*/clusters/*. This
+      is referenced from GKE projects.locations.clusters.get API:
+      https://cloud.google.com/kubernetes-
+      engine/docs/reference/rest/v1/projects.locations.clusters/get
+    kind: A string attribute.
+  """
+
+  gkeClusterName = _messages.StringField(1)
+  kind = _messages.StringField(2, default='dns#managedZonePrivateVisibilityConfigGKECluster')
 
 
 class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):

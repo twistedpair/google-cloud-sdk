@@ -24,8 +24,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
-from googlecloudsdk.api_lib.storage import cloud_api
-from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core.util import files
 
@@ -40,9 +38,9 @@ class FileUploadTask(task.Task):
       source_resource (resource_reference.FileObjectResource): Must contain
           local filesystem path to upload object. Does not need to contain
           metadata.
-      destination_resource (resource_reference.Resource): Must contain
-          the full object path. Directories will not be accepted. Existing
-          objects at the this location will be overwritten.
+      destination_resource (resource_reference.ObjectResource|UnknownResource):
+          Must contain the full object path. Directories will not be accepted.
+          Existing objects at the this location will be overwritten.
     """
     super(FileUploadTask, self).__init__()
     self._source_resource = source_resource
@@ -50,16 +48,10 @@ class FileUploadTask(task.Task):
 
   def execute(self, callback=None):
     destination_url = self._destination_resource.storage_url
-    provider = cloud_api.ProviderPrefix(destination_url.scheme)
-
-    object_metadata = getattr(self._destination_resource, 'metadata', None)
-    if not object_metadata:
-      messages = core_apis.GetMessagesModule('storage', 'v1')
-      object_metadata = messages.Object(bucket=destination_url.bucket_name,
-                                        name=destination_url.object_name,
-                                        generation=destination_url.generation)
+    provider = destination_url.scheme
 
     with files.BinaryFileReader(
         self._source_resource.storage_url.object_name) as upload_stream:
       # TODO(b/162069479): Support all of UploadObject's parameters.
-      api_factory.get_api(provider).UploadObject(upload_stream, object_metadata)
+      api_factory.get_api(provider).UploadObject(
+          upload_stream, self._destination_resource)

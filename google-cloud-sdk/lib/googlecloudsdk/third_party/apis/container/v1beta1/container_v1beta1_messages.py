@@ -377,7 +377,15 @@ class Cluster(_messages.Message):
       zones#available) in which the cluster resides.
     locations: The list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster's nodes should be located.
+      the cluster's nodes should be located. This field provides a default
+      value if [NodePool.Locations](https://cloud.google.com/kubernetes-engine
+      /docs/reference/rest/v1/projects.locations.clusters.nodePools#NodePool.F
+      IELDS.locations) are not specified during node pool creation. Warning:
+      changing cluster locations will update the
+      [NodePool.Locations](https://cloud.google.com/kubernetes-engine/docs/ref
+      erence/rest/v1/projects.locations.clusters.nodePools#NodePool.FIELDS.loc
+      ations) of all node pools and will result in nodes being added and/or
+      removed.
     loggingService: The logging service the cluster should use to write logs.
       Currently available options: * `logging.googleapis.com/kubernetes` - The
       Cloud Logging service with a Kubernetes-native resource model *
@@ -698,10 +706,10 @@ class ClusterUpdate(_messages.Message):
       of kubernetes objects changes and snapshots to specified targets.
     desiredLocations: The desired list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
-      the cluster's nodes should be located. Changing the locations a cluster
-      is in will result in nodes being either created or removed from the
-      cluster, depending on whether locations are being added or removed. This
-      list must always include the cluster's primary zone.
+      the cluster's nodes should be located. This list must always include the
+      cluster's primary zone. Warning: changing cluster locations will update
+      the locations of all node pools and will result in nodes being added
+      and/or removed.
     desiredLoggingService: The logging service the cluster should use to write
       logs. Currently available options: * `logging.googleapis.com/kubernetes`
       - The Cloud Logging service with a Kubernetes-native resource model *
@@ -767,8 +775,10 @@ class ClusterUpdate(_messages.Message):
     Values:
       DATAPATH_PROVIDER_UNSPECIFIED: Default value.
       LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
-      ADVANCED_DATAPATH: Use the eBPF based data plane with additional
-        visibility features.
+      ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional
+        features. See the [GKE Dataplane V2
+        documentation](https://cloud.google.com/kubernetes-enginw/docs/how-
+        to/dataplane-v2) for more.
     """
     DATAPATH_PROVIDER_UNSPECIFIED = 0
     LEGACY_DATAPATH = 1
@@ -2230,8 +2240,10 @@ class NetworkConfig(_messages.Message):
     Values:
       DATAPATH_PROVIDER_UNSPECIFIED: Default value.
       LEGACY_DATAPATH: Use the IPTables implementation based on kube-proxy.
-      ADVANCED_DATAPATH: Use the eBPF based data plane with additional
-        visibility features.
+      ADVANCED_DATAPATH: Use the eBPF based GKE Dataplane V2 with additional
+        features. See the [GKE Dataplane V2
+        documentation](https://cloud.google.com/kubernetes-enginw/docs/how-
+        to/dataplane-v2) for more.
     """
     DATAPATH_PROVIDER_UNSPECIFIED = 0
     LEGACY_DATAPATH = 1
@@ -2644,7 +2656,12 @@ class NodePool(_messages.Message):
       pool.
     locations: The list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
-      the NodePool's nodes should be located.
+      the NodePool's nodes should be located. If this value is unspecified
+      during node pool creation, the
+      [Cluster.Locations](https://cloud.google.com/kubernetes-engine/docs/refe
+      rence/rest/v1/projects.locations.clusters#Cluster.FIELDS.locations)
+      value will be used, instead. Warning: changing node pool locations will
+      result in nodes being added and/or removed.
     management: NodeManagement configuration for this NodePool.
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.

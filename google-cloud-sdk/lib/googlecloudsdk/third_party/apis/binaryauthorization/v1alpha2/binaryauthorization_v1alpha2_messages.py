@@ -320,21 +320,6 @@ class BinaryauthorizationProjectsAttestorsSetIamPolicyRequest(_messages.Message)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
-class BinaryauthorizationProjectsAttestorsTestAttestationOccurrenceRequest(_messages.Message):
-  r"""A BinaryauthorizationProjectsAttestorsTestAttestationOccurrenceRequest
-  object.
-
-  Fields:
-    name: Required. The resource name of the Attestor of the occurrence, in
-      the format `projects/*/attestors/*`.
-    testAttestationOccurrenceRequest: A TestAttestationOccurrenceRequest
-      resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  testAttestationOccurrenceRequest = _messages.MessageField('TestAttestationOccurrenceRequest', 2)
-
-
 class BinaryauthorizationProjectsAttestorsTestIamPermissionsRequest(_messages.Message):
   r"""A BinaryauthorizationProjectsAttestorsTestIamPermissionsRequest object.
 
@@ -348,6 +333,23 @@ class BinaryauthorizationProjectsAttestorsTestIamPermissionsRequest(_messages.Me
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest(_messages.Message):
+  r"""A
+  BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest
+  object.
+
+  Fields:
+    attestor: Required. The resource name of the Attestor of the occurrence,
+      in the format `projects/*/attestors/*`.
+    validateAttestationOccurrenceRequest: A
+      ValidateAttestationOccurrenceRequest resource to be passed as the
+      request body.
+  """
+
+  attestor = _messages.StringField(1, required=True)
+  validateAttestationOccurrenceRequest = _messages.MessageField('ValidateAttestationOccurrenceRequest', 2)
 
 
 class BinaryauthorizationProjectsGetPolicyRequest(_messages.Message):
@@ -897,54 +899,6 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
-class TestAttestationOccurrenceRequest(_messages.Message):
-  r"""Request message for ValidationHelperV1Alpha2.TestAttestationOccurrence.
-
-  Fields:
-    attestation: Required. An AttestationOccurrence to be checked that it can
-      be verified by the Attestor. It does not have to be an existing entity
-      in Container Analysis. It must otherwise be a valid
-      AttestationOccurrence.
-    occurrenceNoteName: Required. The resource name of the Note to which the
-      containing Occurrence is associated.
-    occurrenceResourceUri: Required. The URI of the artifact (e.g. container
-      image) that is the subject of the containing Occurrence.
-  """
-
-  attestation = _messages.MessageField('AttestationOccurrence', 1)
-  occurrenceNoteName = _messages.StringField(2)
-  occurrenceResourceUri = _messages.StringField(3)
-
-
-class TestAttestationOccurrenceResponse(_messages.Message):
-  r"""Response message for ValidationHelperV1Alpha2.TestAttestationOccurrence.
-
-  Enums:
-    ResultValueValuesEnum: The result of the Attestation validation.
-
-  Fields:
-    denialReason: The reason for denial if the Attestation couldn't be
-      validated.
-    result: The result of the Attestation validation.
-  """
-
-  class ResultValueValuesEnum(_messages.Enum):
-    r"""The result of the Attestation validation.
-
-    Values:
-      RESULT_UNSPECIFIED: Unspecified.
-      VERIFIED: The Attestation was able to verified by the Attestor.
-      ATTESTATION_NOT_VERIFIABLE: The Attestation was not able to verified by
-        the Attestor.
-    """
-    RESULT_UNSPECIFIED = 0
-    VERIFIED = 1
-    ATTESTATION_NOT_VERIFIABLE = 2
-
-  denialReason = _messages.StringField(1)
-  result = _messages.EnumField('ResultValueValuesEnum', 2)
-
-
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for `TestIamPermissions` method.
 
@@ -1000,6 +954,54 @@ class UserOwnedDrydockNote(_messages.Message):
   delegationServiceAccountEmail = _messages.StringField(1)
   noteReference = _messages.StringField(2)
   publicKeys = _messages.MessageField('AttestorPublicKey', 3, repeated=True)
+
+
+class ValidateAttestationOccurrenceRequest(_messages.Message):
+  r"""Request message for ValidationHelperV1.ValidateAttestationOccurrence.
+
+  Fields:
+    attestation: Required. An AttestationOccurrence to be checked that it can
+      be verified by the Attestor. It does not have to be an existing entity
+      in Container Analysis. It must otherwise be a valid
+      AttestationOccurrence.
+    occurrenceNote: Required. The resource name of the Note to which the
+      containing Occurrence is associated.
+    occurrenceResourceUri: Required. The URI of the artifact (e.g. container
+      image) that is the subject of the containing Occurrence.
+  """
+
+  attestation = _messages.MessageField('AttestationOccurrence', 1)
+  occurrenceNote = _messages.StringField(2)
+  occurrenceResourceUri = _messages.StringField(3)
+
+
+class ValidateAttestationOccurrenceResponse(_messages.Message):
+  r"""Response message for ValidationHelperV1.ValidateAttestationOccurrence.
+
+  Enums:
+    ResultValueValuesEnum: The result of the Attestation validation.
+
+  Fields:
+    denialReason: The reason for denial if the Attestation couldn't be
+      validated.
+    result: The result of the Attestation validation.
+  """
+
+  class ResultValueValuesEnum(_messages.Enum):
+    r"""The result of the Attestation validation.
+
+    Values:
+      RESULT_UNSPECIFIED: Unspecified.
+      VERIFIED: The Attestation was able to verified by the Attestor.
+      ATTESTATION_NOT_VERIFIABLE: The Attestation was not able to verified by
+        the Attestor.
+    """
+    RESULT_UNSPECIFIED = 0
+    VERIFIED = 1
+    ATTESTATION_NOT_VERIFIABLE = 2
+
+  denialReason = _messages.StringField(1)
+  result = _messages.EnumField('ResultValueValuesEnum', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

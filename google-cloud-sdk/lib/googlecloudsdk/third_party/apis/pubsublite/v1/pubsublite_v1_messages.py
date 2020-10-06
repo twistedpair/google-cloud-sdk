@@ -57,8 +57,8 @@ class ComputeMessageStatsResponse(_messages.Message):
       time, we use the publish time. The timestamp will be unset if there are
       no messages.
     minimumPublishTime: The minimum publish timestamp across these messages.
-      Note that publish timestamps within a partition are non-decreasing. The
-      timestamp will be unset if there are no messages.
+      Note that publish timestamps within a partition are not guaranteed to be
+      non-decreasing. The timestamp will be unset if there are no messages.
   """
 
   messageBytes = _messages.IntegerField(1)

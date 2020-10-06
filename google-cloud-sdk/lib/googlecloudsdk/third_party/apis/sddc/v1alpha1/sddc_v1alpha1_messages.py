@@ -1392,6 +1392,21 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListPrivateCloudsResponse(_messages.Message):
+  r"""A response with a list of zero or more private clouds in a region.
+
+  Fields:
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    privateClouds: A list of SDDC private clouds.
+    unreachable: List of Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  privateClouds = _messages.MessageField('PrivateCloud', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -2166,6 +2181,110 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
+class PrivateCloud(_messages.Message):
+  r"""A private cloud resource. PrivateCloud is a regional resource.
+
+  Enums:
+    StateValueValuesEnum: State of the resource.
+
+  Messages:
+    LabelsValue: Labels are a way to attach lightweight metadata to resources
+      for filtering and querying resource data. No more than 64 user labels
+      can be associated with each resource. Label keys and values can be no
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+
+  Fields:
+    createTime: Output only. Creation time of the resource.
+    description: The description of this resource.
+    labels: Labels are a way to attach lightweight metadata to resources for
+      filtering and querying resource data. No more than 64 user labels can be
+      associated with each resource. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+    name: Output only. The resource name of this PrivateCloud. Resource names
+      are schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/privateClouds/my-cloud`
+    networkConfig: NetworkConfig passed in the param.
+    nsx: Output only. Nsx information.
+    state: State of the resource.
+    updateTime: Output only. Update time of the resource.
+    vcenter: Output only. vCenter information.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of the resource.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value should never be used.
+      ACTIVE: The private cloud is ready.
+      CREATING: The private cloud is being created.
+      DELETING: The private cloud is being deleted.
+      UPDATING: The private cloud is being updated.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    UPDATING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are a way to attach lightweight metadata to resources for
+    filtering and querying resource data. No more than 64 user labels can be
+    associated with each resource. Label keys and values can be no longer than
+    63 characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes, where label keys must start with a letter and
+    international characters are allowed. The empty string is a valid value.
+    Labels are set on creation and updated like any other field. Specifically,
+    to add a new label, you would need to provide all of the existing labels
+    along with the new label. If you only provide a map with the new label,
+    all of the old labels will be removed (probably not what is desired).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  networkConfig = _messages.MessageField('NetworkConfig', 5)
+  nsx = _messages.MessageField('Nsx', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+  vcenter = _messages.MessageField('Vcenter', 9)
+
+
 class QuotaProperties(_messages.Message):
   r"""Represents the properties needed for quota operations.
 
@@ -2802,6 +2921,88 @@ class SddcProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class SddcProjectsLocationsPrivateCloudsCreateRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsCreateRequest object.
+
+  Fields:
+    parent: Required. The location(region) and project where the new
+      PrivateCloud will be created. For example: `projects/my-
+      project/locations/us-central1`
+    privateCloud: A PrivateCloud resource to be passed as the request body.
+    privateCloudId: Required. The user-provided id of the PrivateCloud to be
+      created. This id must be unique among PrivateClouds within the parent
+      and will become the final token in the name URI.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  privateCloud = _messages.MessageField('PrivateCloud', 2)
+  privateCloudId = _messages.StringField(3)
+
+
+class SddcProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the PrivateCloud to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudsGetRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the PrivateCloud to retrieve.
+      Resource names are schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/privateClouds/my-cloud`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudsListRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsListRequest object.
+
+  Fields:
+    filter: List filter.
+    pageSize: The maximum number of privateClouds to return. The service may
+      return fewer than this value.
+    pageToken: A page token, received from a previous
+      `ListPrivateCloudsRequest` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListPrivateCloudsRequest` must match the call that provided the page
+      token.
+    parent: Required. The location and project which will be queried for data
+      centers. For example: `projects/my-project/locations/us-central1`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SddcProjectsLocationsPrivateCloudsPatchRequest(_messages.Message):
+  r"""A SddcProjectsLocationsPrivateCloudsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of this PrivateCloud. Resource names
+      are schemeless URI's that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names For example,
+      `projects/my-project/locations/us-central1/privateClouds/my-cloud`
+    privateCloud: A PrivateCloud resource to be passed as the request body.
+    updateMask: Mask of fields to update. At least one path must be supplied
+      in this field. The elements of the repeated paths field may only include
+      these fields: "description" "labels" "network_config.external_ip_access"
+  """
+
+  name = _messages.StringField(1, required=True)
+  privateCloud = _messages.MessageField('PrivateCloud', 2)
+  updateMask = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

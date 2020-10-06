@@ -155,35 +155,6 @@ class CloudshellUsersEnvironmentsAuthorizeRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
-class CloudshellUsersEnvironmentsCreateRequest(_messages.Message):
-  r"""A CloudshellUsersEnvironmentsCreateRequest object.
-
-  Fields:
-    environment: A Environment resource to be passed as the request body.
-    environmentId: The ID to use for the environment, which will become the
-      final component of the environment's resource name. This value should be
-      4-32 characters, and valid characters are /a-z-/.
-    parent: Required. Parent resource name, e.g. `users/me` or
-      `users/someone@example.com`.
-  """
-
-  environment = _messages.MessageField('Environment', 1)
-  environmentId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class CloudshellUsersEnvironmentsDeleteRequest(_messages.Message):
-  r"""A CloudshellUsersEnvironmentsDeleteRequest object.
-
-  Fields:
-    name: Name of the resource to be deleted, for example
-      `users/me/environments/default` or
-      `users/someone@example.com/environments/default`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class CloudshellUsersEnvironmentsGetRequest(_messages.Message):
   r"""A CloudshellUsersEnvironmentsGetRequest object.
 
@@ -194,41 +165,6 @@ class CloudshellUsersEnvironmentsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class CloudshellUsersEnvironmentsListRequest(_messages.Message):
-  r"""A CloudshellUsersEnvironmentsListRequest object.
-
-  Fields:
-    pageSize: Maximum number of items to return.
-    pageToken: next_page_token value returned from a previous List request, if
-      any.
-    parent: Parent resource name, e.g. `users/me` or
-      `users/someone@example.com`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class CloudshellUsersEnvironmentsPatchRequest(_messages.Message):
-  r"""A CloudshellUsersEnvironmentsPatchRequest object.
-
-  Fields:
-    environment: A Environment resource to be passed as the request body.
-    name: Immutable. Full name of this resource, in the format
-      `users/{owner_email}/environments/{environment_id}`. `{owner_email}` is
-      the email address of the user to whom this environment belongs, and
-      `{environment_id}` is the identifier of this environment. For example,
-      `users/someone@example.com/environments/default`.
-    updateMask: Required. Mask specifying which fields in the environment
-      should be updated.
-  """
-
-  environment = _messages.MessageField('Environment', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class CloudshellUsersEnvironmentsRemovePublicKeyRequest(_messages.Message):
@@ -291,9 +227,6 @@ class Environment(_messages.Message):
   user has at least an environment with the ID "default".
 
   Enums:
-    SizeValueValuesEnum: Indicates the size of the backing VM running the
-      environment. If set to something other than DEFAULT, it will be reverted
-      to the default VM size after vm_size_expire_time.
     StateValueValuesEnum: Output only. Current execution state of this
       environment.
 
@@ -312,9 +245,6 @@ class Environment(_messages.Message):
       private key corresponding to at least one of these public keys. Keys can
       be added to or removed from the environment using the AddPublicKey and
       RemovePublicKey methods.
-    size: Indicates the size of the backing VM running the environment. If set
-      to something other than DEFAULT, it will be reverted to the default VM
-      size after vm_size_expire_time.
     sshHost: Output only. Host to which clients can connect to initiate SSH
       sessions with the environment.
     sshPort: Output only. Port to which clients can connect to initiate SSH
@@ -322,33 +252,9 @@ class Environment(_messages.Message):
     sshUsername: Output only. Username that clients should use when initiating
       SSH sessions with the environment.
     state: Output only. Current execution state of this environment.
-    temporary: Immutable. If true, indicates that this environment is intended
-      for one-time use and will be deleted automatically the next time that
-      the user's session is terminated. Specifically, the environment will be
-      deleted the next time its state changes from RUNNING to DISABLED.
-    trusted: Immutable. Indicates whether this environment is trusted. Trusted
-      environments will be automatically authenticated with the user's
-      credentials. Untrusted environments will not receive authentication
-      credentials.
-    vmSizeExpireTime: Output only. The time when the Environment will expire
-      back to the default VM size.
     webHost: Output only. Host to which clients can connect to initiate HTTPS
       or WSS connections with the environment.
   """
-
-  class SizeValueValuesEnum(_messages.Enum):
-    r"""Indicates the size of the backing VM running the environment. If set
-    to something other than DEFAULT, it will be reverted to the default VM
-    size after vm_size_expire_time.
-
-    Values:
-      VM_SIZE_UNSPECIFIED: The VM size is unknown.
-      DEFAULT: The default VM size.
-      BOOSTED: The boosted VM size.
-    """
-    VM_SIZE_UNSPECIFIED = 0
-    DEFAULT = 1
-    BOOSTED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current execution state of this environment.
@@ -374,28 +280,11 @@ class Environment(_messages.Message):
   id = _messages.StringField(2)
   name = _messages.StringField(3)
   publicKeys = _messages.StringField(4, repeated=True)
-  size = _messages.EnumField('SizeValueValuesEnum', 5)
-  sshHost = _messages.StringField(6)
-  sshPort = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  sshUsername = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  temporary = _messages.BooleanField(10)
-  trusted = _messages.BooleanField(11)
-  vmSizeExpireTime = _messages.StringField(12)
-  webHost = _messages.StringField(13)
-
-
-class ListEnvironmentsResponse(_messages.Message):
-  r"""Response message for ListEnvironments.
-
-  Fields:
-    environments: Requested user's environments.
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-  """
-
-  environments = _messages.MessageField('Environment', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
+  sshHost = _messages.StringField(5)
+  sshPort = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  sshUsername = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  webHost = _messages.StringField(9)
 
 
 class ListOperationsResponse(_messages.Message):

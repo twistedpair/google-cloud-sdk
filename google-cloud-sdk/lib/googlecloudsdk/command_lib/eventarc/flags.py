@@ -86,8 +86,7 @@ def AddServiceAccountResourceArg(parser, required=False):
       '--service-account',
       resource_spec,
       'The IAM service account associated with the trigger, specified with an '
-      'email address or a uniqueId. If not specified, the default compute '
-      'service account will be used. Unless a full resource name is provided, '
+      'email address or a uniqueId. Unless a full resource name is provided, '
       'the service account is assumed to be in the same project as the '
       'trigger.',
       required=required)
@@ -145,8 +144,7 @@ def AddClearServiceAccountArg(parser):
   parser.add_argument(
       '--clear-service-account',
       action='store_true',
-      help='Clear the IAM service account associated with the trigger and use '
-      'the default compute service account instead.')
+      help='Clear the IAM service account associated with the trigger.')
 
 
 def AddClearDestinationRunPathArg(parser):

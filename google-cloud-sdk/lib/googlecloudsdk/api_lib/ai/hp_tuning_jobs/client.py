@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.ai import constants
@@ -101,3 +102,13 @@ class HpTuningJobsClient(object):
     request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsCancelRequest(
         name=name)
     return self._service.Cancel(request)
+
+  def List(self, limit=None, region=None):
+    return list_pager.YieldFromList(
+        self._service,
+        self.messages
+        .AiplatformProjectsLocationsHyperparameterTuningJobsListRequest(
+            parent=region),
+        field='hyperparameterTuningJobs',
+        batch_size_attribute='pageSize',
+        limit=limit)

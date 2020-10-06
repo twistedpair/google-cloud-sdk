@@ -23,10 +23,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import re
-from apitools.base.py import exceptions as apitools_exceptions
 import enum
+import os
+import re
 
+from apitools.base.py import exceptions as apitools_exceptions
+
+from googlecloudsdk.api_lib import tasks
 from googlecloudsdk.api_lib.app import build as app_cloud_build
 from googlecloudsdk.api_lib.app import deploy_app_command_util
 from googlecloudsdk.api_lib.app import deploy_command_util
@@ -38,6 +41,7 @@ from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.datastore import index_api
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.api_lib.tasks import app_deploy_migration_util
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
@@ -58,7 +62,6 @@ from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 import six
-
 
 _TASK_CONSOLE_LINK = """\
 https://console.cloud.google.com/appengine/taskqueues/cron?project={}
@@ -676,6 +679,39 @@ def RunDeploy(
       'versions': new_versions,
       'configs': updated_configs
   }
+
+
+def RunDeployCloudTasks(args):
+  """Perform a deployment using Cloud Tasks API based on the given args.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+        arguments specified in the ArgsDeploy() function.
+
+  Returns:
+    A list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
+  """
+  paths = [os.path.abspath(x) for x in args.deployables]
+  configs = []
+  for path in paths:
+    if not os.path.exists(path):
+      raise exceptions.FileNotFoundError(path)
+    config = yaml_parsing.ConfigYamlInfo.FromFile(path)
+    if config:
+      configs.append(config)
+  if configs:
+    # TODO(b/169069379): Confirm the same metric name can be used twice in the
+    # same run.
+    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG_START)
+    # TODO(b/169069379): Upgrade to use GA once the relevant code is promoted
+    tasks_api = tasks.GetApiAdapter(base.ReleaseTrack.BETA)
+    queues_data = app_deploy_migration_util.FetchCurrrentQueuesData(tasks_api)
+    for config in configs:
+      app_deploy_migration_util.ValidateYamlFileConfig(config)
+      app_deploy_migration_util.DeployQueuesYamlFile(
+          tasks_api, config, queues_data)
+    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
+  return [c.name for c in configs]
 
 
 # TODO(b/30632016): Move to Epilog() when we have a good way to pass

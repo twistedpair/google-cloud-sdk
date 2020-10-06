@@ -849,7 +849,8 @@ class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messag
       parameters should be identical to those in the previous call.
     parent: Required. The container resource on which to execute the request.
       Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
-      ecommenders/[RECOMMENDER_ID]",
+      ecommenders/[RECOMMENDER_ID]", LOCATION here refers to GCP Locations:
+      https://cloud.google.com/about/locations/
   """
 
   filter = _messages.StringField(1)

@@ -1067,6 +1067,10 @@ class LogConfig(_messages.Message):
 class Membership(_messages.Message):
   r"""Membership contains information about a member cluster.
 
+  Enums:
+    InfrastructureTypeValueValuesEnum: Optional. Specifies the infrastructure
+      type that the API server represented by membership is running on.
+
   Messages:
     LabelsValue: Optional. GCP labels for this membership.
 
@@ -1085,6 +1089,8 @@ class Membership(_messages.Message):
       recommended to do so. The ID must match the regex: `a-zA-Z0-9*` If this
       Membership represents a Kubernetes cluster, this value should be set to
       the UUID of the kube-system namespace object.
+    infrastructureType: Optional. Specifies the infrastructure type that the
+      API server represented by membership is running on.
     labels: Optional. GCP labels for this membership.
     lastConnectionTime: Output only. For clusters using Connect, the timestamp
       of the most recent connection established with Google Cloud. This time
@@ -1108,6 +1114,25 @@ class Membership(_messages.Message):
     updateTime: Output only. Timestamp for when the Membership was last
       updated.
   """
+
+  class InfrastructureTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the infrastructure type that the API server
+    represented by membership is running on.
+
+    Values:
+      INFRASTRUCTURE_TYPE_UNSPECIFIED: Default value for backward
+        compatibility. Some Hub functionality may require users to set this
+        value if left unspecified.
+      ON_PREM: OnPrem specifies Memberships running on infrastructure that is
+        owned or operated by customers on private infrastructure. GKE
+        Distributions like GKE-OnPrem and GKE-OnBareMetal will set this value
+        at Membership creation time by default.
+      MULTI_CLOUD: This value indicates the membership is running on public
+        cloud infrastructure.
+    """
+    INFRASTRUCTURE_TYPE_UNSPECIFIED = 0
+    ON_PREM = 1
+    MULTI_CLOUD = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1139,20 +1164,22 @@ class Membership(_messages.Message):
   description = _messages.StringField(4)
   endpoint = _messages.MessageField('MembershipEndpoint', 5)
   externalId = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  lastConnectionTime = _messages.StringField(8)
-  name = _messages.StringField(9)
-  state = _messages.MessageField('MembershipState', 10)
-  uniqueId = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  infrastructureType = _messages.EnumField('InfrastructureTypeValueValuesEnum', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  lastConnectionTime = _messages.StringField(9)
+  name = _messages.StringField(10)
+  state = _messages.MessageField('MembershipState', 11)
+  uniqueId = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains the information to reach a member.
 
   Fields:
-    gkeCluster: If this Membership is a Kubernetes API server hosted on GKE,
-      this is a self link to its GCP resource.
+    gkeCluster: Optional. If this Membership is a Kubernetes API server hosted
+      on GKE, this field will be populated and contain GKE-specific
+      information.
     kubernetesMetadata: Output only. For Memberships that point to Kubernetes
       Endpoints, this field provides useful metadata.
     kubernetesResource: Optional. A correctly registered cluster should have

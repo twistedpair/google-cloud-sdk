@@ -974,7 +974,7 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsPatchRequest(_messages.Mess
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
       only include fields from Domain: * `labels` * `locations` *
-      `authorized_networks`
+      `authorized_networks` * `audit_logs_enabled`
   """
 
   domain = _messages.MessageField('Domain', 1)

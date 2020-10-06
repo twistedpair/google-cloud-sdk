@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20200922",
+ "revision": "20200925",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -550,9 +550,11 @@
      "description": "The type of configuration. The default and only option is ONE_TO_ONE_NAT.",
      "default": "ONE_TO_ONE_NAT",
      "enum": [
+      "DIRECT_IPV6",
       "ONE_TO_ONE_NAT"
      ],
      "enumDescriptions": [
+      "",
       ""
      ]
     }
@@ -2392,7 +2394,7 @@
     },
     "negativeCaching": {
      "type": "boolean",
-     "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These defaults can be overridden in negative_caching_policy"
+     "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. When the cache mode is set to CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, negative caching applies to responses with the specified response code that lack any Cache-Control, Expires, or Pragma: no-cache directives. When the cache mode is set to FORCE_CACHE_ALL, negative caching applies to all responses with the specified response code, and override any caching headers. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 421 (Misdirected Request), 501 (Not Implemented): 60s. These defaults can be overridden in negative_caching_policy."
     },
     "negativeCachingPolicy": {
      "type": "array",
@@ -2447,7 +2449,7 @@
     },
     "ttl": {
      "type": "integer",
-     "description": "The TTL (in seconds) to cache responses with the corresponding status code for. The maximum allowed value is 1800s (30 minutes), noting that infrequently accessed objects may be evicted from the cache before the defined TTL.",
+     "description": "The TTL (in seconds) for which to cache responses with the corresponding status code. The maximum allowed value is 1800s (30 minutes), noting that infrequently accessed objects may be evicted from the cache before the defined TTL.",
      "format": "int32"
     }
    }
@@ -2969,7 +2971,7 @@
     },
     "negativeCaching": {
      "type": "boolean",
-     "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These defaults can be overridden in negative_caching_policy"
+     "description": "Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. When the cache mode is set to CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, negative caching applies to responses with the specified response code that lack any Cache-Control, Expires, or Pragma: no-cache directives. When the cache mode is set to FORCE_CACHE_ALL, negative caching applies to all responses with the specified response code, and override any caching headers. By default, Cloud CDN will apply the following default TTLs to these status codes: HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not Found), 421 (Misdirected Request), 501 (Not Implemented): 60s. These defaults can be overridden in negative_caching_policy."
     },
     "negativeCachingPolicy": {
      "type": "array",
@@ -3024,7 +3026,7 @@
     },
     "ttl": {
      "type": "integer",
-     "description": "The TTL (in seconds) to cache responses with the corresponding status code for. The maximum allowed value is 1800s (30 minutes), noting that infrequently accessed objects may be evicted from the cache before the defined TTL.",
+     "description": "The TTL (in seconds) for which to cache responses with the corresponding status code. The maximum allowed value is 1800s (30 minutes), noting that infrequently accessed objects may be evicted from the cache before the defined TTL.",
      "format": "int32"
     }
    }
@@ -12913,6 +12915,42 @@
     }
    }
   },
+  "InstantSnapshotExportParams": {
+   "id": "InstantSnapshotExportParams",
+   "type": "object",
+   "properties": {
+    "baseInstantSnapshot": {
+     "type": "string",
+     "description": "An optional base instant snapshot that this resource is compared against. If not specified, all blocks of this resource are exported. The base instant snapshot and this resource must be created from the same disk. The base instant snapshot must be created earlier in time than this resource."
+    },
+    "bucketName": {
+     "type": "string",
+     "description": "The name of an existing bucket in Cloud Storage where the changed blocks will be stored. The Google Service Account must have read and write access to this bucket. The bucket has to be in the same region as this resource."
+    },
+    "encryptionKey": {
+     "$ref": "CustomerEncryptionKey",
+     "description": "Encryption key used to encrypt the instant snapshot."
+    },
+    "objectName": {
+     "type": "string",
+     "description": "Name of the output Bigstore object storing the changed blocks. Object name must be less than 1024 bytes in length."
+    },
+    "outputType": {
+     "type": "string",
+     "description": "The format of the output file.",
+     "enum": [
+      "INVALID",
+      "METADATA_AND_DATA",
+      "METADATA_ONLY"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "InstantSnapshotList": {
    "id": "InstantSnapshotList",
    "type": "object",
@@ -16991,6 +17029,13 @@
      "type": "integer",
      "description": "[Output Only] The prefix length of the primary internal IPv6 range.",
      "format": "int32"
+    },
+    "ipv6AccessConfigs": {
+     "type": "array",
+     "description": "An array of IPv6 access configurations for this interface. Currently, only one IPv6 access config, DIRECT_IPV6, is supported. If there is no ipv6AccessConfig specified, then this instance will have no external IPv6 Internet access.",
+     "items": {
+      "$ref": "AccessConfig"
+     }
     },
     "ipv6Address": {
      "type": "string",
@@ -23723,7 +23768,7 @@
     },
     "groupPlacementPolicy": {
      "$ref": "ResourcePolicyGroupPlacementPolicy",
-     "description": "Resource policy for instacnes for placement configuration."
+     "description": "Resource policy for instances for placement configuration."
     },
     "id": {
      "type": "string",
@@ -24415,7 +24460,7 @@
     },
     "nextHopIlb": {
      "type": "string",
-     "description": "The URL to a forwarding rule of type loadBalancingScheme=INTERNAL that should handle matching packets. You can only specify the forwarding rule as a partial or full URL. For example, the following are all valid URLs:  \n- https://www.googleapis.com/compute/v1/projects/project/regions/region/forwardingRules/forwardingRule \n- regions/region/forwardingRules/forwardingRule"
+     "description": "The URL to a forwarding rule of type loadBalancingScheme=INTERNAL that should handle matching packets or the IP address of the forwarding Rule. For example, the following are all valid URLs:  \n- 10.128.0.56 \n- https://www.googleapis.com/compute/v1/projects/project/regions/region/forwardingRules/forwardingRule \n- regions/region/forwardingRules/forwardingRule"
     },
     "nextHopInstance": {
      "type": "string",
@@ -25055,7 +25100,7 @@
     },
     "routerApplianceInstance": {
      "type": "string",
-     "description": "URI of the VM instance that is used as third party router appliances such as Next Gen Firewalls, Virtual Routers, SD-WAN. The VM instance must live in zones contained in the same region as this Cloud Router. The VM instance is the peer side of the BGP session."
+     "description": "URI of the VM instance that is used as third-party router appliances such as Next Gen Firewalls, Virtual Routers, or Router Appliances. The VM instance must be located in zones contained in the same region as this Cloud Router. The VM instance is the peer side of the BGP session."
     }
    }
   },
@@ -25165,16 +25210,16 @@
     },
     "privateIpAddress": {
      "type": "string",
-     "description": "The regional private internal IP address that will be used to establish BGP session to a VM instance, which is used as third party router appliances such as Next Gen Firewalls, Virtual Routers, SD-WAN."
+     "description": "The regional private internal IP address that is used to establish BGP sessions to a VM instance acting as a third-party Router Appliance, such as a Next Gen Firewall, a Virtual Router, or an SD-WAN VM."
     },
     "redundantInterface": {
      "type": "string",
-     "description": "Name of the interface that will be redundant with the current interface you are creating. The redundantInterface must belong to the same Cloud Router as the interface here. To establish the BGP session to SD-WAN VM, you must create two BGP peers, and the two BGP peers need to be attached to two separate interfaces that are redundant with each other. The redundant_interface must be 1-63 characters long, and comply with RFC1035. Specifically, the redundant_interface must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "description": "Name of the interface that will be redundant with the current interface you are creating. The redundantInterface must belong to the same Cloud Router as the interface here. To establish the BGP session to a Router Appliance VM, you must create two BGP peers. The two BGP peers must be attached to two separate interfaces that are redundant with each other. The redundant_interface must be 1-63 characters long, and comply with RFC1035. Specifically, the redundant_interface must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
     },
     "subnetwork": {
      "type": "string",
-     "description": "The URL of the subnetwork resource this interface belongs to, it must be in the same region as the router. When you establish a BGP session to a VM instance using this interface, the VM instance must belong to the same subnetwork as the subnetwork specified here."
+     "description": "The URL of the subnetwork resource that this interface belongs to, which must be in the same region as the Cloud Router. When you establish a BGP session to a VM instance using this interface, the VM instance must belong to the same subnetwork as the subnetwork specified here."
     }
    }
   },
@@ -56183,6 +56228,55 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "export": {
+     "id": "compute.regionInstantSnapshots.export",
+     "path": "projects/{project}/regions/{region}/instantSnapshots/{instantSnapshot}/export",
+     "httpMethod": "POST",
+     "description": "Export the changed blocks between two instant snapshots to a customer?s bucket in the user specified format.",
+     "parameters": {
+      "instantSnapshot": {
+       "type": "string",
+       "description": "Name of the instant snapshot to export.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instantSnapshot"
+     ],
+     "request": {
+      "$ref": "InstantSnapshotExportParams"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "get": {
      "id": "compute.regionInstantSnapshots.get",
      "path": "projects/{project}/regions/{region}/instantSnapshots/{instantSnapshot}",
@@ -66955,6 +67049,55 @@
       "zone",
       "instantSnapshot"
      ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "export": {
+     "id": "compute.zoneInstantSnapshots.export",
+     "path": "projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}/export",
+     "httpMethod": "POST",
+     "description": "Export the changed blocks between two instant snapshots to a customer?s bucket in the user specified format.",
+     "parameters": {
+      "instantSnapshot": {
+       "type": "string",
+       "description": "Name of the instant snapshot to export.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instantSnapshot"
+     ],
+     "request": {
+      "$ref": "InstantSnapshotExportParams"
+     },
      "response": {
       "$ref": "Operation"
      },

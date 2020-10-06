@@ -305,14 +305,24 @@ def AddPrivateIpv6GoogleAccessArg(parser, api_version):
       parser)
 
 
-def AddMaintenanceFreezeDuration(parser):
+def AddStableFleetArgs(parser):
+  """Add flags related to Stable Fleet."""
+  parser.add_argument(
+      '--maintenance-interval',
+      type=lambda x: x.upper(),
+      hidden=True,
+      choices=['PERIODIC'],
+      help="""
+      Set maintenance interval for the instance.
+      """
+  )
   parser.add_argument(
       '--maintenance-freeze-duration',
-      type=int,
-      hidden=True,
+      type=arg_parsers.Duration(),
       help="""
-        Specifies the number of hours after instance creation where the instance
-        won't be scheduled for maintenance""")
+        Specifies the amount of hours after instance creation where the instance
+        won't be scheduled for maintenance, e.g. `4h`, `2d6h`.
+        See $ gcloud topic datetimes for information on duration formats.""")
 
 
 def GetPrivateIpv6GoogleAccessTypeFlagMapper(messages):
@@ -735,13 +745,11 @@ def AddCreateDiskArgs(parser,
     disk_help += """
       *source-snapshot-csek-required*::: The CSK protected source disk snapshot
       that will be used to create the disk. This can be provided as a full URL
-      to the snapshot or just the snapshot name. For example, the following
-      are valid values:
+      to the snapshot or just the snapshot name. Must be specified with
+      `source-snapshot-csek-key-file`. The following are valid values:
 
         * https://www.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
         * snapshot
-
-      Must be specified with `source-snapshot-csek-key-file`.
 
       *source-snapshot-csek-key-file::: Path to a Customer-Supplied Encryption
       Key (CSEK) key file for the source snapshot. Must be specified with

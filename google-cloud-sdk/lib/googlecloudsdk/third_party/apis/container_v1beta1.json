@@ -189,7 +189,7 @@
           }
         },
         "locations": {
-          "description": "The list of Google Compute Engine [zones](https:\/\/cloud.google.com\/compute\/docs\/zones#available) in which the cluster's nodes should be located.",
+          "description": "The list of Google Compute Engine [zones](https:\/\/cloud.google.com\/compute\/docs\/zones#available) in which the cluster's nodes should be located. This field provides a default value if [NodePool.Locations](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters.nodePools#NodePool.FIELDS.locations) are not specified during node pool creation. Warning: changing cluster locations will update the [NodePool.Locations](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters.nodePools#NodePool.FIELDS.locations) of all node pools and will result in nodes being added and\/or removed.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1011,7 +1011,7 @@
           "format": "int32"
         },
         "locations": {
-          "description": "The list of Google Compute Engine [zones](https:\/\/cloud.google.com\/compute\/docs\/zones#available) in which the NodePool's nodes should be located.",
+          "description": "The list of Google Compute Engine [zones](https:\/\/cloud.google.com\/compute\/docs\/zones#available) in which the NodePool's nodes should be located. If this value is unspecified during node pool creation, the [Cluster.Locations](https:\/\/cloud.google.com\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.locations.clusters#Cluster.FIELDS.locations) value will be used, instead. Warning: changing node pool locations will result in nodes being added and\/or removed.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1658,7 +1658,7 @@
           "enumDescriptions": [
             "Default value.",
             "Use the IPTables implementation based on kube-proxy.",
-            "Use the eBPF based data plane with additional visibility features."
+            "Use the eBPF based GKE Dataplane V2 with additional features. See the [GKE Dataplane V2 documentation](https:\/\/cloud.google.com\/kubernetes-enginw\/docs\/how-to\/dataplane-v2) for more."
           ],
           "enum": [
             "DATAPATH_PROVIDER_UNSPECIFIED",
@@ -2355,7 +2355,7 @@
           "$ref": "NodePoolAutoscaling"
         },
         "desiredLocations": {
-          "description": "The desired list of Google Compute Engine [zones](https:\/\/cloud.google.com\/compute\/docs\/zones#available) in which the cluster's nodes should be located. Changing the locations a cluster is in will result in nodes being either created or removed from the cluster, depending on whether locations are being added or removed. This list must always include the cluster's primary zone.",
+          "description": "The desired list of Google Compute Engine [zones](https:\/\/cloud.google.com\/compute\/docs\/zones#available) in which the cluster's nodes should be located. This list must always include the cluster's primary zone. Warning: changing cluster locations will update the locations of all node pools and will result in nodes being added and\/or removed.",
           "type": "array",
           "items": {
             "type": "string"
@@ -2423,7 +2423,7 @@
           "enumDescriptions": [
             "Default value.",
             "Use the IPTables implementation based on kube-proxy.",
-            "Use the eBPF based data plane with additional visibility features."
+            "Use the eBPF based GKE Dataplane V2 with additional features. See the [GKE Dataplane V2 documentation](https:\/\/cloud.google.com\/kubernetes-enginw\/docs\/how-to\/dataplane-v2) for more."
           ],
           "enum": [
             "DATAPATH_PROVIDER_UNSPECIFIED",

@@ -1169,12 +1169,17 @@ class UpdateAction(argparse.Action):
         metavar=metavar)
     self.onduplicatekey_handler = onduplicatekey_handler
 
+  def _EnsureValue(self, namespace, name, value):
+    if getattr(namespace, name, None) is None:
+      setattr(namespace, name, value)
+    return getattr(namespace, name)
+
   # pylint: disable=protected-access
   def __call__(self, parser, namespace, values, option_string=None):
 
     if isinstance(values, dict):
       # Get the existing arg value (if any)
-      items = copy.copy(argparse._ensure_value(
+      items = copy.copy(self._EnsureValue(
           namespace, self.dest, collections.OrderedDict()))
       # Merge the new key/value pair(s) in
       for k, v in six.iteritems(values):
@@ -1183,7 +1188,7 @@ class UpdateAction(argparse.Action):
         items[k] = v
     else:
       # Get the existing arg value (if any)
-      items = copy.copy(argparse._ensure_value(namespace, self.dest, []))
+      items = copy.copy(self._EnsureValue(namespace, self.dest, []))
       # Merge the new key/value pair(s) in
       for k in values:
         if k in items:

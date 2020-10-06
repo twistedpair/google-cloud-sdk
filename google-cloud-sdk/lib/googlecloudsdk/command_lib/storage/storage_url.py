@@ -20,18 +20,23 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import enum
 import os
 
-from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 
 import six
 
-# TODO(b/168690302): Transfer ProviderPrefix enum from cloud_api.py here, and
-# start using an enum instead of string schemes.
-FILE_SCHEME = 'file'
-VALID_CLOUD_SCHEMES = frozenset({
-    provider.value for provider in cloud_api.ProviderPrefix})
+
+class ProviderPrefix(enum.Enum):
+  """Provider prefix strings for storage URLs."""
+  FILE = 'file'
+  GCS = 'gs'
+  S3 = 's3'
+
+
+VALID_CLOUD_SCHEMES = frozenset([ProviderPrefix.GCS, ProviderPrefix.S3])
+VALID_SCHEMES = frozenset([scheme.value for scheme in ProviderPrefix])
 
 
 class StorageUrl(six.with_metaclass(abc.ABCMeta)):
@@ -98,7 +103,7 @@ class FileUrl(StorageUrl):
   contents, this class represents one or more directories or files.
 
   Attributes:
-    scheme (str): This will always be "file" for FileUrl.
+    scheme (ProviderPrefix): This will always be "file" for FileUrl.
     bucket_name (str): None for FileUrl.
     object_name (str): The file/directory path.
     generation (str): None for FileUrl.
@@ -111,7 +116,7 @@ class FileUrl(StorageUrl):
       url_string (str): The string representing the filepath.
     """
     super(FileUrl, self).__init__()
-    self.scheme = FILE_SCHEME
+    self.scheme = ProviderPrefix.FILE
     self.bucket_name = None
     self.generation = None
     if url_string.startswith('file://'):
@@ -135,7 +140,7 @@ class FileUrl(StorageUrl):
   @property
   def url_string(self):
     """Returns the string representation of the instance."""
-    return '%s://%s' % (self.scheme, self.object_name)
+    return '%s://%s' % (self.scheme.value, self.object_name)
 
   @property
   def versionless_url_string(self):
@@ -154,7 +159,7 @@ class CloudUrl(StorageUrl):
     made from this class.
 
     Attributes:
-      scheme (str): The cloud provider.
+      scheme (ProviderPrefix): The cloud provider.
       bucket_name (str): The bucket name if url represents an object or bucket.
       object_name (str): The object name if url represents an object or prefix.
       generation (str): The generation number if present.
@@ -187,7 +192,7 @@ class CloudUrl(StorageUrl):
     scheme = _get_scheme_from_url_string(url_string)
 
     # gs://a/b/c/d#num => a/b/c/d#num
-    url_string = url_string[len(scheme + '://'):]
+    url_string = url_string[len(scheme.value + '://'):]
 
     # a/b/c/d#num => a, b/c/d#num
     bucket_name, _, object_name = url_string.partition(cls.CLOUD_URL_DELIM)
@@ -216,10 +221,11 @@ class CloudUrl(StorageUrl):
   @property
   def versionless_url_string(self):
     if self.is_provider():
-      return '%s://' % self.scheme
+      return '%s://' % self.scheme.value
     elif self.is_bucket():
-      return '%s://%s' % (self.scheme, self.bucket_name)
-    return '%s://%s/%s' % (self.scheme, self.bucket_name, self.object_name)
+      return '%s://%s' % (self.scheme.value, self.bucket_name)
+    return '%s://%s/%s' % (self.scheme.value, self.bucket_name,
+                           self.object_name)
 
   @property
   def delimiter(self):
@@ -240,9 +246,12 @@ def _get_scheme_from_url_string(url_str):
   end_scheme_idx = url_str.find('://')
   if end_scheme_idx == -1:
     # File is the default scheme.
-    return FILE_SCHEME
+    return ProviderPrefix.FILE
   else:
-    return url_str[0:end_scheme_idx].lower()
+    prefix_string = url_str[0:end_scheme_idx].lower()
+    if prefix_string not in VALID_SCHEMES:
+      raise errors.InvalidUrlError('Unrecognized scheme "%s"' % prefix_string)
+    return ProviderPrefix(prefix_string)
 
 
 def storage_url_from_string(url_str):
@@ -258,7 +267,7 @@ def storage_url_from_string(url_str):
     InvalidUrlError if url string is invalid.
   """
   scheme = _get_scheme_from_url_string(url_str)
-  if scheme == FILE_SCHEME:
+  if scheme == ProviderPrefix.FILE:
     return FileUrl(url_str)
   return CloudUrl.from_url_string(url_str)
 

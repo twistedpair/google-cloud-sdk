@@ -18,9 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import gcs_api
 from googlecloudsdk.api_lib.storage import s3_api
+from googlecloudsdk.command_lib.storage import storage_url
 
 
 def get_api(provider):
@@ -36,8 +36,8 @@ def get_api(provider):
     ValueError: Invalid API provider.
   """
   # TODO(b/167685797): Use thread-local.
-  if provider == cloud_api.ProviderPrefix.GCS:
+  if provider == storage_url.ProviderPrefix.GCS:
     return gcs_api.GcsApi()
-  elif provider == cloud_api.ProviderPrefix.S3:
+  elif provider == storage_url.ProviderPrefix.S3:
     return s3_api.S3Api()
   raise ValueError('Provider API value must be "gs" or "s3".')

@@ -203,6 +203,19 @@ _MINIKUBE_ERROR = 'io.k8s.sigs.minikube.error'
 
 _MINIKUBE_NOT_ENOUGH_CPU_FRAGMENT = 'The minimum allowed is 2 CPUs.'
 
+# pylint: disable=line-too-long
+# See https://github.com/kubernetes/minikube/blob/master/pkg/minikube/reason/exitcodes.go
+# pylint: enable=line-too-long
+_MINIKUBE_ERROR_MESSAGES = {
+    '29': 'Not enough CPUs. Cloud Run Emulator requires 2 CPUs.',
+    '69': 'Cannot reach docker daemon.',
+}
+
+_MINIKUBE_PASSTHROUGH_ADVICE_IDS = frozenset(['HOST_HOME_PERMISSION'])
+
+if platforms.OperatingSystem.Current() != platforms.OperatingSystem.LINUX:
+  _MINIKUBE_ERROR_MESSAGES['29'] += ' Increase Docker VM CPUs to 2.'
+
 
 def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
   """Starts a minikube cluster."""
@@ -234,42 +247,39 @@ def _StartMinikubeCluster(cluster_name, vm_driver, debug=False):
             cmd, event_timeout_sec=90, show_stderr=debug):
           if debug:
             print('minikube', json_obj)
-          if json_obj['type'] == _MINIKUBE_STEP:
-            data = json_obj['data']
 
-            current_step = int(data['currentstep'])
-            total_steps = int(data['totalsteps'])
-            completion_fraction = current_step / float(total_steps)
-            progress_bar.SetProgress(completion_fraction)
-          elif json_obj['type'] == _MINIKUBE_DOWNLOAD_PROGRESS:
-            data = json_obj['data']
-            current_step = int(data['currentstep'])
-            total_steps = int(data['totalsteps'])
-            download_progress = float(data['progress'])
-
-            completion_fraction = (current_step +
-                                   download_progress) / total_steps
-            progress_bar.SetProgress(completion_fraction)
-          elif (json_obj['type'] == _MINIKUBE_ERROR and
-                'exitcode' in json_obj['data']):
-            data = json_obj['data']
-            # Using matching of the message to detect the error is brittle.
-            # When the error code gets more specific. Just use the error code.
-            # https://github.com/kubernetes/minikube/issues/9080
-            if (_MINIKUBE_NOT_ENOUGH_CPU_FRAGMENT in data['message'] and
-                data['exitcode'] == '64'):
-              msg = 'Not enough CPUs. Cloud Run Emulator requires 2 CPUs.'
-              if (platforms.OperatingSystem.Current() !=
-                  platforms.OperatingSystem.LINUX):
-                msg += ' Increase Docker VM CPUs to 2.'
-            elif data['exitcode'] == '69':
-              msg = 'Cannot reach docker daemon.'
-            else:
-              msg = 'Unable to start Cloud Run Emulator.'
-            raise MinikubeStartError(msg)
-
+          _HandleMinikubeStatusEvent(progress_bar, json_obj)
   except Exception as e:
     six.reraise(MinikubeStartError, e, sys.exc_info()[2])
+
+
+def _HandleMinikubeStatusEvent(progress_bar, json_obj):
+  """Handle a minikube json event."""
+  if json_obj['type'] == _MINIKUBE_STEP:
+    data = json_obj['data']
+
+    current_step = int(data['currentstep'])
+    total_steps = int(data['totalsteps'])
+    completion_fraction = current_step / float(total_steps)
+    progress_bar.SetProgress(completion_fraction)
+  elif json_obj['type'] == _MINIKUBE_DOWNLOAD_PROGRESS:
+    data = json_obj['data']
+    current_step = int(data['currentstep'])
+    total_steps = int(data['totalsteps'])
+    download_progress = float(data['progress'])
+
+    completion_fraction = (current_step + download_progress) / total_steps
+    progress_bar.SetProgress(completion_fraction)
+  elif (json_obj['type'] == _MINIKUBE_ERROR and 'exitcode' in json_obj['data']):
+    data = json_obj['data']
+    if ('id' in data and 'advice' in data and
+        data['id'] in _MINIKUBE_PASSTHROUGH_ADVICE_IDS):
+      raise MinikubeStartError(data['advice'])
+    else:
+      exit_code = data['exitcode']
+      msg = _MINIKUBE_ERROR_MESSAGES.get(exit_code,
+                                         'Unable to start Cloud Run Emulator.')
+      raise MinikubeStartError(msg)
 
 
 def _GetMinikubeDockerEnvs(cluster_name):

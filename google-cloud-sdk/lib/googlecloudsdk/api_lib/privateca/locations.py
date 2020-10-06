@@ -19,8 +19,21 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.privateca import base
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+
+
+# Hard-coded locations to use if the call to ListLocations fails.
+_FallbackLocations = [
+    'asia-southeast1',
+    'europe-west1',
+    'europe-west4',
+    'us-central1',
+    'us-east1',
+    'us-west1',
+]
 
 
 def GetSupportedLocations():
@@ -30,7 +43,12 @@ def GetSupportedLocations():
 
   project = properties.VALUES.core.project.GetOrFail()
 
-  response = client.projects_locations.List(
-      messages.PrivatecaProjectsLocationsListRequest(
-          name='projects/{}'.format(project)))
-  return [location.locationId for location in response.locations]
+  try:
+    response = client.projects_locations.List(
+        messages.PrivatecaProjectsLocationsListRequest(
+            name='projects/{}'.format(project)))
+    return [location.locationId for location in response.locations]
+  except exceptions.HttpError as e:
+    log.debug('ListLocations failed: %r.', e)
+    log.debug('Falling back to hard-coded list.')
+    return _FallbackLocations

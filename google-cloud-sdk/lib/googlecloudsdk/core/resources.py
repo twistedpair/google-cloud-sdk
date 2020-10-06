@@ -1114,7 +1114,6 @@ class Registry(object):
         try:
           ref = self.ParseURL(line)
         except InvalidResourceException as e:
-          # TODO(b/29573201): Make sure ParseURL handles this logic by default.
           bucket = None
           if line.startswith(_GCS_URL):
             try:

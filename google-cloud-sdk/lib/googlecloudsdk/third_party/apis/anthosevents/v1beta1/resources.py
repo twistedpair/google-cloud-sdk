@@ -17,7 +17,7 @@
 import enum
 
 
-BASE_URL = 'https://anthosevents.googleapis.com/apis/eventing.knative.dev/v1beta1/'
+BASE_URL = 'https://anthosevents.googleapis.com/apis/sources.knative.dev/v1beta1/'
 DOCS_URL = ''
 
 
@@ -102,6 +102,27 @@ class Collections(enum.Enum):
           '':
               'namespaces/{namespacesId}/cloudstoragesources/'
               '{cloudstoragesourcesId}',
+      },
+      ['name'],
+      True
+  )
+  NAMESPACES_APISERVERSOURCES = (
+      'namespaces.apiserversources',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/apiserversources/'
+              '{apiserversourcesId}',
+      },
+      ['name'],
+      True
+  )
+  NAMESPACES_PINGSOURCES = (
+      'namespaces.pingsources',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/pingsources/{pingsourcesId}',
       },
       ['name'],
       True

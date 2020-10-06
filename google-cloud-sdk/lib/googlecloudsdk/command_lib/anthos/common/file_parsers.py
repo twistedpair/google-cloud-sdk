@@ -252,20 +252,34 @@ class YamlConfigFile(object):
   """Utility class for searching and editing collections of YamlObjects.
 
   Attributes:
-    file_path: str, file path that YamlConfigObjects were loaded from
     item_type: class, YamlConfigObject class type of the items in file
+    file_contents: str, YAML contents used to load YamlConfigObjects
+    file_path: str, file path that YamlConfigObjects were loaded from
     data: [YamlObject], data loaded from file path. Could be 1 or more objects.
     yaml: str, yaml string representation of object.
   """
 
-  def __init__(self, file_path, item_type):
+  def __init__(self, item_type, file_contents=None, file_path=None):
+    self._file_contents = file_contents
     self._file_path = file_path
     self._item_type = item_type
-    try:
-      items = yaml.load_all_path(file_path, round_trip=True)
-      self._data = [item_type(x) for x in items]
-    except yaml.FileLoadError as fe:
-      raise YamlConfigFileError('Error Loading Config File: [{}]'.format(fe))
+
+    if not self._file_contents and not self._file_path:
+      raise YamlConfigFileError('Could Not Initialize YamlConfigFile:'
+                                'file_contents And file_path Are Both Empty')
+    # Priority is to try to load from contents if specified. Else from file.
+    if self._file_contents:
+      try:
+        items = yaml.load_all(self._file_contents, round_trip=True)
+        self._data = [item_type(x) for x in items]
+      except yaml.YAMLParseError as fe:
+        raise YamlConfigFileError('Error Parsing Config File: [{}]'.format(fe))
+    elif self._file_path:
+      try:
+        items = yaml.load_all_path(self._file_path, round_trip=True)
+        self._data = [item_type(x) for x in items]
+      except yaml.FileLoadError as fe:
+        raise YamlConfigFileError('Error Loading Config File: [{}]'.format(fe))
 
   @property
   def item_type(self):
@@ -280,6 +294,10 @@ class YamlConfigFile(object):
     if len(self._data) == 1:
       return str(self._data[0])
     return '---\n'.join([str(x) for x in self._data])
+
+  @property
+  def file_contents(self):
+    return self._file_contents
 
   @property
   def file_path(self):
@@ -325,6 +343,9 @@ class YamlConfigFile(object):
 
   def WriteToDisk(self):
     """Overwrite Original Yaml File."""
+    # Only write if file_path is specified.
+    if not self.file_path:
+      raise YamlConfigFileError('Could Not Write To Config File: Path Is Empty')
     out_file_buf = io.BytesIO()
     tmp_yaml_buf = io.TextIOWrapper(out_file_buf, newline='\n',
                                     encoding='utf-8')

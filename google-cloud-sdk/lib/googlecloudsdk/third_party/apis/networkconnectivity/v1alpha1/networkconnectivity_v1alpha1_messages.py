@@ -2236,7 +2236,7 @@ class PolicyBasedRoute(_messages.Message):
       be a lowercase letter, and all following characters (except for the last
       character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
-    network: Optional. Fully-qualified URL of the network that this route
+    network: Required. Fully-qualified URL of the network that this route
       applies to.
     nextHopIlbIp: Optional. The IP of a global access enabled L4 ILB that
       should be the next hop to handle matching packets.
@@ -2246,7 +2246,7 @@ class PolicyBasedRoute(_messages.Message):
       used to break ties in cases where there are more than one matching
       policy based routes found. In cases where multiple policy based routes
       are matched, the one with the lowest-numbered priority value wins. The
-      default value is 1000. The priority value must be from 0 to 65535,
+      default value is 1000. The priority value must be from 1 to 65535,
       inclusive.
     protocol: Optional. The IP protocol number that this policy based route
       applies to. The valid range is [1, 255].
@@ -2431,12 +2431,14 @@ class RouterApplianceInstance(_messages.Message):
   URI and a NIC address.
 
   Fields:
-    networkInterface: The name of the network interface
+    ipAddress: The IP address of the network interface to use for peering.
+    networkInterface: A string attribute.
     virtualMachine: The URI of the virtual machine resource
   """
 
-  networkInterface = _messages.StringField(1)
-  virtualMachine = _messages.StringField(2)
+  ipAddress = _messages.StringField(1)
+  networkInterface = _messages.StringField(2)
+  virtualMachine = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

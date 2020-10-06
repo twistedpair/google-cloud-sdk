@@ -378,6 +378,8 @@ class Job(_messages.Message):
 
   Fields:
     config: The configuration for this job.
+    createTime: Output only. The time the job was created.
+    endTime: Output only. The time the transcoding finished.
     failureDetails: Output only. List of failure details. This property may
       contain additional information about the failure when `failure_reason`
       is present.
@@ -400,6 +402,7 @@ class Job(_messages.Message):
       default is 0.
     progress: Output only. Estimated fractional progress, from `0` to `1` for
       each step.
+    startTime: Output only. The time the transcoding started.
     state: Output only. The current state of the job.
     templateId: Input only. Specify the `template_id` to use for populating
       `Job.config`. The default is `preset/web-hd`. Preset Transcoder
@@ -425,16 +428,19 @@ class Job(_messages.Message):
     FAILED = 4
 
   config = _messages.MessageField('JobConfig', 1)
-  failureDetails = _messages.MessageField('FailureDetail', 2, repeated=True)
-  failureReason = _messages.StringField(3)
-  inputUri = _messages.StringField(4)
-  name = _messages.StringField(5)
-  originUri = _messages.MessageField('OriginUri', 6)
-  outputUri = _messages.StringField(7)
-  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  progress = _messages.MessageField('Progress', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  templateId = _messages.StringField(11)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  failureDetails = _messages.MessageField('FailureDetail', 4, repeated=True)
+  failureReason = _messages.StringField(5)
+  inputUri = _messages.StringField(6)
+  name = _messages.StringField(7)
+  originUri = _messages.MessageField('OriginUri', 8)
+  outputUri = _messages.StringField(9)
+  priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  progress = _messages.MessageField('Progress', 11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  templateId = _messages.StringField(14)
 
 
 class JobConfig(_messages.Message):
@@ -983,9 +989,19 @@ class VideoStream(_messages.Message):
       `false`.
     entropyCoder: The entropy coder to use. The default is `"cabac"`.
       Supported entropy coders: - 'cavlc' - 'cabac'
-    frameRate: Required. The video frame rate in frames per second. Must be
-      less than or equal to 120. Will default to the input frame rate if
-      larger than the input frame rate.
+    frameRate: Required. The target video frame rate in frames per second
+      (FPS). Must be less than or equal to 120. Will default to the input
+      frame rate if larger than the input frame rate. The API will generate an
+      output FPS that is divisible by the input FPS, and smaller or equal to
+      the target FPS. The following table shows the computed video FPS given
+      the target FPS (in parenthesis) and input FPS (in the first column): | |
+      (30) | (60) | (25) | (50) | |--------|--------|--------|------|------| |
+      240 | Fail | Fail | Fail | Fail | | 120 | 30 | 60 | 20 | 30 | | 100 | 25
+      | 50 | 20 | 30 | | 50 | 25 | 50 | 20 | 30 | | 60 | 30 | 60 | 20 | 30 | |
+      59.94 | 29.97 | 59.94 | 20 | 30 | | 48 | 24 | 48 | 20 | 30 | | 30 | 30 |
+      30 | 20 | 30 | | 25 | 25 | 25 | 20 | 30 | | 24 | 24 | 24 | 20 | 30 | |
+      23.976 | 23.976 | 23.976 | 20 | 30 | | 15 | 15 | 15 | 20 | 30 | | 12 |
+      12 | 12 | 20 | 30 | | 10 | 10 | 10 | 20 | 30 |
     gopDuration: Select the GOP size based on the specified duration. The
       default is `"3s"`.
     gopFrameCount: Select the GOP size based on the specified frame count.

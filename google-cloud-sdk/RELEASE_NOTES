@@ -4,6 +4,117 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+## 313.0.0 (2020-10-06)
+
+### Anthos
+
+*   Fixed issue where v2alpha1 Login-Config could not be read from URL in
+    `gcloud` anthos auth login command.
+
+### Artifact Registry
+
+*   Added `gcloud beta artifacts repositories update` to enable changing the
+    description and labels on an existing repository.
+
+### Certificate Authority Service
+
+* Added `gcloud beta privateca` command group which enables creating and
+  managing private certificate authorities and certificates. For more
+  information, see `<https://cloud.google.com/certificate-authority-service/>`.
+
+### Cloud API Gateway
+
+* Added `gcloud api-gateway` to beta, which adds commands for managing APIs, API
+  Configs, and the Gateways that serve those APIs.
+
+### Cloud Build
+
+*   Statically linked `cloud-build-local` component. For more information, see
+    <https://issuetracker.google.com/issues/166758582>.
+
+### Cloud Data Catalog
+
+*   Promoted `gcloud data-catalog taxonomies` to GA release track.
+
+### Cloud Dataflow
+
+* Added runtime environment parameters support in `gcloud dataflow flex-template run`.
+
+### Cloud Memorystore
+
+* Added `--enable-auth` flag to `gcloud beta redis instances create` to allow
+enabling Redis AUTH when creating a new instance.
+
+Added `--[no-]enable-auth` flag to `gcloud beta redis instances update` to allow
+enabling and disabling Redis AUTH when updating an instance.
+
+Added `gcloud beta redis instances get-auth-string` command to allow viewing the
+AUTH string for an instance.
+
+### Cloud Pub/Sub
+
+* Promoted `gcloud pubsub lite-topics` and `gcloud pubsub lite-subscriptions` to GA. For more information about Pub/Sub Lite, see <https://cloud.google.com/pubsub/lite/docs>.
+
+### Cloud Run
+
+* Promoted `--min-instances` flag of `gcloud run deploy` and
+  `gcloud run services update` to beta for `--platform=managed`.
+
+### Cloud SQL
+
+* Promoted server-level `--deny-maintenance-period-start-date`,
+  `--deny-maintenance-period-end-date`, `--deny-maintenance-period-time` and
+  `--remove-deny-maintenance-period` flags of `gcloud sql instances create/patch`
+  to GA.
+
+### Cloud Services
+
+* Promoted `gcloud services peered-dns-domains <create|delete|list>` to beta.
+
+### Compute Engine
+
+* Promoted `--mtu` flag to beta and GA for `gcloud compute networks
+<create|update>`.
+* Promoted `gcloud compute instances set-name` command to beta.
+* Promoted `scope` option for `--disk` flag for `gcloud compute instances create` to GA.
+* Fixes incorrect error message for 'gcloud compute target-http-proxies
+<import>' when the resource already exists.
+
+### Config And Policy Automation
+
+*  Added `pkg` as a gcloud component. `pkg` installs a group of
+   Kubernetes Resource Model (KRM) package management tools including:
+   `kustomize`, `kpt`, `appctl` and `nomos`.
+
+### Firebase Test Lab
+
+*   Added `--other-files` flag to `gcloud beta firebase test ios run`. This flag
+    lets you specify files that are pushed onto the iOS test device prior to
+    testing.
+
+### Identity Groups
+
+*   Promoted `gcloud identity groups create` to GA.
+*   Promoted `gcloud identity groups search` to GA.
+
+### Identity Groups Memberships
+
+*   Promoted `gcloud identity groups memberships describe` to GA.
+
+### Identity and Access Management
+
+*   Added `gcloud beta iam workload-identity-pools` which enables you to grant
+    on-premises or multi-cloud workloads access to Google Cloud resources,
+    without using a service account key.
+
+### Pubsub Emulator
+
+*   Increased server gRPC max message size to 10 MB with some buffer. Allows for
+    publishing 10 MB messages.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 Note: Cloud SDK introduced support for Python 3 in release 274.0.0 and users are strongly encouraged to migrate to Python 3. Support for Python 2 will be deprecated on September 30, 2020. See also [Python 2 Sunset](https://cloud.google.com/python/docs/python2-sunset/) and [Using Python 3](https://cloud.google.com/sdk/gcloud/reference/topic/startup).
 
 ## 312.0.0 (2020-09-29)

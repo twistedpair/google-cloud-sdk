@@ -1131,9 +1131,17 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModificati
   r"""Modifications to make on the order.
 
   Enums:
+    AutoRenewalBehaviorValueValuesEnum: Auto renewal behavior of the
+      subscription for the update. Applied when change_type is
+      [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows plan default
+      config when this field is not specified.
     ChangeTypeValueValuesEnum: Required. Type of change to make.
 
   Fields:
+    autoRenewalBehavior: Auto renewal behavior of the subscription for the
+      update. Applied when change_type is
+      [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows plan default
+      config when this field is not specified.
     changeType: Required. Type of change to make.
     lineItemId: ID of the existing line item to make change to. Required when
       change type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE] or
@@ -1142,6 +1150,23 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModificati
       [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_CREATE] or
       [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE].
   """
+
+  class AutoRenewalBehaviorValueValuesEnum(_messages.Enum):
+    r"""Auto renewal behavior of the subscription for the update. Applied when
+    change_type is [LineItemChangeType.LINE_ITEM_CHANGE_TYPE_UPDATE]. Follows
+    plan default config when this field is not specified.
+
+    Values:
+      AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED: If unspecified, the auto renewal
+        behavior will follow the default config.
+      AUTO_RENEWAL_BEHAVIOR_ENABLE: Auto Renewal will be enabled on
+        subscription.
+      AUTO_RENEWAL_BEHAVIOR_DISABLE: Auto Renewal will be disabled on
+        subscription.
+    """
+    AUTO_RENEWAL_BEHAVIOR_UNSPECIFIED = 0
+    AUTO_RENEWAL_BEHAVIOR_ENABLE = 1
+    AUTO_RENEWAL_BEHAVIOR_DISABLE = 2
 
   class ChangeTypeValueValuesEnum(_messages.Enum):
     r"""Required. Type of change to make.
@@ -1162,9 +1187,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequestModificati
     LINE_ITEM_CHANGE_TYPE_CANCEL = 3
     LINE_ITEM_CHANGE_TYPE_REVERT_CANCELLATION = 4
 
-  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 1)
-  lineItemId = _messages.StringField(2)
-  newLineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 3)
+  autoRenewalBehavior = _messages.EnumField('AutoRenewalBehaviorValueValuesEnum', 1)
+  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 2)
+  lineItemId = _messages.StringField(3)
+  newLineItemInfo = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo', 4)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyProductsOrderRequest(_messages.Message):

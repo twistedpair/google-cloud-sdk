@@ -780,7 +780,8 @@
               "The database version is SQL Server 2017 Web.",
               "The database version is PostgreSQL 10.",
               "The database version is PostgreSQL 12.",
-              "The database version is MySQL 8."
+              "The database version is MySQL 8.",
+              "The database version is PostgreSQL 13."
             ],
             "enum": [
               "SQL_DATABASE_VERSION_UNSPECIFIED",
@@ -796,7 +797,8 @@
               "SQLSERVER_2017_WEB",
               "POSTGRES_10",
               "POSTGRES_12",
-              "MYSQL_8_0"
+              "MYSQL_8_0",
+              "POSTGRES_13"
             ]
           }
         },
@@ -1027,16 +1029,16 @@
           "type": "string"
         },
         "state": {
-          "description": "The current serving state of the Cloud SQL instance. This can be one of the following. *RUNNABLE*: The instance is running, or is ready to run when accessed. *SUSPENDED*: The instance is not available, for example due to problems with billing. *PENDING_CREATE*: The instance is being created. *MAINTENANCE*: The instance is down for maintenance. *FAILED*: The instance creation failed. *UNKNOWN_STATE*: The state of the instance is unknown.",
+          "description": "The current serving state of the Cloud SQL instance. This can be one of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The state of the instance is unknown. *RUNNABLE*: The instance has been stopped by owner. It is not currently running, but it's ready to be restarted. *SUSPENDED*: The instance is not available, for example due to problems with billing. for example due to problems with billing. *PENDING_DELETE*: The instance is being deleted. *PENDING_CREATE*: The instance is being created. *MAINTENANCE*: The instance is down for maintenance. *FAILED*: The instance creation failed.",
           "type": "string",
           "enumDescriptions": [
             "The state of the instance is unknown.",
-            "The instance is running.",
-            "The instance is currently offline, but it may run again in the future.",
+            "The instance has been stopped by owner. It is not currently running, but it's ready to be restarted.",
+            "The instance is not available, for example due to problems with billing.",
             "The instance is being deleted.",
             "The instance is being created.",
             "The instance is down for maintenance.",
-            "The instance failed to be created."
+            "The creation of the instance failed or a fatal error occurred during maintenance."
           ],
           "enum": [
             "SQL_INSTANCE_STATE_UNSPECIFIED",
@@ -1065,7 +1067,8 @@
             "The database version is SQL Server 2017 Web.",
             "The database version is PostgreSQL 10.",
             "The database version is PostgreSQL 12.",
-            "The database version is MySQL 8."
+            "The database version is MySQL 8.",
+            "The database version is PostgreSQL 13."
           ],
           "enum": [
             "SQL_DATABASE_VERSION_UNSPECIFIED",
@@ -1081,7 +1084,8 @@
             "SQLSERVER_2017_WEB",
             "POSTGRES_10",
             "POSTGRES_12",
-            "MYSQL_8_0"
+            "MYSQL_8_0",
+            "POSTGRES_13"
           ]
         },
         "settings": {
@@ -1568,6 +1572,39 @@
         "pointInTimeRecoveryEnabled": {
           "description": "Reserved for future use.",
           "type": "boolean"
+        },
+        "transactionLogRetentionDays": {
+          "description": "The number of days of transaction logs we retain for point in time restore, from 1-7.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "backupRetentionSettings": {
+          "description": "Backup retention settings.",
+          "$ref": "BackupRetentionSettings"
+        }
+      }
+    },
+    "BackupRetentionSettings": {
+      "id": "BackupRetentionSettings",
+      "description": "We currently only support backup retention by specifying the number of backups we will retain.",
+      "type": "object",
+      "properties": {
+        "retentionUnit": {
+          "description": "The unit that 'retained_backups' represents.",
+          "type": "string",
+          "enumDescriptions": [
+            "Backup retention unit is unspecified, will be treated as COUNT.",
+            "Retention will be by count, eg. \"retain the most recent 7 backups\"."
+          ],
+          "enum": [
+            "RETENTION_UNIT_UNSPECIFIED",
+            "COUNT"
+          ]
+        },
+        "retainedBackups": {
+          "description": "Depending on the value of retention_unit, this is used to determine if a backup needs to be deleted. If retention_unit is 'COUNT', we will retain this many backups.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

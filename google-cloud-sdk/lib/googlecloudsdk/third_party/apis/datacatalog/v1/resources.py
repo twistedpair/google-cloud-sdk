@@ -109,6 +109,28 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'tagTemplatesId', 'fieldsId', 'enumValuesId'],
       True
   )
+  PROJECTS_LOCATIONS_TAXONOMIES = (
+      'projects.locations.taxonomies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/taxonomies/'
+              '{taxonomiesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TAXONOMIES_POLICYTAGS = (
+      'projects.locations.taxonomies.policyTags',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/taxonomies/'
+              '{taxonomiesId}/policyTags/{policyTagsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

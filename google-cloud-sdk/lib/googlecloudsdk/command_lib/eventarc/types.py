@@ -50,6 +50,16 @@ def Get(name):
   raise InvalidEventType('"{}" is not a supported event type.'.format(name))
 
 
+def IsPubsubType(name):
+  return name == _PUBSUB_TYPE.name
+
+
+def MatchingCriteriaToType(matching_criteria):
+  return next(
+      (mc['value'] for mc in matching_criteria if mc['attribute'] == 'type'),
+      None)
+
+
 def ValidateAuditLogEventType(name):
   if name != _AUDIT_LOG_TYPE.name:
     raise InvalidEventType(

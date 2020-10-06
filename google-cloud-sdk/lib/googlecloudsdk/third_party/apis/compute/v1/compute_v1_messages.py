@@ -582,8 +582,9 @@ class Address(_messages.Message):
       - `VPC_PEERING` for addresses that are reserved for VPC peer networks.
       - `NAT_AUTO` for addresses that are external IP addresses automatically
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
-      from a private IP range reserved for a VLAN attachment in an IPsec over
-      Interconnect configuration. These addresses are regional resources.
+      from a private IP range that are reserved for a VLAN attachment in an
+      IPsec encrypted Interconnect configuration. These addresses are regional
+      resources.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -629,8 +630,9 @@ class Address(_messages.Message):
       `VPC_PEERING` for addresses that are reserved for VPC peer networks.  -
       `NAT_AUTO` for addresses that are external IP addresses automatically
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
-      from a private IP range reserved for a VLAN attachment in an IPsec over
-      Interconnect configuration. These addresses are regional resources.
+      from a private IP range that are reserved for a VLAN attachment in an
+      IPsec encrypted Interconnect configuration. These addresses are regional
+      resources.
     region: [Output Only] The URL of the region where the regional address
       resides. This field is not applicable to global addresses. You must
       specify this field as part of the HTTP request URL.
@@ -699,7 +701,7 @@ class Address(_messages.Message):
     for addresses that are reserved for VPC peer networks.  - `NAT_AUTO` for
     addresses that are external IP addresses automatically reserved for Cloud
     NAT.  - `IPSEC_INTERCONNECT` for addresses created from a private IP range
-    reserved for a VLAN attachment in an IPsec over Interconnect
+    that are reserved for a VLAN attachment in an IPsec encrypted Interconnect
     configuration. These addresses are regional resources.
 
     Values:
@@ -24020,12 +24022,15 @@ class HealthCheck(_messages.Message):
   Health Check resources:  *
   [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) *
   [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)
-  Internal HTTP(S) load balancers must use regional health checks. Internal
-  TCP/UDP load balancers can use either regional or global health checks. All
-  other types of GCP load balancers and managed instance group auto-healing
-  must use global health checks. For more information, read Health Check
-  Concepts.  To perform health checks on network load balancers, you must use
-  either httpHealthChecks or httpsHealthChecks.
+  Internal HTTP(S) load balancers must use regional health checks
+  (`compute.v1.regionHealthChecks`).  Traffic Director must use global health
+  checks (`compute.v1.HealthChecks`).  Internal TCP/UDP load balancers can use
+  either regional or global health checks (`compute.v1.regionHealthChecks` or
+  `compute.v1.HealthChecks`).  External HTTP(S), TCP proxy, and SSL proxy load
+  balancers as well as managed instance group auto-healing must use global
+  health checks (`compute.v1.HealthChecks`).  Network load balancers must use
+  legacy HTTP health checks (httpHealthChecks).  For more information, see
+  Health checks overview.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -24048,6 +24053,7 @@ class HealthCheck(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: Type of the resource.
+    logConfig: Configure logging on this health check.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -24104,14 +24110,15 @@ class HealthCheck(_messages.Message):
   httpsHealthCheck = _messages.MessageField('HTTPSHealthCheck', 8)
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(10, default='compute#healthCheck')
-  name = _messages.StringField(11)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 14)
-  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 15)
-  timeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  unhealthyThreshold = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('HealthCheckLogConfig', 11)
+  name = _messages.StringField(12)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 15)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 16)
+  timeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  unhealthyThreshold = _messages.IntegerField(19, variant=_messages.Variant.INT32)
 
 
 class HealthCheckList(_messages.Message):
@@ -24238,6 +24245,18 @@ class HealthCheckList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class HealthCheckLogConfig(_messages.Message):
+  r"""Configuration of logging on a health check. If logging is enabled, logs
+  will be exported to Stackdriver.
+
+  Fields:
+    enable: Indicates whether or not to export logs. This is false by default,
+      which means no health check logging will be done.
+  """
+
+  enable = _messages.BooleanField(1)
 
 
 class HealthCheckReference(_messages.Message):
@@ -39320,7 +39339,7 @@ class ResourcePolicy(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: A string attribute.
-    groupPlacementPolicy: Resource policy for instacnes for placement
+    groupPlacementPolicy: Resource policy for instances for placement
       configuration.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -39790,6 +39809,7 @@ class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
       modified by the setLabels method. Label values may be empty.
 
   Fields:
+    chainName: Chain name that the snapshot is created in.
     guestFlush: Indication to perform a 'guest aware' snapshot.
     labels: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
@@ -39822,9 +39842,10 @@ class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  guestFlush = _messages.BooleanField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  storageLocations = _messages.StringField(3, repeated=True)
+  chainName = _messages.StringField(1)
+  guestFlush = _messages.BooleanField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  storageLocations = _messages.StringField(4, repeated=True)
 
 
 class ResourcePolicyWeeklyCycle(_messages.Message):
@@ -39916,11 +39937,11 @@ class Route(_messages.Message):
       You can only specify the internet gateway using a full or partial valid
       URL:  projects/project/global/gateways/default-internet-gateway
     nextHopIlb: The URL to a forwarding rule of type
-      loadBalancingScheme=INTERNAL that should handle matching packets. You
-      can only specify the forwarding rule as a partial or full URL. For
-      example, the following are all valid URLs:   - https://www.googleapis.co
-      m/compute/v1/projects/project/regions/region/forwardingRules/forwardingR
-      ule  - regions/region/forwardingRules/forwardingRule
+      loadBalancingScheme=INTERNAL that should handle matching packets or the
+      IP address of the forwarding Rule. For example, the following are all
+      valid URLs:   - 10.128.0.56  - https://www.googleapis.com/compute/v1/pro
+      jects/project/regions/region/forwardingRules/forwardingRule  -
+      regions/region/forwardingRules/forwardingRule
     nextHopInstance: The URL to an instance that should handle matching
       packets. You can specify this as a full or partial URL. For example: htt
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
@@ -41426,9 +41447,9 @@ class SecurityPoliciesWafConfig(_messages.Message):
 
 
 class SecurityPolicy(_messages.Message):
-  r"""Represents a Cloud Armor Security Policy resource.  Only external
-  backend services that use load balancers can reference a Security Policy.
-  For more information, read  Cloud Armor Security Policy Concepts. (==
+  r"""Represents a Google Cloud Armor security policy resource.  Only external
+  backend services that use load balancers can reference a security policy.
+  For more information, see  Google Cloud Armor security policy overview. (==
   resource_for {$api_version}.securityPolicies ==)
 
   Fields:
@@ -41847,6 +41868,12 @@ class Snapshot(_messages.Message):
   Fields:
     autoCreated: [Output Only] Set to true if snapshots are automatically
       created by applying resource policy on the target disk.
+    chainName: Creates the new snapshot in the snapshot chain labeled with the
+      specified name. The chain name must be 1-63 characters long and comply
+      with RFC1035. This is an uncommon option only for advanced service
+      owners who needs to create separate snapshot chains, for example, for
+      chargeback tracking. When you describe your snapshot resource, this
+      field is visible only if it has a non-empty value.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -41967,26 +41994,27 @@ class Snapshot(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   autoCreated = _messages.BooleanField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  diskSizeGb = _messages.IntegerField(4)
-  downloadBytes = _messages.IntegerField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#snapshot')
-  labelFingerprint = _messages.BytesField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  licenseCodes = _messages.IntegerField(10, repeated=True)
-  licenses = _messages.StringField(11, repeated=True)
-  name = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 14)
-  sourceDisk = _messages.StringField(15)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
-  sourceDiskId = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  storageBytes = _messages.IntegerField(19)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 20)
-  storageLocations = _messages.StringField(21, repeated=True)
+  chainName = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  diskSizeGb = _messages.IntegerField(5)
+  downloadBytes = _messages.IntegerField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default='compute#snapshot')
+  labelFingerprint = _messages.BytesField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  licenseCodes = _messages.IntegerField(11, repeated=True)
+  licenses = _messages.StringField(12, repeated=True)
+  name = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
+  sourceDisk = _messages.StringField(16)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  sourceDiskId = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  storageBytes = _messages.IntegerField(20)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 21)
+  storageLocations = _messages.StringField(22, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -42857,10 +42885,10 @@ class SslPoliciesListAvailableFeaturesResponse(_messages.Message):
 
 
 class SslPolicy(_messages.Message):
-  r"""Represents a Cloud Armor Security Policy resource.  Only external
+  r"""Represents a Google Cloud Armor security policy resource.  Only external
   backend services used by HTTP or HTTPS load balancers can reference a
-  Security Policy. For more information, read read  Cloud Armor Security
-  Policy Concepts. (== resource_for {$api_version}.sslPolicies ==)
+  security policy. For more information, see  Google Cloud Armor security
+  policy overview. (== resource_for {$api_version}.sslPolicies ==)
 
   Enums:
     MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can

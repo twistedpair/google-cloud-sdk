@@ -29,35 +29,11 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import platforms
 
 
-class NoGCDError(exceptions.Error):
-
-  def __init__(self):
-    super(NoGCDError, self).__init__(
-        'Unable to find the Google Cloud Datastore emulator')
-
-
 class UnableToPrepareDataDir(exceptions.Error):
 
   def __init__(self):
     super(UnableToPrepareDataDir, self).__init__(
-        'Unable to prepare the data directory for the emualtor')
-
-
-def GetGCDRoot():
-  """Gets the directory of the GCD emulator installation in the Cloud SDK.
-
-  Raises:
-    NoCloudSDKError: If there is no SDK root.
-    NoGCDError: If the GCD installation dir does not exist.
-
-  Returns:
-    str, The path to the root of the GCD emulator installation within Cloud SDK.
-  """
-  sdk_root = util.GetCloudSDKRoot()
-  gcd_dir = os.path.join(sdk_root, 'platform', 'cloud-datastore-emulator')
-  if not os.path.isdir(gcd_dir):
-    raise NoGCDError()
-  return gcd_dir
+        'Unable to prepare the data directory for the emulator')
 
 
 def ArgsForGCDEmulator(emulator_args):
@@ -72,15 +48,16 @@ def ArgsForGCDEmulator(emulator_args):
   current_os = platforms.OperatingSystem.Current()
   if current_os is platforms.OperatingSystem.WINDOWS:
     cmd = 'cloud_datastore_emulator.cmd'
-    gcd_executable = os.path.join(GetGCDRoot(), cmd)
+    gcd_executable = os.path.join(util.GetEmulatorRoot(CLOUD_DATASTORE), cmd)
     return execution_utils.ArgsForCMDTool(gcd_executable, *emulator_args)
   else:
     cmd = 'cloud_datastore_emulator'
-    gcd_executable = os.path.join(GetGCDRoot(), cmd)
+    gcd_executable = os.path.join(util.GetEmulatorRoot(CLOUD_DATASTORE), cmd)
     return execution_utils.ArgsForExecutableTool(gcd_executable, *emulator_args)
 
 
 DATASTORE = 'datastore'
+CLOUD_DATASTORE = 'cloud-datastore'
 DATASTORE_TITLE = 'Google Cloud Datastore emulator'
 
 

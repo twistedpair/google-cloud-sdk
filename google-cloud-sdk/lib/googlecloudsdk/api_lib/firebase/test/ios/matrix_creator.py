@@ -75,21 +75,39 @@ class MatrixCreator(object):
     self._messages = context['testing_messages']
     self._release_track = release_track
 
-  def _BuildFileReference(self, filename):
+  def _BuildFileReference(self, filename, use_basename=True):
     """Build a FileReference pointing to a file in GCS."""
     if not filename:
       return None
-    path = os.path.join(self._gcs_results_root, os.path.basename(filename))
+    if use_basename:
+      filename = os.path.basename(filename)
+    path = os.path.join(self._gcs_results_root, filename)
     return self._messages.FileReference(gcsPath=path)
 
   def _BuildGenericTestSetup(self):
+    """Build an IosTestSetup for an iOS test."""
     additional_ipas = [
         self._BuildFileReference(os.path.basename(additional_ipa))
         for additional_ipa in getattr(self._args, 'additional_ipas', []) or []
     ]
+    device_files = []
+    other_files = getattr(self._args, 'other_files', None) or {}
+    for device_path in other_files.keys():
+      # Device paths are be prefixed by the bundle ID if they refer to an app's
+      # sandboxed filesystem, separated with the device path by ':'
+      idx = device_path.find(':')
+      bundle_id = device_path[:idx] if idx != -1 else None
+      path = device_path[idx + 1:] if idx != -1 else device_path
+      device_files.append(
+          self._messages.IosDeviceFile(
+              content=self._BuildFileReference(
+                  util.GetRelativeDevicePath(path), use_basename=False),
+              bundleId=bundle_id,
+              devicePath=path))
     return self._messages.IosTestSetup(
         networkProfile=getattr(self._args, 'network_profile', None),
-        additionalIpas=additional_ipas)
+        additionalIpas=additional_ipas,
+        pushFiles=device_files)
 
   def _BuildIosXcTestSpec(self):
     """Build a TestSpecification for an IosXcTest."""

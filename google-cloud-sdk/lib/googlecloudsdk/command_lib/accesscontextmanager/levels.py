@@ -329,7 +329,7 @@ def AddBasicSpecArgs(parser, api_version):
       '     - ipSubnetworks:\n'
       '       - 162.222.181.197/24\n'
       '       - 2001:db8::/48\n'
-      '     - members\n'
+      '     - members:\n'
       '       - user:user@example.com\n'
       '    ```')
   basic_level_spec_arg = base.Argument(
@@ -354,7 +354,7 @@ def AddBasicAndCustomSpecArgs(parser, api_version):
       '     - ipSubnetworks:\n'
       '       - 162.222.181.197/24\n'
       '       - 2001:db8::/48\n'
-      '     - members\n'
+      '     - members:\n'
       '       - user:user@example.com\n'
       '    ```')
   custom_level_help_text = (

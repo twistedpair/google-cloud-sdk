@@ -275,6 +275,24 @@
         "description": {
           "description": "Human readable description of the cluster.",
           "type": "string"
+        },
+        "allocationPriority": {
+          "description": "Optional. The allocation priority assigned to the game server cluster. Game server clusters will receive new game server allocations based on the relative allocation priorites set for each cluster within a realm where multicluster allocation is configured.",
+          "type": "string",
+          "enumDescriptions": [
+            "If the priority is not set, it defaults to PRIORITY_UNSPECIFIED which is the lowest priority.",
+            "Priority 1, which is the highest priority.",
+            "Priority 2.",
+            "Priority 3.",
+            "Priority 4."
+          ],
+          "enum": [
+            "PRIORITY_UNSPECIFIED",
+            "P1",
+            "P2",
+            "P3",
+            "P4"
+          ]
         }
       }
     },

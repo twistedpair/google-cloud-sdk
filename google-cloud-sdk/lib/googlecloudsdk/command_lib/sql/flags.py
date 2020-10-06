@@ -473,6 +473,26 @@ def AddMaintenanceWindowHour(parser):
       help='Hour of day for maintenance window, in UTC time zone.')
 
 
+def AddDenyMaintenancePeriodStartDate(parser):
+  parser.add_argument(
+      '--deny-maintenance-period-start-date',
+      help='''Date when the deny maintenance period begins,
+       that is ``2020-11-01".''')
+
+
+def AddDenyMaintenancePeriodEndDate(parser):
+  parser.add_argument(
+      '--deny-maintenance-period-end-date',
+      help='Date when the deny maintenance period ends, that is ``2021-01-10".')
+
+
+def AddDenyMaintenancePeriodTime(parser):
+  parser.add_argument(
+      '--deny-maintenance-period-time',
+      help='''Time when the deny maintenance period starts or ends,
+       that is ``05:00:00".''')
+
+
 def AddMemory(parser):
   parser.add_argument(
       '--memory',

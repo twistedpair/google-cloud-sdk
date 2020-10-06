@@ -606,7 +606,7 @@ def GetAcceleratorFlag():
           spec={
               'type': str,
               'count': int,
-          }, required_keys=['type', 'count']),
+          }, required_keys=['type']),
       help="""\
 Manage the accelerator config for GPU serving. When deploying a model with
 Compute Engine Machine Types, a GPU accelerator may also
@@ -615,8 +615,10 @@ be selected.
 *type*::: The type of the accelerator. Choices are {}.
 
 *count*::: The number of accelerators to attach to each machine running the job.
- This is usually 1; scaling parameters are configured using `manualScaling` or
-`autoScaling` flags.""".format(', '.join(
+ If not specified, the default value is 1. Your model must be specially designed
+to accommodate more than 1 accelerator per machine. To configure how many
+replicas your model has, set the `manualScaling` or `autoScaling`
+parameters.""".format(', '.join(
     ["'{}'".format(c) for c in _OP_ACCELERATOR_TYPE_MAPPER.choices])))
 
 
@@ -630,7 +632,7 @@ def ParseAcceleratorFlag(accelerator):
     raise ArgumentError("""\
 The type of the accelerator can only be one of the following: {}.
 """.format(', '.join(["'{}'".format(c) for c in types])))
-  accelerator_count = accelerator.get('count', 0)
+  accelerator_count = accelerator.get('count', 1)
   if accelerator_count <= 0:
     raise ArgumentError("""\
 The count of the accelerator must be greater than 0.

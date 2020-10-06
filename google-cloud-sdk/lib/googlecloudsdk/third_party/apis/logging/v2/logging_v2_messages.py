@@ -579,6 +579,8 @@ class LogBucket(_messages.Message):
     locked: Whether the bucket has been locked. The retention period on a
       locked bucket may not be changed. Locked buckets may only be deleted if
       they are empty.
+    logLink: Configures a linked dataset in BigQuery corresponding to this log
+      bucket. Requires analytics_enabled to be True.
     name: The resource name of the bucket. For example: "projects/my-project-
       id/locations/my-location/buckets/my-bucket-id The supported locations
       are: "global"For the location of global it is unspecified where logs are
@@ -609,9 +611,10 @@ class LogBucket(_messages.Message):
   description = _messages.StringField(3)
   lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 4)
   locked = _messages.BooleanField(5)
-  name = _messages.StringField(6)
-  retentionDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(8)
+  logLink = _messages.MessageField('LogLink', 6)
+  name = _messages.StringField(7)
+  retentionDays = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(9)
 
 
 class LogEntry(_messages.Message):
@@ -970,6 +973,30 @@ class LogLine(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 2)
   sourceLocation = _messages.MessageField('SourceLocation', 3)
   time = _messages.StringField(4)
+
+
+class LogLink(_messages.Message):
+  r"""This is used to link logs managed by Cloud Logging with a customer's
+  dataset in BigQuery. Once linked, authorized views are created in the
+  destination dataset that give read-access to the log data.WARNING: LogLinks
+  are still experimental, and may change its behavior in the future.
+
+  Fields:
+    enabled: Enables a log link, and creates a BigQuery dataset in the same
+      parent project as the log bucket. The dataset will be named the same as
+      the log bucket name, and will contain views to access the logs in the
+      bucket.If an active log link is disabled, the dataset and views are
+      deleted.
+    linkedBigqueryDataset: Output only. The name of the BigQuery dataset this
+      log bucket is linked to.
+      Example:"bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET"
+    loggingServiceAccount: Output only. An IAM service account used by Cloud
+      Logging to create views on the destination dataset.
+  """
+
+  enabled = _messages.BooleanField(1)
+  linkedBigqueryDataset = _messages.StringField(2)
+  loggingServiceAccount = _messages.StringField(3)
 
 
 class LogMetric(_messages.Message):

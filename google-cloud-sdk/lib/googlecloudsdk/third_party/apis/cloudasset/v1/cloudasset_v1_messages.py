@@ -1106,9 +1106,8 @@ class GoogleCloudAssetV1GcsDestination(_messages.Message):
   Fields:
     uri: Required. The uri of the Cloud Storage object. It's the same uri that
       is used by gsutil. For example: "gs://bucket_name/object_name". See
-      [Viewing and Editing Object
-      Metadata](https://cloud.google.com/storage/docs/viewing-editing-
-      metadata) for more information.
+      [Quickstart: Using the gsutil tool]
+      (https://cloud.google.com/storage/docs/quickstart-gsutil) for examples.
   """
 
   uri = _messages.StringField(1)

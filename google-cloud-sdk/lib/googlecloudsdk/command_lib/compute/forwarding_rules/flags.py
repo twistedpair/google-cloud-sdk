@@ -28,70 +28,70 @@ from googlecloudsdk.command_lib.compute.addresses import flags as addresses_flag
 from googlecloudsdk.command_lib.util import completers
 
 
-FORWARDING_RULES_OVERVIEW = """\
-        A forwarding rule directs traffic that matches a destination IP address
-        (and possibly a TCP or UDP port) to a forwarding target (load balancer,
-        VPN gateway or VM instance).
+FORWARDING_RULES_OVERVIEW = """
+A forwarding rule directs traffic that matches a destination IP address
+(and possibly a TCP or UDP port) to a forwarding target (load balancer,
+VPN gateway or VM instance).
 
-        Forwarding rules can be either global or regional, specified with the
-        ``--global'' or ``--region=REGION'' flags. For more information about
-        the scope of a forwarding rule, refer to
-        https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
+Forwarding rules can be either global or regional, specified with the
+``--global'' or ``--region=REGION'' flags. For more information about
+the scope of a forwarding rule, refer to
+https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
 
-        Forwarding rules can be external, internal, internal managed, or
-        internal self-managed, specified with the
-        ``--load-balancing-scheme=[EXTERNAL|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
-        flag. External forwarding rules are accessible from the internet, while
-        internal forwarding rules are only accessible from within their VPC
-        networks. You can specify a reserved static external or internal IP
-        address with the ``--address=ADDRESS'' flag for the forwarding rule.
-        Otherwise, if the flag is unspecified, an ephemeral IP address is
-        automatically assigned (global IP addresses for global forwarding rules
-        and regional IP addresses for regional forwarding rules); an internal
-        forwarding rule is automatically assigned an ephemeral internal IP
-        address from the subnet specified with the ``--subnet'' flag. You must
-        provide an IP address for an internal self-managed forwarding rule.
+Forwarding rules can be external, internal, internal managed, or
+internal self-managed, specified with the
+``--load-balancing-scheme=[EXTERNAL|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
+flag. External forwarding rules are accessible from the internet, while
+internal forwarding rules are only accessible from within their VPC
+networks. You can specify a reserved static external or internal IP
+address with the ``--address=ADDRESS'' flag for the forwarding rule.
+Otherwise, if the flag is unspecified, an ephemeral IP address is
+automatically assigned (global IP addresses for global forwarding rules
+and regional IP addresses for regional forwarding rules); an internal
+forwarding rule is automatically assigned an ephemeral internal IP
+address from the subnet specified with the ``--subnet'' flag. You must
+provide an IP address for an internal self-managed forwarding rule.
 
-        Different types of load balancers work at different layers of the OSI
-        networking model (http://en.wikipedia.org/wiki/Network_layer). Layer 3/4
-        targets include target pools, target SSL proxies, target TCP proxies,
-        and backend services. Layer 7 targets include target HTTP proxies and
-        target HTTPS proxies. For more information, refer to
-        https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
-        """
+Different types of load balancers work at different layers of the OSI
+networking model (http://en.wikipedia.org/wiki/Network_layer). Layer 3/4
+targets include target pools, target SSL proxies, target TCP proxies,
+and backend services. Layer 7 targets include target HTTP proxies and
+target HTTPS proxies. For more information, refer to
+https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
+"""
 
 
 FORWARDING_RULES_OVERVIEW_ALPHA = """\
-        A forwarding rule directs traffic that matches a destination IP address
-        (and possibly a TCP or UDP port) to a forwarding target (load balancer,
-        VPN gateway or VM instance).
+A forwarding rule directs traffic that matches a destination IP address
+(and possibly a TCP or UDP port) to a forwarding target (load balancer,
+VPN gateway or VM instance).
 
-        Forwarding rules can be either global or regional, specified with the
-        ``--global'' or ``--region=REGION'' flag. For more information about
-        the scope of a forwarding rule, refer to
-        https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
+Forwarding rules can be either global or regional, specified with the
+``--global'' or ``--region=REGION'' flag. For more information about
+the scope of a forwarding rule, refer to
+https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
 
-        Forwarding rules can be external, internal, internal managed, or
-        internal self-managed, specified with the
-        ``--load-balancing-scheme=[EXTERNAL|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
-        flag. External forwarding rules are accessible from the internet, while
-        internal forwarding rules are only accessible from within their VPC
-        networks. You can specify a reserved static external or internal IP
-        address with the ``--address=ADDRESS'' flag for the forwarding rule.
-        Otherwise, if the flag is unspecified, an ephemeral IP address is
-        automatically assigned (global IP addresses for global forwarding rules
-        and regional IP addresses for regional forwarding rules); an internal
-        forwarding rule is automatically assigned an ephemeral internal IP
-        address from the subnet specified with the ``--subnet'' flag. You must
-        provide an IP address for an internal self-managed forwarding rule.
+Forwarding rules can be external, internal, internal managed, or
+internal self-managed, specified with the
+``--load-balancing-scheme=[EXTERNAL|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
+flag. External forwarding rules are accessible from the internet, while
+internal forwarding rules are only accessible from within their VPC
+networks. You can specify a reserved static external or internal IP
+address with the ``--address=ADDRESS'' flag for the forwarding rule.
+Otherwise, if the flag is unspecified, an ephemeral IP address is
+automatically assigned (global IP addresses for global forwarding rules
+and regional IP addresses for regional forwarding rules); an internal
+forwarding rule is automatically assigned an ephemeral internal IP
+address from the subnet specified with the ``--subnet'' flag. You must
+provide an IP address for an internal self-managed forwarding rule.
 
-        Different types of load balancers work at different layers of the OSI
-        networking model (http://en.wikipedia.org/wiki/Network_layer). Layer 3
-        targets include target pools, target SSL proxies, target TCP proxies,
-        and backend services. Layer 7 targets include target HTTP proxies,
-        target HTTPS and target gRPC proxies. For more information, refer to
-        https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
-        """
+Different types of load balancers work at different layers of the OSI
+networking model (http://en.wikipedia.org/wiki/Network_layer). Layer 3
+targets include target pools, target SSL proxies, target TCP proxies,
+and backend services. Layer 7 targets include target HTTP proxies,
+target HTTPS and target gRPC proxies. For more information, refer to
+https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts.
+"""
 
 
 # This is the list of valid values for the --target-bundle option, used

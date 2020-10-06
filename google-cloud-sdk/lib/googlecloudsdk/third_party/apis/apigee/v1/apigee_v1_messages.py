@@ -908,8 +908,8 @@ class ApigeeOrganizationsEnvgroupsAttachmentsListRequest(_messages.Message):
     pageToken: Page token, returned by a previous
       ListEnvironmentGroupAttachments call, that you can use to retrieve the
       next page.
-    parent: Required. Name of the organization in the following format:
-      `organizations/{org}`.
+    parent: Required. Name of the environment group in the following format:
+      `organizations/{org}/envgroups/{envgroup}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4551,11 +4551,12 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
 
   Fields:
     analyticsRegion: Required. Primary GCP region for analytics data storage.
-      For valid values, see [Create an
-      organization](https://docs.apigee.com/hybrid/latest/precog-provision).
+      For valid values, see [Create an Apigee
+      organization](https://cloud.google.com/apigee/docs/api-platform/get-
+      started/create-org).
     attributes: Not used by Apigee.
-    authorizedNetwork: Compute Engine network used for ServiceNetworking to be
-      peered with Apigee runtime instances. See [Getting started with the
+    authorizedNetwork: Compute Engine network used for Service Networking to
+      be peered with Apigee runtime instances. See [Getting started with the
       Service Networking API](https://cloud.google.com/service-
       infrastructure/docs/service-networking/getting-started). Valid only when
       [RuntimeType] is set to CLOUD. The value can be updated only when there
@@ -4590,7 +4591,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     subscription purchased.
 
     Values:
-      RUNTIME_TYPE_UNSPECIFIED: <no description>
+      RUNTIME_TYPE_UNSPECIFIED: Runtime type not specified.
       CLOUD: Google-managed Apigee runtime.
       HYBRID: User-managed Apigee hybrid runtime.
     """
@@ -4605,7 +4606,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     pricing](https://cloud.google.com/apigee/pricing/).
 
     Values:
-      SUBSCRIPTION_TYPE_UNSPECIFIED: <no description>
+      SUBSCRIPTION_TYPE_UNSPECIFIED: Subscription type not specified.
       PAID: Full subscription to Apigee has been purchased.
       TRIAL: Subscription to Apigee is free, limited, and used for evaluation
         purposes only.
@@ -5440,7 +5441,8 @@ class GoogleCloudApigeeV1SyncAuthorization(_messages.Message):
       multiple service accounts, for example, if you have multiple
       environments and wish to assign a unique service account to each one.
       The service accounts must have **Apigee Synchronizer Manager** role. See
-      also [Create service accounts](https://docs.apigee.com/hybrid/latest/sa-
+      also [Create service
+      accounts](https://cloud.google.com/apigee/docs/hybrid/latest/sa-
       about#create-the-service-accounts).
   """
 

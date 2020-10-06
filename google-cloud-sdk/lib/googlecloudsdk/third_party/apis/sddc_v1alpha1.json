@@ -525,15 +525,16 @@
         }
       }
     },
-    "ListClusterGroupsResponse": {
-      "id": "ListClusterGroupsResponse",
+    "ListPrivateCloudsResponse": {
+      "id": "ListPrivateCloudsResponse",
+      "description": "A response with a list of zero or more private clouds in a region.",
       "type": "object",
       "properties": {
-        "clusterGroups": {
-          "description": "A list of SDDC cluster groups.",
+        "privateClouds": {
+          "description": "A list of SDDC private clouds.",
           "type": "array",
           "items": {
-            "$ref": "ClusterGroup"
+            "$ref": "PrivateCloud"
           }
         },
         "nextPageToken": {
@@ -549,13 +550,13 @@
         }
       }
     },
-    "ClusterGroup": {
-      "id": "ClusterGroup",
-      "description": "A cluster group resource. ClusterGroup is a regional resource.",
+    "PrivateCloud": {
+      "id": "PrivateCloud",
+      "description": "A private cloud resource. PrivateCloud is a regional resource.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of this ClusterGroup. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+          "description": "Output only. The resource name of this PrivateCloud. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud`",
           "readOnly": true,
           "type": "string"
         },
@@ -586,20 +587,15 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "status": {
-          "description": "Output only. Deprecated. Use state instead. Status of the resource.",
-          "readOnly": true,
-          "type": "string"
-        },
         "state": {
           "description": "State of the resource.",
           "type": "string",
           "enumDescriptions": [
             "The default value. This value should never be used.",
-            "The cluster group is ready.",
-            "The cluster group is being created.",
-            "The cluster group is being deleted.",
-            "The cluster group is being updated."
+            "The private cloud is ready.",
+            "The private cloud is being created.",
+            "The private cloud is being deleted.",
+            "The private cloud is being updated."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -703,6 +699,102 @@
         "externalIp": {
           "description": "NSX external address when access is enabled.",
           "type": "string"
+        }
+      }
+    },
+    "ListClusterGroupsResponse": {
+      "id": "ListClusterGroupsResponse",
+      "type": "object",
+      "properties": {
+        "clusterGroups": {
+          "description": "A list of SDDC cluster groups.",
+          "type": "array",
+          "items": {
+            "$ref": "ClusterGroup"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be send as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "List of Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ClusterGroup": {
+      "id": "ClusterGroup",
+      "description": "A cluster group resource. ClusterGroup is a regional resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this ClusterGroup. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/clusterGroups\/my-group`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "The description of this resource.",
+          "type": "string"
+        },
+        "networkConfig": {
+          "description": "NetworkConfig passed in the param.",
+          "$ref": "NetworkConfig"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Update time of the resource.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "status": {
+          "description": "Output only. Deprecated. Use state instead. Status of the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "State of the resource.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value should never be used.",
+            "The cluster group is ready.",
+            "The cluster group is being created.",
+            "The cluster group is being deleted.",
+            "The cluster group is being updated."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "DELETING",
+            "UPDATING"
+          ]
+        },
+        "vcenter": {
+          "description": "Output only. vCenter information.",
+          "readOnly": true,
+          "$ref": "Vcenter"
+        },
+        "nsx": {
+          "description": "Output only. Nsx information.",
+          "readOnly": true,
+          "$ref": "Nsx"
         }
       }
     },
@@ -2330,6 +2422,168 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a ClusterGroupBackup."
+                }
+              }
+            },
+            "privateClouds": {
+              "methods": {
+                "list": {
+                  "id": "sddc.projects.locations.privateClouds.list",
+                  "path": "v1alpha1/{+parent}/privateClouds",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The location and project which will be queried for data centers. For example: `projects\/my-project\/locations\/us-central1`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of privateClouds to return. The service may return fewer than this value.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListPrivateCloudsRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPrivateCloudsRequest` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "List filter.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListPrivateCloudsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists PrivateClouds in a given project and location(region)."
+                },
+                "get": {
+                  "id": "sddc.projects.locations.privateClouds.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the PrivateCloud to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "PrivateCloud"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single PrivateCloud."
+                },
+                "create": {
+                  "id": "sddc.projects.locations.privateClouds.create",
+                  "path": "v1alpha1/{+parent}/privateClouds",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The location(region) and project where the new PrivateCloud will be created. For example: `projects\/my-project\/locations\/us-central1`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "privateCloudId": {
+                      "description": "Required. The user-provided id of the PrivateCloud to be created. This id must be unique among PrivateClouds within the parent and will become the final token in the name URI.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "PrivateCloud"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new PrivateCloud in a given project and location(region). The creation is executed asynchronously and callers may check the returned operation to track its progress. Once the operation is completed the new PrivateCloud will be fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call DeleteOperation."
+                },
+                "patch": {
+                  "id": "sddc.projects.locations.privateClouds.patch",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of this PrivateCloud. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields: \"description\" \"labels\" \"network_config.external_ip_access\"",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "PrivateCloud"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates description, labels and network config of a specific privateCloud."
+                },
+                "delete": {
+                  "id": "sddc.projects.locations.privateClouds.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the PrivateCloud to be deleted.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a PrivateCloud."
                 }
               }
             },

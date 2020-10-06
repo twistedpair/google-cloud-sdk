@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import datetime
 import enum
 
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -38,8 +39,23 @@ from googlecloudsdk.core.util import scaled_integer
 import six
 
 
-LONG_LIST_ROW_FORMAT = ('{size:>10}  {creation_time:>19}  {url}{metageneration}'
+LONG_LIST_ROW_FORMAT = ('{size:>10}  {creation_time:>20}  {url}{metageneration}'
                         '{etag}')
+
+
+def _get_long_listing_creation_time_string(datetime_object):
+  """Converts datetime to UTC or 'None' string for long listing output."""
+  if not datetime_object:
+    return 'None'
+  # Can't use CloudSDK core.util.times.FormatDateTime because of:
+  # https://bugs.python.org/issue29097.
+  # Also cannot use datetime.astimezone because the function doesn't alter
+  # datetimes that have different offsets if they have the same timezone.
+  offset = datetime_object.utcoffset()
+  if offset:
+    datetime_object = (datetime_object - offset).replace(
+        tzinfo=datetime.timezone.utc)
+  return datetime_object.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 class DisplayDetail(enum.Enum):
@@ -103,8 +119,8 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
           url=self.resource.storage_url.url_string, metageneration='',
           etag='')
 
-    creation_time = ('None' if not self.resource.creation_time else
-                     self.resource.creation_time.strftime('%Y-%m-%d %H:%M:%S'))
+    creation_time = _get_long_listing_creation_time_string(
+        self.resource.creation_time)
 
     if self._all_versions:
       url_string = self.resource.storage_url.url_string

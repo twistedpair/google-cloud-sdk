@@ -244,6 +244,31 @@
         "analyticsEnabled": {
           "description": "Whether the bucket is opted in to advanced log analytics. This field may only be set at bucket creation and cannot be changed later.",
           "type": "boolean"
+        },
+        "logLink": {
+          "description": "Configures a linked dataset in BigQuery corresponding to this log bucket. Requires analytics_enabled to be True.",
+          "$ref": "LogLink"
+        }
+      }
+    },
+    "LogLink": {
+      "id": "LogLink",
+      "description": "This is used to link logs managed by Cloud Logging with a customer's dataset in BigQuery. Once linked, authorized views are created in the destination dataset that give read-access to the log data.WARNING: LogLinks are still experimental, and may change its behavior in the future.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enables a log link, and creates a BigQuery dataset in the same parent project as the log bucket. The dataset will be named the same as the log bucket name, and will contain views to access the logs in the bucket.If an active log link is disabled, the dataset and views are deleted.",
+          "type": "boolean"
+        },
+        "linkedBigqueryDataset": {
+          "description": "Output only. The name of the BigQuery dataset this log bucket is linked to. Example:\"bigquery.googleapis.com\/projects\/PROJECT_ID\/datasets\/DATASET\"",
+          "readOnly": true,
+          "type": "string"
+        },
+        "loggingServiceAccount": {
+          "description": "Output only. An IAM service account used by Cloud Logging to create views on the destination dataset.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

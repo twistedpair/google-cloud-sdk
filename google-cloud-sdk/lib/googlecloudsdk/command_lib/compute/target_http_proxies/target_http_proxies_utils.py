@@ -61,14 +61,11 @@ def IsGlobalTargetHttpProxiesRef(target_http_proxy_ref):
 
 
 def SendGetRequest(client, target_http_proxy_ref):
-  """Sends Target HTTP Proxy get request."""
+  """Send Url Maps get request."""
   if target_http_proxy_ref.Collection() == 'compute.regionTargetHttpProxies':
-    request = client.messages.ComputeRegionTargetHttpProxiesGetRequest(
-        **target_http_proxy_ref.AsDict())
-    collection = client.apitools_client.regionTargetHttpProxies
-    return client.MakeRequests([(collection, 'Get', request)])[0]
-
-  request = client.messages.ComputeTargetHttpProxiesGetRequest(
-      **target_http_proxy_ref.AsDict())
-  collection = client.apitools_client.targetHttpProxies
-  return client.MakeRequests([(collection, 'Get', request)])[0]
+    return client.apitools_client.regionTargetHttpProxies.Get(
+        client.messages.ComputeRegionTargetHttpProxiesGetRequest(
+            **target_http_proxy_ref.AsDict()))
+  return client.apitools_client.targetHttpProxies.Get(
+      client.messages.ComputeTargetHttpProxiesGetRequest(
+          **target_http_proxy_ref.AsDict()))

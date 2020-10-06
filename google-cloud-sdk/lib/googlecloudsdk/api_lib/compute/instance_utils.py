@@ -245,7 +245,8 @@ def CreateSchedulingMessage(messages,
                             node_affinities=None,
                             min_node_cpu=None,
                             location_hint=None,
-                            maintenance_freeze_duration=None):
+                            maintenance_freeze_duration=None,
+                            maintenance_interval=None):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
   # makes sense, since no-restart-on-failure is defined as "store-true", and
@@ -274,8 +275,12 @@ def CreateSchedulingMessage(messages,
     scheduling.locationHint = location_hint
 
   if maintenance_freeze_duration:
-    scheduling.maintenanceFreezeDurationHours = maintenance_freeze_duration
+    scheduling.maintenanceFreezeDurationHours = \
+      maintenance_freeze_duration // 3600  # sec to hour
 
+  if maintenance_interval:
+    scheduling.maintenanceInterval = messages.\
+      Scheduling.MaintenanceIntervalValueValuesEnum(maintenance_interval)
   return scheduling
 
 
@@ -479,6 +484,10 @@ def GetScheduling(args,
   if hasattr(args, 'maintenance_freeze_duration') and args.IsSpecified(
       'maintenance_freeze_duration'):
     freeze_duration = args.maintenance_freeze_duration
+  maintenance_interval = None
+  if hasattr(args, 'maintenance_interval') and args.IsSpecified(
+      'maintenance_interval'):
+    maintenance_interval = args.maintenance_interval
   return CreateSchedulingMessage(
       messages=client.messages,
       maintenance_policy=args.maintenance_policy,
@@ -487,7 +496,8 @@ def GetScheduling(args,
       node_affinities=node_affinities,
       min_node_cpu=min_node_cpu,
       location_hint=location_hint,
-      maintenance_freeze_duration=freeze_duration)
+      maintenance_freeze_duration=freeze_duration,
+      maintenance_interval=maintenance_interval)
 
 
 def GetServiceAccounts(args, client, skip_defaults):

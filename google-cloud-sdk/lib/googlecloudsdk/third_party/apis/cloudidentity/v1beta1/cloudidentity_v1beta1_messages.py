@@ -1080,9 +1080,10 @@ class CloudidentityGroupsMembershipsCheckTransitiveMembershipRequest(_messages.M
       where `group_id` is the unique id assigned to the Group to which the
       Membership belongs to.
     query: Required. A CEL expression that MUST include member specification.
-      This is a `required` field. Example query: member_key_id ==
-      'member_key_id_value' [ && member_key_namespace ==
-      'member_key_namespace_value' ]
+      This is a `required` field. Certain groups are uniquely identified by
+      both a 'member_key_id' and a 'member_key_namespace', which requires an
+      additional query input: 'member_key_namespace'. Example query:
+      `member_key_id == 'member_key_id_value'`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1129,8 +1130,10 @@ class CloudidentityGroupsMembershipsGetMembershipGraphRequest(_messages.Message)
       wildcard collection is provided, all membership paths connected to the
       member will be returned.
     query: Required. A CEL expression that MUST include member specification
-      AND label(s). Example query: member_key_id == 'member_key_id_value' [ &&
-      member_key_namespace == 'member_key_namespace_value' ] && in labels
+      AND label(s). Certain groups are uniquely identified by both a
+      'member_key_id' and a 'member_key_namespace', which requires an
+      additional query input: 'member_key_namespace'. Example query:
+      `member_key_id == 'member_key_id_value' && in labels`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1261,8 +1264,10 @@ class CloudidentityGroupsMembershipsSearchTransitiveGroupsRequest(_messages.Mess
     query: Required. A CEL expression that MUST include member specification
       AND label(s). This is a `required` field. Users can search on label
       attributes of groups. CONTAINS match ('in') is supported on labels.
-      Example query: member_key_id == 'member_key_id_value' [ &&
-      member_key_namespace == 'member_key_namespace_value' ] && in labels
+      Certain groups are uniquely identified by both a 'member_key_id' and a
+      'member_key_namespace', which requires an additional query input:
+      'member_key_namespace'. Example query: `member_key_id ==
+      'member_key_id_value' && in labels`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2773,7 +2778,9 @@ class MembershipAdjacencyList(_messages.Message):
 
   Fields:
     edges: Each edge contains information about the member that belongs to
-      this group.
+      this group. Note: Fields returned here will help identify the specific
+      Membership resource (e.g name, preferred_member_key and role), but may
+      not be a comprehensive list of all fields.
     group: Resource name of the group that the members belong to.
   """
 

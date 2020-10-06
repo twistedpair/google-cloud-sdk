@@ -175,6 +175,133 @@ class AiplatformProjectsLocationsCustomJobsListRequest(_messages.Message):
   readMask = _messages.StringField(5)
 
 
+class AiplatformProjectsLocationsCustomJobsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsCustomJobsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsCustomJobsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsCustomJobsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsCustomJobsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsCustomJobsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsCustomJobsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsCustomJobsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsCustomJobsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsCustomJobsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsDataLabelingJobsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDataLabelingJobsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDataLabelingJobsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDataLabelingJobsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsDataLabelingJobsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDataLabelingJobsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsDatasetsAnnotationSpecsGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDatasetsAnnotationSpecsGetRequest object.
 
@@ -187,6 +314,76 @@ class AiplatformProjectsLocationsDatasetsAnnotationSpecsGetRequest(_messages.Mes
 
   name = _messages.StringField(1, required=True)
   readMask = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsCancelRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsDeleteRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsListRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsWaitRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDatasetsAnnotationSpecsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsDatasetsCreateRequest(_messages.Message):
@@ -227,6 +424,75 @@ class AiplatformProjectsLocationsDatasetsDataItemsAnnotationsListRequest(_messag
   readMask = _messages.StringField(6)
 
 
+class AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsCance
+  lRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsDelet
+  eRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsGetRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsListRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsWaitRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDatasetsDataItemsAnnotationsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsDatasetsDataItemsListRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDatasetsDataItemsListRequest object.
 
@@ -247,6 +513,72 @@ class AiplatformProjectsLocationsDatasetsDataItemsListRequest(_messages.Message)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
   readMask = _messages.StringField(6)
+
+
+class AiplatformProjectsLocationsDatasetsDataItemsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsDataItemsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsDataItemsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsDataItemsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsDataItemsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsDataItemsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsDataItemsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsDataItemsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsDatasetsDataItemsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsDataItemsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsDatasetsDeleteRequest(_messages.Message):
@@ -325,6 +657,67 @@ class AiplatformProjectsLocationsDatasetsListRequest(_messages.Message):
   readMask = _messages.StringField(6)
 
 
+class AiplatformProjectsLocationsDatasetsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsDatasetsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsDatasetsPatchRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsDatasetsPatchRequest object.
 
@@ -341,6 +734,72 @@ class AiplatformProjectsLocationsDatasetsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Dataset = _messages.MessageField('GoogleCloudAiplatformV1beta1Dataset', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsSavedQueriesOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsSavedQueriesOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsSavedQueriesOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsSavedQueriesOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsDatasetsSavedQueriesOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDatasetsSavedQueriesOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsEndpointsCreateRequest(_messages.Message):
@@ -443,6 +902,67 @@ class AiplatformProjectsLocationsEndpointsListRequest(_messages.Message):
   readMask = _messages.StringField(5)
 
 
+class AiplatformProjectsLocationsEndpointsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsEndpointsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsEndpointsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsEndpointsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsEndpointsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsEndpointsPatchRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsPatchRequest object.
 
@@ -491,6 +1011,206 @@ class AiplatformProjectsLocationsEndpointsUndeployModelRequest(_messages.Message
   googleCloudAiplatformV1beta1UndeployModelRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1UndeployModelRequest', 2)
 
 
+class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsC
+  ancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsD
+  eleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsG
+  etRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsL
+  istRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesOperationsW
+  aitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsCancelRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsDeleteRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsGetRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsListRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsWaitRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsFeaturestoresEntityTypesOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsFeaturestoresOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsFeaturestoresOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsFeaturestoresOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeaturestoresOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsGetRequest object.
 
@@ -499,6 +1219,71 @@ class AiplatformProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsHumanInTheLoopsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsHumanInTheLoopsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsHumanInTheLoopsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsHumanInTheLoopsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsHumanInTheLoopsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsHumanInTheLoopsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsHyperparameterTuningJobsCancelRequest(_messages.Message):
@@ -587,6 +1372,77 @@ class AiplatformProjectsLocationsHyperparameterTuningJobsListRequest(_messages.M
   readMask = _messages.StringField(5)
 
 
+class AiplatformProjectsLocationsHyperparameterTuningJobsOperationsCancelRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsHyperparameterTuningJobsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsHyperparameterTuningJobsOperationsDeleteRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsHyperparameterTuningJobsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsHyperparameterTuningJobsOperationsGetRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsHyperparameterTuningJobsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsHyperparameterTuningJobsOperationsListRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsHyperparameterTuningJobsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsHyperparameterTuningJobsOperationsWaitRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsHyperparameterTuningJobsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsListRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsListRequest object.
 
@@ -619,6 +1475,72 @@ class AiplatformProjectsLocationsMigratableResourcesBatchMigrateRequest(_message
   parent = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsMigratableResourcesOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMigratableResourcesOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsMigratableResourcesOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMigratableResourcesOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsMigratableResourcesOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMigratableResourcesOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsMigratableResourcesOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMigratableResourcesOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsMigratableResourcesOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMigratableResourcesOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsMigratableResourcesSearchRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsMigratableResourcesSearchRequest object.
 
@@ -634,6 +1556,73 @@ class AiplatformProjectsLocationsMigratableResourcesSearchRequest(_messages.Mess
 
   googleCloudAiplatformV1beta1SearchMigratableResourcesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1SearchMigratableResourcesRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsCanc
+  elRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsDele
+  teRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsGetRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsList
+  Request object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelDeploymentMonitoringJobsOperationsWait
+  Request object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsModelsDeleteRequest(_messages.Message):
@@ -679,6 +1668,72 @@ class AiplatformProjectsLocationsModelsEvaluationsListRequest(_messages.Message)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsModelsEvaluationsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsEvaluationsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelsEvaluationsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsEvaluationsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelsEvaluationsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsEvaluationsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelsEvaluationsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsEvaluationsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsModelsEvaluationsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsEvaluationsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsModelsEvaluationsSlicesGetRequest(_messages.Message):
@@ -760,6 +1815,67 @@ class AiplatformProjectsLocationsModelsListRequest(_messages.Message):
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsModelsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsModelsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsModelsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsModelsPatchRequest(_messages.Message):
@@ -856,6 +1972,67 @@ class AiplatformProjectsLocationsOperationsWaitRequest(_messages.Message):
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsPipelineJobsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPipelineJobsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPipelineJobsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPipelineJobsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsPipelineJobsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsSpecialistPoolsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsSpecialistPoolsCreateRequest object.
 
@@ -919,6 +2096,71 @@ class AiplatformProjectsLocationsSpecialistPoolsListRequest(_messages.Message):
   readMask = _messages.StringField(4)
 
 
+class AiplatformProjectsLocationsSpecialistPoolsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSpecialistPoolsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsSpecialistPoolsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSpecialistPoolsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsSpecialistPoolsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSpecialistPoolsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsSpecialistPoolsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSpecialistPoolsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsSpecialistPoolsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsSpecialistPoolsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
 class AiplatformProjectsLocationsSpecialistPoolsPatchRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsSpecialistPoolsPatchRequest object.
 
@@ -933,6 +2175,335 @@ class AiplatformProjectsLocationsSpecialistPoolsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1SpecialistPool = _messages.MessageField('GoogleCloudAiplatformV1beta1SpecialistPool', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsStudiesTrialsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesTrialsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsStudiesTrialsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesTrialsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsStudiesTrialsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesTrialsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsStudiesTrialsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesTrialsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsStudiesTrialsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsStudiesTrialsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsOperationsCancelRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsOperationsDeleteRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsOperationsListRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsOperationsWaitRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsCancel
+  Request object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsDelete
+  Request object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsGetRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsListRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsWaitRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsRunsOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperat
+  ionsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperat
+  ionsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperat
+  ionsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperat
+  ionsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesOperat
+  ionsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsTensorboardsOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsOperationsCancelRequest object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTensorboardsOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsTensorboardsOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsOperationsWaitRequest object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class AiplatformProjectsLocationsTrainingPipelinesCancelRequest(_messages.Message):
@@ -1014,6 +2585,72 @@ class AiplatformProjectsLocationsTrainingPipelinesListRequest(_messages.Message)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsTrainingPipelinesOperationsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTrainingPipelinesOperationsCancelRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be cancelled.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTrainingPipelinesOperationsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTrainingPipelinesOperationsDeleteRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTrainingPipelinesOperationsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTrainingPipelinesOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsTrainingPipelinesOperationsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTrainingPipelinesOperationsListRequest
+  object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsTrainingPipelinesOperationsWaitRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTrainingPipelinesOperationsWaitRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource to wait on.
+    timeout: The maximum duration to wait before timing out. If left blank,
+      the wait will be at most the time permitted by the underlying HTTP/RPC
+      protocol. If RPC context deadline is also specified, the shorter one
+      will be used.
+  """
+
+  name = _messages.StringField(1, required=True)
+  timeout = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformUiAnnotationSpecStats(_messages.Message):
@@ -4864,8 +6501,8 @@ class GoogleCloudAiplatformV1beta1ExplainResponse(_messages.Message):
   Fields:
     deployedModelId: ID of the Endpoint's DeployedModel that served this
       explanation.
-    explanations: The explanations of the Model's predictions[]. It has the
-      same number of elements as instances to be explained.
+    explanations: The explanations of the Model's PredictResponse.predictions.
+      It has the same number of elements as instances to be explained.
   """
 
   deployedModelId = _messages.StringField(1)
@@ -4873,8 +6510,9 @@ class GoogleCloudAiplatformV1beta1ExplainResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1Explanation(_messages.Message):
-  r"""Explanation of a prediction produced by the Model on a given instance.
-  Currently, only AutoML tabular Models support explanation.
+  r"""Explanation of a prediction (provided in PredictResponse.predictions )
+  produced by the Model on a given instance. Currently, only AutoML tabular
+  Models support explanation.
 
   Fields:
     attributions: Output only. Feature attributions grouped by predicted

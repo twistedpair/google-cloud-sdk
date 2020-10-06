@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 import abc
 
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.command_lib.kuberun import auth
 from googlecloudsdk.command_lib.kuberun import flags
 from googlecloudsdk.command_lib.kuberun import kuberuncli
@@ -34,36 +33,29 @@ from googlecloudsdk.core.console import console_io
 class KubeRunCommand(base.BinaryBackedCommand):
   """Base class to inherit kuberun command classes from.
 
-    Child classes must implement BuildArgs and Command methods.
+    Child classes must implement the Command method and define a 'flags'
+    attribute.
   """
 
-  @staticmethod
-  def _Flags(parser):
-    base.BinaryBackedCommand._Flags(parser)
-    flags.AddClusterConnectionFlags(parser)
+  @classmethod
+  def Args(cls, parser):
+    if not hasattr(cls, 'flags'):
+      raise AttributeError('type {} has not defined the flags attribute'.format(
+          cls.__name__))
+    flags.RegisterFlags(parser, cls.flags)
 
-  def _AddCommonFlags(self, command, args):
-    exec_args = []
-    try:
-      if args.IsSpecified('all_namespaces'):
-        exec_args.extend(['--all-namespaces'])
-    except parser_errors.UnknownDestinationException:
-      # all_namespaces is not a valid flag for this command
-      pass
-    if args.IsSpecified('namespace'):
-      exec_args.extend(['--namespace', args.namespace])
-
-    exec_args.extend(flags.TranslateClusterConnectionFlags(args))
-    command.extend(exec_args)
-
-  @abc.abstractmethod
   def BuildKubeRunArgs(self, args):
     """Converts args to argument list for the given kuberun command.
 
     Args:
       args: the arguments passed to gcloud
+    Returns:
+      a list representing the arguments to be passed to the kuberun binary
     """
-    pass
+    command_args = []
+    for f in self.flags:
+      command_args.extend(f.FormatFlags(args))
+    return command_args
 
   @abc.abstractmethod
   def Command(self):
@@ -92,9 +84,6 @@ class KubeRunCommand(base.BinaryBackedCommand):
     command_executor = self.CommandExecutor()
     project = properties.VALUES.core.project.Get()
     command = self.Command()
-    # TODO(b/168745545) adding commands and args to 'command' defeats the
-    # purpose of BinaryBackedOperation._ParseArgsForCommand
-    self._AddCommonFlags(command, args)
     command.extend(self.BuildKubeRunArgs(args))
     response = command_executor(
         command=command,

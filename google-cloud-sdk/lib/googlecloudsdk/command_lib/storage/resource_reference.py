@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.command_lib.storage import storage_url
 
 
 class Resource(object):
@@ -39,16 +39,17 @@ class Resource(object):
   For filesystem and prefix URLs, metadata_object is not populated.
 
   Attributes:
-    storage_url (StorageUrl): A StorageUrl object representing the resource
+    storage_url (StorageUrl): A StorageUrl object representing the resource.
   """
 
-  def __init__(self, storage_url):
+  def __init__(self, storage_url_object):
     """Initialize the Resource object.
 
     Args:
-      storage_url (StorageUrl): A StorageUrl object representing the resource.
+      storage_url_object (StorageUrl): A StorageUrl object representing the
+          resource.
     """
-    self.storage_url = storage_url
+    self.storage_url = storage_url_object
 
   def __str__(self):
     return self.storage_url.url_string
@@ -67,14 +68,14 @@ class CloudResource(Resource):
   """For Resource classes with CloudUrl's.
 
   Attributes:
-    scheme (cloud_api.ProviderPrefix): Prefix indicating what cloud provider
+    scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
         hosts the bucket.
   """
 
   @property
   def scheme(self):
     # TODO(b/168690302): Stop using string scheme in storage_url.py.
-    return cloud_api.ProviderPrefix(self.storage_url.scheme)
+    return storage_url.ProviderPrefix(self.storage_url.scheme)
 
 
 class BucketResource(CloudResource):
@@ -83,16 +84,16 @@ class BucketResource(CloudResource):
   Attributes:
     storage_url (StorageUrl): A StorageUrl object representing the bucket.
     name (str): Name of bucket.
-    scheme (cloud_api.ProviderPrefix): Prefix indicating what cloud provider
+    scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
         hosts the bucket.
     etag (str): HTTP version identifier.
     metadata (object | dict): Cloud-provider specific data type for holding
         bucket metadata.
   """
 
-  def __init__(self, storage_url, etag=None, metadata=None):
+  def __init__(self, storage_url_object, etag=None, metadata=None):
     """Initializes resource. Args are a subset of attributes."""
-    super(BucketResource, self).__init__(storage_url)
+    super(BucketResource, self).__init__(storage_url_object)
     self.etag = etag
     self.metadata = metadata
 
@@ -112,30 +113,35 @@ class BucketResource(CloudResource):
 
 
 class ObjectResource(Resource):
-  """Class representing a  cloud object.
+  """Class representing a cloud object confirmed to exist.
 
   Attributes:
     storage_url (StorageUrl): A StorageUrl object representing the object.
     creation_time (datetime|None): Time the object was created.
-    scheme (cloud_api.ProviderPrefix): Prefix indicating what cloud provider
-        hosts the object.
-    name (str): Name of object.
     etag (str|None): HTTP version identifier.
-    generation (str|None): Generation (or "version") of the underlying object.
     metageneration (int|None): Generation object's metadata.
     metadata (object|dict|None): Cloud-specific metadata type.
     size (int|None): Size of object in bytes.
+    scheme (storage_url.ProviderPrefix): Prefix indicating what cloud provider
+        hosts the object.
+    bucket (str): Bucket that contains the object.
+    name (str): Name of object.
+    generation (str|None): Generation (or "version") of the underlying object.
   """
 
-  def __init__(self, storage_url, creation_time=None, etag=None, metadata=None,
-               metageneration=None, size=None):
+  def __init__(self, storage_url_object, creation_time=None, etag=None,
+               metadata=None, metageneration=None, size=None):
     """Initializes resource. Args are a subset of attributes."""
-    super(ObjectResource, self).__init__(storage_url)
+    super(ObjectResource, self).__init__(storage_url_object)
     self.creation_time = creation_time
     self.etag = etag
     self.metageneration = metageneration
     self.metadata = metadata
     self.size = size
+
+  @property
+  def bucket(self):
+    return self.storage_url.bucket_name
 
   @property
   def name(self):
@@ -147,7 +153,7 @@ class ObjectResource(Resource):
 
   def __eq__(self, other):
     return (
-        super().__eq__(other) and
+        super(ObjectResource, self).__eq__(other) and
         self.etag == other.etag and
         self.generation == other.generation and
         self.metadata == other.metadata
@@ -161,18 +167,19 @@ class PrefixResource(Resource):
   """Class representing a  cloud object.
 
   Attributes:
-    storage_url (StorageUrl): A StorageUrl object representing the prefix
+    storage_url (StorageUrl): A StorageUrl object representing the prefix.
     prefix (str): A string representing the prefix.
   """
 
-  def __init__(self, storage_url, prefix):
+  def __init__(self, storage_url_object, prefix):
     """Initialize the PrefixResource object.
 
     Args:
-      storage_url (StorageUrl): A StorageUrl object representing the prefix
+      storage_url_object (StorageUrl): A StorageUrl object representing the
+          prefix.
       prefix (str): A string representing the prefix.
     """
-    super(PrefixResource, self).__init__(storage_url)
+    super(PrefixResource, self).__init__(storage_url_object)
     self.prefix = prefix
 
   def is_container(self):

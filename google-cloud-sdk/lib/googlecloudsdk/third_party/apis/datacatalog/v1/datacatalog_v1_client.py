@@ -48,6 +48,8 @@ class DatacatalogV1(base_api.BaseApiClient):
     self.projects_locations_tagTemplates_fields_enumValues = self.ProjectsLocationsTagTemplatesFieldsEnumValuesService(self)
     self.projects_locations_tagTemplates_fields = self.ProjectsLocationsTagTemplatesFieldsService(self)
     self.projects_locations_tagTemplates = self.ProjectsLocationsTagTemplatesService(self)
+    self.projects_locations_taxonomies_policyTags = self.ProjectsLocationsTaxonomiesPolicyTagsService(self)
+    self.projects_locations_taxonomies = self.ProjectsLocationsTaxonomiesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1134,6 +1136,512 @@ class DatacatalogV1(base_api.BaseApiClient):
         relative_path='v1/{+resource}:testIamPermissions',
         request_field='testIamPermissionsRequest',
         request_type_name='DatacatalogProjectsLocationsTagTemplatesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTaxonomiesPolicyTagsService(base_api.BaseApiService):
+    """Service class for the projects_locations_taxonomies_policyTags resource."""
+
+    _NAME = 'projects_locations_taxonomies_policyTags'
+
+    def __init__(self, client):
+      super(DatacatalogV1.ProjectsLocationsTaxonomiesPolicyTagsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a policy tag in a taxonomy.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1PolicyTag) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/policyTags',
+        request_field='googleCloudDatacatalogV1PolicyTag',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1PolicyTag',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a policy tag. This method also deletes - all of its descendant policy tags, if any, - the policies associated with the policy tag and its descendants, and - references from BigQuery table schema of the policy tag and its descendants.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a policy tag.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1PolicyTag) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1PolicyTag',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the IAM policy for a policy tag or a taxonomy.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}:getIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all policy tags in a taxonomy.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1ListPolicyTagsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/policyTags',
+        request_field='',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsListRequest',
+        response_type_name='GoogleCloudDatacatalogV1ListPolicyTagsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a policy tag. This method can update the policy tag's display name, description, and parent policy tag.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1PolicyTag) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDatacatalogV1PolicyTag',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1PolicyTag',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM policy for a policy tag or a taxonomy.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}:setIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the permissions that a caller has on a specified policy tag or taxonomy.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesPolicyTagsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}/policyTags/{policyTagsId}:testIamPermissions',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.policyTags.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPolicyTagsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTaxonomiesService(base_api.BaseApiService):
+    """Service class for the projects_locations_taxonomies resource."""
+
+    _NAME = 'projects_locations_taxonomies'
+
+    def __init__(self, client):
+      super(DatacatalogV1.ProjectsLocationsTaxonomiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a taxonomy in a specified project. The taxonomy is initially empty, i.e., does not contain policy tags.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1Taxonomy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/taxonomies',
+        request_field='googleCloudDatacatalogV1Taxonomy',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesCreateRequest',
+        response_type_name='GoogleCloudDatacatalogV1Taxonomy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a taxonomy. This method will also delete all policy tags in this taxonomy, their associated policies, and the policy tags references from BigQuery columns.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}',
+        http_method='DELETE',
+        method_id='datacatalog.projects.locations.taxonomies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Export(self, request, global_params=None):
+      r"""Exports taxonomies as the requested type and returns the taxonomies including their policy tags. The requested taxonomies must belong to one project. SerializedTaxonomy protos with nested policy tags that are generated by this method can be used as input for future ImportTaxonomies calls.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1ExportTaxonomiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies:export',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.export',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['serializedTaxonomies', 'taxonomies'],
+        relative_path='v1/{+parent}/taxonomies:export',
+        request_field='',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesExportRequest',
+        response_type_name='GoogleCloudDatacatalogV1ExportTaxonomiesResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a taxonomy.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1Taxonomy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesGetRequest',
+        response_type_name='GoogleCloudDatacatalogV1Taxonomy',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the IAM policy for a policy tag or a taxonomy.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:getIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Creates new taxonomies (including their policy tags) by importing from inlined source or cross-regional source. New taxonomies will be created in a given parent project. If using the cross-regional source, a new taxonomy is created by copying from a source in another region. If using the inlined source, this method provides a way to bulk create taxonomies and policy tags using nested proto structure.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1ImportTaxonomiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies:import',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/taxonomies:import',
+        request_field='googleCloudDatacatalogV1ImportTaxonomiesRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesImportRequest',
+        response_type_name='GoogleCloudDatacatalogV1ImportTaxonomiesResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all taxonomies in a project in a particular location that the caller has permission to view.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1ListTaxonomiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies',
+        http_method='GET',
+        method_id='datacatalog.projects.locations.taxonomies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/taxonomies',
+        request_field='',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesListRequest',
+        response_type_name='GoogleCloudDatacatalogV1ListTaxonomiesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a taxonomy. This method can update the taxonomy's display name, description, and activated policy types.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1Taxonomy) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}',
+        http_method='PATCH',
+        method_id='datacatalog.projects.locations.taxonomies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDatacatalogV1Taxonomy',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesPatchRequest',
+        response_type_name='GoogleCloudDatacatalogV1Taxonomy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM policy for a policy tag or a taxonomy.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:setIamPolicy',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the permissions that a caller has on a specified policy tag or taxonomy.
+
+      Args:
+        request: (DatacatalogProjectsLocationsTaxonomiesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/taxonomies/{taxonomiesId}:testIamPermissions',
+        http_method='POST',
+        method_id='datacatalog.projects.locations.taxonomies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='DatacatalogProjectsLocationsTaxonomiesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )

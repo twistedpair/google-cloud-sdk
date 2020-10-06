@@ -4544,6 +4544,16 @@ class GoogleCloudDialogflowV2beta1BatchUpdateIntentsResponse(_messages.Message):
   intents = _messages.MessageField('GoogleCloudDialogflowV2beta1Intent', 1, repeated=True)
 
 
+class GoogleCloudDialogflowV2beta1BatchUpdateSmartMessagingEntriesResponse(_messages.Message):
+  r"""Response message for [Documents.BatchUpdateSmartMessagingEntries]
+
+  Fields:
+    smartMessagingEntries: List of updated smart message entries.
+  """
+
+  smartMessagingEntries = _messages.MessageField('GoogleCloudDialogflowV2beta1SmartMessagingEntry', 1, repeated=True)
+
+
 class GoogleCloudDialogflowV2beta1Context(_messages.Message):
   r"""Dialogflow contexts are similar to natural language context. If a person
   says to you "they are orange", you need context in order to understand what
@@ -6408,6 +6418,85 @@ class GoogleCloudDialogflowV2beta1SessionEntityType(_messages.Message):
   entities = _messages.MessageField('GoogleCloudDialogflowV2beta1EntityTypeEntity', 1, repeated=True)
   entityOverrideMode = _messages.EnumField('EntityOverrideModeValueValuesEnum', 2)
   name = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2beta1SmartMessagingEntry(_messages.Message):
+  r"""Smart Messaging Entry resource.
+
+  Enums:
+    StateValueValuesEnum: Required. Smart Messaging Entry's enabled/disabled
+      state.
+
+  Fields:
+    messageInfo: Output only. Metadata of the message entry
+    name: The unique identifier of this message entry. Required for
+      [Documents.GetSmartMessagingEntry],
+      [Documents.CreateSmartMessagingEntry],
+      [Documents.UpdateSmartMessagingEntry], and
+      [Documents.DeleteSmartMessagingEntry]. Format:
+      `projects//knowledgeBases//documents//smartMessagingEntries/`
+    rawText: Required. The raw text of the message.
+    state: Required. Smart Messaging Entry's enabled/disabled state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. Smart Messaging Entry's enabled/disabled state.
+
+    Values:
+      SMART_MESSAGING_ENTRY_STATE_UNSPECIFIED: State unspecified.
+      ENABLED: This smart reply message is enabled and used when generating
+        suggestions.
+      DISABLED: This smart reply message is disabled and is not used when
+        generating suggestions.
+    """
+    SMART_MESSAGING_ENTRY_STATE_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
+  messageInfo = _messages.MessageField('GoogleCloudDialogflowV2beta1SmartMessagingEntryInfo', 1)
+  name = _messages.StringField(2)
+  rawText = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class GoogleCloudDialogflowV2beta1SmartMessagingEntryInfo(_messages.Message):
+  r"""Smart messaging entry info.
+
+  Enums:
+    CreationMethodValueValuesEnum: Output only. Method of how the smart
+      messaging entry was created. When the smart messaging entry was
+      generated from GenerateDocument, the value is AUTOMATIC; when the entry
+      was manually added through CreateSmartMessagingEntry, the value is
+      MANUAL.
+
+  Fields:
+    creationMethod: Output only. Method of how the smart messaging entry was
+      created. When the smart messaging entry was generated from
+      GenerateDocument, the value is AUTOMATIC; when the entry was manually
+      added through CreateSmartMessagingEntry, the value is MANUAL.
+    occurrenceCount: The number of times an entry's message text has been
+      uttered
+  """
+
+  class CreationMethodValueValuesEnum(_messages.Enum):
+    r"""Output only. Method of how the smart messaging entry was created. When
+    the smart messaging entry was generated from GenerateDocument, the value
+    is AUTOMATIC; when the entry was manually added through
+    CreateSmartMessagingEntry, the value is MANUAL.
+
+    Values:
+      CREATION_METHOD_UNSPECIFIED: The creation method of the smart messaging
+        entry is unspecified. The value is unused.
+      AUTOMATIC: The smart messaging entry was generated automatically from
+        backend pipeline.
+      MANUAL: The smart messaging entry was added manually.
+    """
+    CREATION_METHOD_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+
+  creationMethod = _messages.EnumField('CreationMethodValueValuesEnum', 1)
+  occurrenceCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):

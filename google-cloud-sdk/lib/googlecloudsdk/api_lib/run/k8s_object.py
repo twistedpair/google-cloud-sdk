@@ -27,6 +27,12 @@ from googlecloudsdk.core.console import console_attr
 
 import six
 
+try:
+  # Python 3.3 and above.
+  collections_abc = collections.abc
+except AttributeError:
+  collections_abc = collections
+
 
 SERVING_GROUP = 'serving.knative.dev'
 AUTOSCALING_GROUP = 'autoscaling.knative.dev'
@@ -415,7 +421,7 @@ def LabelsFromMetadata(messages_mod, metadata):
       value_field='value')
 
 
-class LazyListWrapper(collections.MutableSequence):
+class LazyListWrapper(collections_abc.MutableSequence):
   """Wraps a list that does not exist at object creation time.
 
   We sometimes have a need to allow access to a list property of a nested

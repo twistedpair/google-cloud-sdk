@@ -307,33 +307,6 @@ class BinaryauthorizationV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def TestAttestationOccurrence(self, request, global_params=None):
-      r"""Returns whether the given Attestation for the given image URI was signed by the given Attestor.
-
-      Args:
-        request: (BinaryauthorizationProjectsAttestorsTestAttestationOccurrenceRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestAttestationOccurrenceResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestAttestationOccurrence')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestAttestationOccurrence.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha2/projects/{projectsId}/attestors/{attestorsId}:testAttestationOccurrence',
-        http_method='POST',
-        method_id='binaryauthorization.projects.attestors.testAttestationOccurrence',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha2/{+name}:testAttestationOccurrence',
-        request_field='testAttestationOccurrenceRequest',
-        request_type_name='BinaryauthorizationProjectsAttestorsTestAttestationOccurrenceRequest',
-        response_type_name='TestAttestationOccurrenceResponse',
-        supports_download=False,
-    )
-
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
@@ -385,6 +358,33 @@ class BinaryauthorizationV1alpha2(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='Attestor',
         response_type_name='Attestor',
+        supports_download=False,
+    )
+
+    def ValidateAttestationOccurrence(self, request, global_params=None):
+      r"""Returns whether the given Attestation for the given image URI was signed by the given Attestor.
+
+      Args:
+        request: (BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateAttestationOccurrenceResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateAttestationOccurrence')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateAttestationOccurrence.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/attestors/{attestorsId}:validateAttestationOccurrence',
+        http_method='POST',
+        method_id='binaryauthorization.projects.attestors.validateAttestationOccurrence',
+        ordered_params=['attestor'],
+        path_params=['attestor'],
+        query_params=[],
+        relative_path='v1alpha2/{+attestor}:validateAttestationOccurrence',
+        request_field='validateAttestationOccurrenceRequest',
+        request_type_name='BinaryauthorizationProjectsAttestorsValidateAttestationOccurrenceRequest',
+        response_type_name='ValidateAttestationOccurrenceResponse',
         supports_download=False,
     )
 

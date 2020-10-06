@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import enum
 
+from googlecloudsdk.command_lib.storage import storage_url
+
 
 class DownloadStrategy(enum.Enum):
   """Enum class for specifying download strategy."""
@@ -34,13 +36,7 @@ class FieldsScope(enum.Enum):
   SHORT = 3
 
 
-class ProviderPrefix(enum.Enum):
-  """Prefix strings for cloud storage provider URLs."""
-  GCS = 'gs'
-  S3 = 's3'
-
-
-DEFAULT_PROVIDER = ProviderPrefix.GCS
+DEFAULT_PROVIDER = storage_url.ProviderPrefix.GCS
 NUM_ITEMS_PER_LIST_PAGE = 1000
 
 
@@ -55,28 +51,6 @@ class RequestConfig(object):
     self.predefined_acl_string = predefined_acl_string
 
 
-# TODO (b/168332070): Move to a private function for gcs_api.
-def ValidateObjectMetadata(metadata):
-  """Ensures metadata supplies the needed fields for copy and insert.
-
-  Args:
-    metadata (apitools.messages.Object | None): Apitools Object metadata to
-        validate.
-
-  Raises:
-    ValueError: Metadata is invalid.
-  """
-  if not metadata:
-    raise ValueError(
-        'No object metadata supplied for object.')
-  if not metadata.name:
-    raise ValueError(
-        'Object metadata supplied for object had no object name.')
-  if not metadata.bucket:
-    raise ValueError(
-        'Object metadata supplied for object had no bucket name.')
-
-
 class CloudApi(object):
   """Abstract base class for interacting with cloud storage providers.
 
@@ -86,11 +60,12 @@ class CloudApi(object):
   a separate instance of the Cloud API should be instantiated per-thread.
   """
 
-  def CreateBucket(self, metadata, fields_scope=None):
+  def CreateBucket(self, bucket_resource, fields_scope=None):
     """Creates a new bucket with the specified metadata.
 
     Args:
-      metadata (apitools.messages.Bucket): Object defining new bucket metadata.
+      bucket_resource (resource_reference.BucketResource):
+          Resource containing metadata for new bucket.
       fields_scope (FieldsScope): Determines the fields and projection
           parameters of API call.
 
@@ -101,7 +76,7 @@ class CloudApi(object):
       ValueError: Invalid fields_scope.
 
     Returns:
-      apitools.messages.Bucket object describing new bucket metadata.
+      resource_reference.BucketResource representing new bucket.
     """
     raise NotImplementedError('CreateBucket must be overridden.')
 
@@ -239,7 +214,7 @@ class CloudApi(object):
   def PatchObjectMetadata(self,
                           bucket_name,
                           object_name,
-                          metadata,
+                          object_resource,
                           fields_scope=None,
                           generation=None,
                           request_config=None):
@@ -248,8 +223,9 @@ class CloudApi(object):
     Args:
       bucket_name (str): Bucket containing the object.
       object_name (str): Object name.
-      metadata (apitools.messages.Object): Object defining metadata to be
-          updated.
+      object_resource (resource_reference.ObjectResource): Contains
+          metadata that will be used to update cloud object. May have
+          different name than object_name argument.
       fields_scope (FieldsScope): Determines the fields and projection
           parameters of API call.
       generation (string): Generation (or version) of the object to update.
@@ -268,21 +244,18 @@ class CloudApi(object):
     raise NotImplementedError('PatchObjectMetadata must be overridden.')
 
   def CopyObject(self,
-                 source_object_metadata,
-                 destination_object_metadata,
-                 source_object_generation=None,
+                 source_resource,
+                 destination_resource,
                  progress_callback=None,
                  request_config=None):
     """Copies an object within the cloud of one provider.
 
     Args:
-      source_object_metadata (apitools.messages.Object): Object metadata for
-          source object. Must include bucket name, object name, and etag.
-      destination_object_metadata (apitools.messages.Object): Object metadata
-          for new object. Must include bucket and object name.
-      source_object_generation (string): Generation of the source object to
-          copy. Separate from source_object_metadata because Apitools wants
-          an int generation, but we need to support strings for AWS.
+      source_resource (resource_reference.ObjectResource): Resource for
+          source object. Must have been confirmed to exist in the cloud.
+      destination_resource (resource_reference.ObjectResource|UnknownResource):
+          Resource for destination object. Existence doesn't have to be
+          confirmed.
       progress_callback (function): Optional callback function for progress
           notifications. Receives calls with arguments (bytes_transferred,
           total_size).
@@ -357,15 +330,15 @@ class CloudApi(object):
 
   def UploadObject(self,
                    upload_stream,
-                   object_metadata,
+                   upload_resource,
                    progress_callback=None,
                    request_config=None):
     """Uploads object data and metadata.
 
     Args:
       upload_stream (stream): Seekable stream of object data.
-      object_metadata (apitools.messages.Object): Object containing the correct
-          metadata to upload. Exact class depends on API being used.
+      upload_resource (resource_reference.FileObjectResource): Resource
+          containing the correct metadata to upload.
       progress_callback (function): Callback function for progress
           notifications. Receives calls with arguments (bytes_transferred,
           total_size).

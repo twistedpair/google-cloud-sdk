@@ -76,6 +76,7 @@ def SharedArgRules():
           'device',
           'network_profile',
           'num_flaky_test_attempts',
+          'other_files',
           'record_video',
           'results_bucket',
           'results_dir',

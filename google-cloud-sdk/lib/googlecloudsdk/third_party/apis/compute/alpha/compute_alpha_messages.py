@@ -547,9 +547,11 @@ class AccessConfig(_messages.Message):
     ONE_TO_ONE_NAT.
 
     Values:
+      DIRECT_IPV6: <no description>
       ONE_TO_ONE_NAT: <no description>
     """
-    ONE_TO_ONE_NAT = 0
+    DIRECT_IPV6 = 0
+    ONE_TO_ONE_NAT = 1
 
   externalIpv6 = _messages.StringField(1)
   externalIpv6PrefixLength = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -3155,12 +3157,18 @@ class BackendBucketCdnPolicy(_messages.Message):
     negativeCaching: Negative caching allows per-status code TTLs to be set,
       in order to apply fine-grained caching for common errors or redirects.
       This can reduce the load on your origin and improve end-user experience
-      by reducing response latency. By default, Cloud CDN will apply the
-      following default TTLs to these status codes: HTTP 300 (Multiple
-      Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410
-      (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
-      Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These
-      defaults can be overridden in negative_caching_policy
+      by reducing response latency. When the cache mode is set to
+      CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, negative caching applies to
+      responses with the specified response code that lack any Cache-Control,
+      Expires, or Pragma: no-cache directives. When the cache mode is set to
+      FORCE_CACHE_ALL, negative caching applies to all responses with the
+      specified response code, and override any caching headers. By default,
+      Cloud CDN will apply the following default TTLs to these status codes:
+      HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404
+      (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP
+      405 (Method Not Found), 421 (Misdirected Request), 501 (Not
+      Implemented): 60s. These defaults can be overridden in
+      negative_caching_policy.
     negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
@@ -3251,10 +3259,10 @@ class BackendBucketCdnPolicyNegativeCachingPolicy(_messages.Message):
     code: The HTTP status code to define a TTL against. Only HTTP status codes
       300, 301, 308, 404, 405, 410, 421, 451 and 501 are can be specified as
       values, and you cannot specify a status code more than once.
-    ttl: The TTL (in seconds) to cache responses with the corresponding status
-      code for. The maximum allowed value is 1800s (30 minutes), noting that
-      infrequently accessed objects may be evicted from the cache before the
-      defined TTL.
+    ttl: The TTL (in seconds) for which to cache responses with the
+      corresponding status code. The maximum allowed value is 1800s (30
+      minutes), noting that infrequently accessed objects may be evicted from
+      the cache before the defined TTL.
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4001,12 +4009,18 @@ class BackendServiceCdnPolicy(_messages.Message):
     negativeCaching: Negative caching allows per-status code TTLs to be set,
       in order to apply fine-grained caching for common errors or redirects.
       This can reduce the load on your origin and improve end-user experience
-      by reducing response latency. By default, Cloud CDN will apply the
-      following default TTLs to these status codes: HTTP 300 (Multiple
-      Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410
-      (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
-      Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These
-      defaults can be overridden in negative_caching_policy
+      by reducing response latency. When the cache mode is set to
+      CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, negative caching applies to
+      responses with the specified response code that lack any Cache-Control,
+      Expires, or Pragma: no-cache directives. When the cache mode is set to
+      FORCE_CACHE_ALL, negative caching applies to all responses with the
+      specified response code, and override any caching headers. By default,
+      Cloud CDN will apply the following default TTLs to these status codes:
+      HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404
+      (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP
+      405 (Method Not Found), 421 (Misdirected Request), 501 (Not
+      Implemented): 60s. These defaults can be overridden in
+      negative_caching_policy.
     negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
@@ -4098,10 +4112,10 @@ class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
     code: The HTTP status code to define a TTL against. Only HTTP status codes
       300, 301, 308, 404, 405, 410, 421, 451 and 501 are can be specified as
       values, and you cannot specify a status code more than once.
-    ttl: The TTL (in seconds) to cache responses with the corresponding status
-      code for. The maximum allowed value is 1800s (30 minutes), noting that
-      infrequently accessed objects may be evicted from the cache before the
-      defined TTL.
+    ttl: The TTL (in seconds) for which to cache responses with the
+      corresponding status code. The maximum allowed value is 1800s (30
+      minutes), noting that infrequently accessed objects may be evicted from
+      the cache before the defined TTL.
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -18987,6 +19001,34 @@ class ComputeRegionInstantSnapshotsDeleteRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeRegionInstantSnapshotsExportRequest(_messages.Message):
+  r"""A ComputeRegionInstantSnapshotsExportRequest object.
+
+  Fields:
+    instantSnapshot: Name of the instant snapshot to export.
+    instantSnapshotExportParams: A InstantSnapshotExportParams resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    region: The name of the zone for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  instantSnapshotExportParams = _messages.MessageField('InstantSnapshotExportParams', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+
+
 class ComputeRegionInstantSnapshotsGetIamPolicyRequest(_messages.Message):
   r"""A ComputeRegionInstantSnapshotsGetIamPolicyRequest object.
 
@@ -25458,6 +25500,34 @@ class ComputeZoneInstantSnapshotsDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeZoneInstantSnapshotsExportRequest(_messages.Message):
+  r"""A ComputeZoneInstantSnapshotsExportRequest object.
+
+  Fields:
+    instantSnapshot: Name of the instant snapshot to export.
+    instantSnapshotExportParams: A InstantSnapshotExportParams resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instantSnapshot = _messages.StringField(1, required=True)
+  instantSnapshotExportParams = _messages.MessageField('InstantSnapshotExportParams', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeZoneInstantSnapshotsGetIamPolicyRequest(_messages.Message):
@@ -35918,6 +35988,47 @@ class InstantSnapshot(_messages.Message):
   zone = _messages.StringField(16)
 
 
+class InstantSnapshotExportParams(_messages.Message):
+  r"""A InstantSnapshotExportParams object.
+
+  Enums:
+    OutputTypeValueValuesEnum: The format of the output file.
+
+  Fields:
+    baseInstantSnapshot: An optional base instant snapshot that this resource
+      is compared against. If not specified, all blocks of this resource are
+      exported. The base instant snapshot and this resource must be created
+      from the same disk. The base instant snapshot must be created earlier in
+      time than this resource.
+    bucketName: The name of an existing bucket in Cloud Storage where the
+      changed blocks will be stored. The Google Service Account must have read
+      and write access to this bucket. The bucket has to be in the same region
+      as this resource.
+    encryptionKey: Encryption key used to encrypt the instant snapshot.
+    objectName: Name of the output Bigstore object storing the changed blocks.
+      Object name must be less than 1024 bytes in length.
+    outputType: The format of the output file.
+  """
+
+  class OutputTypeValueValuesEnum(_messages.Enum):
+    r"""The format of the output file.
+
+    Values:
+      INVALID: <no description>
+      METADATA_AND_DATA: <no description>
+      METADATA_ONLY: <no description>
+    """
+    INVALID = 0
+    METADATA_AND_DATA = 1
+    METADATA_ONLY = 2
+
+  baseInstantSnapshot = _messages.StringField(1)
+  bucketName = _messages.StringField(2)
+  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 3)
+  objectName = _messages.StringField(4)
+  outputType = _messages.EnumField('OutputTypeValueValuesEnum', 5)
+
+
 class InstantSnapshotList(_messages.Message):
   r"""Contains a list of InstantSnapshot resources.
 
@@ -40792,6 +40903,10 @@ class NetworkInterface(_messages.Message):
       with error 412 conditionNotMet.
     internalIpv6PrefixLength: [Output Only] The prefix length of the primary
       internal IPv6 range.
+    ipv6AccessConfigs: An array of IPv6 access configurations for this
+      interface. Currently, only one IPv6 access config, DIRECT_IPV6, is
+      supported. If there is no ipv6AccessConfig specified, then this instance
+      will have no external IPv6 Internet access.
     ipv6Address: [Output Only] An IPv6 internal network address for this
       network interface.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
@@ -40862,15 +40977,16 @@ class NetworkInterface(_messages.Message):
   aliasIpRanges = _messages.MessageField('AliasIpRange', 2, repeated=True)
   fingerprint = _messages.BytesField(3)
   internalIpv6PrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  ipv6Address = _messages.StringField(5)
-  kind = _messages.StringField(6, default='compute#networkInterface')
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  networkIP = _messages.StringField(9)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 10)
-  queueCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 12)
-  subnetwork = _messages.StringField(13)
+  ipv6AccessConfigs = _messages.MessageField('AccessConfig', 5, repeated=True)
+  ipv6Address = _messages.StringField(6)
+  kind = _messages.StringField(7, default='compute#networkInterface')
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  networkIP = _messages.StringField(10)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 11)
+  queueCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 13)
+  subnetwork = _messages.StringField(14)
 
 
 class NetworkList(_messages.Message):
@@ -48325,7 +48441,7 @@ class ResourcePolicy(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: A string attribute.
-    groupPlacementPolicy: Resource policy for instacnes for placement
+    groupPlacementPolicy: Resource policy for instances for placement
       configuration.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -49067,11 +49183,11 @@ class Route(_messages.Message):
       You can only specify the internet gateway using a full or partial valid
       URL:  projects/project/global/gateways/default-internet-gateway
     nextHopIlb: The URL to a forwarding rule of type
-      loadBalancingScheme=INTERNAL that should handle matching packets. You
-      can only specify the forwarding rule as a partial or full URL. For
-      example, the following are all valid URLs:   - https://www.googleapis.co
-      m/compute/v1/projects/project/regions/region/forwardingRules/forwardingR
-      ule  - regions/region/forwardingRules/forwardingRule
+      loadBalancingScheme=INTERNAL that should handle matching packets or the
+      IP address of the forwarding Rule. For example, the following are all
+      valid URLs:   - 10.128.0.56  - https://www.googleapis.com/compute/v1/pro
+      jects/project/regions/region/forwardingRules/forwardingRule  -
+      regions/region/forwardingRules/forwardingRule
     nextHopInstance: The URL to an instance that should handle matching
       packets. You can specify this as a full or partial URL. For example: htt
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
@@ -49703,10 +49819,11 @@ class RouterBgpPeer(_messages.Message):
       use a different value.
     peerIpAddress: IP address of the BGP interface outside Google Cloud
       Platform. Only IPv4 is supported.
-    routerApplianceInstance: URI of the VM instance that is used as third
-      party router appliances such as Next Gen Firewalls, Virtual Routers, SD-
-      WAN. The VM instance must live in zones contained in the same region as
-      this Cloud Router. The VM instance is the peer side of the BGP session.
+    routerApplianceInstance: URI of the VM instance that is used as third-
+      party router appliances such as Next Gen Firewalls, Virtual Routers, or
+      Router Appliances. The VM instance must be located in zones contained in
+      the same region as this Cloud Router. The VM instance is the peer side
+      of the BGP session.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -49945,25 +50062,26 @@ class RouterInterface(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
-    privateIpAddress: The regional private internal IP address that will be
-      used to establish BGP session to a VM instance, which is used as third
-      party router appliances such as Next Gen Firewalls, Virtual Routers, SD-
-      WAN.
+    privateIpAddress: The regional private internal IP address that is used to
+      establish BGP sessions to a VM instance acting as a third-party Router
+      Appliance, such as a Next Gen Firewall, a Virtual Router, or an SD-WAN
+      VM.
     redundantInterface: Name of the interface that will be redundant with the
       current interface you are creating. The redundantInterface must belong
       to the same Cloud Router as the interface here. To establish the BGP
-      session to SD-WAN VM, you must create two BGP peers, and the two BGP
-      peers need to be attached to two separate interfaces that are redundant
+      session to a Router Appliance VM, you must create two BGP peers. The two
+      BGP peers must be attached to two separate interfaces that are redundant
       with each other. The redundant_interface must be 1-63 characters long,
       and comply with RFC1035. Specifically, the redundant_interface must be
       1-63 characters long and match the regular expression
       `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
       lowercase letter, and all following characters must be a dash, lowercase
       letter, or digit, except the last character, which cannot be a dash.
-    subnetwork: The URL of the subnetwork resource this interface belongs to,
-      it must be in the same region as the router. When you establish a BGP
-      session to a VM instance using this interface, the VM instance must
-      belong to the same subnetwork as the subnetwork specified here.
+    subnetwork: The URL of the subnetwork resource that this interface belongs
+      to, which must be in the same region as the Cloud Router. When you
+      establish a BGP session to a VM instance using this interface, the VM
+      instance must belong to the same subnetwork as the subnetwork specified
+      here.
   """
 
   class ManagementTypeValueValuesEnum(_messages.Enum):

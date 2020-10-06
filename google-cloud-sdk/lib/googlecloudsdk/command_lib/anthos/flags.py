@@ -217,7 +217,6 @@ def GetLoginConfigFlag():
   return base.Argument(
       '--login-config',
       required=False,
-      type=ExpandLocalDirAndVersion,
       help='Specifies the configuration yaml '
            'file for login. Can be a file path or a URL.')
 

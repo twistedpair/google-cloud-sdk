@@ -110,16 +110,16 @@
     }
   },
   "schemas": {
-    "TestAttestationOccurrenceRequest": {
-      "id": "TestAttestationOccurrenceRequest",
-      "description": "Request message for ValidationHelperV1Alpha2.TestAttestationOccurrence.",
+    "ValidateAttestationOccurrenceRequest": {
+      "id": "ValidateAttestationOccurrenceRequest",
+      "description": "Request message for ValidationHelperV1.ValidateAttestationOccurrence.",
       "type": "object",
       "properties": {
         "attestation": {
           "description": "Required. An AttestationOccurrence to be checked that it can be verified by the Attestor. It does not have to be an existing entity in Container Analysis. It must otherwise be a valid AttestationOccurrence.",
           "$ref": "AttestationOccurrence"
         },
-        "occurrenceNoteName": {
+        "occurrenceNote": {
           "description": "Required. The resource name of the Note to which the containing Occurrence is associated.",
           "type": "string"
         },
@@ -181,9 +181,9 @@
         }
       }
     },
-    "TestAttestationOccurrenceResponse": {
-      "id": "TestAttestationOccurrenceResponse",
-      "description": "Response message for ValidationHelperV1Alpha2.TestAttestationOccurrence.",
+    "ValidateAttestationOccurrenceResponse": {
+      "id": "ValidateAttestationOccurrenceResponse",
+      "description": "Response message for ValidationHelperV1.ValidateAttestationOccurrence.",
       "type": "object",
       "properties": {
         "result": {
@@ -634,13 +634,13 @@
       "resources": {
         "attestors": {
           "methods": {
-            "testAttestationOccurrence": {
-              "id": "binaryauthorization.projects.attestors.testAttestationOccurrence",
-              "path": "v1alpha2/{+name}:testAttestationOccurrence",
-              "flatPath": "v1alpha2/projects/{projectsId}/attestors/{attestorsId}:testAttestationOccurrence",
+            "validateAttestationOccurrence": {
+              "id": "binaryauthorization.projects.attestors.validateAttestationOccurrence",
+              "path": "v1alpha2/{+attestor}:validateAttestationOccurrence",
+              "flatPath": "v1alpha2/projects/{projectsId}/attestors/{attestorsId}:validateAttestationOccurrence",
               "httpMethod": "POST",
               "parameters": {
-                "name": {
+                "attestor": {
                   "description": "Required. The resource name of the Attestor of the occurrence, in the format `projects\/*\/attestors\/*`.",
                   "location": "path",
                   "required": true,
@@ -649,13 +649,13 @@
                 }
               },
               "parameterOrder": [
-                "name"
+                "attestor"
               ],
               "request": {
-                "$ref": "TestAttestationOccurrenceRequest"
+                "$ref": "ValidateAttestationOccurrenceRequest"
               },
               "response": {
-                "$ref": "TestAttestationOccurrenceResponse"
+                "$ref": "ValidateAttestationOccurrenceResponse"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"

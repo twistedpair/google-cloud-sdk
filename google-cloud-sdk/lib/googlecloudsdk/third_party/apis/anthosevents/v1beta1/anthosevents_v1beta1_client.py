@@ -40,12 +40,14 @@ class AnthoseventsV1beta1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.customresourcedefinitions = self.CustomresourcedefinitionsService(self)
+    self.namespaces_apiserversources = self.NamespacesApiserversourcesService(self)
     self.namespaces_brokers = self.NamespacesBrokersService(self)
     self.namespaces_cloudauditlogssources = self.NamespacesCloudauditlogssourcesService(self)
     self.namespaces_cloudpubsubsources = self.NamespacesCloudpubsubsourcesService(self)
     self.namespaces_cloudschedulersources = self.NamespacesCloudschedulersourcesService(self)
     self.namespaces_cloudstoragesources = self.NamespacesCloudstoragesourcesService(self)
     self.namespaces_customresourcedefinitions = self.NamespacesCustomresourcedefinitionsService(self)
+    self.namespaces_pingsources = self.NamespacesPingsourcesService(self)
     self.namespaces_triggers = self.NamespacesTriggersService(self)
     self.namespaces = self.NamespacesService(self)
 
@@ -82,6 +84,151 @@ class AnthoseventsV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AnthoseventsCustomresourcedefinitionsListRequest',
         response_type_name='ListCustomResourceDefinitionsResponse',
+        supports_download=False,
+    )
+
+  class NamespacesApiserversourcesService(base_api.BaseApiService):
+    """Service class for the namespaces_apiserversources resource."""
+
+    _NAME = 'namespaces_apiserversources'
+
+    def __init__(self, client):
+      super(AnthoseventsV1beta1.NamespacesApiserversourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new apiserversource.
+
+      Args:
+        request: (AnthoseventsNamespacesApiserversourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApiServerSource) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/apiserversources',
+        http_method='POST',
+        method_id='anthosevents.namespaces.apiserversources.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='apis/sources.knative.dev/v1beta1/{+parent}/apiserversources',
+        request_field='apiServerSource',
+        request_type_name='AnthoseventsNamespacesApiserversourcesCreateRequest',
+        response_type_name='ApiServerSource',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a apiserversource.
+
+      Args:
+        request: (AnthoseventsNamespacesApiserversourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/apiserversources/{apiserversourcesId}',
+        http_method='DELETE',
+        method_id='anthosevents.namespaces.apiserversources.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='apis/sources.knative.dev/v1beta1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesApiserversourcesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a apiserversource.
+
+      Args:
+        request: (AnthoseventsNamespacesApiserversourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApiServerSource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/apiserversources/{apiserversourcesId}',
+        http_method='GET',
+        method_id='anthosevents.namespaces.apiserversources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['region'],
+        relative_path='apis/sources.knative.dev/v1beta1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesApiserversourcesGetRequest',
+        response_type_name='ApiServerSource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list apiserversources.
+
+      Args:
+        request: (AnthoseventsNamespacesApiserversourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListApiServerSourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/apiserversources',
+        http_method='GET',
+        method_id='anthosevents.namespaces.apiserversources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/sources.knative.dev/v1beta1/{+parent}/apiserversources',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesApiserversourcesListRequest',
+        response_type_name='ListApiServerSourcesResponse',
+        supports_download=False,
+    )
+
+    def ReplaceApiServerSource(self, request, global_params=None):
+      r"""Rpc to replace a apiserversource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
+
+      Args:
+        request: (AnthoseventsNamespacesApiserversourcesReplaceApiServerSourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApiServerSource) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceApiServerSource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceApiServerSource.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/apiserversources/{apiserversourcesId}',
+        http_method='PUT',
+        method_id='anthosevents.namespaces.apiserversources.replaceApiServerSource',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['region'],
+        relative_path='apis/sources.knative.dev/v1beta1/{+name}',
+        request_field='apiServerSource',
+        request_type_name='AnthoseventsNamespacesApiserversourcesReplaceApiServerSourceRequest',
+        response_type_name='ApiServerSource',
         supports_download=False,
     )
 
@@ -817,6 +964,151 @@ class AnthoseventsV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AnthoseventsNamespacesCustomresourcedefinitionsGetRequest',
         response_type_name='CustomResourceDefinition',
+        supports_download=False,
+    )
+
+  class NamespacesPingsourcesService(base_api.BaseApiService):
+    """Service class for the namespaces_pingsources resource."""
+
+    _NAME = 'namespaces_pingsources'
+
+    def __init__(self, client):
+      super(AnthoseventsV1beta1.NamespacesPingsourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new pingsource.
+
+      Args:
+        request: (AnthoseventsNamespacesPingsourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PingSource) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/pingsources',
+        http_method='POST',
+        method_id='anthosevents.namespaces.pingsources.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='apis/sources.knative.dev/v1beta1/{+parent}/pingsources',
+        request_field='pingSource',
+        request_type_name='AnthoseventsNamespacesPingsourcesCreateRequest',
+        response_type_name='PingSource',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a pingsource.
+
+      Args:
+        request: (AnthoseventsNamespacesPingsourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/pingsources/{pingsourcesId}',
+        http_method='DELETE',
+        method_id='anthosevents.namespaces.pingsources.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        relative_path='apis/sources.knative.dev/v1beta1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesPingsourcesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a pingsource.
+
+      Args:
+        request: (AnthoseventsNamespacesPingsourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PingSource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/pingsources/{pingsourcesId}',
+        http_method='GET',
+        method_id='anthosevents.namespaces.pingsources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['region'],
+        relative_path='apis/sources.knative.dev/v1beta1/{+name}',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesPingsourcesGetRequest',
+        response_type_name='PingSource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list pingsources.
+
+      Args:
+        request: (AnthoseventsNamespacesPingsourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPingSourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/pingsources',
+        http_method='GET',
+        method_id='anthosevents.namespaces.pingsources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['continue_', 'fieldSelector', 'includeUninitialized', 'labelSelector', 'limit', 'resourceVersion', 'watch'],
+        relative_path='apis/sources.knative.dev/v1beta1/{+parent}/pingsources',
+        request_field='',
+        request_type_name='AnthoseventsNamespacesPingsourcesListRequest',
+        response_type_name='ListPingSourcesResponse',
+        supports_download=False,
+    )
+
+    def ReplacePingSource(self, request, global_params=None):
+      r"""Rpc to replace a pingsource. Only the spec and metadata labels and annotations are modifiable. After the Update request, Cloud Run will work to make the 'status' match the requested 'spec'. May provide metadata.resourceVersion to enforce update from last read for optimistic concurrency control.
+
+      Args:
+        request: (AnthoseventsNamespacesPingsourcesReplacePingSourceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PingSource) The response message.
+      """
+      config = self.GetMethodConfig('ReplacePingSource')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplacePingSource.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='apis/sources.knative.dev/v1beta1/namespaces/{namespacesId}/pingsources/{pingsourcesId}',
+        http_method='PUT',
+        method_id='anthosevents.namespaces.pingsources.replacePingSource',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='apis/sources.knative.dev/v1beta1/{+name}',
+        request_field='pingSource',
+        request_type_name='AnthoseventsNamespacesPingsourcesReplacePingSourceRequest',
+        response_type_name='PingSource',
         supports_download=False,
     )
 

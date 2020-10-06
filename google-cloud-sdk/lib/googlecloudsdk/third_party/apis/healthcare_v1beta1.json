@@ -655,10 +655,6 @@
       "description": "Request to import Annotations. The Annotations to be imported must have client-supplied resource names which indicate the annotation resource. The import operation is not atomic. If a failure occurs, any annotations already imported are not removed.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "The name of the Annotation store to which the server imports annotations, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-          "type": "string"
-        },
         "gcsSource": {
           "$ref": "GoogleCloudHealthcareV1beta1AnnotationGcsSource"
         }
@@ -680,10 +676,6 @@
       "description": "Request to export Annotations. The export operation is not atomic. If a failure occurs, any annotations already exported are not removed.",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "The name of the Annotation store to export annotations to, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-          "type": "string"
-        },
         "gcsDestination": {
           "description": "The Cloud Storage destination, which requires the `roles\/storage.objectAdmin` Cloud IAM role.",
           "$ref": "GoogleCloudHealthcareV1beta1AnnotationGcsDestination"
@@ -715,7 +707,7 @@
           "type": "string"
         },
         "force": {
-          "description": "If the destination table already exists and this flag is `TRUE`, the table is overwritten by the contents of the input store. If the flag is not set and the destination table already exists, the export call returns an error.",
+          "description": "Use `write_disposition` instead. If `write_disposition` is specified, this parameter is ignored. force=false is equivalent to write_disposition=WRITE_EMPTY and force=true is equivalent to write_disposition=WRITE_TRUNCATE.",
           "type": "boolean"
         },
         "schemaType": {
@@ -729,6 +721,22 @@
             "SCHEMA_TYPE_UNSPECIFIED",
             "SIMPLE"
           ]
+        },
+        "writeDisposition": {
+          "description": "Determines whether existing tables in the destination dataset are overwritten or appended to. If a write_disposition is specified, the `force` parameter is ignored.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default behavior is the same as WRITE_EMPTY.",
+            "Only export data if the destination table is empty.",
+            "Erase all existing data in a table before writing the instances.",
+            "Append data to the existing table."
+          ],
+          "enum": [
+            "WRITE_DISPOSITION_UNSPECIFIED",
+            "WRITE_EMPTY",
+            "WRITE_TRUNCATE",
+            "WRITE_APPEND"
+          ]
         }
       }
     },
@@ -737,10 +745,6 @@
       "description": "Request to evaluate an Annotation store against a ground truth [Annotation store].",
       "type": "object",
       "properties": {
-        "name": {
-          "description": "The Annotation store to compare against `golden_store`, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-          "type": "string"
-        },
         "evalInfoTypeMapping": {
           "description": "Optional. InfoType mapping for `eval_store`. Different resources can map to the same infoType. For example, `PERSON_NAME`, `PERSON`, `NAME`, and `HUMAN` are different. To map all of these into a single infoType (such as `PERSON_NAME`), specify the following mapping: ``` info_type_mapping[\"PERSON\"] = \"PERSON_NAME\" info_type_mapping[\"NAME\"] = \"PERSON_NAME\" info_type_mapping[\"HUMAN\"] = \"PERSON_NAME\" ``` Unmentioned infoTypes, such as `DATE`, are treated as identity mapping. For example: ``` info_type_mapping[\"DATE\"] = \"DATE\" ``` InfoTypes are case-insensitive.",
           "type": "object",
@@ -862,7 +866,7 @@
           "type": "string",
           "enumDescriptions": [
             "No category specified. This option is invalid.",
-            "Specify when this attribute captures properties of data resources. For example, data anonmity or data type.",
+            "Specify when this attribute captures properties of data resources. For example, data anonymity or data type.",
             "Specify when this attribute captures properties of access requests. For example, requester's role or requester's organization."
           ],
           "enum": [
@@ -872,7 +876,7 @@
           ]
         },
         "allowedValues": {
-          "description": "Required. Possible values for the attribute. An empty list is invalid. The list can only be expanded after creation.",
+          "description": "Required. Possible values for the attribute. The number of allowed values must not exceed 100. An empty list is invalid. The list can only be expanded after creation.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1095,7 +1099,7 @@
           }
         },
         "authorizationRule": {
-          "description": "The request conditions to meet to grant access.",
+          "description": "The request conditions to meet to grant access. In addition to any supported comparison operators, authorization rules may have `IN` operator as well as at most 10 logical operators that are limited to `AND` (`&&`), `OR` (`||`).",
           "$ref": "Expr"
         }
       }
@@ -1926,8 +1930,24 @@
           "type": "string"
         },
         "force": {
-          "description": "If the destination table already exists and this flag is `TRUE`, the table is overwritten by the contents of the DICOM store. If the flag is not set and the destination table already exists, the export call returns an error.",
+          "description": "Use `write_disposition` instead. If `write_disposition` is specified, this parameter is ignored. force=false is equivalent to write_disposition=WRITE_EMPTY and force=true is equivalent to write_disposition=WRITE_TRUNCATE.",
           "type": "boolean"
+        },
+        "writeDisposition": {
+          "description": "Determines whether the existing table in the destination is to be overwritten or appended to. If a write_disposition is specified, the `force` parameter is ignored.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default behavior is the same as WRITE_EMPTY.",
+            "Only export data if the destination table is empty.",
+            "Erase all existing data in a table before writing the instances.",
+            "Append data to the existing table."
+          ],
+          "enum": [
+            "WRITE_DISPOSITION_UNSPECIFIED",
+            "WRITE_EMPTY",
+            "WRITE_TRUNCATE",
+            "WRITE_APPEND"
+          ]
         }
       }
     },
@@ -1955,7 +1975,7 @@
       "type": "object",
       "properties": {
         "gcsSource": {
-          "description": "Cloud Storage source data location and import configuration. The Cloud Storage location requires the `roles\/storage.objectViewer` Cloud IAM role.",
+          "description": "Cloud Storage source data location and import configuration. The Cloud Healthcare Service Agent requires the `roles\/storage.objectViewer` Cloud IAM roles on the Cloud Storage location.",
           "$ref": "GoogleCloudHealthcareV1beta1DicomGcsSource"
         }
       }
@@ -1977,11 +1997,11 @@
       "type": "object",
       "properties": {
         "gcsDestination": {
-          "description": "The Cloud Storage output destination. The Cloud Storage location requires the `roles\/storage.objectAdmin` Cloud IAM role.",
+          "description": "The Cloud Storage output destination. The Cloud Healthcare Service Agent requires the `roles\/storage.objectAdmin` Cloud IAM roles on the Cloud Storage location.",
           "$ref": "GoogleCloudHealthcareV1beta1DicomGcsDestination"
         },
         "bigqueryDestination": {
-          "description": "The BigQuery output destination. You can only export to a BigQuery dataset that's in the same project as the DICOM store you're exporting from. The BigQuery location requires two IAM roles: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`.",
+          "description": "The BigQuery output destination. You can only export to a BigQuery dataset that's in the same project as the DICOM store you're exporting from. The Cloud Healthcare Service Agent requires two IAM roles on the BigQuery location: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`.",
           "$ref": "GoogleCloudHealthcareV1beta1DicomBigQueryDestination"
         }
       }
@@ -2558,7 +2578,7 @@
       "type": "object",
       "properties": {
         "gcsSource": {
-          "description": "Cloud Storage source data location and import configuration. The Cloud Storage location requires the `roles\/storage.objectViewer` Cloud IAM role.",
+          "description": "Cloud Storage source data location and import configuration. The Cloud Healthcare Service Agent requires the `roles\/storage.objectViewer` Cloud IAM roles on the Cloud Storage location.",
           "$ref": "GcsSource"
         }
       }
@@ -2585,117 +2605,6 @@
         }
       }
     },
-    "ImportResourcesRequest": {
-      "id": "ImportResourcesRequest",
-      "description": " Request to import resources.",
-      "type": "object",
-      "properties": {
-        "contentStructure": {
-          "description": "The content structure in the source location. If not specified, the server treats the input source files as BUNDLE.",
-          "type": "string",
-          "enumDescriptions": [
-            "If the content structure is not specified, the default value `BUNDLE` is used.",
-            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a bundle that contains one or more resources. Set the bundle type to `history` to import resource versions.",
-            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a single resource.",
-            "The entire file is one JSON bundle. The JSON can span multiple lines.",
-            "The entire file is one JSON resource. The JSON can span multiple lines."
-          ],
-          "enum": [
-            "CONTENT_STRUCTURE_UNSPECIFIED",
-            "BUNDLE",
-            "RESOURCE",
-            "BUNDLE_PRETTY",
-            "RESOURCE_PRETTY"
-          ]
-        },
-        "gcsSource": {
-          "description": "Cloud Storage source data location and import configuration. The Cloud Storage location requires the `roles\/storage.objectViewer` Cloud IAM role. Each Cloud Storage object should be a text file that contains the format specified in ContentStructure.",
-          "$ref": "GoogleCloudHealthcareV1beta1FhirRestGcsSource"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1beta1FhirRestGcsSource": {
-      "id": "GoogleCloudHealthcareV1beta1FhirRestGcsSource",
-      "description": " Specifies the configuration for importing data from Cloud Storage.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "Points to a Cloud Storage URI containing file(s) to import. The URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`. The URI can include wildcards in `object_id` and thus identify multiple files. Supported wildcards: * `*` to match 0 or more non-separator characters * `**` to match 0 or more characters (including separators). Must be used at the end of a path and with no other wildcards in the path. Can also be used with a file extension (such as .ndjson), which imports all files with the extension in the specified directory and its sub-directories. For example, `gs:\/\/my-bucket\/my-directory\/**.ndjson` imports all files with `.ndjson` extensions in `my-directory\/` and its sub-directories. * `?` to match 1 character Files matching the wildcard are expected to contain content only, no metadata.",
-          "type": "string"
-        }
-      }
-    },
-    "ExportResourcesRequest": {
-      "id": "ExportResourcesRequest",
-      "description": " Request to export resources.",
-      "type": "object",
-      "properties": {
-        "gcsDestination": {
-          "description": "The Cloud Storage output destination. The Cloud Storage location requires the `roles\/storage.objectAdmin` Cloud IAM role. The exported outputs are organized by FHIR resource types. The server creates one object per resource type. Each object contains newline delimited JSON, and each line is a FHIR resource.",
-          "$ref": "GoogleCloudHealthcareV1beta1FhirRestGcsDestination"
-        },
-        "bigqueryDestination": {
-          "description": "The BigQuery output destination. The BigQuery location requires two IAM roles: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`. The output is one BigQuery table per resource type.",
-          "$ref": "GoogleCloudHealthcareV1beta1FhirBigQueryDestination"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1beta1FhirRestGcsDestination": {
-      "id": "GoogleCloudHealthcareV1beta1FhirRestGcsDestination",
-      "description": " The configuration for exporting to Cloud Storage.",
-      "type": "object",
-      "properties": {
-        "uriPrefix": {
-          "description": "URI for a Cloud Storage directory where result files should be written (in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`). If there is no trailing slash, the service appends one when composing the object path. The user is responsible for creating the Cloud Storage bucket referenced in `uri_prefix`.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1beta1FhirBigQueryDestination": {
-      "id": "GoogleCloudHealthcareV1beta1FhirBigQueryDestination",
-      "description": "The configuration for exporting to BigQuery.",
-      "type": "object",
-      "properties": {
-        "datasetUri": {
-          "description": "BigQuery URI to an existing dataset, up to 2000 characters long, in the format `bq:\/\/projectId.bqDatasetId`.",
-          "type": "string"
-        },
-        "schemaConfig": {
-          "description": "The configuration for the exported BigQuery schema.",
-          "$ref": "SchemaConfig"
-        },
-        "force": {
-          "description": "If this flag is `TRUE`, all tables will be deleted from the dataset before the new exported tables are written. If the flag is not set and the destination dataset contains tables, the export call returns an error. This option is not used for the streaming export.",
-          "type": "boolean"
-        }
-      }
-    },
-    "SchemaConfig": {
-      "id": "SchemaConfig",
-      "description": "Configuration for the FHIR BigQuery schema. Determines how the server generates the schema.",
-      "type": "object",
-      "properties": {
-        "schemaType": {
-          "description": "Specifies the output schema type. Schema type is required.",
-          "type": "string",
-          "enumDescriptions": [
-            "No schema type specified. This type is unsupported.",
-            "A data-driven schema generated from the fields present in the FHIR data being exported, with no additional simplification.",
-            "Analytics schema defined by the FHIR community. See https:\/\/github.com\/FHIR\/sql-on-fhir\/blob\/master\/sql-on-fhir.md. BigQuery only allows a maximum of 10,000 columns per table. Due to this limitation, the server will not generate schemas for fields of type `Resource`, which can hold any resource type. The affected fields are `Parameters.parameter.resource`, `Bundle.entry.resource`, and `Bundle.entry.response.outcome`."
-          ],
-          "enum": [
-            "SCHEMA_TYPE_UNSPECIFIED",
-            "LOSSLESS",
-            "ANALYTICS"
-          ]
-        },
-        "recursiveStructureDepth": {
-          "description": "The depth for all recursive structures in the output analytics schema. For example, `concept` in the CodeSystem resource is a recursive structure; when the depth is 2, the CodeSystem table will have a column called `concept.concept` but not `concept.concept.concept`. If not specified or set to 0, the server will use the default value 2. The maximum depth allowed is 5.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "FhirStore": {
       "id": "FhirStore",
       "description": "Represents a FHIR store.",
@@ -2706,7 +2615,7 @@
           "type": "string"
         },
         "enableUpdateCreate": {
-          "description": "Whether this FHIR store has the [updateCreate capability](https:\/\/www.hl7.org\/fhir\/capabilitystatement-definitions.html#CapabilityStatement.rest.resource.updateCreate). This determines if the client can use an Update operation to create a new resource with a client-specified ID. If false, all IDs are server-assigned through the Create operation and attempts to update a non-existent resource return errors. Please treat the audit logs with appropriate levels of care if client-specified resource IDs contain sensitive data such as patient identifiers, those IDs are part of the FHIR resource path recorded in Cloud audit logs and Cloud Pub\/Sub notifications.",
+          "description": "Whether this FHIR store has the [updateCreate capability](https:\/\/www.hl7.org\/fhir\/capabilitystatement-definitions.html#CapabilityStatement.rest.resource.updateCreate). This determines if the client can use an Update operation to create a new resource with a client-specified ID. If false, all IDs are server-assigned through the Create operation and attempts to update a non-existent resource return errors. Be careful with the audit logs if client-specified resource IDs contain sensitive data such as patient identifiers, those IDs are part of the FHIR resource path recorded in Cloud audit logs and Cloud Pub\/Sub notifications.",
           "type": "boolean"
         },
         "notificationConfig": {
@@ -2775,6 +2684,67 @@
         }
       }
     },
+    "GoogleCloudHealthcareV1beta1FhirBigQueryDestination": {
+      "id": "GoogleCloudHealthcareV1beta1FhirBigQueryDestination",
+      "description": "The configuration for exporting to BigQuery.",
+      "type": "object",
+      "properties": {
+        "datasetUri": {
+          "description": "BigQuery URI to an existing dataset, up to 2000 characters long, in the format `bq:\/\/projectId.bqDatasetId`.",
+          "type": "string"
+        },
+        "schemaConfig": {
+          "description": "The configuration for the exported BigQuery schema.",
+          "$ref": "SchemaConfig"
+        },
+        "force": {
+          "description": "Use `write_disposition` instead. If `write_disposition` is specified, this parameter is ignored. force=false is equivalent to write_disposition=WRITE_EMPTY and force=true is equivalent to write_disposition=WRITE_TRUNCATE.",
+          "type": "boolean"
+        },
+        "writeDisposition": {
+          "description": "Determines whether existing tables in the destination dataset are overwritten or appended to. If a write_disposition is specified, the `force` parameter is ignored.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default behavior is the same as WRITE_EMPTY.",
+            "Only export data if the destination tables are empty.",
+            "Erase all existing data in a tables before writing the instances.",
+            "Append data to the existing tables."
+          ],
+          "enum": [
+            "WRITE_DISPOSITION_UNSPECIFIED",
+            "WRITE_EMPTY",
+            "WRITE_TRUNCATE",
+            "WRITE_APPEND"
+          ]
+        }
+      }
+    },
+    "SchemaConfig": {
+      "id": "SchemaConfig",
+      "description": "Configuration for the FHIR BigQuery schema. Determines how the server generates the schema.",
+      "type": "object",
+      "properties": {
+        "schemaType": {
+          "description": "Specifies the output schema type. Schema type is required.",
+          "type": "string",
+          "enumDescriptions": [
+            "No schema type specified. This type is unsupported.",
+            "A data-driven schema generated from the fields present in the FHIR data being exported, with no additional simplification.",
+            "Analytics schema defined by the FHIR community. See https:\/\/github.com\/FHIR\/sql-on-fhir\/blob\/master\/sql-on-fhir.md. BigQuery only allows a maximum of 10,000 columns per table. Due to this limitation, the server will not generate schemas for fields of type `Resource`, which can hold any resource type. The affected fields are `Parameters.parameter.resource`, `Bundle.entry.resource`, and `Bundle.entry.response.outcome`."
+          ],
+          "enum": [
+            "SCHEMA_TYPE_UNSPECIFIED",
+            "LOSSLESS",
+            "ANALYTICS"
+          ]
+        },
+        "recursiveStructureDepth": {
+          "description": "The depth for all recursive structures in the output analytics schema. For example, `concept` in the CodeSystem resource is a recursive structure; when the depth is 2, the CodeSystem table will have a column called `concept.concept` but not `concept.concept.concept`. If not specified or set to 0, the server will use the default value 2. The maximum depth allowed is 5.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ListFhirStoresResponse": {
       "id": "ListFhirStoresResponse",
       "description": "Lists the FHIR stores in the given dataset.",
@@ -2789,6 +2759,72 @@
         },
         "nextPageToken": {
           "description": "Token to retrieve the next page of results or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "ImportResourcesRequest": {
+      "id": "ImportResourcesRequest",
+      "description": "Request to import resources.",
+      "type": "object",
+      "properties": {
+        "contentStructure": {
+          "description": "The content structure in the source location. If not specified, the server treats the input source files as BUNDLE.",
+          "type": "string",
+          "enumDescriptions": [
+            "If the content structure is not specified, the default value `BUNDLE` is used.",
+            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a bundle that contains one or more resources. Set the bundle type to `history` to import resource versions.",
+            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a single resource.",
+            "The entire file is one JSON bundle. The JSON can span multiple lines.",
+            "The entire file is one JSON resource. The JSON can span multiple lines."
+          ],
+          "enum": [
+            "CONTENT_STRUCTURE_UNSPECIFIED",
+            "BUNDLE",
+            "RESOURCE",
+            "BUNDLE_PRETTY",
+            "RESOURCE_PRETTY"
+          ]
+        },
+        "gcsSource": {
+          "description": "Cloud Storage source data location and import configuration. The Cloud Healthcare Service Agent requires the `roles\/storage.objectViewer` Cloud IAM roles on the Cloud Storage location. The Healthcare Service Agent Each Cloud Storage object should be a text file that contains the format specified in ContentStructure.",
+          "$ref": "GoogleCloudHealthcareV1beta1FhirGcsSource"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1beta1FhirGcsSource": {
+      "id": "GoogleCloudHealthcareV1beta1FhirGcsSource",
+      "description": "Specifies the configuration for importing data from Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Points to a Cloud Storage URI containing file(s) to import. The URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`. The URI can include wildcards in `object_id` and thus identify multiple files. Supported wildcards: * `*` to match 0 or more non-separator characters * `**` to match 0 or more characters (including separators). Must be used at the end of a path and with no other wildcards in the path. Can also be used with a file extension (such as .ndjson), which imports all files with the extension in the specified directory and its sub-directories. For example, `gs:\/\/my-bucket\/my-directory\/**.ndjson` imports all files with `.ndjson` extensions in `my-directory\/` and its sub-directories. * `?` to match 1 character Files matching the wildcard are expected to contain content only, no metadata.",
+          "type": "string"
+        }
+      }
+    },
+    "ExportResourcesRequest": {
+      "id": "ExportResourcesRequest",
+      "description": "Request to export resources.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "The Cloud Storage output destination. The Cloud Healthcare Service Agent requires the `roles\/storage.objectAdmin` Cloud IAM roles on the Cloud Storage location. The exported outputs are organized by FHIR resource types. The server creates one object per resource type. Each object contains newline delimited JSON, and each line is a FHIR resource.",
+          "$ref": "GoogleCloudHealthcareV1beta1FhirGcsDestination"
+        },
+        "bigqueryDestination": {
+          "description": "The BigQuery output destination. The Cloud Healthcare Service Agent requires two IAM roles on the BigQuery location: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`. The output is one BigQuery table per resource type.",
+          "$ref": "GoogleCloudHealthcareV1beta1FhirBigQueryDestination"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1beta1FhirGcsDestination": {
+      "id": "GoogleCloudHealthcareV1beta1FhirGcsDestination",
+      "description": "The configuration for exporting to Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "uriPrefix": {
+          "description": "URI for a Cloud Storage directory where result files should be written (in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`). If there is no trailing slash, the service appends one when composing the object path. The Cloud Storage bucket referenced in `uri_prefix` must exist or an error occurs.",
           "type": "string"
         }
       }
@@ -2852,24 +2888,6 @@
       "description": "Response for successful Annotation store evaluation operations. This structure is included in the response upon operation completion.",
       "type": "object",
       "properties": {
-        "evalStore": {
-          "description": "The evaluated Annotation store, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-          "type": "string"
-        },
-        "goldenStore": {
-          "description": "The ground truth Annotation store, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-          "type": "string"
-        },
-        "goldenCount": {
-          "description": "The number of Annotations in the ground truth Annotation store successfully processed.",
-          "type": "string",
-          "format": "int64"
-        },
-        "matchedCount": {
-          "description": "The number of Annotations in the eval store that match with corresponding annotations in the ground truth Annotation store. Two matched annotations both annotate the same resource defined in AnnotationSource.",
-          "type": "string",
-          "format": "int64"
-        }
       }
     },
     "ExportAnnotationsResponse": {
@@ -2877,36 +2895,6 @@
       "description": "Response for successful annotation export operations. This structure is included in response upon operation completion.",
       "type": "object",
       "properties": {
-        "annotationStore": {
-          "description": "The annotation_store used for the export operation, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-          "type": "string"
-        },
-        "successCount": {
-          "description": "The total number of annotations successfully exported.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "ExportAnnotationsErrorDetails": {
-      "id": "ExportAnnotationsErrorDetails",
-      "description": "Deprecated. Response for failed annotation export operations. This structure is included in error details upon operation completion.",
-      "type": "object",
-      "properties": {
-        "annotationStore": {
-          "description": "The annotation_store used for the export operation, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-          "type": "string"
-        },
-        "successCount": {
-          "description": "The number of annotations successfully exported.",
-          "type": "string",
-          "format": "int64"
-        },
-        "errorCount": {
-          "description": "The number of annotations that had error.",
-          "type": "string",
-          "format": "int64"
-        }
       }
     },
     "ImportAnnotationsResponse": {
@@ -2914,36 +2902,6 @@
       "description": "Final response of importing Annotations in successful case. This structure is included in the response. It is only included when the operation finishes.",
       "type": "object",
       "properties": {
-        "annotationStore": {
-          "description": "The annotation_store that the annotations were imported to, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-          "type": "string"
-        },
-        "successCount": {
-          "description": "The number of the input annotations. All input have been imported successfully.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "ImportAnnotationsErrorDetails": {
-      "id": "ImportAnnotationsErrorDetails",
-      "description": "Deprecated. Final response of importing Annotations in partial or total failure case. This structure is included in the error details. It is only included when the operation finishes.",
-      "type": "object",
-      "properties": {
-        "annotationStore": {
-          "description": "The annotation_store that the annotations were imported to. The name is in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
-          "type": "string"
-        },
-        "successCount": {
-          "description": "The number of annotations that have been imported.",
-          "type": "string",
-          "format": "int64"
-        },
-        "errorCount": {
-          "description": "The number of annotations that had errors.",
-          "type": "string",
-          "format": "int64"
-        }
       }
     },
     "ImportDicomDataResponse": {
@@ -2960,53 +2918,11 @@
       "properties": {
       }
     },
-    "DeidentifyErrorDetails": {
-      "id": "DeidentifyErrorDetails",
-      "description": "Deprecated. Contains the status of the Deidentify operation.",
-      "type": "object",
-      "properties": {
-        "successStoreCount": {
-          "description": "Number of stores successfully processed.",
-          "type": "string",
-          "format": "int64"
-        },
-        "failureStoreCount": {
-          "description": "Number of stores that failed to process.",
-          "type": "string",
-          "format": "int64"
-        },
-        "successResourceCount": {
-          "description": "Number of resources successfully processed.",
-          "type": "string",
-          "format": "int64"
-        },
-        "failureResourceCount": {
-          "description": "Number of resources that failed to process.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "DeidentifySummary": {
       "id": "DeidentifySummary",
       "description": "Contains a detailed summary of the Deidentify operation.",
       "type": "object",
       "properties": {
-        "successStoreCount": {
-          "description": "Number of stores successfully processed.",
-          "type": "string",
-          "format": "int64"
-        },
-        "successResourceCount": {
-          "description": "Number of resources successfully processed.",
-          "type": "string",
-          "format": "int64"
-        },
-        "failureResourceCount": {
-          "description": "Number of resources that failed to process. The failures might be caused by: * Invalid user input data * Transient errors that could be skipped",
-          "type": "string",
-          "format": "int64"
-        }
       }
     },
     "GoogleCloudHealthcareV1beta1DeidentifyDeidentifyDicomStoreSummary": {
@@ -3014,16 +2930,6 @@
       "description": "Contains a summary of the DeidentifyDicomStore operation.",
       "type": "object",
       "properties": {
-        "successResourceCount": {
-          "description": "Number of objects successfully processed.",
-          "type": "string",
-          "format": "int64"
-        },
-        "failureResourceCount": {
-          "description": "Number of objects that processing failed for.",
-          "type": "string",
-          "format": "int64"
-        }
       }
     },
     "GoogleCloudHealthcareV1beta1DeidentifyDeidentifyFhirStoreSummary": {
@@ -3031,11 +2937,6 @@
       "description": "Contains a summary of the DeidentifyFhirStore operation.",
       "type": "object",
       "properties": {
-        "successResourceCount": {
-          "description": "Number of resources successfully processed.",
-          "type": "string",
-          "format": "int64"
-        }
       }
     },
     "ImportDicomDataErrorDetails": {
@@ -3149,6 +3050,20 @@
           "type": "string",
           "format": "int64"
         }
+      }
+    },
+    "GoogleCloudHealthcareV1beta1FhirImportResourcesResponse": {
+      "id": "GoogleCloudHealthcareV1beta1FhirImportResourcesResponse",
+      "description": "Final response of importing resources. This structure is included in the response to describe the detailed outcome after the operation finishes successfully.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudHealthcareV1beta1FhirExportResourcesResponse": {
+      "id": "GoogleCloudHealthcareV1beta1FhirExportResourcesResponse",
+      "description": "Response when all resources export successfully. This structure is included in the response to describe the detailed outcome after the operation finishes successfully.",
+      "type": "object",
+      "properties": {
       }
     },
     "ImportMessagesResponse": {
@@ -4134,12 +4049,12 @@
                             "dicomWebPath"
                           ],
                           "response": {
-                            "$ref": "Empty"
+                            "$ref": "Operation"
                           },
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "DeleteStudy deletes all instances within the given study. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. For samples that show how to call DeleteStudy, see [Deleting a study, series, or instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#deleting_a_study_series_or_instance)."
+                          "description": "DeleteStudyAsync deletes all instances within the given study using an operation. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. The method returns an Operation which will be marked successful when the deletion is complete. Warning: Inserting instances into a study while a delete operation is running for that study could result in the new instances not appearing in search results until the deletion operation finishes."
                         },
                         "storeInstances": {
                           "id": "healthcare.projects.locations.datasets.dicomStores.studies.storeInstances",
@@ -4307,12 +4222,12 @@
                                 "dicomWebPath"
                               ],
                               "response": {
-                                "$ref": "Empty"
+                                "$ref": "Operation"
                               },
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "DeleteSeries deletes all instances within the given study and series. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. For samples that show how to call DeleteSeries, see [Deleting a study, series, or instance](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/dicomweb#deleting_a_study_series_or_instance)."
+                              "description": "DeleteSeriesAsync deletes all instances within the given study and series using an operation. Delete requests are equivalent to the GET requests specified in the Retrieve transaction. The method returns an Operation which will be marked successful when the deletion is complete. Warning: Inserting instances into a series while a delete operation is running for that series could result in the new instances not appearing in search results until the deletion operation finishes."
                             }
                           }
                           ,
@@ -5161,62 +5076,6 @@
                       ],
                       "description": "De-identifies data from the source store and writes it to the destination store. The metadata field type is OperationMetadata. If the request is successful, the response field type is DeidentifyFhirStoreSummary. The number of resources processed are tracked in Operation.metadata. Error details are logged to Cloud Logging. For more information, see [Viewing logs](\/healthcare\/docs\/how-tos\/logging)."
                     },
-                    "import": {
-                      "id": "healthcare.projects.locations.datasets.fhirStores.import",
-                      "path": "v1beta1/{+name}:import",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:import",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the FHIR store to import FHIR resources to, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "ImportResourcesRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": " Import resources to the FHIR store by loading data from the specified sources. This method is optimized to load large quantities of data using import semantics that ignore some FHIR store configuration options and are not suitable for all use cases. It is primarily intended to load data into an empty FHIR store that is not being used by other clients. In cases where this method is not appropriate, consider using ExecuteBundle to load data. Every resource in the input must contain a client-supplied ID. Each resource is stored using the supplied ID regardless of the enable_update_create setting on the FHIR store. The import process does not enforce referential integrity, regardless of the disable_referential_integrity setting on the FHIR store. This allows the import of resources with arbitrary interdependencies without considering grouping or ordering, but if the input data contains invalid references or if some resources fail to be imported, the FHIR store might be left in a state that violates referential integrity. The import process does not trigger Cloud Pub\/Sub notification or BigQuery streaming update, regardless of how those are configured on the FHIR store. If a resource with the specified ID already exists, the most recent version of the resource is overwritten without creating a new historical version, regardless of the disable_resource_versioning setting on the FHIR store. If transient failures occur during the import, it is possible that successfully imported resources will be overwritten more than once. The import operation is idempotent unless the input data contains multiple valid resources with the same ID but different contents. In that case, after the import completes, the store contains exactly one resource with that ID but there is no ordering guarantee on which version of the contents it will have. The operation result counters do not count duplicate IDs as an error and count one success for each resource in the input, which might result in a success count larger than the number of resources in the FHIR store. This often occurs when importing data organized in bundles produced by Patient-everything where each bundle contains its own copy of a resource such as Practitioner that might be referred to by many patients. If some resources fail to import, for example due to parsing errors, successfully imported resources are not rolled back. The location and format of the input data is specified by the parameters below. Note that if no format is specified, this method assumes the `BUNDLE` format. When using the `BUNDLE` format this method ignores the `Bundle.type` field, except that `history` bundles are rejected, and does not apply any of the bundle processing semantics for batch or transaction bundles. Unlike in ExecuteBundle, transaction bundles are not executed as a single transaction and bundle-internal references are not rewritten. The bundle is treated as a collection of resources to be written as provided in `Bundle.entry.resource`, ignoring `Bundle.entry.request`. As an example, this allows the import of `searchset` bundles produced by a FHIR search or Patient-everything operation. This method returns an Operation that can be used to track the status of the import by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing logs](\/healthcare\/docs\/how-tos\/logging)). Otherwise, when the operation finishes, a detailed response of type ImportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata."
-                    },
-                    "export": {
-                      "id": "healthcare.projects.locations.datasets.fhirStores.export",
-                      "path": "v1beta1/{+name}:export",
-                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:export",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "The name of the FHIR store to export resource from, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "ExportResourcesRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": " Export resources from the FHIR store to the specified destination. This method returns an Operation that can be used to track the status of the export by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing logs](\/healthcare\/docs\/how-tos\/logging)). Otherwise, when the operation finishes, a detailed response of type ExportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata."
-                    },
                     "create": {
                       "id": "healthcare.projects.locations.datasets.fhirStores.create",
                       "path": "v1beta1/{+parent}/fhirStores",
@@ -5374,6 +5233,62 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Lists the FHIR stores in the given dataset."
+                    },
+                    "import": {
+                      "id": "healthcare.projects.locations.datasets.fhirStores.import",
+                      "path": "v1beta1/{+name}:import",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the FHIR store to import FHIR resources to, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ImportResourcesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Import resources to the FHIR store by loading data from the specified sources. This method is optimized to load large quantities of data using import semantics that ignore some FHIR store configuration options and are not suitable for all use cases. It is primarily intended to load data into an empty FHIR store that is not being used by other clients. In cases where this method is not appropriate, consider using ExecuteBundle to load data. Every resource in the input must contain a client-supplied ID. Each resource is stored using the supplied ID regardless of the enable_update_create setting on the FHIR store. The import process does not enforce referential integrity, regardless of the disable_referential_integrity setting on the FHIR store. This allows the import of resources with arbitrary interdependencies without considering grouping or ordering, but if the input data contains invalid references or if some resources fail to be imported, the FHIR store might be left in a state that violates referential integrity. The import process does not trigger Pub\/Sub notification or BigQuery streaming update, regardless of how those are configured on the FHIR store. If a resource with the specified ID already exists, the most recent version of the resource is overwritten without creating a new historical version, regardless of the disable_resource_versioning setting on the FHIR store. If transient failures occur during the import, it is possible that successfully imported resources will be overwritten more than once. The import operation is idempotent unless the input data contains multiple valid resources with the same ID but different contents. In that case, after the import completes, the store contains exactly one resource with that ID but there is no ordering guarantee on which version of the contents it will have. The operation result counters do not count duplicate IDs as an error and count one success for each resource in the input, which might result in a success count larger than the number of resources in the FHIR store. This often occurs when importing data organized in bundles produced by Patient-everything where each bundle contains its own copy of a resource such as Practitioner that might be referred to by many patients. If some resources fail to import, for example due to parsing errors, successfully imported resources are not rolled back. The location and format of the input data are specified by the parameters in ImportResourcesRequest. Note that if no format is specified, this method assumes the `BUNDLE` format. When using the `BUNDLE` format this method ignores the `Bundle.type` field, except that `history` bundles are rejected, and does not apply any of the bundle processing semantics for batch or transaction bundles. Unlike in ExecuteBundle, transaction bundles are not executed as a single transaction and bundle-internal references are not rewritten. The bundle is treated as a collection of resources to be written as provided in `Bundle.entry.resource`, ignoring `Bundle.entry.request`. As an example, this allows the import of `searchset` bundles produced by a FHIR search or Patient-everything operation. This method returns an Operation that can be used to track the status of the import by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing logs](\/healthcare\/docs\/how-tos\/logging)). Otherwise, when the operation finishes, a detailed response of type ImportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata."
+                    },
+                    "export": {
+                      "id": "healthcare.projects.locations.datasets.fhirStores.export",
+                      "path": "v1beta1/{+name}:export",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:export",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the FHIR store to export resource from, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/fhirStores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ExportResourcesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Export resources from the FHIR store to the specified destination. This method returns an Operation that can be used to track the status of the export by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing error logs in Cloud Logging](\/healthcare\/docs\/how-tos\/logging)). Otherwise, when the operation finishes, a detailed response of type ExportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata."
                     }
                   }
                   ,
@@ -6330,11 +6245,11 @@
                     },
                     "import": {
                       "id": "healthcare.projects.locations.datasets.annotationStores.import",
-                      "path": "v1beta1/{+annotationStore}:import",
+                      "path": "v1beta1/{+name}:import",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:import",
                       "httpMethod": "POST",
                       "parameters": {
-                        "annotationStore": {
+                        "name": {
                           "description": "The name of the Annotation store to which the server imports annotations, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
                           "location": "path",
                           "required": true,
@@ -6343,7 +6258,7 @@
                         }
                       },
                       "parameterOrder": [
-                        "annotationStore"
+                        "name"
                       ],
                       "request": {
                         "$ref": "ImportAnnotationsRequest"
@@ -6358,11 +6273,11 @@
                     },
                     "export": {
                       "id": "healthcare.projects.locations.datasets.annotationStores.export",
-                      "path": "v1beta1/{+annotationStore}:export",
+                      "path": "v1beta1/{+name}:export",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:export",
                       "httpMethod": "POST",
                       "parameters": {
-                        "annotationStore": {
+                        "name": {
                           "description": "The name of the Annotation store to export annotations to, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
                           "location": "path",
                           "required": true,
@@ -6371,7 +6286,7 @@
                         }
                       },
                       "parameterOrder": [
-                        "annotationStore"
+                        "name"
                       ],
                       "request": {
                         "$ref": "ExportAnnotationsRequest"
@@ -6386,11 +6301,11 @@
                     },
                     "evaluate": {
                       "id": "healthcare.projects.locations.datasets.annotationStores.evaluate",
-                      "path": "v1beta1/{+evalStore}:evaluate",
+                      "path": "v1beta1/{+name}:evaluate",
                       "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/annotationStores/{annotationStoresId}:evaluate",
                       "httpMethod": "POST",
                       "parameters": {
-                        "evalStore": {
+                        "name": {
                           "description": "The Annotation store to compare against `golden_store`, in the format of `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/annotationStores\/{annotation_store_id}`.",
                           "location": "path",
                           "required": true,
@@ -6399,7 +6314,7 @@
                         }
                       },
                       "parameterOrder": [
-                        "evalStore"
+                        "name"
                       ],
                       "request": {
                         "$ref": "EvaluateAnnotationStoreRequest"
@@ -7022,7 +6937,7 @@
                               "type": "string"
                             },
                             "updateMask": {
-                              "description": "The update mask that applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask. The `description`, `possible_values`, `consent_default_values`, and `data_mapping_default_value` fields are allowed to be updated. The updated `possible_values` must contain all values from the previous `possible_values`.",
+                              "description": "The update mask that applies to the resource. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask. The `description`, `allowed_values`, `consent_default_values`, and `data_mapping_default_value` fields are allowed to be updated. The updated `allowed_values` must contain all values from the previous `allowed_values`.",
                               "location": "query",
                               "type": "string",
                               "format": "google-fieldmask"

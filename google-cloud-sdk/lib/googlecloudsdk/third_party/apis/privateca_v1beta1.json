@@ -1055,7 +1055,7 @@
       "type": "object",
       "properties": {
         "cloudKmsKeyVersion": {
-          "description": "Required. The resource name for an existing Cloud KMS CryptoKeyVersion in the format`projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*\/cryptoKeyVersions\/*`. This option enables full flexibility in the key's capabilities and properties.",
+          "description": "Required. The resource name for an existing Cloud KMS CryptoKeyVersion in the format `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*\/cryptoKeyVersions\/*`. This option enables full flexibility in the key's capabilities and properties.",
           "type": "string"
         },
         "algorithm": {
@@ -1066,6 +1066,9 @@
             "maps to CryptoKeyVersionAlgorithm.RSA_SIGN_PSS_2048_SHA256",
             "maps to CryptoKeyVersionAlgorithm. RSA_SIGN_PSS_3072_SHA256",
             "maps to CryptoKeyVersionAlgorithm.RSA_SIGN_PSS_4096_SHA256",
+            "maps to CryptoKeyVersionAlgorithm.RSA_SIGN_PKCS1_2048_SHA256",
+            "maps to CryptoKeyVersionAlgorithm.RSA_SIGN_PKCS1_3072_SHA256",
+            "maps to CryptoKeyVersionAlgorithm.RSA_SIGN_PKCS1_4096_SHA256",
             "maps to CryptoKeyVersionAlgorithm.EC_SIGN_P256_SHA256",
             "maps to CryptoKeyVersionAlgorithm.EC_SIGN_P384_SHA384"
           ],
@@ -1074,6 +1077,9 @@
             "RSA_PSS_2048_SHA256",
             "RSA_PSS_3072_SHA256",
             "RSA_PSS_4096_SHA256",
+            "RSA_PKCS1_2048_SHA256",
+            "RSA_PKCS1_3072_SHA256",
+            "RSA_PKCS1_4096_SHA256",
             "EC_P256_SHA256",
             "EC_P384_SHA384"
           ]
@@ -2409,12 +2415,12 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Optional. Only include resources that match the filter in the response.",
+                          "description": "Optional. Only include resources that match the filter in the response. For details on supported filters and syntax, see [Certificates Filtering documentation](https:\/\/cloud.google.com\/certificate-authority-service\/docs\/sorting-filtering-certificates#filtering_support).",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
-                          "description": "Optional. Specify how the results should be sorted.",
+                          "description": "Optional. Specify how the results should be sorted. For details on supported fields and syntax, see [Certificates Sorting documentation](https:\/\/cloud.google.com\/certificate-authority-service\/docs\/sorting-filtering-certificates#sorting_support).",
                           "location": "query",
                           "type": "string"
                         }
@@ -2742,74 +2748,6 @@
             },
             "reusableConfigs": {
               "methods": {
-                "create": {
-                  "id": "privateca.projects.locations.reusableConfigs.create",
-                  "path": "v1beta1/{+parent}/reusableConfigs",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/reusableConfigs",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The resource name of the location associated with the ReusableConfig, in the format `projects\/*\/locations\/*`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "reusableConfigId": {
-                      "description": "Required. It must be unique within a location and match the regular expression `[a-zA-Z0-9_-]{1,63}`",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "ReusableConfig"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Create a new ReusableConfig in a given Project and Location."
-                },
-                "delete": {
-                  "id": "privateca.projects.locations.reusableConfigs.delete",
-                  "path": "v1beta1/{+name}",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name for this ReusableConfig in the format `projects\/*\/locations\/*\/reusableConfigs\/*`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "DeleteReusableConfig deletes a ReusableConfig."
-                },
                 "get": {
                   "id": "privateca.projects.locations.reusableConfigs.get",
                   "path": "v1beta1/{+name}",
@@ -2880,45 +2818,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Lists ReusableConfigs."
-                },
-                "patch": {
-                  "id": "privateca.projects.locations.reusableConfigs.patch",
-                  "path": "v1beta1/{+name}",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/reusableConfigs/{reusableConfigsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Output only. The resource path for this ReusableConfig in the format `projects\/*\/locations\/*\/reusableConfigs\/*`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reusableConfigs\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Required. A list of fields to be updated in this request.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    },
-                    "requestId": {
-                      "description": "Optional. An ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and t he request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "ReusableConfig"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Update a ReusableConfig."
                 },
                 "setIamPolicy": {
                   "id": "privateca.projects.locations.reusableConfigs.setIamPolicy",

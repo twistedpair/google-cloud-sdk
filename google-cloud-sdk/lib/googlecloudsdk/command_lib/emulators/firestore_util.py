@@ -20,35 +20,9 @@ from __future__ import unicode_literals
 
 import os
 from googlecloudsdk.command_lib.emulators import util
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
-
-
-class NoFirestoreEmulatorError(exceptions.Error):
-
-  def __init__(self):
-    super(NoFirestoreEmulatorError,
-          self).__init__('Unable to find the Google Cloud Firestore emulator')
-
-
-def GetFirestoreEmulatorRoot():
-  """Gets the directory of the Firestore emulator installation in the Cloud SDK.
-
-  Raises:
-    NoCloudSDKError: If there is no SDK root.
-    NoFirestoreEmulatorError: If the installation dir does not exist.
-
-  Returns:
-    str, The path to the root of the Firestore emulator installation within
-    Cloud SDK.
-  """
-  sdk_root = util.GetCloudSDKRoot()
-  firestore_dir = os.path.join(sdk_root, 'platform', 'cloud-firestore-emulator')
-  if not os.path.isdir(firestore_dir):
-    raise NoFirestoreEmulatorError()
-  return firestore_dir
 
 
 def ArgsForFirestoreEmulator(emulator_args):
@@ -63,15 +37,16 @@ def ArgsForFirestoreEmulator(emulator_args):
   current_os = platforms.OperatingSystem.Current()
   if current_os is platforms.OperatingSystem.WINDOWS:
     cmd = 'cloud_firestore_emulator.cmd'
-    exe = os.path.join(GetFirestoreEmulatorRoot(), cmd)
+    exe = os.path.join(util.GetEmulatorRoot(CLOUD_FIRESTORE), cmd)
     return execution_utils.ArgsForCMDTool(exe, *emulator_args)
   else:
     cmd = 'cloud_firestore_emulator'
-    exe = os.path.join(GetFirestoreEmulatorRoot(), cmd)
+    exe = os.path.join(util.GetEmulatorRoot(CLOUD_FIRESTORE), cmd)
     return execution_utils.ArgsForExecutableTool(exe, *emulator_args)
 
 
 FIRESTORE = 'firestore'
+CLOUD_FIRESTORE = 'cloud-firestore'
 FIRESTORE_TITLE = 'Google Cloud Firestore emulator'
 
 

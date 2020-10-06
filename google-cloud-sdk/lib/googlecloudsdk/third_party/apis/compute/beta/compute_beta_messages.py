@@ -582,8 +582,9 @@ class Address(_messages.Message):
       - `VPC_PEERING` for addresses that are reserved for VPC peer networks.
       - `NAT_AUTO` for addresses that are external IP addresses automatically
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
-      from a private IP range reserved for a VLAN attachment in an IPsec over
-      Interconnect configuration. These addresses are regional resources.
+      from a private IP range that are reserved for a VLAN attachment in an
+      IPsec encrypted Interconnect configuration. These addresses are regional
+      resources.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -645,8 +646,9 @@ class Address(_messages.Message):
       `VPC_PEERING` for addresses that are reserved for VPC peer networks.  -
       `NAT_AUTO` for addresses that are external IP addresses automatically
       reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
-      from a private IP range reserved for a VLAN attachment in an IPsec over
-      Interconnect configuration. These addresses are regional resources.
+      from a private IP range that are reserved for a VLAN attachment in an
+      IPsec encrypted Interconnect configuration. These addresses are regional
+      resources.
     region: [Output Only] The URL of the region where the regional address
       resides. This field is not applicable to global addresses. You must
       specify this field as part of the HTTP request URL.
@@ -715,21 +717,23 @@ class Address(_messages.Message):
     for addresses that are reserved for VPC peer networks.  - `NAT_AUTO` for
     addresses that are external IP addresses automatically reserved for Cloud
     NAT.  - `IPSEC_INTERCONNECT` for addresses created from a private IP range
-    reserved for a VLAN attachment in an IPsec over Interconnect
+    that are reserved for a VLAN attachment in an IPsec encrypted Interconnect
     configuration. These addresses are regional resources.
 
     Values:
       DNS_RESOLVER: <no description>
       GCE_ENDPOINT: <no description>
       NAT_AUTO: <no description>
+      PRIVATE_SERVICE_CONNECT: <no description>
       SHARED_LOADBALANCER_VIP: <no description>
       VPC_PEERING: <no description>
     """
     DNS_RESOLVER = 0
     GCE_ENDPOINT = 1
     NAT_AUTO = 2
-    SHARED_LOADBALANCER_VIP = 3
-    VPC_PEERING = 4
+    PRIVATE_SERVICE_CONNECT = 3
+    SHARED_LOADBALANCER_VIP = 4
+    VPC_PEERING = 5
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -2842,12 +2846,18 @@ class BackendBucketCdnPolicy(_messages.Message):
     negativeCaching: Negative caching allows per-status code TTLs to be set,
       in order to apply fine-grained caching for common errors or redirects.
       This can reduce the load on your origin and improve end-user experience
-      by reducing response latency. By default, Cloud CDN will apply the
-      following default TTLs to these status codes: HTTP 300 (Multiple
-      Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410
-      (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
-      Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These
-      defaults can be overridden in negative_caching_policy
+      by reducing response latency. When the cache mode is set to
+      CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, negative caching applies to
+      responses with the specified response code that lack any Cache-Control,
+      Expires, or Pragma: no-cache directives. When the cache mode is set to
+      FORCE_CACHE_ALL, negative caching applies to all responses with the
+      specified response code, and override any caching headers. By default,
+      Cloud CDN will apply the following default TTLs to these status codes:
+      HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404
+      (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP
+      405 (Method Not Found), 421 (Misdirected Request), 501 (Not
+      Implemented): 60s. These defaults can be overridden in
+      negative_caching_policy.
     negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
@@ -2935,10 +2945,10 @@ class BackendBucketCdnPolicyNegativeCachingPolicy(_messages.Message):
     code: The HTTP status code to define a TTL against. Only HTTP status codes
       300, 301, 308, 404, 405, 410, 421, 451 and 501 are can be specified as
       values, and you cannot specify a status code more than once.
-    ttl: The TTL (in seconds) to cache responses with the corresponding status
-      code for. The maximum allowed value is 1800s (30 minutes), noting that
-      infrequently accessed objects may be evicted from the cache before the
-      defined TTL.
+    ttl: The TTL (in seconds) for which to cache responses with the
+      corresponding status code. The maximum allowed value is 1800s (30
+      minutes), noting that infrequently accessed objects may be evicted from
+      the cache before the defined TTL.
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -3676,12 +3686,18 @@ class BackendServiceCdnPolicy(_messages.Message):
     negativeCaching: Negative caching allows per-status code TTLs to be set,
       in order to apply fine-grained caching for common errors or redirects.
       This can reduce the load on your origin and improve end-user experience
-      by reducing response latency. By default, Cloud CDN will apply the
-      following default TTLs to these status codes: HTTP 300 (Multiple
-      Choice), 301, 308 (Permanent Redirects): 10m HTTP 404 (Not Found), 410
-      (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP 405 (Method Not
-      Found), 421 (Misdirected Request), 501 (Not Implemented): 60s These
-      defaults can be overridden in negative_caching_policy
+      by reducing response latency. When the cache mode is set to
+      CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, negative caching applies to
+      responses with the specified response code that lack any Cache-Control,
+      Expires, or Pragma: no-cache directives. When the cache mode is set to
+      FORCE_CACHE_ALL, negative caching applies to all responses with the
+      specified response code, and override any caching headers. By default,
+      Cloud CDN will apply the following default TTLs to these status codes:
+      HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m HTTP 404
+      (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s HTTP
+      405 (Method Not Found), 421 (Misdirected Request), 501 (Not
+      Implemented): 60s. These defaults can be overridden in
+      negative_caching_policy.
     negativeCachingPolicy: Sets a cache TTL for the specified HTTP status
       code. negative_caching must be enabled to configure
       negative_caching_policy. Omitting the policy and leaving
@@ -3770,10 +3786,10 @@ class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
     code: The HTTP status code to define a TTL against. Only HTTP status codes
       300, 301, 308, 404, 405, 410, 421, 451 and 501 are can be specified as
       values, and you cannot specify a status code more than once.
-    ttl: The TTL (in seconds) to cache responses with the corresponding status
-      code for. The maximum allowed value is 1800s (30 minutes), noting that
-      infrequently accessed objects may be evicted from the cache before the
-      defined TTL.
+    ttl: The TTL (in seconds) for which to cache responses with the
+      corresponding status code. The maximum allowed value is 1800s (30
+      minutes), noting that infrequently accessed objects may be evicted from
+      the cache before the defined TTL.
   """
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -10598,11 +10614,11 @@ class ComputeInstancesInsertRequest(_messages.Message):
       plates/instanceTemplate  -
       projects/project/global/instanceTemplates/instanceTemplate  -
       global/instanceTemplates/instanceTemplate
-    sourceMachineImage: Specifies instance machine to create the instance.
-      This field is optional. It can be a full or partial URL. For example,
-      the following are all valid URLs to an instance template:   - https://ww
-      w.googleapis.com/compute/v1/projects/project/global/global/machineImages
-      /machineImage  -
+    sourceMachineImage: Specifies the machine image to use to create the
+      instance.  This field is optional. It can be a full or partial URL. For
+      example, the following are all valid URLs to a machine image:   - https:
+      //www.googleapis.com/compute/v1/projects/project/global/global/machineIm
+      ages/machineImage  -
       projects/project/global/global/machineImages/machineImage  -
       global/machineImages/machineImage
     zone: The name of the zone for this request.
@@ -13889,7 +13905,8 @@ class ComputeOrganizationSecurityPoliciesAddAssociationRequest(_messages.Message
   Fields:
     replaceExistingAssociation: Indicates whether or not to replace it if an
       association of the attachment already exists. This is false by default,
-      in which case an error will be returned if an assocation already exists.
+      in which case an error will be returned if an association already
+      exists.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed.  For example,
@@ -26528,12 +26545,15 @@ class HealthCheck(_messages.Message):
   Health Check resources:  *
   [Global](/compute/docs/reference/rest/{$api_version}/healthChecks) *
   [Regional](/compute/docs/reference/rest/{$api_version}/regionHealthChecks)
-  Internal HTTP(S) load balancers must use regional health checks. Internal
-  TCP/UDP load balancers can use either regional or global health checks. All
-  other types of GCP load balancers and managed instance group auto-healing
-  must use global health checks. For more information, read Health Check
-  Concepts.  To perform health checks on network load balancers, you must use
-  either httpHealthChecks or httpsHealthChecks.
+  Internal HTTP(S) load balancers must use regional health checks
+  (`compute.v1.regionHealthChecks`).  Traffic Director must use global health
+  checks (`compute.v1.HealthChecks`).  Internal TCP/UDP load balancers can use
+  either regional or global health checks (`compute.v1.regionHealthChecks` or
+  `compute.v1.HealthChecks`).  External HTTP(S), TCP proxy, and SSL proxy load
+  balancers as well as managed instance group auto-healing must use global
+  health checks (`compute.v1.HealthChecks`).  Network load balancers must use
+  legacy HTTP health checks (httpHealthChecks).  For more information, see
+  Health checks overview.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -42588,7 +42608,7 @@ class ResourcePolicy(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: A string attribute.
-    groupPlacementPolicy: Resource policy for instacnes for placement
+    groupPlacementPolicy: Resource policy for instances for placement
       configuration.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -43186,11 +43206,11 @@ class Route(_messages.Message):
       You can only specify the internet gateway using a full or partial valid
       URL:  projects/project/global/gateways/default-internet-gateway
     nextHopIlb: The URL to a forwarding rule of type
-      loadBalancingScheme=INTERNAL that should handle matching packets. You
-      can only specify the forwarding rule as a partial or full URL. For
-      example, the following are all valid URLs:   - https://www.googleapis.co
-      m/compute/v1/projects/project/regions/region/forwardingRules/forwardingR
-      ule  - regions/region/forwardingRules/forwardingRule
+      loadBalancingScheme=INTERNAL that should handle matching packets or the
+      IP address of the forwarding Rule. For example, the following are all
+      valid URLs:   - 10.128.0.56  - https://www.googleapis.com/compute/v1/pro
+      jects/project/regions/region/forwardingRules/forwardingRule  -
+      regions/region/forwardingRules/forwardingRule
     nextHopInstance: The URL to an instance that should handle matching
       packets. You can specify this as a full or partial URL. For example: htt
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
@@ -44914,9 +44934,9 @@ class SecurityPoliciesWafConfig(_messages.Message):
 
 
 class SecurityPolicy(_messages.Message):
-  r"""Represents a Cloud Armor Security Policy resource.  Only external
-  backend services that use load balancers can reference a Security Policy.
-  For more information, read  Cloud Armor Security Policy Concepts. (==
+  r"""Represents a Google Cloud Armor security policy resource.  Only external
+  backend services that use load balancers can reference a security policy.
+  For more information, see  Google Cloud Armor security policy overview. (==
   resource_for {$api_version}.securityPolicies ==)
 
   Enums:
@@ -46714,10 +46734,10 @@ class SslPoliciesListAvailableFeaturesResponse(_messages.Message):
 
 
 class SslPolicy(_messages.Message):
-  r"""Represents a Cloud Armor Security Policy resource.  Only external
+  r"""Represents a Google Cloud Armor security policy resource.  Only external
   backend services used by HTTP or HTTPS load balancers can reference a
-  Security Policy. For more information, read read  Cloud Armor Security
-  Policy Concepts. (== resource_for {$api_version}.sslPolicies ==)
+  security policy. For more information, see  Google Cloud Armor security
+  policy overview. (== resource_for {$api_version}.sslPolicies ==)
 
   Enums:
     MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can

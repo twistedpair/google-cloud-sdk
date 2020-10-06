@@ -61,6 +61,7 @@ class BackupConfiguration(_messages.Message):
   r"""Database instance backup configuration.
 
   Fields:
+    backupRetentionSettings: Backup retention settings.
     binaryLogEnabled: (MySQL only) Whether binary log is enabled. If backup
       configuration is disabled, binarylog must be disabled as well.
     enabled: Whether this configuration is enabled.
@@ -70,15 +71,49 @@ class BackupConfiguration(_messages.Message):
     replicationLogArchivingEnabled: Reserved for future use.
     startTime: Start time for the daily backup configuration in UTC timezone
       in the 24 hour format - *HH:MM*.
+    transactionLogRetentionDays: The number of days of transaction logs we
+      retain for point in time restore, from 1-7.
   """
 
-  binaryLogEnabled = _messages.BooleanField(1)
-  enabled = _messages.BooleanField(2)
-  kind = _messages.StringField(3)
-  location = _messages.StringField(4)
-  pointInTimeRecoveryEnabled = _messages.BooleanField(5)
-  replicationLogArchivingEnabled = _messages.BooleanField(6)
-  startTime = _messages.StringField(7)
+  backupRetentionSettings = _messages.MessageField('BackupRetentionSettings', 1)
+  binaryLogEnabled = _messages.BooleanField(2)
+  enabled = _messages.BooleanField(3)
+  kind = _messages.StringField(4)
+  location = _messages.StringField(5)
+  pointInTimeRecoveryEnabled = _messages.BooleanField(6)
+  replicationLogArchivingEnabled = _messages.BooleanField(7)
+  startTime = _messages.StringField(8)
+  transactionLogRetentionDays = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+
+
+class BackupRetentionSettings(_messages.Message):
+  r"""We currently only support backup retention by specifying the number of
+  backups we will retain.
+
+  Enums:
+    RetentionUnitValueValuesEnum: The unit that 'retained_backups' represents.
+
+  Fields:
+    retainedBackups: Depending on the value of retention_unit, this is used to
+      determine if a backup needs to be deleted. If retention_unit is 'COUNT',
+      we will retain this many backups.
+    retentionUnit: The unit that 'retained_backups' represents.
+  """
+
+  class RetentionUnitValueValuesEnum(_messages.Enum):
+    r"""The unit that 'retained_backups' represents.
+
+    Values:
+      RETENTION_UNIT_UNSPECIFIED: Backup retention unit is unspecified, will
+        be treated as COUNT.
+      COUNT: Retention will be by count, eg. "retain the most recent 7
+        backups".
+    """
+    RETENTION_UNIT_UNSPECIFIED = 0
+    COUNT = 1
+
+  retainedBackups = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
 
 
 class BackupRun(_messages.Message):
@@ -311,12 +346,14 @@ class DatabaseInstance(_messages.Message):
       running on the customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL
       instance configured as a read-replica.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
-      This can be one of the following. *RUNNABLE*: The instance is running,
-      or is ready to run when accessed. *SUSPENDED*: The instance is not
-      available, for example due to problems with billing. *PENDING_CREATE*:
-      The instance is being created. *MAINTENANCE*: The instance is down for
-      maintenance. *FAILED*: The instance creation failed. *UNKNOWN_STATE*:
-      The state of the instance is unknown.
+      This can be one of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The
+      state of the instance is unknown. *RUNNABLE*: The instance has been
+      stopped by owner. It is not currently running, but it's ready to be
+      restarted. *SUSPENDED*: The instance is not available, for example due
+      to problems with billing. for example due to problems with billing.
+      *PENDING_DELETE*: The instance is being deleted. *PENDING_CREATE*: The
+      instance is being created. *MAINTENANCE*: The instance is down for
+      maintenance. *FAILED*: The instance creation failed.
     SuspensionReasonValueListEntryValuesEnum:
 
   Messages:
@@ -388,12 +425,14 @@ class DatabaseInstance(_messages.Message):
       instances.
     settings: The user settings.
     state: The current serving state of the Cloud SQL instance. This can be
-      one of the following. *RUNNABLE*: The instance is running, or is ready
-      to run when accessed. *SUSPENDED*: The instance is not available, for
-      example due to problems with billing. *PENDING_CREATE*: The instance is
-      being created. *MAINTENANCE*: The instance is down for maintenance.
-      *FAILED*: The instance creation failed. *UNKNOWN_STATE*: The state of
-      the instance is unknown.
+      one of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The state of the
+      instance is unknown. *RUNNABLE*: The instance has been stopped by owner.
+      It is not currently running, but it's ready to be restarted.
+      *SUSPENDED*: The instance is not available, for example due to problems
+      with billing. for example due to problems with billing.
+      *PENDING_DELETE*: The instance is being deleted. *PENDING_CREATE*: The
+      instance is being created. *MAINTENANCE*: The instance is down for
+      maintenance. *FAILED*: The instance creation failed.
     suspensionReason: If the instance state is SUSPENDED, the reason for the
       suspension.
   """
@@ -441,6 +480,7 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
+      POSTGRES_13: The database version is PostgreSQL 13.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -456,6 +496,7 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_10 = 11
     POSTGRES_12 = 12
     MYSQL_8_0 = 13
+    POSTGRES_13 = 14
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following.
@@ -479,22 +520,26 @@ class DatabaseInstance(_messages.Message):
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current serving state of the Cloud SQL instance. This can be one
-    of the following. *RUNNABLE*: The instance is running, or is ready to run
-    when accessed. *SUSPENDED*: The instance is not available, for example due
-    to problems with billing. *PENDING_CREATE*: The instance is being created.
+    of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The state of the
+    instance is unknown. *RUNNABLE*: The instance has been stopped by owner.
+    It is not currently running, but it's ready to be restarted. *SUSPENDED*:
+    The instance is not available, for example due to problems with billing.
+    for example due to problems with billing. *PENDING_DELETE*: The instance
+    is being deleted. *PENDING_CREATE*: The instance is being created.
     *MAINTENANCE*: The instance is down for maintenance. *FAILED*: The
-    instance creation failed. *UNKNOWN_STATE*: The state of the instance is
-    unknown.
+    instance creation failed.
 
     Values:
       SQL_INSTANCE_STATE_UNSPECIFIED: The state of the instance is unknown.
-      RUNNABLE: The instance is running.
-      SUSPENDED: The instance is currently offline, but it may run again in
-        the future.
+      RUNNABLE: The instance has been stopped by owner. It is not currently
+        running, but it's ready to be restarted.
+      SUSPENDED: The instance is not available, for example due to problems
+        with billing.
       PENDING_DELETE: The instance is being deleted.
       PENDING_CREATE: The instance is being created.
       MAINTENANCE: The instance is down for maintenance.
-      FAILED: The instance failed to be created.
+      FAILED: The creation of the instance failed or a fatal error occurred
+        during maintenance.
     """
     SQL_INSTANCE_STATE_UNSPECIFIED = 0
     RUNNABLE = 1
@@ -857,6 +902,7 @@ class Flag(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
+      POSTGRES_13: The database version is PostgreSQL 13.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_1 = 1
@@ -872,6 +918,7 @@ class Flag(_messages.Message):
     POSTGRES_10 = 11
     POSTGRES_12 = 12
     MYSQL_8_0 = 13
+    POSTGRES_13 = 14
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being *BOOLEAN*, *STRING*,

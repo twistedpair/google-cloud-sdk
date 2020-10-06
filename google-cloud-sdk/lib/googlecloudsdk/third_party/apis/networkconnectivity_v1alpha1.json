@@ -421,8 +421,11 @@
           "description": "The URI of the virtual machine resource",
           "type": "string"
         },
+        "ipAddress": {
+          "description": "The IP address of the network interface to use for peering.",
+          "type": "string"
+        },
         "networkInterface": {
-          "description": "The name of the network interface",
           "type": "string"
         }
       }
@@ -483,7 +486,7 @@
           "type": "string"
         },
         "network": {
-          "description": "Optional. Fully-qualified URL of the network that this route applies to.",
+          "description": "Required. Fully-qualified URL of the network that this route applies to.",
           "type": "string"
         },
         "tags": {
@@ -507,7 +510,7 @@
           "type": "string"
         },
         "priority": {
-          "description": "Optional. The priority of this policy based route. Priority is used to break ties in cases where there are more than one matching policy based routes found. In cases where multiple policy based routes are matched, the one with the lowest-numbered priority value wins. The default value is 1000. The priority value must be from 0 to 65535, inclusive.",
+          "description": "Optional. The priority of this policy based route. Priority is used to break ties in cases where there are more than one matching policy based routes found. In cases where multiple policy based routes are matched, the one with the lowest-numbered priority value wins. The default value is 1000. The priority value must be from 1 to 65535, inclusive.",
           "type": "integer",
           "format": "int32"
         },

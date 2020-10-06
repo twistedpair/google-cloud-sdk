@@ -25,11 +25,13 @@ import ssl
 from googlecloudsdk.core import config
 from googlecloudsdk.core import http
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core.diagnostics import check_base
 from googlecloudsdk.core.diagnostics import diagnostic_base
 from googlecloudsdk.core.diagnostics import http_proxy_setup
 
 import httplib2
+import requests
 from six.moves import http_client
 from six.moves import urllib
 import socks
@@ -87,10 +89,18 @@ class ReachabilityChecker(check_base.Checker):
       urls = DefaultUrls()
 
     failures = []
+    # Check reachability using httplib2
     for url in urls:
-      fail = self._CheckURL(url)
+      fail = self._CheckURLHttplib2(url)
       if fail:
         failures.append(fail)
+
+    # Check reachability using requests
+    for url in urls:
+      fail = self._CheckURLRequests(url)
+      if fail:
+        failures.append(fail)
+
     if failures:
       fail_message = self._ConstructMessageFromFailures(failures, first_run)
       result = check_base.Result(passed=False, message=fail_message,
@@ -104,12 +114,21 @@ class ReachabilityChecker(check_base.Checker):
                                if not urls else pass_message)
     return result, None
 
-  def _CheckURL(self, url):
+  def _CheckURLHttplib2(self, url):
     try:
       http.Http().request(url, method='GET')
     except (http_client.HTTPException, socket.error, ssl.SSLError,
             httplib2.HttpLib2Error, socks.HTTPError) as err:
-      msg = 'Cannot reach {0} ({1})'.format(url, type(err).__name__)
+      msg = 'Cannot reach {0} with httplib2 ({1})'.format(
+          url, type(err).__name__)
+      return check_base.Failure(message=msg, exception=err)
+
+  def _CheckURLRequests(self, url):
+    try:
+      core_requests.GetSession().request('GET', url)
+    except requests.exceptions.RequestException as err:
+      msg = 'Cannot reach {0} with requests ({1})'.format(
+          url, type(err).__name__)
       return check_base.Failure(message=msg, exception=err)
 
   def _ConstructMessageFromFailures(self, failures, first_run):

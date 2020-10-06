@@ -236,6 +236,8 @@ class Attribute(_Attribute):
 class ResourceSpec(ConceptSpec):
   """Defines a Cloud resource as a set of attributes for argument creation.
   """
+  # TODO(b/67707644): Enable completers by default when confident enough.
+  disable_auto_complete = True
 
   # TODO(b/78851830): update the documentation to use this method.
   @classmethod
@@ -261,14 +263,14 @@ class ResourceSpec(ConceptSpec):
         resource_collection=collection.full_name,
         resource_name=yaml_data['name'],
         api_version=collection.api_version,
-        disable_auto_completers=yaml_data['disable_auto_completers'],
+        disable_auto_completers=yaml_data.get(
+            'disable_auto_completers', ResourceSpec.disable_auto_complete),
         plural_name=yaml_data.get('plural_name'),
         **{attribute.parameter_name: attribute for attribute in attributes})
 
-  # TODO(b/67707644): Enable completers by default when confident enough.
   def __init__(self, resource_collection, resource_name='resource',
-               api_version=None, disable_auto_completers=True, plural_name=None,
-               **kwargs):
+               api_version=None, disable_auto_completers=disable_auto_complete,
+               plural_name=None, **kwargs):
     """Initializes a ResourceSpec.
 
     To use a ResourceSpec, give a collection path such as

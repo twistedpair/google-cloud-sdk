@@ -1671,6 +1671,10 @@ class _SectionDataflow(_Section):
         help_text='Prints the container spec to stdout. Does not save in '
         'Google Cloud Storage.',
         default=False)
+    self.enable_streaming_engine = self._AddBool(
+        'enable_streaming_engine',
+        help_text='Specifies that enabling Streaming Engine for the job.',
+        default=False)
 
 
 class _SectionDatafusion(_Section):

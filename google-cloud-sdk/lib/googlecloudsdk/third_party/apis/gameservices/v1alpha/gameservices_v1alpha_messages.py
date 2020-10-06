@@ -593,11 +593,22 @@ class FleetDetails(_messages.Message):
 class GameServerCluster(_messages.Message):
   r"""A game server cluster resource.
 
+  Enums:
+    AllocationPriorityValueValuesEnum: Optional. The allocation priority
+      assigned to the game server cluster. Game server clusters will receive
+      new game server allocations based on the relative allocation priorites
+      set for each cluster within a realm where multicluster allocation is
+      configured.
+
   Messages:
     LabelsValue: The labels associated with this game server cluster. Each
       label is a key-value pair.
 
   Fields:
+    allocationPriority: Optional. The allocation priority assigned to the game
+      server cluster. Game server clusters will receive new game server
+      allocations based on the relative allocation priorites set for each
+      cluster within a realm where multicluster allocation is configured.
     connectionInfo: The game server cluster connection information. This
       information is used to manage game server clusters.
     createTime: Output only. The creation time.
@@ -612,6 +623,26 @@ class GameServerCluster(_messages.Message):
       onprem-cluster`.
     updateTime: Output only. The last-modified time.
   """
+
+  class AllocationPriorityValueValuesEnum(_messages.Enum):
+    r"""Optional. The allocation priority assigned to the game server cluster.
+    Game server clusters will receive new game server allocations based on the
+    relative allocation priorites set for each cluster within a realm where
+    multicluster allocation is configured.
+
+    Values:
+      PRIORITY_UNSPECIFIED: If the priority is not set, it defaults to
+        PRIORITY_UNSPECIFIED which is the lowest priority.
+      P1: Priority 1, which is the highest priority.
+      P2: Priority 2.
+      P3: Priority 3.
+      P4: Priority 4.
+    """
+    PRIORITY_UNSPECIFIED = 0
+    P1 = 1
+    P2 = 2
+    P3 = 3
+    P4 = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -638,13 +669,14 @@ class GameServerCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  allocationPriority = _messages.EnumField('AllocationPriorityValueValuesEnum', 1)
+  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class GameServerClusterConnectionInfo(_messages.Message):

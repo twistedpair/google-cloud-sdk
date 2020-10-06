@@ -766,6 +766,7 @@ class Dataset(_messages.Message):
     location: The geographic location where the dataset should reside. The
       default value is US. See details at
       https://cloud.google.com/bigquery/docs/locations.
+    satisfiesPZS: [Output-only] Reserved for future use.
     selfLink: [Output-only] A URL that can be used to access the resource
       again. You can use this URL in Get or Update requests to the resource.
   """
@@ -852,7 +853,8 @@ class Dataset(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 12)
   lastModifiedTime = _messages.IntegerField(13)
   location = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
+  satisfiesPZS = _messages.BooleanField(15)
+  selfLink = _messages.StringField(16)
 
 
 class DatasetList(_messages.Message):
@@ -1278,17 +1280,24 @@ class HivePartitioningOptions(_messages.Message):
   r"""A HivePartitioningOptions object.
 
   Fields:
-    mode: [Optional, Trusted Tester] When set, what mode of hive partitioning
-      to use when reading data. Two modes are supported. (1) AUTO:
-      automatically infer partition key name(s) and type(s). (2) STRINGS:
-      automatically infer partition key name(s). All types are interpreted as
-      strings. Not all storage formats support hive partitioning. Requesting
-      hive partitioning on an unsupported format will lead to an error.
-      Currently supported types include: AVRO, CSV, JSON, ORC and Parquet.
-    sourceUriPrefix: [Optional, Trusted Tester] When hive partition detection
-      is requested, a common prefix for all source uris should be supplied.
-      The prefix must end immediately before the partition key encoding
-      begins. For example, consider files following this data layout.
+    mode: [Optional] When set, what mode of hive partitioning to use when
+      reading data. The following modes are supported. (1) AUTO: automatically
+      infer partition key name(s) and type(s). (2) STRINGS: automatically
+      infer partition key name(s). All types are interpreted as strings. (3)
+      CUSTOM: partition key schema is encoded in the source URI prefix. Not
+      all storage formats support hive partitioning. Requesting hive
+      partitioning on an unsupported format will lead to an error. Currently
+      supported types include: AVRO, CSV, JSON, ORC and Parquet.
+    requirePartitionFilter: [Optional] If set to true, queries over this table
+      require a partition filter that can be used for partition elimination to
+      be specified. Note that this field should only be true when creating a
+      permanent external table or querying a temporary external table. Hive-
+      partitioned loads with requirePartitionFilter explicitly set to true
+      will fail.
+    sourceUriPrefix: [Optional] When hive partition detection is requested, a
+      common prefix for all source uris should be supplied. The prefix must
+      end immediately before the partition key encoding begins. For example,
+      consider files following this data layout.
       gs://bucket/path_to_table/dt=2019-01-01/country=BR/id=7/file.avro
       gs://bucket/path_to_table/dt=2018-12-31/country=CA/id=3/file.avro When
       hive partitioning is requested with either AUTO or STRINGS detection,
@@ -1297,7 +1306,8 @@ class HivePartitioningOptions(_messages.Message):
   """
 
   mode = _messages.StringField(1)
-  sourceUriPrefix = _messages.StringField(2)
+  requirePartitionFilter = _messages.BooleanField(2)
+  sourceUriPrefix = _messages.StringField(3)
 
 
 class Job(_messages.Message):
@@ -1422,7 +1432,7 @@ class JobConfigurationExtract(_messages.Message):
       value is NONE. DEFLATE and SNAPPY are only supported for Avro. Not
       applicable when extracting models.
     destinationFormat: [Optional] The exported file format. Possible values
-      include CSV, NEWLINE_DELIMITED_JSON or AVRO for tables and
+      include CSV, NEWLINE_DELIMITED_JSON, PARQUET or AVRO for tables and
       ML_TF_SAVED_MODEL or ML_XGBOOST_BOOSTER for models. The default value
       for tables is CSV. Tables with nested or repeated fields cannot be
       exported as CSV. The default value for models is ML_TF_SAVED_MODEL.
@@ -3235,8 +3245,10 @@ class TimePartitioning(_messages.Message):
       instead partitioned by this field. The field must be a top-level
       TIMESTAMP or DATE field. Its mode must be NULLABLE or REQUIRED.
     requirePartitionFilter: A boolean attribute.
-    type: [Required] The only type supported is DAY, which will generate one
-      partition per day.
+    type: [Required] The supported types are DAY, HOUR, MONTH, and YEAR, which
+      will generate one partition per day, hour, month, and year,
+      respectively. When the type is not specified, the default behavior is
+      DAY.
   """
 
   expirationMs = _messages.IntegerField(1)

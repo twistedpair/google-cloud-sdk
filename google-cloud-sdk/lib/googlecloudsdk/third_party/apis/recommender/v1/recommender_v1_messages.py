@@ -797,7 +797,9 @@ class RecommenderProjectsLocationsInsightTypesInsightsListRequest(_messages.Mess
     parent: Required. The container resource on which to execute the request.
       Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/i
       nsightTypes/[INSIGHT_TYPE_ID]", LOCATION here refers to GCP Locations:
-      https://cloud.google.com/about/locations/
+      https://cloud.google.com/about/locations/ INSIGHT_TYPE_ID refers to
+      supported insight types:
+      https://cloud.google.com/recommender/docs/insights/insight-types.)
   """
 
   filter = _messages.StringField(1)
@@ -850,7 +852,9 @@ class RecommenderProjectsLocationsRecommendersRecommendationsListRequest(_messag
     parent: Required. The container resource on which to execute the request.
       Acceptable formats: 1. "projects/[PROJECT_NUMBER]/locations/[LOCATION]/r
       ecommenders/[RECOMMENDER_ID]", LOCATION here refers to GCP Locations:
-      https://cloud.google.com/about/locations/
+      https://cloud.google.com/about/locations/ RECOMMENDER_ID refers to
+      supported recommenders:
+      https://cloud.google.com/recommender/docs/recommenders.
   """
 
   filter = _messages.StringField(1)

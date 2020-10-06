@@ -371,7 +371,7 @@
           "description": "The one hour maintenance window of the metastore service. This specifies when the service can be restarted for maintenance purposes in UTC time.",
           "$ref": "MaintenanceWindow"
         },
-        "uuid": {
+        "uid": {
           "description": "Output only. The globally unique resource identifier of the metastore service.",
           "readOnly": true,
           "type": "string"

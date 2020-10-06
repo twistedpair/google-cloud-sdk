@@ -24,7 +24,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
-from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 
@@ -36,14 +35,14 @@ class IntraCloudCopyTask(task.Task):
     """Initializes task.
 
     Args:
-      source_resource (resource_reference.ObjectResource): Must
+      source_resource (resource_reference.Resource): Must
           contain the full object path. Directories will not be accepted.
-          Existing objects at the this location will be overwritten.
-      destination_resource (resource_reference.ObjectResource): Must
+      destination_resource (resource_reference.Resource): Must
           contain the full object path. Directories will not be accepted.
           Existing objects at the this location will be overwritten.
     """
     super(IntraCloudCopyTask, self).__init__()
+
     if ((source_resource.storage_url.scheme
          != destination_resource.storage_url.scheme)
         or not isinstance(source_resource.storage_url,
@@ -56,8 +55,6 @@ class IntraCloudCopyTask(task.Task):
 
   def execute(self, callback=None):
     # TODO(b/161900052): Support all of CopyObject's parameters
-    provider = cloud_api.ProviderPrefix(
-        self._source_resource.storage_url.scheme)
-    # TODO(b/166278596) Get metadata if the destination is an UnknownResource.
+    provider = self._source_resource.storage_url.scheme
     api_factory.get_api(provider).CopyObject(
-        self._source_resource.metadata, self._destination_resource.metadata)
+        self._source_resource, self._destination_resource)

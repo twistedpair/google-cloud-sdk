@@ -241,8 +241,8 @@ class DetectLanguageResponse(_messages.Message):
   r"""The response message for language detection.
 
   Fields:
-    languages: A list of detected languages sorted by detection confidence in
-      descending order. The most probable language first.
+    languages: The most probable language detected by the Translation API. For
+      each request, the Translation API will always return only one result.
   """
 
   languages = _messages.MessageField('DetectedLanguage', 1, repeated=True)

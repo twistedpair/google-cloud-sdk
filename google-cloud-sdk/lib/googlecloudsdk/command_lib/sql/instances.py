@@ -333,6 +333,18 @@ class _BaseInstances(object):
             maintenance_window_day=args.maintenance_window_day,
             maintenance_window_hour=args.maintenance_window_hour))
 
+    if args.deny_maintenance_period_start_date and args.deny_maintenance_period_end_date:
+      settings.denyMaintenancePeriods = []
+      settings.denyMaintenancePeriods.append(
+          reducers.DenyMaintenancePeriod(
+              sql_messages,
+              instance,
+              deny_maintenance_period_start_date=args
+              .deny_maintenance_period_start_date,
+              deny_maintenance_period_end_date=args
+              .deny_maintenance_period_end_date,
+              deny_maintenance_period_time=args.deny_maintenance_period_time))
+
     if args.storage_type:
       settings.dataDiskType = _ParseStorageType(
           sql_messages, STORAGE_TYPE_PREFIX + args.storage_type)
@@ -405,6 +417,23 @@ class _BaseInstances(object):
             maintenance_release_channel=args.maintenance_release_channel,
             maintenance_window_day=args.maintenance_window_day,
             maintenance_window_hour=args.maintenance_window_hour))
+
+    if args.remove_deny_maintenance_period:
+      settings.denyMaintenancePeriods = []
+
+    if (args.deny_maintenance_period_start_date or
+        args.deny_maintenance_period_end_date or
+        args.deny_maintenance_period_time):
+      settings.denyMaintenancePeriods = []
+      settings.denyMaintenancePeriods.append(
+          reducers.DenyMaintenancePeriod(
+              sql_messages,
+              instance,
+              deny_maintenance_period_start_date=args
+              .deny_maintenance_period_start_date,
+              deny_maintenance_period_end_date=args
+              .deny_maintenance_period_end_date,
+              deny_maintenance_period_time=args.deny_maintenance_period_time))
 
     # BETA args.
     if _IsBetaOrNewer(release_track):
