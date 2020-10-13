@@ -17,7 +17,7 @@ location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: Location of the privatecloud or cluster.
+    help: Region of the private cloud or cluster.
     property: vmware/location
   disable_auto_completers: false
 
@@ -30,7 +30,7 @@ privatecloud:
   - &privatecloud
     parameter_name: clusterGroupsId
     attribute_name: privatecloud
-    help: VMware privatecloud.
+    help: VMware Engine private cloud.
   disable_auto_completers: false
 
 cluster:
@@ -43,5 +43,5 @@ cluster:
   - &cluster
     parameter_name: clustersId
     attribute_name: cluster
-    help: VMware privatecloud cluster.
+    help: Cluster in a VMware Engine private cloud.
   disable_auto_completers: false

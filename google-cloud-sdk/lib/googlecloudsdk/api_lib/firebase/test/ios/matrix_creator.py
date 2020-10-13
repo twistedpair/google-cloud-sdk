@@ -90,6 +90,15 @@ class MatrixCreator(object):
         self._BuildFileReference(os.path.basename(additional_ipa))
         for additional_ipa in getattr(self._args, 'additional_ipas', []) or []
     ]
+    directories_to_pull = []
+    for directory in getattr(self._args, 'directories_to_pull', []) or []:
+      if ':' in directory:
+        bundle, path = directory.split(':')
+        directories_to_pull.append(
+            self._messages.IosDeviceFile(bundleId=bundle, devicePath=path))
+      else:
+        directories_to_pull.append(
+            self._messages.IosDeviceFile(devicePath=directory))
     device_files = []
     other_files = getattr(self._args, 'other_files', None) or {}
     for device_path in other_files.keys():
@@ -107,7 +116,8 @@ class MatrixCreator(object):
     return self._messages.IosTestSetup(
         networkProfile=getattr(self._args, 'network_profile', None),
         additionalIpas=additional_ipas,
-        pushFiles=device_files)
+        pushFiles=device_files,
+        pullDirectories=directories_to_pull)
 
   def _BuildIosXcTestSpec(self):
     """Build a TestSpecification for an IosXcTest."""

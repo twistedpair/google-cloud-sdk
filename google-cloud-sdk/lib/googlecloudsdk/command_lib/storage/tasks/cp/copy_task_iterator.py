@@ -20,9 +20,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
-from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
 
 

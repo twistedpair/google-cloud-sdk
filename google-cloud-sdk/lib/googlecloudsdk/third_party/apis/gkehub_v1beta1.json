@@ -240,7 +240,7 @@
           "type": "string"
         },
         "labels": {
-          "description": "GCP labels for this membership.",
+          "description": "Optional. GCP labels for this membership.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -251,6 +251,7 @@
           "type": "string"
         },
         "endpoint": {
+          "description": "Optional. Endpoint information to reach this member.",
           "$ref": "MembershipEndpoint"
         },
         "state": {
@@ -259,7 +260,7 @@
           "$ref": "MembershipState"
         },
         "authority": {
-          "description": "How to identify workloads from this Membership. See the documentation on workload identity for more details: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/workload-identity",
+          "description": "Optional. How to identify workloads from this Membership. See the documentation on workload identity for more details: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/workload-identity",
           "$ref": "Authority"
         },
         "createTime": {
@@ -281,7 +282,7 @@
           "format": "google-datetime"
         },
         "externalId": {
-          "description": "An externally-generated and managed ID for this Membership. This ID may still be modified after creation but it is not recommended to do so. The ID must match the regex: `a-zA-Z0-9*` If this Membership represents a Kubernetes cluster, this value should be set to the UUID of the kube-system namespace object.",
+          "description": "Optional. An externally-generated and managed ID for this Membership. This ID may still be modified after creation but it is not recommended to do so. The ID must match the regex: `a-zA-Z0-9*` If this Membership represents a Kubernetes cluster, this value should be set to the UUID of the kube-system namespace object.",
           "type": "string"
         },
         "lastConnectionTime": {
@@ -303,7 +304,7 @@
       "type": "object",
       "properties": {
         "gkeCluster": {
-          "description": "If this Membership is a Kubernetes API server hosted on GKE, this field will be populated and contain GKE-specific information.",
+          "description": "Optional. If this Membership is a Kubernetes API server hosted on GKE, this field will be populated and contain GKE-specific information.",
           "$ref": "GkeCluster"
         }
       }
@@ -325,7 +326,8 @@
       "type": "object",
       "properties": {
         "code": {
-          "description": "Code indicating the state of the Membership resource.",
+          "description": "Output only. Code indicating the state of the Membership resource.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -361,7 +363,7 @@
       "type": "object",
       "properties": {
         "issuer": {
-          "description": "A JWT issuer URI. If set, then Google will attempt OIDC discovery on this URI, and allow valid OIDC tokens from this issuer to authenticate within the below identity namespace. This can be updated from a non-empty to empty value and vice-versa. But cannot be changed from one non-empty value to another. Setting to empty will disable Workload Identity. issuer should be a valid URL of length < 2000 that can be parsed, and must start with https:\/\/.",
+          "description": "Optional. A JWT issuer URI. If set, then Google will attempt OIDC discovery on this URI, and allow valid OIDC tokens from this issuer to authenticate within the below identity namespace. This can be updated from a non-empty to empty value and vice-versa. But cannot be changed from one non-empty value to another. Setting to empty will disable Workload Identity. issuer should be a valid URL of length < 2000 that can be parsed, and must start with https:\/\/.",
           "type": "string"
         },
         "workloadIdentityPool": {

@@ -2571,6 +2571,16 @@ class GoogleCloudDialogflowV2ImportAgentRequest(_messages.Message):
   agentUri = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowV2ImportDocumentsResponse(_messages.Message):
+  r"""Response message for Documents.ImportDocuments.
+
+  Fields:
+    warnings: Includes details about skipped documents or any other warnings.
+  """
+
+  warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
 class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
   r"""Instructs the speech recognizer how to process the audio content.
 
@@ -4107,10 +4117,10 @@ class GoogleCloudDialogflowV2SentimentAnalysisResult(_messages.Message):
   r"""The result of sentiment analysis. Sentiment analysis inspects user input
   and identifies the prevailing subjective opinion, especially to determine a
   user's attitude as positive, negative, or neutral. For
-  Participants.AnalyzeContent, it needs to be configured in
-  DetectIntentRequest.query_params. For Participants.StreamingAnalyzeContent,
-  it needs to be configured in StreamingDetectIntentRequest.query_params. And
-  for Participants.AnalyzeContent and Participants.StreamingAnalyzeContent, it
+  Participants.DetectIntent, it needs to be configured in
+  DetectIntentRequest.query_params. For Participants.StreamingDetectIntent, it
+  needs to be configured in StreamingDetectIntentRequest.query_params. And for
+  Participants.AnalyzeContent and Participants.StreamingAnalyzeContent, it
   needs to be configured in ConversationProfile.human_agent_assistant_config
 
   Fields:
@@ -4815,6 +4825,16 @@ class GoogleCloudDialogflowV2beta1ExportAgentResponse(_messages.Message):
 
   agentContent = _messages.BytesField(1)
   agentUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1ImportDocumentsResponse(_messages.Message):
+  r"""Response message for Documents.ImportDocuments.
+
+  Fields:
+    warnings: Includes details about skipped documents or any other warnings.
+  """
+
+  warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
 
 
 class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
@@ -6348,10 +6368,10 @@ class GoogleCloudDialogflowV2beta1SentimentAnalysisResult(_messages.Message):
   r"""The result of sentiment analysis. Sentiment analysis inspects user input
   and identifies the prevailing subjective opinion, especially to determine a
   user's attitude as positive, negative, or neutral. For
-  Participants.AnalyzeContent, it needs to be configured in
-  DetectIntentRequest.query_params. For Participants.StreamingAnalyzeContent,
-  it needs to be configured in StreamingDetectIntentRequest.query_params. And
-  for Participants.AnalyzeContent and Participants.StreamingAnalyzeContent, it
+  Participants.DetectIntent, it needs to be configured in
+  DetectIntentRequest.query_params. For Participants.StreamingDetectIntent, it
+  needs to be configured in StreamingDetectIntentRequest.query_params. And for
+  Participants.AnalyzeContent and Participants.StreamingAnalyzeContent, it
   needs to be configured in ConversationProfile.human_agent_assistant_config
 
   Fields:
@@ -6626,18 +6646,6 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   payload = _messages.MessageField('PayloadValue', 6)
   sessionEntityTypes = _messages.MessageField('GoogleCloudDialogflowV2beta1SessionEntityType', 7, repeated=True)
   source = _messages.StringField(8)
-
-
-class GoogleCloudDialogflowV3alpha1CreateVersionOperationMetadata(_messages.Message):
-  r"""Metadata associated with the long running operation for
-  Versions.CreateVersion.
-
-  Fields:
-    version: Name of the created version. Format:
-      `projects//locations//agents//flows//versions/`.
-  """
-
-  version = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowV3alpha1ExportAgentResponse(_messages.Message):

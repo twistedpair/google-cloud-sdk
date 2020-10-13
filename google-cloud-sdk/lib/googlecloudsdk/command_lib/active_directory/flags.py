@@ -121,6 +121,14 @@ def RemoveAuthorizedNetworksFlag(unused_domain_ref, args, patch_request):
   return patch_request
 
 
+def UpdateAuditLogsEnabled(unused_domain_ref, args, patch_request):
+  """Updates audit logs config for the domain."""
+  if args.IsSpecified('enable_audit_logs'):
+    patch_request.domain.auditLogsEnabled = args.enable_audit_logs
+    AddFieldToUpdateMask('audit_logs_enabled', patch_request)
+  return patch_request
+
+
 def AddFieldToUpdateMask(field, patch_request):
   """Adds name of field to update mask."""
   update_mask = patch_request.updateMask

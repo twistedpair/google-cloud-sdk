@@ -350,30 +350,36 @@
       "type": "object",
       "properties": {
         "kubernetesApiServerVersion": {
-          "description": "Kubernetes API server version string as reported by '\/version'.",
+          "description": "Output only. Kubernetes API server version string as reported by '\/version'.",
+          "readOnly": true,
           "type": "string"
         },
         "nodeProviderId": {
-          "description": "Node providerID as reported by the first node in the list of nodes on the Kubernetes endpoint. It should be noted that some Kubernetes platforms (like GKE-on-GCP) support zero-node clusters. For these platforms, the node_count will be zero and the node_provider_id will be empty.",
+          "description": "Output only. Node providerID as reported by the first node in the list of nodes on the Kubernetes endpoint. It should be noted that some Kubernetes platforms (like GKE-on-GCP) support zero-node clusters. For these platforms, the node_count will be zero and the node_provider_id will be empty.",
+          "readOnly": true,
           "type": "string"
         },
         "nodeCount": {
-          "description": "Node count as reported by Kubernetes nodes resources.",
+          "description": "Output only. Node count as reported by Kubernetes nodes resources.",
+          "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "vcpuCount": {
-          "description": "vCPU count as reported by Kubernetes nodes resources.",
+          "description": "Output only. vCPU count as reported by Kubernetes nodes resources.",
+          "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "memoryMb": {
-          "description": "The total memory capacity as reported by the sum of all Kubernetes nodes resources, defined in MB.",
+          "description": "Output only. The total memory capacity as reported by the sum of all Kubernetes nodes resources, defined in MB.",
+          "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "updateTime": {
-          "description": "The time at which these details were last updated. This update_time is different from the Membership-level update_time since EndpointDetails are updated internally for API consumers.",
+          "description": "Output only. The time at which these details were last updated. This update_time is different from the Membership-level update_time since EndpointDetails are updated internally for API consumers.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         }
@@ -446,7 +452,8 @@
       "type": "object",
       "properties": {
         "code": {
-          "description": "Code indicating the state of the Membership resource.",
+          "description": "Output only. Code indicating the state of the Membership resource.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -473,7 +480,7 @@
       "type": "object",
       "properties": {
         "issuer": {
-          "description": "A JWT issuer URI. If set, then Google will attempt OIDC discovery on this URI, and allow valid OIDC tokens from this issuer to authenticate within the below identity namespace. This can be updated from a non-empty to empty value and vice-versa. But cannot be changed from one non-empty value to another. Setting to empty will disable Workload Identity. issuer should be a valid URL of length < 2000 that can be parsed, and must start with https:\/\/.",
+          "description": "Optional. A JWT issuer URI. If set, then Google will attempt OIDC discovery on this URI, and allow valid OIDC tokens from this issuer to authenticate within the below identity namespace. This can be updated from a non-empty to empty value and vice-versa. But cannot be changed from one non-empty value to another. Setting to empty will disable Workload Identity. issuer should be a valid URL of length < 2000 that can be parsed, and must start with https:\/\/.",
           "type": "string"
         },
         "identityNamespace": {

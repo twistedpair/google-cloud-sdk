@@ -52,6 +52,6 @@ class FileUploadTask(task.Task):
 
     with files.BinaryFileReader(
         self._source_resource.storage_url.object_name) as upload_stream:
-      # TODO(b/162069479): Support all of UploadObject's parameters.
-      api_factory.get_api(provider).UploadObject(
-          upload_stream, self._destination_resource)
+      # TODO(b/162069479): Support all of upload_object's parameters.
+      api_factory.get_api(provider).upload_object(upload_stream,
+                                                  self._destination_resource)

@@ -258,18 +258,21 @@ def _HandleMinikubeStatusEvent(progress_bar, json_obj):
   if json_obj['type'] == _MINIKUBE_STEP:
     data = json_obj['data']
 
-    current_step = int(data['currentstep'])
-    total_steps = int(data['totalsteps'])
-    completion_fraction = current_step / float(total_steps)
-    progress_bar.SetProgress(completion_fraction)
+    if 'currentstep' in data and 'totalsteps' in data:
+      current_step = int(data['currentstep'])
+      total_steps = int(data['totalsteps'])
+      completion_fraction = current_step / float(total_steps)
+      progress_bar.SetProgress(completion_fraction)
   elif json_obj['type'] == _MINIKUBE_DOWNLOAD_PROGRESS:
     data = json_obj['data']
-    current_step = int(data['currentstep'])
-    total_steps = int(data['totalsteps'])
-    download_progress = float(data['progress'])
 
-    completion_fraction = (current_step + download_progress) / total_steps
-    progress_bar.SetProgress(completion_fraction)
+    if 'currentstep' in data and 'totalsteps' in data and 'progress' in data:
+      current_step = int(data['currentstep'])
+      total_steps = int(data['totalsteps'])
+      download_progress = float(data['progress'])
+
+      completion_fraction = (current_step + download_progress) / total_steps
+      progress_bar.SetProgress(completion_fraction)
   elif (json_obj['type'] == _MINIKUBE_ERROR and 'exitcode' in json_obj['data']):
     data = json_obj['data']
     if ('id' in data and 'advice' in data and

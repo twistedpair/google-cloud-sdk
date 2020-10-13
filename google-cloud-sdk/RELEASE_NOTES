@@ -4,6 +4,95 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+
+## 314.0.0 (2020-10-13)
+
+### Breaking Changes
+
+*   **(Cloud Build)** `cloud-build-local` is no longer supported on 32-bit MacOS. The executable
+    has been deleted from this release. The prior release, v0.5.0 included a
+    32-bit MacOS executable that may continue to work for some users.
+
+
+### Apigee
+
+*   Added `apigee` surface to GA which provides access to Apigee Hybrid.
+*   Added `apigee organizations` command group which provides access to Apigee
+    organizations.
+*   Added `apigee apis` command group which allows management and deployment
+    of Apigee API proxies.
+*   Added `apigee environments` command group which provides access to Apigee
+    environments.
+*   Added `apigee deployments` command group which provides access to Apigee
+    API proxy deployments.
+*   Added `apigee product` command group which allows creation and management of
+    Apigee API products.
+*   Added `apigee developer` command group which provides access to Apigee
+    developers.
+*   Added `apigee applications` command group which provides access to Apigee
+    developer applications.
+
+### BigQuery
+
+* Fixed 'TableSnapshot with expiration' issue.
+
+### Certificate Authority Service
+
+* Added `gcloud beta privateca certificates export` command which simplifies
+  the process of writing a PEM certificate to a file.
+
+### Cloud Build
+
+*   Updated `cloud-build-local` component to version v.0.5.1. This fixes an
+    issue identified in
+    <https://github.com/GoogleCloudPlatform/cloud-build-local/releases/tag/v0.5.1>.
+*   Fixed issue where `gcloud builds submit` would not transfer symbolic links
+    correctly to the build.
+
+### Cloud Dataproc
+
+*   Removed prompt from `gcloud dataproc clusters stop` and
+    `gcloud dataproc clusters start`. The commands now run without requiring
+    confirmation.
+
+### Cloud Domains
+
+* Promoted `gcloud domains registrations` to beta. Enables the registering and managing of domains.
+
+### Cloud Run
+
+* Promoted `--vpc-egress` flag of `gcloud run deploy` and
+  `gcloud run services update` to beta.
+
+### Cloud Shell
+
+* Removed `--boosted` flag. An upgraded VM type is available by default.
+
+### Firebase Test Lab
+
+*   Added `--other-files` flag to `gcloud beta firebase test ios run`. This flag
+    lets you specify files that are pushed onto the iOS test device prior to
+    testing.
+*   Added `--directories-to-pull` flag to `gcloud beta firebase test ios run`.
+    This flag lets you specify directories on the device that are pulled after
+    testing and included in the test results.
+
+### Identity Groups
+
+*   Promoted `gcloud identity groups update` to GA.
+
+### Identity Groups Memberships
+
+*   Promoted `gcloud identity groups memberships add` to GA.
+*   Promoted `gcloud identity groups memberships modify-membership-roles` to GA.
+
+### Notebooks
+
+* Fixed CMEK support and add PD_BALANCED disk support.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 ## 313.0.1 (2020-10-07)
 
 ### Cloud Dataflow

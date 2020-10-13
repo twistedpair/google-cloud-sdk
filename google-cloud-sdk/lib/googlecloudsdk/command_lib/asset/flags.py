@@ -35,12 +35,25 @@ def AddFolderArgs(parser, help_text):
   parser.add_argument('--folder', metavar='FOLDER_ID', help=help_text)
 
 
+def AddProjectArgs(parser, help_text):
+  parser.add_argument('--project', metavar='PROJECT_ID', help=help_text)
+
+
 def AddParentArgs(parser, project_help_text, org_help_text, folder_help_text):
   parent_group = parser.add_mutually_exclusive_group(required=True)
   common_args.ProjectArgument(
       help_text_to_prepend=project_help_text).AddToParser(parent_group)
   AddOrganizationArgs(parent_group, org_help_text)
   AddFolderArgs(parent_group, folder_help_text)
+
+
+def AddAnalyzerParentArgs(parser):
+  parent_group = parser.add_mutually_exclusive_group(required=True)
+  AddOrganizationArgs(parent_group,
+                      'The organization ID to perform the analysis.')
+  AddFolderArgs(parent_group, 'The folder ID to perform the analysis.')
+  AddProjectArgs(parent_group,
+                 'The project ID or number to perform the analysis.')
 
 
 def AddSnapshotTimeArgs(parser):
@@ -225,15 +238,13 @@ def AddEndTimeArgs(parser):
 
 def AddOperationArgs(parser):
   parser.add_argument(
-      'id',
-      metavar='OPERATION_NAME',
-      help='Name of the operation to describe.')
+      'id', metavar='OPERATION_NAME', help='Name of the operation to describe.')
 
 
 def AddListContentTypeArgs(parser):
   help_text = (
-      'Asset content type. If not specified, no content but the asset name and '
-      'type will be returned in the feed. For more information, see '
+      'Asset content type. If not specified, no content but the asset name and'
+      ' type will be returned in the feed. For more information, see '
       'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
   )
   parser.add_argument(
@@ -292,8 +303,8 @@ def FeedContentTypeArgs(parser, help_text):
 
 def AddFeedContentTypeArgs(parser):
   help_text = (
-      'Asset content type. If not specified, no content but the asset name and '
-      'type will be returned in the feed. For more information, see '
+      'Asset content type. If not specified, no content but the asset name and'
+      ' type will be returned in the feed. For more information, see '
       'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
   )
 
@@ -313,8 +324,8 @@ def AddFeedPubSubTopicArgs(parser, required):
 
 def AddChangeFeedContentTypeArgs(parser):
   help_text = (
-      'Asset content type to overwrite the existing one. For more information, '
-      'see: '
+      'Asset content type to overwrite the existing one. For more information,'
+      ' see: '
       'https://cloud.google.com/resource-manager/docs/cloud-asset-inventory/overview#asset_content_type'
   )
 
@@ -432,3 +443,168 @@ def AddUpdateFeedConditionDescriptionArgs(parser):
   parent_group = parser.add_group(mutex=True)
   AddChangeFeedConditionDescriptionArgs(parent_group)
   AddClearFeedConditionDescriptionArgs(parent_group)
+
+
+def AddAnalyzerFullResourceNameArgs(parser):
+  parser.add_argument('--full-resource-name', help='The full resource name.')
+
+
+def AddAnalyzerResourceSelectorGroup(parser):
+  resource_selector_group = parser.add_group(
+      mutex=False,
+      required=False,
+      help='Specifies a resource for analysis. Leaving it empty means ANY.')
+  AddAnalyzerFullResourceNameArgs(resource_selector_group)
+
+
+def AddAnalyzerIdentityArgs(parser):
+  parser.add_argument(
+      '--identity',
+      help=('The identity appearing in the form of members in the IAM policy '
+            'binding.'))
+
+
+def AddAnalyzerIdentitySelectorGroup(parser):
+  identity_selector_group = parser.add_group(
+      mutex=False,
+      required=False,
+      help='Specifies an identity for analysis. Leaving it empty means ANY.')
+  AddAnalyzerIdentityArgs(identity_selector_group)
+
+
+def AddAnalyzerRolesArgs(parser):
+  parser.add_argument(
+      '--roles',
+      metavar='ROLES',
+      type=arg_parsers.ArgList(),
+      help='The roles to appear in the result.')
+
+
+def AddAnalyzerPermissionsArgs(parser):
+  parser.add_argument(
+      '--permissions',
+      metavar='PERMISSIONS',
+      type=arg_parsers.ArgList(),
+      help='The permissions to appear in the result.')
+
+
+def AddAnalyzerAccessSelectorGroup(parser):
+  access_selector_group = parser.add_group(
+      mutex=False,
+      required=False,
+      help=('Specifies roles or permissions for analysis. Leaving it empty '
+            'means ANY.'))
+  AddAnalyzerRolesArgs(access_selector_group)
+  AddAnalyzerPermissionsArgs(access_selector_group)
+
+
+def AddAnalyzerSelectorsGroup(parser):
+  AddAnalyzerResourceSelectorGroup(parser)
+  AddAnalyzerIdentitySelectorGroup(parser)
+  AddAnalyzerAccessSelectorGroup(parser)
+
+
+def AddAnalyzerExpandGroupsArgs(parser):
+  parser.add_argument(
+      '--expand-groups',
+      action='store_true',
+      help=(
+          'If true, the identities section of the result will expand any '
+          'Google groups appearing in an IAM policy binding. Default is false.'
+      ))
+  parser.set_defaults(expand_groups=False)
+
+
+def AddAnalyzerExpandRolesArgs(parser):
+  parser.add_argument(
+      '--expand-roles',
+      action='store_true',
+      help=('If true, the access section of result will expand any roles '
+            'appearing in IAM policy bindings to include their permissions. '
+            'Default is false.'))
+  parser.set_defaults(expand_roles=False)
+
+
+def AddAnalyzerExpandResourcesArgs(parser):
+  parser.add_argument(
+      '--expand-resources',
+      action='store_true',
+      help=('If true, the resource section of the result will expand any '
+            'resource attached to an IAM policy to include resources lower in '
+            'the resource hierarchy. Default is false.'))
+  parser.set_defaults(expand_resources=False)
+
+
+def AddAnalyzerOutputResourceEdgesArgs(parser):
+  parser.add_argument(
+      '--output-resource-edges',
+      action='store_true',
+      help=('If true, the result will output resource edges, starting '
+            'from the policy attached resource, to any expanded resources. '
+            'Default is false.'))
+  parser.set_defaults(output_resource_edges=False)
+
+
+def AddAnalyzerOutputGroupEdgesArgs(parser):
+  parser.add_argument(
+      '--output-group-edges',
+      action='store_true',
+      help=('If true, the result will output group identity edges, starting '
+            "from the binding's group members, to any expanded identities. "
+            'Default is false.'))
+  parser.set_defaults(output_group_edges=False)
+
+
+def AddAnalyzerExecutionTimeout(parser):
+  parser.add_argument(
+      '--execution-timeout',
+      type=arg_parsers.Duration(),
+      help=(
+          'The amount of time the executable has to complete. See JSON '
+          'representation of '
+          '[Duration](https://developers.google.com/protocol-buffers/docs/proto3#json). '
+          'Deafult is empty. '))
+
+
+def AddAnalyzerShowAccessControlEntries(parser):
+  parser.add_argument(
+      '--show-response',
+      action='store_true',
+      help=(
+          'If true, the response will be showed as-is in the command output.'))
+  parser.set_defaults(show_response=False)
+
+
+def AddAnalyzerAnalyzeServiceAccountImpersonationArgs(parser):
+  """Adds analyze service account impersonation arg into options.
+
+  Args:
+    parser: the option group.
+  """
+
+  parser.add_argument(
+      '--analyze-service-account-impersonation',
+      action='store_true',
+      help=(
+          'If true, the response will include access analysis from identities '
+          'to resources via service account impersonation. This is a very '
+          'expensive operation, because many derived queries will be executed. '
+          'We highly recommend you use AnalyzeIamPolicyLongrunning rpc instead.'
+          ' Default is false.'))
+  parser.set_defaults(analyze_service_account_impersonation=False)
+
+
+def AddAnalyzerOptionsGroup(parser, is_sync):
+  """Adds a group of options."""
+  options_group = parser.add_group(
+      mutex=False, required=False, help='The analysis options.')
+  AddAnalyzerExpandGroupsArgs(options_group)
+  AddAnalyzerExpandRolesArgs(options_group)
+  AddAnalyzerExpandResourcesArgs(options_group)
+  AddAnalyzerOutputResourceEdgesArgs(options_group)
+  AddAnalyzerOutputGroupEdgesArgs(options_group)
+  AddAnalyzerAnalyzeServiceAccountImpersonationArgs(options_group)
+
+  if is_sync:
+    AddAnalyzerExecutionTimeout(options_group)
+    AddAnalyzerShowAccessControlEntries(options_group)

@@ -54,6 +54,6 @@ class FileDownloadTask(task.Task):
       bucket_name = self._source_resource.storage_url.bucket_name
       object_name = self._source_resource.storage_url.object_name
 
-      # TODO(b/162264437): Support all of DownloadObject's parameters.
-      api_factory.get_api(provider).DownloadObject(bucket_name, object_name,
-                                                   download_stream)
+      # TODO(b/162264437): Support all of download_object's parameters.
+      api_factory.get_api(provider).download_object(bucket_name, object_name,
+                                                    download_stream)

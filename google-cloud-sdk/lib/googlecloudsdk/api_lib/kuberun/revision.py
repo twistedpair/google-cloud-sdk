@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.kuberun import kubernetesobject
 from googlecloudsdk.api_lib.kuberun import mapobject
 
-LAST_MODIFIER_ANNOTATION = 'serving.knative.dev/lastModifier'
+AUTHOR_ANNOTATION = 'serving.knative.dev/creator'
 MIN_SCALE_ANNOTATION = 'autoscaling.knative.dev/minScale'
 MAX_SCALE_ANNOTATION = 'autoscaling.knative.dev/maxScale'
 SERVICE_LABEL = 'serving.knative.dev/service'
@@ -47,8 +47,8 @@ class Revision(kubernetesobject.KubernetesObject):
     return self.metadata.creationTimestamp
 
   @property
-  def last_modifier(self):
-    return self.metadata.annotations.get(LAST_MODIFIER_ANNOTATION)
+  def author(self):
+    return self.annotations.get(AUTHOR_ANNOTATION)
 
   @property
   def service_name(self):
@@ -68,7 +68,7 @@ class Revision(kubernetesobject.KubernetesObject):
 
   @property
   def env_vars(self):
-    return EnvVars(self.container.env)
+    return self.container.env
 
   @property
   def concurrency(self):
@@ -156,11 +156,11 @@ class Spec(mapobject.MapObject):
 
   @property
   def concurrency(self):
-    return self.containerConcurrency
+    return self._props.get('containerConcurrency')
 
   @property
   def timeout(self):
-    return self.timeoutSeconds
+    return self._props.get('timeoutSeconds')
 
   @property
   def volumes(self):
@@ -168,6 +168,10 @@ class Spec(mapobject.MapObject):
       return self._props['volumes']
     else:
       return []
+
+  @property
+  def serviceAccountName(self):
+    return self._props.get('serviceAccountName')
 
 
 class Container(mapobject.MapObject):
@@ -191,6 +195,18 @@ class Container(mapobject.MapObject):
       return self._props['volumeMounts']
     else:
       return []
+
+  @property
+  def image(self):
+    return self._props.get('image')
+
+  @property
+  def resources(self):
+    return self._props.get('resources')
+
+  @property
+  def env(self):
+    return EnvVars(self._props.get('env', dict()))
 
 
 class EnvVars():
@@ -248,16 +264,30 @@ class EnvValueFrom(mapobject.MapObject):
       return None
 
 
-class SecretKey(mapobject.MapObject):
+class Key(mapobject.MapObject):
+
+  @property
+  def key(self):
+    return self._props.get('key')
+
+  @property
+  def name(self):
+    return self._props.get('name')
+
+
+class ConfigMapKey(Key):
   pass
 
 
-class ConfigMapKey(mapobject.MapObject):
+class SecretKey(Key):
   pass
 
 
 class ContainerPort(mapobject.MapObject):
-  pass
+
+  @property
+  def containerPort(self):
+    return self._props.get('containerPort')
 
 
 class Volumes():
@@ -269,7 +299,7 @@ class Volumes():
   @property
   def secrets(self):
     return {
-        vol['name']: VolumeItem(vol.get('secret'))
+        vol['name']: SecretVolumeItem(vol.get('secret'))
         for vol in self._volumes
         if vol.get('secret')
     }
@@ -277,7 +307,7 @@ class Volumes():
   @property
   def config_maps(self):
     return {
-        vol['name']: VolumeItem(vol.get('configMap'))
+        vol['name']: ConfigMapVolumeItem(vol.get('configMap'))
         for vol in self._volumes
         if vol.get('configMap')
     }
@@ -314,5 +344,26 @@ class VolumeItem(mapobject.MapObject):
     return [KeyToPath(x) for x in self._props.get('items', [])]
 
 
+class SecretVolumeItem(VolumeItem):
+
+  @property
+  def secretName(self):
+    return self._props.get('secretName')
+
+
+class ConfigMapVolumeItem(VolumeItem):
+
+  @property
+  def name(self):
+    return self._props.get('name')
+
+
 class KeyToPath(mapobject.MapObject):
-  pass
+
+  @property
+  def key(self):
+    return self._props.get('key')
+
+  @property
+  def path(self):
+    return self._props.get('path')

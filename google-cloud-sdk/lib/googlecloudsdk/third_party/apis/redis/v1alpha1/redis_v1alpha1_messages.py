@@ -144,8 +144,6 @@ class Instance(_messages.Message):
       DIRECT_PEERING.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
-    TlsModeValueValuesEnum: Optional. The TLS mode of Redis instance. If not
-      provided, default one will be used. Current default: DISABLED.
     TransitEncryptionModeValueValuesEnum: Optional. The In-transit encryption
       mode of Redis instance. If not provided, in-transit encryption is
       disabled for instance.
@@ -224,8 +222,6 @@ class Instance(_messages.Message):
     statusMessage: Output only. Additional information about the current
       status of this instance, if available.
     tier: Required. The service tier of the instance.
-    tlsMode: Optional. The TLS mode of Redis instance. If not provided,
-      default one will be used. Current default: DISABLED.
     transitEncryptionMode: Optional. The In-transit encryption mode of Redis
       instance. If not provided, in-transit encryption is disabled for
       instance.
@@ -289,19 +285,6 @@ class Instance(_messages.Message):
     BASIC = 1
     STANDARD_HA = 2
 
-  class TlsModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The TLS mode of Redis instance. If not provided, default one
-    will be used. Current default: DISABLED.
-
-    Values:
-      TLS_MODE_UNSPECIFIED: Not set.
-      DISABLED: TLS is disabled for instance.
-      BASIC_TLS: Basic TLS mode with server authentication
-    """
-    TLS_MODE_UNSPECIFIED = 0
-    DISABLED = 1
-    BASIC_TLS = 2
-
   class TransitEncryptionModeValueValuesEnum(_messages.Enum):
     r"""Optional. The In-transit encryption mode of Redis instance. If not
     provided, in-transit encryption is disabled for instance.
@@ -310,9 +293,11 @@ class Instance(_messages.Message):
       TRANSIT_ENCRYPTION_MODE_UNSPECIFIED: Not set.
       SERVER_AUTHENTICATION: In-transit encryption enabled with server
         authentication
+      DISABLED: In-transit encryption is disabled for instance.
     """
     TRANSIT_ENCRYPTION_MODE_UNSPECIFIED = 0
     SERVER_AUTHENTICATION = 1
+    DISABLED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -388,8 +373,7 @@ class Instance(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 20)
   statusMessage = _messages.StringField(21)
   tier = _messages.EnumField('TierValueValuesEnum', 22)
-  tlsMode = _messages.EnumField('TlsModeValueValuesEnum', 23)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 24)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 23)
 
 
 class InstanceAuthString(_messages.Message):

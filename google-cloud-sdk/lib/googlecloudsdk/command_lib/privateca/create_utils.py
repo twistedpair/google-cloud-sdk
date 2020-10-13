@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.privateca import base as privateca_base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.privateca import flags
@@ -36,6 +37,10 @@ def _ParseCAResourceArgs(args):
   Returns:
     Tuple containing the Resource objects for (CA, source CA, issuer).
   """
+  resource_args.ValidateResourceIsCompleteIfSpecified(args, 'kms_key_version')
+  resource_args.ValidateResourceIsCompleteIfSpecified(args, 'issuer')
+  resource_args.ValidateResourceIsCompleteIfSpecified(args, 'from_ca')
+
   ca_ref = args.CONCEPTS.certificate_authority.Parse()
   resource_args.ValidateResourceLocation(ca_ref, 'CERTIFICATE_AUTHORITY')
 
@@ -148,3 +153,30 @@ when CA service transitions to General Availability (GA). Relying on these
 def PrintBetaResourceDeletionDisclaimer(resource_type_plural):
   log.warning(_BETA_RESOURCE_DELETION_DISCLAIMER.format(
       resource_type=resource_type_plural))
+
+
+def ValidateIssuingCA(ca_name):
+  """Checks that a CA is valid to be issuing Certificate Authority for a subordinate.
+
+  Args:
+    ca_name: The resource name of the issuing Certificate Authority.
+
+  Raises:
+    InvalidArgumentException if the CA does not exist or is not enabled.
+  """
+  try:
+    client = privateca_base.GetClientInstance()
+    messages = privateca_base.GetMessagesModule()
+    ca = client.projects_locations_certificateAuthorities.Get(
+        messages.PrivatecaProjectsLocationsCertificateAuthoritiesGetRequest(
+            name=ca_name))
+    if ca.state != messages.CertificateAuthority.StateValueValuesEnum.ENABLED:
+      raise exceptions.InvalidArgumentException(
+          '--issuer',
+          'The issuing Certificate Authority [{}] is not in ENABLED state. Please enable it and try again.'
+          .format(ca_name))
+  except apitools_exceptions.HttpNotFoundError:
+    raise exceptions.InvalidArgumentException(
+        '--issuer',
+        'The issuing Certificate Authority [{}] was not found. Please verify this information is correct and try again.'
+        .format(ca_name))

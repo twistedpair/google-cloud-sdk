@@ -64,10 +64,7 @@ def SetEntityKey(unused_ref, args, request):
   messages = ci_client.GetMessages(version)
   if hasattr(args, 'member_email') and args.IsSpecified('member_email'):
     entity_key = messages.EntityKey(id=args.member_email)
-    if hasattr(request.membership, 'memberKey'):
-      request.membership.memberKey = entity_key
-    elif hasattr(request.membership, 'preferredMemberKey'):
-      request.membership.preferredMemberKey = entity_key
+    request.membership.preferredMemberKey = entity_key
 
   return request
 
@@ -180,22 +177,32 @@ def SetExpiryDetail(unused_ref, args, request):
   Raises:
     InvalidArgumentException: If 'expiration' is specified upon following cases:
     1. 'request.membership' doesn't have 'roles' attribute, or
-    2. Non-MEMBER role (e.g. OWNER) is provided.
+    2. multiple roles are provided.
 
   """
+
+  ### Pre-validations ###
+
+  # #1. In order to set Expiry Detail, there should be a role in
+  # 'request.membership'
+  if not hasattr(request.membership, 'roles'):
+    raise exceptions.InvalidArgumentException(
+        'expiration', 'roles must be specified.')
+
+  # #2. When setting 'expiration', a single role should be input.
+  if len(request.membership.roles) != 1:
+    raise exceptions.InvalidArgumentException(
+        'roles',
+        'When setting "expiration", a single role should be input.')
 
   version = groups_hooks.GetApiVersion(args)
   if hasattr(args, 'expiration') and args.IsSpecified('expiration'):
     if version == 'v1alpha1':
       request.membership.expiryDetail = ReformatExpiryDetail(
-          version, args.expiration)
+          version, args.expiration, 'add')
     else:
-      if hasattr(request.membership, 'roles'):
-        request.membership.roles = AddExpiryDetailInMembershipRoles(
-            version, request, args.expiration)
-      else:
-        raise exceptions.InvalidArgumentException(
-            'expiration', 'roles must be specified.')
+      request.membership.roles = AddExpiryDetailInMembershipRoles(
+          version, request, args.expiration)
 
   return request
 
@@ -306,17 +313,19 @@ def ConvertEmailToMembershipResourceName(
     # print out an error message.
     parameter_name = group_arg_name + ', ' + member_arg_name
     error_msg = ('There is no such membership associated with the specified '
-                 'arguments:{}, {}').format(args.group_email, args.member_email)
+                 'arguments: {}, {}').format(args.group_email,
+                                             args.member_email)
 
     raise exceptions.InvalidArgumentException(parameter_name, error_msg)
 
 
-def ReformatExpiryDetail(version, expiration):
+def ReformatExpiryDetail(version, expiration, command):
   """Reformat expiration string to ExpiryDetail object.
 
   Args:
     version: Release track information
     expiration: expiration string.
+    command: gcloud command name.
 
   Returns:
     ExpiryDetail object that contains the expiration data.
@@ -327,10 +336,10 @@ def ReformatExpiryDetail(version, expiration):
   duration = 'P' + expiration
   expiration_ts = FormatDateTime(duration)
 
-  if version == 'v1alpha1':
+  if version == 'v1alpha1' and command == 'modify-membership-roles':
     return messages.MembershipRoleExpiryDetail(expireTime=expiration_ts)
-  else:
-    return messages.ExpiryDetail(expireTime=expiration_ts)
+
+  return messages.ExpiryDetail(expireTime=expiration_ts)
 
 
 def ReformatMembershipRoles(version, roles_list):
@@ -420,12 +429,6 @@ def AddExpiryDetailInMembershipRoles(version, request, expiration):
 
   """
 
-  # When setting 'expiration', a single role should be input.
-  if len(request.membership.roles) > 1:
-    raise exceptions.InvalidArgumentException(
-        'roles',
-        'When setting "expiration", a single role should be input.')
-
   messages = ci_client.GetMessages(version)
   roles = []
   has_member_role = False
@@ -434,7 +437,7 @@ def AddExpiryDetailInMembershipRoles(version, request, expiration):
       has_member_role = True
       roles.append(messages.MembershipRole(
           name='MEMBER',
-          expiryDetail=ReformatExpiryDetail(version, expiration)))
+          expiryDetail=ReformatExpiryDetail(version, expiration, 'add')))
     else:
       roles.append(role)
 
@@ -482,7 +485,8 @@ def ReformatUpdateRolesParams(args, update_roles_params):
       raise exceptions.InvalidArgumentException(arg_name, error_msg)
 
     # Instantiate MembershipRole object.
-    expiry_detail = ReformatExpiryDetail(version, param_value)
+    expiry_detail = ReformatExpiryDetail(
+        version, param_value, 'modify-membership-roles')
     membership_role = messages.MembershipRole(
         name=role, expiryDetail=expiry_detail)
 

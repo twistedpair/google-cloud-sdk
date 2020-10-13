@@ -281,6 +281,7 @@ def _ValidateListOfStringToStringDicts(arg_internal_name, arg_value):
 # Any arg not appearing in this map is assumed to be a simple string.
 _FILE_ARG_VALIDATORS = {
     'additional_apks': _ValidateAdditionalApksList,
+    'additional_ipas': _ValidateAdditionalIpasList,
     'async_': _ValidateBool,
     'auto_google_login': _ValidateBool,
     'client_details': _ValidateKeyValueStringPairs,
@@ -307,7 +308,6 @@ _FILE_ARG_VALIDATORS = {
     'timeout': _ValidateDuration,
     'timeout_us': _ValidateDurationUs,
     'use_orchestrator': _ValidateBool,
-    'additional_ipas': _ValidateAdditionalIpasList,
 }
 
 
@@ -595,3 +595,16 @@ def ValidateDeviceList(args, catalog_mgr):
       device_spec['locale'] = catalog_mgr.GetDefaultLocale()
     if 'orientation' not in device_spec:
       device_spec['orientation'] = catalog_mgr.GetDefaultOrientation()
+
+
+_IOS_DIRECTORIES_TO_PULL_PATH_REGEX = re.compile(
+    r'^(/private/var/mobile/Media.*|[a-zA-Z0-9.-]+:/Documents.*)')
+
+
+def ValidateIosDirectoriesToPullList(args):
+  if not getattr(args, 'directories_to_pull', []):
+    return
+  for file_path in args.directories_to_pull:
+    if not _IOS_DIRECTORIES_TO_PULL_PATH_REGEX.match(file_path):
+      raise test_exceptions.InvalidArgException(
+          'directories_to_pull', 'Invalid path [{0}]'.format(file_path))

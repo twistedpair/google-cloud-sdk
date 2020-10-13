@@ -154,6 +154,7 @@ class Build(_messages.Message):
       status, and result.
     artifacts: Artifacts produced by the build that should be uploaded upon
       successful completion of all build steps.
+    availableSecrets: Secrets and secret environment variables.
     buildTriggerId: Output only. The ID of the `BuildTrigger` that triggered
       this build, if it was triggered automatically.
     createTime: Output only. Time at which the request to create the build was
@@ -288,30 +289,31 @@ class Build(_messages.Message):
 
   approval = _messages.MessageField('BuildApproval', 1)
   artifacts = _messages.MessageField('Artifacts', 2)
-  buildTriggerId = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  finishTime = _messages.StringField(5)
-  id = _messages.StringField(6)
-  images = _messages.StringField(7, repeated=True)
-  logUrl = _messages.StringField(8)
-  logsBucket = _messages.StringField(9)
-  name = _messages.StringField(10)
-  options = _messages.MessageField('BuildOptions', 11)
-  projectId = _messages.StringField(12)
-  queueTtl = _messages.StringField(13)
-  results = _messages.MessageField('Results', 14)
-  secrets = _messages.MessageField('Secret', 15, repeated=True)
-  serviceAccount = _messages.StringField(16)
-  source = _messages.MessageField('Source', 17)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 18)
-  startTime = _messages.StringField(19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  statusDetail = _messages.StringField(21)
-  steps = _messages.MessageField('BuildStep', 22, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 23)
-  tags = _messages.StringField(24, repeated=True)
-  timeout = _messages.StringField(25)
-  timing = _messages.MessageField('TimingValue', 26)
+  availableSecrets = _messages.MessageField('Secrets', 3)
+  buildTriggerId = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  finishTime = _messages.StringField(6)
+  id = _messages.StringField(7)
+  images = _messages.StringField(8, repeated=True)
+  logUrl = _messages.StringField(9)
+  logsBucket = _messages.StringField(10)
+  name = _messages.StringField(11)
+  options = _messages.MessageField('BuildOptions', 12)
+  projectId = _messages.StringField(13)
+  queueTtl = _messages.StringField(14)
+  results = _messages.MessageField('Results', 15)
+  secrets = _messages.MessageField('Secret', 16, repeated=True)
+  serviceAccount = _messages.StringField(17)
+  source = _messages.MessageField('Source', 18)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 19)
+  startTime = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  statusDetail = _messages.StringField(22)
+  steps = _messages.MessageField('BuildStep', 23, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 24)
+  tags = _messages.StringField(25, repeated=True)
+  timeout = _messages.StringField(26)
+  timing = _messages.MessageField('TimingValue', 27)
 
 
 class BuildApproval(_messages.Message):
@@ -866,6 +868,59 @@ class Hash(_messages.Message):
   value = _messages.BytesField(2)
 
 
+class InlineSecret(_messages.Message):
+  r"""Pairs a set of secret environment variables mapped to encrypted values
+  with the Cloud KMS key to use to decrypt the value.
+
+  Messages:
+    EnvMapValue: Map of environment variable name to its encrypted value.
+      Secret environment variables must be unique across all of a build's
+      secrets, and must be used by at least one build step. Values can be at
+      most 64 KB in size. There can be at most 100 secret values across all of
+      a build's secrets.
+
+  Fields:
+    envMap: Map of environment variable name to its encrypted value. Secret
+      environment variables must be unique across all of a build's secrets,
+      and must be used by at least one build step. Values can be at most 64 KB
+      in size. There can be at most 100 secret values across all of a build's
+      secrets.
+    kmsKeyName: Resource name of Cloud KMS crypto key to decrypt the encrypted
+      value. In format: projects/*/locations/*/keyRings/*/cryptoKeys/*
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvMapValue(_messages.Message):
+    r"""Map of environment variable name to its encrypted value. Secret
+    environment variables must be unique across all of a build's secrets, and
+    must be used by at least one build step. Values can be at most 64 KB in
+    size. There can be at most 100 secret values across all of a build's
+    secrets.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvMapValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvMapValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A byte attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BytesField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  envMap = _messages.MessageField('EnvMapValue', 1)
+  kmsKeyName = _messages.StringField(2)
+
+
 class ListWorkerPoolsResponse(_messages.Message):
   r"""Response containing existing `WorkerPools`.
 
@@ -1287,6 +1342,36 @@ class Secret(_messages.Message):
 
   kmsKeyName = _messages.StringField(1)
   secretEnv = _messages.MessageField('SecretEnvValue', 2)
+
+
+class SecretManagerSecret(_messages.Message):
+  r"""Pairs a secret environment variable with a SecretVersion in Secret
+  Manager.
+
+  Fields:
+    env: Environment variable name to associate with the secret. Secret
+      environment variables must be unique across all of a build's secrets,
+      and must be used by at least one build step.
+    versionName: Resource name of the SecretVersion. In format:
+      projects/*/secrets/*/versions/*
+  """
+
+  env = _messages.StringField(1)
+  versionName = _messages.StringField(2)
+
+
+class Secrets(_messages.Message):
+  r"""Secrets and secret environment variables.
+
+  Fields:
+    inline: Secrets encrypted with KMS key and the associated secret
+      environment variable.
+    secretManager: Secrets in Secret Manager and associated secret environment
+      variable.
+  """
+
+  inline = _messages.MessageField('InlineSecret', 1, repeated=True)
+  secretManager = _messages.MessageField('SecretManagerSecret', 2, repeated=True)
 
 
 class SlackDelivery(_messages.Message):

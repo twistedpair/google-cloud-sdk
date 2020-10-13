@@ -7,7 +7,7 @@
   "version": "v2alpha1",
   "revision": "0",
   "title": "Identity and Access Management (IAM) API",
-  "description": "Manages identity and access control for Google Cloud Platform resources, including the creation of service accounts, which you can use to authenticate to Google and make API calls.",
+  "description": " Manages identity and access control for Google Cloud Platform resources, including the creation of service accounts, which you can use to authenticate to Google and make API calls. *Note:* This API is tied to the IAM service account credentials API ( iamcredentials.googleapis.com). Enabling or disabling this API will also enable or disable the IAM service account credentials API. ",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -130,19 +130,20 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Immutable. The resource name of the `Policy`. Takes the form:\n`policies\/{attachment-point}\/{kind-plural}\/{policy-id}`\n\nFor example,\n`policies\/cloudresourcemanager.googleapis.com%2Fprojects%2F123\/denypolicies\/a-deny-policy`.",
+          "description": "Immutable. The resource name of the `Policy`. Takes the form: `policies\/{attachment-point}\/{kind-plural}\/{policy-id}` For example, `policies\/cloudresourcemanager.googleapis.com%2Fprojects%2F123\/denypolicies\/a-deny-policy`.",
           "type": "string"
         },
         "kind": {
           "description": "Output only. The kind of the `Policy`, following the rules.",
+          "readOnly": true,
           "type": "string"
         },
         "description": {
-          "description": "A user-specified opaque description of the `Policy`. Must be less\nthan or equal to 256 characters.",
+          "description": "A user-specified opaque description of the `Policy`. Must be less than or equal to 256 characters.",
           "type": "string"
         },
         "etag": {
-          "description": "An opaque tag indicating the current version of the `Policy`, used for\nconcurrency control.\n\nWhen the `Policy` is returned from `GetPolicy` request, this `etag`\nindicates the version of the current `Policy` to use when executing a\nread-modify-write loop.\n\nWhen the `Policy` is used in a `ReplacePolicy` method, use the `etag` value\nthat was returned from a `GetPolicy` request as part of a\nread-modify-write loop for concurrency control.\n\nThis field is ignored if used in a `CreatePolicy` request.",
+          "description": "An opaque tag indicating the current version of the `Policy`, used for concurrency control. When the `Policy` is returned from `GetPolicy` request, this `etag` indicates the version of the current `Policy` to use when executing a read-modify-write loop. When the `Policy` is used in a `ReplacePolicy` method, use the `etag` value that was returned from a `GetPolicy` request as part of a read-modify-write loop for concurrency control. This field is ignored if used in a `CreatePolicy` request.",
           "type": "string"
         },
         "rules": {
@@ -160,7 +161,7 @@
       "type": "object",
       "properties": {
         "description": {
-          "description": "A user-specified opaque description of the rule. Must be less than or\nequal to 256 UTF-8 characters.",
+          "description": "A user-specified opaque description of the rule. Must be less than or equal to 256 UTF-8 characters.",
           "type": "string"
         },
         "denyRule": {
@@ -175,72 +176,72 @@
       "type": "object",
       "properties": {
         "deniedPrincipals": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource,\nwhich are subject to the deny rule.\n\n`denied_principals` can have the following values:\n\n* `principalSet:\/\/goog\/public:all`: A special identifier that represents\n  any user who is on the internet; logged in, or loggerd out, with or\n  without a Google account.",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource, which are subject to the deny rule. `denied_principals` can have the following values: * `principalSet:\/\/goog\/public:all`: A special identifier that represents any user who is on the internet; logged in, or loggerd out, with or without a Google account.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "exceptionPrincipals": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource,\nwhich are excluded from the deny rule.\n\n`exception_principals` can have the following values:\n\n* Google and G Suite user accounts:\n  -- `principal:\/\/goog\/subject\/{emailId}`: An email address that\n     represents a specific Google account. For example,\n     `principal:\/\/goog\/subject\/alice@gmail.com`.\n\n* Google and G Suite groups:\n  -- `principalSet:\/\/goog\/group\/{groupId}`: An identifier that represents a\n     Google group. For example,\n     `principalSet:\/\/goog\/group\/admins@example.com`.\n\n* Service Accounts:\n  --\n  `principal:\/\/iam.googleapis.com\/projects\/-\/serviceAccounts\/{serviceAccountId}`:\n  An identifier that represents a service account. For example,\n  `principal:\/\/iam.googleapis.com\/projects\/-\/serviceAccounts\/sa123@iam.gserviceaccount.com`.\n\n* G Suite Customers:\n  -- `principalSet:\/\/goog\/gsuiteCustomerId\/{customerId}`: All of the\n     principals associated with the specified G Suite Customer ID.\n     For example, `principalSet:\/\/goog\/gsuiteCustomerId\/C01Abc35`.",
+          "description": "Specifies the identities requesting access for a Cloud Platform resource, which are excluded from the deny rule. `exception_principals` can have the following values: * Google and G Suite user accounts: -- `principal:\/\/goog\/subject\/{emailId}`: An email address that represents a specific Google account. For example, `principal:\/\/goog\/subject\/alice@gmail.com`. * Google and G Suite groups: -- `principalSet:\/\/goog\/group\/{groupId}`: An identifier that represents a Google group. For example, `principalSet:\/\/goog\/group\/admins@example.com`. * Service Accounts: -- `principal:\/\/iam.googleapis.com\/projects\/-\/serviceAccounts\/{serviceAccountId}`: An identifier that represents a service account. For example, `principal:\/\/iam.googleapis.com\/projects\/-\/serviceAccounts\/sa123@iam.gserviceaccount.com`. * G Suite Customers: -- `principalSet:\/\/goog\/gsuiteCustomerId\/{customerId}`: All of the principals associated with the specified G Suite Customer ID. For example, `principalSet:\/\/goog\/gsuiteCustomerId\/C01Abc35`.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "deniedPermissions": {
-          "description": "Specifies the permissions that are explicitly denied by this rule.\nThe denied permission can be specified in the following ways:\n\n* a full permission string in either of the following canonical formats\n  as described in the service specific documentation:\n  -- `{service}.{resource}.{verb}`. For example, `storage.buckets.get`.\n  -- `{service_FQDN}\/{resource}.{verb}`. For example,\n     `iam.googleapis.com\/denypolicies.get`.\n\n* a wildcard on permission string.\n  -- `*` represents all permissions.\n\n  Permission string can use more than one wildcard over multiple segments\n  in the permission string. However, it must match the entire segment and\n  no partial matches within a segment is allowed. For example,\n  -- `compute.*.setIamPolicy` refers to all setIamPolicy permissions by any\n      compute resources.\n  -- `iam.googleapis.com\/*.create\"` refers to all create permissions by any\n      iam resources.\n  -- `compute.forwardingRules.*` refers to all permissions for forwarding\n      rules.\n  -- `compute.*.*` refers to all permissions by all compute resource types.",
+          "description": "Specifies the permissions that are explicitly denied by this rule. The denied permission can be specified in the following ways: * a full permission string in either of the following canonical formats as described in the service specific documentation: -- `{service}.{resource}.{verb}`. For example, `storage.buckets.get`. -- `{service_FQDN}\/{resource}.{verb}`. For example, `iam.googleapis.com\/denypolicies.get`. * a wildcard on permission string. -- `*` represents all permissions. Permission string can use more than one wildcard over multiple segments in the permission string. However, it must match the entire segment and no partial matches within a segment is allowed. For example, -- `compute.*.setIamPolicy` refers to all setIamPolicy permissions by any compute resources. -- `iam.googleapis.com\/*.create\"` refers to all create permissions by any iam resources. -- `compute.forwardingRules.*` refers to all permissions for forwarding rules. -- `compute.*.*` refers to all permissions by all compute resource types.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "exceptionPermissions": {
-          "description": "Specifies the permissions that are excluded from the set of denied\npermissions given by `denied_permissions`. If a permission appears in\n`denied_permissions` _and_ in `excluded_permissions` then it will _not_ be\ndenied.\n\nThe excluded permissions can be specified using the same syntax as\n`denied_permissions`.",
+          "description": "Specifies the permissions that are excluded from the set of denied permissions given by `denied_permissions`. If a permission appears in `denied_permissions` _and_ in `excluded_permissions` then it will _not_ be denied. The excluded permissions can be specified using the same syntax as `denied_permissions`.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "denialCondition": {
-          "description": "The condition that is associated with this deny rule.\nNOTE: A satisfied condition will explicitly deny access for applicable\nprincipal, permission, and resource. Different deny rules, including their\nconditions, are examined independently.",
+          "description": "The condition that is associated with this deny rule. NOTE: A satisfied condition will explicitly deny access for applicable principal, permission, and resource. Different deny rules, including their conditions, are examined independently.",
           "$ref": "GoogleTypeExpr"
         }
       }
     },
     "GoogleTypeExpr": {
       "id": "GoogleTypeExpr",
-      "description": "Represents a textual expression in the Common Expression Language (CEL)\nsyntax. CEL is a C-like expression language. The syntax and semantics of CEL\nare documented at https:\/\/github.com\/google\/cel-spec.\n\nExample (Comparison):\n\n    title: \"Summary size limit\"\n    description: \"Determines if a summary is less than 100 chars\"\n    expression: \"document.summary.size() < 100\"\n\nExample (Equality):\n\n    title: \"Requestor is owner\"\n    description: \"Determines if requestor is the document owner\"\n    expression: \"document.owner == request.auth.claims.email\"\n\nExample (Logic):\n\n    title: \"Public documents\"\n    description: \"Determine whether the document should be publicly visible\"\n    expression: \"document.type != 'private' && document.type != 'internal'\"\n\nExample (Data Manipulation):\n\n    title: \"Notification string\"\n    description: \"Create a notification string with a timestamp.\"\n    expression: \"'New message received at ' + string(document.create_time)\"\n\nThe exact variables and functions that may be referenced within an expression\nare determined by the service that evaluates it. See the service\ndocumentation for additional information.",
+      "description": "Represents a textual expression in the Common Expression Language (CEL) syntax. CEL is a C-like expression language. The syntax and semantics of CEL are documented at https:\/\/github.com\/google\/cel-spec. Example (Comparison): title: \"Summary size limit\" description: \"Determines if a summary is less than 100 chars\" expression: \"document.summary.size() < 100\" Example (Equality): title: \"Requestor is owner\" description: \"Determines if requestor is the document owner\" expression: \"document.owner == request.auth.claims.email\" Example (Logic): title: \"Public documents\" description: \"Determine whether the document should be publicly visible\" expression: \"document.type != 'private' && document.type != 'internal'\" Example (Data Manipulation): title: \"Notification string\" description: \"Create a notification string with a timestamp.\" expression: \"'New message received at ' + string(document.create_time)\" The exact variables and functions that may be referenced within an expression are determined by the service that evaluates it. See the service documentation for additional information.",
       "type": "object",
       "properties": {
         "expression": {
-          "description": "Textual representation of an expression in Common Expression Language\nsyntax.",
+          "description": "Textual representation of an expression in Common Expression Language syntax.",
           "type": "string"
         },
         "title": {
-          "description": "Optional. Title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "description": "Optional. Title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression.",
           "type": "string"
         },
         "description": {
-          "description": "Optional. Description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "description": "Optional. Description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI.",
           "type": "string"
         },
         "location": {
-          "description": "Optional. String indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "description": "Optional. String indicating the location of the expression for error reporting, e.g. a file name and a position in the file.",
           "type": "string"
         }
       }
     },
     "GoogleProtobufEmpty": {
       "id": "GoogleProtobufEmpty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for `Empty` is empty JSON object `{}`.",
       "type": "object",
       "properties": {
       }
     },
     "GoogleIamAdminV1AuditData": {
       "id": "GoogleIamAdminV1AuditData",
-      "description": "Audit log information specific to Cloud IAM admin APIs. This message is\nserialized as an `Any` type in the `ServiceData` message of an\n`AuditLog` message.",
+      "description": "Audit log information specific to Cloud IAM admin APIs. This message is serialized as an `Any` type in the `ServiceData` message of an `AuditLog` message.",
       "type": "object",
       "properties": {
         "permissionDelta": {
@@ -251,7 +252,7 @@
     },
     "GoogleIamAdminV1AuditDataPermissionDelta": {
       "id": "GoogleIamAdminV1AuditDataPermissionDelta",
-      "description": "A PermissionDelta message to record the added_permissions and\nremoved_permissions inside a role.",
+      "description": "A PermissionDelta message to record the added_permissions and removed_permissions inside a role.",
       "type": "object",
       "properties": {
         "addedPermissions": {
@@ -272,7 +273,7 @@
     },
     "GoogleIamV1LoggingAuditData": {
       "id": "GoogleIamV1LoggingAuditData",
-      "description": "Audit log information specific to Cloud IAM. This message is serialized\nas an `Any` type in the `ServiceData` message of an\n`AuditLog` message.",
+      "description": "Audit log information specific to Cloud IAM. This message is serialized as an `Any` type in the `ServiceData` message of an `AuditLog` message.",
       "type": "object",
       "properties": {
         "policyDelta": {
@@ -297,17 +298,17 @@
     },
     "GoogleIamV1BindingDelta": {
       "id": "GoogleIamV1BindingDelta",
-      "description": "One delta entry for Binding. Each individual change (only one member in each\nentry) to a binding will be a separate entry.",
+      "description": "One delta entry for Binding. Each individual change (only one member in each entry) to a binding will be a separate entry.",
       "type": "object",
       "properties": {
         "action": {
-          "description": "The action that was performed on a Binding.\nRequired",
+          "description": "The action that was performed on a Binding. Required",
+          "type": "string",
           "enumDescriptions": [
             "Unspecified.",
             "Addition of a Binding.",
             "Removal of a Binding."
           ],
-          "type": "string",
           "enum": [
             "ACTION_UNSPECIFIED",
             "ADD",
@@ -315,11 +316,11 @@
           ]
         },
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`. Required",
           "type": "string"
         },
         "member": {
-          "description": "A single identity requesting access for a Cloud Platform resource.\nFollows the same format of Binding.members.\nRequired",
+          "description": "A single identity requesting access for a Cloud Platform resource. Follows the same format of Binding.members. Required",
           "type": "string"
         },
         "condition": {
@@ -339,7 +340,7 @@
           "httpMethod": "GET",
           "parameters": {
             "parent": {
-              "description": "Required. The Cloud resource that the policy is attached to. Takes the form:\n`policies\/{attachment-point}\/{kind-plural}`",
+              "description": "Required. The Cloud resource that the policy is attached to. Takes the form: `policies\/{attachment-point}\/{kind-plural}`",
               "location": "path",
               "required": true,
               "pattern": "^policies\/[^\/]+\/[^\/]+$",
@@ -355,7 +356,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Retrieves all of the policies attached to the specified resource,\nof the given kind.\n\nOnly policy metadata is listed; specifically `policy.rules` is omitted."
+          "description": "Retrieves all of the policies attached to the specified resource, of the given kind. Only policy metadata is listed; specifically `policy.rules` is omitted."
         },
         "get": {
           "id": "iam.policies.get",
@@ -389,14 +390,14 @@
           "httpMethod": "POST",
           "parameters": {
             "parent": {
-              "description": "Required. The Cloud resource the new Policy is attached to. Takes the form:\n`policies\/{attachment-point}\/{kind-plural}`",
+              "description": "Required. The Cloud resource the new Policy is attached to. Takes the form: `policies\/{attachment-point}\/{kind-plural}`",
               "location": "path",
               "required": true,
               "pattern": "^policies\/[^\/]+\/[^\/]+$",
               "type": "string"
             },
             "policyId": {
-              "description": "The ID to use for this policy, which will become the final component of\nthe policy's resource name. Must match a-z{3,63}.",
+              "description": "The ID to use for this policy, which will become the final component of the policy's resource name. Must match a-z{3,63}.",
               "location": "query",
               "type": "string"
             }
@@ -413,7 +414,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Creates a policy.\n\nAll the policies attached to a specific resource must have unique IDs."
+          "description": "Creates a policy. All the policies attached to a specific resource must have unique IDs."
         },
         "replacePolicy": {
           "id": "iam.policies.replacePolicy",
@@ -422,7 +423,7 @@
           "httpMethod": "PUT",
           "parameters": {
             "name": {
-              "description": "Immutable. The resource name of the `Policy`. Takes the form:\n`policies\/{attachment-point}\/{kind-plural}\/{policy-id}`\n\nFor example,\n`policies\/cloudresourcemanager.googleapis.com%2Fprojects%2F123\/denypolicies\/a-deny-policy`.",
+              "description": "Immutable. The resource name of the `Policy`. Takes the form: `policies\/{attachment-point}\/{kind-plural}\/{policy-id}` For example, `policies\/cloudresourcemanager.googleapis.com%2Fprojects%2F123\/denypolicies\/a-deny-policy`.",
               "location": "path",
               "required": true,
               "pattern": "^policies\/[^\/]+\/[^\/]+\/[^\/]+$",
@@ -441,7 +442,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Replaces the specified existing policy.\n\nOnly `Policy.rules` and `Policy.description` may be updated.\n\nNeed to provide etag to enforce update from last read for optimistic\nconcurrency control."
+          "description": "Replaces the specified existing policy. Only `Policy.rules` and `Policy.description` may be updated. Need to provide etag to enforce update from last read for optimistic concurrency control."
         },
         "delete": {
           "id": "iam.policies.delete",
@@ -457,7 +458,7 @@
               "type": "string"
             },
             "etag": {
-              "description": "The expected etag of the policy to delete. If the policy was modified\nconcurrently such that the etag changed, the delete operation will fail.",
+              "description": "The expected etag of the policy to delete. If the policy was modified concurrently such that the etag changed, the delete operation will fail.",
               "location": "query",
               "type": "string"
             }

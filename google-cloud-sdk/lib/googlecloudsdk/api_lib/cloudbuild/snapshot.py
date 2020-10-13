@@ -12,9 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Move local source snapshots to GCP.
-
-"""
+"""Move local source snapshots to GCP."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -75,10 +73,10 @@ class Snapshot(object):
     src_dir: str, The root of the snapshot source on the local disk.
     ignore_file: Override .gcloudignore file to skip specified files.
     files: {str: FileMetadata}, A mapping from file path (relative to the
-        snapshot root) to file metadata.
+      snapshot root) to file metadata.
     dirs: [str], The list of dirs (possibly empty) in the snapshot.
-    uncompressed_size: int, The number of bytes needed to store all of the
-        files in this snapshot, uncompressed.
+    uncompressed_size: int, The number of bytes needed to store all of the files
+      in this snapshot, uncompressed.
     any_files_ignored: bool, any files which are ignored to skip.
   """
 
@@ -89,9 +87,8 @@ class Snapshot(object):
     self.uncompressed_size = 0
     self._client = core_apis.GetClientInstance('storage', 'v1')
     self._messages = core_apis.GetMessagesModule('storage', 'v1')
-    file_chooser = gcloudignore.GetFileChooserForDir(self.src_dir,
-                                                     write_on_disk=False,
-                                                     ignore_file=ignore_file)
+    file_chooser = gcloudignore.GetFileChooserForDir(
+        self.src_dir, write_on_disk=False, ignore_file=ignore_file)
     self.any_files_ignored = False
     for (dirpath, dirnames, filenames) in os.walk(six.text_type(self.src_dir)):
       relpath = os.path.relpath(dirpath, self.src_dir)
@@ -140,7 +137,16 @@ class Snapshot(object):
     tf = tarfile.open(archive_path, mode='w:gz')
     for dpath in self.dirs:
       t = tarfile.TarInfo(dpath)
-      t.type = tarfile.DIRTYPE
+      if os.path.islink(dpath):
+        t.type = tarfile.SYMTYPE
+        t.linkname = os.readlink(dpath)
+      elif os.path.isdir(dpath):
+        t.type = tarfile.DIRTYPE
+      else:
+        log.debug(
+            'Adding [%s] as dir; os.path says is neither a dir nor a link.',
+            dpath)
+        t.type = tarfile.DIRTYPE
       t.mode = os.stat(dpath).st_mode
       tf.addfile(_ResetOwnership(t))
       log.debug('Added dir [%s]', dpath)
@@ -154,7 +160,7 @@ class Snapshot(object):
 
     Args:
       storage_client: storage_api.StorageClient, The storage client to use for
-                      uploading.
+        uploading.
       gcs_object: storage.objects Resource, The GCS object to write.
       ignore_file: Override .gcloudignore file to specify skip files.
 
@@ -167,20 +173,19 @@ class Snapshot(object):
           archive_path = os.path.join(tmp, 'file.tgz')
           tf = self._MakeTarball(archive_path)
           tf.close()
-          ignore_file_path = os.path.join(self.src_dir, ignore_file or
-                                          gcloudignore.IGNORE_FILE_NAME)
+          ignore_file_path = os.path.join(
+              self.src_dir, ignore_file or gcloudignore.IGNORE_FILE_NAME)
           if self.any_files_ignored:
             if os.path.exists(ignore_file_path):
               log.info('Using ignore file [{}]'.format(ignore_file_path))
             else:
-              log.status.Print(_IGNORED_FILE_MESSAGE.format(
-                  log_file=log.GetLogFilePath()))
+              log.status.Print(
+                  _IGNORED_FILE_MESSAGE.format(log_file=log.GetLogFilePath()))
           log.status.write(
               'Uploading tarball of [{src_dir}] to '
               '[gs://{bucket}/{object}]\n'.format(
                   src_dir=self.src_dir,
                   bucket=gcs_object.bucket,
                   object=gcs_object.object,
-              ),
-          )
+              ),)
           return storage_client.CopyFileToGCS(archive_path, gcs_object)

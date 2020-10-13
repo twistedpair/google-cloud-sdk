@@ -183,3 +183,52 @@ def GetJsonKeyFlag():
       help=('Path to service account JSON key. If not specified, '
             'current active service account credentials or a placeholder for '
             'gcloud credentials is used.'))
+
+
+def GetShowAllMetadataFlag():
+  return base.Argument(
+      '--show-all-metadata',
+      hidden=True,
+      action='store_true',
+      help='Include all metadata in the output.')
+
+
+def GetShowDeploymentFlag():
+  return base.Argument(
+      '--show-deployment',
+      hidden=True,
+      action='store_true',
+      help='Include deployment metadata in the output.')
+
+
+def GetShowImageBasisFlag():
+  return base.Argument(
+      '--show-image-basis',
+      hidden=True,
+      action='store_true',
+      help='Include base image metadata in the output.')
+
+
+def GetShowPackageVulnerabilityFlag():
+  return base.Argument(
+      '--show-package-vulnerability',
+      hidden=True,
+      action='store_true',
+      help='Include vulnerability metadata in the output.')
+
+
+def GetShowBuildDetailsFlag():
+  return base.Argument(
+      '--show-build-details',
+      hidden=True,
+      action='store_true',
+      help='Include build metadata in the output.')
+
+
+def GetMetadataFilterFlag():
+  return base.Argument(
+      '--metadata-filter',
+      hidden=True,
+      help=('Additional filter to fetch metadata for a given '
+            'qualified image reference.'))
+

@@ -55,6 +55,20 @@ def SubnetworkArgument(required=True, plural=False):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
+def SubnetworkArgumentForRouter(required=False, operation_type='added'):
+  return compute_flags.ResourceArgument(
+      resource_name='subnetwork',
+      name='--subnetwork',
+      completer=SubnetworksCompleter,
+      plural=False,
+      required=required,
+      regional_collection='compute.subnetworks',
+      short_help='The subnetwork of the interface being {0}.'.format(
+          operation_type),
+      region_explanation=(
+          'If not specified it will be set to the region of the router.'))
+
+
 def SubnetworkResolver():
   return compute_flags.ResourceResolver.FromMap(
       'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})

@@ -27,8 +27,10 @@ PROXY_TYPE_MAP = {
     'socks4': socks.PROXY_TYPE_SOCKS4,
     'socks5': socks.PROXY_TYPE_SOCKS5,
     'http': socks.PROXY_TYPE_HTTP,
-    'http_no_tunnel': socks.PROXY_TYPE_HTTP_NO_TUNNEL,
 }
 
+# TODO(b/170117186) Move this back to PROXY_TYPE_MAP instantiation.
+if hasattr(socks, 'PROXY_TYPE_HTTP_NO_TUNNEL'):
+  PROXY_TYPE_MAP['http_no_tunnel'] = socks.PROXY_TYPE_HTTP_NO_TUNNEL
 
 REVERSE_PROXY_TYPE_MAP = dict((v, k) for k, v in six.iteritems(PROXY_TYPE_MAP))

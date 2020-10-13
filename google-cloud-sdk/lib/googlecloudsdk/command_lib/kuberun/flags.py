@@ -61,7 +61,7 @@ class StringFlag(BinaryCommandFlag):
   def FormatFlags(self, args):
     dest_name = _GetDestNameForFlag(self.arg.name)
     if args.IsSpecified(dest_name):
-      return [self.arg.name, getattr(args, dest_name)]
+      return [self.arg.name, str(getattr(args, dest_name))]
     return []
 
 

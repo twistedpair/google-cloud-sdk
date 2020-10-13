@@ -3460,6 +3460,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Export(self, request, global_params=None):
+      r"""Exports the messages to a destination. To filter messages to be exported, define a filter using the start and end time, relative to the message generation time (MSH.7). This API returns an Operation that can be used to track the status of the job by calling GetOperation. Immediate fatal errors appear in the error field. Otherwise, when the operation finishes, a detailed response of type ExportMessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Export')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Export.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:export',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.export',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:export',
+        request_field='exportMessagesRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the specified HL7v2 store.
 

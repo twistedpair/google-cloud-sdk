@@ -39,9 +39,30 @@ def GetKey(target):
 
 
 class TrafficTarget(mapobject.MapObject):
+  """Wraps the traffic target of Knative service revision."""
 
   def __str__(self):
     return '%s' % self._props
 
   def __repr__(self):
     return str(self)
+
+  @property
+  def latestRevision(self):
+    return self._props.get('latestRevision')
+
+  @property
+  def revisionName(self):
+    return self._props.get('revisionName')
+
+  @property
+  def percent(self):
+    return self._props['percent']
+
+  @property
+  def tag(self):
+    return self._props.get('tag')
+
+  @property
+  def url(self):
+    return self._props.get('url')

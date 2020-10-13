@@ -1373,7 +1373,8 @@ def VerifyOnePlatformFlags(args, release_track, product):
       release_track == base.ReleaseTrack.GA):
     if args.timeout > _FIFTEEN_MINUTES:
       raise serverless_exceptions.ConfigurationError(
-          'Timeout duration must be less than 15m.')
+          'Timeout duration must be less than 15m. Timeouts above 15m are in '
+          'Beta. Use "gcloud beta run ..." to set timeouts above 15m.')
 
   if FlagIsExplicitlySet(args, 'trigger_filters'):
     raise serverless_exceptions.ConfigurationError(

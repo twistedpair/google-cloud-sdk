@@ -25328,7 +25328,9 @@ class ForwardingRule(_messages.Message):
       information, refer to [IP address specifications](/load-
       balancing/docs/forwarding-rule-concepts#ip_address_specifications).
       Must be set to `0.0.0.0` when the target is targetGrpcProxy that has
-      validateForProxyless field set to true.
+      validateForProxyless field set to true.  For Private Service Connect
+      forwarding rules that forward traffic to Google APIs, IP address must be
+      provided.
     IPProtocol: The IP protocol to which this rule applies. For protocol
       forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For
       Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL,
@@ -25423,7 +25425,9 @@ class ForwardingRule(_messages.Message):
     network: This field is not used for external load balancing.  For internal
       load balancing, this field identifies the network that the load balanced
       IP should belong to for this Forwarding Rule. If this field is not
-      specified, the default network will be used.
+      specified, the default network will be used.  For Private Service
+      Connect forwarding rules that forward traffic to Google APIs, a network
+      must be provided.
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM, STANDARD.
       For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
@@ -25487,7 +25491,15 @@ class ForwardingRule(_messages.Message):
       global load balancing resource. The forwarded traffic must be of a type
       appropriate to the target object. For more information, see the "Target"
       column in [Port specifications](/load-balancing/docs/forwarding-rule-
-      concepts#ip_address_specifications).
+      concepts#ip_address_specifications).  For Private Service Connect
+      forwarding rules that forward traffic to Google APIs, provide the name
+      of a supported Google API bundle. Currently, the supported Google API
+      bundles include:    - vpc-sc - GCP APIs that support VPC Service
+      Controls. For more information about which APIs support VPC Service
+      Controls, refer to VPC-SC supported products and limitations.   - all-
+      apis - All GCP APIs. For more information about which APIs are supported
+      with this bundle, refer to Private Google Access-specific domains and
+      VIPs.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
@@ -48253,9 +48265,15 @@ class TargetHttpProxy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    proxyBind: This field only applies when the loadBalancingScheme is
-      INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP
-      address specified by the forwarding rule. Default is false.
+    proxyBind: This field only applies when the forwarding rule that
+      references this target proxy has a loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.  When this field is set to true, Envoy proxies
+      set up inbound traffic interception and bind to the IP address and port
+      specified in the forwarding rule. This is generally useful when using
+      Traffic Director to configure Envoy as a gateway or middle proxy (in
+      other words, not a sidecar proxy). The Envoy proxy listens for inbound
+      requests and handles requests when it receives them.  The default is
+      false.
     region: [Output Only] URL of the region where the regional Target HTTP
       Proxy resides. This field is not applicable to global Target HTTP
       Proxies.
@@ -48774,9 +48792,15 @@ class TargetHttpsProxy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    proxyBind: This field only applies when the loadBalancingScheme is
-      INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP
-      address specified by the forwarding rule. Default is false.
+    proxyBind: This field only applies when the forwarding rule that
+      references this target proxy has a loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.  When this field is set to true, Envoy proxies
+      set up inbound traffic interception and bind to the IP address and port
+      specified in the forwarding rule. This is generally useful when using
+      Traffic Director to configure Envoy as a gateway or middle proxy (in
+      other words, not a sidecar proxy). The Envoy proxy listens for inbound
+      requests and handles requests when it receives them.  The default is
+      false.
     quicOverride: Specifies the QUIC override policy for this TargetHttpsProxy
       resource. This setting determines whether the load balancer attempts to
       negotiate QUIC with clients. You can specify NONE, ENABLE, or DISABLE.

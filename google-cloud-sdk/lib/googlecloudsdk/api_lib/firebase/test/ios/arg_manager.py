@@ -74,6 +74,7 @@ def SharedArgRules():
           'async_',
           'client_details',
           'device',
+          'directories_to_pull',
           'network_profile',
           'num_flaky_test_attempts',
           'other_files',
@@ -156,6 +157,7 @@ class IosArgsManager(object):
     arg_validate.ValidateResultsBucket(args)
     arg_validate.ValidateResultsDir(args)
     arg_validate.ValidateScenarioNumbers(args)
+    arg_validate.ValidateIosDirectoriesToPullList(args)
 
   def GetTestTypeOrRaise(self, args):
     """If the test type is not user-specified, infer the most reasonable value.

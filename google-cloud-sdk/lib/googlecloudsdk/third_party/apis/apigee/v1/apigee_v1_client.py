@@ -95,6 +95,8 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_sharedflows_revisions_deployments = self.OrganizationsSharedflowsRevisionsDeploymentsService(self)
     self.organizations_sharedflows_revisions = self.OrganizationsSharedflowsRevisionsService(self)
     self.organizations_sharedflows = self.OrganizationsSharedflowsService(self)
+    self.organizations_sites_apicategories = self.OrganizationsSitesApicategoriesService(self)
+    self.organizations_sites = self.OrganizationsSitesService(self)
     self.organizations = self.OrganizationsService(self)
 
   class HybridIssuersService(base_api.BaseApiService):
@@ -5112,6 +5114,161 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsSitesApicategoriesService(base_api.BaseApiService):
+    """Service class for the organizations_sites_apicategories resource."""
+
+    _NAME = 'organizations_sites_apicategories'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSitesApicategoriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new category on the portal.
+
+      Args:
+        request: (ApigeeOrganizationsSitesApicategoriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ApiCategory) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/sites/{sitesId}/apicategories',
+        http_method='POST',
+        method_id='apigee.organizations.sites.apicategories.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/apicategories',
+        request_field='googleCloudApigeeV1ApiCategoryData',
+        request_type_name='ApigeeOrganizationsSitesApicategoriesCreateRequest',
+        response_type_name='GoogleCloudApigeeV1ApiCategory',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a category from the portal.
+
+      Args:
+        request: (ApigeeOrganizationsSitesApicategoriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ApiResponseWrapper) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/sites/{sitesId}/apicategories/{apicategoriesId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.sites.apicategories.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSitesApicategoriesDeleteRequest',
+        response_type_name='GoogleCloudApigeeV1ApiResponseWrapper',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a category on the portal.
+
+      Args:
+        request: (ApigeeOrganizationsSitesApicategoriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ApiCategory) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/sites/{sitesId}/apicategories/{apicategoriesId}',
+        http_method='GET',
+        method_id='apigee.organizations.sites.apicategories.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSitesApicategoriesGetRequest',
+        response_type_name='GoogleCloudApigeeV1ApiCategory',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the categories on the portal.
+
+      Args:
+        request: (ApigeeOrganizationsSitesApicategoriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListApiCategoriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/sites/{sitesId}/apicategories',
+        http_method='GET',
+        method_id='apigee.organizations.sites.apicategories.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/apicategories',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSitesApicategoriesListRequest',
+        response_type_name='GoogleCloudApigeeV1ListApiCategoriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a category on the portal.
+
+      Args:
+        request: (GoogleCloudApigeeV1ApiCategoryData) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ApiCategory) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/sites/{sitesId}/apicategories/{apicategoriesId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.sites.apicategories.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudApigeeV1ApiCategoryData',
+        response_type_name='GoogleCloudApigeeV1ApiCategory',
+        supports_download=False,
+    )
+
+  class OrganizationsSitesService(base_api.BaseApiService):
+    """Service class for the organizations_sites resource."""
+
+    _NAME = 'organizations_sites'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSitesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
@@ -5194,7 +5351,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.getDeployedIngressConfig',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['view'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='ApigeeOrganizationsGetDeployedIngressConfigRequest',

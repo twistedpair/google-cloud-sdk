@@ -66,6 +66,8 @@ If this gets enabled, the following will happen:
 2) The CDP extension in all future issued certificates will point to the CRL URL in that distribution point.
 
 Note that the same bucket may be used for the CA cert if --publish-ca-cert is set.
+
+CRL publication is not supported for CAs in the DevOps tier.
 """
 
 PUBLISH_CRL_UPDATE_HELP = """
@@ -79,6 +81,8 @@ However, an existing bucket will not be deleted, and any existing CRLs will not 
 from that bucket.
 
 Note that the same bucket may be used for the CA cert if --publish-ca-cert is set.
+
+CRL publication is not supported for CAs in the DevOps tier.
 """
 
 _VALID_KEY_USAGES = [
@@ -450,9 +454,21 @@ def SanFlagsAreSpecified(args):
 
 def ParseIssuingOptions(args):
   """Parses the IssuingOptions proto message from the args."""
-  return privateca_base.GetMessagesModule().IssuingOptions(
-      includeCaCertUrl=args.publish_ca_cert,
-      includeCrlAccessUrl=args.publish_crl)
+  messages = privateca_base.GetMessagesModule()
+  publish_ca_cert = args.publish_ca_cert
+  publish_crl = args.publish_crl
+
+  tier = ParseTierFlag(args)
+  if tier == messages.CertificateAuthority.TierValueValuesEnum.DEVOPS:
+    if args.IsSpecified('publish_crl') and publish_crl:
+      raise exceptions.InvalidArgumentException(
+          '--publish-crl',
+          'CRL publication is not supported in the DevOps tier.')
+    # It's not explicitly set to True, so change the default to False here.
+    publish_crl = False
+
+  return messages.IssuingOptions(
+      includeCaCertUrl=publish_ca_cert, includeCrlAccessUrl=publish_crl)
 
 
 def ParseIssuancePolicy(args):
@@ -463,7 +479,9 @@ def ParseIssuancePolicy(args):
     return messages_util.DictToMessageWithErrorCheck(
         args.issuance_policy,
         privateca_base.GetMessagesModule().CertificateAuthorityPolicy)
-  except messages_util.DecodeError:
+  # TODO(b/77547931): Catch `AttributeError` until upstream library takes the
+  # fix.
+  except (messages_util.DecodeError, AttributeError):
     raise exceptions.InvalidArgumentException(
         '--issuance-policy', 'Unrecognized field in the Issuance Policy.')
 

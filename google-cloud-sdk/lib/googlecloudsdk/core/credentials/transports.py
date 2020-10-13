@@ -70,6 +70,8 @@ def GetApitoolsTransport(timeout='unset',
 
       return requests.GetApitoolsRequests(session)
     except requests.UnsupportedCredentialsException:
+      # TODO(b/170148815) Fallback to httplib2 until requests can support all
+      # credential types.
       pass
 
   return http.Http(timeout=timeout,

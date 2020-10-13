@@ -33,6 +33,7 @@ def CheckFieldsSpecified(unused_domain_ref, args, patch_request):
       'remove_region',
       'add_authorized_networks',
       'remove_authorized_networks',
+      'enable_audit_logs',
   ]
   if any(args.IsSpecified(update_arg) for update_arg in update_args):
     return patch_request

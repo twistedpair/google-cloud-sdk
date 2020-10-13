@@ -56,14 +56,23 @@ def _BuildStartArgsForDocker(args):
     raise ValueError('When using docker, hostname specified via --host-port '
                      'must be an IPV4 or IPV6 address, found ' + host_ip)
 
-  return execution_utils.ArgsForExecutableTool(
-      'docker', 'run', '-p',
-      '{}:{}:{}'.format(host_ip, args.host_port.port,
-                        SPANNER_EMULATOR_DEFAULT_GRPC_PORT), '-p',
-      '{}:{}:{}'.format(host_ip, args.rest_port,
-                        SPANNER_EMULATOR_DEFAULT_REST_PORT),
-      ('--enable_fault_injection' if args.enable_fault_injection else
-       '--noenable_fault_injection'), SPANNER_EMULATOR_DOCKER_IMAGE)
+  if args.enable_fault_injection:
+    return execution_utils.ArgsForExecutableTool(
+        'docker', 'run', '-p',
+        '{}:{}:{}'.format(host_ip, args.host_port.port,
+                          SPANNER_EMULATOR_DEFAULT_GRPC_PORT), '-p',
+        '{}:{}:{}'.format(host_ip, args.rest_port,
+                          SPANNER_EMULATOR_DEFAULT_REST_PORT),
+        SPANNER_EMULATOR_DOCKER_IMAGE, './gateway_main', '--hostname',
+        '0.0.0.0', '--enable_fault_injection')
+  else:
+    return execution_utils.ArgsForExecutableTool(
+        'docker', 'run', '-p',
+        '{}:{}:{}'.format(host_ip, args.host_port.port,
+                          SPANNER_EMULATOR_DEFAULT_GRPC_PORT), '-p',
+        '{}:{}:{}'.format(host_ip, args.rest_port,
+                          SPANNER_EMULATOR_DEFAULT_REST_PORT),
+        SPANNER_EMULATOR_DOCKER_IMAGE)
 
 
 def _BuildStartArgsForNativeExecutable(args):
@@ -73,8 +82,7 @@ def _BuildStartArgsForNativeExecutable(args):
   return execution_utils.ArgsForExecutableTool(
       spanner_executable, '--hostname', args.host_port.host, '--grpc_port',
       args.host_port.port, '--http_port', six.text_type(args.rest_port),
-      ('--enable_fault_injection'
-       if args.enable_fault_injection else '--noenable_fault_injection'))
+      ('--enable_fault_injection' if args.enable_fault_injection else ''))
 
 
 def _BuildStartArgs(args):

@@ -584,6 +584,13 @@
             "$ref": "GoogleCloudVideointelligenceV1beta2_LabelAnnotation"
           }
         },
+        "faceAnnotations": {
+          "description": "Deprecated. Please use `face_detection_annotations` instead.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta2_FaceAnnotation"
+          }
+        },
         "faceDetectionAnnotations": {
           "description": "Face detection annotations.",
           "type": "array",
@@ -743,6 +750,89 @@
         },
         "confidence": {
           "description": "Confidence that the label is accurate. Range: [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_FaceAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1beta2_FaceAnnotation",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "thumbnail": {
+          "description": "Thumbnail of a representative face view (in JPEG format).",
+          "type": "string",
+          "format": "byte"
+        },
+        "segments": {
+          "description": "All video segments where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta2_FaceSegment"
+          }
+        },
+        "frames": {
+          "description": "All video frames where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta2_FaceFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_FaceSegment": {
+      "id": "GoogleCloudVideointelligenceV1beta2_FaceSegment",
+      "description": "Video segment level annotation results for face detection.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment where a face was detected.",
+          "$ref": "GoogleCloudVideointelligenceV1beta2_VideoSegment"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_FaceFrame": {
+      "id": "GoogleCloudVideointelligenceV1beta2_FaceFrame",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBoxes": {
+          "description": "Normalized Bounding boxes in a frame. There can be more than one boxes if the same face is detected in multiple locations within the current frame.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1beta2_NormalizedBoundingBox"
+          }
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1beta2_NormalizedBoundingBox": {
+      "id": "GoogleCloudVideointelligenceV1beta2_NormalizedBoundingBox",
+      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
+      "type": "object",
+      "properties": {
+        "left": {
+          "description": "Left X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "top": {
+          "description": "Top Y coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "right": {
+          "description": "Right X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "bottom": {
+          "description": "Bottom Y coordinate.",
           "type": "number",
           "format": "float"
         }
@@ -1030,33 +1120,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1beta2_NormalizedBoundingBox": {
-      "id": "GoogleCloudVideointelligenceV1beta2_NormalizedBoundingBox",
-      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
-      "type": "object",
-      "properties": {
-        "left": {
-          "description": "Left X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "top": {
-          "description": "Top Y coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "right": {
-          "description": "Right X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "bottom": {
-          "description": "Bottom Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1beta2_LogoRecognitionAnnotation": {
       "id": "GoogleCloudVideointelligenceV1beta2_LogoRecognitionAnnotation",
       "description": "Annotation corresponding to one detected, tracked and recognized logo class.",
@@ -1334,6 +1397,13 @@
             "$ref": "GoogleCloudVideointelligenceV1_LabelAnnotation"
           }
         },
+        "faceAnnotations": {
+          "description": "Deprecated. Please use `face_detection_annotations` instead.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_FaceAnnotation"
+          }
+        },
         "faceDetectionAnnotations": {
           "description": "Face detection annotations.",
           "type": "array",
@@ -1476,6 +1546,89 @@
         },
         "confidence": {
           "description": "Confidence that the label is accurate. Range: [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_FaceAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1_FaceAnnotation",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "thumbnail": {
+          "description": "Thumbnail of a representative face view (in JPEG format).",
+          "type": "string",
+          "format": "byte"
+        },
+        "segments": {
+          "description": "All video segments where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_FaceSegment"
+          }
+        },
+        "frames": {
+          "description": "All video frames where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_FaceFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_FaceSegment": {
+      "id": "GoogleCloudVideointelligenceV1_FaceSegment",
+      "description": "Video segment level annotation results for face detection.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment where a face was detected.",
+          "$ref": "GoogleCloudVideointelligenceV1_VideoSegment"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_FaceFrame": {
+      "id": "GoogleCloudVideointelligenceV1_FaceFrame",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBoxes": {
+          "description": "Normalized Bounding boxes in a frame. There can be more than one boxes if the same face is detected in multiple locations within the current frame.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1_NormalizedBoundingBox"
+          }
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1_NormalizedBoundingBox": {
+      "id": "GoogleCloudVideointelligenceV1_NormalizedBoundingBox",
+      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
+      "type": "object",
+      "properties": {
+        "left": {
+          "description": "Left X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "top": {
+          "description": "Top Y coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "right": {
+          "description": "Right X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "bottom": {
+          "description": "Bottom Y coordinate.",
           "type": "number",
           "format": "float"
         }
@@ -1763,33 +1916,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1_NormalizedBoundingBox": {
-      "id": "GoogleCloudVideointelligenceV1_NormalizedBoundingBox",
-      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
-      "type": "object",
-      "properties": {
-        "left": {
-          "description": "Left X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "top": {
-          "description": "Top Y coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "right": {
-          "description": "Right X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "bottom": {
-          "description": "Bottom Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1_LogoRecognitionAnnotation": {
       "id": "GoogleCloudVideointelligenceV1_LogoRecognitionAnnotation",
       "description": "Annotation corresponding to one detected, tracked and recognized logo class.",
@@ -2067,6 +2193,13 @@
             "$ref": "GoogleCloudVideointelligenceV1p1beta1_LabelAnnotation"
           }
         },
+        "faceAnnotations": {
+          "description": "Deprecated. Please use `face_detection_annotations` instead.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceAnnotation"
+          }
+        },
         "faceDetectionAnnotations": {
           "description": "Face detection annotations.",
           "type": "array",
@@ -2226,6 +2359,89 @@
         },
         "confidence": {
           "description": "Confidence that the label is accurate. Range: [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_FaceAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceAnnotation",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "thumbnail": {
+          "description": "Thumbnail of a representative face view (in JPEG format).",
+          "type": "string",
+          "format": "byte"
+        },
+        "segments": {
+          "description": "All video segments where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceSegment"
+          }
+        },
+        "frames": {
+          "description": "All video frames where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_FaceSegment": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceSegment",
+      "description": "Video segment level annotation results for face detection.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment where a face was detected.",
+          "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_FaceFrame": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceFrame",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBoxes": {
+          "description": "Normalized Bounding boxes in a frame. There can be more than one boxes if the same face is detected in multiple locations within the current frame.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox"
+          }
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox": {
+      "id": "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox",
+      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
+      "type": "object",
+      "properties": {
+        "left": {
+          "description": "Left X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "top": {
+          "description": "Top Y coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "right": {
+          "description": "Right X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "bottom": {
+          "description": "Bottom Y coordinate.",
           "type": "number",
           "format": "float"
         }
@@ -2513,33 +2729,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox",
-      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
-      "type": "object",
-      "properties": {
-        "left": {
-          "description": "Left X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "top": {
-          "description": "Top Y coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "right": {
-          "description": "Right X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "bottom": {
-          "description": "Bottom Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1p1beta1_LogoRecognitionAnnotation": {
       "id": "GoogleCloudVideointelligenceV1p1beta1_LogoRecognitionAnnotation",
       "description": "Annotation corresponding to one detected, tracked and recognized logo class.",
@@ -2817,6 +3006,13 @@
             "$ref": "GoogleCloudVideointelligenceV1p2beta1_LabelAnnotation"
           }
         },
+        "faceAnnotations": {
+          "description": "Deprecated. Please use `face_detection_annotations` instead.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_FaceAnnotation"
+          }
+        },
         "faceDetectionAnnotations": {
           "description": "Face detection annotations.",
           "type": "array",
@@ -2976,6 +3172,89 @@
         },
         "confidence": {
           "description": "Confidence that the label is accurate. Range: [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_FaceAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_FaceAnnotation",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "thumbnail": {
+          "description": "Thumbnail of a representative face view (in JPEG format).",
+          "type": "string",
+          "format": "byte"
+        },
+        "segments": {
+          "description": "All video segments where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_FaceSegment"
+          }
+        },
+        "frames": {
+          "description": "All video frames where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_FaceFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_FaceSegment": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_FaceSegment",
+      "description": "Video segment level annotation results for face detection.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment where a face was detected.",
+          "$ref": "GoogleCloudVideointelligenceV1p2beta1_VideoSegment"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_FaceFrame": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_FaceFrame",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBoxes": {
+          "description": "Normalized Bounding boxes in a frame. There can be more than one boxes if the same face is detected in multiple locations within the current frame.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_NormalizedBoundingBox"
+          }
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_NormalizedBoundingBox": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_NormalizedBoundingBox",
+      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
+      "type": "object",
+      "properties": {
+        "left": {
+          "description": "Left X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "top": {
+          "description": "Top Y coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "right": {
+          "description": "Right X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "bottom": {
+          "description": "Bottom Y coordinate.",
           "type": "number",
           "format": "float"
         }
@@ -3263,33 +3542,6 @@
         }
       }
     },
-    "GoogleCloudVideointelligenceV1p2beta1_NormalizedBoundingBox": {
-      "id": "GoogleCloudVideointelligenceV1p2beta1_NormalizedBoundingBox",
-      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
-      "type": "object",
-      "properties": {
-        "left": {
-          "description": "Left X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "top": {
-          "description": "Top Y coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "right": {
-          "description": "Right X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "bottom": {
-          "description": "Bottom Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
     "GoogleCloudVideointelligenceV1p2beta1_LogoRecognitionAnnotation": {
       "id": "GoogleCloudVideointelligenceV1p2beta1_LogoRecognitionAnnotation",
       "description": "Annotation corresponding to one detected, tracked and recognized logo class.",
@@ -3567,6 +3819,13 @@
             "$ref": "GoogleCloudVideointelligenceV1p3beta1_LabelAnnotation"
           }
         },
+        "faceAnnotations": {
+          "description": "Deprecated. Please use `face_detection_annotations` instead.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_FaceAnnotation"
+          }
+        },
         "faceDetectionAnnotations": {
           "description": "Face detection annotations.",
           "type": "array",
@@ -3730,6 +3989,89 @@
         },
         "confidence": {
           "description": "Confidence that the label is accurate. Range: [0, 1].",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_FaceAnnotation": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_FaceAnnotation",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "thumbnail": {
+          "description": "Thumbnail of a representative face view (in JPEG format).",
+          "type": "string",
+          "format": "byte"
+        },
+        "segments": {
+          "description": "All video segments where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_FaceSegment"
+          }
+        },
+        "frames": {
+          "description": "All video frames where a face was detected.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_FaceFrame"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_FaceSegment": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_FaceSegment",
+      "description": "Video segment level annotation results for face detection.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment where a face was detected.",
+          "$ref": "GoogleCloudVideointelligenceV1p3beta1_VideoSegment"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_FaceFrame": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_FaceFrame",
+      "description": "Deprecated. No effect.",
+      "type": "object",
+      "properties": {
+        "normalizedBoundingBoxes": {
+          "description": "Normalized Bounding boxes in a frame. There can be more than one boxes if the same face is detected in multiple locations within the current frame.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p3beta1_NormalizedBoundingBox"
+          }
+        },
+        "timeOffset": {
+          "description": "Time-offset, relative to the beginning of the video, corresponding to the video frame for this location.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p3beta1_NormalizedBoundingBox": {
+      "id": "GoogleCloudVideointelligenceV1p3beta1_NormalizedBoundingBox",
+      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
+      "type": "object",
+      "properties": {
+        "left": {
+          "description": "Left X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "top": {
+          "description": "Top Y coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "right": {
+          "description": "Right X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "bottom": {
+          "description": "Bottom Y coordinate.",
           "type": "number",
           "format": "float"
         }
@@ -4014,33 +4356,6 @@
           "description": "The timestamp of the frame in microseconds.",
           "type": "string",
           "format": "google-duration"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p3beta1_NormalizedBoundingBox": {
-      "id": "GoogleCloudVideointelligenceV1p3beta1_NormalizedBoundingBox",
-      "description": "Normalized bounding box. The normalized vertex coordinates are relative to the original image. Range: [0, 1].",
-      "type": "object",
-      "properties": {
-        "left": {
-          "description": "Left X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "top": {
-          "description": "Top Y coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "right": {
-          "description": "Right X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "bottom": {
-          "description": "Bottom Y coordinate.",
-          "type": "number",
-          "format": "float"
         }
       }
     },
@@ -4353,9 +4668,14 @@
     },
     "GoogleCloudVideointelligenceV1p3beta1_StreamingVideoAnnotationResults": {
       "id": "GoogleCloudVideointelligenceV1p3beta1_StreamingVideoAnnotationResults",
-      "description": "Streaming annotation results corresponding to a portion of the video that is currently being processed.",
+      "description": "Streaming annotation results corresponding to a portion of the video that is currently being processed. Only ONE type of annotation will be specified in the response.",
       "type": "object",
       "properties": {
+        "frameTimestamp": {
+          "description": "Timestamp of the processed frame in microseconds.",
+          "type": "string",
+          "format": "google-duration"
+        },
         "shotAnnotations": {
           "description": "Shot annotation results. Each shot is represented as a video segment.",
           "type": "array",

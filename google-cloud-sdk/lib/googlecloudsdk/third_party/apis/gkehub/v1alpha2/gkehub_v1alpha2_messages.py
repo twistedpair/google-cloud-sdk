@@ -95,8 +95,8 @@ class Authority(_messages.Message):
       instead of identity_namespace, once we start setting it.
     identityProvider: Output only. An identity provider that reflects this
       issuer in the identity namespace.
-    issuer: A JWT issuer URI. If set, then Google will attempt OIDC discovery
-      on this URI, and allow valid OIDC tokens from this issuer to
+    issuer: Optional. A JWT issuer URI. If set, then Google will attempt OIDC
+      discovery on this URI, and allow valid OIDC tokens from this issuer to
       authenticate within the below identity namespace. This can be updated
       from a non-empty to empty value and vice-versa. But cannot be changed
       from one non-empty value to another. Setting to empty will disable
@@ -861,20 +861,23 @@ class KubernetesMetadata(_messages.Message):
   Kubernetes clusters).
 
   Fields:
-    kubernetesApiServerVersion: Kubernetes API server version string as
-      reported by '/version'.
-    memoryMb: The total memory capacity as reported by the sum of all
-      Kubernetes nodes resources, defined in MB.
-    nodeCount: Node count as reported by Kubernetes nodes resources.
-    nodeProviderId: Node providerID as reported by the first node in the list
-      of nodes on the Kubernetes endpoint. It should be noted that some
-      Kubernetes platforms (like GKE-on-GCP) support zero-node clusters. For
-      these platforms, the node_count will be zero and the node_provider_id
-      will be empty.
-    updateTime: The time at which these details were last updated. This
-      update_time is different from the Membership-level update_time since
-      EndpointDetails are updated internally for API consumers.
-    vcpuCount: vCPU count as reported by Kubernetes nodes resources.
+    kubernetesApiServerVersion: Output only. Kubernetes API server version
+      string as reported by '/version'.
+    memoryMb: Output only. The total memory capacity as reported by the sum of
+      all Kubernetes nodes resources, defined in MB.
+    nodeCount: Output only. Node count as reported by Kubernetes nodes
+      resources.
+    nodeProviderId: Output only. Node providerID as reported by the first node
+      in the list of nodes on the Kubernetes endpoint. It should be noted that
+      some Kubernetes platforms (like GKE-on-GCP) support zero-node clusters.
+      For these platforms, the node_count will be zero and the
+      node_provider_id will be empty.
+    updateTime: Output only. The time at which these details were last
+      updated. This update_time is different from the Membership-level
+      update_time since EndpointDetails are updated internally for API
+      consumers.
+    vcpuCount: Output only. vCPU count as reported by Kubernetes nodes
+      resources.
   """
 
   kubernetesApiServerVersion = _messages.StringField(1)
@@ -1200,14 +1203,15 @@ class MembershipState(_messages.Message):
   r"""State of the Membership resource.
 
   Enums:
-    CodeValueValuesEnum: Code indicating the state of the Membership resource.
+    CodeValueValuesEnum: Output only. Code indicating the state of the
+      Membership resource.
 
   Fields:
-    code: Code indicating the state of the Membership resource.
+    code: Output only. Code indicating the state of the Membership resource.
   """
 
   class CodeValueValuesEnum(_messages.Enum):
-    r"""Code indicating the state of the Membership resource.
+    r"""Output only. Code indicating the state of the Membership resource.
 
     Values:
       CODE_UNSPECIFIED: Not set.

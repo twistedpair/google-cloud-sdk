@@ -30,11 +30,13 @@ from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as api_errors
 from googlecloudsdk.command_lib.storage import errors
-from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage.resources import resource_reference
+
 import six
 
 
+COMPRESS_WILDCARDS_REGEX = re.compile(r'\*{3,}')
 WILDCARD_REGEX = re.compile(r'[*?\[\]]')
 
 
@@ -72,6 +74,22 @@ def get_wildcard_iterator(
     raise errors.InvalidUrlError('Unknown url type %s.' % url)
 
 
+def _compress_url_wildcards(url):
+  """Asterisk counts greater than two treated as single * to mimic globs.
+
+  Args:
+    url (StorageUrl): Url to compress wildcards in.
+
+  Returns:
+    StorageUrl built from string with compressed wildcards.
+  """
+  compressed_url_string = re.sub(COMPRESS_WILDCARDS_REGEX, '*',
+                                 url.versionless_url_string)
+  if url.generation is not None:
+    compressed_url_string += '#' + url.generation
+  return storage_url.storage_url_from_string(compressed_url_string)
+
+
 class WildcardIterator(six.with_metaclass(abc.ABCMeta)):
   """Class for iterating over Google Cloud Storage strings containing wildcards.
 
@@ -95,6 +113,7 @@ class FileWildcardIterator(WildcardIterator):
       url (FileUrl): A FileUrl instance representing a file path.
     """
     super().__init__()
+    url = _compress_url_wildcards(url)
     self._path = url.object_name
 
   def __iter__(self):
@@ -130,6 +149,7 @@ class CloudWildcardIterator(WildcardIterator):
           returned by API.
     """
     super(CloudWildcardIterator, self).__init__()
+    url = _compress_url_wildcards(url)
     self._url = url
     self._all_versions = all_versions
     self._fields_scope = fields_scope
@@ -142,7 +162,7 @@ class CloudWildcardIterator(WildcardIterator):
 
   def __iter__(self):
     if self._url.is_provider():
-      for bucket_resource in self._client.ListBuckets(self._fields_scope):
+      for bucket_resource in self._client.list_buckets(self._fields_scope):
         yield bucket_resource
     else:
       for bucket_resource in self._fetch_buckets():
@@ -158,9 +178,11 @@ class CloudWildcardIterator(WildcardIterator):
     if not contains_wildcard(self._url.object_name) and not self._all_versions:
       try:
         # Assume that the url represents a single object.
-        return [self._client.GetObjectMetadata(
-            bucket_name, self._url.object_name, self._url.generation,
-            self._fields_scope)]
+        return [
+            self._client.get_object_metadata(bucket_name, self._url.object_name,
+                                             self._url.generation,
+                                             self._fields_scope)
+        ]
       except api_errors.NotFoundError:
         # Object does not exist. Could be a prefix.
         pass
@@ -194,7 +216,7 @@ class CloudWildcardIterator(WildcardIterator):
       wildcard_parts = CloudWildcardParts.from_string(name, self._url.delimiter)
 
       # Fetch all the objects and prefixes.
-      resource_iterator = self._client.ListObjects(
+      resource_iterator = self._client.list_objects(
           all_versions=self._all_versions or bool(self._url.generation),
           bucket_name=bucket_name,
           delimiter=wildcard_parts.delimiter,
@@ -258,8 +280,9 @@ class CloudWildcardIterator(WildcardIterator):
     if contains_wildcard(self._url.bucket_name):
       return self._expand_bucket_wildcards(self._url.bucket_name)
     elif self._url.is_bucket():
-      return  [self._client.GetBucket(
-          self._url.bucket_name, self._fields_scope)]
+      return [
+          self._client.get_bucket(self._url.bucket_name, self._fields_scope)
+      ]
     else:
       return [resource_reference.BucketResource(self._url)]
 
@@ -274,7 +297,7 @@ class CloudWildcardIterator(WildcardIterator):
     """
     regex = fnmatch.translate(bucket_name)
     bucket_pattern = re.compile(regex)
-    for bucket_resource in self._client.ListBuckets(self._fields_scope):
+    for bucket_resource in self._client.list_buckets(self._fields_scope):
       if bucket_pattern.match(bucket_resource.name):
         yield bucket_resource
 
@@ -289,7 +312,7 @@ class CloudWildcardParts:
       prefix (str): The prefix string to be passed to the API request.
         This is the substring before the first occurrance of the wildcard.
       filter_pattern (str): The pattern to be used to filter out the results
-        returned by the ListObjects call. This is a substring starting from
+        returned by the list_objects call. This is a substring starting from
         the first occurance of the wildcard upto the first delimiter.
       delimiter (str): The delimiter to be passed to the api request.
       suffix (str): The substirng after the first delimiter in the wildcard.

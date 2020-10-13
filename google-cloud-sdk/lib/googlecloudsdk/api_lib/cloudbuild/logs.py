@@ -19,18 +19,22 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import collections
 import time
 
 from apitools.base.py import exceptions as api_exceptions
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
 from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.credentials import requests as creds_requests
 from googlecloudsdk.core.util import encoding
 
 import httplib2
+import requests
 
 
 class NoLogsBucketException(exceptions.Error):
@@ -38,6 +42,50 @@ class NoLogsBucketException(exceptions.Error):
   def __init__(self):
     msg = 'Build does not specify logsBucket, unable to stream logs'
     super(NoLogsBucketException, self).__init__(msg)
+
+
+Response = collections.namedtuple('Response', ['status', 'headers', 'body'])
+
+
+class Httplib2LogTailer(object):
+  """LogTailer transport to make HTTP requests using httplib2."""
+
+  def __init__(self):
+    self.http = http.Http()
+
+  def Request(self, url, cursor):
+    try:
+      (res, body) = self.http.request(
+          url,
+          method='GET',
+          headers={'Range': 'bytes={0}-'.format(cursor)})
+      return Response(res.status, res, body)
+    except httplib2.HttpLib2Error as e:
+      raise api_exceptions.CommunicationError('Failed to connect: %s' % e)
+
+
+class RequestsLogTailer(object):
+  """LogTailer transport to make HTTP requests using requests."""
+
+  def __init__(self):
+    self.session = creds_requests.GetSession()
+
+  def Request(self, url, cursor):
+    try:
+      response = self.session.request(
+          'GET', url, headers={'Range': 'bytes={0}-'.format(cursor)})
+      return Response(response.status_code, response.headers, response.content)
+    except requests.exceptions.RequestException as e:
+      raise api_exceptions.CommunicationError('Failed to connect: %s' % e)
+
+
+def GetLogTailerTransport():
+  if base.UseRequests():
+    try:
+      return RequestsLogTailer()
+    except requests.UnsupportedCredentialsException:
+      pass
+  return Httplib2LogTailer()
 
 
 class LogTailer(object):
@@ -50,7 +98,7 @@ class LogTailer(object):
       'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
 
   def __init__(self, bucket, obj, out=log.status, url_pattern=None):
-    self.http = http.Http()
+    self.transport = GetLogTailerTransport()
     url_pattern = url_pattern or self.GCS_URL_PATTERN
     self.url = url_pattern.format(bucket=bucket, obj=obj)
     log.debug('GCS logfile url is ' + self.url)
@@ -111,17 +159,14 @@ class LogTailer(object):
           and is_last=True.
     """
     try:
-      (res, body) = self.http.request(
-          self.url,
-          method='GET',
-          headers={'Range': 'bytes={0}-'.format(self.cursor)})
-    except httplib2.HttpLib2Error as e:
+      res = self.transport.Request(self.url, self.cursor)
+    except api_exceptions.CommunicationError:
       # Sometimes this request fails due to read timeouts (b/121307719). When
       # this happens we should just proceed and rely on the next poll to pick
       # up any missed logs. If this is the last request, there won't be another
       # request, and we can just fail.
       if is_last:
-        raise api_exceptions.CommunicationError('Failed to connect: %s' % e)
+        raise
       return
 
     if res.status == 404:  # Not Found
@@ -139,12 +184,12 @@ class LogTailer(object):
     if res.status == 206 or res.status == 200:  # Partial Content
       # New content available. Print it!
       log.debug('Reading GCS logfile: {code} (read {count} bytes)'.format(
-          code=res.status, count=len(body)))
+          code=res.status, count=len(res.body)))
       if self.cursor == 0:
         self._PrintFirstLine()
-      self.cursor += len(body)
-      body = encoding.Decode(body)
-      self._PrintLogLine(body.rstrip('\n'))
+      self.cursor += len(res.body)
+      decoded = encoding.Decode(res.body)
+      self._PrintLogLine(decoded.rstrip('\n'))
 
       if is_last:
         self._PrintLastLine()
@@ -167,7 +212,9 @@ class LogTailer(object):
       return
 
     # Default: any other codes are treated as errors.
-    raise api_exceptions.HttpError(res, body, self.url)
+    headers = dict(res.headers)
+    headers['status'] = res.status
+    raise api_exceptions.HttpError(headers, res.body, self.url)
 
   def _PrintLogLine(self, text):
     """Testing Hook: This method enables better verification of output."""
@@ -226,6 +273,7 @@ class CloudBuildClient(object):
     if not build.options or build.options.logging not in [
         self.messages.BuildOptions.LoggingValueValuesEnum.NONE,
         self.messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
+        self.messages.BuildOptions.LoggingValueValuesEnum.CLOUD_LOGGING_ONLY,
     ]:
       log_tailer = LogTailer.FromBuild(build, out=out)
     else:
@@ -267,6 +315,7 @@ class CloudBuildClient(object):
     if build.options and build.options.logging in [
         self.messages.BuildOptions.LoggingValueValuesEnum.NONE,
         self.messages.BuildOptions.LoggingValueValuesEnum.STACKDRIVER_ONLY,
+        self.messages.BuildOptions.LoggingValueValuesEnum.CLOUD_LOGGING_ONLY,
     ]:
       log.info('GCS logs not available: build logging mode is {0}.'.format(
           build.options.logging))

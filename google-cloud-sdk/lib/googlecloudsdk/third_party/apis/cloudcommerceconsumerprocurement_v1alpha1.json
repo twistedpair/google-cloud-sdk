@@ -1249,7 +1249,7 @@
             "The allocation is pending activation.",
             "The allocation is active.",
             "The allocation is pending deletion.",
-            "The allocation is cancelled. This can be caused by failure in creating the allocation."
+            "The allocation is cancelled. This can be caused by failure in creating the allocation or the associated Order being cancelled."
           ],
           "enum": [
             "STATE_UNSPECIFIED",

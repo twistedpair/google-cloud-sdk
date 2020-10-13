@@ -608,8 +608,13 @@ def RunImageImport(args,
                             IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
 
 
-def _GetBuilder(args, executable, docker_image_tag, release_track,
-                region_getter):
+def _GetBuilder(
+    args,
+    executable,
+    docker_image_tag,
+    release_track,
+    region_getter,
+    use_regionalized_builder=lambda release_track: release_track != 'ga'):
   """Returns a path to a builder Docker images.
 
   If a region can be determined from region_getter and if regionalized builder
@@ -624,11 +629,13 @@ def _GetBuilder(args, executable, docker_image_tag, release_track,
     release_track: release track of the command used. One of - "alpha", "beta"
       or "ga"
     region_getter: method that returns desired region based on args
+    use_regionalized_builder: lambda that uses release_track arg to determine if
+      regionalized builder should be used.
 
   Returns:
     str: a path to a builder Docker images.
   """
-  if release_track != 'ga':
+  if use_regionalized_builder(release_track):
     # Use regionalized wrapper image for Alpha and Beta
     regionalized_builder = _GetRegionalizedBuilder(args, executable,
                                                    region_getter,
@@ -670,14 +677,9 @@ def _GetRegionalizedBuilder(args, executable, region_getter, docker_image_tag):
   try:
     docker_util.GetDockerImage(regionalized_builder)
     return regionalized_builder
-  except HttpNotFoundError:
-    # We're sure here that repo or image don't exist
+  except (HttpNotFoundError, HttpError):
+    # We can't verify the repo exists
     return ''
-  except HttpError:
-    # For other HTTP errors, such as no permission to check if the repo exists
-    # return the builder path and let Cloud Build run method handle potential
-    # failures due to missing repo
-    return regionalized_builder
 
 
 def _GetImageImportRegion(args):
@@ -692,17 +694,10 @@ def _GetImageImportRegion(args):
   zone = properties.VALUES.compute.zone.Get()
   if zone:
     return utils.ZoneNameToRegionName(zone)
+  elif args.source_file and not IsLocalFile(args.source_file):
+    return _GetBucketLocation(args.source_file)
   elif args.storage_location:
     return args.storage_location.lower()
-  elif args.source_file and not IsLocalFile(args.source_file):
-    try:
-      bucket = storage_api.StorageClient().GetBucket(
-          storage_util.ObjectReference.FromUrl(MakeGcsUri(
-              args.source_file)).bucket)
-      if bucket and bucket.location:
-        return bucket.location.lower()
-    except storage_api.BucketNotFoundError:
-      return ''
   return ''
 
 
@@ -756,7 +751,11 @@ def _GetImageExportRegion(args):  # pylint:disable=unused-argument
   Returns:
     str: region. Can be empty.
   """
-  # TODO(b/168663236)
+  zone = properties.VALUES.compute.zone.Get()
+  if zone:
+    return utils.ZoneNameToRegionName(zone)
+  elif args.destination_uri:
+    return _GetBucketLocation(args.destination_uri)
   return ''
 
 
@@ -971,7 +970,7 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
 
   builder = _GetBuilder(args, _OVF_IMPORT_BUILDER_EXECUTABLE,
                         args.docker_image_tag, release_track,
-                        _GetOVFImportRegion)
+                        _GetInstanceImportRegion)
   return _RunCloudBuild(
       args,
       builder,
@@ -982,8 +981,8 @@ def RunOVFImportBuild(args, compute_client, instance_name, source_uri,
       log_location=args.log_location)
 
 
-def _GetOVFImportRegion(args):  # pylint:disable=unused-argument
-  """Return region to run OVF import in.
+def _GetInstanceImportRegion(args):  # pylint:disable=unused-argument
+  """Return region to run instance import in.
 
   Args:
     args: command args
@@ -991,8 +990,21 @@ def _GetOVFImportRegion(args):  # pylint:disable=unused-argument
   Returns:
     str: region. Can be empty.
   """
-  # TODO(b/168663237)
-  # TODO(b/168663402)
+  zone = properties.VALUES.compute.zone.Get()
+  if zone:
+    return utils.ZoneNameToRegionName(zone)
+  return ''
+
+
+def _GetBucketLocation(gcs_path):
+  try:
+    bucket = storage_api.StorageClient().GetBucket(
+        storage_util.ObjectReference.FromUrl(
+            MakeGcsUri(gcs_path), allow_empty_object=True).bucket)
+    if bucket and bucket.location:
+      return bucket.location.lower()
+  except storage_api.BucketNotFoundError:
+    return ''
   return ''
 
 
@@ -1063,9 +1075,13 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
 
-  builder = _GetBuilder(args, _OVF_IMPORT_BUILDER_EXECUTABLE,
-                        args.docker_image_tag, release_track,
-                        _GetOVFImportRegion)
+  builder = _GetBuilder(
+      args,
+      _OVF_IMPORT_BUILDER_EXECUTABLE,
+      args.docker_image_tag,
+      release_track,
+      _GetMachineImageImportRegion,
+      use_regionalized_builder=lambda rt: rt == 'alpha')
   return _RunCloudBuild(
       args,
       builder,
@@ -1074,6 +1090,23 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
       output_filter,
       backoff=backoff,
       log_location=args.log_location)
+
+
+def _GetMachineImageImportRegion(args):  # pylint:disable=unused-argument
+  """Return region to run machine image import in.
+
+  Args:
+    args: command args
+
+  Returns:
+    str: region. Can be empty.
+  """
+  zone = properties.VALUES.compute.zone.Get()
+  if zone:
+    return utils.ZoneNameToRegionName(zone)
+  elif args.source_uri:
+    return _GetBucketLocation(args.source_uri)
+  return ''
 
 
 def RunOsUpgradeBuild(args, output_filter, instance_uri, release_track):

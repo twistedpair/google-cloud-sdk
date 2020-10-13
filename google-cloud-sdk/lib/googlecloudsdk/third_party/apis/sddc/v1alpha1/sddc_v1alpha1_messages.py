@@ -349,12 +349,14 @@ class Cluster(_messages.Message):
       CREATING: The cluster is being created.
       UPDATING: The cluster is being updated.
       DELETING: The cluster is being deleted.
+      FAILED: The cluster has experienced an issue and might be unusable.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     UPDATING = 3
     DELETING = 4
+    FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -457,12 +459,15 @@ class ClusterGroup(_messages.Message):
       CREATING: The cluster group is being created.
       DELETING: The cluster group is being deleted.
       UPDATING: The cluster group is being updated.
+      FAILED: The cluster group has experienced an issue and might be
+        unusable.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     DELETING = 3
     UPDATING = 4
+    FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2234,12 +2239,15 @@ class PrivateCloud(_messages.Message):
       CREATING: The private cloud is being created.
       DELETING: The private cloud is being deleted.
       UPDATING: The private cloud is being updated.
+      FAILED: The private cloud has experienced an issue and might be
+        unusable.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     CREATING = 2
     DELETING = 3
     UPDATING = 4
+    FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

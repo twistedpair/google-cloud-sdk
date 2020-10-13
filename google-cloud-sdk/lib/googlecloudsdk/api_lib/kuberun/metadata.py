@@ -22,11 +22,24 @@ from googlecloudsdk.api_lib.kuberun import mapobject
 
 
 class Metadata(mapobject.MapObject):
+  """Wraps the metadata fields of Kubernetes objects."""
 
   @property
   def labels(self):
-    if 'labels' in self._props:
-      return self._props.get('labels')
-    else:
-      return dict()
+    return self._props.get('labels', dict())
 
+  @property
+  def creationTimestamp(self):
+    return self._props['creationTimestamp']
+
+  @property
+  def annotations(self):
+    return self._props.get('annotations', dict())
+
+  @property
+  def namespace(self):
+    return self._props['namespace']
+
+  @property
+  def name(self):
+    return self._props['name']

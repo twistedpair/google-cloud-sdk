@@ -107,10 +107,14 @@ class RevisionPrinter(k8s_object_printer.K8sObjectPrinter):
     return None
 
   def GetMinInstances(self, record):
-    return record.annotations.get(revision.MIN_SCALE_ANNOTATION, '')
+    if record.annotations:
+      return record.annotations.get(revision.MIN_SCALE_ANNOTATION, '')
+    return None
 
   def GetMaxInstances(self, record):
-    return record.annotations.get(revision.MAX_SCALE_ANNOTATION, '')
+    if record.annotations:
+      return record.annotations.get(revision.MAX_SCALE_ANNOTATION, '')
+    return None
 
   def TransformSpec(self, record):
     limits = self.GetLimits(record)

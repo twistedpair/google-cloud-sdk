@@ -301,7 +301,7 @@
       "type": "object",
       "properties": {
         "gkeCluster": {
-          "description": "If this Membership is a Kubernetes API server hosted on GKE, this field will be populated and contain GKE-specific information.",
+          "description": "Optional. If this Membership is a Kubernetes API server hosted on GKE, this field will be populated and contain GKE-specific information.",
           "$ref": "GkeCluster"
         }
       }
@@ -323,7 +323,8 @@
       "type": "object",
       "properties": {
         "code": {
-          "description": "Code indicating the state of the Membership resource.",
+          "description": "Output only. Code indicating the state of the Membership resource.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "Not set.",

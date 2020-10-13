@@ -740,9 +740,8 @@ class SoftwareConfig(_messages.Message):
       written in [snake_case](https://en.wikipedia.org/wiki/Snake_case).
       Property values can contain any character, and can be written in any
       lower/upper case format. Certain Apache Airflow configuration property
-      values are [blacklisted](/composer/docs/how-to/managing/setting-airflow-
-      configurations#airflow_configuration_blacklists), and cannot be
-      overridden.
+      values are [blocked](/composer/docs/concepts/airflow-configurations),
+      and cannot be overridden.
     EnvVariablesValue: Optional. Additional environment variables to provide
       to the Apache Airflow scheduler, worker, and webserver processes.
       Environment variable names must match the regular expression `a-zA-Z_*`.
@@ -772,8 +771,7 @@ class SoftwareConfig(_messages.Message):
       [snake_case](https://en.wikipedia.org/wiki/Snake_case). Property values
       can contain any character, and can be written in any lower/upper case
       format. Certain Apache Airflow configuration property values are
-      [blacklisted](/composer/docs/how-to/managing/setting-airflow-
-      configurations#airflow_configuration_blacklists), and cannot be
+      [blocked](/composer/docs/concepts/airflow-configurations), and cannot be
       overridden.
     envVariables: Optional. Additional environment variables to provide to the
       Apache Airflow scheduler, worker, and webserver processes. Environment
@@ -824,8 +822,7 @@ class SoftwareConfig(_messages.Message):
     [snake_case](https://en.wikipedia.org/wiki/Snake_case). Property values
     can contain any character, and can be written in any lower/upper case
     format. Certain Apache Airflow configuration property values are
-    [blacklisted](/composer/docs/how-to/managing/setting-airflow-
-    configurations#airflow_configuration_blacklists), and cannot be
+    [blocked](/composer/docs/concepts/airflow-configurations), and cannot be
     overridden.
 
     Messages:

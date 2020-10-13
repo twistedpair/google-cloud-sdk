@@ -302,9 +302,12 @@ class MessageStoragePolicy(_messages.Message):
       outside of GCP altogether) will be routed for storage in one of the
       allowed regions. An empty list means that no regions are allowed, and is
       not a valid configuration.
+    satisfiesPzs: Reserved for future use. This field is set only in responses
+      from the server; it is ignored if it is set in any requests.
   """
 
   allowedPersistenceRegions = _messages.StringField(1, repeated=True)
+  satisfiesPzs = _messages.BooleanField(2)
 
 
 class ModifyAckDeadlineRequest(_messages.Message):
@@ -1486,9 +1489,6 @@ class Topic(_messages.Message):
       (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or
       percent signs (`%`). It must be between 3 and 255 characters in length,
       and it must not start with `"goog"`.
-    zoneSeparationRequired: If set, messages will be stored in regions with
-      support for Zone Separation. This field cannot override the org policy
-      `constraints/gcp.requireStrongIsolation` if it's enabled.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1520,7 +1520,6 @@ class Topic(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 3)
   name = _messages.StringField(4)
-  zoneSeparationRequired = _messages.BooleanField(5)
 
 
 class UpdateSnapshotRequest(_messages.Message):

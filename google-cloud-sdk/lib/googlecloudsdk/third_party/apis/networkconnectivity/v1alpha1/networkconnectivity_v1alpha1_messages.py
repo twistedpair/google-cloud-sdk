@@ -2226,8 +2226,8 @@ class PolicyBasedRoute(_messages.Message):
       this field when you create the resource.
     destRange: Optional. The destination IP range of outgoing packets that
       this policy based route applies to. Only IPv4 is supported.
-    kind: Output only. Type of this resource. Always compute#routes for Route
-      resources.
+    kind: Output only. Type of this resource. Always
+      networkconnectivity#policyBasedRoute for Policy Based Route resources.
     labels: User-defined labels.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.

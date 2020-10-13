@@ -54,7 +54,7 @@ class IntraCloudCopyTask(task.Task):
     self._destination_resource = destination_resource
 
   def execute(self, callback=None):
-    # TODO(b/161900052): Support all of CopyObject's parameters
+    # TODO(b/161900052): Support all of copy_object's parameters
     provider = self._source_resource.storage_url.scheme
-    api_factory.get_api(provider).CopyObject(
-        self._source_resource, self._destination_resource)
+    api_factory.get_api(provider).copy_object(self._source_resource,
+                                              self._destination_resource)

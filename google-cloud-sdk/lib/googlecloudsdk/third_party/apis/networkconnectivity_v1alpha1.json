@@ -536,7 +536,7 @@
           "type": "string"
         },
         "kind": {
-          "description": "Output only. Type of this resource. Always compute#routes for Route resources.",
+          "description": "Output only. Type of this resource. Always networkconnectivity#policyBasedRoute for Policy Based Route resources.",
           "readOnly": true,
           "type": "string"
         }

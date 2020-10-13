@@ -14347,6 +14347,8 @@ For more information, see Deleting snapshots.
     def InvalidateCache(self, request, global_params=None):
       r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
 
+For more information, see [Invalidating cached content](/cdn/docs/invalidating-cached-content).
+
       Args:
         request: (ComputeUrlMapsInvalidateCacheRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments

@@ -224,19 +224,16 @@ class TriggersClient(object):
         updateMask=update_mask)
     return self._service.Patch(patch_req)
 
-  def WaitFor(self, operation, delete=False):
+  def WaitFor(self, operation):
     """Waits until the given long-running operation is complete.
 
     Args:
       operation: the long-running operation to wait for.
-      delete: bool, whether the operation is a delete operation.
 
     Returns:
-      The Trigger that is the subject of the operation.
+      The long-running operation's response.
     """
-    poller = waiter.CloudOperationPollerNoResources(
-        self._operation_service) if delete else waiter.CloudOperationPoller(
-            self._service, self._operation_service)
+    poller = waiter.CloudOperationPollerNoResources(self._operation_service)
     operation_ref = resources.REGISTRY.Parse(
         operation.name, collection='eventarc.projects.locations.operations')
     message = 'Waiting for operation [{}] to complete'.format(

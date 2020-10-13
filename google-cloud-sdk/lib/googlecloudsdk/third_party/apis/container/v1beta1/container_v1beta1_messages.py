@@ -478,6 +478,8 @@ class Cluster(_messages.Message):
       configuration.
     workloadIdentityConfig: Configuration for the use of Kubernetes Service
       Accounts in GCP IAM policies.
+    workloadMonitoringEnabledEap: Whether to send workload metrics from the
+      cluster to Google Cloud Monitoring. Temporary flag for EAP.
     zone: [Output only] The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/zones#available) in which
       the cluster resides. This field is deprecated, use location instead.
@@ -598,7 +600,8 @@ class Cluster(_messages.Message):
   tpuIpv4CidrBlock = _messages.StringField(60)
   verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 61)
   workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 62)
-  zone = _messages.StringField(63)
+  workloadMonitoringEnabledEap = _messages.BooleanField(63)
+  zone = _messages.StringField(64)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -2336,12 +2339,12 @@ class NodeConfig(_messages.Message):
       ensure-gke-docker" - "gci-metrics-enabled" - "gci-update-strategy" -
       "instance-template" - "kube-env" - "startup-script" - "user-data" -
       "disable-address-manager" - "windows-startup-script-ps1" - "common-psm1"
-      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" -
-      "serial-port-logging-enable" Values are free-form strings, and only have
-      meaning as interpreted by the image running in the instance. The only
-      restriction placed on them is that each value's size must be less than
-      or equal to 32 KB. The total size of all keys and values must be less
-      than 512 KB.
+      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" The
+      following keys are reserved for Windows nodes: - "serial-port-logging-
+      enable" Values are free-form strings, and only have meaning as
+      interpreted by the image running in the instance. The only restriction
+      placed on them is that each value's size must be less than or equal to
+      32 KB. The total size of all keys and values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2389,12 +2392,12 @@ class NodeConfig(_messages.Message):
       ensure-gke-docker" - "gci-metrics-enabled" - "gci-update-strategy" -
       "instance-template" - "kube-env" - "startup-script" - "user-data" -
       "disable-address-manager" - "windows-startup-script-ps1" - "common-psm1"
-      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" -
-      "serial-port-logging-enable" Values are free-form strings, and only have
-      meaning as interpreted by the image running in the instance. The only
-      restriction placed on them is that each value's size must be less than
-      or equal to 32 KB. The total size of all keys and values must be less
-      than 512 KB.
+      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" The
+      following keys are reserved for Windows nodes: - "serial-port-logging-
+      enable" Values are free-form strings, and only have meaning as
+      interpreted by the image running in the instance. The only restriction
+      placed on them is that each value's size must be less than or equal to
+      32 KB. The total size of all keys and values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -2485,11 +2488,12 @@ class NodeConfig(_messages.Message):
     "gci-metrics-enabled" - "gci-update-strategy" - "instance-template" -
     "kube-env" - "startup-script" - "user-data" - "disable-address-manager" -
     "windows-startup-script-ps1" - "common-psm1" - "k8s-node-setup-psm1" -
-    "install-ssh-psm1" - "user-profile-psm1" - "serial-port-logging-enable"
-    Values are free-form strings, and only have meaning as interpreted by the
-    image running in the instance. The only restriction placed on them is that
-    each value's size must be less than or equal to 32 KB. The total size of
-    all keys and values must be less than 512 KB.
+    "install-ssh-psm1" - "user-profile-psm1" The following keys are reserved
+    for Windows nodes: - "serial-port-logging-enable" Values are free-form
+    strings, and only have meaning as interpreted by the image running in the
+    instance. The only restriction placed on them is that each value's size
+    must be less than or equal to 32 KB. The total size of all keys and values
+    must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.

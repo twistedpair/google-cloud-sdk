@@ -24,7 +24,7 @@ import hmac
 import time
 
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import http
+from googlecloudsdk.core import requests
 from googlecloudsdk.core.util import encoding
 import six.moves.urllib.parse
 
@@ -123,6 +123,6 @@ def ValidateSignedUrl(signed_url):
     Returns the response code for the HEAD request to the specified Signed
         URL.
   """
-  http_client = http.Http()
-  http_response, _ = http_client.request(signed_url, method='HEAD')
-  return http_response.status
+  http_client = requests.GetSession()
+  http_response = http_client.request('HEAD', signed_url)
+  return http_response.status_code

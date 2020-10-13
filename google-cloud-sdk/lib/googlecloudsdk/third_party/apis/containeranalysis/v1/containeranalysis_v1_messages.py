@@ -824,8 +824,8 @@ class ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(_messag
 
   Fields:
     filter: The filter expression.
-    parent: The name of the project to get a vulnerability summary for in the
-      form of `projects/[PROJECT_ID]`.
+    parent: Required. The name of the project to get a vulnerability summary
+      for in the form of `projects/[PROJECT_ID]`.
   """
 
   filter = _messages.StringField(1)

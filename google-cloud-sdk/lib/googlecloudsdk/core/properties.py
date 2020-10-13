@@ -312,8 +312,8 @@ class _Sections(object):
       SDK.
     ml_engine: Section, The section containing ml_engine properties for the
       Cloud SDK.
-    notebooks: Section, The section containing notebook properties for the
-      Cloud SDK.
+    notebooks: Section, The section containing notebook properties for the Cloud
+      SDK.
     privateca: Section, The section containing privateca properties for the
       Cloud SDK.
     proxy: Section, The section containing proxy properties for the Cloud SDK.
@@ -1423,9 +1423,7 @@ class _SectionAuth(_Section):
   def __init__(self):
     super(_SectionAuth, self).__init__('auth')
     self.auth_host = self._Add(
-        'auth_host',
-        hidden=True,
-        default=self.DEFAULT_AUTH_HOST)
+        'auth_host', hidden=True, default=self.DEFAULT_AUTH_HOST)
     self.disable_credentials = self._AddBool(
         'disable_credentials',
         default=False,
@@ -1433,9 +1431,7 @@ class _SectionAuth(_Section):
         'or authenticate any requests. This is useful when behind a proxy '
         'that adds authentication to requests.')
     self.token_host = self._Add(
-        'token_host',
-        hidden=True,
-        default=self.DEFAULT_TOKEN_HOST)
+        'token_host', hidden=True, default=self.DEFAULT_TOKEN_HOST)
     self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(
@@ -1464,17 +1460,15 @@ class _SectionAuth(_Section):
         default=False,
         hidden=True,
         help_text='Global switch to turn off loading credentials as '
-                  'google-auth. Users can use it to switch back to the old '
-                  'mode if google-auth breaks users.'
-    )
+        'google-auth. Users can use it to switch back to the old '
+        'mode if google-auth breaks users.')
     self.opt_out_google_auth = self._AddBool(
         'opt_out_google_auth',
         default=False,
         hidden=True,
         help_text='A switch to disable google-auth for a surface or a command '
-                  'group, in case there are some edge cases or google-auth '
-                  'does not work for some surface.'
-    )
+        'group, in case there are some edge cases or google-auth '
+        'does not work for some surface.')
     self.disable_activate_service_account_google_auth = self._AddBool(
         'disable_activate_service_account_google_auth',
         default=False,
@@ -1582,14 +1576,14 @@ class _SectionTransport(_Section):
         default=False,
         hidden=True,
         help_text='Global switch to turn off using requests as a'
-                  'transport. Users can use it to switch back to the old '
-                  'mode if requests breaks users.')
+        'transport. Users can use it to switch back to the old '
+        'mode if requests breaks users.')
     self.opt_in_requests = self._AddBool(
         'opt_in_requests',
         default=False,
         hidden=True,
         help_text='A switch to opt in a surface or a command group '
-                  'to requests.')
+        'to requests.')
 
 
 class _SectionMlEngine(_Section):
@@ -2052,6 +2046,15 @@ def AccessPolicyValidator(policy):
 class _SectionAccessContextManager(_Section):
   """Contains the properties for the 'access_context_manager' section."""
 
+  def OrganizationValidator(self, org):
+    """Checks to see if the Organization string is valid."""
+    if org is None:
+      return
+    if not org.isdigit():
+      raise InvalidValueError(
+          'The access_context_manager.organization property must be set '
+          'to the organization ID number, not a string.')
+
   def __init__(self):
     super(_SectionAccessContextManager, self).__init__(
         'access_context_manager', hidden=True)
@@ -2062,6 +2065,11 @@ class _SectionAccessContextManager(_Section):
         help_text=('ID of the policy resource to operate on. Can be found '
                    'by running the `access-context-manager policies list` '
                    'command.'))
+    self.organization = self._Add(
+        'organization',
+        validator=self.OrganizationValidator,
+        help_text=('Default organization cloud-bindings command group will '
+                   'operate on.'))
 
 
 class _SectionContextAware(_Section):
@@ -2089,13 +2097,13 @@ class _SectionEventarc(_Section):
   """Contains the properties for the 'eventarc' section."""
 
   def __init__(self):
-    super(_SectionEventarc, self).__init__('eventarc', hidden=True)
+    super(_SectionEventarc, self).__init__('eventarc')
     self.location = self._Add(
         'location',
-        help_text="The default location to use when working with Eventarc "
+        help_text='The default location to use when working with Eventarc '
         "resources. This should be either ``global'' or one of the supported "
-        "regions. When a `--location` flag is required but not provided, the "
-        "command will fall back to this value, if set.")
+        'regions. When a `--location` flag is required but not provided, the '
+        'command will fall back to this value, if set.')
 
 
 class _SectionMemcache(_Section):

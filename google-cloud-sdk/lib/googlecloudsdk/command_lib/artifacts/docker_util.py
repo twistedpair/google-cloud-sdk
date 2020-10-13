@@ -23,6 +23,7 @@ import re
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.artifacts import containeranalysis_util as ca_util
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.artifacts import util as ar_util
 from googlecloudsdk.core import log
@@ -315,6 +316,38 @@ def _ValidateDockerRepo(repo_name):
         "only be used on Docker repositories.".format(repo.format))
 
 
+def _ValidateAndGetDockerVersion(version_or_tag):
+  """Validates a version_or_tag and returns the validated DockerVersion object.
+
+  Args:
+    version_or_tag: a docker version or a docker tag.
+
+  Returns:
+    a DockerVersion object.
+
+  Raises:
+    ar_exceptions.InvalidInputValueError if version_or_tag is not valid.
+  """
+  try:
+    if isinstance(version_or_tag, DockerVersion):
+      # We have all the information about the docker digest.
+      # Call the API to make sure it exists.
+      ar_requests.GetVersion(ar_requests.GetClient(), ar_requests.GetMessages(),
+                             version_or_tag.GetVersionName())
+      return version_or_tag
+    elif isinstance(version_or_tag, DockerTag):
+      digest = ar_requests.GetVersionFromTag(
+          ar_requests.GetClient(),
+          ar_requests.GetMessages(),
+          version_or_tag.GetTagName())
+      docker_version = DockerVersion(version_or_tag.image, digest)
+      return docker_version
+    else:
+      raise ar_exceptions.InvalidInputValueError(_INVALID_DOCKER_IMAGE_ERROR)
+  except api_exceptions.HttpNotFoundError:
+    raise ar_exceptions.InvalidInputValueError(_DOCKER_IMAGE_NOT_FOUND)
+
+
 class DockerRepo(object):
   """Holder for a Docker repository.
 
@@ -426,6 +459,7 @@ class DockerVersion(object):
   Properties:
     image: DockerImage, The DockerImage containing the tag.
     digest: str, The name of the Docker digest.
+    project: str, the project this image belongs to.
   """
 
   def __init__(self, docker_img, digest):
@@ -439,6 +473,10 @@ class DockerVersion(object):
   @property
   def digest(self):
     return self._digest
+
+  @property
+  def project(self):
+    return self._image.docker_repo.project
 
   def GetVersionName(self):
     return "{}/versions/{}".format(self.image.GetPackageName(), self.digest)
@@ -499,39 +537,10 @@ def DescribeDockerImage(args):
   """
   image, version_or_tag = _ParseDockerImage(args.IMAGE, _INVALID_IMAGE_ERROR)
   _ValidateDockerRepo(image.docker_repo.GetRepositoryName())
+  docker_version = _ValidateAndGetDockerVersion(version_or_tag)
 
   result = {}
-  result["image_summary"] = _GetDockerDigest(version_or_tag)
-  return result
-
-
-def _GetDockerDigest(version_or_tag):
-  """Retrieves the docker digest information.
-
-  Args:
-    version_or_tag: an object of DockerVersion or DockerTag
-
-  Returns:
-    A dictionary of information about the given docker image.
-  """
-  docker_version = version_or_tag
-  try:
-    if isinstance(version_or_tag, DockerVersion):
-      # We have all the information about the docker digest.
-      # Call the API to make sure it exists.
-      ar_requests.GetVersion(ar_requests.GetClient(), ar_requests.GetMessages(),
-                             version_or_tag.GetVersionName())
-    elif isinstance(version_or_tag, DockerTag):
-      digest = ar_requests.GetVersionFromTag(
-          ar_requests.GetClient(),
-          ar_requests.GetMessages(),
-          version_or_tag.GetTagName())
-      docker_version = DockerVersion(version_or_tag.image, digest)
-    else:
-      raise ar_exceptions.InvalidInputValueError(_INVALID_DOCKER_IMAGE_ERROR)
-  except api_exceptions.HttpNotFoundError:
-    raise ar_exceptions.InvalidInputValueError(_DOCKER_IMAGE_NOT_FOUND)
-  return {
+  result["image_summary"] = {
       "digest":
           docker_version.digest,
       "fully_qualified_digest":
@@ -541,6 +550,10 @@ def _GetDockerDigest(version_or_tag):
       "repository":
           docker_version.image.docker_repo.repo,
   }
+
+  metadata = ca_util.GetContainerAnalysisMetadata(docker_version, args)
+  result.update(metadata.ImagesDescribeView())
+  return result
 
 
 def DeleteDockerImage(args):

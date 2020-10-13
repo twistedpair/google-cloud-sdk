@@ -170,7 +170,7 @@ class _GoogleAuthApitoolsCredentials():
     self.credentials = credentials
 
   def refresh(self, http_client):  # pylint: disable=invalid-name
-    auth_request = google_auth_requests.Request(http_client)
+    auth_request = google_auth_requests.Request(http_client.session)
     self.credentials.refresh(auth_request)
 
 

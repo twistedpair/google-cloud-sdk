@@ -394,6 +394,24 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_SITES = (
+      'organizations.sites',
+      'organizations/{organizationsId}/sites/{sitesId}',
+      {},
+      ['organizationsId', 'sitesId'],
+      True
+  )
+  ORGANIZATIONS_SITES_APICATEGORIES = (
+      'organizations.sites.apicategories',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/sites/{sitesId}/apicategories/'
+              '{apicategoriesId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

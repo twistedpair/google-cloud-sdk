@@ -2388,7 +2388,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The name of the project to get a vulnerability summary for in the form of `projects\/[PROJECT_ID]`.",
+                  "description": "Required. The name of the project to get a vulnerability summary for in the form of `projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",

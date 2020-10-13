@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20200925",
+ "revision": "20201002",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -6003,7 +6003,7 @@
    "properties": {
     "IPAddress": {
      "type": "string",
-     "description": "IP address that this forwarding rule serves. When a client sends traffic to this IP address, the forwarding rule directs the traffic to the target that you specify in the forwarding rule.\n\nIf you don't specify a reserved IP address, an ephemeral IP address is assigned. Methods for specifying an IP address:\n\n* IPv4 dotted decimal, as in `100.1.2.3` * Full URL, as in https://www.googleapis.com/compute/v1/projects/project_id/regions/region/addresses/address-name * Partial URL or by name, as in: * projects/project_id/regions/region/addresses/address-name * regions/region/addresses/address-name * global/addresses/address-name * address-name \n\nThe loadBalancingScheme and the forwarding rule's target determine the type of IP address that you can use. For detailed information, refer to [IP address specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications).\n\nMust be set to `0.0.0.0` when the target is targetGrpcProxy that has validateForProxyless field set to true."
+     "description": "IP address that this forwarding rule serves. When a client sends traffic to this IP address, the forwarding rule directs the traffic to the target that you specify in the forwarding rule.\n\nIf you don't specify a reserved IP address, an ephemeral IP address is assigned. Methods for specifying an IP address:\n\n* IPv4 dotted decimal, as in `100.1.2.3` * Full URL, as in https://www.googleapis.com/compute/v1/projects/project_id/regions/region/addresses/address-name * Partial URL or by name, as in: * projects/project_id/regions/region/addresses/address-name * regions/region/addresses/address-name * global/addresses/address-name * address-name \n\nThe loadBalancingScheme and the forwarding rule's target determine the type of IP address that you can use. For detailed information, refer to [IP address specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications).\n\nMust be set to `0.0.0.0` when the target is targetGrpcProxy that has validateForProxyless field set to true.\n\nFor Private Service Connect forwarding rules that forward traffic to Google APIs, IP address must be provided."
     },
     "IPProtocol": {
      "type": "string",
@@ -6122,7 +6122,7 @@
     },
     "network": {
      "type": "string",
-     "description": "This field is not used for external load balancing.\n\nFor internal load balancing, this field identifies the network that the load balanced IP should belong to for this Forwarding Rule. If this field is not specified, the default network will be used."
+     "description": "This field is not used for external load balancing.\n\nFor internal load balancing, this field identifies the network that the load balanced IP should belong to for this Forwarding Rule. If this field is not specified, the default network will be used.\n\nFor Private Service Connect forwarding rules that forward traffic to Google APIs, a network must be provided."
     },
     "networkTier": {
      "type": "string",
@@ -6177,7 +6177,7 @@
     },
     "target": {
      "type": "string",
-     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must be in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object. For more information, see the \"Target\" column in [Port specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications)."
+     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must be in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object. For more information, see the \"Target\" column in [Port specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications).\n\nFor Private Service Connect forwarding rules that forward traffic to Google APIs, provide the name of a supported Google API bundle. Currently, the supported Google API bundles include:\n\n \n- vpc-sc - GCP APIs that support VPC Service Controls. For more information about which APIs support VPC Service Controls, refer to VPC-SC supported products and limitations.  \n- all-apis - All GCP APIs. For more information about which APIs are supported with this bundle, refer to Private Google Access-specific domains and VIPs."
     }
    }
   },
@@ -25644,7 +25644,7 @@
     },
     "proxyBind": {
      "type": "boolean",
-     "description": "This field only applies when the loadBalancingScheme is INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP address specified by the forwarding rule. Default is false."
+     "description": "This field only applies when the forwarding rule that references this target proxy has a loadBalancingScheme set to INTERNAL_SELF_MANAGED.\n\nWhen this field is set to true, Envoy proxies set up inbound traffic interception and bind to the IP address and port specified in the forwarding rule. This is generally useful when using Traffic Director to configure Envoy as a gateway or middle proxy (in other words, not a sidecar proxy). The Envoy proxy listens for inbound requests and handles requests when it receives them.\n\nThe default is false."
     },
     "region": {
      "type": "string",
@@ -26073,7 +26073,7 @@
     },
     "proxyBind": {
      "type": "boolean",
-     "description": "This field only applies when the loadBalancingScheme is INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP address specified by the forwarding rule. Default is false."
+     "description": "This field only applies when the forwarding rule that references this target proxy has a loadBalancingScheme set to INTERNAL_SELF_MANAGED.\n\nWhen this field is set to true, Envoy proxies set up inbound traffic interception and bind to the IP address and port specified in the forwarding rule. This is generally useful when using Traffic Director to configure Envoy as a gateway or middle proxy (in other words, not a sidecar proxy). The Envoy proxy listens for inbound requests and handles requests when it receives them.\n\nThe default is false."
     },
     "quicOverride": {
      "type": "string",
@@ -50816,7 +50816,7 @@
      "id": "compute.regionUrlMaps.invalidateCache",
      "path": "projects/{project}/regions/{region}/urlMaps/{urlMap}/invalidateCache",
      "httpMethod": "POST",
-     "description": "Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.",
+     "description": "Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.\n\nFor more information, see [Invalidating cached content](/cdn/docs/invalidating-cached-content).",
      "parameters": {
       "project": {
        "type": "string",
@@ -57698,7 +57698,7 @@
      "id": "compute.urlMaps.invalidateCache",
      "path": "projects/{project}/global/urlMaps/{urlMap}/invalidateCache",
      "httpMethod": "POST",
-     "description": "Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.",
+     "description": "Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.\n\nFor more information, see [Invalidating cached content](/cdn/docs/invalidating-cached-content).",
      "parameters": {
       "project": {
        "type": "string",

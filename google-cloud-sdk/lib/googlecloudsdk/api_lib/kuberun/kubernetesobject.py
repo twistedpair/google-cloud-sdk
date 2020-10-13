@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.kuberun import metadata
 from googlecloudsdk.api_lib.kuberun import status
 from googlecloudsdk.core.console import console_attr
 
+LAST_MODIFIER_ANNOTATION = 'serving.knative.dev/lastModifier'
 
 SERVING_GROUP = 'serving.knative.dev'
 AUTOSCALING_GROUP = 'autoscaling.knative.dev'
@@ -92,6 +93,17 @@ class KubernetesObject(mapobject.MapObject):
   @property
   def self_link(self):
     return self.metadata.selfLink.lstrip('/')
+
+  @property
+  def last_transition_time(self):
+    if self.ready_condition:
+      return self.ready_condition.lastTransitionTime
+    else:
+      return None
+
+  @property
+  def last_modifier(self):
+    return self.metadata.annotations.get(LAST_MODIFIER_ANNOTATION)
 
   def ReadySymbolAndColor(self):
     """Return a tuple of ready_symbol and display color for this object."""

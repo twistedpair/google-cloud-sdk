@@ -126,54 +126,58 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       "config.softwareConfig.pypiPackages", and the patch environment would be
       the following: { "config":{ "softwareConfig":{ "pypiPackages":{
       "botocore":"==1.7.14" } } } } *Note:* Only the following fields can be
-      updated: *Mask* *Purpose* config.softwareConfig.pypiPackages Replace all
-      custom custom PyPI packages. If a replacement package map is not
-      included in `environment`, all custom PyPI packages are cleared. It is
-      an error to provide both this mask and a mask specifying an individual
-      package. config.softwareConfig.pypiPackages.packagename Update the
-      custom PyPI package packagename, preserving other packages. To delete
-      the package, include it in `updateMask`, and omit the mapping for it in
+      updated: * config.softwareConfig.pypiPackages * Replace all custom
+      custom PyPI packages. If a replacement package map is not included in
+      `environment`, all custom PyPI packages are cleared. It is an error to
+      provide both this mask and a mask specifying an individual package. *
+      config.softwareConfig.pypiPackages.packagename * Update the custom PyPI
+      package packagename, preserving other packages. To delete the package,
+      include it in `updateMask`, and omit the mapping for it in
       `environment.config.softwareConfig.pypiPackages`. It is an error to
       provide both a mask of this form and the
-      "config.softwareConfig.pypiPackages" mask. labels Replace all
+      "config.softwareConfig.pypiPackages" mask. * labels * Replace all
       environment labels. If a replacement labels map is not included in
       `environment`, all labels are cleared. It is an error to provide both
-      this mask and a mask specifying one or more individual labels.
-      labels.labelName Set the label named labelName, while preserving other
+      this mask and a mask specifying one or more individual labels. *
+      labels.labelName * Set the label named labelName, while preserving other
       labels. To delete the label, include it in `updateMask` and omit its
       mapping in `environment.labels`. It is an error to provide both a mask
-      of this form and the "labels" mask. config.nodeCount Horizontally scale
-      the number of nodes in the environment. An integer greater than or equal
-      to 3 must be provided in the `config.nodeCount` field.
-      config.webServerNetworkAccessControl Replace the environment's current
-      WebServerNetworkAccessControl.
-      config.softwareConfig.airflowConfigOverrides Replace all Apache Airflow
-      config overrides. If a replacement config overrides map is not included
-      in `environment`, all config overrides are cleared. It is an error to
-      provide both this mask and a mask specifying one or more individual
-      config overrides. config.softwareConfig.airflowConfigOverrides.section-
-      name Override the Apache Airflow config property name in the section
-      named section, preserving other properties. To delete the property
-      override, include it in `updateMask` and omit its mapping in
+      of this form and the "labels" mask. * config.nodeCount * Horizontally
+      scale the number of nodes in the environment. An integer greater than or
+      equal to 3 must be provided in the `config.nodeCount` field. *
+      config.webServerNetworkAccessControl * Replace the environment's current
+      WebServerNetworkAccessControl. *
+      config.softwareConfig.airflowConfigOverrides * Replace all Apache
+      Airflow config overrides. If a replacement config overrides map is not
+      included in `environment`, all config overrides are cleared. It is an
+      error to provide both this mask and a mask specifying one or more
+      individual config overrides. *
+      config.softwareConfig.airflowConfigOverrides.section- name * Override
+      the Apache Airflow config property name in the section named section,
+      preserving other properties. To delete the property override, include it
+      in `updateMask` and omit its mapping in
       `environment.config.softwareConfig.airflowConfigOverrides`. It is an
       error to provide both a mask of this form and the
-      "config.softwareConfig.airflowConfigOverrides" mask.
-      config.softwareConfig.envVariables Replace all environment variables. If
-      a replacement environment variable map is not included in `environment`,
-      all custom environment variables are cleared. It is an error to provide
-      both this mask and a mask specifying one or more individual environment
-      variables. config.softwareConfig.imageVersion Upgrade the version of the
-      environment in-place. Refer to `SoftwareConfig.image_version` for
-      information on how to format the new image version. Additionally, the
-      new image version cannot effect a version downgrade and must match the
-      current image version's Composer major version and Airflow major and
-      minor versions. Consult the Cloud Composer Version List for valid
-      values. config.databaseConfig.machineType Cloud SQL machine type used by
+      "config.softwareConfig.airflowConfigOverrides" mask. *
+      config.softwareConfig.envVariables * Replace all environment variables.
+      If a replacement environment variable map is not included in
+      `environment`, all custom environment variables are cleared. It is an
+      error to provide both this mask and a mask specifying one or more
+      individual environment variables. * config.softwareConfig.imageVersion *
+      Upgrade the version of the environment in-place. Refer to
+      `SoftwareConfig.image_version` for information on how to format the new
+      image version. Additionally, the new image version cannot effect a
+      version downgrade and must match the current image version's Composer
+      major version and Airflow major and minor versions. Consult the Cloud
+      Composer Version List for valid values. *
+      config.databaseConfig.machineType * Cloud SQL machine type used by
       Airflow database. It has to be one of: db-n1-standard-2,
-      db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16.
-      config.webServerConfig.machineType Machine type on which Airflow web
+      db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. *
+      config.webServerConfig.machineType * Machine type on which Airflow web
       server is running. It has to be one of: composer-n1-webserver-2,
-      composer-n1-webserver-4 or composer-n1-webserver-8.
+      composer-n1-webserver-4 or composer-n1-webserver-8. *
+      config.maintenanceWindow * Maintenance window during which Cloud
+      Composer components may be under maintenance.
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -436,6 +440,15 @@ class EnvironmentConfig(_messages.Message):
       environment and its dependencies. Cannot be updated.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
+    maintenanceWindow: Optional. The maintenance window is the period when
+      Cloud Composer components may undergo maintenance. It is defined so that
+      maintenance is not executed during peak hours or critical time periods.
+      The system will not be under maintenance for every occurrence of this
+      window, but when maintenance is planned, it will be scheduled during the
+      window. The maintenance window period must encompass at least 12 hours
+      per week. This may be split into multiple chunks, each with a size of at
+      least 4 hours. If this value is omitted, Cloud Composer components may
+      be subject to maintenance at any time.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
     nodeCount: The number of nodes in the Kubernetes Engine cluster that will
       be used to run this environment.
@@ -455,12 +468,13 @@ class EnvironmentConfig(_messages.Message):
   databaseConfig = _messages.MessageField('DatabaseConfig', 3)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
   gkeCluster = _messages.StringField(5)
-  nodeConfig = _messages.MessageField('NodeConfig', 6)
-  nodeCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 8)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 9)
-  webServerConfig = _messages.MessageField('WebServerConfig', 10)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 11)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
+  nodeConfig = _messages.MessageField('NodeConfig', 7)
+  nodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 9)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 10)
+  webServerConfig = _messages.MessageField('WebServerConfig', 11)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 12)
 
 
 class IPAllocationPolicy(_messages.Message):
@@ -567,6 +581,31 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class MaintenanceWindow(_messages.Message):
+  r"""The configuration settings for Cloud Composer maintenance window. The
+  following example: { "startTime":"2019-08-01T01:00:00Z"
+  "endTime":"2019-08-01T07:00:00Z" "recurrence":"FREQ=WEEKLY;BYDAY=TU,WE" }
+  would define a maintenance window between 01 and 07 hours UTC during each
+  Tuesday and Wednesday.
+
+  Fields:
+    endTime: Required. Maintenance window end time. It is used only to
+      calculate the duration of the maintenance window. The value for end-time
+      must be in the future, relative to `start_time`.
+    recurrence: Required. Maintenance window recurrence. Format is a subset of
+      [RFC-5545](https://tools.ietf.org/html/rfc5545) `RRULE`. The only
+      allowed values for `FREQ` field are `FREQ=DAILY` and
+      `FREQ=WEEKLY;BYDAY=...` Example values: `FREQ=WEEKLY;BYDAY=TU,WE`,
+      `FREQ=DAILY`.
+    startTime: Required. Start time of the first recurrence of the maintenance
+      window.
+  """
+
+  endTime = _messages.StringField(1)
+  recurrence = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+
+
 class NodeConfig(_messages.Message):
   r"""The configuration information for the Kubernetes Engine nodes running
   the Apache Airflow software.
@@ -605,6 +644,16 @@ class NodeConfig(_messages.Message):
       [shared-core machine type](/compute/docs/machine-types#sharedcore). If
       this field is unspecified, the `machineTypeId` defaults to
       "n1-standard-1".
+    maxPodsPerNode: Optional. The maximum number of pods per node in the Cloud
+      Composer GKE cluster. The value must be between 8 and 110 and it can be
+      set only if the environment is VPC-native. The default value is 32.
+      Values of this field will be propagated both to the `default-pool` node
+      pool of the newly created GKE cluster, and to the default "Maximum Pods
+      per Node" value which is used for newly created node pools if their
+      value is not explicitly set during node pool creation. For more
+      information, see [Optimizing IP address allocation]
+      (https://cloud.google.com/kubernetes-engine/docs/how-to/flexible-pod-
+      cidr). Cannot be updated.
     network: Optional. The Compute Engine network to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:
@@ -637,11 +686,12 @@ class NodeConfig(_messages.Message):
   ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 2)
   location = _messages.StringField(3)
   machineType = _messages.StringField(4)
-  network = _messages.StringField(5)
-  oauthScopes = _messages.StringField(6, repeated=True)
-  serviceAccount = _messages.StringField(7)
-  subnetwork = _messages.StringField(8)
-  tags = _messages.StringField(9, repeated=True)
+  maxPodsPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  network = _messages.StringField(6)
+  oauthScopes = _messages.StringField(7, repeated=True)
+  serviceAccount = _messages.StringField(8)
+  subnetwork = _messages.StringField(9)
+  tags = _messages.StringField(10, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -888,9 +938,8 @@ class SoftwareConfig(_messages.Message):
       written in [snake_case](https://en.wikipedia.org/wiki/Snake_case).
       Property values can contain any character, and can be written in any
       lower/upper case format. Certain Apache Airflow configuration property
-      values are [blacklisted](/composer/docs/how-to/managing/setting-airflow-
-      configurations#airflow_configuration_blacklists), and cannot be
-      overridden.
+      values are [blocked](/composer/docs/concepts/airflow-configurations),
+      and cannot be overridden.
     EnvVariablesValue: Optional. Additional environment variables to provide
       to the Apache Airflow scheduler, worker, and webserver processes.
       Environment variable names must match the regular expression `a-zA-Z_*`.
@@ -920,8 +969,7 @@ class SoftwareConfig(_messages.Message):
       [snake_case](https://en.wikipedia.org/wiki/Snake_case). Property values
       can contain any character, and can be written in any lower/upper case
       format. Certain Apache Airflow configuration property values are
-      [blacklisted](/composer/docs/how-to/managing/setting-airflow-
-      configurations#airflow_configuration_blacklists), and cannot be
+      [blocked](/composer/docs/concepts/airflow-configurations), and cannot be
       overridden.
     airflowExecutorType: The `airflowExecutorType` specifies the [executor](ht
       tps://airflow.apache.org/code.html?highlight=executor#executors) by
@@ -992,8 +1040,7 @@ class SoftwareConfig(_messages.Message):
     [snake_case](https://en.wikipedia.org/wiki/Snake_case). Property values
     can contain any character, and can be written in any lower/upper case
     format. Certain Apache Airflow configuration property values are
-    [blacklisted](/composer/docs/how-to/managing/setting-airflow-
-    configurations#airflow_configuration_blacklists), and cannot be
+    [blocked](/composer/docs/concepts/airflow-configurations), and cannot be
     overridden.
 
     Messages:

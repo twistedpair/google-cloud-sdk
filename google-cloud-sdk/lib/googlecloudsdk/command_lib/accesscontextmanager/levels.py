@@ -294,6 +294,22 @@ def AddResourceArg(parser, verb):
       required=True).AddToParser(parser)
 
 
+def AddResourceFlagArg(parser, verb):
+  """Add a resource argument for an access level.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      '--level',
+      GetResourceSpec(),
+      'The access level {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
 def GetCombineFunctionEnumMapper(api_version=None):
   return arg_utils.ChoiceEnumMapper(
       '--combine-function',

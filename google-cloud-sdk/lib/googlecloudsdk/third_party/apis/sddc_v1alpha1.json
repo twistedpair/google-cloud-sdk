@@ -344,14 +344,16 @@
             "The cluster is ready.",
             "The cluster is being created.",
             "The cluster is being updated.",
-            "The cluster is being deleted."
+            "The cluster is being deleted.",
+            "The cluster has experienced an issue and might be unusable."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
             "CREATING",
             "UPDATING",
-            "DELETING"
+            "DELETING",
+            "FAILED"
           ]
         },
         "management": {
@@ -595,14 +597,16 @@
             "The private cloud is ready.",
             "The private cloud is being created.",
             "The private cloud is being deleted.",
-            "The private cloud is being updated."
+            "The private cloud is being updated.",
+            "The private cloud has experienced an issue and might be unusable."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
             "CREATING",
             "DELETING",
-            "UPDATING"
+            "UPDATING",
+            "FAILED"
           ]
         },
         "vcenter": {
@@ -776,14 +780,16 @@
             "The cluster group is ready.",
             "The cluster group is being created.",
             "The cluster group is being deleted.",
-            "The cluster group is being updated."
+            "The cluster group is being updated.",
+            "The cluster group has experienced an issue and might be unusable."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "ACTIVE",
             "CREATING",
             "DELETING",
-            "UPDATING"
+            "UPDATING",
+            "FAILED"
           ]
         },
         "vcenter": {

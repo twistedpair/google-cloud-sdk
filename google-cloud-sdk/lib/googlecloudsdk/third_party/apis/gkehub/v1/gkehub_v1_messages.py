@@ -727,8 +727,9 @@ class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains the information to reach a member.
 
   Fields:
-    gkeCluster: If this Membership is a Kubernetes API server hosted on GKE,
-      this field will be populated and contain GKE-specific information.
+    gkeCluster: Optional. If this Membership is a Kubernetes API server hosted
+      on GKE, this field will be populated and contain GKE-specific
+      information.
   """
 
   gkeCluster = _messages.MessageField('GkeCluster', 1)
@@ -738,14 +739,15 @@ class MembershipState(_messages.Message):
   r"""State of the Membership resource.
 
   Enums:
-    CodeValueValuesEnum: Code indicating the state of the Membership resource.
+    CodeValueValuesEnum: Output only. Code indicating the state of the
+      Membership resource.
 
   Fields:
-    code: Code indicating the state of the Membership resource.
+    code: Output only. Code indicating the state of the Membership resource.
   """
 
   class CodeValueValuesEnum(_messages.Enum):
-    r"""Code indicating the state of the Membership resource.
+    r"""Output only. Code indicating the state of the Membership resource.
 
     Values:
       CODE_UNSPECIFIED: Not set.

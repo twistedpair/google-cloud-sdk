@@ -1422,7 +1422,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation(_messages.Me
       STATE_ACTIVE: The allocation is active.
       STATE_PENDING_DELETION: The allocation is pending deletion.
       STATE_CANCELLED: The allocation is cancelled. This can be caused by
-        failure in creating the allocation.
+        failure in creating the allocation or the associated Order being
+        cancelled.
     """
     STATE_UNSPECIFIED = 0
     STATE_PENDING_ACTIVATION = 1

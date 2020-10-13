@@ -21,6 +21,7 @@ googlecloudsdk.command_lib.storage.tasks.task_executor.
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
@@ -30,9 +31,9 @@ import enum
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
-from googlecloudsdk.command_lib.storage import resource_reference
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core.util import scaled_integer
 
@@ -65,11 +66,27 @@ class DisplayDetail(enum.Enum):
   FULL = 3
 
 
-_DISPLAY_DETAIL_TO_FIELDS_SCOPE = {
-    DisplayDetail.SHORT: cloud_api.FieldsScope.SHORT,
-    DisplayDetail.LONG: cloud_api.FieldsScope.NO_ACL,
-    DisplayDetail.FULL: cloud_api.FieldsScope.FULL
-}
+def _translate_display_detail_to_fields_scope(
+    display_detail, is_bucket_listing):
+  """Translates display details to fields scope equivalent.
+
+  Args:
+    display_detail (DisplayDetail): Argument to translate.
+    is_bucket_listing (bool): Buckets require special handling.
+
+  Returns:
+    cloud_api.FieldsScope appropriate for the resources and display detail.
+  """
+  # Long listing is the same as normal listing for buckets.
+  if display_detail == DisplayDetail.LONG and is_bucket_listing:
+    return cloud_api.FieldsScope.SHORT
+
+  display_detail_to_fields_scope = {
+      DisplayDetail.SHORT: cloud_api.FieldsScope.SHORT,
+      DisplayDetail.LONG: cloud_api.FieldsScope.NO_ACL,
+      DisplayDetail.FULL: cloud_api.FieldsScope.FULL
+  }
+  return display_detail_to_fields_scope[display_detail]
 
 
 class _BaseFormatWrapper(six.with_metaclass(abc.ABCMeta)):
@@ -79,17 +96,27 @@ class _BaseFormatWrapper(six.with_metaclass(abc.ABCMeta)):
     resource (resource_reference.Resource): Item to be formatted for printing.
   """
 
-  def __init__(self, resource):
-    """Initializes wrapper instance."""
+  def __init__(self, resource, display_detail=DisplayDetail.SHORT,):
+    """Initializes wrapper instance.
+
+    Args:
+      resource (resource_reference.Resource): Item to be formatted for printing.
+      display_detail (DisplayDetail): Level of metadata detail for printing.
+    """
     self.resource = resource
+    self._display_detail = display_detail
 
 
 class _HeaderFormatWrapper(_BaseFormatWrapper):
   """For formatting how containers are printed as headers when listed."""
 
   def __str__(self):
+    url = self.resource.storage_url.versionless_url_string
+    if self._display_detail == DisplayDetail.FULL:
+      # TODO(b/169795589): We may display something other than JSON for FULL.
+      return self.resource.get_metadata_dump()
     # This will print as "gs://bucket:" or "gs://bucket/prefix/:".
-    return '\n{}:'.format(self.resource.storage_url.versionless_url_string)
+    return '\n{}:'.format(url)
 
 
 class _ResourceFormatWrapper(_BaseFormatWrapper):
@@ -106,9 +133,8 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
       include_etag (bool): Display etag string of resource.
     """
     self._all_versions = all_versions
-    self._display_detail = display_detail
     self._include_etag = include_etag
-    super().__init__(resource)
+    super().__init__(resource, display_detail)
 
   def _format_for_list_long(self):
     """Returns string of select properties from resource."""
@@ -146,6 +172,9 @@ class _ResourceFormatWrapper(_BaseFormatWrapper):
         isinstance(self.resource, resource_reference.ObjectResource) or
         isinstance(self.resource, resource_reference.PrefixResource)):
       return self._format_for_list_long()
+    if self._display_detail == DisplayDetail.FULL:
+      # TODO(b/169795589): We may display something other than JSON for FULL.
+      return self.resource.get_metadata_dump()
     if self._all_versions:
       # Include generation in URL.
       return self.resource.storage_url.url_string
@@ -182,50 +211,6 @@ class CloudListTask(task.Task):
     self._include_etag = include_etag
     self._recursion_flag = recursion_flag
 
-  def execute(self, callback=None):
-    """Recursively create wildcard iterators to print all relevant items."""
-
-    resources = plurality_checkable_iterator.PluralityCheckableIterator(
-        wildcard_iterator.CloudWildcardIterator(
-            self._cloud_url,
-            fields_scope=_DISPLAY_DETAIL_TO_FIELDS_SCOPE[self._display_detail]))
-
-    if resources.is_empty():
-      raise errors.InvalidUrlError('One or more URLs matched no objects.')
-    if self._cloud_url.is_provider():
-      # Received a provider URL ("gs://"). List bucket names with no formatting.
-      resources_wrappers = self._recursion_helper(resources, recursion_level=0)
-    # "**" overrides recursive flag.
-    elif self._recursion_flag and '**' not in self._cloud_url.url_string:
-      resources_wrappers = self._recursion_helper(resources, float('inf'))
-    elif not resources.is_plural() and resources.peek().is_container():
-      # One container was returned by the query, in which case we show
-      # its contents.
-      resources_wrappers = self._get_container_iterator(
-          resources.peek().storage_url, recursion_level=0)
-    else:
-      resources_wrappers = self._recursion_helper(resources, recursion_level=1)
-
-    object_count = total_bytes = 0
-    for i, resource_wrapper in enumerate(resources_wrappers):
-      if i == 0 and resource_wrapper and str(resource_wrapper)[0] == '\n':
-        # First print should not begin with a line break.
-        print(str(resource_wrapper)[1:])
-      else:
-        print(resource_wrapper)
-      # For printing long listing data summary.
-      if isinstance(resource_wrapper.resource,
-                    resource_reference.ObjectResource):
-        object_count += 1
-        total_bytes += resource_wrapper.resource.size or 0
-    if self._display_detail == DisplayDetail.LONG:
-      print('TOTAL: {} objects, {} bytes ({})'.format(
-          object_count, int(total_bytes),
-          scaled_integer.FormatBinaryNumber(total_bytes, decimal_places=2)))
-
-    if callback:
-      callback()
-
   def _get_container_iterator(
       self, cloud_url, recursion_level):
     """For recursing into and retrieving the contents of a container.
@@ -243,9 +228,10 @@ class CloudListTask(task.Task):
       new_url_string += cloud_url.delimiter
     new_cloud_url = storage_url.storage_url_from_string(new_url_string + '*')
 
+    fields_scope = _translate_display_detail_to_fields_scope(
+        self._display_detail, is_bucket_listing=False)
     iterator = wildcard_iterator.CloudWildcardIterator(
-        new_cloud_url,
-        fields_scope=_DISPLAY_DETAIL_TO_FIELDS_SCOPE[self._display_detail])
+        new_cloud_url, fields_scope=fields_scope)
     return self._recursion_helper(iterator, recursion_level)
 
   def _recursion_helper(self, iterator, recursion_level):
@@ -264,7 +250,8 @@ class CloudListTask(task.Task):
     for resource in iterator:
       # Check if we need to display contents of a container.
       if resource.is_container() and recursion_level > 0:
-        yield _HeaderFormatWrapper(resource)
+        yield _HeaderFormatWrapper(
+            resource, display_detail=self._display_detail)
 
         # Get container contents by adding wildcard to URL.
         nested_iterator = self._get_container_iterator(
@@ -278,3 +265,81 @@ class CloudListTask(task.Task):
                                      all_versions=self._all_versions,
                                      display_detail=self._display_detail,
                                      include_etag=self._include_etag)
+
+  def _print_json_list(self, resource_wrappers):
+    """Prints ResourceWrapper objects as JSON list."""
+    is_empty_list = True
+    for i, resource_wrapper in enumerate(resource_wrappers):
+      is_empty_list = False
+      if i == 0:
+        # Start of JSON list for long long listing.
+        print('[')
+        print(resource_wrapper, end='')
+      else:
+        # Print resource without newline at end to allow list formatting for
+        # unknown number of items in generator.
+        print(',\n{}'.format(resource_wrapper), end='')
+
+    # New line because we were removing it from previous prints to give us
+    # the ability to do a trailing comma for JSON list printing.
+    print()
+    if not is_empty_list:
+      # Close long long listing JSON list. Prints nothing if no items.
+      print(']')
+
+  def _print_row_list(self, resource_wrappers):
+    """Prints ResourceWrapper objects in list with custom row formatting."""
+    object_count = total_bytes = 0
+    for i, resource_wrapper in enumerate(resource_wrappers):
+      if i == 0 and resource_wrapper and str(resource_wrapper)[0] == '\n':
+        # First print should not begin with a line break, which can happen
+        # for headers.
+        print(str(resource_wrapper)[1:])
+      else:
+        print(str(resource_wrapper))
+
+      if isinstance(resource_wrapper.resource,
+                    resource_reference.ObjectResource):
+        # For printing long listing data summary.
+        object_count += 1
+        total_bytes += resource_wrapper.resource.size or 0
+
+    if self._display_detail == DisplayDetail.LONG:
+      # Long listing needs summary line.
+      print('TOTAL: {} objects, {} bytes ({})'.format(
+          object_count, int(total_bytes),
+          scaled_integer.FormatBinaryNumber(total_bytes, decimal_places=2)))
+
+  def execute(self, callback=None):
+    """Recursively create wildcard iterators to print all relevant items."""
+    fields_scope = _translate_display_detail_to_fields_scope(
+        self._display_detail, is_bucket_listing=self._cloud_url.is_provider())
+    resources = plurality_checkable_iterator.PluralityCheckableIterator(
+        wildcard_iterator.CloudWildcardIterator(
+            self._cloud_url, fields_scope=fields_scope))
+
+    if resources.is_empty():
+      raise errors.InvalidUrlError('One or more URLs matched no objects.')
+    if self._cloud_url.is_provider():
+      # Received a provider URL ("gs://"). List bucket names with no formatting.
+      resources_wrappers = self._recursion_helper(resources, recursion_level=0)
+    # "**" overrides recursive flag.
+    elif self._recursion_flag and '**' not in self._cloud_url.url_string:
+      resources_wrappers = self._recursion_helper(resources, float('inf'))
+    elif not resources.is_plural() and resources.peek().is_container():
+      # One container was returned by the query, in which case we show
+      # its contents.
+      resources_wrappers = self._get_container_iterator(
+          resources.peek().storage_url, recursion_level=0)
+    else:
+      resources_wrappers = self._recursion_helper(resources, recursion_level=1)
+
+    if self._display_detail == DisplayDetail.FULL:
+      # TODO(b/169795589): We may display something other than JSON for FULL,
+      # and make JSON its own DisplayDetail option.
+      self._print_json_list(resources_wrappers)
+    else:
+      self._print_row_list(resources_wrappers)
+
+    if callback:
+      callback()

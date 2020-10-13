@@ -2154,7 +2154,7 @@
     },
     "GoogleCloudDialogflowV2SentimentAnalysisResult": {
       "id": "GoogleCloudDialogflowV2SentimentAnalysisResult",
-      "description": "The result of sentiment analysis. Sentiment analysis inspects user input and identifies the prevailing subjective opinion, especially to determine a user's attitude as positive, negative, or neutral. For Participants.AnalyzeContent, it needs to be configured in DetectIntentRequest.query_params. For Participants.StreamingAnalyzeContent, it needs to be configured in StreamingDetectIntentRequest.query_params. And for Participants.AnalyzeContent and Participants.StreamingAnalyzeContent, it needs to be configured in ConversationProfile.human_agent_assistant_config",
+      "description": "The result of sentiment analysis. Sentiment analysis inspects user input and identifies the prevailing subjective opinion, especially to determine a user's attitude as positive, negative, or neutral. For Participants.DetectIntent, it needs to be configured in DetectIntentRequest.query_params. For Participants.StreamingDetectIntent, it needs to be configured in StreamingDetectIntentRequest.query_params. And for Participants.AnalyzeContent and Participants.StreamingAnalyzeContent, it needs to be configured in ConversationProfile.human_agent_assistant_config",
       "type": "object",
       "properties": {
         "queryTextSentiment": {
@@ -2489,6 +2489,20 @@
           "description": "Zip compressed raw byte content for agent.",
           "type": "string",
           "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudDialogflowV2ImportDocumentsResponse": {
+      "id": "GoogleCloudDialogflowV2ImportDocumentsResponse",
+      "description": "Response message for Documents.ImportDocuments.",
+      "type": "object",
+      "properties": {
+        "warnings": {
+          "description": "Includes details about skipped documents or any other warnings.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleRpcStatus"
+          }
         }
       }
     },
@@ -3929,6 +3943,20 @@
         }
       }
     },
+    "GoogleCloudDialogflowV2beta1ImportDocumentsResponse": {
+      "id": "GoogleCloudDialogflowV2beta1ImportDocumentsResponse",
+      "description": "Response message for Documents.ImportDocuments.",
+      "type": "object",
+      "properties": {
+        "warnings": {
+          "description": "Includes details about skipped documents or any other warnings.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleRpcStatus"
+          }
+        }
+      }
+    },
     "GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata": {
       "id": "GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata",
       "description": "Metadata in google::longrunning::Operation for Knowledge operations.",
@@ -4099,7 +4127,7 @@
     },
     "GoogleCloudDialogflowV2beta1SentimentAnalysisResult": {
       "id": "GoogleCloudDialogflowV2beta1SentimentAnalysisResult",
-      "description": "The result of sentiment analysis. Sentiment analysis inspects user input and identifies the prevailing subjective opinion, especially to determine a user's attitude as positive, negative, or neutral. For Participants.AnalyzeContent, it needs to be configured in DetectIntentRequest.query_params. For Participants.StreamingAnalyzeContent, it needs to be configured in StreamingDetectIntentRequest.query_params. And for Participants.AnalyzeContent and Participants.StreamingAnalyzeContent, it needs to be configured in ConversationProfile.human_agent_assistant_config",
+      "description": "The result of sentiment analysis. Sentiment analysis inspects user input and identifies the prevailing subjective opinion, especially to determine a user's attitude as positive, negative, or neutral. For Participants.DetectIntent, it needs to be configured in DetectIntentRequest.query_params. For Participants.StreamingDetectIntent, it needs to be configured in StreamingDetectIntentRequest.query_params. And for Participants.AnalyzeContent and Participants.StreamingAnalyzeContent, it needs to be configured in ConversationProfile.human_agent_assistant_config",
       "type": "object",
       "properties": {
         "queryTextSentiment": {
@@ -4336,17 +4364,6 @@
         "questionTypeName": {
           "description": "Output only. Question type name that identifies a labeling task. A question is a single task that a worker answers. A question type is set of related questions. Each question belongs to a particular question type. It can be used in CrowdCompute UI to filter and manage labeling tasks.",
           "readOnly": true,
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudDialogflowV3alpha1CreateVersionOperationMetadata": {
-      "id": "GoogleCloudDialogflowV3alpha1CreateVersionOperationMetadata",
-      "description": "Metadata associated with the long running operation for Versions.CreateVersion.",
-      "type": "object",
-      "properties": {
-        "version": {
-          "description": "Name of the created version. Format: `projects\/\/locations\/\/agents\/\/flows\/\/versions\/`.",
           "type": "string"
         }
       }

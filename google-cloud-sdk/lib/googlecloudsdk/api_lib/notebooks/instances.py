@@ -84,12 +84,12 @@ def CreateInstance(args):
     return type_enum
 
   def GetDiskEncryption():
-    instance_message = util.GetMessages().Instance
     type_enum = None
     if args.IsSpecified('disk_encryption'):
+      instance_message = util.GetMessages().Instance
       type_enum = arg_utils.ChoiceEnumMapper(
           arg_name='disk-encryption',
-          message_enum=instance_message.BootDiskTypeValueValuesEnum,
+          message_enum=instance_message.DiskEncryptionValueValuesEnum,
           include_filter=lambda x: 'UNSPECIFIED' not in x).GetEnumForChoice(
               arg_utils.EnumNameToChoice(args.disk_encryption))
     return type_enum

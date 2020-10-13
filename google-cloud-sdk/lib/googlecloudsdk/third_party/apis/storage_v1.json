@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20200925",
+ "revision": "20201002",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -390,6 +390,10 @@
       }
      }
     },
+    "satisfiesPZS": {
+     "type": "boolean",
+     "description": "Reserved for future use."
+    },
     "selfLink": {
      "type": "string",
      "description": "The URI of this bucket."
@@ -438,10 +442,6 @@
      "items": {
       "type": "string"
      }
-    },
-    "zoneSeparation": {
-     "type": "boolean",
-     "description": "If set, objects placed in this bucket are required to be separated by disaster domain."
     }
    }
   },

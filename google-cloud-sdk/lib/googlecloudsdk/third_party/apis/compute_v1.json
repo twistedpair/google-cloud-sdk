@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20200925",
+ "revision": "20201002",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1886,9 +1886,18 @@
    "type": "object",
    "description": "Custom utilization metric policy.",
    "properties": {
+    "filter": {
+     "type": "string",
+     "description": "A filter string, compatible with a Stackdriver Monitoring filter string for TimeSeries.list API call. This filter is used to select a specific TimeSeries for the purpose of autoscaling and to determine whether the metric is exporting per-instance or per-group data.\n\nFor the filter to be valid for autoscaling purposes, the following rules apply:  \n- You can only use the AND operator for joining selectors. \n- You can only use direct equality comparison operator (=) without any functions for each selector. \n- You can specify the metric in both the filter string and in the metric field. However, if specified in both places, the metric must be identical. \n- The monitored resource type determines what kind of values are expected for the metric. If it is a gce_instance, the autoscaler expects the metric to include a separate TimeSeries for each instance in a group. In such a case, you cannot filter on resource labels.\nIf the resource type is any other value, the autoscaler expects this metric to contain values that apply to the entire autoscaled instance group and resource label filtering can be performed to point autoscaler at the correct TimeSeries to scale upon. This is called a per-group metric for the purpose of autoscaling.\n\nIf not specified, the type defaults to gce_instance.  \n\nYou should provide a filter that is selective enough to pick just one TimeSeries for the autoscaled group or for each of the instances (if you are using gce_instance resource type). If multiple TimeSeries are returned upon the query execution, the autoscaler will sum their respective values to obtain its scaling value."
+    },
     "metric": {
      "type": "string",
      "description": "The identifier (type) of the Stackdriver Monitoring metric. The metric cannot have negative values.\n\nThe metric must have a value type of INT64 or DOUBLE."
+    },
+    "singleInstanceAssignment": {
+     "type": "number",
+     "description": "If scaling is based on a per-group metric value that represents the total amount of work to be done or resource usage, set this value to an amount assigned for a single instance of the scaled group. Autoscaler will keep the number of instances proportional to the value of this metric, the metric itself should not change value due to group resizing.\n\nA good metric to use with the target is for example pubsub.googleapis.com/subscription/num_undelivered_messages or a custom metric exporting the total number of requests coming to your instances.\n\nA bad example would be a metric exporting an average or median latency, since this value can't include a chunk assignable to a single instance, it could be better used with utilization_target instead.",
+     "format": "double"
     },
     "utilizationTarget": {
      "type": "number",
@@ -5435,7 +5444,7 @@
    "properties": {
     "IPAddress": {
      "type": "string",
-     "description": "IP address that this forwarding rule serves. When a client sends traffic to this IP address, the forwarding rule directs the traffic to the target that you specify in the forwarding rule.\n\nIf you don't specify a reserved IP address, an ephemeral IP address is assigned. Methods for specifying an IP address:\n\n* IPv4 dotted decimal, as in `100.1.2.3` * Full URL, as in https://www.googleapis.com/compute/v1/projects/project_id/regions/region/addresses/address-name * Partial URL or by name, as in: * projects/project_id/regions/region/addresses/address-name * regions/region/addresses/address-name * global/addresses/address-name * address-name \n\nThe loadBalancingScheme and the forwarding rule's target determine the type of IP address that you can use. For detailed information, refer to [IP address specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications).\n\nMust be set to `0.0.0.0` when the target is targetGrpcProxy that has validateForProxyless field set to true."
+     "description": "IP address that this forwarding rule serves. When a client sends traffic to this IP address, the forwarding rule directs the traffic to the target that you specify in the forwarding rule.\n\nIf you don't specify a reserved IP address, an ephemeral IP address is assigned. Methods for specifying an IP address:\n\n* IPv4 dotted decimal, as in `100.1.2.3` * Full URL, as in https://www.googleapis.com/compute/v1/projects/project_id/regions/region/addresses/address-name * Partial URL or by name, as in: * projects/project_id/regions/region/addresses/address-name * regions/region/addresses/address-name * global/addresses/address-name * address-name \n\nThe loadBalancingScheme and the forwarding rule's target determine the type of IP address that you can use. For detailed information, refer to [IP address specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications).\n\nMust be set to `0.0.0.0` when the target is targetGrpcProxy that has validateForProxyless field set to true.\n\nFor Private Service Connect forwarding rules that forward traffic to Google APIs, IP address must be provided."
     },
     "IPProtocol": {
      "type": "string",
@@ -5542,7 +5551,7 @@
     },
     "network": {
      "type": "string",
-     "description": "This field is not used for external load balancing.\n\nFor internal load balancing, this field identifies the network that the load balanced IP should belong to for this Forwarding Rule. If this field is not specified, the default network will be used."
+     "description": "This field is not used for external load balancing.\n\nFor internal load balancing, this field identifies the network that the load balanced IP should belong to for this Forwarding Rule. If this field is not specified, the default network will be used.\n\nFor Private Service Connect forwarding rules that forward traffic to Google APIs, a network must be provided."
     },
     "networkTier": {
      "type": "string",
@@ -5590,7 +5599,7 @@
     },
     "target": {
      "type": "string",
-     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must be in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object. For more information, see the \"Target\" column in [Port specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications)."
+     "description": "The URL of the target resource to receive the matched traffic. For regional forwarding rules, this target must be in the same region as the forwarding rule. For global forwarding rules, this target must be a global load balancing resource. The forwarded traffic must be of a type appropriate to the target object. For more information, see the \"Target\" column in [Port specifications](/load-balancing/docs/forwarding-rule-concepts#ip_address_specifications).\n\nFor Private Service Connect forwarding rules that forward traffic to Google APIs, provide the name of a supported Google API bundle. Currently, the supported Google API bundles include:\n\n \n- vpc-sc - GCP APIs that support VPC Service Controls. For more information about which APIs support VPC Service Controls, refer to VPC-SC supported products and limitations.  \n- all-apis - All GCP APIs. For more information about which APIs are supported with this bundle, refer to Private Google Access-specific domains and VIPs."
     }
    }
   },
@@ -52616,7 +52625,7 @@
      "id": "compute.urlMaps.invalidateCache",
      "path": "{project}/global/urlMaps/{urlMap}/invalidateCache",
      "httpMethod": "POST",
-     "description": "Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.",
+     "description": "Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.\n\nFor more information, see [Invalidating cached content](/cdn/docs/invalidating-cached-content).",
      "parameters": {
       "project": {
        "type": "string",

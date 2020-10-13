@@ -91,8 +91,8 @@ class Authority(_messages.Message):
   Fields:
     identityProvider: Output only. An identity provider that reflects this
       issuer in the workload identity pool.
-    issuer: A JWT issuer URI. If set, then Google will attempt OIDC discovery
-      on this URI, and allow valid OIDC tokens from this issuer to
+    issuer: Optional. A JWT issuer URI. If set, then Google will attempt OIDC
+      discovery on this URI, and allow valid OIDC tokens from this issuer to
       authenticate within the below identity namespace. This can be updated
       from a non-empty to empty value and vice-versa. But cannot be changed
       from one non-empty value to another. Setting to empty will disable
@@ -1011,23 +1011,23 @@ class Membership(_messages.Message):
   r"""Membership contains information about a member cluster.
 
   Messages:
-    LabelsValue: GCP labels for this membership.
+    LabelsValue: Optional. GCP labels for this membership.
 
   Fields:
-    authority: How to identify workloads from this Membership. See the
-      documentation on workload identity for more details:
+    authority: Optional. How to identify workloads from this Membership. See
+      the documentation on workload identity for more details:
       https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
     createTime: Output only. Timestamp for when the Membership was created.
     deleteTime: Output only. Timestamp for when the Membership was deleted.
     description: Required. Description of this membership, limited to 63
       characters. It must match the regex: `a-zA-Z0-9*`
-    endpoint: A MembershipEndpoint attribute.
-    externalId: An externally-generated and managed ID for this Membership.
-      This ID may still be modified after creation but it is not recommended
-      to do so. The ID must match the regex: `a-zA-Z0-9*` If this Membership
-      represents a Kubernetes cluster, this value should be set to the UUID of
-      the kube-system namespace object.
-    labels: GCP labels for this membership.
+    endpoint: Optional. Endpoint information to reach this member.
+    externalId: Optional. An externally-generated and managed ID for this
+      Membership. This ID may still be modified after creation but it is not
+      recommended to do so. The ID must match the regex: `a-zA-Z0-9*` If this
+      Membership represents a Kubernetes cluster, this value should be set to
+      the UUID of the kube-system namespace object.
+    labels: Optional. GCP labels for this membership.
     lastConnectionTime: Output only. For clusters using Connect, the timestamp
       of the most recent connection established with Google Cloud. This time
       is updated every several minutes, not continuously. For clusters that do
@@ -1053,7 +1053,7 @@ class Membership(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""GCP labels for this membership.
+    r"""Optional. GCP labels for this membership.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1093,8 +1093,9 @@ class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains the information to reach a member.
 
   Fields:
-    gkeCluster: If this Membership is a Kubernetes API server hosted on GKE,
-      this field will be populated and contain GKE-specific information.
+    gkeCluster: Optional. If this Membership is a Kubernetes API server hosted
+      on GKE, this field will be populated and contain GKE-specific
+      information.
   """
 
   gkeCluster = _messages.MessageField('GkeCluster', 1)
@@ -1104,10 +1105,11 @@ class MembershipState(_messages.Message):
   r"""State of the Membership resource.
 
   Enums:
-    CodeValueValuesEnum: Code indicating the state of the Membership resource.
+    CodeValueValuesEnum: Output only. Code indicating the state of the
+      Membership resource.
 
   Fields:
-    code: Code indicating the state of the Membership resource.
+    code: Output only. Code indicating the state of the Membership resource.
     description: Human readable description of the issue. This field is
       deprecated, and is never set by the Hub Service.
     updateTime: The last update time of this state by the controllers This
@@ -1115,7 +1117,7 @@ class MembershipState(_messages.Message):
   """
 
   class CodeValueValuesEnum(_messages.Enum):
-    r"""Code indicating the state of the Membership resource.
+    r"""Output only. Code indicating the state of the Membership resource.
 
     Values:
       CODE_UNSPECIFIED: Not set.

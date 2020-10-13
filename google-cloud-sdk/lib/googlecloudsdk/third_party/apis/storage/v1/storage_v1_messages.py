@@ -94,6 +94,7 @@ class Bucket(_messages.Message):
       retention policy cannot be removed or shortened in duration for the
       lifetime of the bucket. Attempting to remove or decrease period of a
       locked retention policy will result in a PERMISSION_DENIED error.
+    satisfiesPZS: Reserved for future use.
     selfLink: The URI of this bucket.
     storageClass: The bucket's default storage class, used whenever no
       storageClass is specified for a newly-created object. This defines how
@@ -113,8 +114,6 @@ class Bucket(_messages.Message):
       still allowed but won't be able to use zonal quota. The zone or zones
       need to be within the bucket location otherwise the requests will fail
       with a 400 Bad Request response.
-    zoneSeparation: If set, objects placed in this bucket are required to be
-      separated by disaster domain.
   """
 
   class BillingValue(_messages.Message):
@@ -443,14 +442,14 @@ class Bucket(_messages.Message):
   owner = _messages.MessageField('OwnerValue', 18)
   projectNumber = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
   retentionPolicy = _messages.MessageField('RetentionPolicyValue', 20)
-  selfLink = _messages.StringField(21)
-  storageClass = _messages.StringField(22)
-  timeCreated = _message_types.DateTimeField(23)
-  updated = _message_types.DateTimeField(24)
-  versioning = _messages.MessageField('VersioningValue', 25)
-  website = _messages.MessageField('WebsiteValue', 26)
-  zoneAffinity = _messages.StringField(27, repeated=True)
-  zoneSeparation = _messages.BooleanField(28)
+  satisfiesPZS = _messages.BooleanField(21)
+  selfLink = _messages.StringField(22)
+  storageClass = _messages.StringField(23)
+  timeCreated = _message_types.DateTimeField(24)
+  updated = _message_types.DateTimeField(25)
+  versioning = _messages.MessageField('VersioningValue', 26)
+  website = _messages.MessageField('WebsiteValue', 27)
+  zoneAffinity = _messages.StringField(28, repeated=True)
 
 
 class BucketAccessControl(_messages.Message):

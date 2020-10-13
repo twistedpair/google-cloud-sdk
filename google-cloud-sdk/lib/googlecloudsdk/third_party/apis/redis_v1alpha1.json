@@ -358,20 +358,6 @@
           "description": "Optional. Indicates whether OSS Redis AUTH is enabled for the instance. If set to \"true\" AUTH is enabled on the instance. Default value is \"false\" meaning AUTH is disabled.",
           "type": "boolean"
         },
-        "tlsMode": {
-          "description": "Optional. The TLS mode of Redis instance. If not provided, default one will be used. Current default: DISABLED.",
-          "type": "string",
-          "enumDescriptions": [
-            "Not set.",
-            "TLS is disabled for instance.",
-            "Basic TLS mode with server authentication"
-          ],
-          "enum": [
-            "TLS_MODE_UNSPECIFIED",
-            "DISABLED",
-            "BASIC_TLS"
-          ]
-        },
         "serverCaCerts": {
           "description": "Output only. List of server CA certificates for the instance. The visibility of this data will be controlled by a GetInstanceRequest.view field once CCFE support partial view of GetInstance. https:\/\/google.aip.dev\/157.",
           "readOnly": true,
@@ -389,11 +375,13 @@
           "type": "string",
           "enumDescriptions": [
             "Not set.",
-            "In-transit encryption enabled with server authentication"
+            "In-transit encryption enabled with server authentication",
+            "In-transit encryption is disabled for instance."
           ],
           "enum": [
             "TRANSIT_ENCRYPTION_MODE_UNSPECIFIED",
-            "SERVER_AUTHENTICATION"
+            "SERVER_AUTHENTICATION",
+            "DISABLED"
           ]
         }
       }

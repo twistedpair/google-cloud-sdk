@@ -181,6 +181,18 @@ def InstanceArgumentForRoute(required=True):
       zone_explanation=ZONE_PROPERTY_EXPLANATION)
 
 
+def InstanceArgumentForRouter(required=False, operation_type='added'):
+  return compute_flags.ResourceArgument(
+      resource_name='instance',
+      name='--instance',
+      completer=compute_completers.InstancesCompleter,
+      required=required,
+      zonal_collection='compute.instances',
+      short_help='Router appliance instance of the BGP peer being {0}.'
+      .format(operation_type),
+      zone_explanation=ZONE_PROPERTY_EXPLANATION)
+
+
 def InstanceArgumentForTargetInstance(required=True):
   return compute_flags.ResourceArgument(
       resource_name='instance',
@@ -2031,8 +2043,8 @@ def AddShieldedInstanceIntegrityPolicyArgs(parser):
 def AddConfidentialComputeArgs(parser):
   """Adds flags for confidential compute for instance."""
   help_text = """\
-  The instance will boot with confidential compute enabled. Confidential
-  Compute is based on Secure Encrypted Virtualization (SEV), an AMD
+  The instance will boot with Confidential Computing enabled. Confidential
+  Computing is based on Secure Encrypted Virtualization (SEV), an AMD
   virtualization feature for running confidential instances.
   """
   parser.add_argument(

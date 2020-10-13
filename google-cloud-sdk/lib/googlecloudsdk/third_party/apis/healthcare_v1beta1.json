@@ -2572,6 +2572,70 @@
         }
       }
     },
+    "ExportMessagesRequest": {
+      "id": "ExportMessagesRequest",
+      "description": "Request to schedule an export.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "The start of the range in `send_time` (MSH.7, https:\/\/www.hl7.org\/documentcenter\/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D\/wg\/conf\/HL7MSH.htm) to process. If not specified, the UNIX epoch (1970-01-01T00:00:00Z) is used. This value has to come before the `end_time` defined below. Only messages whose `send_time` lies in the range `start_time` (inclusive) to `end_time` (exclusive) are exported.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The end of the range in `send_time` (MSH.7, https:\/\/www.hl7.org\/documentcenter\/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D\/wg\/conf\/HL7MSH.htm) to process. If not specified, the time when the export is scheduled is used. This value has to come after the `start_time` defined below. Only messages whose `send_time` lies in the range `start_time` (inclusive) to `end_time` (exclusive) are exported.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "gcsDestination": {
+          "description": "Export to a Cloud Storage destination.",
+          "$ref": "GcsDestination"
+        }
+      }
+    },
+    "GcsDestination": {
+      "id": "GcsDestination",
+      "description": "The Cloud Storage output destination. The Cloud Healthcare Service Agent requires the `roles\/storage.objectAdmin` Cloud IAM roles on the Cloud Storage location.",
+      "type": "object",
+      "properties": {
+        "uriPrefix": {
+          "description": "URI of an existing Cloud Storage directory where the server writes result files, in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no trailing slash, the service appends one when composing the object path.",
+          "type": "string"
+        },
+        "messageView": {
+          "description": "Specifies the parts of the Message resource to include in the export. If not specified, FULL is used.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified, equivalent to FULL for getMessage, equivalent to BASIC for listMessages.",
+            "Server responses include all the message fields except parsed_data, and schematized_data fields.",
+            "Server responses include all the message fields except data and schematized_data fields.",
+            "Server responses include all the message fields.",
+            "Server responses include all the message fields except data and parsed_data fields.",
+            "Server responses include only the name field."
+          ],
+          "enum": [
+            "MESSAGE_VIEW_UNSPECIFIED",
+            "RAW_ONLY",
+            "PARSED_ONLY",
+            "FULL",
+            "SCHEMATIZED_ONLY",
+            "BASIC"
+          ]
+        },
+        "contentStructure": {
+          "description": "The format of the exported HL7v2 message files.",
+          "type": "string",
+          "enumDescriptions": [
+            "If the content structure is not specified, the default value `MESSAGE_JSON` will be used.",
+            "Messages are printed using the JSON format returned from the `GetMessage` API. Messages are delimited with newlines."
+          ],
+          "enum": [
+            "CONTENT_STRUCTURE_UNSPECIFIED",
+            "MESSAGE_JSON"
+          ]
+        }
+      }
+    },
     "ImportMessagesRequest": {
       "id": "ImportMessagesRequest",
       "description": "Request to import messages.",
@@ -4694,6 +4758,34 @@
                       ],
                       "description": "Updates the HL7v2 store."
                     },
+                    "export": {
+                      "id": "healthcare.projects.locations.datasets.hl7V2Stores.export",
+                      "path": "v1beta1/{+name}:export",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:export",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the source HL7v2 store, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ExportMessagesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Exports the messages to a destination. To filter messages to be exported, define a filter using the start and end time, relative to the message generation time (MSH.7). This API returns an Operation that can be used to track the status of the job by calling GetOperation. Immediate fatal errors appear in the error field. Otherwise, when the operation finishes, a detailed response of type ExportMessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata."
+                    },
                     "import": {
                       "id": "healthcare.projects.locations.datasets.hl7V2Stores.import",
                       "path": "v1beta1/{+name}:import",
@@ -5840,7 +5932,7 @@
                               "type": "string"
                             },
                             "_count": {
-                              "description": "The maximum number of search results on a page. Defaults to 1000.",
+                              "description": "The maximum number of search results on a page. Default value is 100. Maximum value is 1,000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"

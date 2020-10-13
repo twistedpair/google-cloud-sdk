@@ -518,7 +518,7 @@ class Manifest(_messages.Message):
       "DASH".
 
   Fields:
-    fileName: The name of the generated file. The default is `"master"` with
+    fileName: The name of the generated file. The default is `"manifest"` with
       the extension suffix corresponding to the `Manifest.type`.
     muxStreams: Required. List of user given `MuxStream.key`s that should
       appear in this manifest. When `Manifest.type` is `HLS`, a media manifest

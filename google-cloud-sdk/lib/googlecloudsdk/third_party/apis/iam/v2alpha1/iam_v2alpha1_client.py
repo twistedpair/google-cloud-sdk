@@ -52,9 +52,7 @@ class IamV2alpha1(base_api.BaseApiClient):
           }
 
     def CreatePolicy(self, request, global_params=None):
-      r"""Creates a policy.
-
-All the policies attached to a specific resource must have unique IDs.
+      r"""Creates a policy. All the policies attached to a specific resource must have unique IDs.
 
       Args:
         request: (IamPoliciesCreatePolicyRequest) input message
@@ -135,10 +133,7 @@ All the policies attached to a specific resource must have unique IDs.
     )
 
     def ListPolicies(self, request, global_params=None):
-      r"""Retrieves all of the policies attached to the specified resource,.
-of the given kind.
-
-Only policy metadata is listed; specifically `policy.rules` is omitted.
+      r"""Retrieves all of the policies attached to the specified resource, of the given kind. Only policy metadata is listed; specifically `policy.rules` is omitted.
 
       Args:
         request: (IamPoliciesListPoliciesRequest) input message
@@ -165,12 +160,7 @@ Only policy metadata is listed; specifically `policy.rules` is omitted.
     )
 
     def ReplacePolicy(self, request, global_params=None):
-      r"""Replaces the specified existing policy.
-
-Only `Policy.rules` and `Policy.description` may be updated.
-
-Need to provide etag to enforce update from last read for optimistic
-concurrency control.
+      r"""Replaces the specified existing policy. Only `Policy.rules` and `Policy.description` may be updated. Need to provide etag to enforce update from last read for optimistic concurrency control.
 
       Args:
         request: (GoogleIamV2alpha1Policy) input message

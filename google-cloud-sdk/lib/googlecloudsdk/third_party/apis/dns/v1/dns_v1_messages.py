@@ -1084,6 +1084,83 @@ class Quota(_messages.Message):
   whitelistedKeySpecs = _messages.MessageField('DnsKeySpec', 16, repeated=True)
 
 
+class RRSetRoutingPolicy(_messages.Message):
+  r"""A RRSetRoutingPolicy object.
+
+  Fields:
+    geoPolicy: A RRSetRoutingPolicyGeoPolicy attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#rRSetRoutingPolicy".
+    wrrPolicy: A RRSetRoutingPolicyWrrPolicy attribute.
+  """
+
+  geoPolicy = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 1)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicy')
+  wrrPolicy = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 3)
+
+
+class RRSetRoutingPolicyGeoPolicy(_messages.Message):
+  r"""A RRSetRoutingPolicyGeoPolicy object.
+
+  Fields:
+    failovers: A RRSetRoutingPolicyGeoPolicyGeoPolicyItem attribute.
+    items: A RRSetRoutingPolicyGeoPolicyGeoPolicyItem attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#rRSetRoutingPolicyGeoPolicy".
+  """
+
+  failovers = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 1, repeated=True)
+  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 2, repeated=True)
+  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicyGeoPolicy')
+
+
+class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
+  r"""A RRSetRoutingPolicyGeoPolicyGeoPolicyItem object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem".
+    location: A string attribute.
+    rrdatas: A string attribute.
+    signatureRrdatas: A string attribute.
+  """
+
+  kind = _messages.StringField(1, default='dns#rRSetRoutingPolicyGeoPolicyGeoPolicyItem')
+  location = _messages.StringField(2)
+  rrdatas = _messages.StringField(3, repeated=True)
+  signatureRrdatas = _messages.StringField(4, repeated=True)
+
+
+class RRSetRoutingPolicyWrrPolicy(_messages.Message):
+  r"""A RRSetRoutingPolicyWrrPolicy object.
+
+  Fields:
+    items: A RRSetRoutingPolicyWrrPolicyWrrPolicyItem attribute.
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#rRSetRoutingPolicyWrrPolicy".
+  """
+
+  items = _messages.MessageField('RRSetRoutingPolicyWrrPolicyWrrPolicyItem', 1, repeated=True)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyWrrPolicy')
+
+
+class RRSetRoutingPolicyWrrPolicyWrrPolicyItem(_messages.Message):
+  r"""A RRSetRoutingPolicyWrrPolicyWrrPolicyItem object.
+
+  Fields:
+    kind: Identifies what kind of resource this is. Value: the fixed string
+      "dns#rRSetRoutingPolicyWrrPolicyWrrPolicyItem".
+    rrdatas: A string attribute.
+    signatureRrdatas: A string attribute.
+    weight: A number attribute.
+  """
+
+  kind = _messages.StringField(1, default='dns#rRSetRoutingPolicyWrrPolicyWrrPolicyItem')
+  rrdatas = _messages.StringField(2, repeated=True)
+  signatureRrdatas = _messages.StringField(3, repeated=True)
+  weight = _messages.FloatField(4)
+
+
 class ResourceRecordSet(_messages.Message):
   r"""A ResourceRecordSet object.
 
@@ -1091,6 +1168,7 @@ class ResourceRecordSet(_messages.Message):
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#resourceRecordSet".
     name: A string attribute.
+    routingPolicy: A RRSetRoutingPolicy attribute.
     rrdatas: A string attribute.
     signatureRrdatas: A string attribute.
     ttl: A integer attribute.
@@ -1099,10 +1177,11 @@ class ResourceRecordSet(_messages.Message):
 
   kind = _messages.StringField(1, default='dns#resourceRecordSet')
   name = _messages.StringField(2)
-  rrdatas = _messages.StringField(3, repeated=True)
-  signatureRrdatas = _messages.StringField(4, repeated=True)
-  ttl = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  type = _messages.StringField(6)
+  routingPolicy = _messages.MessageField('RRSetRoutingPolicy', 3)
+  rrdatas = _messages.StringField(4, repeated=True)
+  signatureRrdatas = _messages.StringField(5, repeated=True)
+  ttl = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  type = _messages.StringField(7)
 
 
 class ResourceRecordSetsListResponse(_messages.Message):

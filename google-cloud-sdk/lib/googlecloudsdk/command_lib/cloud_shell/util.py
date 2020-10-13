@@ -60,14 +60,6 @@ def ParseCommonArgs(parser):
         *~/.ssh/google_compute_engine*.
       """,
       action='store_true')
-  parser.add_argument(
-      '--boosted',
-      help="""\
-      If provided, starts Cloud Shell in boost mode. If there is alread a
-      running Cloud Shell session that is not boosted, this will restart the
-      session.
-      """,
-      action='store_true')
 
 
 def AddSshArgFlag(parser):
@@ -100,24 +92,6 @@ def PrepareV1Environment(args):
   environment = client.users_environments.Get(
       messages.CloudshellUsersEnvironmentsGetRequest(
           name=DEFAULT_ENVIRONMENT_NAME))
-
-  if args.boosted and environment.size != messages.Environment.SizeValueValuesEnum.BOOSTED:
-    boosted_environment = messages.Environment(
-        size=messages.Environment.SizeValueValuesEnum.BOOSTED)
-
-    update_operation = client.users_environments.Patch(
-        messages.CloudshellUsersEnvironmentsPatchRequest(
-            name=DEFAULT_ENVIRONMENT_NAME,
-            updateMask='size',
-            environment=boosted_environment))
-
-    environment = waiter.WaitFor(
-        EnvironmentPoller(client.users_environments,
-                          operations_client.operations),
-        update_operation,
-        'Waiting for your Cloud Shell machine to boost',
-        sleep_ms=500,
-        max_wait_ms=None)
 
   # If the environment doesn't have the public key, push it.
   key = keys.GetPublicKey().ToEntry()
@@ -196,15 +170,6 @@ def PrepareEnvironment(args):
   environment = client.users_environments.Get(
       messages.CloudshellUsersEnvironmentsGetRequest(
           name=DEFAULT_ENVIRONMENT_NAME))
-
-  if args.boosted and environment.size != messages.Environment.SizeValueValuesEnum.BOOSTED:
-    boosted_environment = messages.Environment(
-        size=messages.Environment.SizeValueValuesEnum.BOOSTED)
-    client.users_environments.Patch(
-        messages.CloudshellUsersEnvironmentsPatchRequest(
-            name=DEFAULT_ENVIRONMENT_NAME,
-            updateMask='size',
-            environment=boosted_environment))
 
   # If the environment doesn't have the public key, push it.
   key_parts = keys.GetPublicKey().ToEntry().split(' ')

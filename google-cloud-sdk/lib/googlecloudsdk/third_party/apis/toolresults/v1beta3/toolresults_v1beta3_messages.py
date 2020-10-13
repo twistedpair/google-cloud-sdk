@@ -1121,6 +1121,7 @@ class NonSdkApi(_messages.Message):
       GREY_MAX_O: <no description>
       GREY_MAX_P: <no description>
       GREY_MAX_Q: <no description>
+      GREY_MAX_R: <no description>
     """
     NONE = 0
     WHITE = 1
@@ -1129,6 +1130,7 @@ class NonSdkApi(_messages.Message):
     GREY_MAX_O = 4
     GREY_MAX_P = 5
     GREY_MAX_Q = 6
+    GREY_MAX_R = 7
 
   apiSignature = _messages.StringField(1)
   exampleStackTraces = _messages.StringField(2, repeated=True)

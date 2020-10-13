@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage.tasks.cp import daisy_chain_copy_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_upload_task
 from googlecloudsdk.command_lib.storage.tasks.cp import intra_cloud_copy_task
@@ -61,8 +62,7 @@ def get_copy_task(source_resource, destination_resource):
   if (isinstance(source_url, storage_url.CloudUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):
     if source_url.scheme != destination_url.scheme:
-      # TODO(b/162733204): Return daisy chaining task for cross-cloud copying.
-      raise NotImplementedError('Daisy channing copies across cloud providers'
-                                ' is not implemented yet.')
+      return daisy_chain_copy_task.DaisyChainCopyTask(source_resource,
+                                                      destination_resource)
     return intra_cloud_copy_task.IntraCloudCopyTask(source_resource,
                                                     destination_resource)

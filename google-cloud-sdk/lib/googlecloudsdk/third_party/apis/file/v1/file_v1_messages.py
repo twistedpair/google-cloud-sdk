@@ -216,7 +216,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       define the same policy type. For complete details of MaintenancePolicy,
       please refer to go/cloud-saas-mw-ug.
     MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
-      information of published maintenance schedule.
+      information of published maintenance schedule with same key as
+      software_versions.
     ProducerMetadataValue: Output only. Custom string attributes used
       primarily to expose producer-specific information in monitoring
       dashboards. See go/get-instance-metadata.
@@ -239,7 +240,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       same policy type. For complete details of MaintenancePolicy, please
       refer to go/cloud-saas-mw-ug.
     maintenanceSchedules: The MaintenanceSchedule contains the scheduling
-      information of published maintenance schedule.
+      information of published maintenance schedule with same key as
+      software_versions.
     maintenanceSettings: Optional. The MaintenanceSettings associated with
       instance.
     name: Unique name of the resource. It uses the form:
@@ -346,7 +348,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MaintenanceSchedulesValue(_messages.Message):
     r"""The MaintenanceSchedule contains the scheduling information of
-    published maintenance schedule.
+    published maintenance schedule with same key as software_versions.
 
     Messages:
       AdditionalProperty: An additional property for a

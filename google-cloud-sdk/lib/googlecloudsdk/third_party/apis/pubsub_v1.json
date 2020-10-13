@@ -246,10 +246,6 @@
         "kmsKeyName": {
           "description": "The resource name of the Cloud KMS CryptoKey to be used to protect access to messages published on this topic. The expected format is `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
           "type": "string"
-        },
-        "zoneSeparationRequired": {
-          "description": "If set, messages will be stored in regions with support for Zone Separation. This field cannot override the org policy `constraints\/gcp.requireStrongIsolation` if it's enabled.",
-          "type": "boolean"
         }
       }
     },
@@ -264,6 +260,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "satisfiesPzs": {
+          "description": "Reserved for future use. This field is set only in responses from the server; it is ignored if it is set in any requests.",
+          "type": "boolean"
         }
       }
     },

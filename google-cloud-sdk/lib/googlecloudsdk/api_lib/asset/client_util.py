@@ -587,27 +587,29 @@ class AssetOperationClient(object):
     return self.service.Get(request)
 
 
-class IamPolicyAnalysisExportClient(object):
-  """Client for export IAM policy analysis."""
+class IamPolicyAnalysisLongrunningClient(object):
+  """Client for analyze IAM policy asynchronously."""
 
-  def __init__(self, parent, api_version=V1P4BETA1_API_VERSION):
-    self.parent = parent
+  def __init__(self, api_version=DEFAULT_API_VERSION):
     self.message_module = GetMessages(api_version)
-    self.service = GetClient(api_version).v1p4beta1
+    if api_version == V1P4BETA1_API_VERSION:
+      self.service = GetClient(api_version).v1p4beta1
+    else:
+      self.service = GetClient(api_version).v1
 
-  def Export(self, args):
-    """Export IAM Policy Analysis with the asset export method."""
-    analysis_query = self.message_module.IamPolicyAnalysisQuery(
-        parent=self.parent)
-
+  def Analyze(self, scope, args, api_version=DEFAULT_API_VERSION):
+    """Analyze IAM Policy asynchronously."""
+    analysis_query = self.message_module.IamPolicyAnalysisQuery()
+    if api_version == V1P4BETA1_API_VERSION:
+      analysis_query.parent = scope
+    else:
+      analysis_query.scope = scope
     if args.IsSpecified('full_resource_name'):
       analysis_query.resourceSelector = self.message_module.ResourceSelector(
           fullResourceName=args.full_resource_name)
-
     if args.IsSpecified('identity'):
       analysis_query.identitySelector = self.message_module.IdentitySelector(
           identity=args.identity)
-
     if args.IsSpecified('roles') or args.IsSpecified('permissions'):
       analysis_query.accessSelector = self.message_module.AccessSelector()
       if args.IsSpecified('roles'):
@@ -615,8 +617,28 @@ class IamPolicyAnalysisExportClient(object):
       if args.IsSpecified('permissions'):
         analysis_query.accessSelector.permissions.extend(args.permissions)
 
-    output_config = self.message_module.IamPolicyAnalysisOutputConfig(
-        gcsDestination=self.message_module.GcsDestination(uri=args.output_path))
+    output_config = None
+    if api_version == V1P4BETA1_API_VERSION:
+      output_config = self.message_module.IamPolicyAnalysisOutputConfig(
+          gcsDestination=self.message_module.GcsDestination(
+              uri=args.output_path))
+    else:
+      if args.gcs_output_path:
+        output_config = self.message_module.IamPolicyAnalysisOutputConfig(
+            gcsDestination=self.message_module.GoogleCloudAssetV1GcsDestination(
+                uri=args.gcs_output_path))
+      else:
+        output_config = self.message_module.IamPolicyAnalysisOutputConfig(
+            bigqueryDestination=self.message_module
+            .GoogleCloudAssetV1BigQueryDestination(
+                dataset=args.bigquery_dataset,
+                tablePrefix=args.bigquery_table_prefix))
+        if args.IsSpecified('bigquery_partition_key'):
+          output_config.bigqueryDestination.partitionKey = getattr(
+              self.message_module.GoogleCloudAssetV1BigQueryDestination
+              .PartitionKeyValueValuesEnum, args.bigquery_partition_key)
+        if args.IsSpecified('bigquery_write_disposition'):
+          output_config.bigqueryDestination.writeDisposition = args.bigquery_write_disposition
 
     options = self.message_module.Options()
     if args.expand_groups:
@@ -625,21 +647,28 @@ class IamPolicyAnalysisExportClient(object):
       options.expandResources = args.expand_resources
     if args.expand_roles:
       options.expandRoles = args.expand_roles
-
     if args.output_resource_edges:
       options.outputResourceEdges = args.output_resource_edges
     if args.output_group_edges:
       options.outputGroupEdges = args.output_group_edges
-
     if args.analyze_service_account_impersonation:
       options.analyzeServiceAccountImpersonation = args.analyze_service_account_impersonation
 
-    export_iam_policy_analysis_request = self.message_module.ExportIamPolicyAnalysisRequest(
-        analysisQuery=analysis_query,
-        options=options,
-        outputConfig=output_config)
-    request_message = self.message_module.CloudassetExportIamPolicyAnalysisRequest(
-        parent=self.parent,
-        exportIamPolicyAnalysisRequest=export_iam_policy_analysis_request)
-    operation = self.service.ExportIamPolicyAnalysis(request_message)
+    operation = None
+    if api_version == V1P4BETA1_API_VERSION:
+      request = self.message_module.ExportIamPolicyAnalysisRequest(
+          analysisQuery=analysis_query,
+          options=options,
+          outputConfig=output_config)
+      request_message = self.message_module.CloudassetExportIamPolicyAnalysisRequest(
+          parent=scope, exportIamPolicyAnalysisRequest=request)
+      operation = self.service.ExportIamPolicyAnalysis(request_message)
+    else:
+      analysis_query.options = options
+      request = self.message_module.AnalyzeIamPolicyLongrunningRequest(
+          analysisQuery=analysis_query, outputConfig=output_config)
+      request_message = self.message_module.CloudassetAnalyzeIamPolicyLongrunningRequest(
+          scope=scope, analyzeIamPolicyLongrunningRequest=request)
+      operation = self.service.AnalyzeIamPolicyLongrunning(request_message)
+
     return operation

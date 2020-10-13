@@ -26,3 +26,7 @@ class DomainMapping(kubernetesobject.KubernetesObject):
   @property
   def routeName(self):
     return self._props['spec']['routeName']
+
+  @property
+  def records(self):
+    return self._props['status']['resourceRecords']

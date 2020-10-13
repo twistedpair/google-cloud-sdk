@@ -907,7 +907,7 @@
           "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata"
         },
         "maintenanceSchedules": {
-          "description": "The MaintenanceSchedule contains the scheduling information of published maintenance schedule.",
+          "description": "The MaintenanceSchedule contains the scheduling information of published maintenance schedule with same key as software_versions.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSchedule"

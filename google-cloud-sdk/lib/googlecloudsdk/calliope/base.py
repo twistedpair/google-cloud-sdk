@@ -954,7 +954,7 @@ def UserProjectQuotaWithFallbackEnabled():
 
 
 def OptInRequests():
-  """Opts the command group into to using google auth for authentication.
+  """Opts the command group into to using requests to make HTTP requests.
 
   Call this function in the Filter method of the command group
   to enable requests.
@@ -963,7 +963,7 @@ def OptInRequests():
 
 
 def UseRequests():
-  """Returns True if using google-auth to authenticate the http request.
+  """Returns True if using requests to make HTTP requests.
 
   transport/disable_requests_override is a global switch to turn off requests in
   case support is buggy. transport/opt_in_requests is an internal property

@@ -38,6 +38,7 @@ from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
@@ -983,6 +984,20 @@ class ServerlessOperations(object):
         str(curr_generation + 1).zfill(5), name_generator.GenerateName())
     config_changes.insert(0, _NewRevisionForcingChange(revision_suffix))
 
+  def _BuildFromSource(self, tracker, build_messages, build_config):
+    """Build an image from source if a user specifies a source when deploying."""
+    build, build_op = submit_util.Build(build_messages, True, build_config,
+                                        True)
+    build_op_ref = resources.REGISTRY.ParseRelativeName(
+        build_op.name, 'cloudbuild.operations')
+    build_log_url = build.logUrl
+    tracker.StartStage(stages.BUILD_READY)
+    tracker.UpdateHeaderMessage('Building Container.')
+    tracker.UpdateStage(
+        stages.BUILD_READY, 'Logs are available at [{build_log_url}].'.format(
+            build_log_url=build_log_url))
+    return build_op_ref, build_log_url
+
   def ReleaseService(self,
                      service_ref,
                      config_changes,
@@ -991,8 +1006,8 @@ class ServerlessOperations(object):
                      allow_unauthenticated=None,
                      for_replace=False,
                      prefetch=False,
-                     build_op_ref=None,
-                     build_log_url=None):
+                     build_config=None,
+                     build_messages=None):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -1012,8 +1027,8 @@ class ServerlessOperations(object):
       prefetch: the service, pre-fetched for ReleaseService. `False` indicates
         the caller did not perform a prefetch; `None` indicates a nonexistant
         service.
-      build_op_ref: The reference to the build.
-      build_log_url: The log url of the build result.
+      build_config: The build config reference to the build.
+      build_messages: The message reference to the build.
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
        request to create/update the service.
@@ -1021,13 +1036,12 @@ class ServerlessOperations(object):
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
           stages.ServiceStages(allow_unauthenticated is not None),
-          interruptable=True, aborted_message='aborted')
-    if build_op_ref is not None:
-      tracker.StartStage(stages.BUILD_READY)
-      tracker.UpdateHeaderMessage('Building Container.')
-      tracker.UpdateStage(
-          stages.BUILD_READY, 'Logs are available at [{build_log_url}].'.format(
-              build_log_url=build_log_url))
+          interruptable=True,
+          aborted_message='aborted')
+
+    if build_config is not None:
+      build_op_ref, build_log_url = self._BuildFromSource(
+          tracker, build_messages, build_config)
       client = cloudbuild_util.GetClientInstance()
       poller = waiter.CloudOperationPoller(client.projects_builds,
                                            client.operations)

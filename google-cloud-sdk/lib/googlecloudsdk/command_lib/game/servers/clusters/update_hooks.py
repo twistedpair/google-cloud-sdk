@@ -40,6 +40,7 @@ def ConvertOutput(response, args):
   Args:
     response: The reference to response instace.
     args: The parsed args namespace.
+
   Returns:
     Output response.
   """
@@ -48,11 +49,9 @@ def ConvertOutput(response, args):
   if not args.dry_run:
     utils.WaitForOperation(response, utils.GetApiVersionFromArgs(args))
     if 'update' in args.command_path:
-      log.status.Print('Updated game server cluster: [{}]'.format(
-          args.cluster))
+      log.status.Print('Updated game server cluster: [{}]'.format(args.cluster))
     else:
-      log.status.Print('Created game server cluster: [{}]'.format(
-          args.cluster))
+      log.status.Print('Created game server cluster: [{}]'.format(args.cluster))
     return GetExistingResource(args)
   return response
 
@@ -62,6 +61,7 @@ def GetResourceRef(args):
 
   Args:
    args: The parsed args namespace.
+
   Returns:
    Resource reference.
   """
@@ -137,6 +137,7 @@ def ChooseUpdateOrPreviewMethod(unused_instance_ref, args):
   Args:
     unused_instance_ref: The unused instace reference.
     args: The parsed args namespace.
+
   Returns:
     Method to be called.
   Raises:
@@ -159,6 +160,7 @@ def ChooseCreateOrPreviewMethod(unused_instance_ref, args):
   Args:
     unused_instance_ref: The unused instace reference.
     args: The parsed args namespace.
+
   Returns:
     Method to be called.
   Raises:
@@ -185,6 +187,7 @@ def SetUpdateMask(ref, args, request):
     ref: The game server cluster resource reference.
     args: The parsed args namespace.
     request: The update game server cluster request.
+
   Returns:
     Request with update mask set appropriately.
   Raises:
@@ -195,10 +198,13 @@ def SetUpdateMask(ref, args, request):
 
   if args.IsSpecified('description'):
     update_mask.append('description')
-  if (args.IsSpecified('update_labels') or
-      args.IsSpecified('remove_labels') or
+  if (args.IsSpecified('update_labels') or args.IsSpecified('remove_labels') or
       args.IsSpecified('clear_labels')):
     update_mask.append('labels')
+
+  # TODO(b/169913796): Use IsSpecified once allocation-priority is GA
+  if getattr(args, 'allocation_priority', None) is not None:
+    update_mask.append('allocationPriority')
 
   if not args.dry_run and not update_mask:
     raise NoFieldsSpecifiedError(

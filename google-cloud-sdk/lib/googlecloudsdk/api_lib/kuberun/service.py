@@ -22,9 +22,6 @@ from googlecloudsdk.api_lib.kuberun import kubernetesobject
 from googlecloudsdk.api_lib.kuberun import revision
 from googlecloudsdk.api_lib.kuberun import traffic
 
-# Label names as to be stored in k8s object metadata
-AUTHOR_ANNOTATION = 'serving.knative.dev/creator'
-LAST_MODIFIER_ANNOTATION = 'serving.knative.dev/lastModifier'
 SERVICE_LABEL = 'serving.knative.dev/service'
 # Used to force a new revision, and also to tie a particular request for changes
 # to a particular created revision.
@@ -45,17 +42,6 @@ class Service(kubernetesobject.KubernetesObject):
   @property
   def url(self):
     return self.status.url
-
-  @property
-  def last_modifier(self):
-    return self.metadata.annotations.get(LAST_MODIFIER_ANNOTATION)
-
-  @property
-  def last_transition_time(self):
-    if self.ready_condition:
-      return self.ready_condition.lastTransitionTime
-    else:
-      return None
 
   @property
   def latest_created_revision(self):

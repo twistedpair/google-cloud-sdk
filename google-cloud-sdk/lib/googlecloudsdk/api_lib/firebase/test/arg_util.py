@@ -562,6 +562,21 @@ def AddIosBetaArgs(parser):
       --other-files com.my.app:/Documents/file.txt=local/file.txt,/private/var/mobile/Media/file.jpg=gs://bucket/file.jpg
       ```
       """)
+  parser.add_argument(
+      '--directories-to-pull',
+      type=arg_parsers.ArgList(),
+      metavar='DIR_TO_PULL',
+      help="""\
+      A list of paths that will be copied from the device\'s storage to
+      the designated results bucket after the test is complete. These must be
+      absolute paths under `/private/var/mobile/Media` or `/Documents` of the
+      app under test. If the path is under an app\'s `/Documents`, it must be
+      prefixed with the app\'s bundle id and a colon.\n
+      Example:\n
+      ```
+      --directories-to-pull=com.my.app:/Documents/output,/private/var/mobile/Media/output
+      ```
+      """)
 
   # The following args are specific to iOS game-loop tests.
 

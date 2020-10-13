@@ -2044,12 +2044,40 @@ class ApigeeOrganizationsEnvironmentsUpdateDebugmaskRequest(_messages.Message):
 class ApigeeOrganizationsGetDeployedIngressConfigRequest(_messages.Message):
   r"""A ApigeeOrganizationsGetDeployedIngressConfigRequest object.
 
+  Enums:
+    ViewValueValuesEnum: When set to FULL, additional details about the
+      specific deployments receiving traffic will be included in the
+      IngressConfig response's RoutingRules.
+
   Fields:
     name: Required. Name of the deployed configuration for the organization in
       the following format: 'organizations/{org}/deployedIngressConfig'.
+    view: When set to FULL, additional details about the specific deployments
+      receiving traffic will be included in the IngressConfig response's
+      RoutingRules.
   """
 
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""When set to FULL, additional details about the specific deployments
+    receiving traffic will be included in the IngressConfig response's
+    RoutingRules.
+
+    Values:
+      INGRESS_CONFIG_VIEW_UNSPECIFIED: The default/unset value. The API will
+        default to the BASIC view.
+      BASIC: Include all ingress config data necessary for the runtime to
+        configure ingress, but no more. Routing rules will include only
+        basepath and destination environment. This the default value.
+      FULL: Include all ingress config data, including internal debug info for
+        each routing rule such as the proxy claiming a particular basepath and
+        when the routing rule first appeared in the env group.
+    """
+    INGRESS_CONFIG_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
   name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
 class ApigeeOrganizationsGetRequest(_messages.Message):
@@ -2458,6 +2486,53 @@ class ApigeeOrganizationsSharedflowsRevisionsUpdateSharedFlowRevisionRequest(_me
   validate = _messages.BooleanField(3)
 
 
+class ApigeeOrganizationsSitesApicategoriesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApicategoriesCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1ApiCategoryData: A GoogleCloudApigeeV1ApiCategoryData
+      resource to be passed as the request body.
+    parent: Required. Name of the portal. Use the following structure in your
+      request: `organizations/{org}/sites/{site}`
+  """
+
+  googleCloudApigeeV1ApiCategoryData = _messages.MessageField('GoogleCloudApigeeV1ApiCategoryData', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSitesApicategoriesDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApicategoriesDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the category. Use the following structure in your
+      request: `organizations/{org}/sites/{site}/apicategories/{apicategory}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSitesApicategoriesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApicategoriesGetRequest object.
+
+  Fields:
+    name: Required. Name of the category. Use the following structure in your
+      request: `organizations/{org}/sites/{site}/apicategories/{apicategory}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSitesApicategoriesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApicategoriesListRequest object.
+
+  Fields:
+    parent: Required. Name of the portal. Use the following structure in your
+      request: `organizations/{org}/sites/{site}`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class GoogleApiHttpBody(_messages.Message):
   r"""Message that represents an arbitrary HTTP body. It should only be used
   for payload formats that can't be represented as JSON, such as raw binary or
@@ -2634,6 +2709,41 @@ class GoogleCloudApigeeV1AliasRevisionConfig(_messages.Message):
   location = _messages.StringField(1)
   name = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class GoogleCloudApigeeV1ApiCategory(_messages.Message):
+  r"""the Api category resource wrapped with response status, error_code etc.
+
+  Fields:
+    data: Details of category.
+    errorCode: ID that can be used to find errors in the log files.
+    message: Description of the operation.
+    requestId: ID that can be used to find request details in the log files.
+    status: Status of the operation.
+  """
+
+  data = _messages.MessageField('GoogleCloudApigeeV1ApiCategoryData', 1)
+  errorCode = _messages.StringField(2)
+  message = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  status = _messages.StringField(5)
+
+
+class GoogleCloudApigeeV1ApiCategoryData(_messages.Message):
+  r"""the Api category resource.
+
+  Fields:
+    id: ID of the category (a UUID).
+    name: Name of the category.
+    siteId: Name of the portal.
+    updateTime: Time the category was last modified in milliseconds since
+      epoch.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+  siteId = _messages.StringField(3)
+  updateTime = _messages.IntegerField(4)
 
 
 class GoogleCloudApigeeV1ApiProduct(_messages.Message):
@@ -2871,6 +2981,22 @@ class GoogleCloudApigeeV1ApiProxyRevision(_messages.Message):
   targets = _messages.StringField(20, repeated=True)
   teams = _messages.StringField(21, repeated=True)
   type = _messages.StringField(22)
+
+
+class GoogleCloudApigeeV1ApiResponseWrapper(_messages.Message):
+  r"""A GoogleCloudApigeeV1ApiResponseWrapper object.
+
+  Fields:
+    errorCode: ID that can be used to find errors in the log files.
+    message: Description of the operation.
+    requestId: ID that can be used to find request details in the log files.
+    status: Status of the operation.
+  """
+
+  errorCode = _messages.StringField(1)
+  message = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+  status = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1App(_messages.Message):
@@ -3988,6 +4114,10 @@ class GoogleCloudApigeeV1IngressConfig(_messages.Message):
 class GoogleCloudApigeeV1Instance(_messages.Message):
   r"""Apigee runtime instance.
 
+  Enums:
+    StateValueValuesEnum: Output only. State of the instance. Values other
+      than ACTIVE means the resource is not ready to use.
+
   Fields:
     createdAt: Output only. Time the instance was created in milliseconds
       since epoch.
@@ -4003,7 +4133,24 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     name: Required. Resource ID of the instance. Values must match the regular
       expression `^a-z{0,30}[a-z\d]$`.
     port: Output only. Port number of the exposed Apigee endpoint.
+    state: Output only. State of the instance. Values other than ACTIVE means
+      the resource is not ready to use.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the instance. Values other than ACTIVE means the
+    resource is not ready to use.
+
+    Values:
+      STATE_UNSPECIFIED: Resource is in an unspecified state.
+      CREATING: Resource is being created.
+      ACTIVE: Resource is provisioned and ready to use.
+      DELETING: The resource is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
 
   createdAt = _messages.IntegerField(1)
   description = _messages.StringField(2)
@@ -4014,6 +4161,7 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
   location = _messages.StringField(7)
   name = _messages.StringField(8)
   port = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
@@ -4126,6 +4274,24 @@ class GoogleCloudApigeeV1KeystoreConfig(_messages.Message):
 
   aliases = _messages.MessageField('GoogleCloudApigeeV1AliasRevisionConfig', 1, repeated=True)
   name = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1ListApiCategoriesResponse(_messages.Message):
+  r"""the response for ListApiCategoriesRequest.
+
+  Fields:
+    data: Details of categories.
+    errorCode: ID that can be used to find errors in the log files.
+    message: Description of the operation.
+    requestId: ID that can be used to find request details in the log files.
+    status: Status of the operation.
+  """
+
+  data = _messages.MessageField('GoogleCloudApigeeV1ApiCategoryData', 1, repeated=True)
+  errorCode = _messages.StringField(2)
+  message = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  status = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1ListApiProductsResponse(_messages.Message):
@@ -5052,12 +5218,30 @@ class GoogleCloudApigeeV1RoutingRule(_messages.Message):
     basepath: URI path prefix used to route to the specified environment. May
       contain one or more wildcards. For example, path segments consisting of
       a single `*` character will match any string.
+    envGroupRevision: The env group config revision_id when this rule was
+      added or last updated. This value is set when the rule is created and
+      will only update if the the environment_id changes. It is used to
+      determine if the runtime is up to date with respect to this rule. This
+      field is omitted from the IngressConfig unless the
+      GetDeployedIngressConfig API is called with debug=true.
     environment: Name of an environment bound to the environment group in the
       following format: `organizations/{org}/environments/{env}`.
+    receiver: The resource name of the proxy revision that is receiving this
+      basepath in the following format:
+      `organizations/{org}/apis/{api}/revisions/{rev}`. This field is omitted
+      from the IngressConfig unless the GetDeployedIngressConfig API is called
+      with debug=true.
+    updateTime: The unix timestamp when this rule was updated. This is updated
+      whenever env_group_revision is updated. This field is omitted from the
+      IngressConfig unless the GetDeployedIngressConfig API is called with
+      debug=true.
   """
 
   basepath = _messages.StringField(1)
-  environment = _messages.StringField(2)
+  envGroupRevision = _messages.IntegerField(2)
+  environment = _messages.StringField(3)
+  receiver = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1RuntimeTraceConfig(_messages.Message):
@@ -5519,7 +5703,8 @@ class GoogleCloudApigeeV1TlsInfo(_messages.Message):
       ides/security/StandardNames.html#ciphersuites
     clientAuthEnabled: Optional. Enables two-way TLS.
     commonName: The TLS Common Name of the certificate.
-    enabled: Required. Enables one-way TLS.
+    enabled: Required. Enables TLS. If false, neither one-way nor two-way TLS
+      will be enabled.
     ignoreValidationErrors: If true, Edge ignores TLS certificate errors.
       Valid when configuring TLS for target servers and target endpoints, and
       when configuring virtual hosts that use 2-way TLS. When used with a

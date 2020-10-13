@@ -2136,6 +2136,20 @@
         "environment": {
           "description": "Name of an environment bound to the environment group in the following format: `organizations\/{org}\/environments\/{env}`.",
           "type": "string"
+        },
+        "envGroupRevision": {
+          "description": "The env group config revision_id when this rule was added or last updated. This value is set when the rule is created and will only update if the the environment_id changes. It is used to determine if the runtime is up to date with respect to this rule. This field is omitted from the IngressConfig unless the GetDeployedIngressConfig API is called with debug=true.",
+          "type": "string",
+          "format": "int64"
+        },
+        "updateTime": {
+          "description": "The unix timestamp when this rule was updated. This is updated whenever env_group_revision is updated. This field is omitted from the IngressConfig unless the GetDeployedIngressConfig API is called with debug=true.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "receiver": {
+          "description": "The resource name of the proxy revision that is receiving this basepath in the following format: `organizations\/{org}\/apis\/{api}\/revisions\/{rev}`. This field is omitted from the IngressConfig unless the GetDeployedIngressConfig API is called with debug=true.",
+          "type": "string"
         }
       }
     },
@@ -2437,7 +2451,7 @@
       "type": "object",
       "properties": {
         "enabled": {
-          "description": "Required. Enables one-way TLS.",
+          "description": "Required. Enables TLS. If false, neither one-way nor two-way TLS will be enabled.",
           "type": "boolean"
         },
         "clientAuthEnabled": {
@@ -4102,6 +4116,109 @@
         }
       }
     },
+    "GoogleCloudApigeeV1ApiCategoryData": {
+      "id": "GoogleCloudApigeeV1ApiCategoryData",
+      "description": "the Api category resource.",
+      "type": "object",
+      "properties": {
+        "siteId": {
+          "description": "Name of the portal.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name of the category.",
+          "type": "string"
+        },
+        "id": {
+          "description": "ID of the category (a UUID).",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Time the category was last modified in milliseconds since epoch.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1ApiCategory": {
+      "id": "GoogleCloudApigeeV1ApiCategory",
+      "description": "the Api category resource wrapped with response status, error_code etc.",
+      "type": "object",
+      "properties": {
+        "data": {
+          "description": "Details of category.",
+          "$ref": "GoogleCloudApigeeV1ApiCategoryData"
+        },
+        "status": {
+          "description": "Status of the operation.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Description of the operation.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "ID that can be used to find request details in the log files.",
+          "type": "string"
+        },
+        "errorCode": {
+          "description": "ID that can be used to find errors in the log files.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1ApiResponseWrapper": {
+      "id": "GoogleCloudApigeeV1ApiResponseWrapper",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Status of the operation.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Description of the operation.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "ID that can be used to find request details in the log files.",
+          "type": "string"
+        },
+        "errorCode": {
+          "description": "ID that can be used to find errors in the log files.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1ListApiCategoriesResponse": {
+      "id": "GoogleCloudApigeeV1ListApiCategoriesResponse",
+      "description": "the response for ListApiCategoriesRequest.",
+      "type": "object",
+      "properties": {
+        "data": {
+          "description": "Details of categories.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1ApiCategoryData"
+          }
+        },
+        "status": {
+          "description": "Status of the operation.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Description of the operation.",
+          "type": "string"
+        },
+        "requestId": {
+          "description": "ID that can be used to find request details in the log files.",
+          "type": "string"
+        },
+        "errorCode": {
+          "description": "ID that can be used to find errors in the log files.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudApigeeV1Instance": {
       "id": "GoogleCloudApigeeV1Instance",
       "description": "Apigee runtime instance.",
@@ -4148,6 +4265,23 @@
         "diskEncryptionKeyName": {
           "description": "Optional. Customer Managed Encryption Key (CMEK) used for disk & volume encryption.",
           "type": "string"
+        },
+        "state": {
+          "description": "Output only. State of the instance. Values other than ACTIVE means the resource is not ready to use.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Resource is in an unspecified state.",
+            "Resource is being created.",
+            "Resource is provisioned and ready to use.",
+            "The resource is being deleted."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "DELETING"
+          ]
         }
       }
     },
@@ -4458,6 +4592,21 @@
               "required": true,
               "pattern": "^organizations\/[^\/]+\/deployedIngressConfig$",
               "type": "string"
+            },
+            "view": {
+              "description": "When set to FULL, additional details about the specific deployments receiving traffic will be included in the IngressConfig response's RoutingRules.",
+              "location": "query",
+              "type": "string",
+              "enumDescriptions": [
+                "The default\/unset value. The API will default to the BASIC view.",
+                "Include all ingress config data necessary for the runtime to configure ingress, but no more. Routing rules will include only basepath and destination environment. This the default value.",
+                "Include all ingress config data, including internal debug info for each routing rule such as the proxy claiming a particular basepath and when the routing rule first appeared in the env group."
+              ],
+              "enum": [
+                "INGRESS_CONFIG_VIEW_UNSPECIFIED",
+                "BASIC",
+                "FULL"
+              ]
             }
           },
           "parameterOrder": [
@@ -9662,6 +9811,145 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete a key value map in an organization."
+            }
+          }
+        },
+        "sites": {
+          "resources": {
+            "apicategories": {
+              "methods": {
+                "create": {
+                  "id": "apigee.organizations.sites.apicategories.create",
+                  "path": "v1/{+parent}/apicategories",
+                  "flatPath": "v1/organizations/{organizationsId}/sites/{sitesId}/apicategories",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Name of the portal. Use the following structure in your request: `organizations\/{org}\/sites\/{site}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/sites\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudApigeeV1ApiCategoryData"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1ApiCategory"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new category on the portal."
+                },
+                "delete": {
+                  "id": "apigee.organizations.sites.apicategories.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/organizations/{organizationsId}/sites/{sitesId}/apicategories/{apicategoriesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the category. Use the following structure in your request: `organizations\/{org}\/sites\/{site}\/apicategories\/{apicategory}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/sites\/[^\/]+\/apicategories\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1ApiResponseWrapper"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a category from the portal."
+                },
+                "patch": {
+                  "id": "apigee.organizations.sites.apicategories.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/organizations/{organizationsId}/sites/{sitesId}/apicategories/{apicategoriesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the category. Use the following structure in your request: `organizations\/{org}\/sites\/{site}\/apicategories\/{apicategory}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/sites\/[^\/]+\/apicategories\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudApigeeV1ApiCategoryData"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1ApiCategory"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a category on the portal."
+                },
+                "get": {
+                  "id": "apigee.organizations.sites.apicategories.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/organizations/{organizationsId}/sites/{sitesId}/apicategories/{apicategoriesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the category. Use the following structure in your request: `organizations\/{org}\/sites\/{site}\/apicategories\/{apicategory}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/sites\/[^\/]+\/apicategories\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1ApiCategory"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a category on the portal."
+                },
+                "list": {
+                  "id": "apigee.organizations.sites.apicategories.list",
+                  "path": "v1/{+parent}/apicategories",
+                  "flatPath": "v1/organizations/{organizationsId}/sites/{sitesId}/apicategories",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Name of the portal. Use the following structure in your request: `organizations\/{org}\/sites\/{site}`",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^organizations\/[^\/]+\/sites\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1ListApiCategoriesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists the categories on the portal."
+                }
+              }
             }
           }
         }

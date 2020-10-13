@@ -20,19 +20,10 @@ from __future__ import unicode_literals
 
 
 class MapObject(object):
-  """Base class to wrap dict-like structures and support attributes for keys.
-
-  TODO(b/168654418): Remove this class and add any necessary properties to
-  other objects as necessary.
-  """
+  """Base class to wrap dict-like structures and support attributes for keys."""
 
   def __init__(self, props):
     self._props = props
-
-  def __getattr__(self, name):
-    if name in ('__iter__', 'next', '__next__', 'items'):
-      raise AttributeError
-    return self._props.get(name)
 
   @property
   def props(self):

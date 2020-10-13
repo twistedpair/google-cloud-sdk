@@ -26,10 +26,10 @@ import time
 from googlecloudsdk.command_lib.survey import question
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import requests
 from googlecloudsdk.core.survey import survey_check
 from googlecloudsdk.core.util import platforms
 
@@ -171,12 +171,12 @@ def _ClearcutRequest(survey_instance):
 
 def LogSurveyAnswers(survey_instance):
   """Sends survey response to clearcut table."""
-  http_client = http.Http()
+  http_client = requests.GetSession()
   headers = {'user-agent': metrics.GetUserAgent()}
   body = json.dumps(_ClearcutRequest(survey_instance), sort_keys=True)
-  response, _ = http_client.request(
-      _CLEARCUT_ENDPOINT, method='POST', body=body, headers=headers)
-  if int(response['status']) != httplib.OK:
+  response = http_client.request(
+      'POST', _CLEARCUT_ENDPOINT, data=body, headers=headers)
+  if response.status_code != httplib.OK:
     raise SurveyNotRecordedError(
         'We cannot record your feedback at this time, please try again later.')
   _UpdateSurveyCache()

@@ -2339,9 +2339,44 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
       DELTA_PER_SECOND, or DELTA_PER_MINUTE.
 
   Fields:
+    filter: A filter string, compatible with a Stackdriver Monitoring filter
+      string for TimeSeries.list API call. This filter is used to select a
+      specific TimeSeries for the purpose of autoscaling and to determine
+      whether the metric is exporting per-instance or per-group data.  For the
+      filter to be valid for autoscaling purposes, the following rules apply:
+      - You can only use the AND operator for joining selectors.  - You can
+      only use direct equality comparison operator (=) without any functions
+      for each selector.  - You can specify the metric in both the filter
+      string and in the metric field. However, if specified in both places,
+      the metric must be identical.  - The monitored resource type determines
+      what kind of values are expected for the metric. If it is a
+      gce_instance, the autoscaler expects the metric to include a separate
+      TimeSeries for each instance in a group. In such a case, you cannot
+      filter on resource labels. If the resource type is any other value, the
+      autoscaler expects this metric to contain values that apply to the
+      entire autoscaled instance group and resource label filtering can be
+      performed to point autoscaler at the correct TimeSeries to scale upon.
+      This is called a per-group metric for the purpose of autoscaling.  If
+      not specified, the type defaults to gce_instance.    You should provide
+      a filter that is selective enough to pick just one TimeSeries for the
+      autoscaled group or for each of the instances (if you are using
+      gce_instance resource type). If multiple TimeSeries are returned upon
+      the query execution, the autoscaler will sum their respective values to
+      obtain its scaling value.
     metric: The identifier (type) of the Stackdriver Monitoring metric. The
       metric cannot have negative values.  The metric must have a value type
       of INT64 or DOUBLE.
+    singleInstanceAssignment: If scaling is based on a per-group metric value
+      that represents the total amount of work to be done or resource usage,
+      set this value to an amount assigned for a single instance of the scaled
+      group. Autoscaler will keep the number of instances proportional to the
+      value of this metric, the metric itself should not change value due to
+      group resizing.  A good metric to use with the target is for example
+      pubsub.googleapis.com/subscription/num_undelivered_messages or a custom
+      metric exporting the total number of requests coming to your instances.
+      A bad example would be a metric exporting an average or median latency,
+      since this value can't include a chunk assignable to a single instance,
+      it could be better used with utilization_target instead.
     utilizationTarget: The target value of the metric that autoscaler should
       maintain. This must be a positive value. A utilization metric scales
       number of virtual machines handling requests to increase or decrease
@@ -2367,9 +2402,11 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
     DELTA_PER_SECOND = 1
     GAUGE = 2
 
-  metric = _messages.StringField(1)
-  utilizationTarget = _messages.FloatField(2)
-  utilizationTargetType = _messages.EnumField('UtilizationTargetTypeValueValuesEnum', 3)
+  filter = _messages.StringField(1)
+  metric = _messages.StringField(2)
+  singleInstanceAssignment = _messages.FloatField(3)
+  utilizationTarget = _messages.FloatField(4)
+  utilizationTargetType = _messages.EnumField('UtilizationTargetTypeValueValuesEnum', 5)
 
 
 class AutoscalingPolicyLoadBalancingUtilization(_messages.Message):
@@ -22865,7 +22902,9 @@ class ForwardingRule(_messages.Message):
       information, refer to [IP address specifications](/load-
       balancing/docs/forwarding-rule-concepts#ip_address_specifications).
       Must be set to `0.0.0.0` when the target is targetGrpcProxy that has
-      validateForProxyless field set to true.
+      validateForProxyless field set to true.  For Private Service Connect
+      forwarding rules that forward traffic to Google APIs, IP address must be
+      provided.
     IPProtocol: The IP protocol to which this rule applies. For protocol
       forwarding, valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  For
       Internal TCP/UDP Load Balancing, the load balancing scheme is INTERNAL,
@@ -22949,7 +22988,9 @@ class ForwardingRule(_messages.Message):
     network: This field is not used for external load balancing.  For internal
       load balancing, this field identifies the network that the load balanced
       IP should belong to for this Forwarding Rule. If this field is not
-      specified, the default network will be used.
+      specified, the default network will be used.  For Private Service
+      Connect forwarding rules that forward traffic to Google APIs, a network
+      must be provided.
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM, STANDARD.
       For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
@@ -23010,7 +23051,15 @@ class ForwardingRule(_messages.Message):
       global load balancing resource. The forwarded traffic must be of a type
       appropriate to the target object. For more information, see the "Target"
       column in [Port specifications](/load-balancing/docs/forwarding-rule-
-      concepts#ip_address_specifications).
+      concepts#ip_address_specifications).  For Private Service Connect
+      forwarding rules that forward traffic to Google APIs, provide the name
+      of a supported Google API bundle. Currently, the supported Google API
+      bundles include:    - vpc-sc - GCP APIs that support VPC Service
+      Controls. For more information about which APIs support VPC Service
+      Controls, refer to VPC-SC supported products and limitations.   - all-
+      apis - All GCP APIs. For more information about which APIs are supported
+      with this bundle, refer to Private Google Access-specific domains and
+      VIPs.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):

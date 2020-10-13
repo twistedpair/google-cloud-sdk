@@ -355,6 +355,10 @@
         "serviceAccount": {
           "description": "IAM service account whose credentials will be used at build runtime. Must be of the format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. ACCOUNT can be email address or uniqueId of the service account. This field is in alpha and is not publicly available.",
           "type": "string"
+        },
+        "availableSecrets": {
+          "description": "Secrets and secret environment variables.",
+          "$ref": "Secrets"
         }
       }
     },
@@ -1038,6 +1042,61 @@
         "url": {
           "description": "Optional. An optional URL tied to this manual approval result. This field is essentially the same as comment, except that it will be rendered by the UI differently. An example use case is a link to an external job that approved this Build.",
           "type": "string"
+        }
+      }
+    },
+    "Secrets": {
+      "id": "Secrets",
+      "description": "Secrets and secret environment variables.",
+      "type": "object",
+      "properties": {
+        "secretManager": {
+          "description": "Secrets in Secret Manager and associated secret environment variable.",
+          "type": "array",
+          "items": {
+            "$ref": "SecretManagerSecret"
+          }
+        },
+        "inline": {
+          "description": "Secrets encrypted with KMS key and the associated secret environment variable.",
+          "type": "array",
+          "items": {
+            "$ref": "InlineSecret"
+          }
+        }
+      }
+    },
+    "SecretManagerSecret": {
+      "id": "SecretManagerSecret",
+      "description": "Pairs a secret environment variable with a SecretVersion in Secret Manager.",
+      "type": "object",
+      "properties": {
+        "versionName": {
+          "description": "Resource name of the SecretVersion. In format: projects\/*\/secrets\/*\/versions\/*",
+          "type": "string"
+        },
+        "env": {
+          "description": "Environment variable name to associate with the secret. Secret environment variables must be unique across all of a build's secrets, and must be used by at least one build step.",
+          "type": "string"
+        }
+      }
+    },
+    "InlineSecret": {
+      "id": "InlineSecret",
+      "description": "Pairs a set of secret environment variables mapped to encrypted values with the Cloud KMS key to use to decrypt the value.",
+      "type": "object",
+      "properties": {
+        "kmsKeyName": {
+          "description": "Resource name of Cloud KMS crypto key to decrypt the encrypted value. In format: projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*",
+          "type": "string"
+        },
+        "envMap": {
+          "description": "Map of environment variable name to its encrypted value. Secret environment variables must be unique across all of a build's secrets, and must be used by at least one build step. Values can be at most 64 KB in size. There can be at most 100 secret values across all of a build's secrets.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "byte"
+          }
         }
       }
     },

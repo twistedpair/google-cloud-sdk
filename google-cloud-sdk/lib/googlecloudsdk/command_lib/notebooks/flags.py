@@ -246,7 +246,7 @@ def AddCreateInstanceFlags(parser):
       'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4', 'NVIDIA_TESLA_T4_VWS',
       'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS', 'TPU_V2', 'TPU_V3'
   ]
-  boot_disk_choices = ['PD_STANDARD', 'PD_SSD']
+  boot_disk_choices = ['PD_STANDARD', 'PD_SSD', 'PD_BALANCED']
   encryption_choices = ['GMEK', 'CMEK']
   AddInstanceResource(parser)
   environment_group = parser.add_group(mutex=True, required=True)

@@ -33,10 +33,10 @@ class AccessApprovalSettings(_messages.Message):
       be honored and all following entries will be discarded. A maximum of 10
       enrolled services will be enforced, to be expanded as the set of
       supported services is expanded.
-    name: The resource name of the settings. Format is one of: 1.
-      "projects/{project_id}/accessApprovalSettings" 2.
-      "folders/{folder_id}/accessApprovalSettings" 3.
-      "organizations/{organization_id}/accessApprovalSettings"
+    name: The resource name of the settings. Format is one of: *
+      "projects/{project}/accessApprovalSettings" *
+      "folders/{folder}/accessApprovalSettings" *
+      "organizations/{organization}/accessApprovalSettings"
     notificationEmails: A list of email addresses to which notifications
       relating to approval requests should be sent. Notifications relating to
       a resource will be sent to all emails in the settings of ancestor
@@ -57,15 +57,15 @@ class AccessLocations(_messages.Message):
       two-letter country code (ISO 3166-1 alpha-2), such as "US", "DE" or "GB"
       or a region code. In some limited situations Google systems may refer
       refer to a region code instead of a country code. Possible Region Codes:
-      1. ASI: Asia 2. EUR: Europe 3. OCE: Oceania 4. AFR: Africa 5. NAM: North
-      America 6. SAM: South America 7. ANT: Antarctica 8. ANY: Any location
+      * ASI: Asia * EUR: Europe * OCE: Oceania * AFR: Africa * NAM: North
+      America * SAM: South America * ANT: Antarctica * ANY: Any location
     principalPhysicalLocationCountry: Physical location of the principal at
       the time of the access. A two-letter country code (ISO 3166-1 alpha-2),
       such as "US", "DE" or "GB" or a region code. In some limited situations
       Google systems may refer refer to a region code instead of a country
-      code. Possible Region Codes: 1. ASI: Asia 2. EUR: Europe 3. OCE: Oceania
-      4. AFR: Africa 5. NAM: North America 6. SAM: South America 7. ANT:
-      Antarctica 8. ANY: Any location
+      code. Possible Region Codes: * ASI: Asia * EUR: Europe * OCE: Oceania *
+      AFR: Africa * NAM: North America * SAM: South America * ANT: Antarctica
+      * ANY: Any location
   """
 
   principalOfficeCountry = _messages.StringField(1)
@@ -91,9 +91,9 @@ class AccessReason(_messages.Message):
       TYPE_UNSPECIFIED: Default value for proto, shouldn't be used.
       CUSTOMER_INITIATED_SUPPORT: Customer made a request or raised an issue
         that required the principal to access customer data. `detail` is of
-        the form ("#####" is the issue ID): 1. "Feedback Report: #####" 2.
-        "Case Number: #####" 3. "Case ID: #####" 4. "E-PIN Reference: #####"
-        5. "Google-#####" 6. "T-#####"
+        the form ("#####" is the issue ID): * "Feedback Report: #####" * "Case
+        Number: #####" * "Case ID: #####" * "E-PIN Reference: #####" *
+        "Google-#####" * "T-#####"
       GOOGLE_INITIATED_SERVICE: The principal accessed customer data in order
         to diagnose or resolve a suspected issue in services or a known
         outage. Often this access is used to confirm that customers are not
@@ -152,15 +152,15 @@ class AccessapprovalFoldersApprovalRequestsListRequest(_messages.Message):
 
   Fields:
     filter: A filter on the type of approval requests to retrieve. Must be one
-      of the following values: 1. [not set]: Requests that are pending or have
-      active approvals. 2. ALL: All requests. 3. PENDING: Only pending
-      requests. 4. ACTIVE: Only active (i.e. currently approved) requests. 5.
-      DISMISSED: Only dismissed (including expired) requests. 6. HISTORY:
-      Active and dismissed (including expired) requests.
+      of the following values: * [not set]: Requests that are pending or have
+      active approvals. * ALL: All requests. * PENDING: Only pending requests.
+      * ACTIVE: Only active (i.e. currently approved) requests. * DISMISSED:
+      Only dismissed (including expired) requests. * HISTORY: Active and
+      dismissed (including expired) requests.
     pageSize: Requested page size.
     pageToken: A token identifying the page of results to return.
-    parent: The parent resource. This may be "projects/{project_id}",
-      "folders/{folder_id}", or "organizations/{organization_id}".
+    parent: The parent resource. This may be "projects/{project}",
+      "folders/{folder}", or "organizations/{organization}".
   """
 
   filter = _messages.StringField(1)
@@ -195,10 +195,10 @@ class AccessapprovalFoldersUpdateAccessApprovalSettingsRequest(_messages.Message
   Fields:
     accessApprovalSettings: A AccessApprovalSettings resource to be passed as
       the request body.
-    name: The resource name of the settings. Format is one of: 1.
-      "projects/{project_id}/accessApprovalSettings" 2.
-      "folders/{folder_id}/accessApprovalSettings" 3.
-      "organizations/{organization_id}/accessApprovalSettings"
+    name: The resource name of the settings. Format is one of: *
+      "projects/{project}/accessApprovalSettings" *
+      "folders/{folder}/accessApprovalSettings" *
+      "organizations/{organization}/accessApprovalSettings"
     updateMask: The update mask applies to the settings. Only the top level
       fields of AccessApprovalSettings (notification_emails &
       enrolled_services) are supported. For each field, if it is included, the
@@ -255,15 +255,15 @@ class AccessapprovalOrganizationsApprovalRequestsListRequest(_messages.Message):
 
   Fields:
     filter: A filter on the type of approval requests to retrieve. Must be one
-      of the following values: 1. [not set]: Requests that are pending or have
-      active approvals. 2. ALL: All requests. 3. PENDING: Only pending
-      requests. 4. ACTIVE: Only active (i.e. currently approved) requests. 5.
-      DISMISSED: Only dismissed (including expired) requests. 6. HISTORY:
-      Active and dismissed (including expired) requests.
+      of the following values: * [not set]: Requests that are pending or have
+      active approvals. * ALL: All requests. * PENDING: Only pending requests.
+      * ACTIVE: Only active (i.e. currently approved) requests. * DISMISSED:
+      Only dismissed (including expired) requests. * HISTORY: Active and
+      dismissed (including expired) requests.
     pageSize: Requested page size.
     pageToken: A token identifying the page of results to return.
-    parent: The parent resource. This may be "projects/{project_id}",
-      "folders/{folder_id}", or "organizations/{organization_id}".
+    parent: The parent resource. This may be "projects/{project}",
+      "folders/{folder}", or "organizations/{organization}".
   """
 
   filter = _messages.StringField(1)
@@ -298,10 +298,10 @@ class AccessapprovalOrganizationsUpdateAccessApprovalSettingsRequest(_messages.M
   Fields:
     accessApprovalSettings: A AccessApprovalSettings resource to be passed as
       the request body.
-    name: The resource name of the settings. Format is one of: 1.
-      "projects/{project_id}/accessApprovalSettings" 2.
-      "folders/{folder_id}/accessApprovalSettings" 3.
-      "organizations/{organization_id}/accessApprovalSettings"
+    name: The resource name of the settings. Format is one of: *
+      "projects/{project}/accessApprovalSettings" *
+      "folders/{folder}/accessApprovalSettings" *
+      "organizations/{organization}/accessApprovalSettings"
     updateMask: The update mask applies to the settings. Only the top level
       fields of AccessApprovalSettings (notification_emails &
       enrolled_services) are supported. For each field, if it is included, the
@@ -358,15 +358,15 @@ class AccessapprovalProjectsApprovalRequestsListRequest(_messages.Message):
 
   Fields:
     filter: A filter on the type of approval requests to retrieve. Must be one
-      of the following values: 1. [not set]: Requests that are pending or have
-      active approvals. 2. ALL: All requests. 3. PENDING: Only pending
-      requests. 4. ACTIVE: Only active (i.e. currently approved) requests. 5.
-      DISMISSED: Only dismissed (including expired) requests. 6. HISTORY:
-      Active and dismissed (including expired) requests.
+      of the following values: * [not set]: Requests that are pending or have
+      active approvals. * ALL: All requests. * PENDING: Only pending requests.
+      * ACTIVE: Only active (i.e. currently approved) requests. * DISMISSED:
+      Only dismissed (including expired) requests. * HISTORY: Active and
+      dismissed (including expired) requests.
     pageSize: Requested page size.
     pageToken: A token identifying the page of results to return.
-    parent: The parent resource. This may be "projects/{project_id}",
-      "folders/{folder_id}", or "organizations/{organization_id}".
+    parent: The parent resource. This may be "projects/{project}",
+      "folders/{folder}", or "organizations/{organization}".
   """
 
   filter = _messages.StringField(1)
@@ -401,10 +401,10 @@ class AccessapprovalProjectsUpdateAccessApprovalSettingsRequest(_messages.Messag
   Fields:
     accessApprovalSettings: A AccessApprovalSettings resource to be passed as
       the request body.
-    name: The resource name of the settings. Format is one of: 1.
-      "projects/{project_id}/accessApprovalSettings" 2.
-      "folders/{folder_id}/accessApprovalSettings" 3.
-      "organizations/{organization_id}/accessApprovalSettings"
+    name: The resource name of the settings. Format is one of: *
+      "projects/{project}/accessApprovalSettings" *
+      "folders/{folder}/accessApprovalSettings" *
+      "organizations/{organization}/accessApprovalSettings"
     updateMask: The update mask applies to the settings. Only the top level
       fields of AccessApprovalSettings (notification_emails &
       enrolled_services) are supported. For each field, if it is included, the
@@ -427,7 +427,7 @@ class ApprovalRequest(_messages.Message):
     approve: Access was approved.
     dismiss: The request was dismissed.
     name: The resource name of the request. Format is "{projects|folders|organ
-      izations}/{id}/approvalRequests/{approval_request_id}".
+      izations}/{id}/approvalRequests/{approval_request}".
     requestTime: The time at which approval was requested.
     requestedExpiration: The requested expiration for the approval. If the
       request is approved, access will be granted from the time of approval
@@ -514,14 +514,23 @@ class EnrolledService(_messages.Message):
 
   Fields:
     cloudProduct: The product for which Access Approval will be enrolled.
-      Allowed values are listed below (case-sensitive): 1. all 2. ga-only 3.
-      appengine.googleapis.com 4. bigquery.googleapis.com 5.
-      bigtable.googleapis.com 6. cloudkms.googleapis.com 7.
-      compute.googleapis.com 8. dataflow.googleapis.com 9. iam.googleapis.com
-      10. pubsub.googleapis.com 11. storage.googleapis.com Note: 'all' will
-      enroll the resource in all products supported at both 'GA' and 'Preview'
-      levels. 'ga-only' will only enroll the resource in products supported at
-      'GA' level.
+      Allowed values are listed below (case-sensitive): * all * GA * App
+      Engine * BigQuery * Cloud Bigtable * Cloud Key Management Service *
+      Compute Engine * Cloud Dataflow * Cloud Identity and Access Management *
+      Cloud Pub/Sub * Cloud Storage * Persistent Disk Note: These values are
+      supported as input for legacy purposes, but will not be returned from
+      the API. * all * ga-only * appengine.googleapis.com *
+      bigquery.googleapis.com * bigtable.googleapis.com *
+      cloudkms.googleapis.com * compute.googleapis.com *
+      dataflow.googleapis.com * iam.googleapis.com * pubsub.googleapis.com *
+      storage.googleapis.com Calls to UpdateAccessApprovalSettings using
+      'all', 'ga-only', or any of the XXX.googleapis.com will be translated to
+      the associated product name ('all', 'GA', 'App Engine', etc.). Note:
+      'all' will enroll the resource in all products supported at both 'GA'
+      and 'Preview' levels. 'ga-only'/'GA' will only enroll the resource in
+      products supported at 'GA' level. More information about levels of
+      support is available at https://cloud.google.com/access-
+      approval/docs/supported-services
     enrollmentLevel: The enrollment level of the service.
   """
 

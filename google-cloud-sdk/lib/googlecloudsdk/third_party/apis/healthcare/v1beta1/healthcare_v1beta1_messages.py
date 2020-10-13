@@ -1371,6 +1371,30 @@ class ExportDicomDataResponse(_messages.Message):
 
 
 
+class ExportMessagesRequest(_messages.Message):
+  r"""Request to schedule an export.
+
+  Fields:
+    endTime: The end of the range in `send_time` (MSH.7, https://www.hl7.org/d
+      ocumentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/conf/HL
+      7MSH.htm) to process. If not specified, the time when the export is
+      scheduled is used. This value has to come after the `start_time` defined
+      below. Only messages whose `send_time` lies in the range `start_time`
+      (inclusive) to `end_time` (exclusive) are exported.
+    gcsDestination: Export to a Cloud Storage destination.
+    startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
+      rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/con
+      f/HL7MSH.htm) to process. If not specified, the UNIX epoch
+      (1970-01-01T00:00:00Z) is used. This value has to come before the
+      `end_time` defined below. Only messages whose `send_time` lies in the
+      range `start_time` (inclusive) to `end_time` (exclusive) are exported.
+  """
+
+  endTime = _messages.StringField(1)
+  gcsDestination = _messages.MessageField('GcsDestination', 2)
+  startTime = _messages.StringField(3)
+
+
 class ExportResourcesRequest(_messages.Message):
   r"""Request to export resources.
 
@@ -1698,6 +1722,67 @@ class Finding(_messages.Message):
   infoType = _messages.StringField(2)
   quote = _messages.StringField(3)
   start = _messages.IntegerField(4)
+
+
+class GcsDestination(_messages.Message):
+  r"""The Cloud Storage output destination. The Cloud Healthcare Service Agent
+  requires the `roles/storage.objectAdmin` Cloud IAM roles on the Cloud
+  Storage location.
+
+  Enums:
+    ContentStructureValueValuesEnum: The format of the exported HL7v2 message
+      files.
+    MessageViewValueValuesEnum: Specifies the parts of the Message resource to
+      include in the export. If not specified, FULL is used.
+
+  Fields:
+    contentStructure: The format of the exported HL7v2 message files.
+    messageView: Specifies the parts of the Message resource to include in the
+      export. If not specified, FULL is used.
+    uriPrefix: URI of an existing Cloud Storage directory where the server
+      writes result files, in the format `gs://{bucket-
+      id}/{path/to/destination/dir}`. If there is no trailing slash, the
+      service appends one when composing the object path.
+  """
+
+  class ContentStructureValueValuesEnum(_messages.Enum):
+    r"""The format of the exported HL7v2 message files.
+
+    Values:
+      CONTENT_STRUCTURE_UNSPECIFIED: If the content structure is not
+        specified, the default value `MESSAGE_JSON` will be used.
+      MESSAGE_JSON: Messages are printed using the JSON format returned from
+        the `GetMessage` API. Messages are delimited with newlines.
+    """
+    CONTENT_STRUCTURE_UNSPECIFIED = 0
+    MESSAGE_JSON = 1
+
+  class MessageViewValueValuesEnum(_messages.Enum):
+    r"""Specifies the parts of the Message resource to include in the export.
+    If not specified, FULL is used.
+
+    Values:
+      MESSAGE_VIEW_UNSPECIFIED: Not specified, equivalent to FULL for
+        getMessage, equivalent to BASIC for listMessages.
+      RAW_ONLY: Server responses include all the message fields except
+        parsed_data, and schematized_data fields.
+      PARSED_ONLY: Server responses include all the message fields except data
+        and schematized_data fields.
+      FULL: Server responses include all the message fields.
+      SCHEMATIZED_ONLY: Server responses include all the message fields except
+        data and parsed_data fields.
+      BASIC: Server responses include only the name field.
+    """
+    MESSAGE_VIEW_UNSPECIFIED = 0
+    RAW_ONLY = 1
+    PARSED_ONLY = 2
+    FULL = 3
+    SCHEMATIZED_ONLY = 4
+    BASIC = 5
+
+  contentStructure = _messages.EnumField('ContentStructureValueValuesEnum', 1)
+  messageView = _messages.EnumField('MessageViewValueValuesEnum', 2)
+  uriPrefix = _messages.StringField(3)
 
 
 class GcsSource(_messages.Message):
@@ -3835,7 +3920,8 @@ class HealthcareProjectsLocationsDatasetsFhirStoresFhirHistoryRequest(_messages.
       the following: * An entire year: `_at=2019` * An entire month:
       `_at=2019-01` * A specific day: `_at=2019-01-20` * A specific second:
       `_at=2018-12-31T23:59:58Z`
-    _count: The maximum number of search results on a page. Defaults to 1000.
+    _count: The maximum number of search results on a page. Default value is
+      100. Maximum value is 1,000.
     _page_token: Used to retrieve the first, previous, next, or last page of
       resource versions when using pagination. Value should be set to the
       value of `_page_token` set in next or previous page links' URLs. Next
@@ -4144,6 +4230,21 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresDeleteRequest(_messages.Mess
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest object.
+
+  Fields:
+    exportMessagesRequest: A ExportMessagesRequest resource to be passed as
+      the request body.
+    name: The name of the source HL7v2 store, in the format `projects/{project
+      _id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores/{hl7v2_st
+      ore_id}`
+  """
+
+  exportMessagesRequest = _messages.MessageField('ExportMessagesRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_messages.Message):
