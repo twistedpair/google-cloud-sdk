@@ -81,10 +81,7 @@ class RequestsLogTailer(object):
 
 def GetLogTailerTransport():
   if base.UseRequests():
-    try:
-      return RequestsLogTailer()
-    except requests.UnsupportedCredentialsException:
-      pass
+    return RequestsLogTailer()
   return Httplib2LogTailer()
 
 

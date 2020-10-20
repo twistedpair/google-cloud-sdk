@@ -20,10 +20,14 @@ from __future__ import unicode_literals
 
 import enum
 
+from googlecloudsdk.api_lib.domains import registrations
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
+
+# Alpha API = Beta API, it doesn't matter which one is used to generate flags.
+API_VERSION_FOR_FLAGS = registrations.BETA_API_VERSION
 
 
 class MutationOp(enum.Enum):
@@ -57,13 +61,15 @@ def AddConfigureContactsSettingsFlagsToParser(parser):
   """
   _AddContactSettingsFlagsToParser(parser, mutation_op=MutationOp.UPDATE)
 
+  messages = apis.GetMessagesModule('domains', API_VERSION_FOR_FLAGS)
   base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
       '--notices',
       help='Notices about special properties of contacts.',
       metavar='NOTICE',
       type=arg_parsers.ArgList(
           element_type=str,
-          choices=CONTACT_NOTICE_ENUM_MAPPER.choices)).AddToParser(parser)
+          choices=ContactNoticeEnumMapper(messages).choices)).AddToParser(
+              parser)
 
 
 def AddRegisterFlagsToParser(parser):
@@ -83,7 +89,8 @@ def AddRegisterFlagsToParser(parser):
             'the price using the get-register-parameters command.'),
   ).AddToParser(parser)
 
-  notice_choices = CONTACT_NOTICE_ENUM_MAPPER.choices.copy()
+  messages = apis.GetMessagesModule('domains', API_VERSION_FOR_FLAGS)
+  notice_choices = ContactNoticeEnumMapper(messages).choices.copy()
   notice_choices.update({
       'hsts-preloaded':
           ('By sending this notice you acknowledge that the domain is '
@@ -302,9 +309,10 @@ def _AddContactSettingsFlagsToParser(parser, mutation_op):
     """Copy of base._ChoiceValueType."""
     return value.replace('_', '-').lower()
 
+  messages = apis.GetMessagesModule('domains', API_VERSION_FOR_FLAGS)
   base.Argument(
       '--contact-privacy',
-      choices=CONTACT_PRIVACY_ENUM_MAPPER.choices,
+      choices=ContactPrivacyEnumMapper(messages).choices,
       type=_ChoiceValueType,
       help='The contact privacy mode to use. Supported privacy modes depend on the domain.',
       required=False,
@@ -334,41 +342,41 @@ def AddManagementSettingsFlagsToParser(parser):
     parser: argparse parser to which to add these flags.
   """
 
-  TRANSFER_LOCK_ENUM_MAPPER.choice_arg.AddToParser(parser)
+  messages = apis.GetMessagesModule('domains', API_VERSION_FOR_FLAGS)
+  TransferLockEnumMapper(messages).choice_arg.AddToParser(parser)
 
 
-def _GetContactPrivacyEnum():
+def _GetContactPrivacyEnum(domains_messages):
   """Get Contact Privacy Enum from api messages."""
-  messages = apis.GetMessagesModule('domains', 'v1alpha2')
-  return messages.ContactSettings.PrivacyValueValuesEnum
+  return domains_messages.ContactSettings.PrivacyValueValuesEnum
 
 
-CONTACT_PRIVACY_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
-    '--contact-privacy',
-    _GetContactPrivacyEnum(),
-    custom_mappings={
-        'PRIVATE_CONTACT_DATA':
-            ('private-contact-data',
-             ('Your contact info won\'t be available to the public. To help '
+def ContactPrivacyEnumMapper(domains_messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--contact-privacy',
+      _GetContactPrivacyEnum(domains_messages),
+      custom_mappings={
+          'PRIVATE_CONTACT_DATA': ('private-contact-data', (
+              'Your contact info won\'t be available to the public. To help '
               'protect your info and prevent spam, a third party provides '
               'alternate (proxy) contact info for your domain in the public '
               'directory at no extra cost. They will forward received messages '
               'to you.')),
-        'REDACTED_CONTACT_DATA': ('redacted-contact-data', (
-            'Limited personal information will be available to the public. The '
-            'actual information redacted depends on the domain. For more '
-            'information see '
-            'https://support.google.com/domains/answer/3251242.')),
-        'PUBLIC_CONTACT_DATA':
-            ('public-contact-data',
-             ('All the data from contact config is publicly available. To set '
-              'this value, you must also pass the --notices flag with value '
-              'public-contact-data-acknowledgement or agree to the notice '
-              'interactively.')),
-    },
-    required=False,
-    help_str=('The contact privacy mode to use. Supported privacy modes '
-              'depend on the domain.'))
+          'REDACTED_CONTACT_DATA': ('redacted-contact-data', (
+              'Limited personal information will be available to the public. The '
+              'actual information redacted depends on the domain. For more '
+              'information see '
+              'https://support.google.com/domains/answer/3251242.')),
+          'PUBLIC_CONTACT_DATA': (
+              'public-contact-data',
+              ('All the data from contact config is publicly available. To set '
+               'this value, you must also pass the --notices flag with value '
+               'public-contact-data-acknowledgement or agree to the notice '
+               'interactively.')),
+      },
+      required=False,
+      help_str=('The contact privacy mode to use. Supported privacy modes '
+                'depend on the domain.'))
 
 
 def PrivacyChoiceStrength(privacy):
@@ -381,39 +389,39 @@ def PrivacyChoiceStrength(privacy):
     return 2
 
 
-def _GetContactNoticeEnum():
+def _GetContactNoticeEnum(domains_messages):
   """Get ContactNoticeEnum from api messages."""
-  messages = apis.GetMessagesModule('domains', 'v1alpha2')
-  return messages.ConfigureContactSettingsRequest.ContactNoticesValueListEntryValuesEnum
+  return domains_messages.ConfigureContactSettingsRequest.ContactNoticesValueListEntryValuesEnum
 
 
-CONTACT_NOTICE_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
-    '--notices',
-    _GetContactNoticeEnum(),
-    custom_mappings={
-        'PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT':
-            ('public-contact-data-acknowledgement',
-             ('By sending this notice you acknowledge that using '
-              'public-contact-data contact privacy makes all the data '
-              'from contact config publicly available.')),
-    },
-    required=False,
-    help_str=('Notices about special properties of contacts.'))
+def ContactNoticeEnumMapper(domains_messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--notices',
+      _GetContactNoticeEnum(domains_messages),
+      custom_mappings={
+          'PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT':
+              ('public-contact-data-acknowledgement',
+               ('By sending this notice you acknowledge that using '
+                'public-contact-data contact privacy makes all the data '
+                'from contact config publicly available.')),
+      },
+      required=False,
+      help_str=('Notices about special properties of contacts.'))
 
 
-def _GetTransferLockEnum():
+def _GetTransferLockEnum(domains_messages):
   """Get TransferLockStateValueValuesEnum from api messages."""
-  messages = apis.GetMessagesModule('domains', 'v1alpha2')
-  return messages.ManagementSettings.TransferLockStateValueValuesEnum
+  return domains_messages.ManagementSettings.TransferLockStateValueValuesEnum
 
 
-TRANSFER_LOCK_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
-    '--transfer-lock-state',
-    _GetTransferLockEnum(),
-    custom_mappings={
-        'LOCKED': ('locked', ('The transfer lock is locked.')),
-        'UNLOCKED': ('unlocked', ('The transfer lock is unlocked.')),
-    },
-    required=False,
-    help_str=('Transfer Lock of a registration. It needs to be unlocked '
-              'in order to transfer the domain to another registrar.'))
+def TransferLockEnumMapper(domains_messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--transfer-lock-state',
+      _GetTransferLockEnum(domains_messages),
+      custom_mappings={
+          'LOCKED': ('locked', ('The transfer lock is locked.')),
+          'UNLOCKED': ('unlocked', ('The transfer lock is unlocked.')),
+      },
+      required=False,
+      help_str=('Transfer Lock of a registration. It needs to be unlocked '
+                'in order to transfer the domain to another registrar.'))

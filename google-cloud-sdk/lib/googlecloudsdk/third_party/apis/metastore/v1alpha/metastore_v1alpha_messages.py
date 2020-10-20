@@ -128,6 +128,19 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class DataCatalogConfig(_messages.Message):
+  r"""Specifies how metastore metadata should be integrated with the Data
+  Catalog service.
+
+  Fields:
+    disabled: Defines whether the metastore metadata should be synced to Data
+      Catalog. The default value is to enable syncing metastore metadata to
+      Data Catalog.
+  """
+
+  disabled = _messages.BooleanField(1)
+
+
 class DatabaseDump(_messages.Message):
   r"""A specification of the location of and metadata about a database dump
   from a relational database management system.
@@ -515,6 +528,17 @@ class MetadataImport(_messages.Message):
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
+
+
+class MetadataIntegration(_messages.Message):
+  r"""Specifies how metastore metadata should be integrated with external
+  services.
+
+  Fields:
+    dataCatalogConfig: The integration config for the Data Catalog service.
+  """
+
+  dataCatalogConfig = _messages.MessageField('DataCatalogConfig', 1)
 
 
 class MetastoreProjectsLocationsGetRequest(_messages.Message):
@@ -1094,6 +1118,8 @@ class Service(_messages.Message):
     maintenanceWindow: The one hour maintenance window of the metastore
       service. This specifies when the service can be restarted for
       maintenance purposes in UTC time.
+    metadataIntegration: The setting that defines how metastore metadata
+      should be integrated with external services and systems.
     name: Immutable. The relative resource name of the metastore service, of
       the form:"projects/{project_id}/locations/{location_id}/services/{servic
       e_id}".
@@ -1181,14 +1207,15 @@ class Service(_messages.Message):
   hiveMetastoreConfig = _messages.MessageField('HiveMetastoreConfig', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 6)
-  name = _messages.StringField(7)
-  network = _messages.StringField(8)
-  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateMessage = _messages.StringField(11)
-  tier = _messages.EnumField('TierValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  metadataIntegration = _messages.MessageField('MetadataIntegration', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateMessage = _messages.StringField(12)
+  tier = _messages.EnumField('TierValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class SetIamPolicyRequest(_messages.Message):

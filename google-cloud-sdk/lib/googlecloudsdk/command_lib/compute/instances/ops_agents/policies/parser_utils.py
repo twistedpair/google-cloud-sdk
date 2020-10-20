@@ -158,10 +158,17 @@ def AddMutationArgs(parser, required=True):
 
       *type*::: Type of agent to manage.
 
-      *Required*. Allowed values: ``logging'' and ``metrics''. Use ``logging''
-      for the Logging Agent (https://cloud.google.com/logging/docs/agent).
-      Use ``metrics'' for the Monitoring Agent
-      (https://cloud.google.com/monitoring/agent).
+      *Required*. Allowed values: ``logging'', ``metrics'' and ``ops-agent''.
+      Use ``logging'' for the Logging Agent
+      (https://cloud.google.com/logging/docs/agent). Use ``metrics'' for the
+      Monitoring Agent (https://cloud.google.com/monitoring/agent). Use
+      ``ops-agent'' for the Ops Agent
+      (https://cloud.google.com/stackdriver/docs/solutions/ops-agent). The Ops
+      Agent has both a logging module and a metrics module already. So other
+      types of agents are not allowed when there is an agent with type
+      ``ops-agent''. See
+      https://cloud.google.com/stackdriver/docs/solutions/ops-agent#which_agent
+      for which agent to use.
 
       *version*::: Version of the agent to install.
 

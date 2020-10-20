@@ -565,9 +565,9 @@ class GameServerCluster(_messages.Message):
     etag: ETag of the resource.
     labels: The labels associated with this game server cluster. Each label is
       a key-value pair.
-    name: Required. The resource name of the game server cluster. Uses the
-      form: `projects/{project}/locations/{location}/realms/{realm}/gameServer
-      Clusters/{cluster}`. For example, `projects/my-
+    name: Required. The resource name of the game server cluster, in the
+      following form: `projects/{project}/locations/{location}/realms/{realm}/
+      gameServerClusters/{cluster}`. For example, `projects/my-
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
       onprem-cluster`.
     updateTime: Output only. The last-modified time.
@@ -636,9 +636,9 @@ class GameServerConfig(_messages.Message):
       FleetConfig is allowed.
     labels: The labels associated with this game server config. Each label is
       a key-value pair.
-    name: The resource name of the game server config. Uses the form: `project
-      s/{project}/locations/{location}/gameServerDeployments/{deployment}/conf
-      igs/{config}`. For example, `projects/my-
+    name: The resource name of the game server config, in the following form:
+      `projects/{project}/locations/{location}/gameServerDeployments/{deployme
+      nt}/configs/{config}`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-game/configs/my-
       config`.
     scalingConfigs: The autoscaling settings.
@@ -704,9 +704,9 @@ class GameServerDeployment(_messages.Message):
     etag: ETag of the resource.
     labels: The labels associated with this game server deployment. Each label
       is a key-value pair.
-    name: The resource name of the game server deployment. Uses the form: `pro
-      jects/{project}/locations/{location}/gameServerDeployments/{deployment}`
-      . For example, `projects/my-
+    name: The resource name of the game server deployment, in the following
+      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
+      ployment}`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment`.
     updateTime: Output only. The last-modified time.
   """
@@ -758,9 +758,9 @@ class GameServerDeploymentRollout(_messages.Message):
     gameServerConfigOverrides: Contains the game server config rollout
       overrides. Overrides are processed in the order they are listed. Once a
       match is found for a realm, the rest of the list is not processed.
-    name: The resource name of the game server deployment rollout. Uses the
-      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
-      ployment}/rollout`. For example, `projects/my-
+    name: The resource name of the game server deployment rollout, in the
+      following form: `projects/{project}/locations/{location}/gameServerDeplo
+      yments/{deployment}/rollout`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment/rollout`.
     updateTime: Output only. The last-modified time.
   """
@@ -782,8 +782,8 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsCreateRequest(_me
       created.
     gameServerConfig: A GameServerConfig resource to be passed as the request
       body.
-    parent: Required. The parent resource name. Uses the form: `projects/{proj
-      ect}/locations/{location}/gameServerDeployments/{deployment}/`.
+    parent: Required. The parent resource name, in the following form: `projec
+      ts/{project}/locations/{location}/gameServerDeployments/{deployment}/`.
   """
 
   configId = _messages.StringField(1)
@@ -796,9 +796,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsDeleteRequest(_me
   object.
 
   Fields:
-    name: Required. The name of the game server config to delete. Uses the
-      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
-      ployment}/configs/{config}`.
+    name: Required. The name of the game server config to delete, in the
+      following form: `projects/{project}/locations/{location}/gameServerDeplo
+      yments/{deployment}/configs/{config}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -809,9 +809,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsGetRequest(_messa
   object.
 
   Fields:
-    name: Required. The name of the game server config to retrieve. Uses the
-      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
-      ployment}/configs/{config}`.
+    name: Required. The name of the game server config to retrieve, in the
+      following form: `projects/{project}/locations/{location}/gameServerDeplo
+      yments/{deployment}/configs/{config}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -831,8 +831,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsConfigsListRequest(_mess
       to determine if there are more GameServerConfigs left to be queried.
     pageToken: Optional. The next_page_token value returned from a previous
       list request, if any.
-    parent: Required. The parent resource name. Uses the form: `projects/{proj
-      ect}/locations/{location}/gameServerDeployments/{deployment}/configs/*`.
+    parent: Required. The parent resource name, in the following form: `projec
+      ts/{project}/locations/{location}/gameServerDeployments/{deployment}/con
+      figs/*`.
   """
 
   filter = _messages.StringField(1)
@@ -851,7 +852,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsCreateRequest(_messages.
       be created.
     gameServerDeployment: A GameServerDeployment resource to be passed as the
       request body.
-    parent: Required. The parent resource name. Uses the form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
   """
 
@@ -865,9 +866,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsDeleteRequest(_messages.
   object.
 
   Fields:
-    name: Required. The name of the game server delpoyment to delete. Uses the
-      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
-      ployment}`.
+    name: Required. The name of the game server delpoyment to delete, in the
+      following form: `projects/{project}/locations/{location}/gameServerDeplo
+      yments/{deployment}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -880,9 +881,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsFetchDeploymentStateRequ
   Fields:
     fetchDeploymentStateRequest: A FetchDeploymentStateRequest resource to be
       passed as the request body.
-    name: Required. The name of the game server delpoyment. Uses the form: `pr
-      ojects/{project}/locations/{location}/gameServerDeployments/{deployment}
-      `.
+    name: Required. The name of the game server delpoyment, in the following
+      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
+      ployment}`.
   """
 
   fetchDeploymentStateRequest = _messages.MessageField('FetchDeploymentStateRequest', 1)
@@ -915,9 +916,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsGetRequest(_messages.Mes
   r"""A GameservicesProjectsLocationsGameServerDeploymentsGetRequest object.
 
   Fields:
-    name: Required. The name of the game server delpoyment to retrieve. Uses
-      the form: `projects/{project}/locations/{location}/gameServerDeployments
-      /{deployment}`.
+    name: Required. The name of the game server delpoyment to retrieve, in the
+      following form: `projects/{project}/locations/{location}/gameServerDeplo
+      yments/{deployment}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -928,9 +929,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsGetRolloutRequest(_messa
   object.
 
   Fields:
-    name: Required. The name of the game server delpoyment to retrieve. Uses
-      the form: `projects/{project}/locations/{location}/gameServerDeployments
-      /{deployment}/rollout`.
+    name: Required. The name of the game server delpoyment to retrieve, in the
+      following form: `projects/{project}/locations/{location}/gameServerDeplo
+      yments/{deployment}/rollout`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -950,7 +951,7 @@ class GameservicesProjectsLocationsGameServerDeploymentsListRequest(_messages.Me
       left to be queried.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
-    parent: Required. The parent resource name. Uses the form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
   """
 
@@ -967,9 +968,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsPatchRequest(_messages.M
   Fields:
     gameServerDeployment: A GameServerDeployment resource to be passed as the
       request body.
-    name: The resource name of the game server deployment. Uses the form: `pro
-      jects/{project}/locations/{location}/gameServerDeployments/{deployment}`
-      . For example, `projects/my-
+    name: The resource name of the game server deployment, in the following
+      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
+      ployment}`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment`.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. For the `FieldMask` definition, see https:
@@ -990,9 +991,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsPreviewRolloutRequest(_m
   Fields:
     gameServerDeploymentRollout: A GameServerDeploymentRollout resource to be
       passed as the request body.
-    name: The resource name of the game server deployment rollout. Uses the
-      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
-      ployment}/rollout`. For example, `projects/my-
+    name: The resource name of the game server deployment rollout, in the
+      following form: `projects/{project}/locations/{location}/gameServerDeplo
+      yments/{deployment}/rollout`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment/rollout`.
     previewTime: Optional. The target timestamp to compute the preview.
       Defaults to the immediately after the proposed rollout completes.
@@ -1048,9 +1049,9 @@ class GameservicesProjectsLocationsGameServerDeploymentsUpdateRolloutRequest(_me
   Fields:
     gameServerDeploymentRollout: A GameServerDeploymentRollout resource to be
       passed as the request body.
-    name: The resource name of the game server deployment rollout. Uses the
-      form: `projects/{project}/locations/{location}/gameServerDeployments/{de
-      ployment}/rollout`. For example, `projects/my-
+    name: The resource name of the game server deployment rollout, in the
+      following form: `projects/{project}/locations/{location}/gameServerDeplo
+      yments/{deployment}/rollout`. For example, `projects/my-
       project/locations/global/gameServerDeployments/my-deployment/rollout`.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. For the `FieldMask` definition, see https:
@@ -1145,7 +1146,7 @@ class GameservicesProjectsLocationsRealmsCreateRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsRealmsCreateRequest object.
 
   Fields:
-    parent: Required. The parent resource name. Uses the form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
     realm: A Realm resource to be passed as the request body.
     realmId: Required. The ID of the realm resource to be created.
@@ -1160,7 +1161,7 @@ class GameservicesProjectsLocationsRealmsDeleteRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsRealmsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the realm to delete. Uses the form:
+    name: Required. The name of the realm to delete, in the following form:
       `projects/{project}/locations/{location}/realms/{realm}`.
   """
 
@@ -1176,7 +1177,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersCreateRequest(_messag
       request body.
     gameServerClusterId: Required. The ID of the game server cluster resource
       to be created.
-    parent: Required. The parent resource name. Uses the form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}/realms/{realm-id}`.
   """
 
@@ -1190,8 +1191,8 @@ class GameservicesProjectsLocationsRealmsGameServerClustersDeleteRequest(_messag
   object.
 
   Fields:
-    name: Required. The name of the game server cluster to delete. Uses the
-      form:
+    name: Required. The name of the game server cluster to delete, in the
+      following form:
       `projects/{project}/locations/{location}/gameServerClusters/{cluster}`.
   """
 
@@ -1203,8 +1204,8 @@ class GameservicesProjectsLocationsRealmsGameServerClustersGetRequest(_messages.
   object.
 
   Fields:
-    name: Required. The name of the game server cluster to retrieve. Uses the
-      form: `projects/{project}/locations/{location}/realms/{realm-
+    name: Required. The name of the game server cluster to retrieve, in the
+      following form: `projects/{project}/locations/{location}/realms/{realm-
       id}/gameServerClusters/{cluster}`.
   """
 
@@ -1226,7 +1227,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersListRequest(_messages
       to be queried.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
-    parent: Required. The parent resource name. Uses the form:
+    parent: Required. The parent resource name, in the following form:
       "projects/{project}/locations/{location}/realms/{realm}".
   """
 
@@ -1244,9 +1245,9 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPatchRequest(_message
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
-    name: Required. The resource name of the game server cluster. Uses the
-      form: `projects/{project}/locations/{location}/realms/{realm}/gameServer
-      Clusters/{cluster}`. For example, `projects/my-
+    name: Required. The resource name of the game server cluster, in the
+      following form: `projects/{project}/locations/{location}/realms/{realm}/
+      gameServerClusters/{cluster}`. For example, `projects/my-
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
       onprem-cluster`.
     updateMask: Required. Mask of fields to update. At least one path must be
@@ -1270,7 +1271,7 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewCreateRequest(
       request body.
     gameServerClusterId: Required. The ID of the game server cluster resource
       to be created.
-    parent: Required. The parent resource name. Uses the form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}/realms/{realm}`.
     previewTime: Optional. The target timestamp to compute the preview.
   """
@@ -1287,8 +1288,8 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewDeleteRequest(
   object.
 
   Fields:
-    name: Required. The name of the game server cluster to delete. Uses the
-      form:
+    name: Required. The name of the game server cluster to delete, in the
+      following form:
       `projects/{project}/locations/{location}/gameServerClusters/{cluster}`.
     previewTime: Optional. The target timestamp to compute the preview.
   """
@@ -1305,9 +1306,9 @@ class GameservicesProjectsLocationsRealmsGameServerClustersPreviewUpdateRequest(
   Fields:
     gameServerCluster: A GameServerCluster resource to be passed as the
       request body.
-    name: Required. The resource name of the game server cluster. Uses the
-      form: `projects/{project}/locations/{location}/realms/{realm}/gameServer
-      Clusters/{cluster}`. For example, `projects/my-
+    name: Required. The resource name of the game server cluster, in the
+      following form: `projects/{project}/locations/{location}/realms/{realm}/
+      gameServerClusters/{cluster}`. For example, `projects/my-
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
       onprem-cluster`.
     previewTime: Optional. The target timestamp to compute the preview.
@@ -1327,7 +1328,7 @@ class GameservicesProjectsLocationsRealmsGetRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsRealmsGetRequest object.
 
   Fields:
-    name: Required. The name of the realm to retrieve. Uses the form:
+    name: Required. The name of the realm to retrieve, in the following form:
       `projects/{project}/locations/{location}/realms/{realm}`.
   """
 
@@ -1347,7 +1348,7 @@ class GameservicesProjectsLocationsRealmsListRequest(_messages.Message):
       to determine if there are more realms left to be queried.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
-    parent: Required. The parent resource name. Uses the form:
+    parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}`.
   """
 
@@ -1362,7 +1363,7 @@ class GameservicesProjectsLocationsRealmsPatchRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsRealmsPatchRequest object.
 
   Fields:
-    name: The resource name of the realm. Uses the form:
+    name: The resource name of the realm, in the following form:
       `projects/{project}/locations/{location}/realms/{realm}`. For example,
       `projects/my-project/locations/{location}/realms/my-realm`.
     realm: A Realm resource to be passed as the request body.
@@ -1380,7 +1381,7 @@ class GameservicesProjectsLocationsRealmsPreviewUpdateRequest(_messages.Message)
   r"""A GameservicesProjectsLocationsRealmsPreviewUpdateRequest object.
 
   Fields:
-    name: The resource name of the realm. Uses the form:
+    name: The resource name of the realm, in the following form:
       `projects/{project}/locations/{location}/realms/{realm}`. For example,
       `projects/my-project/locations/{location}/realms/my-realm`.
     previewTime: Optional. The target timestamp to compute the preview.
@@ -1998,7 +1999,7 @@ class Realm(_messages.Message):
     etag: ETag of the resource.
     labels: The labels associated with this realm. Each label is a key-value
       pair.
-    name: The resource name of the realm. Uses the form:
+    name: The resource name of the realm, in the following form:
       `projects/{project}/locations/{location}/realms/{realm}`. For example,
       `projects/my-project/locations/{location}/realms/my-realm`.
     timeZone: Required. Time zone where all policies targeting this realm are

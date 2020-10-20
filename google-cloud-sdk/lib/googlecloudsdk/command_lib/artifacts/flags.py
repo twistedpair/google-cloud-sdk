@@ -18,8 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import sys
 import textwrap
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -232,3 +234,28 @@ def GetMetadataFilterFlag():
       help=('Additional filter to fetch metadata for a given '
             'qualified image reference.'))
 
+
+def GetShowOccurrencesFromFlag():
+  return base.Argument(
+      '--show-occurrences-from',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      hidden=True,
+      default=10,
+      help=('The number of the most recent images for which to '
+            'summarize Occurences.'))
+
+
+def GetShowOccurrencesFlag():
+  return base.Argument(
+      '--show-occurrences',
+      hidden=True,
+      action='store_true',
+      help='Whether to show summaries of the various Occurrence types.')
+
+
+def GetOccurrenceFilterFlag():
+  return base.Argument(
+      '--occurrence-filter',
+      hidden=True,
+      default='kind="BUILD" OR kind="IMAGE" OR kind="DISCOVERY"',
+      help='A filter for the Occurrences which will be summarized.')

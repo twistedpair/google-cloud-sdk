@@ -540,20 +540,10 @@
             "$ref": "AuditConfig"
           }
         },
-        "rules": {
-          "description": "If more than one rule is specified, the rules are applied in the following manner: - All matching LOG rules are always applied. - If any DENY\/DENY_WITH_LOG rule matches, permission is denied. Logging will be applied if one or more matching rule requires logging. - Otherwise, if any ALLOW\/ALLOW_WITH_LOG rule matches, permission is granted. Logging will be applied if one or more matching rule requires logging. - Otherwise, if no rule applies, permission is denied.",
-          "type": "array",
-          "items": {
-            "$ref": "Rule"
-          }
-        },
         "etag": {
           "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy. **Important:** If you use IAM Conditions, you must include the `etag` field whenever you call `setIamPolicy`. If you omit this field, then IAM allows you to overwrite a version `3` policy with a version `1` policy, and all of the conditions in the version `3` policy are lost.",
           "type": "string",
           "format": "byte"
-        },
-        "iamOwned": {
-          "type": "boolean"
         }
       }
     },
@@ -576,10 +566,6 @@
         "condition": {
           "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
-        },
-        "bindingId": {
-          "description": "A client-specified ID for this binding. Expected to be globally unique to support the internal bindings-by-ID API.",
-          "type": "string"
         }
       }
     },
@@ -614,12 +600,6 @@
         "service": {
           "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services.",
           "type": "string"
-        },
-        "exemptedMembers": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "auditLogConfigs": {
           "description": "The configuration for logging of each type of permission.",
@@ -657,279 +637,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "ignoreChildExemptions": {
-          "type": "boolean"
-        }
-      }
-    },
-    "Rule": {
-      "id": "Rule",
-      "description": "A rule to be applied in a Policy.",
-      "type": "object",
-      "properties": {
-        "description": {
-          "description": "Human-readable description of the rule.",
-          "type": "string"
-        },
-        "permissions": {
-          "description": "A permission is a string of form '..' (e.g., 'storage.buckets.list'). A value of '*' matches all permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "action": {
-          "description": "Required",
-          "type": "string",
-          "enumDescriptions": [
-            "Default no action.",
-            "Matching 'Entries' grant access.",
-            "Matching 'Entries' grant access and the caller promises to log the request per the returned log_configs.",
-            "Matching 'Entries' deny access.",
-            "Matching 'Entries' deny access and the caller promises to log the request per the returned log_configs.",
-            "Matching 'Entries' tell IAM.Check callers to generate logs."
-          ],
-          "enum": [
-            "NO_ACTION",
-            "ALLOW",
-            "ALLOW_WITH_LOG",
-            "DENY",
-            "DENY_WITH_LOG",
-            "LOG"
-          ]
-        },
-        "in": {
-          "description": "If one or more 'in' clauses are specified, the rule matches if the PRINCIPAL\/AUTHORITY_SELECTOR is in at least one of these entries.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "notIn": {
-          "description": "If one or more 'not_in' clauses are specified, the rule matches if the PRINCIPAL\/AUTHORITY_SELECTOR is in none of the entries. The format for in and not_in entries can be found at in the Local IAM documentation (see go\/local-iam#features).",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "conditions": {
-          "description": "Additional restrictions that must be met. All conditions must pass for the rule to match.",
-          "type": "array",
-          "items": {
-            "$ref": "Condition"
-          }
-        },
-        "logConfig": {
-          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries that match the LOG action.",
-          "type": "array",
-          "items": {
-            "$ref": "LogConfig"
-          }
-        }
-      }
-    },
-    "Condition": {
-      "id": "Condition",
-      "description": "A condition to be met.",
-      "type": "object",
-      "properties": {
-        "iam": {
-          "description": "Trusted attributes supplied by the IAM system.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default non-attribute.",
-            "Either principal or (if present) authority selector.",
-            "The principal (even if an authority selector is present), which must only be used for attribution, not authorization.",
-            "Any of the security realms in the IAMContext (go\/security-realms). When used with IN, the condition indicates \"any of the request's realms match one of the given values; with NOT_IN, \"none of the realms match any of the given values\". Note that a value can be: - 'self' (i.e., allow connections from clients that are in the same security realm) - 'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-region' (i.e., allow connections from clients that are in the same cloud region) - 'guardians' (i.e., allow connections from its guardian realms. See go\/security-realms-glossary#guardian for more information.) - a realm (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups) A match is determined by a realm group membership check performed by a RealmAclRep object (go\/realm-acl-howto). It is not permitted to grant access based on the *absence* of a realm, so realm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
-            "An approver (distinct from the requester) that has authorized this request. When used with IN, the condition indicates that one of the approvers associated with the request matches the specified principal, or is a member of the specified group. Approvers can only grant additional access, and are thus only used in a strictly positive context (e.g. ALLOW\/IN or DENY\/NOT_IN).",
-            "What types of justifications have been supplied with this request. String values should match enum names from security.credentials.JustificationType, e.g. \"MANUAL_STRING\". It is not permitted to grant access based on the *absence* of a justification, so justification conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN). Multiple justifications, e.g., a Buganizer ID and a manually-entered reason, are normal and supported.",
-            "What type of credentials have been supplied with this request. String values should match enum names from security_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access based on the *absence* of a credentials type, so the conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
-            "EXPERIMENTAL -- DO NOT USE. "
-          ],
-          "enum": [
-            "NO_ATTR",
-            "AUTHORITY",
-            "ATTRIBUTION",
-            "SECURITY_REALM",
-            "APPROVER",
-            "JUSTIFICATION_TYPE",
-            "CREDENTIALS_TYPE",
-            "CREDS_ASSERTION"
-          ]
-        },
-        "sys": {
-          "description": "Trusted attributes supplied by any service that owns resources and uses the IAM system for access control.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default non-attribute type",
-            "Region of the resource",
-            "Service name",
-            "Resource name",
-            "IP address of the caller"
-          ],
-          "enum": [
-            "NO_ATTR",
-            "REGION",
-            "SERVICE",
-            "NAME",
-            "IP"
-          ]
-        },
-        "svc": {
-          "description": "Trusted attributes discharged by the service.",
-          "type": "string"
-        },
-        "op": {
-          "description": "An operator to apply the subject with.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default no-op.",
-            "DEPRECATED. Use IN instead.",
-            "DEPRECATED. Use NOT_IN instead.",
-            "The condition is true if the subject (or any element of it if it is a set) matches any of the supplied values.",
-            "The condition is true if the subject (or every element of it if it is a set) matches none of the supplied values.",
-            "Subject is discharged"
-          ],
-          "enum": [
-            "NO_OP",
-            "EQUALS",
-            "NOT_EQUALS",
-            "IN",
-            "NOT_IN",
-            "DISCHARGED"
-          ]
-        },
-        "values": {
-          "description": "The objects of the condition.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "LogConfig": {
-      "id": "LogConfig",
-      "description": "Specifies what kind of log the caller must write",
-      "type": "object",
-      "properties": {
-        "counter": {
-          "description": "Counter options.",
-          "$ref": "CounterOptions"
-        },
-        "dataAccess": {
-          "description": "Data access options.",
-          "$ref": "DataAccessOptions"
-        },
-        "cloudAudit": {
-          "description": "Cloud audit options.",
-          "$ref": "CloudAuditOptions"
-        }
-      }
-    },
-    "CounterOptions": {
-      "id": "CounterOptions",
-      "description": "Increment a streamz counter with the specified metric and field names. Metric names should start with a '\/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"\/iam\/policy\" prepended. Field names correspond to IAM request parameters and field values are their respective values. Supported field names: - \"authority\", which is \"[token]\" if IAMContext.token is present, otherwise the value of IAMContext.authority_selector if present, and otherwise a representation of IAMContext.principal; or - \"iam_principal\", a representation of IAMContext.principal even if a token or authority selector is present; or - \"\" (empty string), resulting in a counter with no fields. Examples: counter { metric: \"\/debug_access_count\" field: \"iam_principal\" } ==> increment counter \/iam\/policy\/debug_access_count {iam_principal=[value of IAMContext.principal]}",
-      "type": "object",
-      "properties": {
-        "metric": {
-          "description": "The metric to update.",
-          "type": "string"
-        },
-        "field": {
-          "description": "The field value to attribute.",
-          "type": "string"
-        },
-        "customFields": {
-          "description": "Custom fields.",
-          "type": "array",
-          "items": {
-            "$ref": "CustomField"
-          }
-        }
-      }
-    },
-    "CustomField": {
-      "id": "CustomField",
-      "description": "Custom fields. These can be used to create a counter with arbitrary field\/value pairs. See: go\/rpcsp-custom-fields.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Name is the field name.",
-          "type": "string"
-        },
-        "value": {
-          "description": "Value is the field value. It is important that in contrast to the CounterOptions.field, the value here is a constant that is not derived from the IAMContext.",
-          "type": "string"
-        }
-      }
-    },
-    "DataAccessOptions": {
-      "id": "DataAccessOptions",
-      "description": "Write a Data Access (Gin) log",
-      "type": "object",
-      "properties": {
-        "logMode": {
-          "type": "string",
-          "enumDescriptions": [
-            "Client is not required to write a partial Gin log immediately after the authorization check. If client chooses to write one and it fails, client may either fail open (allow the operation to continue) or fail closed (handle as a DENY outcome).",
-            "The application's operation in the context of which this authorization check is being made may only be performed if it is successfully logged to Gin. For instance, the authorization library may satisfy this obligation by emitting a partial log entry at authorization check time and only returning ALLOW to the application if it succeeds. If a matching Rule has this directive, but the client has not indicated that it will honor such requirements, then the IAM check will result in authorization failure by setting CheckPolicyResponse.success=false."
-          ],
-          "enum": [
-            "LOG_MODE_UNSPECIFIED",
-            "LOG_FAIL_CLOSED"
-          ]
-        }
-      }
-    },
-    "CloudAuditOptions": {
-      "id": "CloudAuditOptions",
-      "description": "Write a Cloud Audit log",
-      "type": "object",
-      "properties": {
-        "logName": {
-          "description": "The log_name to populate in the Cloud Audit Record.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default. Should not be used.",
-            "Corresponds to \"cloudaudit.googleapis.com\/activity\"",
-            "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
-          ],
-          "enum": [
-            "UNSPECIFIED_LOG_NAME",
-            "ADMIN_ACTIVITY",
-            "DATA_ACCESS"
-          ]
-        },
-        "authorizationLoggingOptions": {
-          "description": "Information used by the Cloud Audit Logging pipeline.",
-          "$ref": "AuthorizationLoggingOptions"
-        }
-      }
-    },
-    "AuthorizationLoggingOptions": {
-      "id": "AuthorizationLoggingOptions",
-      "description": "Authorization-related information used by Cloud Audit Logging.",
-      "type": "object",
-      "properties": {
-        "permissionType": {
-          "description": "The type of the permission that was checked.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default. Should not be used.",
-            "A read of admin (meta) data.",
-            "A write of admin (meta) data.",
-            "A read of standard data.",
-            "A write of standard data."
-          ],
-          "enum": [
-            "PERMISSION_TYPE_UNSPECIFIED",
-            "ADMIN_READ",
-            "ADMIN_WRITE",
-            "DATA_READ",
-            "DATA_WRITE"
-          ]
         }
       }
     },
@@ -984,11 +691,6 @@
                   "description": "The standard list filter.",
                   "location": "query",
                   "type": "string"
-                },
-                "includeUnrevealedLocations": {
-                  "description": "If true, the returned list will include locations which are not yet revealed.",
-                  "location": "query",
-                  "type": "boolean"
                 },
                 "pageSize": {
                   "description": "The standard list page size.",

@@ -32,7 +32,6 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 
 ARTIFACTREGISTRY_API_NAME = "artifactregistry"
-ARTIFACTREGISTRY_API_VERSION = "v1beta1"
 
 _INVALID_IMAGE_PATH_ERROR = """Invalid Docker string.
 
@@ -94,6 +93,8 @@ DOCKER_IMG_BY_DIGEST_REGEX = (
 
 DOCKER_IMG_REGEX = r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)"
 
+_VERSION_COLLECTION_NAME = "artifactregistry.projects.locations.repositories.packages.versions"
+
 
 def _GetDefaultResources():
   """Gets default config values for project, location, and repository."""
@@ -132,7 +133,7 @@ def _ParseInput(input_str):
   return DockerRepo(project_id, location, matches.group("repo"))
 
 
-def _ParseDockerImagePath(img_path):
+def ParseDockerImagePath(img_path):
   """Validates and parses an image path into a DockerImage or a DockerRepo."""
   if not img_path:
     return _GetDefaultResources()
@@ -277,10 +278,12 @@ def _GetDockerVersions(docker_img,
 
   img_list = []
   for ver in ver_list:
+    v = resources.REGISTRY.Parse(
+        ver.name, collection=_VERSION_COLLECTION_NAME).Name()
     img_list.append({
         "package": docker_img.GetDockerString(),
         "tags": ", ".join([tag.name.split("/")[-1] for tag in ver.relatedTags]),
-        "version": ver.name,
+        "version": v,
         "createTime": ver.createTime,
         "updateTime": ver.updateTime
     })
@@ -336,10 +339,9 @@ def _ValidateAndGetDockerVersion(version_or_tag):
                              version_or_tag.GetVersionName())
       return version_or_tag
     elif isinstance(version_or_tag, DockerTag):
-      digest = ar_requests.GetVersionFromTag(
-          ar_requests.GetClient(),
-          ar_requests.GetMessages(),
-          version_or_tag.GetTagName())
+      digest = ar_requests.GetVersionFromTag(ar_requests.GetClient(),
+                                             ar_requests.GetMessages(),
+                                             version_or_tag.GetTagName())
       docker_version = DockerVersion(version_or_tag.image, digest)
       return docker_version
     else:
@@ -377,6 +379,10 @@ class DockerRepo(object):
   def repo(self):
     return self._repo
 
+  def GetDockerString(self):
+    return "{}-docker.pkg.dev/{}/{}".format(self.location, self.project,
+                                            self.repo)
+
   def GetRepositoryName(self):
     return "projects/{}/locations/{}/repositories/{}".format(
         self.project, self.location, self.repo)
@@ -389,6 +395,7 @@ class DockerImage(object):
   LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE_PATH
 
   Properties:
+    project: str, The name of cloud project.
     docker_repo: DockerRepo, The Docker repository.
     pkg: str, The name of the package.
   """
@@ -396,6 +403,10 @@ class DockerImage(object):
   def __init__(self, docker_repo, pkg_id):
     self._docker_repo = docker_repo
     self._pkg = pkg_id
+
+  @property
+  def project(self):
+    return self._docker_repo.project
 
   @property
   def docker_repo(self):
@@ -488,9 +499,8 @@ class DockerVersion(object):
     return "{}@{}".format(self.image.GetDockerString(), self.digest)
 
 
-def GetDockerImages(args):
+def GetDockerImages(resource, args):
   """Gets Docker images."""
-  resource = _ParseDockerImagePath(args.IMAGE_PATH)
   if isinstance(resource, DockerRepo):
     _ValidateDockerRepo(resource.GetRepositoryName())
     log.status.Print(
@@ -685,7 +695,7 @@ def DeleteDockerTag(args):
 
 def ListDockerTags(args):
   """Lists Docker tags."""
-  resource = _ParseDockerImagePath(args.IMAGE_PATH)
+  resource = ParseDockerImagePath(args.IMAGE_PATH)
 
   client = ar_requests.GetClient()
   messages = ar_requests.GetMessages()

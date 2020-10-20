@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.iam import completers as iam_completers
 from googlecloudsdk.command_lib.util import completers
 
 
@@ -42,31 +41,4 @@ class OrganizationCompleter(completers.ResourceParamCompleter):
         collection='cloudresourcemanager.organizations',
         list_command='organizations list --uri',
         param='organizationsId',
-        **kwargs)
-
-
-class FoldersIamRolesCompleter(iam_completers.IamRolesCompleter):
-
-  def __init__(self, **kwargs):
-    super(FoldersIamRolesCompleter, self).__init__(
-        resource_collection='cloudresourcemanager.folders',
-        resource_dest='id',
-        **kwargs)
-
-
-class OrganizationsIamRolesCompleter(iam_completers.IamRolesCompleter):
-
-  def __init__(self, **kwargs):
-    super(OrganizationsIamRolesCompleter, self).__init__(
-        resource_collection='cloudresourcemanager.organizations',
-        resource_dest='id',
-        **kwargs)
-
-
-class ProjectsIamRolesCompleter(iam_completers.IamRolesCompleter):
-
-  def __init__(self, **kwargs):
-    super(ProjectsIamRolesCompleter, self).__init__(
-        resource_collection='cloudresourcemanager.projects',
-        resource_dest='id',
         **kwargs)

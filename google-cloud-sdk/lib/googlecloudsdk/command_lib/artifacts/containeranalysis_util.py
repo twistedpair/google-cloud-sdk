@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from googlecloudsdk.api_lib.containeranalysis import requests as ca_requests
+from googlecloudsdk.command_lib.artifacts import containeranalysis_filter_util as filter_util
 import six
 
 
@@ -45,6 +48,23 @@ class ContainerAnalysisMetadata:
       self.deployment.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.DISCOVERY:
       self.discovery.AddOccurrence(occ)
+
+  def ImagesListView(self):
+    """Returns a dictionary representing the metadata.
+
+    The returned dictionary is used by artifacts docker images list command.
+    """
+    view = {}
+    if self.image.base_images:
+      view['IMAGE'] = self.image.base_images
+    if self.deployment.deployments:
+      view['DEPLOYMENT'] = self.deployment.deployments
+    if self.discovery.discovery:
+      view['DISCOVERY'] = self.discovery.discovery
+    if self.build.build_details:
+      view['BUILD'] = self.build.build_details
+    view.update(self.vulnerability.ImagesListView())
+    return view
 
   def ImagesDescribeView(self):
     """Returns a dictionary representing the metadata.
@@ -84,7 +104,7 @@ class PackageVulnerabilitySummary:
     self.counts.append(count)
 
   def ImagesDescribeView(self):
-    """Returns a dictionary representing the metadata.
+    """Returns a dictionary representing package vulnerability metadata.
 
     The returned dictionary is used by artifacts docker images describe command.
     """
@@ -94,13 +114,32 @@ class PackageVulnerabilitySummary:
       view['vulnerabilities'] = self.vulnerabilities
     for count in self.counts:
       # SEVERITY_UNSPECIFIED represents total counts across all serverities
-      if (count.severity ==
-          messages.FixableTotalByDigest
+      if (count.severity == messages.FixableTotalByDigest
           .SeverityValueValuesEnum.SEVERITY_UNSPECIFIED):
         view['not_fixed_vulnerability_count'] = (
             count.totalCount - count.fixableCount)
         view['total_vulnerability_count'] = count.totalCount
         break
+    return view
+
+  def ImagesListView(self):
+    """Returns a dictionary representing package vulnerability metadata.
+
+    The returned dictionary is used by artifacts docker images list command.
+    """
+    messages = ca_requests.GetMessages()
+    view = {}
+    if self.vulnerabilities:
+      view['PACKAGE_VULNERABILITY'] = self.vulnerabilities
+    vuln_counts = {}
+    for count in self.counts:
+      # SEVERITY_UNSPECIFIED represents total counts across all serverities
+      sev = count.severity
+      if (sev and sev != messages.FixableTotalByDigest.SeverityValueValuesEnum
+          .SEVERITY_UNSPECIFIED):
+        vuln_counts.update({sev: vuln_counts.get(sev, 0) + count.totalCount})
+    if vuln_counts:
+      view['vuln_counts'] = vuln_counts
     return view
 
 
@@ -147,27 +186,50 @@ class DiscoverySummary:
 def GetContainerAnalysisMetadata(docker_version, args):
   """Retrieves metadata for a docker image."""
   metadata = ContainerAnalysisMetadata()
-  occ_filter = _CreateFilterFromArgs(args)
+  docker_str = docker_version.GetDockerString()
+  occ_filter = _CreateFilterFromImagesDescribeArgs(docker_str, args)
   if occ_filter is None:
     return metadata
-
-  occurrences = ca_requests.ListOccurrences(
-      docker_version.project,
-      _HasField('resource_uri', docker_version.GetDockerString()), occ_filter)
+  occurrences = ca_requests.ListOccurrences(docker_version.project, occ_filter)
   for occ in occurrences:
     metadata.AddOccurrence(occ)
 
   if metadata.vulnerability.vulnerabilities:
     vuln_summary = ca_requests.GetVulnerabilitySummary(
         docker_version.project,
-        _HasField('resource_uri', docker_version.GetDockerString()))
+        filter_util.ContainerAnalysisFilter().WithResources([docker_str
+                                                            ]).GetFilter())
     metadata.vulnerability.AddSummary(vuln_summary)
+  return metadata
+
+
+def GetContainerAnalysisMetadataForImages(repo_or_image, occurrence_filter,
+                                          images):
+  """Retrieves metadata for all images with a given path prefix."""
+  metadata = collections.defaultdict(ContainerAnalysisMetadata)
+  occ_filters = _CreateFilterForImages(repo_or_image, occurrence_filter, images)
+  occurrences = ca_requests.ListOccurrencesWithFilters(repo_or_image.project,
+                                                       occ_filters)
+  for occ in occurrences:
+    metadata.setdefault(occ.resourceUri,
+                        ContainerAnalysisMetadata()).AddOccurrence(occ)
+
+  summary_filters = filter_util.ContainerAnalysisFilter().WithResourcePrefix(
+      repo_or_image.GetDockerString()).WithResources(
+          images).GetChunkifiedFilters()
+  summaries = ca_requests.GetVulnerabilitySummaryWithFilters(
+      repo_or_image.project, summary_filters)
+  for summary in summaries:
+    for count in summary.counts:
+      metadata.setdefault(
+          count.resourceUri,
+          ContainerAnalysisMetadata()).vulnerability.AddCount(count)
 
   return metadata
 
 
-def _CreateFilterFromArgs(args):
-  r"""Parses user-provided arguments into a filter to send to containeranalysis API.
+def _CreateFilterFromImagesDescribeArgs(image, args):
+  r"""Parses `docker images describe` arguments into a filter to send to containeranalysis API.
 
   The returned filter will combine the user-provided filter specified by
   the --metadata-filter flag and occurrence kind filters specified by flags
@@ -176,51 +238,67 @@ def _CreateFilterFromArgs(args):
   Returns None if there is no information to fetch from containeranalysis API.
 
   Args:
+    image: the fully-qualified path of a docker image.
     args: user provided command line arguments.
 
   Returns:
     A filter string to send to the containeranalysis API.
 
   For example, given a user input:
-  gcloud docker images describe MY_IMAGE --show-package-vulnerability \
+  gcloud docker images describe \
+    us-west1-docker.pkg.dev/my-project/my-repo/ubuntu@sha256:abc \
+    --show-package-vulnerability \
     --show-image-basis \
     --metadata-filter='createTime>"2019-04-10T"'
 
   this method will create a filter:
 
-  '((kind="VULNERABILITY") OR (kind="IMAGE")) AND (createTime>"2019-04-10T")'
+  '''
+  ((kind="VULNERABILITY") OR (kind="IMAGE")) AND
+  (createTime>"2019-04-10T") AND
+  (resourceUrl=us-west1-docker.pkg.dev/my-project/my-repo/ubuntu@sha256:abc'))
+  '''
   """
-  filter_kinds = []
 
+  occ_filter = filter_util.ContainerAnalysisFilter()
+  filter_kinds = []
   # We don't need to filter on kinds when showing all metadata
   if not args.show_all_metadata:
     if args.show_build_details:
-      filter_kinds.append(_HasField('kind', 'BUILD'))
+      filter_kinds.append('BUILD')
     if args.show_package_vulnerability:
-      filter_kinds.append(_HasField('kind', 'VULNERABILITY'))
-      filter_kinds.append(_HasField('kind', 'DISCOVERY'))
+      filter_kinds.append('VULNERABILITY')
+      filter_kinds.append('DISCOVERY')
     if args.show_image_basis:
-      filter_kinds.append(_HasField('kind', 'IMAGE'))
+      filter_kinds.append('IMAGE')
     if args.show_deployment:
-      filter_kinds.append(_HasField('kind', 'DEPLOYMENT'))
+      filter_kinds.append('DEPLOYMENT')
 
     # args include none of the occurrence types, there's no need to call the
     # containeranalysis API.
     if not filter_kinds:
       return None
 
-  occ_filter = _OrJoinFilters(*filter_kinds)
-  occ_filter = _AndJoinFilters(occ_filter, args.metadata_filter)
-  return occ_filter
+  occ_filter.WithKinds(filter_kinds)
+  occ_filter.WithCustomFilter(args.metadata_filter)
+  occ_filter.WithResources([image])
+  return occ_filter.GetFilter()
 
 
-def _AndJoinFilters(*filters):
-  return ' AND '.join(['({})'.format(f) for f in filters if f])
+def _CreateFilterForImages(repo_or_image, custom_filter, images):
+  """Creates a list of filters from a docker image prefix, a custom filter and fully-qualified image URLs.
 
+  Args:
+    repo_or_image: an instance of DockerImage or DockerRepo.
+    custom_filter: user provided filter string.
+    images: fully-qualified docker image URLs. Only metadata of these images
+      will be retrieved.
 
-def _OrJoinFilters(*filters):
-  return ' OR '.join(['({})'.format(f) for f in filters if f])
-
-
-def _HasField(field, value):
-  return '{} = "{}"'.format(field, value)
+  Returns:
+    A filter string to send to the containeranalysis API.
+  """
+  occ_filter = filter_util.ContainerAnalysisFilter()
+  occ_filter.WithResourcePrefix(repo_or_image.GetDockerString())
+  occ_filter.WithResources(images)
+  occ_filter.WithCustomFilter(custom_filter)
+  return occ_filter.GetChunkifiedFilters()

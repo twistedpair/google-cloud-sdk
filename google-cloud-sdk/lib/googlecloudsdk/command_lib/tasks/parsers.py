@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.command_lib.tasks import app
 from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.core import exceptions
@@ -99,6 +100,7 @@ class QueueUpdatableConfiguration(object):
         config.rate_limits = {
             'max_dispatches_per_second': 'maxDispatchesPerSecond',
             'max_concurrent_dispatches': 'maxConcurrentDispatches',
+            'max_burst_size': 'maxBurstSize',
         }
         config.app_engine_routing_override = {
             'routing_override': 'appEngineRoutingOverride',
@@ -315,10 +317,31 @@ def GetSpecifiedFieldsMask(args, queue_type,
 
 def _SpecifiedArgs(specified_args_object, args_list, clear_args=False):
   """Returns the list of known arguments in the specified list."""
+
+  def _IsSpecifiedWrapper(arg):
+    """Wrapper function for Namespace.IsSpecified function.
+
+    We need this function to be support being able to modify certain queue
+    attributes internally using `gcloud app deploy queue.yaml` without exposing
+    the same functionality via `gcloud tasks queues create/update`.
+
+    Args:
+      arg: The argument we are trying to check if specified.
+
+    Returns:
+      True if the argument was specified at CLI invocation, False otherwise.
+    """
+    try:
+      return specified_args_object.IsSpecified(arg)
+    except parser_errors.UnknownDestinationException:
+      if arg in ('max_burst_size', 'clear_max_burst_size'):
+        return False
+      raise
+
   clear_args_list = []
   if clear_args:
     clear_args_list = [_EquivalentClearArg(a) for a in args_list]
-  return filter(specified_args_object.IsSpecified, args_list + clear_args_list)
+  return filter(_IsSpecifiedWrapper, args_list + clear_args_list)
 
 
 def _AnyArgsSpecified(specified_args_object, args_list, clear_args=False):
@@ -378,12 +401,19 @@ def _ParseAlphaRateLimitsArgs(args, queue_type, messages, is_update):
 
 def _ParseRateLimitsArgs(args, queue_type, messages, is_update):
   """Parses the attributes of 'args' for Queue.rateLimits."""
-  if (queue_type == constants.PUSH_QUEUE and _AnyArgsSpecified(
-      args, ['max_dispatches_per_second', 'max_concurrent_dispatches'],
-      clear_args=is_update)):
+  if (
+      queue_type == constants.PUSH_QUEUE and
+      _AnyArgsSpecified(
+          args,
+          ['max_dispatches_per_second', 'max_concurrent_dispatches',
+           'max_burst_size'],
+          clear_args=is_update)):
+    max_burst_size = (
+        args.max_burst_size if hasattr(args, 'max_burst_size') else None)
     return messages.RateLimits(
         maxDispatchesPerSecond=args.max_dispatches_per_second,
-        maxConcurrentDispatches=args.max_concurrent_dispatches)
+        maxConcurrentDispatches=args.max_concurrent_dispatches,
+        maxBurstSize=max_burst_size)
 
 
 def _ParseStackdriverLoggingConfigArgs(args, unused_queue_type, messages,

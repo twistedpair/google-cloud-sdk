@@ -34,6 +34,7 @@ from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.command_lib.tasks import flags
 from googlecloudsdk.command_lib.tasks import parsers
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
 
 import six
 from six.moves import urllib
@@ -48,6 +49,7 @@ CONVERSION_FUNCTIONS = {
     'retry_parameters.max_backoff_seconds': convertors.ConvertBackoffSeconds,
     'retry_parameters.task_age_limit': convertors.ConvertTaskAgeLimit,
     'retry_parameters.task_retry_limit': lambda x: int(x) + 1,
+    'target': convertors.ConvertTarget
 }
 
 
@@ -75,6 +77,11 @@ def IsClose(a, b, rel_tol=1e-09, abs_tol=0.0):
 def _DoesAttributeNeedToBeUpdated(cur_queue_state, attribute, new_value):
   """Checks whether the attribute & value provided need to be updated.
 
+  Note: We only check if the attribute exists in `queue.rateLimits` and
+  `queue.retryConfig` since those are the only attributes we verify here. The
+  only attribute we do not verify here is app-engine routing override which we
+  handle separately.
+
   Args:
     cur_queue_state: apis.cloudtasks.<ver>.cloudtasks_<ver>_messages.Queue,
       The Queue instance fetched from the backend.
@@ -86,9 +93,7 @@ def _DoesAttributeNeedToBeUpdated(cur_queue_state, attribute, new_value):
     True if the attribute needs to be updated to the new value, False otherwise.
   """
   proto_attribute_name = convertors.ConvertStringToCamelCase(attribute)
-  if hasattr(cur_queue_state, proto_attribute_name):
-    old_value = getattr(cur_queue_state, proto_attribute_name)
-  elif (
+  if (
       hasattr(cur_queue_state, 'rateLimits') and
       hasattr(cur_queue_state.rateLimits, proto_attribute_name)
   ):
@@ -154,10 +159,6 @@ def _PostProcessMinMaxBackoff(
     used_default_value_for_min_backoff: A boolean value telling us if we used
       a default value for min_backoff or if it was specified explicitly in the
       YAML file.
-
-  Returns:
-    argparse.Namespace, The same dummy args namespace but with min_backoff and
-    max_backoff values set appropriately.
   """
   min_backoff_specified = cloud_task_args.IsSpecified('min_backoff')
   max_backoff_specified = cloud_task_args.IsSpecified('max_backoff')
@@ -185,6 +186,39 @@ def _PostProcessMinMaxBackoff(
       cloud_task_args.min_backoff = cloud_task_args.max_backoff
       _SetSpecifiedArg(
           cloud_task_args, 'min_backoff', cloud_task_args.max_backoff)
+
+
+def _PostProcessRoutingOverride(cloud_task_args, cur_queue_state):
+  """Checks if service and target values need to be updated for host URL.
+
+  An app engine host URL may have optionally version_dot_service appended to
+  the URL if specified via 'routing_override'. Here we check the existing URL
+  and make sure the service & target values are only updated when need be.
+
+  Args:
+    cloud_task_args: argparse.Namespace, A dummy args namespace built to pass
+      on forwards to Cloud Tasks API.
+    cur_queue_state: apis.cloudtasks.<ver>.cloudtasks_<ver>_messages.Queue,
+      The Queue instance fetched from the backend if it exists, None otherwise.
+  """
+  try:
+    host_url = cur_queue_state.appEngineHttpQueue.appEngineRoutingOverride.host
+  except AttributeError:
+    # The queue does not exist or had no override set before.
+    return
+  if cloud_task_args.IsSpecified('routing_override'):
+    targets = []
+    if 'version' in cloud_task_args.routing_override:
+      targets.append(cloud_task_args.routing_override['version'])
+    if 'service' in cloud_task_args.routing_override:
+      targets.append(cloud_task_args.routing_override['service'])
+    targets_sub_url = '.'.join(targets)
+    targets_sub_url_and_project = '{}.{}.'.format(
+        targets_sub_url, properties.VALUES.core.project.Get())
+    if host_url.startswith(targets_sub_url_and_project):
+      # pylint: disable=protected-access
+      del cloud_task_args._specified_args['routing_override']
+      cloud_task_args.routing_override = None
 
 
 def _PopulateCloudTasksArgs(queue, cur_queue_state, ct_expected_args):
@@ -252,6 +286,7 @@ def _PopulateCloudTasksArgs(queue, cur_queue_state, ct_expected_args):
           _SetSpecifiedArg(cloud_task_args, new_arg, value)
     setattr(cloud_task_args, new_arg, value)
   _PostProcessMinMaxBackoff(cloud_task_args, used_default_value_for_min_backoff)
+  _PostProcessRoutingOverride(cloud_task_args, cur_queue_state)
   return cloud_task_args
 
 
@@ -460,6 +495,12 @@ def ValidateYamlFileConfig(config):
             'Invalid queue configuration. Bucket size must not be specified '
             'for pull-based queue.')
 
+      # Target
+      if queue.target:
+        _RaiseHTTPException(
+            'Invalid queue configuration. Target must not be specified for '
+            'pull-based queue.')
+
 
 def FetchCurrrentQueuesData(tasks_api):
   """Fetches the current queues data stored in the database.
@@ -545,6 +586,9 @@ def DeployQueuesYamlFile(
   # Get the arg values that we need to fill up for each queue using CT APIs
   # pylint: disable=protected-access
   task_args = flags._PushQueueFlags(release_track=ct_api_version)
+  # TODO(b/169069379) Remove max_burst_size when/if API is exposed via `gcloud
+  # tasks queues` CLI invocation.
+  task_args.append(base.Argument('--max_burst_size', type=int, help=''))
   expected_args = []
   for task_flag in task_args:
     new_arg = task_flag.args[0][2:].replace('-', '_')
@@ -564,11 +608,11 @@ def DeployQueuesYamlFile(
     if (
         cur_queue_object and
         (rate_to_set or queue.mode == constants.PULL_QUEUE) and
-        cur_queue_object.state == cur_queue_object.state.DISABLED
+        cur_queue_object.state in (cur_queue_object.state.DISABLED,
+                                   cur_queue_object.state.PAUSED)
     ):
-      # Resume queue if it exists, was previously disabled and the new rate > 0
-      # TODO(b/169069379) We should also add PAUSED state to the check if we
-      # want to replace DISABLED functionality with PAUSED.
+      # Resume queue if it exists, was previously disabled/paused and the
+      # new rate > 0
       queues_client.Resume(queue_ref)
     elif (
         cur_queue_object and not rate_to_set and
@@ -589,7 +633,7 @@ def DeployQueuesYamlFile(
         tasks_api.messages,
         release_track=ct_api_version)
     updated_fields = parsers.GetSpecifiedFieldsMask(
-        cloud_task_args, constants.PUSH_QUEUE)
+        cloud_task_args, constants.PUSH_QUEUE, release_track=ct_api_version)
     app_engine_routing_override = (
         queue_config.appEngineHttpQueue.appEngineRoutingOverride
         if queue_config.appEngineHttpQueue is not None else None)

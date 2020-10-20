@@ -2364,7 +2364,9 @@ of RAM:
   parser.add_argument('--machine-type', '-m', help=help_text)
 
 
-def AddWorkloadIdentityFlags(parser, use_identity_provider=False):
+def AddWorkloadIdentityFlags(parser,
+                             use_identity_provider=False,
+                             use_workload_certificates=False):
   """Adds Workload Identity flags to the parser."""
   parser.add_argument(
       '--workload-pool',
@@ -2398,9 +2400,25 @@ For more information on Workload Identity, see
   Currently, the only accepted identity provider is the identity provider of Hub
   membership for hub workload pool `PROJECT_ID.hub.id.goog`.
     """)
+  if use_workload_certificates:
+    parser.add_argument(
+        '--workload-identity-certificate-authority',
+        default=None,
+        hidden=True,
+        type=arg_parsers.RegexpValidator(
+            r'^//privateca\.googleapis\.com/projects/[^/]+/locations/[^/]+/certificateAuthorities/[^/]+$',
+            'Must be of the form //privateca.googleapis.com/projects/{project}/locations/{location}/certificateAuthorities/{ca}'
+        ),
+        help="""\
+Enable issuance of Workload Identity certificates from this certificate authority.
+
+Must be a Private CA resource URL of the form
+`//privateca.googleapis.com/projects/{project}/locations/{location}/certificateAuthorities/{ca}`.
+""")
 
 
-def AddWorkloadIdentityUpdateFlags(parser):
+def AddWorkloadIdentityUpdateFlags(parser, use_workload_certificates=False):
+  """Adds Workload Identity update flags to the parser."""
   parser.add_argument(
       '--disable-workload-identity',
       default=False,
@@ -2411,6 +2429,16 @@ Disable Workload Identity on the cluster.
 For more information on Workload Identity, see
 
             https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
+""")
+
+  if use_workload_certificates:
+    parser.add_argument(
+        '--disable-workload-identity-certificates',
+        default=False,
+        action='store_true',
+        hidden=True,
+        help="""\
+Disable Workload Identity certificates on the cluster.
 """)
 
 
@@ -2996,23 +3024,37 @@ def AddDisableDefaultSnatFlag(parser, for_cluster_create=False):
     help_text = """\
 Disable default source NAT rules applied in cluster nodes.
 
-By default, network traffic sending from Pods to outside of VPC will get
-masqueraded by the node external IP. When this flag is set, no default sNAT
-will be enforced on the cluster. The flag must be set if the cluster uses
-privately used public IPs.
+By default, cluster nodes perform source network address translation (SNAT)
+for packets sent from Pod IP address sources to destination IP addresses
+that are not in the non-masquerade CIDRs list.
+For more details about SNAT and IP masquerading, see:
+https://cloud.google.com/kubernetes-engine/docs/how-to/ip-masquerade-agent#how_ipmasq_works
+SNAT changes the packet's source IP address to the node's internal IP address.
 
-Must be used in conjunction with `--enable-ip-alias` and `--enable-private-nodes`.
+When this flag is set, GKE does not perform SNAT for packets sent to any destination.
+You must set this flag if the cluster uses privately reused public IPs.
+
+The --disable-default-snat flag is only applicable to private GKE clusters, which are
+inherently VPC-native. Thus, --disable-default-snat requires that you also set
+--enable-ip-alias and --enable-private-nodes.
 """
   else:
     help_text = """\
 Disable default source NAT rules applied in cluster nodes.
 
-By default, network traffic sending from Pods to outside of VPC will get
-masqueraded by the node external IP. When this flag is set, no default sNAT
-will be enforced on the cluster. The flag must be set if the cluster uses
-privately used public IPs.
+By default, cluster nodes perform source network address translation (SNAT)
+for packets sent from Pod IP address sources to destination IP addresses
+that are not in the non-masquerade CIDRs list.
+For more details about SNAT and IP masquerading, see:
+https://cloud.google.com/kubernetes-engine/docs/how-to/ip-masquerade-agent#how_ipmasq_works
+SNAT changes the packet's source IP address to the node's internal IP address.
 
-Can only be used with private cluster in VPC Native network mode.
+When this flag is set, GKE does not perform SNAT for packets sent to any destination.
+You must set this flag if the cluster uses privately reused public IPs.
+
+The --disable-default-snat flag is only applicable to private GKE clusters, which are
+inherently VPC-native. Thus, --disable-default-snat requires that the cluster was created
+with both --enable-ip-alias and --enable-private-nodes.
 """
   parser.add_argument(
       '--disable-default-snat',

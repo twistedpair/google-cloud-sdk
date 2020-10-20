@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20201002",
+ "revision": "20201009",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -209,6 +209,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -227,6 +228,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -323,6 +325,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -341,6 +344,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -419,6 +423,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -437,6 +442,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -777,6 +783,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -795,6 +802,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -891,6 +899,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -909,6 +918,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -987,6 +997,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -1005,6 +1016,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1676,6 +1688,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -1694,6 +1707,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1790,6 +1804,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -1808,6 +1823,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -1940,6 +1956,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -1958,6 +1975,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -2320,6 +2338,10 @@
      "type": "string",
      "description": "An optional textual description of the resource; provided by the client when the resource is created."
     },
+    "edgeSecurityPolicy": {
+     "type": "string",
+     "description": "[Output Only] The resource URL for the edge security policy associated with this backend bucket."
+    },
     "enableCdn": {
      "type": "boolean",
      "description": "If true, enable Cloud CDN for this BackendBucket."
@@ -2499,6 +2521,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -2517,6 +2540,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -2622,6 +2646,10 @@
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
     },
+    "edgeSecurityPolicy": {
+     "type": "string",
+     "description": "[Output Only] The resource URL for the edge security policy associated with this backend service."
+    },
     "enableCDN": {
      "type": "boolean",
      "description": "If true, enables Cloud CDN for the backend service. Only applicable if the loadBalancingScheme is EXTERNAL and the protocol is HTTP or HTTPS."
@@ -2661,12 +2689,14 @@
      "description": "Specifies the load balancer type. Choose EXTERNAL for load balancers that receive traffic from external clients. Choose INTERNAL for Internal TCP/UDP Load Balancing. Choose INTERNAL_MANAGED for Internal HTTP(S) Load Balancing. Choose INTERNAL_SELF_MANAGED for Traffic Director. A backend service created for one type of load balancing cannot be used with another. For more information, refer to Choosing a load balancer.",
      "enum": [
       "EXTERNAL",
+      "EXTERNAL_MANAGED",
       "INTERNAL",
       "INTERNAL_MANAGED",
       "INTERNAL_SELF_MANAGED",
       "INVALID_LOAD_BALANCING_SCHEME"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -2853,6 +2883,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -2871,6 +2902,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3166,6 +3198,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -3184,6 +3217,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -3287,6 +3321,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -3305,6 +3340,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4049,6 +4085,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -4067,6 +4104,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4163,6 +4201,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -4181,6 +4220,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4259,6 +4299,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -4277,6 +4318,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -4912,6 +4954,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -4930,6 +4973,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5067,6 +5111,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -5085,6 +5130,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5261,6 +5307,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -5279,6 +5326,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5375,6 +5423,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -5393,6 +5442,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5471,6 +5521,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -5489,6 +5540,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5604,6 +5656,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -5622,6 +5675,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -5825,6 +5879,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -5843,6 +5898,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6053,6 +6109,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -6071,6 +6128,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6351,6 +6409,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -6369,6 +6428,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6575,6 +6635,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -6593,6 +6654,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -6896,12 +6958,14 @@
      "description": "Specifies the forwarding rule type.\n\n \n- EXTERNAL is used for:  \n- Classic Cloud VPN gateways \n- Protocol forwarding to VMs from an external IP address \n- The following load balancers: HTTP(S), SSL Proxy, TCP Proxy, and Network TCP/UDP    \n- INTERNAL is used for:  \n- Protocol forwarding to VMs from an internal IP address \n- Internal TCP/UDP load balancers   \n- INTERNAL_MANAGED is used for:  \n- Internal HTTP(S) load balancers   \n- INTERNAL_SELF_MANAGED is used for:  \n- Traffic Director    \n\nFor more information about forwarding rules, refer to Forwarding rule concepts.",
      "enum": [
       "EXTERNAL",
+      "EXTERNAL_MANAGED",
       "INTERNAL",
       "INTERNAL_MANAGED",
       "INTERNAL_SELF_MANAGED",
       "INVALID"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -7040,6 +7104,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -7058,6 +7123,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7154,6 +7220,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -7172,6 +7239,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7274,6 +7342,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -7292,6 +7361,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -7883,6 +7953,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -7901,6 +7972,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -8119,6 +8191,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -8137,6 +8210,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -8240,6 +8314,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -8258,6 +8333,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -8336,6 +8412,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -8354,6 +8431,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -8779,6 +8857,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -8797,6 +8876,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9189,6 +9269,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -9207,6 +9288,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9506,6 +9588,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -9524,6 +9607,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -9711,6 +9795,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -9729,6 +9814,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10145,6 +10231,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -10163,6 +10250,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10342,6 +10430,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -10360,6 +10449,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10456,6 +10546,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -10474,6 +10565,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10782,6 +10874,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -10800,6 +10893,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -10916,6 +11010,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -10934,6 +11029,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -11349,6 +11445,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -11367,6 +11464,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -11487,6 +11585,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -11505,6 +11604,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -11667,6 +11767,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -11685,6 +11786,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -11794,6 +11896,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -11812,6 +11915,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -11926,6 +12030,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -11944,6 +12049,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -12040,6 +12146,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -12058,6 +12165,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -12438,6 +12546,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -12456,6 +12565,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -12661,6 +12771,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -12679,6 +12790,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -13000,6 +13112,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -13018,6 +13131,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -13527,6 +13641,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -13545,6 +13660,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -13641,6 +13757,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -13659,6 +13776,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -13768,6 +13886,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -13786,6 +13905,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -14028,6 +14148,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -14046,6 +14167,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -14250,6 +14372,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -14268,6 +14391,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -14548,6 +14672,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -14566,6 +14691,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -14662,6 +14788,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -14680,6 +14807,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -14998,6 +15126,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -15016,6 +15145,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -15090,7 +15220,7 @@
   "LocationPolicy": {
    "id": "LocationPolicy",
    "type": "object",
-   "description": "Configuration for location policy among multiple possible locations (e.g. preferences for zone selection among zones in a single region). Note that this message has a copy in logs/proto/bigcluster/bulk_apis.proto.",
+   "description": "Configuration for location policy among multiple possible locations (e.g. preferences for zone selection among zones in a single region).",
    "properties": {
     "locations": {
      "type": "object",
@@ -15361,6 +15491,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -15379,6 +15510,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -15570,6 +15702,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -15588,6 +15721,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -15684,6 +15818,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -15702,6 +15837,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -15780,6 +15916,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -15798,6 +15935,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16464,6 +16602,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -16482,6 +16621,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16654,6 +16794,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -16672,6 +16813,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16823,6 +16965,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -16841,6 +16984,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -16919,6 +17063,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -16937,6 +17082,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17146,6 +17292,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -17164,6 +17311,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17539,6 +17687,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -17557,6 +17706,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17685,6 +17835,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -17703,6 +17854,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -17915,6 +18067,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -17933,6 +18086,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18011,6 +18165,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -18029,6 +18184,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18248,6 +18404,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -18266,6 +18423,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18362,6 +18520,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -18380,6 +18539,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18473,6 +18633,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -18491,6 +18652,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18659,6 +18821,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -18677,6 +18840,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18773,6 +18937,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -18791,6 +18956,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -18869,6 +19035,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -18887,6 +19054,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19052,6 +19220,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -19070,6 +19239,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19270,6 +19440,7 @@
          "EXTERNAL_API_WARNING",
          "FIELD_VALUE_OVERRIDEN",
          "INJECTED_KERNELS_DEPRECATED",
+         "LARGE_DEPLOYMENT_WARNING",
          "MISSING_TYPE_DEPENDENCY",
          "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
          "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -19288,6 +19459,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -19396,6 +19568,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -19414,6 +19587,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19510,6 +19684,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -19528,6 +19703,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19606,6 +19782,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -19624,6 +19801,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -19960,6 +20138,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -19978,6 +20157,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -20122,6 +20302,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -20140,6 +20321,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -20287,6 +20469,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -20305,6 +20488,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21049,6 +21233,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -21067,6 +21252,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21276,6 +21462,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -21294,6 +21481,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21389,6 +21577,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -21407,6 +21596,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -21528,6 +21718,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -21546,6 +21737,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22026,6 +22218,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -22044,6 +22237,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22152,6 +22346,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -22170,6 +22365,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22303,6 +22499,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -22321,6 +22518,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22431,6 +22629,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -22449,6 +22648,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22682,6 +22882,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -22700,6 +22901,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -22865,6 +23067,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -22883,6 +23086,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -23020,6 +23224,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -23038,6 +23243,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -23329,6 +23535,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -23347,6 +23554,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -23442,6 +23650,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -23460,6 +23669,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -23549,6 +23759,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -23567,6 +23778,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -23689,6 +23901,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -23707,6 +23920,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -23891,6 +24105,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -23909,6 +24124,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -24148,6 +24364,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -24166,6 +24383,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -24538,6 +24756,7 @@
          "EXTERNAL_API_WARNING",
          "FIELD_VALUE_OVERRIDEN",
          "INJECTED_KERNELS_DEPRECATED",
+         "LARGE_DEPLOYMENT_WARNING",
          "MISSING_TYPE_DEPENDENCY",
          "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
          "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -24556,6 +24775,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -24653,6 +24873,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -24671,6 +24892,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -24876,6 +25098,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -24894,6 +25117,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -25272,6 +25496,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -25290,6 +25515,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -25796,6 +26022,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -25814,6 +26041,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -26353,9 +26581,11 @@
      "description": "The type indicates the intended use of the security policy. CLOUD_ARMOR policies apply to backend services. FIREWALL policies apply to organizations.",
      "enum": [
       "CLOUD_ARMOR",
+      "CLOUD_ARMOR_EDGE",
       "FIREWALL"
      ],
      "enumDescriptions": [
+      "",
       "",
       ""
      ]
@@ -26435,6 +26665,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -26453,6 +26684,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27021,6 +27253,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -27039,6 +27272,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27442,6 +27676,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -27460,6 +27695,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27748,6 +27984,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -27766,6 +28003,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -27862,6 +28100,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -27880,6 +28119,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -28032,6 +28272,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -28050,6 +28291,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -28145,6 +28387,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -28163,6 +28406,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -28333,6 +28577,7 @@
          "EXTERNAL_API_WARNING",
          "FIELD_VALUE_OVERRIDEN",
          "INJECTED_KERNELS_DEPRECATED",
+         "LARGE_DEPLOYMENT_WARNING",
          "MISSING_TYPE_DEPENDENCY",
          "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
          "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -28351,6 +28596,7 @@
          "UNREACHABLE"
         ],
         "enumDescriptions": [
+         "",
          "",
          "",
          "",
@@ -28730,6 +28976,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -28748,6 +28995,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -28844,6 +29092,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -28862,6 +29111,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29026,6 +29276,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -29044,6 +29295,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29290,6 +29542,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -29308,6 +29561,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29386,6 +29640,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -29404,6 +29659,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29569,6 +29825,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -29587,6 +29844,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29683,6 +29941,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -29701,6 +29960,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -29779,6 +30039,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -29797,6 +30058,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30045,6 +30307,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -30063,6 +30326,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30159,6 +30423,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -30177,6 +30442,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30340,6 +30606,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -30358,6 +30625,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30454,6 +30722,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -30472,6 +30741,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30550,6 +30820,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -30568,6 +30839,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30626,7 +30898,7 @@
    "properties": {
     "backupPool": {
      "type": "string",
-     "description": "This field is applicable only when the containing target pool is serving a forwarding rule as the primary pool, and its failoverRatio field is properly set to a value between [0, 1].\n\nbackupPool and failoverRatio together define the fallback behavior of the primary target pool: if the ratio of the healthy instances in the primary pool is at or below failoverRatio, traffic arriving at the load-balanced IP will be directed to the backup pool.\n\nIn case where failoverRatio and backupPool are not set, or all the instances in the backup pool are unhealthy, the traffic will be directed back to the primary pool in the \"force\" mode, where traffic will be spread to the healthy instances with the best effort, or to all instances when no instance is healthy."
+     "description": "The server-defined URL for the resource. This field is applicable only when the containing target pool is serving a forwarding rule as the primary pool, and its failoverRatio field is properly set to a value between [0, 1].\n\nbackupPool and failoverRatio together define the fallback behavior of the primary target pool: if the ratio of the healthy instances in the primary pool is at or below failoverRatio, traffic arriving at the load-balanced IP will be directed to the backup pool.\n\nIn case where failoverRatio and backupPool are not set, or all the instances in the backup pool are unhealthy, the traffic will be directed back to the primary pool in the \"force\" mode, where traffic will be spread to the healthy instances with the best effort, or to all instances when no instance is healthy."
     },
     "creationTimestamp": {
      "type": "string",
@@ -30760,6 +31032,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -30778,6 +31051,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -30891,6 +31165,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -30909,6 +31184,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31039,6 +31315,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -31057,6 +31334,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31278,6 +31556,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -31296,6 +31575,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31470,6 +31750,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -31488,6 +31769,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31685,6 +31967,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -31703,6 +31986,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31799,6 +32083,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -31817,6 +32102,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -31895,6 +32181,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -31913,6 +32200,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -32277,6 +32565,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -32295,6 +32584,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -32466,6 +32756,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -32484,6 +32775,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -32562,6 +32854,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -32580,6 +32873,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -32750,6 +33044,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -32768,6 +33063,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -32978,6 +33274,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -32996,6 +33293,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -33170,6 +33468,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -33188,6 +33487,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -33284,6 +33584,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -33302,6 +33603,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -33498,6 +33800,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -33516,6 +33819,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -33773,6 +34077,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -33791,6 +34096,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -33887,6 +34193,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -33905,6 +34212,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -33983,6 +34291,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -34001,6 +34310,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -34150,6 +34460,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -34168,6 +34479,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -34351,6 +34663,7 @@
         "EXTERNAL_API_WARNING",
         "FIELD_VALUE_OVERRIDEN",
         "INJECTED_KERNELS_DEPRECATED",
+        "LARGE_DEPLOYMENT_WARNING",
         "MISSING_TYPE_DEPENDENCY",
         "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
         "NEXT_HOP_CANNOT_IP_FORWARD",
@@ -34369,6 +34682,7 @@
         "UNREACHABLE"
        ],
        "enumDescriptions": [
+        "",
         "",
         "",
         "",
@@ -35696,6 +36010,46 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "setEdgeSecurityPolicy": {
+     "id": "compute.backendBuckets.setEdgeSecurityPolicy",
+     "path": "projects/{project}/global/backendBuckets/{backendBucket}/setEdgeSecurityPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the edge security policy for the specified backend bucket.",
+     "parameters": {
+      "backendBucket": {
+       "type": "string",
+       "description": "Name of the BackendService resource to which the security policy should be set. The name should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "backendBucket"
+     ],
+     "request": {
+      "$ref": "SecurityPolicyReference"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setIamPolicy": {
      "id": "compute.backendBuckets.setIamPolicy",
      "path": "projects/{project}/global/backendBuckets/{resource}/setIamPolicy",
@@ -36184,6 +36538,46 @@
      ],
      "request": {
       "$ref": "BackendService"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "setEdgeSecurityPolicy": {
+     "id": "compute.backendServices.setEdgeSecurityPolicy",
+     "path": "projects/{project}/global/backendServices/{backendService}/setEdgeSecurityPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the edge security policy for the specified backend service.",
+     "parameters": {
+      "backendService": {
+       "type": "string",
+       "description": "Name of the BackendService resource to which the edge security policy should be set. The name should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "backendService"
+     ],
+     "request": {
+      "$ref": "SecurityPolicyReference"
      },
      "response": {
       "$ref": "Operation"

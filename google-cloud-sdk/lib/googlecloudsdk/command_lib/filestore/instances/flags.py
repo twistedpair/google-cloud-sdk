@@ -233,18 +233,18 @@ def AddFileShareArg(parser,
       filestore_client.V1_API_VERSION: """\
 File share configuration for an instance.  Specifying both `name` and `capacity`
 is required.
-*capacity*::: The desired size of the volume. The capacity must be a whole
-number followed by a size unit such as ``TB'' for terabyte. If no size
-unit is specified, GB is assumed. The minimum size for a standard instance
-is 1TB. The minimum size for a premium instance is 2.5TB.
+*capacity*::: The desired capacity of the volume. The capacity must be a whole
+number followed by a capacity unit such as ``TB'' for terabyte. If no capacity
+unit is specified, GB is assumed. The minimum capacity for a standard instance
+is 1TB. The minimum capacity for a premium instance is 2.5TB.
 *name*::: The desired logical name of the volume.
 """,
       filestore_client.ALPHA_API_VERSION: """
 File share configuration for an instance. Specifying both `name` and `capacity`
 is required.
 
-*capacity*::: The desired size of the volume in GB or TB units. If no size
-unit is specified, GB is assumed. Acceptable instance sizes for each tier are as follows:
+*capacity*::: The desired capacity of the volume in GB or TB units. If no capacity
+unit is specified, GB is assumed. Acceptable instance capacities for each tier are as follows:
 * BASIC_HDD: 1TB-63.9TB in 1GB increments or its multiples.
 * BASIC_SSD: 2.5TB-63.9TB in 1GB increments or its multiples.
 * HIGH_SCALE_SSD: 60TB-320TB in 10TB increments or its multiples.
@@ -286,8 +286,8 @@ The default value is 65534.
 File share configuration for an instance. Specifying both `name` and `capacity`
 is required.
 
-*capacity*::: The desired size of the volume in GB or TB units. If no size
-unit is specified, GB is assumed. Acceptable instance sizes for each tier are as follows:
+*capacity*::: The desired capacity of the volume in GB or TB units. If no capacity
+unit is specified, GB is assumed. Acceptable instance capacities for each tier are as follows:
 * BASIC_HDD: 1TB-63.9TB in 1GB increments or its multiples.
 * BASIC_SSD: 2.5TB-63.9TB in 1GB increments or its multiples.
 * HIGH_SCALE_SSD: 60TB-320TB in 10TB increments or its multiples.

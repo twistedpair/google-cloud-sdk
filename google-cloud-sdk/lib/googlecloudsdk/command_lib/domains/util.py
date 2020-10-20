@@ -40,12 +40,14 @@ REGISTRATIONS_COLLECTION = 'domains.projects.locations.registrations'
 _PROJECT = lambda: properties.VALUES.core.project.Get(required=True)
 
 
-def RegistrationsUriFunc(resource):
-  return ParseRegistration(resource.name).SelfLink()
+def RegistrationsUriFunc(api_version):
+  def UriFunc(resource):
+    return ParseRegistration(api_version, resource.name).SelfLink()
+  return UriFunc
 
 
-def AssertRegistrationOperational(registration):
-  messages = registrations.GetMessagesModule()
+def AssertRegistrationOperational(api_version, registration):
+  messages = registrations.GetMessagesModule(api_version)
 
   if registration.state not in [
       messages.Registration.StateValueValuesEnum.ACTIVE,
@@ -186,14 +188,14 @@ def PromptWithValidator(prompt_string,
       log.status.Print(error_message)
 
 
-def GetRegistry():
+def GetRegistry(api_version):
   registry = resources.REGISTRY.Clone()
-  registry.RegisterApiByName('domains', 'v1alpha2')
+  registry.RegisterApiByName('domains', api_version)
   return registry
 
 
-def ParseRegistration(registration):
-  return GetRegistry().Parse(
+def ParseRegistration(api_version, registration):
+  return GetRegistry(api_version).Parse(
       registration,
       params={
           'projectsId': _PROJECT,
@@ -202,8 +204,8 @@ def ParseRegistration(registration):
       collection=REGISTRATIONS_COLLECTION)
 
 
-def ParseOperation(operation):
-  return GetRegistry().Parse(
+def ParseOperation(api_version, operation):
+  return GetRegistry(api_version).Parse(
       operation,
       params={
           'projectsId': _PROJECT,
@@ -218,19 +220,22 @@ def DomainNamespace(domain):
   return domain[domain.find('.'):]
 
 
-def ParseTransferLockState(transfer_lock_state):
+def ParseTransferLockState(api_version, transfer_lock_state):
+  messages = registrations.GetMessagesModule(api_version)
   if transfer_lock_state is None:
     return None
-  return flags.TRANSFER_LOCK_ENUM_MAPPER.GetEnumForChoice(transfer_lock_state)
+  return flags.TransferLockEnumMapper(messages).GetEnumForChoice(
+      transfer_lock_state)
 
 
-def PromptForTransferLockState(transfer_lock=None):
+def PromptForTransferLockState(api_version, transfer_lock=None):
   """Prompts the user for new transfer lock state."""
+  messages = registrations.GetMessagesModule(api_version)
   if transfer_lock is not None:
     log.status.Print('Your current Transfer Lock state is: {}'.format(
         six.text_type(transfer_lock)))
 
-  options = list(flags.TRANSFER_LOCK_ENUM_MAPPER.choices)
+  options = list(flags.TransferLockEnumMapper(messages).choices)
   index = console_io.PromptChoice(
       options=options,
       cancel_option=True,
@@ -238,7 +243,7 @@ def PromptForTransferLockState(transfer_lock=None):
       message='Specify new transfer lock state')
   if index >= len(options):
     return None
-  return ParseTransferLockState(options[index])
+  return ParseTransferLockState(api_version, options[index])
 
 
 def TransformMoneyType(r):
@@ -265,7 +270,7 @@ def _ParseMoney(money):
     return int(number), 0, s
 
 
-def ParseYearlyPrice(price_string):
+def ParseYearlyPrice(api_version, price_string):
   """Parses money string as type Money."""
   if not price_string:
     return None
@@ -278,7 +283,7 @@ def ParseYearlyPrice(price_string):
   if currency == '$':
     currency = 'USD'
 
-  messages = registrations.GetMessagesModule()
+  messages = registrations.GetMessagesModule(api_version)
   return messages.Money(
       units=int(units), nanos=cents * 10**7, currencyCode=currency)
 
@@ -330,22 +335,23 @@ def PromptForHSTSAck(domain):
   return ack
 
 
-def WaitForOperation(response, asynchronous):
+def WaitForOperation(api_version, response, asynchronous):
   """Handles waiting for the operation and printing information about it.
 
   Args:
+    api_version: Cloud Domains API version to call.
     response: Response from the API call
     asynchronous: If true, do not wait for the operation
 
   Returns:
     The last information about the operation.
   """
-  operation_ref = ParseOperation(response.name)
+  operation_ref = ParseOperation(api_version, response.name)
   if asynchronous:
     log.status.Print('Started \'{}\''.format(operation_ref.Name()))
   else:
     message = 'Waiting for \'{}\' to complete'
-    operations_client = operations.Client.FromApiVersion('v1alpha2')
+    operations_client = operations.Client.FromApiVersion(api_version)
     response = operations_client.WaitForOperation(
         operation_ref, message.format(operation_ref.Name()))
   return response

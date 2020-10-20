@@ -98,6 +98,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_sites_apicategories = self.OrganizationsSitesApicategoriesService(self)
     self.organizations_sites = self.OrganizationsSitesService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects = self.ProjectsService(self)
 
   class HybridIssuersService(base_api.BaseApiService):
     """Service class for the hybrid_issuers resource."""
@@ -2880,7 +2881,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an alias from a key, certificate pair. The structure of the request is controlled by the `format` query parameter: * `keycertfile` - Separate PEM-encoded key and certificate files are uploaded. The request must have `Content-Type: multipart/form-data` and include fields `keyFile` and `certFile`. If uploading to a truststore, omit `keyFile`. * `pkcs12` - A PKCS12 file is uploaded. The request must have `Content-Type: multipart/form-data` with the file provided in the only field. * `selfsignedcert` - A new private key and certificate are generated. The request must have `Content-Type: application/json` and a body of CertificateGenerationSpec.
+      r"""Creates an alias from a key, certificate pair. The structure of the request is controlled by the `format` query parameter: * `keycertfile` - Separate PEM-encoded key and certificate files are uploaded. The request must have `Content-Type: multipart/form-data` and include fields `keyFile` and `certFile`. If uploading to a truststore, omit `keyFile`. A `password` field should be provided for encrypted keys. * `pkcs12` - A PKCS12 file is uploaded. The request must have `Content-Type: multipart/form-data` with the file provided in the `file` field and a `password` field if the file is encrypted. * `selfsignedcert` - A new private key and certificate are generated. The request must have `Content-Type: application/json` and a body of CertificateGenerationSpec.
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsKeystoresAliasesCreateRequest) input message
@@ -3480,7 +3481,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a resource file. Specify the `Content-Type` as `application/octet-stream` or `multipart/form-data`. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
+      r"""Creates a resource file. Specify the `Content-Type` as `application/octet-stream` or `multipart/form-data`. For more information about resource files, see [Resource files](https://cloud.google.com/apigee/docs/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesCreateRequest) input message
@@ -3507,7 +3508,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a resource file. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
+      r"""Deletes a resource file. For more information about resource files, see [Resource files](https://cloud.google.com/apigee/docs/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesDeleteRequest) input message
@@ -3534,7 +3535,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the contents of a resource file. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
+      r"""Gets the contents of a resource file. For more information about resource files, see [Resource files](https://cloud.google.com/apigee/docs/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesGetRequest) input message
@@ -3561,7 +3562,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all resource files. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
+      r"""Lists all resource files, optionally filtering by type. For more information about resource files, see [Resource files](https://cloud.google.com/apigee/docs/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesListRequest) input message
@@ -3588,7 +3589,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def ListEnvironmentResources(self, request, global_params=None):
-      r"""Lists all resource files. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
+      r"""Lists all resource files, optionally filtering by type. For more information about resource files, see [Resource files](https://cloud.google.com/apigee/docs/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesListEnvironmentResourcesRequest) input message
@@ -3615,7 +3616,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a resource file. Specify the `Content-Type` as `application/octet-stream` or `multipart/form-data`. For more information about resource files, see [Resource files](/api-platform/develop/resource-files).
+      r"""Updates a resource file. Specify the `Content-Type` as `application/octet-stream` or `multipart/form-data`. For more information about resource files, see [Resource files](https://cloud.google.com/apigee/docs/api-platform/develop/resource-files).
 
       Args:
         request: (ApigeeOrganizationsEnvironmentsResourcefilesUpdateRequest) input message
@@ -5464,5 +5465,42 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='GoogleCloudApigeeV1Organization',
         response_type_name='GoogleCloudApigeeV1Organization',
+        supports_download=False,
+    )
+
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
+
+    _NAME = 'projects'
+
+    def __init__(self, client):
+      super(ApigeeV1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ProvisionOrganization(self, request, global_params=None):
+      r"""Provisions a new Apigee organization with a functioning runtime. This is the standard way to create trial organizations for a free Apigee trial.
+
+      Args:
+        request: (ApigeeProjectsProvisionOrganizationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('ProvisionOrganization')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ProvisionOrganization.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:provisionOrganization',
+        http_method='POST',
+        method_id='apigee.projects.provisionOrganization',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=[],
+        relative_path='v1/{+project}:provisionOrganization',
+        request_field='googleCloudApigeeV1ProvisionOrganizationRequest',
+        request_type_name='ApigeeProjectsProvisionOrganizationRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

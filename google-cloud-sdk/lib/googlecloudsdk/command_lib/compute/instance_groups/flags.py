@@ -821,33 +821,35 @@ def ValidateMigInstanceRedistributionTypeFlag(instance_redistribution_type,
 DISTRIBUTION_POLICY_TARGET_SHAPES = ['EVEN', 'ANY', 'BALANCED']
 
 
-def AddMigDistributionPolicyTargetShapeFlag(parser):
+def AddMigDistributionPolicyTargetShapeFlag(parser, for_create=True):
   """Add --target-distribution-shape flag to the parser."""
+  help_text = """\
+      Specifies how a regional managed instance group distributes its instances
+      across zones within the region.
+
+      The following target shape are available:
+
+      * ``EVEN'' ‒ The group schedules VM instance creation and deletion in a
+        way that maintains an even number of managed instances across the
+        selected zones. Recommended for highly available serving workloads.
+      * ``BALANCED'' ‒ The group prioritizes acquisition of resources -
+        scheduling VMs in zones where resources are available - while
+        distributing VMs as evenly as possible across selected zones to minimize
+        the impact of zone-level failure. Recommended for highly available
+        serving or batch workloads that do not require autoscaling.
+      * ``ANY'' ‒ The group picks zones for creating VM instances to fulfill the
+        requested number of VMs within present capacity constraints. Recommended
+        for batch workloads that do not require high availability.
+    """
+  if for_create:
+    help_text += "\nIf not specified, the default shape is ``EVEN''."
+
   parser.add_argument(
       '--target-distribution-shape',
       metavar='SHAPE',
       type=lambda x: x.upper(),
       choices=DISTRIBUTION_POLICY_TARGET_SHAPES,
-      help="""\
-      Specify distribution policy target shape.
-
-      Target shape may be specified for regional managed instance group only.
-      By default it is set to EVEN.
-
-      The following target shapes are available:
-
-       * EVEN - The managed instance group creates the same number of managed
-         instances in each zone without consideration for resource availability.
-
-       * ANY - The managed instance group creates managed instances in zones
-         that have available resources - such as specialized hardware - and will
-         not attempt to converge to even distribution. All VMs might end up in a
-         single zone.
-
-       * BALANCED - The managed instance group creates managed instances in
-         zones as evenly as possible given availability of resources in each
-         zone, such as availability of specialized hardware.
-      """)
+      help=help_text)
 
 
 def ValidateMigDistributionPolicyTargetShapeFlag(target_shape, group_ref):

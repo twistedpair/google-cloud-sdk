@@ -23,7 +23,6 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import requests
 from googlecloudsdk.core import transport as core_transport
-from googlecloudsdk.core.credentials import creds as core_creds
 from googlecloudsdk.core.credentials import transport
 
 import httplib2
@@ -32,10 +31,6 @@ from google.auth.transport import requests as google_auth_requests
 
 class Error(exceptions.Error):
   """Exceptions for this module."""
-
-
-class UnsupportedCredentialsException(Error):
-  """An error for when we fail to determine the type of the credentials."""
 
 
 def GetSession(timeout='unset',
@@ -74,8 +69,6 @@ def GetSession(timeout='unset',
 
   Raises:
     c_store.Error: If an error loading the credentials occurs.
-    UnsupportedCredentialsException: If the attached credentails are not
-      supported by requests.
   """
   session = requests.GetSession(timeout=timeout,
                                 response_encoding=response_encoding,
@@ -87,14 +80,6 @@ def GetSession(timeout='unset',
                                       allow_account_impersonation, True)
   session = request_wrapper.WrapCredentials(session,
                                             allow_account_impersonation)
-
-  if hasattr(session, '_googlecloudsdk_credentials'):
-    creds = session._googlecloudsdk_credentials  # pylint: disable=protected-access
-    # The requests transport only supports google auth credentials
-    if not core_creds.IsGoogleAuthCredentials(creds):
-      raise UnsupportedCredentialsException(
-          'Requests does not support credentials of this type: {}'.format(
-              creds))
 
   return session
 
@@ -199,6 +184,9 @@ class _ApitoolsRequests():
 
   def __init__(self, session):
     self.session = session
+    # Mocks the dictionary of connection instances that apitools iterates over
+    # to modify the underlying connection.
+    self.connections = {}
 
   def request(
       self,

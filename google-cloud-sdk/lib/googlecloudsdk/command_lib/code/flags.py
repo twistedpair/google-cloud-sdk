@@ -95,6 +95,17 @@ def CommonFlags(parser):
       'suffix. Valid unit suffixes are "B", "KB", "MB", "GB", "TB", "KiB", '
       '"MiB", "GiB", "TiB", or "PiB".')
 
+  # This flag launches the readiness probe feature. It is currently
+  # default off. It will be moved to default on when ready and then
+  # the feature will be always on.
+  parser.add_argument(
+      '--readiness-probe',
+      default=False,
+      action='store_true',
+      hidden=True,
+      help='Add a readiness probe to the list of containers that delays '
+      'deployment stabilization until the application app has bound to $PORT')
+
   env_var_group = parser.add_mutually_exclusive_group(required=False)
   env_var_group.add_argument(
       '--env-vars',

@@ -32,6 +32,7 @@ from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -317,9 +318,8 @@ def AddPrivateIpv6GoogleAccessArg(parser, api_version):
       parser)
 
 
-def AddStableFleetArgs(parser):
-  """Add flags related to Stable Fleet."""
-  parser.add_argument(
+def AddMaintenanceInterval():
+  return base.Argument(
       '--maintenance-interval',
       type=lambda x: x.upper(),
       hidden=True,
@@ -328,13 +328,23 @@ def AddStableFleetArgs(parser):
       Set maintenance interval for the instance.
       """
   )
-  parser.add_argument(
+
+
+def AddMaintenanceFreezeDuration():
+  return base.Argument(
       '--maintenance-freeze-duration',
       type=arg_parsers.Duration(),
       help="""
         Specifies the amount of hours after instance creation where the instance
         won't be scheduled for maintenance, e.g. `4h`, `2d6h`.
-        See $ gcloud topic datetimes for information on duration formats.""")
+        See $ gcloud topic datetimes for information on duration formats."""
+  )
+
+
+def AddStableFleetArgs(parser):
+  """Add flags related to Stable Fleet."""
+  AddMaintenanceInterval().AddToParser(parser)
+  AddMaintenanceFreezeDuration().AddToParser(parser)
 
 
 def GetPrivateIpv6GoogleAccessTypeFlagMapper(messages):

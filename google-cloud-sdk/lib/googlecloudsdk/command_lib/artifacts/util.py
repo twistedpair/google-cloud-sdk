@@ -24,7 +24,6 @@ import encodings.idna  # pylint: disable=unused-import
 import os
 import re
 
-from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib import artifacts
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 
@@ -38,29 +37,6 @@ from googlecloudsdk.core.util import parallel
 _INVALID_REPO_NAME_ERROR = (
     "Names may only contain lowercase letters, numbers, and hyphens, and must "
     "begin with a letter and end with a letter or number.")
-
-_GCR_BUCKETS = {
-    "us": {
-        "bucket": "us.artifacts.{}.appspot.com",
-        "repository": "us.gcr.io",
-        "location": "us"
-    },
-    "europe": {
-        "bucket": "eu.artifacts.{}.appspot.com",
-        "repository": "eu.gcr.io",
-        "location": "europe"
-    },
-    "asia": {
-        "bucket": "asia.artifacts.{}.appspot.com",
-        "repository": "asia.gcr.io",
-        "location": "asia"
-    },
-    "global": {
-        "bucket": "artifacts.{}.appspot.com",
-        "repository": "gcr.io",
-        "location": "us"
-    }
-}
 
 _REPO_REGEX = "^[a-z]([a-z0-9-]*[a-z0-9])?$"
 
@@ -248,29 +224,6 @@ def AppendParentInfoToListVersionsAndTagsResponse(response, args):
   return response
 
 
-def GetGCRRepos(buckets, project):
-  """Gets a list of GCR repositories given a list of GCR bucket names."""
-  messages = ar_requests.GetMessages()
-  repos = []
-
-  project_id_for_bucket = project
-  if ":" in project:
-    domain, project_id = project.split(":")
-    project_id_for_bucket = "{}.{}.a".format(project_id, domain)
-  for bucket in buckets:
-    try:
-      ar_requests.TestStorageIAMPermission(
-          bucket["bucket"].format(project_id_for_bucket), project)
-      repo = messages.Repository(
-          name="projects/{}/locations/{}/repositories/{}".format(
-              project, bucket["location"], bucket["repository"]),
-          format=messages.Repository.FormatValueValuesEnum.DOCKER)
-      repos.append(repo)
-    except api_exceptions.HttpNotFoundError:
-      continue
-  return repos
-
-
 def ListRepositories(args):
   """Lists repositories in a given project.
 
@@ -295,7 +248,6 @@ def ListRepositories(args):
     log.status.Print("Listing items under project {}, location {}.\n".format(
         project, location))
     loc_paths.append("projects/{}/locations/{}".format(project, location))
-    buckets = [_GCR_BUCKETS[location]] if location in _GCR_BUCKETS else []
   else:
     log.status.Print(
         "Listing items under project {}, across all locations.\n".format(
@@ -303,7 +255,6 @@ def ListRepositories(args):
     loc_paths.extend([
         "projects/{}/locations/{}".format(project, loc) for loc in location_list
     ])
-    buckets = _GCR_BUCKETS.values()
 
   pool_size = len(loc_paths) if loc_paths else 1
   pool = parallel.GetPool(pool_size)
@@ -325,7 +276,7 @@ def ListRepositories(args):
     repos.extend([repo for repo in sublist])
   repos.sort(key=lambda x: x.name.split("/")[-1])
 
-  return repos, buckets, project
+  return repos
 
 
 def ValidateLocation(location, project_id):

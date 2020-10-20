@@ -20,23 +20,38 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions
+
+ALPHA_API_VERSION = 'v1alpha2'
+BETA_API_VERSION = 'v1beta1'
 
 
-def GetClientInstance():
-  return apis.GetClientInstance('domains', 'v1alpha2')
+def GetApiVersionFromArgs(args):
+  """Return API version based on args."""
+  release_track = args.calliope_command.ReleaseTrack()
+  if release_track == base.ReleaseTrack.ALPHA:
+    return ALPHA_API_VERSION
+  if release_track == base.ReleaseTrack.BETA:
+    return BETA_API_VERSION
+  raise exceptions.UnsupportedReleaseTrackError(release_track)
 
 
-def GetMessagesModule(client=None):
-  client = client or GetClientInstance()
+def GetClientInstance(api_version):
+  return apis.GetClientInstance('domains', api_version)
+
+
+def GetMessagesModule(api_version, client=None):
+  client = client or GetClientInstance(api_version)
   return client.MESSAGES_MODULE
 
 
 class RegistrationsClient(object):
   """Client for registrations service in the Cloud Domains API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClientInstance()
-    self.messages = messages or GetMessagesModule(client)
+  def __init__(self, api_version, client=None, messages=None):
+    self.client = client or GetClientInstance(api_version)
+    self.messages = messages or GetMessagesModule(api_version, client)
     self._service = self.client.projects_locations_registrations
 
   def Register(self,

@@ -280,7 +280,8 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The immutable name of the TPU",
+          "description": "Output only. Immutable. The name of the TPU",
+          "readOnly": true,
           "type": "string"
         },
         "description": {
@@ -288,7 +289,7 @@
           "type": "string"
         },
         "acceleratorType": {
-          "description": "The type of hardware accelerators associated with this node. Required.",
+          "description": "Required. The type of hardware accelerators associated with this node.",
           "type": "string"
         },
         "ipAddress": {
@@ -301,6 +302,7 @@
         },
         "state": {
           "description": "Output only. The current state for the TPU Node.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "TPU node state is not known\/set.",
@@ -339,10 +341,11 @@
         },
         "healthDescription": {
           "description": "Output only. If this field is populated, it contains a description of why the TPU Node is unhealthy.",
+          "readOnly": true,
           "type": "string"
         },
         "tensorflowVersion": {
-          "description": "The version of Tensorflow running in the Node. Required.",
+          "description": "Required. The version of Tensorflow running in the Node.",
           "type": "string"
         },
         "network": {
@@ -355,18 +358,22 @@
         },
         "serviceAccount": {
           "description": "Output only. The service account used to run the tensor flow services within the node. To share resources, including Google Cloud Storage data, with the Tensorflow job running in the Node, this account must have permissions to that data.",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
           "description": "Output only. The time when the node was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "schedulingConfig": {
+          "description": "The scheduling options for this node.",
           "$ref": "SchedulingConfig"
         },
         "networkEndpoints": {
           "description": "Output only. The network endpoints where TPU workers can be accessed and sent work. It is recommended that Tensorflow clients of the node reach out to the 0th entry in this map first.",
+          "readOnly": true,
           "type": "array",
           "items": {
             "$ref": "NetworkEndpoint"
@@ -404,15 +411,15 @@
           "type": "boolean"
         },
         "modelConfigFile": {
-          "description": "Inference Mode: GCS path to model configuration file for models to serve The contents of the model_config.pbtxt is a ModelServerConfig proto.",
+          "description": "Inference Mode: Cloud Storage path to model configuration file for models to serve. The contents of the model_config.pbtxt is a ModelServerConfig proto.",
           "type": "string"
         },
         "platformConfigFile": {
-          "description": "Inference Mode: GCS path to configuration file for platform requirements The contents of the platform_config.pbtxt is a PlatformConfigMap proto.",
+          "description": "Inference Mode: Cloud Storage path to configuration file for platform requirements The contents of the platform_config.pbtxt is a PlatformConfigMap proto.",
           "type": "string"
         },
         "modelBasePath": {
-          "description": "Inference Mode: Base path to exported saved model. This field can be used instead of model_config_file directly to specify the exported saved model's base path (excluding timestamp), whereas model_config_file points to a GCS path to a ModelServerConfig proto.",
+          "description": "Inference Mode: Base path to exported saved model. This field can be used instead of model_config_file directly to specify the exported saved model's base path (excluding timestamp), whereas model_config_file points to a Cloud Storage path to a ModelServerConfig proto.",
           "type": "string"
         },
         "modelName": {
@@ -846,7 +853,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name.",
+                      "description": "Required. The parent resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -882,7 +889,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name.",
+                      "description": "Required. The resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
@@ -907,7 +914,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name.",
+                      "description": "Required. The parent resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -940,7 +947,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "The resource name.",
+                      "description": "Required. The resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
@@ -1053,7 +1060,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name.",
+                      "description": "Required. The parent resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1099,7 +1106,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name.",
+                      "description": "Required. The resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorflowVersions\/[^\/]+$",
@@ -1128,7 +1135,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The parent resource name.",
+                      "description": "Required. The parent resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1174,7 +1181,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name.",
+                      "description": "Required. The resource name.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/acceleratorTypes\/[^\/]+$",

@@ -18,11 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import validation
+from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
 
 
@@ -55,43 +56,49 @@ class CustomJobsClient(object):
     if config_path:
       data = yaml.load_path(config_path)
       if data:
-        job_spec = encoding.DictToMessage(
+        job_spec = messages_util.DictToMessageWithErrorCheck(
             data, self.messages.GoogleCloudAiplatformV1beta1CustomJobSpec)
 
     worker_pool_specs = []
-    for spec in specs:
-      machine_type = spec.get('machine-type')
-      if not spec.get('replica-count'):
-        replica_count = 1
-      else:
-        replica_count = int(spec.get('replica-count'))
-      container_image_uri = spec.get('container-image-uri')
-      python_image_uri = spec.get('python-image-uri')
-      python_module = spec.get('python-module')
-      machine_spec = self.messages.GoogleCloudAiplatformV1beta1MachineSpec(
-          machineType=machine_type)
+    if specs is not None:
+      for spec in specs:
+        machine_type = spec.get('machine-type')
+        if not spec.get('replica-count'):
+          replica_count = 1
+        else:
+          replica_count = int(spec.get('replica-count'))
+        container_image_uri = spec.get('container-image-uri')
+        python_image_uri = spec.get('python-image-uri')
+        python_module = spec.get('python-module')
+        machine_spec = (
+            self.messages.GoogleCloudAiplatformV1beta1MachineSpec(
+                machineType=machine_type))
 
-      worker_pool_spec = self.messages.GoogleCloudAiplatformV1beta1WorkerPoolSpec(
-          replicaCount=replica_count, machineSpec=machine_spec)
-      if container_image_uri:
-        worker_pool_spec.containerSpec = self.messages.GoogleCloudAiplatformV1beta1ContainerSpec(
-            imageUri=container_image_uri)
+        worker_pool_spec = (
+            self.messages.GoogleCloudAiplatformV1beta1WorkerPoolSpec(
+                replicaCount=replica_count, machineSpec=machine_spec))
+        if container_image_uri:
+          worker_pool_spec.containerSpec = (
+              self.messages.GoogleCloudAiplatformV1beta1ContainerSpec(
+                  imageUri=container_image_uri))
 
-      # TODO(b/161753810): Pass args and commands to the python package
-      # and container.
-      if python_package_uri or python_image_uri or python_module:
-        worker_pool_spec.pythonPackageSpec = self.messages.GoogleCloudAiplatformV1beta1PythonPackageSpec(
-            executorImageUri=python_image_uri,
-            packageUris=python_package_uri,
-            pythonModule=python_module)
+        # TODO(b/161753810): Pass args and commands to the python package
+        # and container.
+        if python_package_uri or python_image_uri or python_module:
+          worker_pool_spec.pythonPackageSpec = (
+              self.messages.GoogleCloudAiplatformV1beta1PythonPackageSpec(
+                  executorImageUri=python_image_uri,
+                  packageUris=python_package_uri,
+                  pythonModule=python_module))
+        worker_pool_specs.append(worker_pool_spec)
 
-      worker_pool_specs.append(worker_pool_spec)
     if worker_pool_specs:
       job_spec.workerPoolSpecs = worker_pool_specs
     validation.ValidateWorkerPoolSpec(job_spec.workerPoolSpecs)
 
-    custom_job = self.messages.GoogleCloudAiplatformV1beta1CustomJob(
-        displayName=display_name, jobSpec=job_spec)
+    custom_job = (
+        self.messages.GoogleCloudAiplatformV1beta1CustomJob(
+            displayName=display_name, jobSpec=job_spec))
 
     return self._service.Create(
         self.messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
@@ -115,3 +122,24 @@ class CustomJobsClient(object):
     request = self.messages.AiplatformProjectsLocationsCustomJobsCancelRequest(
         name=name)
     return self._service.Cancel(request)
+
+  def CheckJobComplete(self, name):
+    """Returns a function to decide if log fetcher should continue polling.
+
+    Args:
+      name: String id of job.
+
+    Returns:
+      A one-argument function decides if log fetcher should continue.
+    """
+    request = self.messages.AiplatformProjectsLocationsCustomJobsGetRequest(
+        name=name)
+    response = self._service.Get(request)
+    log.status.Print(response.endTime is None)
+
+    def ShouldContinue(periods_without_logs):
+      if periods_without_logs <= 1:
+        return True
+      return response.endTime is None
+
+    return ShouldContinue

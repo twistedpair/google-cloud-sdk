@@ -22,7 +22,6 @@ from googlecloudsdk.api_lib.kuberun import traffic
 
 import six
 
-
 # Human readable indicator for a missing traffic percentage or missing tags.
 _MISSING_PERCENT_OR_TAGS = '-'
 
@@ -96,8 +95,8 @@ class TrafficTargetPair(object):
     latestRevision: Boolean indicating if the traffic targets reference the
       latest ready revision.
     revisionName: The name of the revision referenced by these traffic targets.
-    specPercent: The percent of traffic allocated to the referenced revision
-      in the service's spec.
+    specPercent: The percent of traffic allocated to the referenced revision in
+      the service's spec.
     statusPercent: The percent of traffic allocated to the referenced revision
       in the service's status.
     specTags: Tags assigned to the referenced revision in the service's spec as
@@ -113,6 +112,7 @@ class TrafficTargetPair(object):
       the referenced revision.
     serviceUrl: The main URL for the service.
   """
+
   # This class has lower camel case public attribute names to implement our
   # desired style for json and yaml property names in structured output.
   #
@@ -235,11 +235,13 @@ def GetTrafficTargetPairs(spec_traffic,
   between the spec and status traffic.
 
   Args:
-    spec_traffic: A traffic.TrafficTargets instance wrapping the spec traffic.
-    status_traffic: A traffic.TrafficTargets instance wrapping the status
+    spec_traffic: A dictionary of name->traffic.TrafficTarget for the spec
+      traffic.
+    status_traffic: A dictionary of name->traffic.TrafficTarget for the status
       traffic.
     latest_ready_revision_name: The name of the service's latest ready revision.
     service_url: The main URL for the service. Optional.
+
   Returns:
     A list of TrafficTargetPairs representing the current state of the service's
     traffic assignments. The TrafficTargetPairs are sorted by revision name,

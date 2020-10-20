@@ -616,6 +616,10 @@
           "description": "Whether this is a required field. Defaults to false.",
           "type": "boolean"
         },
+        "description": {
+          "description": "The description for this field. Defaults to an empty string.",
+          "type": "string"
+        },
         "order": {
           "description": "The order of this field with respect to other fields in this tag template. A higher value indicates a more important field. The value can be negative. Multiple fields can have the same order, and field orders within a tag do not have to be sequential.",
           "type": "integer",

@@ -63,8 +63,8 @@ class LocalRuntimeFiles(object):
         local.AppContainerGenerator(self._settings.service_name,
                                     self._settings.image,
                                     self._settings.env_vars,
-                                    self._settings.memory,
-                                    self._settings.cpu, cpu_request)
+                                    self._settings.memory, self._settings.cpu,
+                                    cpu_request, self._settings.readiness_probe)
     ]
 
     credential_generator = None

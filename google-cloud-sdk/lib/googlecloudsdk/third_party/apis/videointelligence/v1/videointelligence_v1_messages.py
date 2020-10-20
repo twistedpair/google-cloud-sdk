@@ -3854,26 +3854,6 @@ class VideointelligenceOperationsProjectsLocationsOperationsGetRequest(_messages
   name = _messages.StringField(1, required=True)
 
 
-class VideointelligenceProjectsLocationsCorporaOperationsGetRequest(_messages.Message):
-  r"""A VideointelligenceProjectsLocationsCorporaOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class VideointelligenceProjectsLocationsCorpuraOperationsGetRequest(_messages.Message):
-  r"""A VideointelligenceProjectsLocationsCorpuraOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class VideointelligenceProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A VideointelligenceProjectsLocationsOperationsCancelRequest object.
 

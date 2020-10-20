@@ -20,8 +20,10 @@ from __future__ import unicode_literals
 
 import json
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.credentials import requests
 
 import six
 from six.moves import http_client as httplib
@@ -35,6 +37,19 @@ class InstancesEncodeError(core_exceptions.Error):
 class HttpRequestFailError(core_exceptions.Error):
   """Indicates that the http request fails in some way."""
   pass
+
+
+def _GetPrediction(response_encoding, url, body, headers):
+  """Make http request to get prediction results."""
+  if base.UseRequests():
+    response = requests.GetSession(response_encoding=response_encoding).request(
+        'POST', url, data=body, headers=headers)
+    return getattr(response, 'status_code'), getattr(response, 'text')
+
+  response, response_body = http.Http(
+      response_encoding=response_encoding).request(
+          uri=url, method='POST', body=body, headers=headers)
+  return response.get('status'), response_body
 
 
 def Predict(model_or_version_ref, instances, signature_name=None):
@@ -69,9 +84,8 @@ def Predict(model_or_version_ref, instances, signature_name=None):
   # Workaround since gcloud cannot handle HttpBody properly, see b/31403673
   # TODO(b/77278279): Decide whether we should always set this or not.
   encoding = None if six.PY2 else 'utf-8'
-  response, response_body = http.Http(response_encoding=encoding).request(
-      uri=url, method='POST', body=body, headers=headers)
-  if int(response.get('status')) != httplib.OK:
+  response_status, response_body = _GetPrediction(encoding, url, body, headers)
+  if int(response_status) != httplib.OK:
     raise HttpRequestFailError('HTTP request failed. Response: ' +
                                response_body)
   try:

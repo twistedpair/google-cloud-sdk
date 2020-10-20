@@ -1140,6 +1140,22 @@
         "name": {
           "description": "The name of the `MembershipRole`. Must be one of `OWNER`, `MANAGER`, `MEMBER`.",
           "type": "string"
+        },
+        "expiryDetail": {
+          "description": "The expiry details of the `MembershipRole`. Expiry details are only supported for `MEMBER` `MembershipRoles`. May be set if `name` is `MEMBER`. Must not be set if `name` is any other value.",
+          "$ref": "ExpiryDetail"
+        }
+      }
+    },
+    "ExpiryDetail": {
+      "id": "ExpiryDetail",
+      "description": "The `MembershipRole` expiry details.",
+      "type": "object",
+      "properties": {
+        "expireTime": {
+          "description": "The time at which the `MembershipRole` will expire.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

@@ -801,15 +801,17 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
   Fields:
     dockerCacheHit: Indicates whether we are using a cached Docker image
       (true) or had to pull the Docker image (false) for this command.
+    dockerImageName: Docker Image name.
     inputCacheMiss: The input cache miss ratio.
     numErrors: The number of errors reported.
     numWarnings: The number of warnings reported.
   """
 
   dockerCacheHit = _messages.BooleanField(1)
-  inputCacheMiss = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  numErrors = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  numWarnings = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  dockerImageName = _messages.StringField(2)
+  inputCacheMiss = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  numErrors = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  numWarnings = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
 
 
 class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):

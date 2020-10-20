@@ -56,4 +56,5 @@ SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     regional_collection='compute.regionDisks',
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
+    use_existing_default_scope=True,
     required=True)

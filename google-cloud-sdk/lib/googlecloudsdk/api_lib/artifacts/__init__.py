@@ -22,8 +22,8 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
 API_VERSION_FOR_TRACK = {
-    base.ReleaseTrack.ALPHA: 'v1beta1',
-    base.ReleaseTrack.BETA: 'v1beta1'
+    base.ReleaseTrack.ALPHA: 'v1beta2',
+    base.ReleaseTrack.BETA: 'v1beta2'
 }
 
 

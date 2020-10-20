@@ -2533,6 +2533,21 @@ class ApigeeOrganizationsSitesApicategoriesListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
 
 
+class ApigeeProjectsProvisionOrganizationRequest(_messages.Message):
+  r"""A ApigeeProjectsProvisionOrganizationRequest object.
+
+  Fields:
+    googleCloudApigeeV1ProvisionOrganizationRequest: A
+      GoogleCloudApigeeV1ProvisionOrganizationRequest resource to be passed as
+      the request body.
+    project: Required. Name of the GCP project with which to associate the
+      Apigee organization.
+  """
+
+  googleCloudApigeeV1ProvisionOrganizationRequest = _messages.MessageField('GoogleCloudApigeeV1ProvisionOrganizationRequest', 1)
+  project = _messages.StringField(2, required=True)
+
+
 class GoogleApiHttpBody(_messages.Message):
   r"""Message that represents an arbitrary HTTP body. It should only be used
   for payload formats that can't be represented as JSON, such as raw binary or
@@ -4902,6 +4917,27 @@ class GoogleCloudApigeeV1Property(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1ProvisionOrganizationRequest(_messages.Message):
+  r"""Request for ProvisionOrganization.
+
+  Fields:
+    analyticsRegion: Primary Cloud Platform region for analytics data storage.
+      For valid values, see [Create an
+      organization](https://docs.apigee.com/hybrid/latest/precog-provision).
+      Defaults to us-west1.
+    authorizedNetwork: Name of the customer project's VPC network. If
+      provided, the network needs to be peered through Service Networking. If
+      none is provided, the organization will have access only to the public
+      internet.
+    runtimeLocation: Cloud Platform location for the runtime instance.
+      Defaults to us-west1-a.
+  """
+
+  analyticsRegion = _messages.StringField(1)
+  authorizedNetwork = _messages.StringField(2)
+  runtimeLocation = _messages.StringField(3)
 
 
 class GoogleCloudApigeeV1Query(_messages.Message):

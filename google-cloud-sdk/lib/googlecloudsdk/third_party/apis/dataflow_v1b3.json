@@ -2424,6 +2424,10 @@
         "sdkInfo": {
           "description": "Required. SDK info of the Flex Template.",
           "$ref": "SDKInfo"
+        },
+        "defaultEnvironment": {
+          "description": "Default runtime environment for the job.",
+          "$ref": "FlexTemplateRuntimeEnvironment"
         }
       }
     },

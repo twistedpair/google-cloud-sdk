@@ -212,7 +212,7 @@ class TrafficFlags(BinaryCommandFlag):
         '--to-revisions',
         help='Comma-separated list of traffic assignments in the form '
         'REVISION-NAME=PERCENTAGE. REVISION-NAME must be the name for a revision '
-        'for the service as returned by \'gcloud kuberun clusters revisions list\'. '
+        'for the service as returned by \'gcloud kuberun core revisions list\'. '
         'PERCENTAGE must be an integer percentage between 0 and 100 inclusive. '
         'E.g. service-nw9hs=10,service-nw9hs=20 Up to 100 percent of traffic may '
         'be assigned. If 100 percent of traffic is assigned, the Service traffic '

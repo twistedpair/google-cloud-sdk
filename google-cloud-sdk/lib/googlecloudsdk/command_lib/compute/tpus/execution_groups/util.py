@@ -588,7 +588,7 @@ class SSH(object):
 
     external_nat = ssh_utils.GetExternalIPAddress(instance)
     log.status.Print(
-        'Trying to SSH to GCE Green VM with NAT IP:{}'.format(external_nat))
+        'Trying to SSH to VM with NAT IP:{}'.format(external_nat))
     remote = ssh.Remote(external_nat, ssh.GetDefaultSshUsername())
     args.ssh_key_file = ssh.Keys.DEFAULT_KEY_FILE
 

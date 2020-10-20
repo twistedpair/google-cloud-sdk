@@ -789,6 +789,12 @@ class Dataset(_messages.Message):
         will accept any of the above formats, but will return only the legacy
         format. For example, if you set this field to
         "roles/bigquery.dataOwner", it will be returned back as "OWNER".
+      routine: [Pick one] A routine from a different dataset to grant access
+        to. Queries executed against that routine will have read access to
+        views/tables/routines in this dataset. Only UDF is supported for now.
+        The role field is not required when this field is set. If that routine
+        is updated by any user, access to the routine needs to be granted
+        again via an update operation.
       specialGroup: [Pick one] A special group to grant access to. Possible
         values include: projectOwners: Owners of the enclosing project.
         projectReaders: Readers of the enclosing project. projectWriters:
@@ -808,9 +814,10 @@ class Dataset(_messages.Message):
     groupByEmail = _messages.StringField(2)
     iamMember = _messages.StringField(3)
     role = _messages.StringField(4)
-    specialGroup = _messages.StringField(5)
-    userByEmail = _messages.StringField(6)
-    view = _messages.MessageField('TableReference', 7)
+    routine = _messages.MessageField('RoutineReference', 5)
+    specialGroup = _messages.StringField(6)
+    userByEmail = _messages.StringField(7)
+    view = _messages.MessageField('TableReference', 8)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2867,11 +2874,11 @@ class Table(_messages.Message):
       Only one of timePartitioning and rangePartitioning should be specified.
     type: [Output-only] Describes the table type. The following values are
       supported: TABLE: A normal BigQuery table. VIEW: A virtual table defined
-      by a SQL query. [TrustedTester] SNAPSHOT: An immutable, read-only table
-      that is a copy of another table. [TrustedTester] MATERIALIZED_VIEW: SQL
-      query whose result is persisted. EXTERNAL: A table that references data
-      stored in an external storage system, such as Google Cloud Storage. The
-      default value is TABLE.
+      by a SQL query. SNAPSHOT: An immutable, read-only table that is a copy
+      of another table. [TrustedTester] MATERIALIZED_VIEW: SQL query whose
+      result is persisted. EXTERNAL: A table that references data stored in an
+      external storage system, such as Google Cloud Storage. The default value
+      is TABLE.
     view: [Optional] The view definition.
   """
 

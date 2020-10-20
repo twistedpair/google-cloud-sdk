@@ -2121,7 +2121,8 @@
             "The primary instance logging setup doesn't allow EM sync.",
             "The primary instance database parameter setup doesn't allow EM sync.",
             "The gtid_mode is not supported, applicable for MySQL.",
-            "SQL Server Agent is not running."
+            "SQL Server Agent is not running.",
+            "The table definition is not support due to missing primary key or replica identity, applicable for postgres."
           ],
           "enum": [
             "SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED",
@@ -2143,7 +2144,8 @@
             "INVALID_LOGGING_SETUP",
             "INVALID_DB_PARAM",
             "UNSUPPORTED_GTID_MODE",
-            "SQLSERVER_AGENT_NOT_RUNNING"
+            "SQLSERVER_AGENT_NOT_RUNNING",
+            "UNSUPPORTED_TABLE_DEFINITION"
           ]
         },
         "detail": {

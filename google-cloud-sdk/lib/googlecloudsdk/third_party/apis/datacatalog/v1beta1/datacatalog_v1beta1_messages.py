@@ -1932,6 +1932,7 @@ class GoogleCloudDatacatalogV1beta1TagTemplateField(_messages.Message):
   r"""The template for an individual field within a tag template.
 
   Fields:
+    description: The description for this field. Defaults to an empty string.
     displayName: The display name for this field. Defaults to an empty string.
     isRequired: Whether this is a required field. Defaults to false.
     name: Output only. The resource name of the tag template field in URL
@@ -1945,11 +1946,12 @@ class GoogleCloudDatacatalogV1beta1TagTemplateField(_messages.Message):
     type: Required. The type of value this tag field can contain.
   """
 
-  displayName = _messages.StringField(1)
-  isRequired = _messages.BooleanField(2)
-  name = _messages.StringField(3)
-  order = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  type = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldType', 5)
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  isRequired = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  order = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  type = _messages.MessageField('GoogleCloudDatacatalogV1beta1FieldType', 6)
 
 
 class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):

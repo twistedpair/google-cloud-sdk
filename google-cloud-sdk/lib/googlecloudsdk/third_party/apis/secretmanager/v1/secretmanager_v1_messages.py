@@ -546,6 +546,9 @@ class Secret(_messages.Message):
 
   Fields:
     createTime: Output only. The time at which the Secret was created.
+    expireTime: Optional. Timestamp in UTC at which the Secret is scheduled to
+      expire. This is always provided on output, regardless of what was sent
+      on input.
     labels: The labels assigned to this Secret. Label keys must be between 1
       and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
       must conform to the following PCRE regular expression:
@@ -558,6 +561,7 @@ class Secret(_messages.Message):
     replication: Required. Immutable. The replication policy of the secret
       data attached to the Secret. The replication policy cannot be changed
       after the Secret has been created.
+    ttl: Input only. The TTL for the Secret.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -591,9 +595,11 @@ class Secret(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  replication = _messages.MessageField('Replication', 4)
+  expireTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  replication = _messages.MessageField('Replication', 5)
+  ttl = _messages.StringField(6)
 
 
 class SecretPayload(_messages.Message):

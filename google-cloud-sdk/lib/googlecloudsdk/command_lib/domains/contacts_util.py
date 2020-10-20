@@ -32,18 +32,18 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 
 
-def ParseContactData(path):
+def ParseContactData(api_version, path):
   """Parses contact data from a yaml file."""
-  messages = registrations.GetMessagesModule()
+  domains_messages = registrations.GetMessagesModule(api_version)
 
   class ContactData(_messages.Message):
     """Message that should be present in YAML file with contacts data."""
 
     # pylint: disable=invalid-name
-    allContacts = _messages.MessageField(messages.Contact, 1)
-    registrantContact = _messages.MessageField(messages.Contact, 2)
-    adminContact = _messages.MessageField(messages.Contact, 3)
-    technicalContact = _messages.MessageField(messages.Contact, 4)
+    allContacts = _messages.MessageField(domains_messages.Contact, 1)
+    registrantContact = _messages.MessageField(domains_messages.Contact, 2)
+    adminContact = _messages.MessageField(domains_messages.Contact, 3)
+    technicalContact = _messages.MessageField(domains_messages.Contact, 4)
 
   contacts = util.ParseMessageFromYamlFile(
       path, ContactData,
@@ -59,12 +59,12 @@ def ParseContactData(path):
         raise exceptions.Error(
             ('Contact data file \'{}\' cannot contain both '
              'allContacts and {} fields.').format(path, field))
-    parsed_contact = messages.ContactSettings(
+    parsed_contact = domains_messages.ContactSettings(
         registrantContact=contacts.allContacts,
         adminContact=contacts.allContacts,
         technicalContact=contacts.allContacts)
   else:
-    parsed_contact = messages.ContactSettings(
+    parsed_contact = domains_messages.ContactSettings(
         registrantContact=contacts.registrantContact,
         adminContact=contacts.adminContact,
         technicalContact=contacts.technicalContact)
@@ -72,9 +72,9 @@ def ParseContactData(path):
   return parsed_contact
 
 
-def PromptForContacts(current_contacts=None):
+def PromptForContacts(api_version, current_contacts=None):
   """Interactively prompts for Whois Contact information."""
-  messages = registrations.GetMessagesModule()
+  domains_messages = registrations.GetMessagesModule(api_version)
 
   create_call = (current_contacts is None)
   if not console_io.PromptContinue(
@@ -84,8 +84,8 @@ def PromptForContacts(current_contacts=None):
     return None
 
   if create_call:
-    contact = _PromptForSingleContact()
-    return messages.ContactSettings(
+    contact = _PromptForSingleContact(domains_messages)
+    return domains_messages.ContactSettings(
         registrantContact=contact,
         adminContact=contact,
         technicalContact=contact)
@@ -102,29 +102,31 @@ def PromptForContacts(current_contacts=None):
       message='Which contact do you want to change?')
 
   if index == 0:
-    contact = _PromptForSingleContact(current_contacts.registrantContact)
-    return messages.ContactSettings(
+    contact = _PromptForSingleContact(domains_messages,
+                                      current_contacts.registrantContact)
+    return domains_messages.ContactSettings(
         registrantContact=contact,
         adminContact=contact,
         technicalContact=contact)
   if index == 1:
-    contact = _PromptForSingleContact(current_contacts.registrantContact)
-    return messages.ContactSettings(registrantContact=contact)
+    contact = _PromptForSingleContact(domains_messages,
+                                      current_contacts.registrantContact)
+    return domains_messages.ContactSettings(registrantContact=contact)
   if index == 2:
-    contact = _PromptForSingleContact(current_contacts.adminContact)
-    return messages.ContactSettings(adminContact=contact)
+    contact = _PromptForSingleContact(domains_messages,
+                                      current_contacts.adminContact)
+    return domains_messages.ContactSettings(adminContact=contact)
   if index == 3:
-    contact = _PromptForSingleContact(current_contacts.technicalContact)
-    return messages.ContactSettings(technicalContact=contact)
+    contact = _PromptForSingleContact(domains_messages,
+                                      current_contacts.technicalContact)
+    return domains_messages.ContactSettings(technicalContact=contact)
   return None
 
 
-def _PromptForSingleContact(unused_current_contact=None):
+def _PromptForSingleContact(domains_messages, unused_current_contact=None):
   """Asks a user for a single contact data."""
-  messages = registrations.GetMessagesModule()
-
-  contact = messages.Contact()
-  contact.postalAddress = messages.PostalAddress()
+  contact = domains_messages.Contact()
+  contact.postalAddress = domains_messages.PostalAddress()
 
   # TODO(b/166210862): Use defaults from current_contact.
   #                      But then: How to clear a value?
@@ -167,16 +169,19 @@ def _PromptForSingleContact(unused_current_contact=None):
   return contact
 
 
-def ParseContactPrivacy(contact_privacy):
+def ParseContactPrivacy(api_version, contact_privacy):
+  domains_messages = registrations.GetMessagesModule(api_version)
   if contact_privacy is None:
     return None
-  return flags.CONTACT_PRIVACY_ENUM_MAPPER.GetEnumForChoice(contact_privacy)
+  return flags.ContactPrivacyEnumMapper(domains_messages).GetEnumForChoice(
+      contact_privacy)
 
 
-def PromptForContactPrivacy(choices, current_privacy=None):
+def PromptForContactPrivacy(api_version, choices, current_privacy=None):
   """Asks a user for Contacts Privacy.
 
   Args:
+    api_version: Cloud Domains API version to call.
     choices: List of privacy choices.
     current_privacy: Current privacy. Should be nonempty in update calls.
 
@@ -186,6 +191,7 @@ def PromptForContactPrivacy(choices, current_privacy=None):
   if not choices:
     raise exceptions.Error('Could not find supported contact privacy.')
 
+  domains_messages = registrations.GetMessagesModule(api_version)
   # Sort the choices according to the privacy strength.
   choices.sort(key=flags.PrivacyChoiceStrength, reverse=True)
 
@@ -205,8 +211,8 @@ def PromptForContactPrivacy(choices, current_privacy=None):
 
     current_choice = 0
     for ix, privacy in enumerate(choices):
-      if privacy == flags.CONTACT_PRIVACY_ENUM_MAPPER.GetChoiceForEnum(
-          current_privacy):
+      if privacy == flags.ContactPrivacyEnumMapper(
+          domains_messages).GetChoiceForEnum(current_privacy):
         current_choice = ix
   else:
     current_choice = 0  # The strongest available privacy
@@ -216,36 +222,37 @@ def PromptForContactPrivacy(choices, current_privacy=None):
         default=True)
     if not ack:
       return None
-    return ParseContactPrivacy(choices[0])
+    return ParseContactPrivacy(api_version, choices[0])
   else:
     index = console_io.PromptChoice(
         options=choices,
         default=current_choice,
         message='Specify contact privacy')
-    return ParseContactPrivacy(choices[index])
+    return ParseContactPrivacy(api_version, choices[index])
 
 
-def ParsePublicContactsAck(notices):
+def ParsePublicContactsAck(api_version, notices):
   """Parses Contact Notices. Returns public_contact_ack enum or None."""
-  messages = registrations.GetMessagesModule()
+  domains_messages = registrations.GetMessagesModule(api_version)
 
   if notices is None:
     return False
   for notice in notices:
-    enum = flags.CONTACT_NOTICE_ENUM_MAPPER.GetEnumForChoice(notice)
+    enum = flags.ContactNoticeEnumMapper(domains_messages).GetEnumForChoice(
+        notice)
     # pylint: disable=line-too-long
-    if enum == messages.ConfigureContactSettingsRequest.ContactNoticesValueListEntryValuesEnum.PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT:
+    if enum == domains_messages.ConfigureContactSettingsRequest.ContactNoticesValueListEntryValuesEnum.PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT:
       return enum
 
   return None
 
 
-def MergeContacts(prev_contacts, new_contacts):
-  messages = registrations.GetMessagesModule()
+def MergeContacts(api_version, prev_contacts, new_contacts):
+  domains_messages = registrations.GetMessagesModule(api_version)
   if new_contacts is None:
-    new_contacts = messages.ContactSettings()
+    new_contacts = domains_messages.ContactSettings()
 
-  return messages.ContactSettings(
+  return domains_messages.ContactSettings(
       registrantContact=(new_contacts.registrantContact or
                          prev_contacts.registrantContact),
       adminContact=(new_contacts.adminContact or prev_contacts.adminContact),

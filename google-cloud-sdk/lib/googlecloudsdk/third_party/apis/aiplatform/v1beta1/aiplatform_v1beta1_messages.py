@@ -3017,10 +3017,15 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
       Keys are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
       which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform.
-    OutputsValue: Required. Map from output names to output metadata. Keys are
-      the name of the output field in the prediction to be explained.
-      Currently only one key is allowed.
+      The baseline of the empty feature is chosen by AI Platform. For AI
+      Platform provided Tensorflow images, the key can be any friendly name of
+      the feature . Once specified, featureAttributions will be keyed by this
+      key (if not grouped with another feature). For custom images, the key
+      must match with the key in instance[].
+    OutputsValue: Required. Map from output names to output metadata. For AI
+      Platform provided Tensorflow images, keys can be any string user
+      defines. For custom images, keys are the name of the output field in the
+      prediction to be explained. Currently only one key is allowed.
 
   Fields:
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
@@ -3035,10 +3040,15 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
       are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
       which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform.
-    outputs: Required. Map from output names to output metadata. Keys are the
-      name of the output field in the prediction to be explained. Currently
-      only one key is allowed.
+      The baseline of the empty feature is chosen by AI Platform. For AI
+      Platform provided Tensorflow images, the key can be any friendly name of
+      the feature . Once specified, featureAttributions will be keyed by this
+      key (if not grouped with another feature). For custom images, the key
+      must match with the key in instance[].
+    outputs: Required. Map from output names to output metadata. For AI
+      Platform provided Tensorflow images, keys can be any string user
+      defines. For custom images, keys are the name of the output field in the
+      prediction to be explained. Currently only one key is allowed.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3047,7 +3057,11 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
     the name of the features. Values are the specification of the feature. An
     empty InputMetadata is valid. It describes a text feature which has the
     name specified as the key in ExplanationMetadata.inputs. The baseline of
-    the empty feature is chosen by AI Platform.
+    the empty feature is chosen by AI Platform. For AI Platform provided
+    Tensorflow images, the key can be any friendly name of the feature . Once
+    specified, featureAttributions will be keyed by this key (if not grouped
+    with another feature). For custom images, the key must match with the key
+    in instance[].
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -3072,9 +3086,10 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OutputsValue(_messages.Message):
-    r"""Required. Map from output names to output metadata. Keys are the name
-    of the output field in the prediction to be explained. Currently only one
-    key is allowed.
+    r"""Required. Map from output names to output metadata. For AI Platform
+    provided Tensorflow images, keys can be any string user defines. For
+    custom images, keys are the name of the output field in the prediction to
+    be explained. Currently only one key is allowed.
 
     Messages:
       AdditionalProperty: An additional property for a OutputsValue object.
@@ -3103,20 +3118,270 @@ class GoogleCloudAiplatformUiExplanationMetadata(_messages.Message):
 
 
 class GoogleCloudAiplatformUiExplanationMetadataInputMetadata(_messages.Message):
-  r"""Metadata of the input of a feature.
+  r"""Metadata of the input of a feature. Fields other than
+  InputMetadata.input_baselines are only applicable to Models that are using
+  AI Platform provided images for Tensorflow.
+
+  Enums:
+    EncodingValueValuesEnum: Defines how the feature is encoded into the input
+      tensor. Defaults to IDENTITY.
 
   Fields:
+    denseShapeTensorName: Specifies the shape of the values of the input if
+      the input is a sparse representation. Refer to Tensorflow documentation
+      for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
+    encodedBaselines: A list of baselines for the encoded tensor. The shape of
+      each baseline should match the shape of the encoded tensor. If a scalar
+      is provided, AI Platform broadcast to the same shape as the encoded
+      tensor.
+    encodedTensorName: Encoded tensor is a transformation of the input tensor.
+      Must be provided if choosing Integrated Gradients attribution or XRAI
+      attribution and the input tensor is not differentiable. An encoded
+      tensor is generated if the input tensor is encoded by a lookup table.
+    encoding: Defines how the feature is encoded into the input tensor.
+      Defaults to IDENTITY.
+    featureValueDomain: The domain details of the input feature value. Like
+      min/max, original mean or standard deviation if normalized.
+    groupName: Name of the group that the input belongs to. Features with the
+      same group name will be treated as one feature when computing
+      attributions. Features grouped together can have different shapes in
+      value. If provided, there will be one single attribution generated in
+      featureAttributions, keyed by the group name.
+    indexFeatureMapping: A list of feature names for each index in the input
+      tensor. Required when the input InputMetadata.encoding is
+      BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
+    indicesTensorName: Specifies the index of the values of the input tensor.
+      Required when the input tensor is a sparse representation. Refer to
+      Tensorflow documentation for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
     inputBaselines: Baseline inputs for this feature. If no baseline is
       specified, AI Platform chooses the baseline for this feature. If
       multiple baselines are specified, AI Platform returns the average
-      attributions across them in Attributions.baseline_attribution. The
-      element of the baselines must be in the same format as the feature's
-      input in the instance[]. The schema of any single instance may be
-      specified via Endpoint's DeployedModels' Model's PredictSchemata's
+      attributions across them in Attributions.baseline_attribution. For AI
+      Platform provided Tensorflow images (both 1.x and 2.x), the shape of
+      each baseline must match the shape of the input tensor. If a scalar is
+      provided, we broadcast to the same shape as the input tensor. For custom
+      images, the element of the baselines must be in the same format as the
+      feature's input in the instance[]. The schema of any single instance may
+      be specified via Endpoint's DeployedModels' Model's PredictSchemata's
       instance_schema_uri.
+    inputTensorName: Name of the input tensor for this feature. Required and
+      is only applicable to AI Platform provided images for Tensorflow.
+    modality: Modality of the feature. Valid values are: numeric, image.
+      Defaults to numeric.
+    visualization: Visualization configurations for image explanation.
   """
 
-  inputBaselines = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+  class EncodingValueValuesEnum(_messages.Enum):
+    r"""Defines how the feature is encoded into the input tensor. Defaults to
+    IDENTITY.
+
+    Values:
+      ENCODING_UNSPECIFIED: Default value. This is the same as IDENTITY.
+      IDENTITY: The tensor represents one feature.
+      BAG_OF_FEATURES: The tensor represents a bag of features where each
+        index maps to a feature. InputMetadata.index_feature_mapping must be
+        provided for this encoding. For example: ``` input = [27, 6.0, 150]
+        index_feature_mapping = ["age", "height", "weight"] ```
+      BAG_OF_FEATURES_SPARSE: The tensor represents a bag of features where
+        each index maps to a feature. Zero values in the tensor indicates
+        feature being non-existent. InputMetadata.index_feature_mapping must
+        be provided for this encoding. For example: ``` input = [2, 0, 5, 0,
+        1] index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      INDICATOR: The tensor is a list of binaries representing whether a
+        feature exists or not (1 indicates existence).
+        InputMetadata.index_feature_mapping must be provided for this
+        encoding. For example: ``` input = [1, 0, 1, 0, 1]
+        index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      COMBINED_EMBEDDING: The tensor is encoded into a 1-dimensional array
+        represented by an encoded tensor. InputMetadata.encoded_tensor_name
+        must be provided for this encoding. For example: ``` input = ["This",
+        "is", "a", "test", "."] encoded = [0.1, 0.2, 0.3, 0.4, 0.5] ```
+      CONCAT_EMBEDDING: Select this encoding when the input tensor is encoded
+        into a 2-dimensional array represented by an encoded tensor.
+        InputMetadata.encoded_tensor_name must be provided for this encoding.
+        The first dimension of the encoded tensor's shape is the same as the
+        input tensor's shape. For example: ``` input = ["This", "is", "a",
+        "test", "."] encoded = [[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.1, 0.4,
+        0.3, 0.5], [0.5, 0.1, 0.3, 0.5, 0.4], [0.5, 0.3, 0.1, 0.2, 0.4], [0.4,
+        0.3, 0.2, 0.5, 0.1]] ```
+    """
+    ENCODING_UNSPECIFIED = 0
+    IDENTITY = 1
+    BAG_OF_FEATURES = 2
+    BAG_OF_FEATURES_SPARSE = 3
+    INDICATOR = 4
+    COMBINED_EMBEDDING = 5
+    CONCAT_EMBEDDING = 6
+
+  denseShapeTensorName = _messages.StringField(1)
+  encodedBaselines = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  encodedTensorName = _messages.StringField(3)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 4)
+  featureValueDomain = _messages.MessageField('GoogleCloudAiplatformUiExplanationMetadataInputMetadataFeatureValueDomain', 5)
+  groupName = _messages.StringField(6)
+  indexFeatureMapping = _messages.StringField(7, repeated=True)
+  indicesTensorName = _messages.StringField(8)
+  inputBaselines = _messages.MessageField('extra_types.JsonValue', 9, repeated=True)
+  inputTensorName = _messages.StringField(10)
+  modality = _messages.StringField(11)
+  visualization = _messages.MessageField('GoogleCloudAiplatformUiExplanationMetadataInputMetadataVisualization', 12)
+
+
+class GoogleCloudAiplatformUiExplanationMetadataInputMetadataFeatureValueDomain(_messages.Message):
+  r"""Domain details of input feature value. Provides numeric information
+  about the feature such as its range (min, max). If the feature has been pre-
+  processed, e.g. via z-scoring, then it also provides information about how
+  to recover the original feature. For example, if the input feature is an
+  image and it has been pre-processed to obtain 0-mean and stddev = 1 values,
+  then original_mean, and original_stddev refer to the mean and stddev of the
+  original feature (e.g. image tensor) from which input feature (with mean = 0
+  and stddev = 1) was obtained.
+
+  Fields:
+    max: The maximum permissible value for this feature.
+    min: The minimum permissible value for this feature.
+    originalMean: If this input feature has been normalized to a mean value of
+      0, the original_mean specifies the mean value of the domain prior to
+      normalization.
+    originalStddev: If this input feature has been normalized to a standard
+      deviation of 1.0, the original_stddev specifies the standard deviation
+      of the domain prior to normalization.
+  """
+
+  max = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  min = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformUiExplanationMetadataInputMetadataVisualization(_messages.Message):
+  r"""Visualization configurations for image explanation.
+
+  Enums:
+    ColorMapValueValuesEnum: The color scheme used for the highlighted areas.
+      Defaults to PINK_GREEN for Integrated Gradients attribution, which shows
+      positive attributions in green and negative in pink. Defaults to VIRIDIS
+      for XRAI attribution, which highlights the most influential regions in
+      yellow and the least influential in blue.
+    OverlayTypeValueValuesEnum: How the original image is displayed in the
+      visualization. Adjusting the overlay can help increase visual clarity if
+      the original image makes it difficult to view the visualization.
+      Defaults to NONE.
+    PolarityValueValuesEnum: Whether to only highlight pixels with positive
+      contributions, negative or both. Defaults to POSITIVE.
+    TypeValueValuesEnum: Type of the image visualization. Only applicable to
+      Integrated Gradients attribution. OUTLINES shows regions of attribution,
+      while PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+
+  Fields:
+    clipPercentLowerbound: Excludes attributions below the specified
+      percentile, from the highlighted areas. Defaults to 35.
+    clipPercentUpperbound: Excludes attributions above the specified
+      percentile from the highlighted areas. Using the clip_percent_upperbound
+      and clip_percent_lowerbound together can be useful for filtering out
+      noise and making it easier to see areas of strong attribution. Defaults
+      to 99.9.
+    colorMap: The color scheme used for the highlighted areas. Defaults to
+      PINK_GREEN for Integrated Gradients attribution, which shows positive
+      attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+      attribution, which highlights the most influential regions in yellow and
+      the least influential in blue.
+    overlayType: How the original image is displayed in the visualization.
+      Adjusting the overlay can help increase visual clarity if the original
+      image makes it difficult to view the visualization. Defaults to NONE.
+    polarity: Whether to only highlight pixels with positive contributions,
+      negative or both. Defaults to POSITIVE.
+    type: Type of the image visualization. Only applicable to Integrated
+      Gradients attribution. OUTLINES shows regions of attribution, while
+      PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+  """
+
+  class ColorMapValueValuesEnum(_messages.Enum):
+    r"""The color scheme used for the highlighted areas. Defaults to
+    PINK_GREEN for Integrated Gradients attribution, which shows positive
+    attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+    attribution, which highlights the most influential regions in yellow and
+    the least influential in blue.
+
+    Values:
+      COLOR_MAP_UNSPECIFIED: Should not be used.
+      PINK_GREEN: Positive: green. Negative: pink.
+      VIRIDIS: Viridis color map: A perceptually uniform color mapping which
+        is easier to see by those with colorblindness and progresses from
+        yellow to green to blue. Positive: yellow. Negative: blue.
+      RED: Positive: red. Negative: red.
+      GREEN: Positive: green. Negative: green.
+      RED_GREEN: Positive: green. Negative: red.
+      PINK_WHITE_GREEN: PiYG palette.
+    """
+    COLOR_MAP_UNSPECIFIED = 0
+    PINK_GREEN = 1
+    VIRIDIS = 2
+    RED = 3
+    GREEN = 4
+    RED_GREEN = 5
+    PINK_WHITE_GREEN = 6
+
+  class OverlayTypeValueValuesEnum(_messages.Enum):
+    r"""How the original image is displayed in the visualization. Adjusting
+    the overlay can help increase visual clarity if the original image makes
+    it difficult to view the visualization. Defaults to NONE.
+
+    Values:
+      OVERLAY_TYPE_UNSPECIFIED: Default value. This is the same as NONE.
+      NONE: No overlay.
+      ORIGINAL: The attributions are shown on top of the original image.
+      GRAYSCALE: The attributions are shown on top of grayscaled version of
+        the original image.
+      MASK_BLACK: The attributions are used as a mask to reveal predictive
+        parts of the image and hide the un-predictive parts.
+    """
+    OVERLAY_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    ORIGINAL = 2
+    GRAYSCALE = 3
+    MASK_BLACK = 4
+
+  class PolarityValueValuesEnum(_messages.Enum):
+    r"""Whether to only highlight pixels with positive contributions, negative
+    or both. Defaults to POSITIVE.
+
+    Values:
+      POLARITY_UNSPECIFIED: Default value. This is the same as POSITIVE.
+      POSITIVE: Highlights the pixels/outlines that were most influential to
+        the model's prediction.
+      NEGATIVE: Setting polarity to negative highlights areas that does not
+        lead to the models's current prediction.
+      BOTH: Shows both positive and negative attributions.
+    """
+    POLARITY_UNSPECIFIED = 0
+    POSITIVE = 1
+    NEGATIVE = 2
+    BOTH = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the image visualization. Only applicable to Integrated
+    Gradients attribution. OUTLINES shows regions of attribution, while PIXELS
+    shows per-pixel attribution. Defaults to OUTLINES.
+
+    Values:
+      TYPE_UNSPECIFIED: Should not be used.
+      PIXELS: Shows which pixel contributed to the image prediction.
+      OUTLINES: Shows which region contributed to the image prediction by
+        outlining the region.
+    """
+    TYPE_UNSPECIFIED = 0
+    PIXELS = 1
+    OUTLINES = 2
+
+  clipPercentLowerbound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  clipPercentUpperbound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  colorMap = _messages.EnumField('ColorMapValueValuesEnum', 3)
+  overlayType = _messages.EnumField('OverlayTypeValueValuesEnum', 4)
+  polarity = _messages.EnumField('PolarityValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class GoogleCloudAiplatformUiExplanationMetadataOutputMetadata(_messages.Message):
@@ -3137,28 +3402,58 @@ class GoogleCloudAiplatformUiExplanationMetadataOutputMetadata(_messages.Message
       of strings. The number of dimentions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
+    outputTensorName: Name of the output tensor. Required and is only
+      applicable to AI Platform provided images for Tensorflow.
   """
 
   displayNameMappingKey = _messages.StringField(1)
   indexDisplayNameMapping = _messages.MessageField('extra_types.JsonValue', 2)
+  outputTensorName = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformUiExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
   Fields:
+    integratedGradientsAttribution: An attribution method that computes
+      Aumann-Shapley values taking advantage of the model's fully
+      differentiable structure. Refer to this paper for more details:
+      https://arxiv.org/abs/1703.01365
+    outputIndices: If populated, only returns attributions that have
+      output_index contained in output_indices. It must be an ndarray of
+      integers, with the same shape of the output it's explaining. If not
+      populated, returns attributions for top_k indices of outputs. If neither
+      top_k nor output_indeices is populated, returns the argmax index of the
+      outputs. Only applicable to Models that predict multiple outputs (e,g,
+      multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
       values for features that contribute to the label being predicted. A
       sampling strategy is used to approximate the value rather than
-      considering all subsets of features.
+      considering all subsets of features. Refer to this paper for model
+      details: https://arxiv.org/abs/1306.4265.
+    topK: If populated, returns attributions for top K indices of outputs
+      (defaults to 1). Only applies to Models that predicts more than one
+      outputs (e,g, multi-class Models). When set to -1, returns explanations
+      for all outputs.
+    xraiAttribution: An attribution method that redistributes Integrated
+      Gradients attribution to segmented regions, taking advantage of the
+      model's fully differentiable structure. Refer to this paper for more
+      details: https://arxiv.org/abs/1906.02825 XRAI currently performs better
+      on natural images, like a picture of a house or an animal. If the images
+      are taken in artificial environments, like a lab or manufacturing line,
+      or from diagnostic equipment, like x-rays or quality-control cameras,
+      use Integrated Gradients instead.
   """
 
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformUiSampledShapleyAttribution', 1)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformUiIntegratedGradientsAttribution', 1)
+  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformUiSampledShapleyAttribution', 3)
+  topK = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformUiXraiAttribution', 5)
 
 
 class GoogleCloudAiplatformUiExplanationSpec(_messages.Message):
-  r"""Specification of Model explanation. Currently, only AutoML tabular
-  Models support explanation.
+  r"""Specification of Model explanation.
 
   Fields:
     metadata: Required. Metadata describing the Model's input and output for
@@ -3263,6 +3558,32 @@ class GoogleCloudAiplatformUiExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
 
 
+class GoogleCloudAiplatformUiFeatureNoiseSigma(_messages.Message):
+  r"""Noise sigma by features. Noise sigma represents the standard deviation
+  of the gaussian kernel that will be used to add noise to interpolated inputs
+  prior to computing gradients.
+
+  Fields:
+    noiseSigma: Noise sigma per feature. No noise is added to features that
+      are not set.
+  """
+
+  noiseSigma = _messages.MessageField('GoogleCloudAiplatformUiFeatureNoiseSigmaNoiseSigmaForFeature', 1, repeated=True)
+
+
+class GoogleCloudAiplatformUiFeatureNoiseSigmaNoiseSigmaForFeature(_messages.Message):
+  r"""Noise sigma for a single feature.
+
+  Fields:
+    name: The name of the input feature for which noise sigma is provided. The
+      features are defined in explanation metadata inputs.
+    sigma: Standard deviation of gaussian kernel for noise.
+  """
+
+  name = _messages.StringField(1)
+  sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformUiGenerateDatasetStatsOperationMetadata(_messages.Message):
   r"""Runtime operation information for DatasetService.GenerateDatasetStats.
 
@@ -3337,6 +3658,27 @@ class GoogleCloudAiplatformUiImportDataOperationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformUiImportDataResponse(_messages.Message):
   r"""Response message for DatasetService.ImportData."""
+
+
+class GoogleCloudAiplatformUiIntegratedGradientsAttribution(_messages.Message):
+  r"""An attribution method that computes the Aumann-Shapley value taking
+  advantage of the model's fully differentiable structure. Refer to this paper
+  for more details: https://arxiv.org/abs/1703.01365
+
+  Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is within the desired error range. Valid range of
+      its value is [1, 100], inclusively.
+  """
+
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformUiSmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
@@ -4029,6 +4371,25 @@ class GoogleCloudAiplatformUiSchemaVisualInspectionMaskSavedQueryMetadata(_messa
   colorMap = _messages.MessageField('GoogleCloudAiplatformUiSchemaAnnotationSpecColor', 1, repeated=True)
 
 
+class GoogleCloudAiplatformUiSmoothGradConfig(_messages.Message):
+  r"""Config for SmoothGrad approximation of gradients. When enabled, the
+  gradients are approximated by averaging the gradients from noisy samples in
+  the vicinity of the inputs. Adding noise can help improve the computed
+  gradients. Refer to this paper for more details:
+  https://arxiv.org/pdf/1706.03825.pdf
+
+  Fields:
+    featureNoiseSigma: Alternatively, set this to use different noise_sigma
+      per feature. One entry per feature. No noise is added to features that
+      are not set.
+    noiseSigma: If set, this std. deviation will be used to apply noise to all
+      features.
+  """
+
+  featureNoiseSigma = _messages.MessageField('GoogleCloudAiplatformUiFeatureNoiseSigma', 1)
+  noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformUiSpecialistPool(_messages.Message):
   r"""SpecialistPool represents customers' own workforce to work on their data
   labeling jobs. It includes a group of specialist managers who are
@@ -4108,6 +4469,23 @@ class GoogleCloudAiplatformUiUploadModelResponse(_messages.Message):
   """
 
   model = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformUiXraiAttribution(_messages.Message):
+  r"""An explanation method that redistributes Integrated Gradients
+  attributions to segmented regions, taking advantage of the model's fully
+  differentiable structure. Refer to this paper for more details:
+  https://arxiv.org/abs/1906.02825 Only supports image Models (modality is
+  IMAGE).
+
+  Fields:
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is met within the desired error range. Valid range
+      of its value is [1, 100], inclusively.
+  """
+
+  stepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1alpha1AutomaticResources(_messages.Message):
@@ -4282,10 +4660,15 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
       Keys are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
       which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform.
-    OutputsValue: Required. Map from output names to output metadata. Keys are
-      the name of the output field in the prediction to be explained.
-      Currently only one key is allowed.
+      The baseline of the empty feature is chosen by AI Platform. For AI
+      Platform provided Tensorflow images, the key can be any friendly name of
+      the feature . Once specified, featureAttributions will be keyed by this
+      key (if not grouped with another feature). For custom images, the key
+      must match with the key in instance[].
+    OutputsValue: Required. Map from output names to output metadata. For AI
+      Platform provided Tensorflow images, keys can be any string user
+      defines. For custom images, keys are the name of the output field in the
+      prediction to be explained. Currently only one key is allowed.
 
   Fields:
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
@@ -4300,10 +4683,15 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
       are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
       which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform.
-    outputs: Required. Map from output names to output metadata. Keys are the
-      name of the output field in the prediction to be explained. Currently
-      only one key is allowed.
+      The baseline of the empty feature is chosen by AI Platform. For AI
+      Platform provided Tensorflow images, the key can be any friendly name of
+      the feature . Once specified, featureAttributions will be keyed by this
+      key (if not grouped with another feature). For custom images, the key
+      must match with the key in instance[].
+    outputs: Required. Map from output names to output metadata. For AI
+      Platform provided Tensorflow images, keys can be any string user
+      defines. For custom images, keys are the name of the output field in the
+      prediction to be explained. Currently only one key is allowed.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4312,7 +4700,11 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
     the name of the features. Values are the specification of the feature. An
     empty InputMetadata is valid. It describes a text feature which has the
     name specified as the key in ExplanationMetadata.inputs. The baseline of
-    the empty feature is chosen by AI Platform.
+    the empty feature is chosen by AI Platform. For AI Platform provided
+    Tensorflow images, the key can be any friendly name of the feature . Once
+    specified, featureAttributions will be keyed by this key (if not grouped
+    with another feature). For custom images, the key must match with the key
+    in instance[].
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -4337,9 +4729,10 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OutputsValue(_messages.Message):
-    r"""Required. Map from output names to output metadata. Keys are the name
-    of the output field in the prediction to be explained. Currently only one
-    key is allowed.
+    r"""Required. Map from output names to output metadata. For AI Platform
+    provided Tensorflow images, keys can be any string user defines. For
+    custom images, keys are the name of the output field in the prediction to
+    be explained. Currently only one key is allowed.
 
     Messages:
       AdditionalProperty: An additional property for a OutputsValue object.
@@ -4369,20 +4762,270 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata(_messages.Message):
-  r"""Metadata of the input of a feature.
+  r"""Metadata of the input of a feature. Fields other than
+  InputMetadata.input_baselines are only applicable to Models that are using
+  AI Platform provided images for Tensorflow.
+
+  Enums:
+    EncodingValueValuesEnum: Defines how the feature is encoded into the input
+      tensor. Defaults to IDENTITY.
 
   Fields:
+    denseShapeTensorName: Specifies the shape of the values of the input if
+      the input is a sparse representation. Refer to Tensorflow documentation
+      for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
+    encodedBaselines: A list of baselines for the encoded tensor. The shape of
+      each baseline should match the shape of the encoded tensor. If a scalar
+      is provided, AI Platform broadcast to the same shape as the encoded
+      tensor.
+    encodedTensorName: Encoded tensor is a transformation of the input tensor.
+      Must be provided if choosing Integrated Gradients attribution or XRAI
+      attribution and the input tensor is not differentiable. An encoded
+      tensor is generated if the input tensor is encoded by a lookup table.
+    encoding: Defines how the feature is encoded into the input tensor.
+      Defaults to IDENTITY.
+    featureValueDomain: The domain details of the input feature value. Like
+      min/max, original mean or standard deviation if normalized.
+    groupName: Name of the group that the input belongs to. Features with the
+      same group name will be treated as one feature when computing
+      attributions. Features grouped together can have different shapes in
+      value. If provided, there will be one single attribution generated in
+      featureAttributions, keyed by the group name.
+    indexFeatureMapping: A list of feature names for each index in the input
+      tensor. Required when the input InputMetadata.encoding is
+      BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
+    indicesTensorName: Specifies the index of the values of the input tensor.
+      Required when the input tensor is a sparse representation. Refer to
+      Tensorflow documentation for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
     inputBaselines: Baseline inputs for this feature. If no baseline is
       specified, AI Platform chooses the baseline for this feature. If
       multiple baselines are specified, AI Platform returns the average
-      attributions across them in Attributions.baseline_attribution. The
-      element of the baselines must be in the same format as the feature's
-      input in the instance[]. The schema of any single instance may be
-      specified via Endpoint's DeployedModels' Model's PredictSchemata's
+      attributions across them in Attributions.baseline_attribution. For AI
+      Platform provided Tensorflow images (both 1.x and 2.x), the shape of
+      each baseline must match the shape of the input tensor. If a scalar is
+      provided, we broadcast to the same shape as the input tensor. For custom
+      images, the element of the baselines must be in the same format as the
+      feature's input in the instance[]. The schema of any single instance may
+      be specified via Endpoint's DeployedModels' Model's PredictSchemata's
       instance_schema_uri.
+    inputTensorName: Name of the input tensor for this feature. Required and
+      is only applicable to AI Platform provided images for Tensorflow.
+    modality: Modality of the feature. Valid values are: numeric, image.
+      Defaults to numeric.
+    visualization: Visualization configurations for image explanation.
   """
 
-  inputBaselines = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+  class EncodingValueValuesEnum(_messages.Enum):
+    r"""Defines how the feature is encoded into the input tensor. Defaults to
+    IDENTITY.
+
+    Values:
+      ENCODING_UNSPECIFIED: Default value. This is the same as IDENTITY.
+      IDENTITY: The tensor represents one feature.
+      BAG_OF_FEATURES: The tensor represents a bag of features where each
+        index maps to a feature. InputMetadata.index_feature_mapping must be
+        provided for this encoding. For example: ``` input = [27, 6.0, 150]
+        index_feature_mapping = ["age", "height", "weight"] ```
+      BAG_OF_FEATURES_SPARSE: The tensor represents a bag of features where
+        each index maps to a feature. Zero values in the tensor indicates
+        feature being non-existent. InputMetadata.index_feature_mapping must
+        be provided for this encoding. For example: ``` input = [2, 0, 5, 0,
+        1] index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      INDICATOR: The tensor is a list of binaries representing whether a
+        feature exists or not (1 indicates existence).
+        InputMetadata.index_feature_mapping must be provided for this
+        encoding. For example: ``` input = [1, 0, 1, 0, 1]
+        index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      COMBINED_EMBEDDING: The tensor is encoded into a 1-dimensional array
+        represented by an encoded tensor. InputMetadata.encoded_tensor_name
+        must be provided for this encoding. For example: ``` input = ["This",
+        "is", "a", "test", "."] encoded = [0.1, 0.2, 0.3, 0.4, 0.5] ```
+      CONCAT_EMBEDDING: Select this encoding when the input tensor is encoded
+        into a 2-dimensional array represented by an encoded tensor.
+        InputMetadata.encoded_tensor_name must be provided for this encoding.
+        The first dimension of the encoded tensor's shape is the same as the
+        input tensor's shape. For example: ``` input = ["This", "is", "a",
+        "test", "."] encoded = [[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.1, 0.4,
+        0.3, 0.5], [0.5, 0.1, 0.3, 0.5, 0.4], [0.5, 0.3, 0.1, 0.2, 0.4], [0.4,
+        0.3, 0.2, 0.5, 0.1]] ```
+    """
+    ENCODING_UNSPECIFIED = 0
+    IDENTITY = 1
+    BAG_OF_FEATURES = 2
+    BAG_OF_FEATURES_SPARSE = 3
+    INDICATOR = 4
+    COMBINED_EMBEDDING = 5
+    CONCAT_EMBEDDING = 6
+
+  denseShapeTensorName = _messages.StringField(1)
+  encodedBaselines = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  encodedTensorName = _messages.StringField(3)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 4)
+  featureValueDomain = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataFeatureValueDomain', 5)
+  groupName = _messages.StringField(6)
+  indexFeatureMapping = _messages.StringField(7, repeated=True)
+  indicesTensorName = _messages.StringField(8)
+  inputBaselines = _messages.MessageField('extra_types.JsonValue', 9, repeated=True)
+  inputTensorName = _messages.StringField(10)
+  modality = _messages.StringField(11)
+  visualization = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataVisualization', 12)
+
+
+class GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataFeatureValueDomain(_messages.Message):
+  r"""Domain details of input feature value. Provides numeric information
+  about the feature such as its range (min, max). If the feature has been pre-
+  processed, e.g. via z-scoring, then it also provides information about how
+  to recover the original feature. For example, if the input feature is an
+  image and it has been pre-processed to obtain 0-mean and stddev = 1 values,
+  then original_mean, and original_stddev refer to the mean and stddev of the
+  original feature (e.g. image tensor) from which input feature (with mean = 0
+  and stddev = 1) was obtained.
+
+  Fields:
+    max: The maximum permissible value for this feature.
+    min: The minimum permissible value for this feature.
+    originalMean: If this input feature has been normalized to a mean value of
+      0, the original_mean specifies the mean value of the domain prior to
+      normalization.
+    originalStddev: If this input feature has been normalized to a standard
+      deviation of 1.0, the original_stddev specifies the standard deviation
+      of the domain prior to normalization.
+  """
+
+  max = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  min = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadataVisualization(_messages.Message):
+  r"""Visualization configurations for image explanation.
+
+  Enums:
+    ColorMapValueValuesEnum: The color scheme used for the highlighted areas.
+      Defaults to PINK_GREEN for Integrated Gradients attribution, which shows
+      positive attributions in green and negative in pink. Defaults to VIRIDIS
+      for XRAI attribution, which highlights the most influential regions in
+      yellow and the least influential in blue.
+    OverlayTypeValueValuesEnum: How the original image is displayed in the
+      visualization. Adjusting the overlay can help increase visual clarity if
+      the original image makes it difficult to view the visualization.
+      Defaults to NONE.
+    PolarityValueValuesEnum: Whether to only highlight pixels with positive
+      contributions, negative or both. Defaults to POSITIVE.
+    TypeValueValuesEnum: Type of the image visualization. Only applicable to
+      Integrated Gradients attribution. OUTLINES shows regions of attribution,
+      while PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+
+  Fields:
+    clipPercentLowerbound: Excludes attributions below the specified
+      percentile, from the highlighted areas. Defaults to 35.
+    clipPercentUpperbound: Excludes attributions above the specified
+      percentile from the highlighted areas. Using the clip_percent_upperbound
+      and clip_percent_lowerbound together can be useful for filtering out
+      noise and making it easier to see areas of strong attribution. Defaults
+      to 99.9.
+    colorMap: The color scheme used for the highlighted areas. Defaults to
+      PINK_GREEN for Integrated Gradients attribution, which shows positive
+      attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+      attribution, which highlights the most influential regions in yellow and
+      the least influential in blue.
+    overlayType: How the original image is displayed in the visualization.
+      Adjusting the overlay can help increase visual clarity if the original
+      image makes it difficult to view the visualization. Defaults to NONE.
+    polarity: Whether to only highlight pixels with positive contributions,
+      negative or both. Defaults to POSITIVE.
+    type: Type of the image visualization. Only applicable to Integrated
+      Gradients attribution. OUTLINES shows regions of attribution, while
+      PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+  """
+
+  class ColorMapValueValuesEnum(_messages.Enum):
+    r"""The color scheme used for the highlighted areas. Defaults to
+    PINK_GREEN for Integrated Gradients attribution, which shows positive
+    attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+    attribution, which highlights the most influential regions in yellow and
+    the least influential in blue.
+
+    Values:
+      COLOR_MAP_UNSPECIFIED: Should not be used.
+      PINK_GREEN: Positive: green. Negative: pink.
+      VIRIDIS: Viridis color map: A perceptually uniform color mapping which
+        is easier to see by those with colorblindness and progresses from
+        yellow to green to blue. Positive: yellow. Negative: blue.
+      RED: Positive: red. Negative: red.
+      GREEN: Positive: green. Negative: green.
+      RED_GREEN: Positive: green. Negative: red.
+      PINK_WHITE_GREEN: PiYG palette.
+    """
+    COLOR_MAP_UNSPECIFIED = 0
+    PINK_GREEN = 1
+    VIRIDIS = 2
+    RED = 3
+    GREEN = 4
+    RED_GREEN = 5
+    PINK_WHITE_GREEN = 6
+
+  class OverlayTypeValueValuesEnum(_messages.Enum):
+    r"""How the original image is displayed in the visualization. Adjusting
+    the overlay can help increase visual clarity if the original image makes
+    it difficult to view the visualization. Defaults to NONE.
+
+    Values:
+      OVERLAY_TYPE_UNSPECIFIED: Default value. This is the same as NONE.
+      NONE: No overlay.
+      ORIGINAL: The attributions are shown on top of the original image.
+      GRAYSCALE: The attributions are shown on top of grayscaled version of
+        the original image.
+      MASK_BLACK: The attributions are used as a mask to reveal predictive
+        parts of the image and hide the un-predictive parts.
+    """
+    OVERLAY_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    ORIGINAL = 2
+    GRAYSCALE = 3
+    MASK_BLACK = 4
+
+  class PolarityValueValuesEnum(_messages.Enum):
+    r"""Whether to only highlight pixels with positive contributions, negative
+    or both. Defaults to POSITIVE.
+
+    Values:
+      POLARITY_UNSPECIFIED: Default value. This is the same as POSITIVE.
+      POSITIVE: Highlights the pixels/outlines that were most influential to
+        the model's prediction.
+      NEGATIVE: Setting polarity to negative highlights areas that does not
+        lead to the models's current prediction.
+      BOTH: Shows both positive and negative attributions.
+    """
+    POLARITY_UNSPECIFIED = 0
+    POSITIVE = 1
+    NEGATIVE = 2
+    BOTH = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the image visualization. Only applicable to Integrated
+    Gradients attribution. OUTLINES shows regions of attribution, while PIXELS
+    shows per-pixel attribution. Defaults to OUTLINES.
+
+    Values:
+      TYPE_UNSPECIFIED: Should not be used.
+      PIXELS: Shows which pixel contributed to the image prediction.
+      OUTLINES: Shows which region contributed to the image prediction by
+        outlining the region.
+    """
+    TYPE_UNSPECIFIED = 0
+    PIXELS = 1
+    OUTLINES = 2
+
+  clipPercentLowerbound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  clipPercentUpperbound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  colorMap = _messages.EnumField('ColorMapValueValuesEnum', 3)
+  overlayType = _messages.EnumField('OverlayTypeValueValuesEnum', 4)
+  polarity = _messages.EnumField('PolarityValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata(_messages.Message):
@@ -4403,28 +5046,58 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata(_messages.M
       of strings. The number of dimentions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
+    outputTensorName: Name of the output tensor. Required and is only
+      applicable to AI Platform provided images for Tensorflow.
   """
 
   displayNameMappingKey = _messages.StringField(1)
   indexDisplayNameMapping = _messages.MessageField('extra_types.JsonValue', 2)
+  outputTensorName = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
   Fields:
+    integratedGradientsAttribution: An attribution method that computes
+      Aumann-Shapley values taking advantage of the model's fully
+      differentiable structure. Refer to this paper for more details:
+      https://arxiv.org/abs/1703.01365
+    outputIndices: If populated, only returns attributions that have
+      output_index contained in output_indices. It must be an ndarray of
+      integers, with the same shape of the output it's explaining. If not
+      populated, returns attributions for top_k indices of outputs. If neither
+      top_k nor output_indeices is populated, returns the argmax index of the
+      outputs. Only applicable to Models that predict multiple outputs (e,g,
+      multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
       values for features that contribute to the label being predicted. A
       sampling strategy is used to approximate the value rather than
-      considering all subsets of features.
+      considering all subsets of features. Refer to this paper for model
+      details: https://arxiv.org/abs/1306.4265.
+    topK: If populated, returns attributions for top K indices of outputs
+      (defaults to 1). Only applies to Models that predicts more than one
+      outputs (e,g, multi-class Models). When set to -1, returns explanations
+      for all outputs.
+    xraiAttribution: An attribution method that redistributes Integrated
+      Gradients attribution to segmented regions, taking advantage of the
+      model's fully differentiable structure. Refer to this paper for more
+      details: https://arxiv.org/abs/1906.02825 XRAI currently performs better
+      on natural images, like a picture of a house or an animal. If the images
+      are taken in artificial environments, like a lab or manufacturing line,
+      or from diagnostic equipment, like x-rays or quality-control cameras,
+      use Integrated Gradients instead.
   """
 
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1SampledShapleyAttribution', 1)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1IntegratedGradientsAttribution', 1)
+  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1SampledShapleyAttribution', 3)
+  topK = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1XraiAttribution', 5)
 
 
 class GoogleCloudAiplatformV1alpha1ExplanationSpec(_messages.Message):
-  r"""Specification of Model explanation. Currently, only AutoML tabular
-  Models support explanation.
+  r"""Specification of Model explanation.
 
   Fields:
     metadata: Required. Metadata describing the Model's input and output for
@@ -4521,6 +5194,32 @@ class GoogleCloudAiplatformV1alpha1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
 
 
+class GoogleCloudAiplatformV1alpha1FeatureNoiseSigma(_messages.Message):
+  r"""Noise sigma by features. Noise sigma represents the standard deviation
+  of the gaussian kernel that will be used to add noise to interpolated inputs
+  prior to computing gradients.
+
+  Fields:
+    noiseSigma: Noise sigma per feature. No noise is added to features that
+      are not set.
+  """
+
+  noiseSigma = _messages.MessageField('GoogleCloudAiplatformV1alpha1FeatureNoiseSigmaNoiseSigmaForFeature', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1alpha1FeatureNoiseSigmaNoiseSigmaForFeature(_messages.Message):
+  r"""Noise sigma for a single feature.
+
+  Fields:
+    name: The name of the input feature for which noise sigma is provided. The
+      features are defined in explanation metadata inputs.
+    sigma: Standard deviation of gaussian kernel for noise.
+  """
+
+  name = _messages.StringField(1)
+  sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformV1alpha1GenericOperationMetadata(_messages.Message):
   r"""Generic Metadata shared by all operations.
 
@@ -4550,6 +5249,27 @@ class GoogleCloudAiplatformV1alpha1ImportDataOperationMetadata(_messages.Message
 
 class GoogleCloudAiplatformV1alpha1ImportDataResponse(_messages.Message):
   r"""Response message for DatasetService.ImportData."""
+
+
+class GoogleCloudAiplatformV1alpha1IntegratedGradientsAttribution(_messages.Message):
+  r"""An attribution method that computes the Aumann-Shapley value taking
+  advantage of the model's fully differentiable structure. Refer to this paper
+  for more details: https://arxiv.org/abs/1703.01365
+
+  Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is within the desired error range. Valid range of
+      its value is [1, 100], inclusively.
+  """
+
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1SmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
@@ -5175,6 +5895,25 @@ class GoogleCloudAiplatformV1alpha1SchemaVisualInspectionMaskSavedQueryMetadata(
   colorMap = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaAnnotationSpecColor', 1, repeated=True)
 
 
+class GoogleCloudAiplatformV1alpha1SmoothGradConfig(_messages.Message):
+  r"""Config for SmoothGrad approximation of gradients. When enabled, the
+  gradients are approximated by averaging the gradients from noisy samples in
+  the vicinity of the inputs. Adding noise can help improve the computed
+  gradients. Refer to this paper for more details:
+  https://arxiv.org/pdf/1706.03825.pdf
+
+  Fields:
+    featureNoiseSigma: Alternatively, set this to use different noise_sigma
+      per feature. One entry per feature. No noise is added to features that
+      are not set.
+    noiseSigma: If set, this std. deviation will be used to apply noise to all
+      features.
+  """
+
+  featureNoiseSigma = _messages.MessageField('GoogleCloudAiplatformV1alpha1FeatureNoiseSigma', 1)
+  noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
   r"""SpecialistPool represents customers' own workforce to work on their data
   labeling jobs. It includes a group of specialist managers who are
@@ -5251,6 +5990,23 @@ class GoogleCloudAiplatformV1alpha1UploadModelResponse(_messages.Message):
   """
 
   model = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1alpha1XraiAttribution(_messages.Message):
+  r"""An explanation method that redistributes Integrated Gradients
+  attributions to segmented regions, taking advantage of the model's fully
+  differentiable structure. Refer to this paper for more details:
+  https://arxiv.org/abs/1906.02825 Only supports image Models (modality is
+  IMAGE).
+
+  Fields:
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is met within the desired error range. Valid range
+      of its value is [1, 100], inclusively.
+  """
+
+  stepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1Annotation(_messages.Message):
@@ -5377,20 +6133,24 @@ class GoogleCloudAiplatformV1beta1Attribution(_messages.Message):
   Fields:
     approximationError: Output only. Error of feature_attributions caused by
       approximation used in the explanation method. Lower value means more
-      precise attributions. For Sampled Shapley attribution, increasing
-      path_count might reduce the error.
+      precise attributions. * For Sampled Shapley attribution, increasing
+      path_count may reduce the error. * For Integrated Gradients attribution,
+      increasing step_count may reduce the error. * For XRAI attribution,
+      increasing step_count may reduce the error. Refer to AI Explanations
+      Whitepaper for more details: https: //storage.googleapis.com/cloud-ai-
+      whitep // apers/AI%20Explainability%20Whitepaper.pdf
     baselineOutputValue: Output only. Model predicted output if the input
       instance is constructed from the baselines of all the features defined
       in ExplanationMetadata.inputs. The field name of the output is
-      determined by the key in ExplanationMetadata.outputs. If the Model
-      predicted output is a tensor value (for example, an ndarray), this is
-      the value in the output located by output_index. If there are multiple
-      baselines, their output values are averaged.
+      determined by the key in ExplanationMetadata.outputs. If the Model's
+      predicted output has multiple dimensions (rank > 1), this is the value
+      in the output located by output_index. If there are multiple baselines,
+      their output values are averaged.
     featureAttributions: Output only. Attributions of each explained feature.
       Features are extracted from the prediction instances according to
-      explanation input metadata. The value is a struct, whose keys are the
-      name of the feature. The values are how much the feature in the instance
-      contributed to the predicted result. The format of the value is
+      explanation metadata for inputs. The value is a struct, whose keys are
+      the name of the feature. The values are how much the feature in the
+      instance contributed to the predicted result. The format of the value is
       determined by the feature's input format: * If the feature is a scalar
       value, the attribution value is a floating number. * If the feature is
       an array of scalar values, the attribution value is an array. * If the
@@ -5405,8 +6165,8 @@ class GoogleCloudAiplatformV1beta1Attribution(_messages.Message):
     instanceOutputValue: Output only. Model predicted output on the
       corresponding explanation instance. The field name of the output is
       determined by the key in ExplanationMetadata.outputs. If the Model
-      predicted output is a tensor value (for example, an ndarray), this is
-      the value in the output located by output_index.
+      predicted output has multiple dimensions, this is the value in the
+      output located by output_index.
     outputDisplayName: Output only. The display name of the output identified
       by output_index, e.g. the predicted class name by a multi-classification
       Model. This field is only populated iff the Model predicts display names
@@ -5415,11 +6175,10 @@ class GoogleCloudAiplatformV1beta1Attribution(_messages.Message):
       located using output_index.
     outputIndex: Output only. The index that locates the explained prediction
       output. If the prediction output is a scalar value, output_index is not
-      populated. If the prediction output is a tensor value (for example, an
-      ndarray), the length of output_index is the same as the number of
-      dimensions of the output. The i-th element in output_index is the
-      element index of the i-th dimension of the output vector. Indexes start
-      from 0.
+      populated. If the prediction output has multiple dimensions, the length
+      of the output_index list is the same as the number of dimensions of the
+      output. The i-th element in output_index is the element index of the
+      i-th dimension of the output vector. Indices start from 0.
   """
 
   approximationError = _messages.FloatField(1)
@@ -5541,19 +6300,8 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     generateExplanation: Generate explanation along with the batch prediction
       results. This can only be set to true for AutoML tabular Models, and
       only when the output destination is BigQuery. When it's true, the batch
-      prediction output will include a column named `feature_attributions`.
-      For AutoML tabular Models, the value of the `feature_attributions`
-      column is a struct that maps from string to number. The keys in the map
-      are the names of the features. The values in the map are the how much
-      the features contribute to the predicted result. Features are defined as
-      follows: * A scalar column defines a feature of the same name as the
-      column. * A struct column defines multiple features, one feature per
-      leaf field. The feature name is the fully qualified path for the leaf
-      field, separated by ".". For example a column `key1` in the format of
-      {"value1": {"prop1": number}, "value2": number} defines two features:
-      `key1.value1.prop1` and `key1.value2` Attributions of each feature is
-      represented as an extra column in the batch prediction output BigQuery
-      table.
+      prediction output will include a column named `explanation`. The value
+      is a struct that conforms to the Explanation object.
     inputConfig: Required. Input configuration of the instances on which
       predictions are performed. The schema of any single instance may be
       specified via the Model's PredictSchemata's instance_schema_uri.
@@ -6503,14 +7251,17 @@ class GoogleCloudAiplatformV1beta1ExplainResponse(_messages.Message):
       explanation.
     explanations: The explanations of the Model's PredictResponse.predictions.
       It has the same number of elements as instances to be explained.
+    predictions: The predictions that are the output of the predictions call.
+      Same as PredictResponse.predictions.
   """
 
   deployedModelId = _messages.StringField(1)
   explanations = _messages.MessageField('GoogleCloudAiplatformV1beta1Explanation', 2, repeated=True)
+  predictions = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1Explanation(_messages.Message):
-  r"""Explanation of a prediction (provided in PredictResponse.predictions )
+  r"""Explanation of a prediction (provided in PredictResponse.predictions)
   produced by the Model on a given instance. Currently, only AutoML tabular
   Models support explanation.
 
@@ -6521,7 +7272,12 @@ class GoogleCloudAiplatformV1beta1Explanation(_messages.Message):
       explains the predicted output. For Models that predict multiple outputs,
       such as multiclass Models that predict multiple classes, each element
       explains one specific item. Attribution.output_index can be used to
-      identify which output this attribution is explaining.
+      identify which output this attribution is explaining. If users set
+      ExplanationParameters.top_k, the attributions are sorted by
+      instance_output_value in descending order. If
+      ExplanationParameters.output_indices is specified, the attributions are
+      stored by Attribution.output_index in the same order as they appear in
+      the output_indices.
   """
 
   attributions = _messages.MessageField('GoogleCloudAiplatformV1beta1Attribution', 1, repeated=True)
@@ -6535,10 +7291,15 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
       Keys are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
       which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform.
-    OutputsValue: Required. Map from output names to output metadata. Keys are
-      the name of the output field in the prediction to be explained.
-      Currently only one key is allowed.
+      The baseline of the empty feature is chosen by AI Platform. For AI
+      Platform provided Tensorflow images, the key can be any friendly name of
+      the feature . Once specified, featureAttributions will be keyed by this
+      key (if not grouped with another feature). For custom images, the key
+      must match with the key in instance[].
+    OutputsValue: Required. Map from output names to output metadata. For AI
+      Platform provided Tensorflow images, keys can be any string user
+      defines. For custom images, keys are the name of the output field in the
+      prediction to be explained. Currently only one key is allowed.
 
   Fields:
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
@@ -6553,10 +7314,15 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
       are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
       which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform.
-    outputs: Required. Map from output names to output metadata. Keys are the
-      name of the output field in the prediction to be explained. Currently
-      only one key is allowed.
+      The baseline of the empty feature is chosen by AI Platform. For AI
+      Platform provided Tensorflow images, the key can be any friendly name of
+      the feature . Once specified, featureAttributions will be keyed by this
+      key (if not grouped with another feature). For custom images, the key
+      must match with the key in instance[].
+    outputs: Required. Map from output names to output metadata. For AI
+      Platform provided Tensorflow images, keys can be any string user
+      defines. For custom images, keys are the name of the output field in the
+      prediction to be explained. Currently only one key is allowed.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6565,7 +7331,11 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
     the name of the features. Values are the specification of the feature. An
     empty InputMetadata is valid. It describes a text feature which has the
     name specified as the key in ExplanationMetadata.inputs. The baseline of
-    the empty feature is chosen by AI Platform.
+    the empty feature is chosen by AI Platform. For AI Platform provided
+    Tensorflow images, the key can be any friendly name of the feature . Once
+    specified, featureAttributions will be keyed by this key (if not grouped
+    with another feature). For custom images, the key must match with the key
+    in instance[].
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -6590,9 +7360,10 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OutputsValue(_messages.Message):
-    r"""Required. Map from output names to output metadata. Keys are the name
-    of the output field in the prediction to be explained. Currently only one
-    key is allowed.
+    r"""Required. Map from output names to output metadata. For AI Platform
+    provided Tensorflow images, keys can be any string user defines. For
+    custom images, keys are the name of the output field in the prediction to
+    be explained. Currently only one key is allowed.
 
     Messages:
       AdditionalProperty: An additional property for a OutputsValue object.
@@ -6621,20 +7392,270 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata(_messages.Message):
-  r"""Metadata of the input of a feature.
+  r"""Metadata of the input of a feature. Fields other than
+  InputMetadata.input_baselines are only applicable to Models that are using
+  AI Platform provided images for Tensorflow.
+
+  Enums:
+    EncodingValueValuesEnum: Defines how the feature is encoded into the input
+      tensor. Defaults to IDENTITY.
 
   Fields:
+    denseShapeTensorName: Specifies the shape of the values of the input if
+      the input is a sparse representation. Refer to Tensorflow documentation
+      for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
+    encodedBaselines: A list of baselines for the encoded tensor. The shape of
+      each baseline should match the shape of the encoded tensor. If a scalar
+      is provided, AI Platform broadcast to the same shape as the encoded
+      tensor.
+    encodedTensorName: Encoded tensor is a transformation of the input tensor.
+      Must be provided if choosing Integrated Gradients attribution or XRAI
+      attribution and the input tensor is not differentiable. An encoded
+      tensor is generated if the input tensor is encoded by a lookup table.
+    encoding: Defines how the feature is encoded into the input tensor.
+      Defaults to IDENTITY.
+    featureValueDomain: The domain details of the input feature value. Like
+      min/max, original mean or standard deviation if normalized.
+    groupName: Name of the group that the input belongs to. Features with the
+      same group name will be treated as one feature when computing
+      attributions. Features grouped together can have different shapes in
+      value. If provided, there will be one single attribution generated in
+      featureAttributions, keyed by the group name.
+    indexFeatureMapping: A list of feature names for each index in the input
+      tensor. Required when the input InputMetadata.encoding is
+      BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
+    indicesTensorName: Specifies the index of the values of the input tensor.
+      Required when the input tensor is a sparse representation. Refer to
+      Tensorflow documentation for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
     inputBaselines: Baseline inputs for this feature. If no baseline is
       specified, AI Platform chooses the baseline for this feature. If
       multiple baselines are specified, AI Platform returns the average
-      attributions across them in Attributions.baseline_attribution. The
-      element of the baselines must be in the same format as the feature's
-      input in the instance[]. The schema of any single instance may be
-      specified via Endpoint's DeployedModels' Model's PredictSchemata's
+      attributions across them in Attributions.baseline_attribution. For AI
+      Platform provided Tensorflow images (both 1.x and 2.x), the shape of
+      each baseline must match the shape of the input tensor. If a scalar is
+      provided, we broadcast to the same shape as the input tensor. For custom
+      images, the element of the baselines must be in the same format as the
+      feature's input in the instance[]. The schema of any single instance may
+      be specified via Endpoint's DeployedModels' Model's PredictSchemata's
       instance_schema_uri.
+    inputTensorName: Name of the input tensor for this feature. Required and
+      is only applicable to AI Platform provided images for Tensorflow.
+    modality: Modality of the feature. Valid values are: numeric, image.
+      Defaults to numeric.
+    visualization: Visualization configurations for image explanation.
   """
 
-  inputBaselines = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+  class EncodingValueValuesEnum(_messages.Enum):
+    r"""Defines how the feature is encoded into the input tensor. Defaults to
+    IDENTITY.
+
+    Values:
+      ENCODING_UNSPECIFIED: Default value. This is the same as IDENTITY.
+      IDENTITY: The tensor represents one feature.
+      BAG_OF_FEATURES: The tensor represents a bag of features where each
+        index maps to a feature. InputMetadata.index_feature_mapping must be
+        provided for this encoding. For example: ``` input = [27, 6.0, 150]
+        index_feature_mapping = ["age", "height", "weight"] ```
+      BAG_OF_FEATURES_SPARSE: The tensor represents a bag of features where
+        each index maps to a feature. Zero values in the tensor indicates
+        feature being non-existent. InputMetadata.index_feature_mapping must
+        be provided for this encoding. For example: ``` input = [2, 0, 5, 0,
+        1] index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      INDICATOR: The tensor is a list of binaries representing whether a
+        feature exists or not (1 indicates existence).
+        InputMetadata.index_feature_mapping must be provided for this
+        encoding. For example: ``` input = [1, 0, 1, 0, 1]
+        index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      COMBINED_EMBEDDING: The tensor is encoded into a 1-dimensional array
+        represented by an encoded tensor. InputMetadata.encoded_tensor_name
+        must be provided for this encoding. For example: ``` input = ["This",
+        "is", "a", "test", "."] encoded = [0.1, 0.2, 0.3, 0.4, 0.5] ```
+      CONCAT_EMBEDDING: Select this encoding when the input tensor is encoded
+        into a 2-dimensional array represented by an encoded tensor.
+        InputMetadata.encoded_tensor_name must be provided for this encoding.
+        The first dimension of the encoded tensor's shape is the same as the
+        input tensor's shape. For example: ``` input = ["This", "is", "a",
+        "test", "."] encoded = [[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.1, 0.4,
+        0.3, 0.5], [0.5, 0.1, 0.3, 0.5, 0.4], [0.5, 0.3, 0.1, 0.2, 0.4], [0.4,
+        0.3, 0.2, 0.5, 0.1]] ```
+    """
+    ENCODING_UNSPECIFIED = 0
+    IDENTITY = 1
+    BAG_OF_FEATURES = 2
+    BAG_OF_FEATURES_SPARSE = 3
+    INDICATOR = 4
+    COMBINED_EMBEDDING = 5
+    CONCAT_EMBEDDING = 6
+
+  denseShapeTensorName = _messages.StringField(1)
+  encodedBaselines = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  encodedTensorName = _messages.StringField(3)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 4)
+  featureValueDomain = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataFeatureValueDomain', 5)
+  groupName = _messages.StringField(6)
+  indexFeatureMapping = _messages.StringField(7, repeated=True)
+  indicesTensorName = _messages.StringField(8)
+  inputBaselines = _messages.MessageField('extra_types.JsonValue', 9, repeated=True)
+  inputTensorName = _messages.StringField(10)
+  modality = _messages.StringField(11)
+  visualization = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataVisualization', 12)
+
+
+class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataFeatureValueDomain(_messages.Message):
+  r"""Domain details of input feature value. Provides numeric information
+  about the feature such as its range (min, max). If the feature has been pre-
+  processed, e.g. via z-scoring, then it also provides information about how
+  to recover the original feature. For example, if the input feature is an
+  image and it has been pre-processed to obtain 0-mean and stddev = 1 values,
+  then original_mean, and original_stddev refer to the mean and stddev of the
+  original feature (e.g. image tensor) from which input feature (with mean = 0
+  and stddev = 1) was obtained.
+
+  Fields:
+    max: The maximum permissible value for this feature.
+    min: The minimum permissible value for this feature.
+    originalMean: If this input feature has been normalized to a mean value of
+      0, the original_mean specifies the mean value of the domain prior to
+      normalization.
+    originalStddev: If this input feature has been normalized to a standard
+      deviation of 1.0, the original_stddev specifies the standard deviation
+      of the domain prior to normalization.
+  """
+
+  max = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  min = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataVisualization(_messages.Message):
+  r"""Visualization configurations for image explanation.
+
+  Enums:
+    ColorMapValueValuesEnum: The color scheme used for the highlighted areas.
+      Defaults to PINK_GREEN for Integrated Gradients attribution, which shows
+      positive attributions in green and negative in pink. Defaults to VIRIDIS
+      for XRAI attribution, which highlights the most influential regions in
+      yellow and the least influential in blue.
+    OverlayTypeValueValuesEnum: How the original image is displayed in the
+      visualization. Adjusting the overlay can help increase visual clarity if
+      the original image makes it difficult to view the visualization.
+      Defaults to NONE.
+    PolarityValueValuesEnum: Whether to only highlight pixels with positive
+      contributions, negative or both. Defaults to POSITIVE.
+    TypeValueValuesEnum: Type of the image visualization. Only applicable to
+      Integrated Gradients attribution. OUTLINES shows regions of attribution,
+      while PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+
+  Fields:
+    clipPercentLowerbound: Excludes attributions below the specified
+      percentile, from the highlighted areas. Defaults to 35.
+    clipPercentUpperbound: Excludes attributions above the specified
+      percentile from the highlighted areas. Using the clip_percent_upperbound
+      and clip_percent_lowerbound together can be useful for filtering out
+      noise and making it easier to see areas of strong attribution. Defaults
+      to 99.9.
+    colorMap: The color scheme used for the highlighted areas. Defaults to
+      PINK_GREEN for Integrated Gradients attribution, which shows positive
+      attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+      attribution, which highlights the most influential regions in yellow and
+      the least influential in blue.
+    overlayType: How the original image is displayed in the visualization.
+      Adjusting the overlay can help increase visual clarity if the original
+      image makes it difficult to view the visualization. Defaults to NONE.
+    polarity: Whether to only highlight pixels with positive contributions,
+      negative or both. Defaults to POSITIVE.
+    type: Type of the image visualization. Only applicable to Integrated
+      Gradients attribution. OUTLINES shows regions of attribution, while
+      PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+  """
+
+  class ColorMapValueValuesEnum(_messages.Enum):
+    r"""The color scheme used for the highlighted areas. Defaults to
+    PINK_GREEN for Integrated Gradients attribution, which shows positive
+    attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+    attribution, which highlights the most influential regions in yellow and
+    the least influential in blue.
+
+    Values:
+      COLOR_MAP_UNSPECIFIED: Should not be used.
+      PINK_GREEN: Positive: green. Negative: pink.
+      VIRIDIS: Viridis color map: A perceptually uniform color mapping which
+        is easier to see by those with colorblindness and progresses from
+        yellow to green to blue. Positive: yellow. Negative: blue.
+      RED: Positive: red. Negative: red.
+      GREEN: Positive: green. Negative: green.
+      RED_GREEN: Positive: green. Negative: red.
+      PINK_WHITE_GREEN: PiYG palette.
+    """
+    COLOR_MAP_UNSPECIFIED = 0
+    PINK_GREEN = 1
+    VIRIDIS = 2
+    RED = 3
+    GREEN = 4
+    RED_GREEN = 5
+    PINK_WHITE_GREEN = 6
+
+  class OverlayTypeValueValuesEnum(_messages.Enum):
+    r"""How the original image is displayed in the visualization. Adjusting
+    the overlay can help increase visual clarity if the original image makes
+    it difficult to view the visualization. Defaults to NONE.
+
+    Values:
+      OVERLAY_TYPE_UNSPECIFIED: Default value. This is the same as NONE.
+      NONE: No overlay.
+      ORIGINAL: The attributions are shown on top of the original image.
+      GRAYSCALE: The attributions are shown on top of grayscaled version of
+        the original image.
+      MASK_BLACK: The attributions are used as a mask to reveal predictive
+        parts of the image and hide the un-predictive parts.
+    """
+    OVERLAY_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    ORIGINAL = 2
+    GRAYSCALE = 3
+    MASK_BLACK = 4
+
+  class PolarityValueValuesEnum(_messages.Enum):
+    r"""Whether to only highlight pixels with positive contributions, negative
+    or both. Defaults to POSITIVE.
+
+    Values:
+      POLARITY_UNSPECIFIED: Default value. This is the same as POSITIVE.
+      POSITIVE: Highlights the pixels/outlines that were most influential to
+        the model's prediction.
+      NEGATIVE: Setting polarity to negative highlights areas that does not
+        lead to the models's current prediction.
+      BOTH: Shows both positive and negative attributions.
+    """
+    POLARITY_UNSPECIFIED = 0
+    POSITIVE = 1
+    NEGATIVE = 2
+    BOTH = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the image visualization. Only applicable to Integrated
+    Gradients attribution. OUTLINES shows regions of attribution, while PIXELS
+    shows per-pixel attribution. Defaults to OUTLINES.
+
+    Values:
+      TYPE_UNSPECIFIED: Should not be used.
+      PIXELS: Shows which pixel contributed to the image prediction.
+      OUTLINES: Shows which region contributed to the image prediction by
+        outlining the region.
+    """
+    TYPE_UNSPECIFIED = 0
+    PIXELS = 1
+    OUTLINES = 2
+
+  clipPercentLowerbound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  clipPercentUpperbound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  colorMap = _messages.EnumField('ColorMapValueValuesEnum', 3)
+  overlayType = _messages.EnumField('OverlayTypeValueValuesEnum', 4)
+  polarity = _messages.EnumField('PolarityValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class GoogleCloudAiplatformV1beta1ExplanationMetadataOutputMetadata(_messages.Message):
@@ -6655,28 +7676,58 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataOutputMetadata(_messages.Me
       of strings. The number of dimentions must match that of the outputs to
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
+    outputTensorName: Name of the output tensor. Required and is only
+      applicable to AI Platform provided images for Tensorflow.
   """
 
   displayNameMappingKey = _messages.StringField(1)
   indexDisplayNameMapping = _messages.MessageField('extra_types.JsonValue', 2)
+  outputTensorName = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
   r"""Parameters to configure explaining for Model's predictions.
 
   Fields:
+    integratedGradientsAttribution: An attribution method that computes
+      Aumann-Shapley values taking advantage of the model's fully
+      differentiable structure. Refer to this paper for more details:
+      https://arxiv.org/abs/1703.01365
+    outputIndices: If populated, only returns attributions that have
+      output_index contained in output_indices. It must be an ndarray of
+      integers, with the same shape of the output it's explaining. If not
+      populated, returns attributions for top_k indices of outputs. If neither
+      top_k nor output_indeices is populated, returns the argmax index of the
+      outputs. Only applicable to Models that predict multiple outputs (e,g,
+      multi-class Models that predict multiple classes).
     sampledShapleyAttribution: An attribution method that approximates Shapley
       values for features that contribute to the label being predicted. A
       sampling strategy is used to approximate the value rather than
-      considering all subsets of features.
+      considering all subsets of features. Refer to this paper for model
+      details: https://arxiv.org/abs/1306.4265.
+    topK: If populated, returns attributions for top K indices of outputs
+      (defaults to 1). Only applies to Models that predicts more than one
+      outputs (e,g, multi-class Models). When set to -1, returns explanations
+      for all outputs.
+    xraiAttribution: An attribution method that redistributes Integrated
+      Gradients attribution to segmented regions, taking advantage of the
+      model's fully differentiable structure. Refer to this paper for more
+      details: https://arxiv.org/abs/1906.02825 XRAI currently performs better
+      on natural images, like a picture of a house or an animal. If the images
+      are taken in artificial environments, like a lab or manufacturing line,
+      or from diagnostic equipment, like x-rays or quality-control cameras,
+      use Integrated Gradients instead.
   """
 
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SampledShapleyAttribution', 1)
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution', 1)
+  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SampledShapleyAttribution', 3)
+  topK = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1XraiAttribution', 5)
 
 
 class GoogleCloudAiplatformV1beta1ExplanationSpec(_messages.Message):
-  r"""Specification of Model explanation. Currently, only AutoML tabular
-  Models support explanation.
+  r"""Specification of Model explanation.
 
   Fields:
     metadata: Required. Metadata describing the Model's input and output for
@@ -6814,6 +7865,32 @@ class GoogleCloudAiplatformV1beta1ExportModelRequestOutputConfig(_messages.Messa
 
 class GoogleCloudAiplatformV1beta1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
+
+
+class GoogleCloudAiplatformV1beta1FeatureNoiseSigma(_messages.Message):
+  r"""Noise sigma by features. Noise sigma represents the standard deviation
+  of the gaussian kernel that will be used to add noise to interpolated inputs
+  prior to computing gradients.
+
+  Fields:
+    noiseSigma: Noise sigma per feature. No noise is added to features that
+      are not set.
+  """
+
+  noiseSigma = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureNoiseSigmaNoiseSigmaForFeature', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1FeatureNoiseSigmaNoiseSigmaForFeature(_messages.Message):
+  r"""Noise sigma for a single feature.
+
+  Fields:
+    name: The name of the input feature for which noise sigma is provided. The
+      features are defined in explanation metadata inputs.
+    sigma: Standard deviation of gaussian kernel for noise.
+  """
+
+  name = _messages.StringField(1)
+  sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1FilterSplit(_messages.Message):
@@ -7173,13 +8250,18 @@ class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
       exported to training, to pick and choose from.
     filterSplit: Split based on the provided filters for each set.
     fractionSplit: Split based on fractions defining the size of each set.
-    gcsDestination: The Google Cloud Storage location. The AI Platform
-      environment variables representing Google Cloud Storage data URIs will
-      always be represented in the Google Cloud Storage wildcard format to
-      support sharded data. e.g.: "gs://.../training-* * AIP_DATA_FORMAT =
-      "jsonl". * AIP_TRAINING_DATA_URI = "gcs_destination/training-*" *
-      AIP_VALIDATION_DATA_URI = "gcs_destination/validation-*" *
-      AIP_TEST_DATA_URI = "gcs_destination/test-*"
+    gcsDestination: The Google Cloud Storage location where the output is to
+      be written to. In the given directory a new directory will be created
+      with name: `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ
+      ISO-8601 format. All training input data will be written into that
+      directory. The AI Platform environment variables representing Google
+      Cloud Storage data URIs will always be represented in the Google Cloud
+      Storage wildcard format to support sharded data. e.g.:
+      "gs://.../training-*.jsonl" * AIP_DATA_FORMAT = "jsonl". *
+      AIP_TRAINING_DATA_URI = "gcs_destination/dataset---/training-*.jsonl" *
+      AIP_VALIDATION_DATA_URI =
+      "gcs_destination/dataset---/validation-*.jsonl" * AIP_TEST_DATA_URI =
+      "gcs_destination/dataset---/test-*.jsonl"
     predefinedSplit: Supported only for tabular Datasets. Split based on a
       predefined key.
     timestampSplit: Supported only for tabular Datasets. Split based on the
@@ -7194,6 +8276,27 @@ class GoogleCloudAiplatformV1beta1InputDataConfig(_messages.Message):
   gcsDestination = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 6)
   predefinedSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1PredefinedSplit', 7)
   timestampSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1TimestampSplit', 8)
+
+
+class GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution(_messages.Message):
+  r"""An attribution method that computes the Aumann-Shapley value taking
+  advantage of the model's fully differentiable structure. Refer to this paper
+  for more details: https://arxiv.org/abs/1703.01365
+
+  Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is within the desired error range. Valid range of
+      its value is [1, 100], inclusively.
+  """
+
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1ListAnnotationsResponse(_messages.Message):
@@ -7841,44 +8944,152 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
-  r"""Specification of the container to be deployed for this Model. The
-  ModelContainerSpec is based on the Kubernetes Container
-  [specification](https://tinyurl.com/k8s-io-api/v1.10/#container-v1-core).
+  r"""Specification of a container for serving predictions. This message is a
+  subset of the [Kubernetes Container v1 core specification](https:
+  //kubernetes.io/docs/reference/generated // /kubernetes-
+  api/v1.18/#container-v1-core).
 
   Fields:
-    args: Immutable. The arguments to the command. The Docker image's CMD is
-      used if this is not provided. Variable references $(VAR_NAME) are
-      expanded using the container's environment. If a variable cannot be
-      resolved, the reference in the input string will be unchanged. The
-      $(VAR_NAME) syntax can be escaped with a double $$, ie: $$(VAR_NAME).
-      Escaped references will never be expanded, regardless of whether the
-      variable exists or not. More info: https://tinyurl.com/y42hmlxe
-    command: Immutable. The command with which the container is run. Not
-      executed within a shell. The Docker image's ENTRYPOINT is used if this
-      is not provided. Variable references $(VAR_NAME) are expanded using the
-      container's environment. If a variable cannot be resolved, the reference
-      in the input string will be unchanged. The $(VAR_NAME) syntax can be
-      escaped with a double $$, ie: $$(VAR_NAME). Escaped references will
-      never be expanded, regardless of whether the variable exists or not.
-      More info: https://tinyurl.com/y42hmlxe
-    env: Immutable. The environment variables that are to be present in the
-      container.
-    healthRoute: Immutable. An HTTP path to send health check requests to the
-      container, and which must be supported by it. If not specified a
-      standard HTTP path will be used by AI Platform.
-    imageUri: Required. Immutable. The URI of the Model serving container file
-      in the Container Registry. The container image is ingested upon
+    args: Immutable. Specifies arguments for the command that runs when the
+      container starts. This overrides the container's
+      [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd). Specify
+      this field as an array of executable and arguments, similar to a Docker
+      `CMD`'s "default parameters" form. If you don't specify this field but
+      do specify the command field, then the command from the `command` field
+      runs without any additional arguments. See the [Kubernetes documentation
+      about how the `command` and `args` fields interact with a container's
+      `ENTRYPOINT` and `CMD`](https: //kubernetes.io/docs/tasks/inject-data-a
+      // pplication/define-command-argument-container/#notes). If you don't
+      specify this field and don't specify the `command` field, then the
+      container's
+      [`ENTRYPOINT`](https://docs.docker.com/engine/reference/builder/#cmd)
+      and `CMD` determine what runs based on their default behavior. See the
+      [Docker documentation about how `CMD` and `ENTRYPOINT` interact](https:
+      //docs.docker.com/engine/reference/build // er/#understand-how-cmd-and-
+      entrypoint-interact). In this field, you can reference [environment
+      variables set by AI Platform](https: //cloud.google.com/ai-platform-
+      unified/d // ocs/predictions/custom-container-requirements#aip-
+      variables) and environment variables set in the env field. You cannot
+      reference environment variables set in the Docker image. In order for
+      environment variables to be expanded, reference them by using the
+      following syntax: $( VARIABLE_NAME) Note that this differs from Bash
+      variable expansion, which does not use parentheses. If a variable cannot
+      be resolved, the reference in the input string is used unchanged. To
+      avoid variable expansion, you can escape this syntax with `$$`; for
+      example: $$(VARIABLE_NAME) This field corresponds to the `args` field of
+      the [Kubernetes Containers v1 core API](https:
+      //kubernetes.io/docs/reference/generated // /kubernetes-
+      api/v1.18/#container-v1-core).
+    command: Immutable. Specifies the command that runs when the container
+      starts. This overrides the container's [`ENTRYPOINT`](https:
+      //docs.docker.com/engine/reference/builder/#entrypoint). Specify this
+      field as an array of executable and arguments, similar to a Docker
+      `ENTRYPOINT`'s "exec" form, not its "shell" form. If you do not specify
+      this field, then the container's `ENTRYPOINT` runs, in conjunction with
+      the args field or the container's
+      [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd), if
+      either exists. If this field is not specified and the container does not
+      have an `ENTRYPOINT`, then refer to the [Docker documentation about how
+      `CMD` and `ENTRYPOINT` interact](https:
+      //docs.docker.com/engine/reference/build // er/#understand-how-cmd-and-
+      entrypoint-interact). If you specify this field, then you can also
+      specify the `args` field to provide additional arguments for this
+      command. However, if you specify this field, then the container's `CMD`
+      is ignored. See the [Kubernetes documentation about how the `command`
+      and `args` fields interact with a container's `ENTRYPOINT` and
+      `CMD`](https: //kubernetes.io/docs/tasks/inject-data-a //
+      pplication/define-command-argument-container/#notes). In this field, you
+      can reference [environment variables set by AI Platform](https:
+      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
+      container-requirements#aip-variables) and environment variables set in
+      the env field. You cannot reference environment variables set in the
+      Docker image. In order for environment variables to be expanded,
+      reference them by using the following syntax: $( VARIABLE_NAME) Note
+      that this differs from Bash variable expansion, which does not use
+      parentheses. If a variable cannot be resolved, the reference in the
+      input string is used unchanged. To avoid variable expansion, you can
+      escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+      corresponds to the `command` field of the [Kubernetes Containers v1 core
+      API](https: //kubernetes.io/docs/reference/generated // /kubernetes-
+      api/v1.18/#container-v1-core).
+    env: Immutable. List of environment variables to set in the container.
+      After the container starts running, code running in the container can
+      read these environment variables. Additionally, the command and args
+      fields can reference these variables. Later entries in this list can
+      also reference earlier entries. For example, the following example sets
+      the variable `VAR_2` to have the value `foo bar`: ```json [ { "name":
+      "VAR_1", "value": "foo" }, { "name": "VAR_2", "value": "$(VAR_1) bar" }
+      ] ``` If you switch the order of the variables in the example, then the
+      expansion does not occur. This field corresponds to the `env` field of
+      the [Kubernetes Containers v1 core API](https:
+      //kubernetes.io/docs/reference/generated // /kubernetes-
+      api/v1.18/#container-v1-core).
+    healthRoute: Immutable. HTTP path on the container to send health checkss
+      to. AI Platform intermittently sends GET requests to this path on the
+      container's IP address and port to check that the container is healthy.
+      Read more about [health checks](https: //cloud.google.com/ai-platform-
+      unified/d // ocs/predictions/custom-container-requirements#checks). For
+      example, if you set this field to `/bar`, then AI Platform
+      intermittently sends a GET request to the following URL on the
+      container: localhost:PORT/bar PORT refers to the first value of this
+      `ModelContainerSpec`'s ports field. If you don't specify this field, it
+      defaults to the following value when you deploy this Model to an
+      Endpoint: /v1/endpoints/ENDPOINT/deployedModels/ DEPLOYED_MODEL:predict
+      The placeholders in this value are replaced as follows: * ENDPOINT: The
+      last segment (following `endpoints/`)of the Endpoint.name][] field of
+      the Endpoint where this Model has been deployed. (AI Platform makes this
+      value available to your container code as the [`AIP_ENDPOINT_ID`
+      environment variable](https: //cloud.google.com/ai-platform-unified/d //
+      ocs/predictions/custom-container-requirements#aip-variables).) *
+      DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform
+      makes this value available to your container code as the
+      [`AIP_DEPLOYED_MODEL_ID` environment variable](https:
+      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
+      container-requirements#aip-variables).)
+    imageUri: Required. Immutable. URI of the Docker image to be used as the
+      custom container for serving predictions. This URI must identify an
+      image in Artifact Registry or Container Registry. Learn more about the
+      [container publishing requirements](https: //cloud.google.com/ai-
+      platform-unified/d // ocs/predictions/custom-container-
+      requirements#publishing), including permissions requirements for the AI
+      Platform Service Agent. The container image is ingested upon
       ModelService.UploadModel, stored internally, and this original path is
-      afterwards not used.
-    ports: Immutable. Declaration of ports that are exposed by the container.
-      This field is primarily informational, it gives AI Platform information
-      about the network connections the container uses. Listing or not a port
-      here has no impact on whether the port is actually exposed, any port
-      listening on the default "0.0.0.0" address inside a container will be
-      accessible from the network.
-    predictRoute: Immutable. An HTTP path to send prediction requests to the
-      container, and which must be supported by it. If not specified a default
-      HTTP path will be used by AI Platform.
+      afterwards not used. To learn about the requirements for the Docker
+      image itself, read [Custom container requirements](https:
+      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
+      container-requirements).
+    ports: Immutable. List of ports to expose from the container. AI Platform
+      sends any prediction requests that it receives to the first port on this
+      list. AI Platform also sends [liveness and health checks](https:
+      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
+      container-requirements#health) to this port. If you do not specify this
+      field, it defaults to following value: ```json [ { "containerPort": 8080
+      } ] ``` AI Platform does not use ports other than the first one listed.
+      This field corresponds to the `ports` field of the [Kubernetes
+      Containers v1 core API](https: //kubernetes.io/docs/reference/generated
+      // /kubernetes-api/v1.18/#container-v1-core).
+    predictRoute: Immutable. HTTP path on the container to send prediction
+      requests to. AI Platform forwards requests sent using
+      projects.locations.endpoints.predict to this path on the container's IP
+      address and port. AI Platform then returns the container's response in
+      the API response. For example, if you set this field to `/foo`, then
+      when AI Platform receives a prediction request, it forwards the request
+      body in a POST request to the following URL on the container:
+      localhost:PORT/foo PORT refers to the first value of this
+      `ModelContainerSpec`'s ports field. If you don't specify this field, it
+      defaults to the following value when you deploy this Model to an
+      Endpoint: /v1/endpoints/ENDPOINT/deployedModels/DEPLOYED_MODEL:predict
+      The placeholders in this value are replaced as follows: * ENDPOINT: The
+      last segment (following `endpoints/`)of the Endpoint.name][] field of
+      the Endpoint where this Model has been deployed. (AI Platform makes this
+      value available to your container code as the [`AIP_ENDPOINT_ID`
+      environment variable](https: //cloud.google.com/ai-platform-unified/d //
+      ocs/predictions/custom-container-requirements#aip-variables).) *
+      DEPLOYED_MODEL: DeployedModel.id of the `DeployedModel`. (AI Platform
+      makes this value available to your container code as the
+      [`AIP_DEPLOYED_MODEL_ID` environment variable](https:
+      //cloud.google.com/ai-platform-unified/d // ocs/predictions/custom-
+      container-requirements#aip-variables).)
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -8207,6 +9418,23 @@ class GoogleCloudAiplatformV1beta1SchemaAnnotationSpecColor(_messages.Message):
   id = _messages.StringField(3)
 
 
+class GoogleCloudAiplatformV1beta1SchemaClassificationPredictionResult(_messages.Message):
+  r"""Prediction output format for Image Classification.
+
+  Fields:
+    confidences: The Model's confidences in correctness of the predicted IDs,
+      higher value means higher confidence. Order matches the Ids.
+    displayNames: The display names of the AnnotationSpecs that had been
+      identified, order matches the IDs.
+    ids: The resource IDs of the AnnotationSpecs that had been identified,
+      ordered by the confidence score descendingly.
+  """
+
+  confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
+  displayNames = _messages.StringField(2, repeated=True)
+  ids = _messages.IntegerField(3, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1SchemaImageBoundingBoxAnnotation(_messages.Message):
   r"""Annotation details specific to image object detection.
 
@@ -8243,6 +9471,36 @@ class GoogleCloudAiplatformV1beta1SchemaImageClassificationAnnotation(_messages.
   displayName = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1SchemaImageClassificationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Image Classification.
+
+  Fields:
+    content: The image bytes or GCS URI to make the prediction on.
+    mimeType: The MIME type of the content of the image. Only the images in
+      below listed MIME types are supported. - image/jpeg - image/gif -
+      image/png - image/webp - image/bmp - image/tiff -
+      image/vnd.microsoft.icon
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaImageClassificationPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Image Classification.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The Model only returns up to that many top, by confidence
+      score, predictions per instance. If this number is very high, the Model
+      may return fewer predictions. Default value is 10.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformV1beta1SchemaImageDataItem(_messages.Message):
   r"""Payload of Image DataItem.
 
@@ -8273,6 +9531,73 @@ class GoogleCloudAiplatformV1beta1SchemaImageDatasetMetadata(_messages.Message):
   gcsBucket = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1SchemaImageObjectDetectionPredictionInstance(_messages.Message):
+  r"""Prediction input format for Image Object Detection.
+
+  Fields:
+    content: The image bytes or GCS URI to make the prediction on.
+    mimeType: The MIME type of the content of the image. Only the images in
+      below listed MIME types are supported. - image/jpeg - image/gif -
+      image/png - image/webp - image/bmp - image/tiff -
+      image/vnd.microsoft.icon
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaImageObjectDetectionPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Image Object Detection.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The Model only returns up to that many top, by confidence
+      score, predictions per instance. Note that number of returned
+      predictions is also limited by metadata's predictionsLimit. Default
+      value is 10.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaImageObjectDetectionPredictionResult(_messages.Message):
+  r"""Prediction output format for Image Object Detection.
+
+  Messages:
+    BboxesValueListEntry: Single entry in a BboxesValue.
+
+  Fields:
+    bboxes: Bounding boxes, i.e. the rectangles over the image, that pinpoint
+      the found AnnotationSpecs. Given in order that matches the IDs. Each
+      bounding box is an array of 4 numbers `xMin`, `xMax`, `yMin`, and
+      `yMax`, which represent the extremal coordinates of the box. They are
+      relative to the image size, and the point 0,0 is in the top left of the
+      image.
+    confidences: The Model's confidences in correctness of the predicted IDs,
+      higher value means higher confidence. Order matches the Ids.
+    displayNames: The display names of the AnnotationSpecs that had been
+      identified, order matches the IDs.
+    ids: The resource IDs of the AnnotationSpecs that had been identified,
+      ordered by the confidence score descendingly.
+  """
+
+  class BboxesValueListEntry(_messages.Message):
+    r"""Single entry in a BboxesValue.
+
+    Fields:
+      entry: A extra_types.JsonValue attribute.
+    """
+
+    entry = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+
+  bboxes = _messages.MessageField('BboxesValueListEntry', 1, repeated=True)
+  confidences = _messages.FloatField(2, repeated=True, variant=_messages.Variant.FLOAT)
+  displayNames = _messages.StringField(3, repeated=True)
+  ids = _messages.IntegerField(4, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotation(_messages.Message):
   r"""Annotation details specific to image segmentation.
 
@@ -8288,6 +9613,81 @@ class GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotation(_messages.Me
 
   annotationSpecColors = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaAnnotationSpecColor', 1, repeated=True)
   maskGcsUri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaImageSegmentationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Image Segmentation.
+
+  Fields:
+    content: The image bytes to make the predictions on.
+    mimeType: The MIME type of the content of the image. Only the images in
+      below listed MIME types are supported. - image/jpeg - image/png
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaImageSegmentationPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Image Segmentation.
+
+  Fields:
+    confidenceThreshold: When the model predicts category of pixels of the
+      image, it will only provide predictions for pixels that it is at least
+      this much confident about. All other pixels will be classified as
+      background. Default value is 0.5.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaPredictionResult(_messages.Message):
+  r"""Represents a line of JSONL in the batch prediction output file.
+
+  Messages:
+    InstanceValue: User's input instance. Struct is used here instead of Any
+      so that JsonFormat does not append an extra "@type" field when we
+      convert the proto to JSON.
+
+  Fields:
+    instance: User's input instance. Struct is used here instead of Any so
+      that JsonFormat does not append an extra "@type" field when we convert
+      the proto to JSON.
+    key: Optional user-provided key from the input instance.
+    prediction: The prediction result. Value is used here instead of Any so
+      that JsonFormat does not append an extra "@type" field when we convert
+      the proto to JSON and so we can represent array of objects.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InstanceValue(_messages.Message):
+    r"""User's input instance. Struct is used here instead of Any so that
+    JsonFormat does not append an extra "@type" field when we convert the
+    proto to JSON.
+
+    Messages:
+      AdditionalProperty: An additional property for a InstanceValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InstanceValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  instance = _messages.MessageField('InstanceValue', 1)
+  key = _messages.StringField(2)
+  prediction = _messages.MessageField('extra_types.JsonValue', 3)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTablesDatasetMetadata(_messages.Message):
@@ -8356,6 +9756,19 @@ class GoogleCloudAiplatformV1beta1SchemaTextClassificationAnnotation(_messages.M
   displayName = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1SchemaTextClassificationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Text Classification.
+
+  Fields:
+    content: The text snippet to make the predictions on.
+    mimeType: The MIME type of the text snippet. The supported MIME types are
+      listed below. - text/plain
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1SchemaTextDataItem(_messages.Message):
   r"""Payload of Text DataItem.
 
@@ -8397,6 +9810,51 @@ class GoogleCloudAiplatformV1beta1SchemaTextExtractionAnnotation(_messages.Messa
   textSegment = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTextSegment', 3)
 
 
+class GoogleCloudAiplatformV1beta1SchemaTextExtractionPredictionInstance(_messages.Message):
+  r"""Prediction input format for Text Extraction.
+
+  Fields:
+    content: The text snippet to make the predictions on.
+    key: This field is only used for batch prediction. If a key is provided,
+      the batch prediction result will by mapped to this key. If omitted, then
+      the batch prediction result will contain the entire input instance. AI
+      Platform will not check if keys in the request are duplicates, so it is
+      up to the caller to ensure the keys are unique.
+    mimeType: The MIME type of the text snippet. The supported MIME types are
+      listed below. - text/plain
+  """
+
+  content = _messages.StringField(1)
+  key = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTextExtractionPredictionResult(_messages.Message):
+  r"""Prediction output format for Text Extraction.
+
+  Fields:
+    confidences: The Model's confidences in correctness of the predicted IDs,
+      higher value means higher confidence. Order matches the Ids.
+    displayNames: The display names of the AnnotationSpecs that had been
+      identified, order matches the IDs.
+    ids: The resource IDs of the AnnotationSpecs that had been identified,
+      ordered by the confidence score descendingly.
+    textSegmentEndOffsets: The end offsets, inclusive, of the text segment in
+      which the AnnotationSpec has been identified. Expressed as a zero-based
+      number of characters as measured from the start of the text snippet.
+    textSegmentStartOffsets: The start offsets, inclusive, of the text segment
+      in which the AnnotationSpec has been identified. Expressed as a zero-
+      based number of characters as measured from the start of the text
+      snippet.
+  """
+
+  confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
+  displayNames = _messages.StringField(2, repeated=True)
+  ids = _messages.IntegerField(3, repeated=True)
+  textSegmentEndOffsets = _messages.IntegerField(4, repeated=True)
+  textSegmentStartOffsets = _messages.IntegerField(5, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1SchemaTextSegment(_messages.Message):
   r"""The text segment inside of DataItem.
 
@@ -8430,6 +9888,47 @@ class GoogleCloudAiplatformV1beta1SchemaTextSentimentAnnotation(_messages.Messag
   displayName = _messages.StringField(2)
   sentiment = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   sentimentMax = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTextSentimentPredictionInstance(_messages.Message):
+  r"""Prediction input format for Text Sentiment.
+
+  Fields:
+    content: The text snippet to make the predictions on.
+    mimeType: The MIME type of the text snippet. The supported MIME types are
+      listed below. - text/plain
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTextSentimentPredictionResult(_messages.Message):
+  r"""Represents a line of JSONL in the text sentiment batch prediction output
+  file. This is a hack to allow printing of integer values.
+
+  Fields:
+    instance: User's input instance.
+    prediction: The prediction result.
+  """
+
+  instance = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTextSentimentPredictionInstance', 1)
+  prediction = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTextSentimentPredictionResultPrediction', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTextSentimentPredictionResultPrediction(_messages.Message):
+  r"""Prediction output format for Text Sentiment.
+
+  Fields:
+    sentiment: The integer sentiment labels between 0 (inclusive) and
+      sentimentMax label (inclusive), while 0 maps to the least positive
+      sentiment and sentimentMax maps to the most positive one. The higher the
+      score is, the more positive the sentiment in the text snippet is. Note:
+      sentimentMax is an integer value between 1 (inclusive) and 10
+      (inclusive).
+  """
+
+  sentiment = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTextSentimentSavedQueryMetadata(_messages.Message):
@@ -8517,6 +10016,1123 @@ class GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataInputConfig(_me
   gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTimeSeriesDatasetMetadataGcsSource', 2)
 
 
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecasting(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Forecasting Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputs', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecasti
+  ngInputs object.
+
+  Fields:
+    exportEvaluatedDataItemsConfig: Configuration for exporting test set
+      predictions to a BigQuery table. If this configuration is absent, then
+      the export is not performed.
+    forecastWindowEnd: The number of periods offset into the future as the end
+      of the forecast window (the window of future values to predict, relative
+      to the present.), where each period is one unit of granularity as
+      defined by the `period` field above. Inclusive.
+    forecastWindowStart: The number of periods offset into the future as the
+      start of the forecast window (the window of future values to predict,
+      relative to the present.), where each period is one unit of granularity
+      as defined by the `period` field above. Default to 0. Inclusive.
+    optimizationObjective: Objective function the model is optimizing towards.
+      The training process creates a model that optimizes the value of the
+      objective function over the validation set. The supported optimization
+      objectives: "minimize-rmse" (default) - Minimize root-mean-squared error
+      (RMSE). "minimize-mae" - Minimize mean-absolute error (MAE). "minimize-
+      rmsle" - Minimize root-mean-squared log error (RMSLE). "minimize-rmspe"
+      - Minimize root-mean-squared percentage error (RMSPE). "minimize-wape-
+      mae" - Minimize the combination of weighted absolute percentage error
+      (WAPE) and mean-absolute-error (MAE).
+    pastHorizon: The number of periods offset into the past to restrict past
+      sequence, where each period is one unit of granularity as defined by the
+      `period`. Default value 0 means that it lets algorithm to define the
+      value. Inclusive.
+    period: Expected difference in time granularity between rows in the data.
+      If it is not set, the period is inferred from data.
+    staticColumns: Column names that should be used as static columns. The
+      value of these columns are static per time series.
+    targetColumn: The name of the column that the model is to predict.
+    timeColumn: The name of the column that identifies time order in the time
+      series.
+    timeSeriesIdentifierColumn: The name of the column that identifies the
+      time series.
+    timeVariantPastAndFutureColumns: Column names that should be used as time
+      variant past and future columns. This column contains information for
+      the given entity (identified by the key column) that is known for the
+      past and the future
+    timeVariantPastOnlyColumns: Column names that should be used as time
+      variant past only columns. This column contains information for the
+      given entity (identified by the time_series_identifier_column) that is
+      known for the past but not the future (e.g. population of a city in a
+      given year, or weather on a given day).
+    trainBudgetMilliNodeHours: Required. The train budget of creating this
+      model, expressed in milli node hours i.e. 1,000 value in this field
+      means 1 node hour. The training cost of the model will not exceed this
+      budget. The final cost will be attempted to be close to the budget,
+      though may end up being (even) noticeably smaller - at the backend's
+      discretion. This especially may happen when further model training
+      ceases to provide any improvements. If the budget is set to a value
+      known to be insufficient to train a model for the given dataset, the
+      training won't be attempted and will error. The train budget must be
+      between 1,000 and 72,000 milli node hours, inclusive.
+    transformations: Each transformation will apply transform function to
+      given input column. And the result will be used for training. When
+      creating transformation for BigQuery Struct column, the column should be
+      flattened using "." as the delimiter.
+    weightColumn: Column name that should be used as the weight column. Higher
+      values in this column give more importance to the row during model
+      training. The column must have numeric values between 0 and 10000
+      inclusively; 0 means the row is ignored for training. If weight column
+      field is not set, then all rows are assumed to have equal weight of 1.
+  """
+
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 1)
+  forecastWindowEnd = _messages.IntegerField(2)
+  forecastWindowStart = _messages.IntegerField(3)
+  optimizationObjective = _messages.StringField(4)
+  pastHorizon = _messages.IntegerField(5)
+  period = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod', 6)
+  staticColumns = _messages.StringField(7, repeated=True)
+  targetColumn = _messages.StringField(8)
+  timeColumn = _messages.StringField(9)
+  timeSeriesIdentifierColumn = _messages.StringField(10)
+  timeVariantPastAndFutureColumns = _messages.StringField(11, repeated=True)
+  timeVariantPastOnlyColumns = _messages.StringField(12, repeated=True)
+  trainBudgetMilliNodeHours = _messages.IntegerField(13)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 14, repeated=True)
+  weightColumn = _messages.StringField(15)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod(_messages.Message):
+  r"""A duration of time expressed in time granularity units.
+
+  Fields:
+    quantity: The number of units per period, e.g. 3 weeks or 2 months.
+    unit: The time granularity unit of this time period. The supported unit
+      are: "hour" "day" "week" "month" "year"
+  """
+
+  quantity = _messages.IntegerField(1)
+  unit = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecasti
+  ngInputsTransformation object.
+
+  Fields:
+    auto: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForec
+      astingInputsTransformationAutoTransformation attribute.
+    categorical: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAuto
+      MlForecastingInputsTransformationCategoricalTransformation attribute.
+    numeric: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlFo
+      recastingInputsTransformationNumericTransformation attribute.
+    repeatedCategorical: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefini
+      tionAutoMlForecastingInputsTransformationCategoricalArrayTransformation
+      attribute.
+    repeatedNumeric: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinition
+      AutoMlForecastingInputsTransformationNumericArrayTransformation
+      attribute.
+    repeatedText: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAut
+      oMlForecastingInputsTransformationTextArrayTransformation attribute.
+    text: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForec
+      astingInputsTransformationTextTransformation attribute.
+    timestamp: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMl
+      ForecastingInputsTransformationTimestampTransformation attribute.
+  """
+
+  auto = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation', 1)
+  categorical = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation', 2)
+  numeric = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation', 3)
+  repeatedCategorical = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalArrayTransformation', 4)
+  repeatedNumeric = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericArrayTransformation', 5)
+  repeatedText = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextArrayTransformation', 6)
+  text = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation', 7)
+  timestamp = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation', 8)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation(_messages.Message):
+  r"""Training pipeline will infer the proper transformation based on the
+  statistic of dataset.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalArrayTransformation(_messages.Message):
+  r"""Treats the column as categorical array and performs following
+  transformation functions. * For each element in the array, convert the
+  category name to a dictionary lookup index and generate an embedding for
+  each index. Combine the embedding of all elements into a single embedding
+  using the mean. * Empty arrays treated as an embedding of zeroes.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  categorical string as is--no change to case, punctuation, spelling, tense,
+  and so on. * Convert the category name to a dictionary lookup index and
+  generate an embedding for each index. * Categories that appear less than 5
+  times in the training dataset are treated as the "unknown" category. The
+  "unknown" category gets its own special lookup index and resulting
+  embedding.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericArrayTransformation(_messages.Message):
+  r"""Treats the column as numerical array and performs following
+  transformation functions. * All transformations for Numerical types applied
+  to the average of the all elements. * The average of empty arrays is treated
+  as zero.
+
+  Fields:
+    columnName: A string attribute.
+    invalidValuesAllowed: If invalid values is allowed, the training pipeline
+      will create a boolean feature that indicated whether the value is valid.
+      Otherwise, the training pipeline will discard the input row from
+      trainining data.
+  """
+
+  columnName = _messages.StringField(1)
+  invalidValuesAllowed = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  value converted to float32. * The z_score of the value. * log(value+1) when
+  the value is greater than or equal to 0. Otherwise, this transformation is
+  not applied and the value is considered a missing value. * z_score of
+  log(value+1) when the value is greater than or equal to 0. Otherwise, this
+  transformation is not applied and the value is considered a missing value. *
+  A boolean value that indicates whether the value is valid.
+
+  Fields:
+    columnName: A string attribute.
+    invalidValuesAllowed: If invalid values is allowed, the training pipeline
+      will create a boolean feature that indicated whether the value is valid.
+      Otherwise, the training pipeline will discard the input row from
+      trainining data.
+  """
+
+  columnName = _messages.StringField(1)
+  invalidValuesAllowed = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextArrayTransformation(_messages.Message):
+  r"""Treats the column as text array and performs following transformation
+  functions. * Concatenate all text values in the array into a single text
+  value using a space (" ") as a delimiter, and then treat the result as a
+  single text value. Apply the transformations for Text columns. * Empty
+  arrays treated as an empty text.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  text as is--no change to case, punctuation, spelling, tense, and so on. *
+  Tokenize text to words. Convert each words to a dictionary lookup index and
+  generate an embedding for each index. Combine the embedding of all elements
+  into a single embedding using the mean. * Tokenization is based on unicode
+  script boundaries. * Missing values get their own lookup index and resulting
+  embedding. * Stop-words receive no special treatment and are not removed.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. *
+  Apply the transformation functions for Numerical columns. * Determine the
+  year, month, day,and weekday. Treat each value from the * timestamp as a
+  Categorical column. * Invalid numerical values (for example, values that
+  fall outside of a typical timestamp range, or are extreme values) receive no
+  special treatment and are not removed.
+
+  Fields:
+    columnName: A string attribute.
+    invalidValuesAllowed: If invalid values is allowed, the training pipeline
+      will create a boolean feature that indicated whether the value is valid.
+      Otherwise, the training pipeline will discard the input row from
+      trainining data.
+    timeFormat: The format in which that time field is expressed. The
+      time_format must either be one of: * `unix-seconds` * `unix-
+      milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for
+      respectively number of seconds, milliseconds, microseconds and
+      nanoseconds since start of the Unix epoch); or be written in `strftime`
+      syntax. If time_format is not set, then the default format is RFC 3339
+      `date-time` format, where `time-offset` = `"Z"` (e.g.
+      1985-04-12T23:20:50.52Z)
+  """
+
+  columnName = _messages.StringField(1)
+  invalidValuesAllowed = _messages.BooleanField(2)
+  timeFormat = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingMetadata(_messages.Message):
+  r"""Model metadata specific to AutoML Forecasting.
+
+  Fields:
+    trainCostMilliNodeHours: Output only. The actual training cost of the
+      model, expressed in milli node hours, i.e. 1,000 value in this field
+      means 1 node hour. Guaranteed to not exceed the train budget.
+  """
+
+  trainCostMilliNodeHours = _messages.IntegerField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassification(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Image Classification
+  Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassificationInputs', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassificationInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClas
+  sificationInputs object.
+
+  Enums:
+    ModelTypeValueValuesEnum:
+
+  Fields:
+    baseModelId: The ID of the `base` model. If it is specified, the new model
+      will be trained based on the `base` model. Otherwise, the new model will
+      be trained from scratch. The `base` model must be in the same Project
+      and Location as the new Model to train, and have the same modelType.
+    budgetMilliNodeHours: The training budget of creating this model,
+      expressed in milli node hours i.e. 1,000 value in this field means 1
+      node hour. The actual metadata.costMilliNodeHours will be equal or less
+      than this value. If further model training ceases to provide any
+      improvements, it will stop without using the full budget and the
+      metadata.successfulStopReason will be `model-converged`. Note, node_hour
+      = actual_hour * number_of_nodes_involved. For modelType
+      `cloud`(default), the budget must be between 8,000 and 800,000 milli
+      node hours, inclusive. The default value is 192,000 which represents one
+      day in wall time, considering 8 nodes are used. For model types `mobile-
+      tf-low-latency-1`, `mobile-tf-versatile-1`, `mobile-tf-high-accuracy-1`,
+      the training budget must be between 1,000 and 100,000 milli node hours,
+      inclusive. The default value is 24,000 which represents one day in wall
+      time on a single node that is used.
+    disableEarlyStopping: Use the entire training budget. This disables the
+      early stopping feature. When false the early stopping feature is
+      enabled, which means that AutoML Image Classification might stop
+      training before the entire training budget has been used.
+    modelType: A ModelTypeValueValuesEnum attribute.
+    multiLabel: If false, a single-label (multi-class) Model will be trained
+      (i.e. assuming that for each image just up to one annotation may be
+      applicable). If true, a multi-label Model will be trained (i.e. assuming
+      that for each image multiple annotations may be applicable).
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""ModelTypeValueValuesEnum enum type.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: Should not be set.
+      CLOUD: A Model best tailored to be used within Google Cloud, and which
+        cannot be exported. Default.
+      MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) as TensorFlow or Core ML model and used on a
+        mobile or edge device afterwards. Expected to have low latency, but
+        may have lower prediction quality than other mobile models.
+      MOBILE_TF_VERSATILE_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) as TensorFlow or Core ML model and used on a
+        mobile or edge device with afterwards.
+      MOBILE_TF_HIGH_ACCURACY_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) as TensorFlow or Core ML model and used on a
+        mobile or edge device afterwards. Expected to have a higher latency,
+        but should also have a higher prediction quality than other mobile
+        models.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    CLOUD = 1
+    MOBILE_TF_LOW_LATENCY_1 = 2
+    MOBILE_TF_VERSATILE_1 = 3
+    MOBILE_TF_HIGH_ACCURACY_1 = 4
+
+  baseModelId = _messages.StringField(1)
+  budgetMilliNodeHours = _messages.IntegerField(2)
+  disableEarlyStopping = _messages.BooleanField(3)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
+  multiLabel = _messages.BooleanField(5)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClas
+  sificationMetadata object.
+
+  Enums:
+    SuccessfulStopReasonValueValuesEnum: For successful job completions, this
+      is the reason why the job has finished.
+
+  Fields:
+    costMilliNodeHours: The actual training cost of creating this model,
+      expressed in milli node hours, i.e. 1,000 value in this field means 1
+      node hour. Guaranteed to not exceed inputs.budgetMilliNodeHours.
+    successfulStopReason: For successful job completions, this is the reason
+      why the job has finished.
+  """
+
+  class SuccessfulStopReasonValueValuesEnum(_messages.Enum):
+    r"""For successful job completions, this is the reason why the job has
+    finished.
+
+    Values:
+      SUCCESSFUL_STOP_REASON_UNSPECIFIED: Should not be set.
+      BUDGET_REACHED: The inputs.budgetMilliNodeHours had been reached.
+      MODEL_CONVERGED: Further training of the Model ceased to increase its
+        quality, since it already has converged.
+    """
+    SUCCESSFUL_STOP_REASON_UNSPECIFIED = 0
+    BUDGET_REACHED = 1
+    MODEL_CONVERGED = 2
+
+  costMilliNodeHours = _messages.IntegerField(1)
+  successfulStopReason = _messages.EnumField('SuccessfulStopReasonValueValuesEnum', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetection(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Image Object Detection
+  Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+    metadata: The metadata information
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionInputs', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObje
+  ctDetectionInputs object.
+
+  Enums:
+    ModelTypeValueValuesEnum:
+
+  Fields:
+    budgetMilliNodeHours: The training budget of creating this model,
+      expressed in milli node hours i.e. 1,000 value in this field means 1
+      node hour. The actual metadata.costMilliNodeHours will be equal or less
+      than this value. If further model training ceases to provide any
+      improvements, it will stop without using the full budget and the
+      metadata.successfulStopReason will be `model-converged`. Note, node_hour
+      = actual_hour * number_of_nodes_involved. For modelType
+      `cloud`(default), the budget must be between 20,000 and 900,000 milli
+      node hours, inclusive. The default value is 216,000 which represents one
+      day in wall time, considering 9 nodes are used. For model types `mobile-
+      tf-low-latency-1`, `mobile-tf-versatile-1`, `mobile-tf-high-accuracy-1`
+      the training budget must be between 1,000 and 100,000 milli node hours,
+      inclusive. The default value is 24,000 which represents one day in wall
+      time on a single node that is used.
+    disableEarlyStopping: Use the entire training budget. This disables the
+      early stopping feature. When false the early stopping feature is
+      enabled, which means that AutoML Image Object Detection might stop
+      training before the entire training budget has been used.
+    modelType: A ModelTypeValueValuesEnum attribute.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""ModelTypeValueValuesEnum enum type.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: Should not be set.
+      CLOUD_HIGH_ACCURACY_1: A model best tailored to be used within Google
+        Cloud, and which cannot be exported. Expected to have a higher
+        latency, but should also have a higher prediction quality than other
+        cloud models.
+      CLOUD_LOW_LATENCY_1: A model best tailored to be used within Google
+        Cloud, and which cannot be exported. Expected to have a low latency,
+        but may have lower prediction quality than other cloud models.
+      MOBILE_TF_LOW_LATENCY_1: A model that, in addition to being available
+        within Google Cloud can also be exported (see
+        ModelService.ExportModel) and used on a mobile or edge device with
+        TensorFlow afterwards. Expected to have low latency, but may have
+        lower prediction quality than other mobile models.
+      MOBILE_TF_VERSATILE_1: A model that, in addition to being available
+        within Google Cloud can also be exported (see
+        ModelService.ExportModel) and used on a mobile or edge device with
+        TensorFlow afterwards.
+      MOBILE_TF_HIGH_ACCURACY_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) and used on a mobile or edge device with
+        TensorFlow afterwards. Expected to have a higher latency, but should
+        also have a higher prediction quality than other mobile models.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    CLOUD_HIGH_ACCURACY_1 = 1
+    CLOUD_LOW_LATENCY_1 = 2
+    MOBILE_TF_LOW_LATENCY_1 = 3
+    MOBILE_TF_VERSATILE_1 = 4
+    MOBILE_TF_HIGH_ACCURACY_1 = 5
+
+  budgetMilliNodeHours = _messages.IntegerField(1)
+  disableEarlyStopping = _messages.BooleanField(2)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetectionMetadata(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObje
+  ctDetectionMetadata object.
+
+  Enums:
+    SuccessfulStopReasonValueValuesEnum: For successful job completions, this
+      is the reason why the job has finished.
+
+  Fields:
+    costMilliNodeHours: The actual training cost of creating this model,
+      expressed in milli node hours, i.e. 1,000 value in this field means 1
+      node hour. Guaranteed to not exceed inputs.budgetMilliNodeHours.
+    successfulStopReason: For successful job completions, this is the reason
+      why the job has finished.
+  """
+
+  class SuccessfulStopReasonValueValuesEnum(_messages.Enum):
+    r"""For successful job completions, this is the reason why the job has
+    finished.
+
+    Values:
+      SUCCESSFUL_STOP_REASON_UNSPECIFIED: Should not be set.
+      BUDGET_REACHED: The inputs.budgetMilliNodeHours had been reached.
+      MODEL_CONVERGED: Further training of the Model ceased to increase its
+        quality, since it already has converged.
+    """
+    SUCCESSFUL_STOP_REASON_UNSPECIFIED = 0
+    BUDGET_REACHED = 1
+    MODEL_CONVERGED = 2
+
+  costMilliNodeHours = _messages.IntegerField(1)
+  successfulStopReason = _messages.EnumField('SuccessfulStopReasonValueValuesEnum', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageSegmentation(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Image Segmentation
+  Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageSegmentationInputs', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageSegmentationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageSegmentationInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageSegm
+  entationInputs object.
+
+  Enums:
+    ModelTypeValueValuesEnum:
+
+  Fields:
+    baseModelId: The ID of the `base` model. If it is specified, the new model
+      will be trained based on the `base` model. Otherwise, the new model will
+      be trained from scratch. The `base` model must be in the same Project
+      and Location as the new Model to train, and have the same modelType.
+    budgetMilliNodeHours: The training budget of creating this model,
+      expressed in milli node hours i.e. 1,000 value in this field means 1
+      node hour. The actual metadata.costMilliNodeHours will be equal or less
+      than this value. If further model training ceases to provide any
+      improvements, it will stop without using the full budget and the
+      metadata.successfulStopReason will be `model-converged`. Note, node_hour
+      = actual_hour * number_of_nodes_involved. Or actaul_wall_clock_hours =
+      train_budget_milli_node_hours / (number_of_nodes_involved * 1000) For
+      modelType `cloud-high-accuracy-1`(default), the budget must be between
+      20,000 and 2,000,000 milli node hours, inclusive. The default value is
+      192,000 which represents one day in wall time (1000 milli * 24 hours * 8
+      nodes).
+    modelType: A ModelTypeValueValuesEnum attribute.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""ModelTypeValueValuesEnum enum type.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: Should not be set.
+      CLOUD_HIGH_ACCURACY_1: A model to be used via prediction calls to uCAIP
+        API. Expected to have a higher latency, but should also have a higher
+        prediction quality than other models.
+      CLOUD_LOW_ACCURACY_1: A model to be used via prediction calls to uCAIP
+        API. Expected to have a lower latency but relatively lower prediction
+        quality.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    CLOUD_HIGH_ACCURACY_1 = 1
+    CLOUD_LOW_ACCURACY_1 = 2
+
+  baseModelId = _messages.StringField(1)
+  budgetMilliNodeHours = _messages.IntegerField(2)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageSegmentationMetadata(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageSegm
+  entationMetadata object.
+
+  Enums:
+    SuccessfulStopReasonValueValuesEnum: For successful job completions, this
+      is the reason why the job has finished.
+
+  Fields:
+    costMilliNodeHours: The actual training cost of creating this model,
+      expressed in milli node hours, i.e. 1,000 value in this field means 1
+      node hour. Guaranteed to not exceed inputs.budgetMilliNodeHours.
+    successfulStopReason: For successful job completions, this is the reason
+      why the job has finished.
+  """
+
+  class SuccessfulStopReasonValueValuesEnum(_messages.Enum):
+    r"""For successful job completions, this is the reason why the job has
+    finished.
+
+    Values:
+      SUCCESSFUL_STOP_REASON_UNSPECIFIED: Should not be set.
+      BUDGET_REACHED: The inputs.budgetMilliNodeHours had been reached.
+      MODEL_CONVERGED: Further training of the Model ceased to increase its
+        quality, since it already has converged.
+    """
+    SUCCESSFUL_STOP_REASON_UNSPECIFIED = 0
+    BUDGET_REACHED = 1
+    MODEL_CONVERGED = 2
+
+  costMilliNodeHours = _messages.IntegerField(1)
+  successfulStopReason = _messages.EnumField('SuccessfulStopReasonValueValuesEnum', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTables(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Tables Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+    metadata: The metadata information.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputs', 1)
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputs(_messages.Message):
+  r"""A
+  GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputs
+  object.
+
+  Fields:
+    disableEarlyStopping: Use the entire training budget. This disables the
+      early stopping feature. By default, the early stopping feature is
+      enabled, which means that AutoML Tables might stop training before the
+      entire training budget has been used.
+    exportEvaluatedDataItemsConfig: Configuration for exporting test set
+      predictions to a BigQuery table. If this configuration is absent, then
+      the export is not performed.
+    optimizationObjective: Objective function the model is optimizing towards.
+      The training process creates a model that maximizes/minimizes the value
+      of the objective function over the validation set. The supported
+      optimization objectives depend on the prediction type. If the field is
+      not set, a default objective function is used. classification (binary):
+      "maximize-au-roc" (default) - Maximize the area under the receiver
+      operating characteristic (ROC) curve. "minimize-log-loss" - Minimize log
+      loss. "maximize-au-prc" - Maximize the area under the precision-recall
+      curve. "maximize-precision-at-recall" - Maximize precision for a
+      specified recall value. "maximize-recall-at-precision" - Maximize recall
+      for a specified precision value. classification (multi-class):
+      "minimize-log-loss" (default) - Minimize log loss. regression:
+      "minimize-rmse" (default) - Minimize root-mean-squared error (RMSE).
+      "minimize-mae" - Minimize mean-absolute error (MAE). "minimize-rmsle" -
+      Minimize root-mean-squared log error (RMSLE).
+    optimizationObjectivePrecisionValue: Required when optimization_objective
+      is "maximize-recall-at-precision". Must be between 0 and 1, inclusive.
+    optimizationObjectiveRecallValue: Required when optimization_objective is
+      "maximize-precision-at-recall". Must be between 0 and 1, inclusive.
+    predictionType: The type of prediction the Model is to produce.
+      "classification" - Predict one out of multiple target values is picked
+      for each row. "regression" - Predict a value based on its relation to
+      other values. This type is available only to columns that contain
+      semantically numeric values, i.e. integers or floating point number,
+      even if stored as e.g. strings.
+    targetColumn: The column name of the target column that the model is to
+      predict.
+    trainBudgetMilliNodeHours: Required. The train budget of creating this
+      model, expressed in milli node hours i.e. 1,000 value in this field
+      means 1 node hour. The training cost of the model will not exceed this
+      budget. The final cost will be attempted to be close to the budget,
+      though may end up being (even) noticeably smaller - at the backend's
+      discretion. This especially may happen when further model training
+      ceases to provide any improvements. If the budget is set to a value
+      known to be insufficient to train a model for the given dataset, the
+      training won't be attempted and will error. The train budget must be
+      between 1,000 and 72,000 milli node hours, inclusive.
+    transformations: Each transformation will apply transform function to
+      given input column. And the result will be used for training. When
+      creating transformation for BigQuery Struct column, the column should be
+      flattened using "." as the delimiter.
+    weightColumnName: Column name that should be used as the weight column.
+      Higher values in this column give more importance to the row during
+      model training. The column must have numeric values between 0 and 10000
+      inclusively; 0 means the row is ignored for training. If weight column
+      field is not set, then all rows are assumed to have equal weight of 1.
+  """
+
+  disableEarlyStopping = _messages.BooleanField(1)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 2)
+  optimizationObjective = _messages.StringField(3)
+  optimizationObjectivePrecisionValue = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  optimizationObjectiveRecallValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  predictionType = _messages.StringField(6)
+  targetColumn = _messages.StringField(7)
+  trainBudgetMilliNodeHours = _messages.IntegerField(8)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation', 9, repeated=True)
+  weightColumnName = _messages.StringField(10)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInp
+  utsTransformation object.
+
+  Fields:
+    auto: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTable
+      sInputsTransformationAutoTransformation attribute.
+    categorical: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAuto
+      MlTablesInputsTransformationCategoricalTransformation attribute.
+    numeric: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTa
+      blesInputsTransformationNumericTransformation attribute.
+    repeatedCategorical: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefini
+      tionAutoMlTablesInputsTransformationCategoricalArrayTransformation
+      attribute.
+    repeatedNumeric: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinition
+      AutoMlTablesInputsTransformationNumericArrayTransformation attribute.
+    repeatedText: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAut
+      oMlTablesInputsTransformationTextArrayTransformation attribute.
+    text: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTable
+      sInputsTransformationTextTransformation attribute.
+    timestamp: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMl
+      TablesInputsTransformationTimestampTransformation attribute.
+  """
+
+  auto = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationAutoTransformation', 1)
+  categorical = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalTransformation', 2)
+  numeric = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericTransformation', 3)
+  repeatedCategorical = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalArrayTransformation', 4)
+  repeatedNumeric = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericArrayTransformation', 5)
+  repeatedText = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextArrayTransformation', 6)
+  text = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextTransformation', 7)
+  timestamp = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTimestampTransformation', 8)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationAutoTransformation(_messages.Message):
+  r"""Training pipeline will infer the proper transformation based on the
+  statistic of dataset.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalArrayTransformation(_messages.Message):
+  r"""Treats the column as categorical array and performs following
+  transformation functions. * For each element in the array, convert the
+  category name to a dictionary lookup index and generate an embedding for
+  each index. Combine the embedding of all elements into a single embedding
+  using the mean. * Empty arrays treated as an embedding of zeroes.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationCategoricalTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  categorical string as is--no change to case, punctuation, spelling, tense,
+  and so on. * Convert the category name to a dictionary lookup index and
+  generate an embedding for each index. * Categories that appear less than 5
+  times in the training dataset are treated as the "unknown" category. The
+  "unknown" category gets its own special lookup index and resulting
+  embedding.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericArrayTransformation(_messages.Message):
+  r"""Treats the column as numerical array and performs following
+  transformation functions. * All transformations for Numerical types applied
+  to the average of the all elements. * The average of empty arrays is treated
+  as zero.
+
+  Fields:
+    columnName: A string attribute.
+    invalidValuesAllowed: If invalid values is allowed, the training pipeline
+      will create a boolean feature that indicated whether the value is valid.
+      Otherwise, the training pipeline will discard the input row from
+      trainining data.
+  """
+
+  columnName = _messages.StringField(1)
+  invalidValuesAllowed = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationNumericTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  value converted to float32. * The z_score of the value. * log(value+1) when
+  the value is greater than or equal to 0. Otherwise, this transformation is
+  not applied and the value is considered a missing value. * z_score of
+  log(value+1) when the value is greater than or equal to 0. Otherwise, this
+  transformation is not applied and the value is considered a missing value. *
+  A boolean value that indicates whether the value is valid.
+
+  Fields:
+    columnName: A string attribute.
+    invalidValuesAllowed: If invalid values is allowed, the training pipeline
+      will create a boolean feature that indicated whether the value is valid.
+      Otherwise, the training pipeline will discard the input row from
+      trainining data.
+  """
+
+  columnName = _messages.StringField(1)
+  invalidValuesAllowed = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextArrayTransformation(_messages.Message):
+  r"""Treats the column as text array and performs following transformation
+  functions. * Concatenate all text values in the array into a single text
+  value using a space (" ") as a delimiter, and then treat the result as a
+  single text value. Apply the transformations for Text columns. * Empty
+  arrays treated as an empty text.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTextTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. * The
+  text as is--no change to case, punctuation, spelling, tense, and so on. *
+  Tokenize text to words. Convert each words to a dictionary lookup index and
+  generate an embedding for each index. Combine the embedding of all elements
+  into a single embedding using the mean. * Tokenization is based on unicode
+  script boundaries. * Missing values get their own lookup index and resulting
+  embedding. * Stop-words receive no special treatment and are not removed.
+
+  Fields:
+    columnName: A string attribute.
+  """
+
+  columnName = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformationTimestampTransformation(_messages.Message):
+  r"""Training pipeline will perform following transformation functions. *
+  Apply the transformation functions for Numerical columns. * Determine the
+  year, month, day,and weekday. Treat each value from the * timestamp as a
+  Categorical column. * Invalid numerical values (for example, values that
+  fall outside of a typical timestamp range, or are extreme values) receive no
+  special treatment and are not removed.
+
+  Fields:
+    columnName: A string attribute.
+    invalidValuesAllowed: If invalid values is allowed, the training pipeline
+      will create a boolean feature that indicated whether the value is valid.
+      Otherwise, the training pipeline will discard the input row from
+      trainining data.
+    timeFormat: The format in which that time field is expressed. The
+      time_format must either be one of: * `unix-seconds` * `unix-
+      milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for
+      respectively number of seconds, milliseconds, microseconds and
+      nanoseconds since start of the Unix epoch); or be written in `strftime`
+      syntax. If time_format is not set, then the default format is RFC 3339
+      `date-time` format, where `time-offset` = `"Z"` (e.g.
+      1985-04-12T23:20:50.52Z)
+  """
+
+  columnName = _messages.StringField(1)
+  invalidValuesAllowed = _messages.BooleanField(2)
+  timeFormat = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesMetadata(_messages.Message):
+  r"""Model metadata specific to AutoML Tables.
+
+  Fields:
+    trainCostMilliNodeHours: Output only. The actual training cost of the
+      model, expressed in milli node hours, i.e. 1,000 value in this field
+      means 1 node hour. Guaranteed to not exceed the train budget.
+  """
+
+  trainCostMilliNodeHours = _messages.IntegerField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextClassification(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Text Classification
+  Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextClassificationInputs', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextClassificationInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextClass
+  ificationInputs object.
+
+  Fields:
+    multiLabel: A boolean attribute.
+  """
+
+  multiLabel = _messages.BooleanField(1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextExtraction(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Text Extraction Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextExtractionInputs', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextExtractionInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextExtra
+  ctionInputs object.
+  """
+
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextSentiment(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Text Sentiment Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextSentimentInputs', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextSentimentInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextSenti
+  mentInputs object.
+
+  Fields:
+    sentimentMax: A sentiment is expressed as an integer ordinal, where higher
+      value means a more positive sentiment. The range of sentiments that will
+      be used is between 0 and sentimentMax (inclusive on both ends), and all
+      the values in the range must be represented in the dataset before a
+      model can be created. Only the Annotations with this sentimentMax will
+      be used for training. sentimentMax value must be between 1 and 10
+      (inclusive).
+  """
+
+  sentimentMax = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoActionRecognition(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Video Action Recognition
+  Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoActionRecognitionInputs', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoActionRecognitionInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoActi
+  onRecognitionInputs object.
+
+  Enums:
+    ModelTypeValueValuesEnum:
+
+  Fields:
+    modelType: A ModelTypeValueValuesEnum attribute.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""ModelTypeValueValuesEnum enum type.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: Should not be set.
+      CLOUD: A model best tailored to be used within Google Cloud, and which c
+        annot be exported. Default.
+      MOBILE_VERSATILE_1: A model that, in addition to being available within
+        Google Cloud, can also be exported (see ModelService.ExportModel) as a
+        TensorFlow or TensorFlow Lite model and used on a mobile or edge
+        device afterwards.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    CLOUD = 1
+    MOBILE_VERSATILE_1 = 2
+
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoClassification(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Video Classification
+  Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoClassificationInputs', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoClassificationInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoClas
+  sificationInputs object.
+
+  Enums:
+    ModelTypeValueValuesEnum:
+
+  Fields:
+    modelType: A ModelTypeValueValuesEnum attribute.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""ModelTypeValueValuesEnum enum type.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: Should not be set.
+      CLOUD: A model best tailored to be used within Google Cloud, and which
+        cannot be exported. Default.
+      MOBILE_VERSATILE_1: A model that, in addition to being available within
+        Google Cloud, can also be exported (see ModelService.ExportModel) as a
+        TensorFlow or TensorFlow Lite model and used on a mobile or edge
+        device afterwards.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    CLOUD = 1
+    MOBILE_VERSATILE_1 = 2
+
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoObjectTracking(_messages.Message):
+  r"""A TrainingJob that trains and uploads an AutoML Video ObjectTracking
+  Model.
+
+  Fields:
+    inputs: The input parameters of this TrainingJob.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoObjectTrackingInputs', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoObjectTrackingInputs(_messages.Message):
+  r"""A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoObje
+  ctTrackingInputs object.
+
+  Enums:
+    ModelTypeValueValuesEnum:
+
+  Fields:
+    modelType: A ModelTypeValueValuesEnum attribute.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""ModelTypeValueValuesEnum enum type.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: Should not be set.
+      CLOUD: A model best tailored to be used within Google Cloud, and which c
+        annot be exported. Default.
+      MOBILE_VERSATILE_1: A model that, in addition to being available within
+        Google Cloud, can also be exported (see ModelService.ExportModel) as a
+        TensorFlow or TensorFlow Lite model and used on a mobile or edge
+        device afterwards.
+      MOBILE_CORAL_VERSATILE_1: A versatile model that is meant to be exported
+        (see ModelService.ExportModel) and used on a Google Coral device.
+      MOBILE_CORAL_LOW_LATENCY_1: A model that trades off quality for low
+        latency, to be exported (see ModelService.ExportModel) and used on a
+        Google Coral device.
+      MOBILE_JETSON_VERSATILE_1: A versatile model that is meant to be
+        exported (see ModelService.ExportModel) and used on an NVIDIA Jetson
+        device.
+      MOBILE_JETSON_LOW_LATENCY_1: A model that trades off quality for low
+        latency, to be exported (see ModelService.ExportModel) and used on an
+        NVIDIA Jetson device.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    CLOUD = 1
+    MOBILE_VERSATILE_1 = 2
+    MOBILE_CORAL_VERSATILE_1 = 3
+    MOBILE_CORAL_LOW_LATENCY_1 = 4
+    MOBILE_JETSON_VERSATILE_1 = 5
+    MOBILE_JETSON_LOW_LATENCY_1 = 6
+
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
+
+
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig(_messages.Message):
+  r"""Configuration for exporting test set predictions to a BigQuery table.
+
+  Fields:
+    destinationBigqueryUri: URI of desired destination BigQuery table. If not
+      specified, then results are exported to the following auto-created
+      BigQuery table: :export_evaluated_examples__.evaluated_examples
+    overrideExistingTable: If true and an export destination is specified,
+      then the contents of the destination will be overwritten. Otherwise, if
+      the export destination already exists, then the export operation will
+      not trigger and a failure response is returned.
+  """
+
+  destinationBigqueryUri = _messages.StringField(1)
+  overrideExistingTable = _messages.BooleanField(2)
+
+
 class GoogleCloudAiplatformV1beta1SchemaVideoActionRecognitionAnnotation(_messages.Message):
   r"""Annotation details specific to video action recognition.
 
@@ -8534,6 +11150,46 @@ class GoogleCloudAiplatformV1beta1SchemaVideoActionRecognitionAnnotation(_messag
   timeSegment = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTimeSegment', 3)
 
 
+class GoogleCloudAiplatformV1beta1SchemaVideoActionRecognitionPredictionInstance(_messages.Message):
+  r"""Prediction input format for Video Action Recognition.
+
+  Fields:
+    content: The Google Cloud Storage location of the video on which to
+      perform the prediction.
+    mimeType: The MIME type of the content of the video. Only the following
+      are supported: video/mp4 video/avi video/quicktime
+    timeSegmentEnd: The end, exclusive, of the video's time segment on which
+      to perform the prediction. Expressed as a number of seconds as measured
+      from the start of the video, with "s" appended at the end. Fractions are
+      allowed, up to a microsecond precision, and "Infinity" is allowed, which
+      means the end of the video.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment on
+      which to perform the prediction. Expressed as a number of seconds as
+      measured from the start of the video, with "s" appended at the end.
+      Fractions are allowed, up to a microsecond precision.
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+  timeSegmentEnd = _messages.StringField(3)
+  timeSegmentStart = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaVideoActionRecognitionPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Video Action Recognition.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The model only returns up to that many top, by confidence
+      score, predictions per frame of the video. If this number is very high,
+      the Model may return fewer predictions per frame. Default value is 50.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformV1beta1SchemaVideoClassificationAnnotation(_messages.Message):
   r"""Annotation details specific to video classification.
 
@@ -8549,6 +11205,104 @@ class GoogleCloudAiplatformV1beta1SchemaVideoClassificationAnnotation(_messages.
   annotationSpecId = _messages.StringField(1)
   displayName = _messages.StringField(2)
   timeSegment = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTimeSegment', 3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaVideoClassificationPredictionInstance(_messages.Message):
+  r"""Prediction input format for Video Classification.
+
+  Fields:
+    content: The Google Cloud Storage location of the video on which to
+      perform the prediction.
+    mimeType: The MIME type of the content of the video. Only the following
+      are supported: video/mp4 video/avi video/quicktime
+    timeSegmentEnd: The end, exclusive, of the video's time segment on which
+      to perform the prediction. Expressed as a number of seconds as measured
+      from the start of the video, with "s" appended at the end. Fractions are
+      allowed, up to a microsecond precision, and "Infinity" is allowed, which
+      means the end of the video.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment on
+      which to perform the prediction. Expressed as a number of seconds as
+      measured from the start of the video, with "s" appended at the end.
+      Fractions are allowed, up to a microsecond precision.
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+  timeSegmentEnd = _messages.StringField(3)
+  timeSegmentStart = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaVideoClassificationPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Video Classification.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The Model only returns up to that many top, by confidence
+      score, predictions per instance. If this number is very high, the Model
+      may return fewer predictions. Default value is 10,000.
+    oneSecIntervalClassification: Set to true to request classification for a
+      video at one-second intervals. AI Platform returns labels and their
+      confidence scores for each second of the entire time segment of the
+      video that user specified in the input WARNING: Model evaluation is not
+      done for this classification type, the quality of it depends on the
+      training data, but there are no metrics provided to describe that
+      quality. Default value is false
+    segmentClassification: Set to true to request segment-level
+      classification. AI Platform returns labels and their confidence scores
+      for the entire time segment of the video that user specified in the
+      input instance. Default value is true
+    shotClassification: Set to true to request shot-level classification. AI
+      Platform determines the boundaries for each camera shot in the entire
+      time segment of the video that user specified in the input instance. AI
+      Platform then returns labels and their confidence scores for each
+      detected shot, along with the start and end time of the shot. WARNING:
+      Model evaluation is not done for this classification type, the quality
+      of it depends on the training data, but there are no metrics provided to
+      describe that quality. Default value is false
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  oneSecIntervalClassification = _messages.BooleanField(3)
+  segmentClassification = _messages.BooleanField(4)
+  shotClassification = _messages.BooleanField(5)
+
+
+class GoogleCloudAiplatformV1beta1SchemaVideoClassificationPredictionResult(_messages.Message):
+  r"""Prediction output format for Video Classification.
+
+  Fields:
+    confidence: The Model's confidence in correction of this prediction,
+      higher value means higher confidence.
+    displayName: The display name of the AnnotationSpec that had been
+      identified.
+    id: The resource ID of the AnnotationSpec that had been identified.
+    timeSegmentEnd: The end, exclusive, of the video's time segment in which
+      the AnnotationSpec has been identified. Expressed as a number of seconds
+      as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end. Note that for
+      'segment-classification' prediction type, this equals the original
+      'timeSegmentEnd' from the input instance, for other types it is the end
+      of a shot or a 1 second interval respectively.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment in
+      which the AnnotationSpec has been identified. Expressed as a number of
+      seconds as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end. Note that for
+      'segment-classification' prediction type, this equals the original
+      'timeSegmentStart' from the input instance, for other types it is the
+      start of a shot or a 1 second interval respectively.
+    type: The type of the prediction. The requested types can be configured
+      via parameters. This will be one of - segment-classification - shot-
+      classification - one-sec-interval-classification
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  id = _messages.StringField(3)
+  timeSegmentEnd = _messages.StringField(4)
+  timeSegmentStart = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class GoogleCloudAiplatformV1beta1SchemaVideoDataItem(_messages.Message):
@@ -8609,6 +11363,104 @@ class GoogleCloudAiplatformV1beta1SchemaVideoObjectTrackingAnnotation(_messages.
   yMin = _messages.FloatField(8)
 
 
+class GoogleCloudAiplatformV1beta1SchemaVideoObjectTrackingPredictionInstance(_messages.Message):
+  r"""Prediction input format for Video Classification.
+
+  Fields:
+    content: The Google Cloud Storage location of the video on which to
+      perform the prediction.
+    mimeType: The MIME type of the content of the video. Only the following
+      are supported: video/mp4 video/avi video/quicktime
+    timeSegmentEnd: The end, exclusive, of the video's time segment on which
+      to perform the prediction. Expressed as a number of seconds as measured
+      from the start of the video, with "s" appended at the end. Fractions are
+      allowed, up to a microsecond precision, and "Infinity" is allowed, which
+      means the end of the video.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment on
+      which to perform the prediction. Expressed as a number of seconds as
+      measured from the start of the video, with "s" appended at the end.
+      Fractions are allowed, up to a microsecond precision.
+  """
+
+  content = _messages.StringField(1)
+  mimeType = _messages.StringField(2)
+  timeSegmentEnd = _messages.StringField(3)
+  timeSegmentStart = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1SchemaVideoObjectTrackingPredictionParams(_messages.Message):
+  r"""Prediction model parameters for Video Object Tracking.
+
+  Fields:
+    confidenceThreshold: The Model only returns predictions with at least this
+      confidence score. Default value is 0.0
+    maxPredictions: The model only returns up to that many top, by confidence
+      score, predictions per frame of the video. If this number is very high,
+      the Model may return fewer predictions per frame. Default value is 50.
+    minBoundingBoxSize: Only bounding boxes with shortest edge at least that
+      long as a relative value of video frame size are returned. Default value
+      is 0.0.
+  """
+
+  confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  maxPredictions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minBoundingBoxSize = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1SchemaVideoObjectTrackingPredictionResult(_messages.Message):
+  r"""Prediction output format for Video Object Tracking.
+
+  Fields:
+    confidence: The Model's confidence in correction of this prediction,
+      higher value means higher confidence.
+    displayName: The display name of the AnnotationSpec that had been
+      identified.
+    frames: All of the frames of the video in which a single object instance
+      has been detected. The bounding boxes in the frames identify the same
+      object.
+    id: The resource ID of the AnnotationSpec that had been identified.
+    timeSegmentEnd: The end, inclusive, of the video's time segment in which
+      the object instance has been detected. Expressed as a number of seconds
+      as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+    timeSegmentStart: The beginning, inclusive, of the video's time segment in
+      which the object instance has been detected. Expressed as a number of
+      seconds as measured from the start of the video, with fractions up to a
+      microsecond precision, and with "s" appended at the end.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  displayName = _messages.StringField(2)
+  frames = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaVideoObjectTrackingPredictionResultFrame', 3, repeated=True)
+  id = _messages.StringField(4)
+  timeSegmentEnd = _messages.StringField(5)
+  timeSegmentStart = _messages.StringField(6)
+
+
+class GoogleCloudAiplatformV1beta1SchemaVideoObjectTrackingPredictionResultFrame(_messages.Message):
+  r"""The fields `xMin`, `xMax`, `yMin`, and `yMax` refer to a bounding box,
+  i.e. the rectangle over the video frame pinpointing the found
+  AnnotationSpec. The coordinates are relative to the frame size, and the
+  point 0,0 is in the top left of the frame.
+
+  Fields:
+    timeOffset: A time (frame) of a video in which the object has been
+      detected. Expressed as a number of seconds as measured from the start of
+      the video, with fractions up to a microsecond precision, and with "s"
+      appended at the end.
+    xMax: The rightmost coordinate of the bounding box.
+    xMin: The leftmost coordinate of the bounding box.
+    yMax: The bottommost coordinate of the bounding box.
+    yMin: The topmost coordinate of the bounding box.
+  """
+
+  timeOffset = _messages.StringField(1)
+  xMax = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  xMin = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  yMax = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  yMin = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformV1beta1SchemaVisualInspectionClassificationLabelSavedQueryMetadata(_messages.Message):
   r"""A GoogleCloudAiplatformV1beta1SchemaVisualInspectionClassificationLabelS
   avedQueryMetadata object.
@@ -8658,6 +11510,25 @@ class GoogleCloudAiplatformV1beta1SearchMigratableResourcesResponse(_messages.Me
 
   migratableResources = _messages.MessageField('GoogleCloudAiplatformV1beta1MigratableResource', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):
+  r"""Config for SmoothGrad approximation of gradients. When enabled, the
+  gradients are approximated by averaging the gradients from noisy samples in
+  the vicinity of the inputs. Adding noise can help improve the computed
+  gradients. Refer to this paper for more details:
+  https://arxiv.org/pdf/1706.03825.pdf
+
+  Fields:
+    featureNoiseSigma: Alternatively, set this to use different noise_sigma
+      per feature. One entry per feature. No noise is added to features that
+      are not set.
+    noiseSigma: If set, this std. deviation will be used to apply noise to all
+      features.
+  """
+
+  featureNoiseSigma = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureNoiseSigma', 1)
+  noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudAiplatformV1beta1SpecialistPool(_messages.Message):
@@ -9231,6 +12102,23 @@ class GoogleCloudAiplatformV1beta1WorkerPoolSpec(_messages.Message):
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 2)
   pythonPackageSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PythonPackageSpec', 3)
   replicaCount = _messages.IntegerField(4)
+
+
+class GoogleCloudAiplatformV1beta1XraiAttribution(_messages.Message):
+  r"""An explanation method that redistributes Integrated Gradients
+  attributions to segmented regions, taking advantage of the model's fully
+  differentiable structure. Refer to this paper for more details:
+  https://arxiv.org/abs/1906.02825 Only supports image Models (modality is
+  IMAGE).
+
+  Fields:
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is met within the desired error range. Valid range
+      of its value is [1, 100], inclusively.
+  """
+
+  stepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

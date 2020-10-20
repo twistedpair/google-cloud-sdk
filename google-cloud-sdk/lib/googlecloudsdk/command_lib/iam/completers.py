@@ -23,7 +23,6 @@ from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core import resources
 
 
-# TODO(b/117872514) Remove this class after declarative conversion.
 class IamRolesCompleter(completers.ListCommandCompleter):
   """An IAM role completer for a resource argument.
 

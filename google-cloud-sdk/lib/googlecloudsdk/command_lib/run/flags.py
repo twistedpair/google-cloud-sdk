@@ -495,8 +495,12 @@ def AddMemoryFlag(parser):
 def AddCpuFlag(parser):
   parser.add_argument(
       '--cpu',
-      help='Set a CPU limit in Kubernetes cpu units. '
-      'Ex: .5, 500m, 2.')
+      help='Set a CPU limit in Kubernetes cpu units.\n\n'
+      'Cloud Run (fully managed) supports values 1, 2 and 4.'
+      '  For Cloud Run (fully managed), 4 cpus also requires a minimum 2Gi'
+      '  `--memory` value.  Examples 2, 2.0, 2000m\n\n'
+      'Cloud Run for Anthos and Knative-compatible Kubernetes clusters support'
+      '  fractional values.  Examples .5, 500m, 2')
 
 
 def _ConcurrencyValue(value):

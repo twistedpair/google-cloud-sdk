@@ -104,12 +104,31 @@ def IsUserAccountCredentials(creds):
     return _IsUserAccountCredentialsGoogleAuth(creds)
 
 
+def IsOauth2clientP12AccountCredentials(creds):
+  return (CredentialType.FromCredentials(creds) ==
+          CredentialType.P12_SERVICE_ACCOUNT)
+
+
 def GetEffectiveTokenUri(cred_json, key='token_uri'):
   if properties.VALUES.auth.token_host.IsExplicitlySet():
     return properties.VALUES.auth.token_host.Get()
   if cred_json.get(key):
     return cred_json.get(key)
   return properties.VALUES.auth.DEFAULT_TOKEN_HOST
+
+
+class P12CredentialsGoogleAuth(google_auth_creds.Credentials):
+  """A fake google-auth credential to represent a p12 service account creds.
+
+  google-auth does not support the p12 service account credentials which was
+  demoted for years. This credential does not support refresh, so the token
+  passed to this class should be a fresh token.
+  """
+
+  def refresh(self, request):
+    # We cannot raise exception here because we don't know if the consumers will
+    # will refresh the loaded credentials or not.
+    pass
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -642,8 +661,9 @@ class CredentialTypeGoogleAuth(enum.Enum):
   UNKNOWN = (0, UNKNOWN_CREDS_NAME, False, False)
   USER_ACCOUNT = (1, USER_ACCOUNT_CREDS_NAME, True, True)
   SERVICE_ACCOUNT = (2, SERVICE_ACCOUNT_CREDS_NAME, True, False)
-  GCE = (3, GCE_CREDS_NAME, False, False)
+  P12_SERVICE_ACCOUNT = (3, P12_SERVICE_ACCOUNT_CREDS_NAME, True, False)
   DEVSHELL = (4, DEVSHELL_CREDS_NAME, False, True)
+  GCE = (5, GCE_CREDS_NAME, False, False)
 
   def __init__(self, type_id, key, is_serializable, is_user):
     """Builds a credentials type instance given the credentials information.
@@ -692,6 +712,8 @@ class CredentialTypeGoogleAuth(enum.Enum):
     # pylint: enable=g-import-not-at-top
     if isinstance(creds, google_auth_service_account.Credentials):
       return CredentialTypeGoogleAuth.SERVICE_ACCOUNT
+    if isinstance(creds, P12CredentialsGoogleAuth):
+      return CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT
     if getattr(creds, 'refresh_token', None) is not None:
       return CredentialTypeGoogleAuth.USER_ACCOUNT
     return CredentialTypeGoogleAuth.UNKNOWN

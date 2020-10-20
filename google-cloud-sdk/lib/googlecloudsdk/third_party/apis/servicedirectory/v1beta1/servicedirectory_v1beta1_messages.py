@@ -419,6 +419,12 @@ class Endpoint(_messages.Message):
       any these limits will be rejected.
     name: Immutable. The resource name for the endpoint in the format
       'projects/*/locations/*/namespaces/*/services/*/endpoints/*'.
+    network: Immutable. Specifies the Google Compute Engine Network (VPC) of
+      the Endpoint. Network must be in the same project as the Service
+      Directory Endpoint. Invalid network (bad format, different project, non-
+      existent) will be rejected. Project may be specified by project-id or
+      project-number. Service Directory will return project-number. Example:
+      `projects/project-number/global/networks/my-network`
     port: Optional. Service Directory will reject values outside of [0,
       65535].
   """
@@ -453,7 +459,8 @@ class Endpoint(_messages.Message):
   address = _messages.StringField(1)
   metadata = _messages.MessageField('MetadataValue', 2)
   name = _messages.StringField(3)
-  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  network = _messages.StringField(4)
+  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class Expr(_messages.Message):

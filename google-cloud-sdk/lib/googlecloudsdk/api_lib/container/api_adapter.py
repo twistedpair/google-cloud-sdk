@@ -486,6 +486,7 @@ class CreateClusterOptions(object):
       enable_resource_consumption_metering=None,
       workload_pool=None,
       identity_provider=None,
+      workload_identity_certificate_authority=None,
       enable_gke_oidc=None,
       enable_shielded_nodes=None,
       linux_sysctls=None,
@@ -618,6 +619,7 @@ class CreateClusterOptions(object):
     self.enable_resource_consumption_metering = enable_resource_consumption_metering
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
+    self.workload_identity_certificate_authority = workload_identity_certificate_authority
     self.enable_gke_oidc = enable_gke_oidc
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
@@ -704,6 +706,8 @@ class UpdateClusterOptions(object):
                workload_pool=None,
                identity_provider=None,
                disable_workload_identity=None,
+               workload_identity_certificate_authority=None,
+               disable_workload_identity_certificates=None,
                enable_gke_oidc=None,
                enable_shielded_nodes=None,
                disable_default_snat=None,
@@ -773,6 +777,8 @@ class UpdateClusterOptions(object):
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
     self.disable_workload_identity = disable_workload_identity
+    self.workload_identity_certificate_authority = workload_identity_certificate_authority
+    self.disable_workload_identity_certificates = disable_workload_identity_certificates
     self.enable_gke_oidc = enable_gke_oidc
     self.enable_shielded_nodes = enable_shielded_nodes
     self.disable_default_snat = disable_default_snat
@@ -2086,6 +2092,12 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
               options, self.messages))
+
+    if options.disable_default_snat is not None:
+      disable_default_snat = self.messages.DefaultSnatStatus(
+          disabled=options.disable_default_snat)
+      update = self.messages.ClusterUpdate(
+          desiredDefaultSnatStatus=disable_default_snat)
 
     return update
 
@@ -3505,6 +3517,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           workloadPool=options.workload_pool)
       if options.identity_provider:
         cluster.workloadIdentityConfig.identityProvider = options.identity_provider
+      if options.workload_identity_certificate_authority:
+        cluster.workloadIdentityConfig.issuingCertificateAuthority = options.workload_identity_certificate_authority
     if options.enable_gke_oidc:
       cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
           enabled=options.enable_gke_oidc)
@@ -3601,6 +3615,15 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
               workloadPool=''))
+    elif options.workload_identity_certificate_authority:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              issuingCertificateAuthority=options
+              .workload_identity_certificate_authority,))
+    elif options.disable_workload_identity_certificates:
+      update = self.messages.ClusterUpdate(
+          desiredWorkloadIdentityConfig=self.messages.WorkloadIdentityConfig(
+              issuingCertificateAuthority='',))
 
     if options.enable_gke_oidc is not None:
       update = self.messages.ClusterUpdate(
@@ -3611,12 +3634,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredCostManagementConfig=self.messages.CostManagementConfig(
               enabled=options.enable_cost_management))
-
-    if options.disable_default_snat is not None:
-      disable_default_snat = self.messages.DefaultSnatStatus(
-          disabled=options.disable_default_snat)
-      update = self.messages.ClusterUpdate(
-          desiredDefaultSnatStatus=disable_default_snat)
 
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(

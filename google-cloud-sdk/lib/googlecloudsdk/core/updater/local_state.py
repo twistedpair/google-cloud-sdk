@@ -624,6 +624,7 @@ class InstallationState(object):
       elif sys.version_info[1] == 8:
         regex_exclusion = re.compile(
             '(kubernetes/utils/create_from_yaml.py'
+            '|platform/google_appengine'
             '|gslib/vendored/boto/boto/iam/connection.py)')
       else:
         regex_exclusion = None

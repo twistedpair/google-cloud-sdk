@@ -50,7 +50,7 @@ TIME_IN_SECONDS = {
 }
 
 APP_TO_TASKS_ATTRIBUTES_MAPPING = {
-    # 'bucket_size': 'max_burst_size',  # Not yet implemented
+    'bucket_size': 'max_burst_size',
     'max_concurrent_requests': 'max_concurrent_dispatches',
     'mode': 'type',
     'name': 'name',
@@ -60,7 +60,7 @@ APP_TO_TASKS_ATTRIBUTES_MAPPING = {
     'retry_parameters.max_doublings': 'max_doublings',
     'retry_parameters.task_age_limit': 'max_retry_duration',
     'retry_parameters.task_retry_limit': 'max_attempts',
-    # 'target': 'routing_override',  # Verify functionality.
+    'target': 'routing_override',
     # Not supported and need to deprecate if possible. See go/remove-tq-quotas
     # 'total_storage_limit': 'total_storage_limit'
 }
@@ -69,6 +69,7 @@ PUSH_QUEUES_APP_DEPLOY_DEFAULT_VALUES = {
     'max_attempts': -1,  # Translates as 'unlimited' in CT-FE
     'max_backoff': '3600s',
     'max_doublings': 16,
+    'max_burst_size': 5,
     # The previous behavior when max_concurrent_dispactches was not present in
     # the YAML file was to NOT set it at all which would show up as 0 in the UI.
     # However, functionally it is no different from using the default value of

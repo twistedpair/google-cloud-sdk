@@ -350,6 +350,7 @@ class Cluster(_messages.Message):
       UPDATING: The cluster is being updated.
       DELETING: The cluster is being deleted.
       FAILED: The cluster has experienced an issue and might be unusable.
+      PENDING: The cluster has pending operation.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -357,6 +358,7 @@ class Cluster(_messages.Message):
     UPDATING = 3
     DELETING = 4
     FAILED = 5
+    PENDING = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

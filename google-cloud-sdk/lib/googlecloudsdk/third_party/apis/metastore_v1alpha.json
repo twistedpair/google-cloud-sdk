@@ -367,6 +367,10 @@
             "ENTERPRISE"
           ]
         },
+        "metadataIntegration": {
+          "description": "The setting that defines how metastore metadata should be integrated with external services and systems.",
+          "$ref": "MetadataIntegration"
+        },
         "maintenanceWindow": {
           "description": "The one hour maintenance window of the metastore service. This specifies when the service can be restarted for maintenance purposes in UTC time.",
           "$ref": "MaintenanceWindow"
@@ -427,6 +431,28 @@
         "cloudSecret": {
           "description": "The relative resource name of a Secret Manager secret version, in the following form:\"projects\/{project_id}\/secrets\/{secret_id}\/versions\/{version_id}\".",
           "type": "string"
+        }
+      }
+    },
+    "MetadataIntegration": {
+      "id": "MetadataIntegration",
+      "description": "Specifies how metastore metadata should be integrated with external services.",
+      "type": "object",
+      "properties": {
+        "dataCatalogConfig": {
+          "description": "The integration config for the Data Catalog service.",
+          "$ref": "DataCatalogConfig"
+        }
+      }
+    },
+    "DataCatalogConfig": {
+      "id": "DataCatalogConfig",
+      "description": "Specifies how metastore metadata should be integrated with the Data Catalog service.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Defines whether the metastore metadata should be synced to Data Catalog. The default value is to enable syncing metastore metadata to Data Catalog.",
+          "type": "boolean"
         }
       }
     },

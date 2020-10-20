@@ -20,12 +20,12 @@ location:
 
 instance:
   name: instance
-  collection: krmapihosting.projects.locations.anthosApiEndpoints
+  collection: krmapihosting.projects.locations.krmApiHosts
   attributes:
   - *project
   - *location
   - &instance
-    parameter_name: anthosApiEndpointsId
+    parameter_name: krmApiHostsId
     attribute_name: name
     help: The name of the Admin Service Cluster instance.
   disable_auto_completers: false

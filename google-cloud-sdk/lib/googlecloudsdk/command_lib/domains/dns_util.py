@@ -49,7 +49,8 @@ class DnsUpdateMask(object):
     self.custom_dnssec = custom_dnssec
 
 
-def ParseDNSSettings(name_servers,
+def ParseDNSSettings(api_version,
+                     name_servers,
                      cloud_dns_zone,
                      use_google_domains_dns,
                      dns_settings_from_file,
@@ -61,6 +62,7 @@ def ParseDNSSettings(name_servers,
   At most one of the arguments (except domain) should be non-empty.
 
   Args:
+    api_version: Cloud Domains API version to call.
     name_servers: List of name servers
     cloud_dns_zone: Cloud DNS Zone name
     use_google_domains_dns: Information that Google Domains name servers should
@@ -75,22 +77,24 @@ def ParseDNSSettings(name_servers,
     A pair: (messages.DnsSettings, DnsUpdateMask) to be updated, or (None, None)
     if all the arguments are empty.
   """
+  domains_messages = registrations.GetMessagesModule(api_version)
   if name_servers is not None:
-    return _CustomNameServers(name_servers)
+    return _CustomNameServers(domains_messages, name_servers)
   if cloud_dns_zone is not None:
-    nameservers, ds_records = _GetCloudDnsDetails(cloud_dns_zone, domain,
+    nameservers, ds_records = _GetCloudDnsDetails(domains_messages,
+                                                  cloud_dns_zone, domain,
                                                   enable_dnssec)
-    return _CustomNameServers(nameservers, ds_records)
+    return _CustomNameServers(domains_messages, nameservers, ds_records)
   if use_google_domains_dns:
-    return _GoogleDomainsNameServers(enable_dnssec)
+    return _GoogleDomainsNameServers(domains_messages, enable_dnssec)
   if dns_settings_from_file is not None:
-    return _ParseDnsSettingsFromFile(dns_settings_from_file)
+    return _ParseDnsSettingsFromFile(domains_messages, dns_settings_from_file)
   if dns_settings is not None and not enable_dnssec:
-    return _DisableDnssec(dns_settings)
+    return _DisableDnssec(domains_messages, dns_settings)
   return None, None
 
 
-def _CustomNameServers(name_servers, ds_records=None):
+def _CustomNameServers(domains_messages, name_servers, ds_records=None):
   """Validates name servers and returns (dns_settings, update_mask)."""
   if not ds_records:
     ds_records = []
@@ -98,39 +102,36 @@ def _CustomNameServers(name_servers, ds_records=None):
   for ns, normalized in zip(name_servers, normalized_name_servers):
     if not util.ValidateDomainName(normalized):
       raise exceptions.Error('Invalid name server: \'{}\'.'.format(ns))
-  messages = registrations.GetMessagesModule()
   update_mask = DnsUpdateMask(name_servers=True, custom_dnssec=True)
-  dns_settings = messages.DnsSettings(
-      customDns=messages.CustomDns(
+  dns_settings = domains_messages.DnsSettings(
+      customDns=domains_messages.CustomDns(
           nameServers=normalized_name_servers, dsRecords=ds_records))
   return dns_settings, update_mask
 
 
-def _GoogleDomainsNameServers(enable_dnssec):
+def _GoogleDomainsNameServers(domains_messages, enable_dnssec):
   """Enable Google Domains name servers and returns (dns_settings, update_mask)."""
-  messages = registrations.GetMessagesModule()
-
   update_mask = DnsUpdateMask(name_servers=True, google_domains_dnssec=True)
-  ds_state = messages.GoogleDomainsDns.DsStateValueValuesEnum.DS_RECORDS_PUBLISHED
+  ds_state = domains_messages.GoogleDomainsDns.DsStateValueValuesEnum.DS_RECORDS_PUBLISHED
   if not enable_dnssec:
-    ds_state = messages.GoogleDomainsDns.DsStateValueValuesEnum.DS_RECORDS_UNPUBLISHED
-  dns_settings = messages.DnsSettings(
-      googleDomainsDns=messages.GoogleDomainsDns(dsState=ds_state))
+    ds_state = domains_messages.GoogleDomainsDns.DsStateValueValuesEnum.DS_RECORDS_UNPUBLISHED
+  dns_settings = domains_messages.DnsSettings(
+      googleDomainsDns=domains_messages.GoogleDomainsDns(dsState=ds_state))
   return dns_settings, update_mask
 
 
-def _ParseDnsSettingsFromFile(path):
+def _ParseDnsSettingsFromFile(domains_messages, path):
   """Parses dns_settings from a yaml file.
 
   Args:
+    domains_messages: Cloud Domains messages module.
     path: YAML file path.
 
   Returns:
     Pair (DnsSettings, DnsUpdateMask) or (None, None) if path is None.
   """
-  messages = registrations.GetMessagesModule()
   dns_settings = util.ParseMessageFromYamlFile(
-      path, messages.DnsSettings,
+      path, domains_messages.DnsSettings,
       'DNS settings file \'{}\' does not contain valid dns_settings message'
       .format(path))
   if not dns_settings:
@@ -150,10 +151,12 @@ def _ParseDnsSettingsFromFile(path):
   return dns_settings, update_mask
 
 
-def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
+def _GetCloudDnsDetails(domains_messages, cloud_dns_zone, domain,
+                        enable_dnssec):
   """Fetches list of name servers from provided Cloud DNS Managed Zone.
 
   Args:
+    domains_messages: Cloud Domains messages module.
     cloud_dns_zone: Cloud DNS Zone resource reference.
     domain: Domain name.
     enable_dnssec: If true, try to read DNSSEC information from the Zone.
@@ -165,6 +168,7 @@ def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
   # Get the managed-zone.
   dns_api_version = 'v1'
   dns = apis.GetClientInstance('dns', dns_api_version)
+  dns_messages = dns.MESSAGES_MODULE
   zone_ref = dns_api_util.GetRegistry(dns_api_version).Parse(
       cloud_dns_zone,
       params={
@@ -174,7 +178,7 @@ def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
 
   try:
     zone = dns.managedZones.Get(
-        dns.MESSAGES_MODULE.DnsManagedZonesGetRequest(
+        dns_messages.DnsManagedZonesGetRequest(
             project=zone_ref.project, managedZone=zone_ref.managedZone))
   except apitools_exceptions.HttpError as error:
     raise calliope_exceptions.HttpException(error)
@@ -184,14 +188,14 @@ def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
         'The dnsName \'{}\' of specified Cloud DNS zone \'{}\' does not match the '
         'registration domain \'{}\''.format(zone.dnsName, cloud_dns_zone,
                                             domain_with_dot))
-  if zone.visibility != dns.MESSAGES_MODULE.ManagedZone.VisibilityValueValuesEnum.public:
+  if zone.visibility != dns_messages.ManagedZone.VisibilityValueValuesEnum.public:
     raise exceptions.Error(
         'Cloud DNS Zone \'{}\' is not public.'.format(cloud_dns_zone))
 
   if not enable_dnssec:
     return zone.nameServers, []
 
-  signed = dns.MESSAGES_MODULE.ManagedZoneDnsSecConfig.StateValueValuesEnum.on
+  signed = dns_messages.ManagedZoneDnsSecConfig.StateValueValuesEnum.on
   if not zone.dnssecConfig or zone.dnssecConfig.state != signed:
     log.status.Print(
         'Cloud DNS Zone \'{}\' is not signed. DNSSEC won\'t be enabled.'.format(
@@ -199,13 +203,13 @@ def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
     return zone.nameServers, []
   try:
     dns_keys = []
-    req = dns.MESSAGES_MODULE.DnsDnsKeysListRequest(
+    req = dns_messages.DnsDnsKeysListRequest(
         project=zone_ref.project,
         managedZone=zone_ref.managedZone,
         maxResults=1)
     while True:
       resp = dns.dnsKeys.List(
-          dns.MESSAGES_MODULE.DnsDnsKeysListRequest(
+          dns_messages.DnsDnsKeysListRequest(
               project=zone_ref.project, managedZone=zone_ref.managedZone))
       dns_keys += resp.dnsKeys
       req.pageToken = resp.nextPageToken
@@ -214,7 +218,7 @@ def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
   except apitools_exceptions.HttpError as error:
     log.status.Print('Cannot read DS records from Cloud DNS Zone \'{}\': {}. '
                      'DNSSEC won\'t be enabled.'.format(cloud_dns_zone, error))
-  ds_records = _ConvertDnsKeys(dns.MESSAGES_MODULE, dns_keys)
+  ds_records = _ConvertDnsKeys(domains_messages, dns_messages, dns_keys)
   if not ds_records:
     log.status.Print('No supported DS records found in Cloud DNS Zone \'{}\'. '
                      'DNSSEC won\'t be enabled.'.format(cloud_dns_zone))
@@ -222,9 +226,8 @@ def _GetCloudDnsDetails(cloud_dns_zone, domain, enable_dnssec):
   return zone.nameServers, ds_records
 
 
-def _ConvertDnsKeys(dns_messages, dns_keys):
+def _ConvertDnsKeys(domains_messages, dns_messages, dns_keys):
   """Converts DnsKeys to DsRecords."""
-  messages = registrations.GetMessagesModule()
   ds_records = []
   for key in dns_keys:
     if key.type != dns_messages.DnsKey.TypeValueValuesEnum.keySigning:
@@ -232,13 +235,13 @@ def _ConvertDnsKeys(dns_messages, dns_keys):
     if not key.isActive:
       continue
     try:
-      algorithm = messages.DsRecord.AlgorithmValueValuesEnum(
+      algorithm = domains_messages.DsRecord.AlgorithmValueValuesEnum(
           six.text_type(key.algorithm).upper())
       for d in key.digests:
-        digest_type = messages.DsRecord.DigestTypeValueValuesEnum(
+        digest_type = domains_messages.DsRecord.DigestTypeValueValuesEnum(
             six.text_type(d.type).upper())
         ds_records.append(
-            messages.DsRecord(
+            domains_messages.DsRecord(
                 keyTag=key.keyTag,
                 digest=d.digest,
                 algorithm=algorithm,
@@ -248,33 +251,34 @@ def _ConvertDnsKeys(dns_messages, dns_keys):
   return ds_records
 
 
-def _DisableDnssec(dns_settings):
+def _DisableDnssec(domains_messages, dns_settings):
   """Returns DNS settings (and update mask) with DNSSEC disabled."""
   if dns_settings is None:
     return None, None
-  messages = registrations.GetMessagesModule()
   if dns_settings.googleDomainsDns is not None:
-    updated_dns_settings = messages.DnsSettings(
-        googleDomainsDns=messages.GoogleDomainsDns(
-            dsState=messages.GoogleDomainsDns.DsStateValueValuesEnum
+    updated_dns_settings = domains_messages.DnsSettings(
+        googleDomainsDns=domains_messages.GoogleDomainsDns(
+            dsState=domains_messages.GoogleDomainsDns.DsStateValueValuesEnum
             .DS_RECORDS_UNPUBLISHED))
     update_mask = DnsUpdateMask(google_domains_dnssec=True)
   elif dns_settings.customDns is not None:
-    updated_dns_settings = messages.DnsSettings(
-        customDns=messages.CustomDns(dsRecords=[]))
+    updated_dns_settings = domains_messages.DnsSettings(
+        customDns=domains_messages.CustomDns(dsRecords=[]))
     update_mask = DnsUpdateMask(custom_dnssec=True)
   else:
     return None, None
   return updated_dns_settings, update_mask
 
 
-def PromptForNameServers(domain,
+def PromptForNameServers(api_version,
+                         domain,
                          enable_dnssec=None,
                          dns_settings=None,
                          print_format='default'):
   """Asks the user to provide DNS settings interactively.
 
   Args:
+    api_version: Cloud Domains API version to call.
     domain: Domain name corresponding to the DNS settings.
     enable_dnssec: Should the DNSSEC be enabled.
     dns_settings: Current DNS configuration (or None if resource is not yet
@@ -285,6 +289,7 @@ def PromptForNameServers(domain,
     A pair: (messages.DnsSettings, DnsUpdateMask) to be updated, or (None, None)
     if the user cancelled.
   """
+  domains_messages = registrations.GetMessagesModule(api_version)
   options = [
       'Provide name servers list', 'Provide Cloud DNS Managed Zone name',
       'Use free name servers provided by Google Domains'
@@ -320,7 +325,7 @@ def PromptForNameServers(domain,
           name_servers += [ns]
       if len(name_servers) < 2:
         log.status.Print('You have to provide at least 2 name servers.')
-    return _CustomNameServers(name_servers)
+    return _CustomNameServers(domains_messages, name_servers)
   elif index == 1:  # Cloud DNS.
     while True:
       zone = util.PromptWithValidator(
@@ -328,15 +333,15 @@ def PromptForNameServers(domain,
           error_message=' Cloud DNS Managed Zone name must not be empty.',
           prompt_string='Cloud DNS Managed Zone name:  ')
       try:
-        name_servers, ds_records = _GetCloudDnsDetails(zone, domain,
-                                                       enable_dnssec)
+        name_servers, ds_records = _GetCloudDnsDetails(domains_messages, zone,
+                                                       domain, enable_dnssec)
       except (exceptions.Error, calliope_exceptions.HttpException) as e:
         log.status.Print(six.text_type(e))
       else:
         break
-    return _CustomNameServers(name_servers, ds_records)
+    return _CustomNameServers(domains_messages, name_servers, ds_records)
   elif index == 2:  # Google Domains name servers.
-    return _GoogleDomainsNameServers(enable_dnssec)
+    return _GoogleDomainsNameServers(domains_messages, enable_dnssec)
   else:
     return None, None  # Cancel.
 

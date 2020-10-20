@@ -62,17 +62,16 @@ CUSTOM_JOB_CONFIG = base.Argument(
     help="""
 Path to the job configuration file. This file should be a YAML document containing a CustomJobSpec.
 If an option is specified both in the configuration file **and** via command line arguments, the command line arguments
-override the configuration file.
+override the configuration file. Note that keys with underscore are invalid.
 
 Example(YAML):
 
-  worker_pool_specs:
-    machine_spec:
-      machine_type: n1-highmem-2
-    replica_count: 1
-    container_spec:
-      image_uri: gcr.io/ucaip-test/ucaip-training-test
-""")
+  workerPoolSpecs:
+    machineSpec:
+      machineType: n1-highmem-2
+    replicaCount: 1
+    containerSpec:
+      imageUri: gcr.io/ucaip-test/ucaip-training-test""")
 
 WORKER_POOL_SPEC = base.Argument(
     '--worker-pool-spec',
@@ -154,6 +153,25 @@ Example(YAML):
         imageUri: gcr.io/ucaip-test/ucaip-training-test
 """)
 
+_POLLING_INTERVAL_FLAG = base.Argument(
+    '--polling-interval',
+    type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+    default=60,
+    help=('Number of seconds to wait between efforts to fetch the latest '
+          'log messages.'))
+
+_ALLOW_MULTILINE_LOGS = base.Argument(
+    '--allow-multiline-logs',
+    action='store_true',
+    default=False,
+    help='Output multiline log messages as single records.')
+
+_TASK_NAME = base.Argument(
+    '--task-name',
+    required=False,
+    default=None,
+    help='If set, display only the logs for this particular task.')
+
 
 def AddCreateCustomJobFlags(parser):
   """Adds flags related to create a custom job."""
@@ -165,6 +183,12 @@ def AddCreateCustomJobFlags(parser):
   worker_pool_spec_group.AddArgument(CUSTOM_JOB_CONFIG)
   worker_pool_spec_group.AddArgument(WORKER_POOL_SPEC)
   worker_pool_spec_group.AddToParser(parser)
+
+
+def AddStreamLogsCustomJobFlags(parser):
+  _POLLING_INTERVAL_FLAG.AddToParser(parser)
+  _TASK_NAME.AddToParser(parser)
+  _ALLOW_MULTILINE_LOGS.AddToParser(parser)
 
 
 def GetModelIdArg(required=True):

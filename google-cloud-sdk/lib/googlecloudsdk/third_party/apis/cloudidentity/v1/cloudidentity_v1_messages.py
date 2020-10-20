@@ -1078,6 +1078,16 @@ class EntityKey(_messages.Message):
   namespace = _messages.StringField(2)
 
 
+class ExpiryDetail(_messages.Message):
+  r"""The `MembershipRole` expiry details.
+
+  Fields:
+    expireTime: The time at which the `MembershipRole` will expire.
+  """
+
+  expireTime = _messages.StringField(1)
+
+
 class GoogleAppsCloudidentityDevicesV1AndroidAttributes(_messages.Message):
   r"""Resource representing the Android specific attributes of a Device.
 
@@ -2081,11 +2091,15 @@ class MembershipRole(_messages.Message):
   `MembershipRole` defines the privileges granted to a `Membership`.
 
   Fields:
+    expiryDetail: The expiry details of the `MembershipRole`. Expiry details
+      are only supported for `MEMBER` `MembershipRoles`. May be set if `name`
+      is `MEMBER`. Must not be set if `name` is any other value.
     name: The name of the `MembershipRole`. Must be one of `OWNER`, `MANAGER`,
       `MEMBER`.
   """
 
-  name = _messages.StringField(1)
+  expiryDetail = _messages.MessageField('ExpiryDetail', 1)
+  name = _messages.StringField(2)
 
 
 class ModifyMembershipRolesRequest(_messages.Message):

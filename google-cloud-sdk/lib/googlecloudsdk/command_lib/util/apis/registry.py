@@ -334,7 +334,7 @@ class APIMethod(object):
       return request_func(global_params=global_params)
     except apitools_exc.InvalidUserInputError as e:
       log.debug('', exc_info=True)
-      raise APICallError(e.message)
+      raise APICallError(str(e))
 
   def _GetRequestFunc(self, service, request, raw=False,
                       limit=None, page_size=None):

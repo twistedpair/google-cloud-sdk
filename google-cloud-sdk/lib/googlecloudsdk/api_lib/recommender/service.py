@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""recommender API recommendations list command."""
+"""recommender API recommendations service."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -34,25 +34,49 @@ def RecommenderMessages():
   return apis.GetMessagesModule(RECOMMENDER_API_NAME, RECOMMENDER_API_VERSION)
 
 
-def BillingAccountsRecommenderListRecommendationsService():
-  """Returns the service class for the Billing Account List recommendations."""
+def BillingAccountsRecommenderRecommendationsService():
+  """Returns the service class for the Billing Account recommendations."""
   client = RecommenderClient()
   return client.billingAccounts_locations_recommenders_recommendations
 
 
-def ProjectsRecommenderListRecommendationsService():
-  """Returns the service class for the Project List recommendations."""
+def ProjectsRecommenderRecommendationsService():
+  """Returns the service class for the Project recommendations."""
   client = RecommenderClient()
   return client.projects_locations_recommenders_recommendations
 
 
-def FoldersRecommenderListRecommendationsService():
-  """Returns the service class for the Folders List recommendations."""
+def FoldersRecommenderRecommendationsService():
+  """Returns the service class for the Folders recommendations."""
   client = RecommenderClient()
   return client.folders_locations_recommenders_recommendations
 
 
-def OrganizationsRecommenderListRecommendationsService():
-  """Returns the service class for the Organization List recommendations."""
+def OrganizationsRecommenderRecommendationsService():
+  """Returns the service class for the Organization recommendations."""
   client = RecommenderClient()
   return client.organizations_locations_recommenders_recommendations
+
+
+def BillingAccountsInsightTypeInsightsService():
+  """Returns the service class for the Billing Account insights."""
+  client = RecommenderClient()
+  return client.billingAccounts_locations_insightTypes_insights
+
+
+def ProjectsInsightTypeInsightsService():
+  """Returns the service class for the Project insights."""
+  client = RecommenderClient()
+  return client.projects_locations_insightTypes_insights
+
+
+def FoldersInsightTypeInsightsService():
+  """Returns the service class for the Folders insights."""
+  client = RecommenderClient()
+  return client.folders_locations_insightTypes_insights
+
+
+def OrganizationsInsightTypeInsightsService():
+  """Returns the service class for the Organization insights."""
+  client = RecommenderClient()
+  return client.organizations_locations_insightTypes_insights

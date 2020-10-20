@@ -21,12 +21,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import contextlib
 import json
 import socket
 import webbrowser
 import wsgiref
 from google_auth_oauthlib import flow as google_auth_flow
 
+from googlecloudsdk.core import exceptions as c_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
@@ -35,7 +37,9 @@ from googlecloudsdk.core.util import pkg_resources
 
 from oauth2client import client
 from oauth2client import tools
+from oauthlib.oauth2.rfc6749 import errors as rfc6749_errors
 
+from requests import exceptions as requests_exceptions
 import six
 from six.moves import input  # pylint: disable=redefined-builtin
 from six.moves.http_client import ResponseNotReady
@@ -51,7 +55,7 @@ _PORT_SEARCH_START = 8085
 _PORT_SEARCH_END = _PORT_SEARCH_START + 100
 
 
-class Error(Exception):
+class Error(c_exceptions.Error):
   """Exceptions for the flow module."""
 
 
@@ -60,11 +64,20 @@ class AuthRequestRejectedError(Error):
 
 
 class AuthRequestFailedError(Error):
-  """Exception for when the authentication request was rejected."""
+  """Exception for when the authentication request failed."""
 
 
 class LocalServerCreationError(Error):
   """Exception for when a local server cannot be created."""
+
+
+def RaiseProxyError(source_exc):
+  six.raise_from(AuthRequestFailedError(
+      'Could not reach the login server. A potential cause of this could be '
+      'because you are behind a proxy. Please set the environment variables '
+      'HTTPS_PROXY and HTTP_PROXY to the address of the proxy in the format '
+      '"protocol://address:port" (without quotes) and try again.\n'
+      'Example: HTTPS_PROXY=https://192.168.0.1:8080'), source_exc)
 
 
 class ClientRedirectHandler(tools.ClientRedirectHandler):
@@ -187,13 +200,8 @@ def Run(flow, launch_browser=True, http=None,
     credential = flow.step2_exchange(code, http=http)
   except client.FlowExchangeError as e:
     raise AuthRequestFailedError(e)
-  except ResponseNotReady:
-    raise AuthRequestFailedError(
-        'Could not reach the login server. A potential cause of this could be '
-        'because you are behind a proxy. Please set the environment variables '
-        'HTTPS_PROXY and HTTP_PROXY to the address of the proxy in the format '
-        '"protocol://address:port" (without quotes) and try again.\n'
-        'Example: HTTPS_PROXY=https://192.168.0.1:8080')
+  except ResponseNotReady as e:
+    RaiseProxyError(e)
 
   return credential
 
@@ -228,6 +236,36 @@ def _CreateGoogleAuthClientConfigFromProperties():
   }
 
 
+@contextlib.contextmanager
+def HandleOauth2FlowErrors():
+  try:
+    yield
+  except requests_exceptions.ConnectionError as e:
+    RaiseProxyError(e)
+  except rfc6749_errors.AccessDeniedError as e:
+    six.raise_from(AuthRequestRejectedError(e), e)
+  except ValueError as e:
+    raise six.raise_from(AuthRequestFailedError(e), e)
+
+
+def _RunGoogleAuthFlowLaunchBrowser(flow):
+  """Runs oauth2 3LO flow and auto launch the browser."""
+  authorization_prompt_msg_launch_browser = (
+      'Your browser has been opened to visit:\n\n    {url}\n')
+  with HandleOauth2FlowErrors():
+    return flow.run_local_server(
+        authorization_prompt_message=authorization_prompt_msg_launch_browser)
+
+
+def _RunGoogleAuthFlowNoLaunchBrowser(flow):
+  """Runs oauth2 3LO flow without auto-launching the browser."""
+  authorization_prompt_msg_no_launch_browser = (
+      'Go to the following link in your browser:\n\n    {url}\n')
+  with HandleOauth2FlowErrors():
+    return flow.run_console(
+        authorization_prompt_message=authorization_prompt_msg_no_launch_browser)
+
+
 def RunGoogleAuthFlow(flow, launch_browser=False):
   """Runs a Google auth oauthlib web flow.
 
@@ -240,21 +278,13 @@ def RunGoogleAuthFlow(flow, launch_browser=False):
   Returns:
     google.auth.credentials.Credentials, The credentials obtained from the flow.
   """
-  authorization_prompt_msg_launch_browser = (
-      'Your browser has been opened to visit:\n\n    {url}\n')
-  authorization_prompt_msg_no_launch_browser = (
-      'Go to the following link in your browser:\n\n    {url}\n')
   if launch_browser:
     try:
-      return flow.run_local_server(
-          authorization_prompt_message=authorization_prompt_msg_launch_browser)
-    # If anything unexpected happens, we fall back to manual mode where users
-    # need to copy/paste url to browser and copy the auth code back.
-    except Exception as e:  # pylint: disable=broad-except
+      return _RunGoogleAuthFlowLaunchBrowser(flow)
+    except LocalServerCreationError as e:
       log.warning(e)
       log.warning('Defaulting to URL copy/paste mode.')
-  return flow.run_console(
-      authorization_prompt_message=authorization_prompt_msg_no_launch_browser)
+  return _RunGoogleAuthFlowNoLaunchBrowser(flow)
 
 
 class InstalledAppFlow(google_auth_flow.InstalledAppFlow):

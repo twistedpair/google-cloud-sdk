@@ -4343,6 +4343,25 @@
         }
       }
     },
+    "GoogleCloudApigeeV1ProvisionOrganizationRequest": {
+      "id": "GoogleCloudApigeeV1ProvisionOrganizationRequest",
+      "description": "Request for ProvisionOrganization.",
+      "type": "object",
+      "properties": {
+        "authorizedNetwork": {
+          "description": "Name of the customer project's VPC network. If provided, the network needs to be peered through Service Networking. If none is provided, the organization will have access only to the public internet.",
+          "type": "string"
+        },
+        "analyticsRegion": {
+          "description": "Primary Cloud Platform region for analytics data storage. For valid values, see [Create an organization](https:\/\/docs.apigee.com\/hybrid\/latest\/precog-provision). Defaults to us-west1.",
+          "type": "string"
+        },
+        "runtimeLocation": {
+          "description": "Cloud Platform location for the runtime instance. Defaults to us-west1-a.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudApigeeV1OperationMetadata": {
       "id": "GoogleCloudApigeeV1OperationMetadata",
       "description": "Metadata describing an Operation.",
@@ -5379,7 +5398,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a resource file. Specify the `Content-Type` as `application\/octet-stream` or `multipart\/form-data`. For more information about resource files, see [Resource files](\/api-platform\/develop\/resource-files)."
+                  "description": "Creates a resource file. Specify the `Content-Type` as `application\/octet-stream` or `multipart\/form-data`. For more information about resource files, see [Resource files](https:\/\/cloud.google.com\/apigee\/docs\/api-platform\/develop\/resource-files)."
                 },
                 "update": {
                   "id": "apigee.organizations.environments.resourcefiles.update",
@@ -5421,7 +5440,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates a resource file. Specify the `Content-Type` as `application\/octet-stream` or `multipart\/form-data`. For more information about resource files, see [Resource files](\/api-platform\/develop\/resource-files)."
+                  "description": "Updates a resource file. Specify the `Content-Type` as `application\/octet-stream` or `multipart\/form-data`. For more information about resource files, see [Resource files](https:\/\/cloud.google.com\/apigee\/docs\/api-platform\/develop\/resource-files)."
                 },
                 "get": {
                   "id": "apigee.organizations.environments.resourcefiles.get",
@@ -5460,7 +5479,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the contents of a resource file. For more information about resource files, see [Resource files](\/api-platform\/develop\/resource-files)."
+                  "description": "Gets the contents of a resource file. For more information about resource files, see [Resource files](https:\/\/cloud.google.com\/apigee\/docs\/api-platform\/develop\/resource-files)."
                 },
                 "delete": {
                   "id": "apigee.organizations.environments.resourcefiles.delete",
@@ -5499,7 +5518,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a resource file. For more information about resource files, see [Resource files](\/api-platform\/develop\/resource-files)."
+                  "description": "Deletes a resource file. For more information about resource files, see [Resource files](https:\/\/cloud.google.com\/apigee\/docs\/api-platform\/develop\/resource-files)."
                 },
                 "list": {
                   "id": "apigee.organizations.environments.resourcefiles.list",
@@ -5529,7 +5548,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists all resource files. For more information about resource files, see [Resource files](\/api-platform\/develop\/resource-files)."
+                  "description": "Lists all resource files, optionally filtering by type. For more information about resource files, see [Resource files](https:\/\/cloud.google.com\/apigee\/docs\/api-platform\/develop\/resource-files)."
                 },
                 "listEnvironmentResources": {
                   "id": "apigee.organizations.environments.resourcefiles.listEnvironmentResources",
@@ -5561,7 +5580,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists all resource files. For more information about resource files, see [Resource files](\/api-platform\/develop\/resource-files)."
+                  "description": "Lists all resource files, optionally filtering by type. For more information about resource files, see [Resource files](https:\/\/cloud.google.com\/apigee\/docs\/api-platform\/develop\/resource-files)."
                 }
               }
             },
@@ -6284,7 +6303,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates an alias from a key, certificate pair. The structure of the request is controlled by the `format` query parameter: * `keycertfile` - Separate PEM-encoded key and certificate files are uploaded. The request must have `Content-Type: multipart\/form-data` and include fields `keyFile` and `certFile`. If uploading to a truststore, omit `keyFile`. * `pkcs12` - A PKCS12 file is uploaded. The request must have `Content-Type: multipart\/form-data` with the file provided in the only field. * `selfsignedcert` - A new private key and certificate are generated. The request must have `Content-Type: application\/json` and a body of CertificateGenerationSpec."
+                      "description": "Creates an alias from a key, certificate pair. The structure of the request is controlled by the `format` query parameter: * `keycertfile` - Separate PEM-encoded key and certificate files are uploaded. The request must have `Content-Type: multipart\/form-data` and include fields `keyFile` and `certFile`. If uploading to a truststore, omit `keyFile`. A `password` field should be provided for encrypted keys. * `pkcs12` - A PKCS12 file is uploaded. The request must have `Content-Type: multipart\/form-data` with the file provided in the `file` field and a `password` field if the file is encrypted. * `selfsignedcert` - A new private key and certificate are generated. The request must have `Content-Type: application\/json` and a body of CertificateGenerationSpec."
                     },
                     "get": {
                       "id": "apigee.organizations.environments.keystores.aliases.get",
@@ -9952,6 +9971,38 @@
               }
             }
           }
+        }
+      }
+    },
+    "projects": {
+      "methods": {
+        "provisionOrganization": {
+          "id": "apigee.projects.provisionOrganization",
+          "path": "v1/{+project}:provisionOrganization",
+          "flatPath": "v1/projects/{projectsId}:provisionOrganization",
+          "httpMethod": "POST",
+          "parameters": {
+            "project": {
+              "description": "Required. Name of the GCP project with which to associate the Apigee organization.",
+              "location": "path",
+              "required": true,
+              "pattern": "^projects\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "project"
+          ],
+          "request": {
+            "$ref": "GoogleCloudApigeeV1ProvisionOrganizationRequest"
+          },
+          "response": {
+            "$ref": "GoogleLongrunningOperation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Provisions a new Apigee organization with a functioning runtime. This is the standard way to create trial organizations for a free Apigee trial."
         }
       }
     }

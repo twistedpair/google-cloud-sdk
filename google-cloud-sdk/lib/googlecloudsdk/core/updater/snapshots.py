@@ -202,7 +202,8 @@ class ComponentSnapshot(object):
       log.debug('Could not fetch [{url}]'.format(url=url), exc_info=True)
       response = None
     except ValueError as e:
-      if not e.message or 'unknown url type' not in e.message:
+      message = str(e)
+      if not message or 'unknown url type' not in message:
         raise
       log.debug('Bad repository url: [{url}]'.format(url=url), exc_info=True)
       raise URLFetchError(malformed=True, extra_repo=extra_repo)

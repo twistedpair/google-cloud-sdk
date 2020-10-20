@@ -843,6 +843,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetEdgeSecurityPolicy(self, request, global_params=None):
+      r"""Sets the edge security policy for the specified backend bucket.
+
+      Args:
+        request: (ComputeBackendBucketsSetEdgeSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetEdgeSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetEdgeSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.backendBuckets.setEdgeSecurityPolicy',
+        ordered_params=['project', 'backendBucket'],
+        path_params=['backendBucket', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendBuckets/{backendBucket}/setEdgeSecurityPolicy',
+        request_field='securityPolicyReference',
+        request_type_name='ComputeBackendBucketsSetEdgeSecurityPolicyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
@@ -1165,6 +1191,32 @@ Example request body:
         relative_path='projects/{project}/global/backendServices/{backendService}',
         request_field='backendServiceResource',
         request_type_name='ComputeBackendServicesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetEdgeSecurityPolicy(self, request, global_params=None):
+      r"""Sets the edge security policy for the specified backend service.
+
+      Args:
+        request: (ComputeBackendServicesSetEdgeSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetEdgeSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetEdgeSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.backendServices.setEdgeSecurityPolicy',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendServices/{backendService}/setEdgeSecurityPolicy',
+        request_field='securityPolicyReference',
+        request_type_name='ComputeBackendServicesSetEdgeSecurityPolicyRequest',
         response_type_name='Operation',
         supports_download=False,
     )

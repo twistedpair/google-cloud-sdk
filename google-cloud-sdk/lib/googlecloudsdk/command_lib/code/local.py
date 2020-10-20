@@ -158,11 +158,13 @@ class Settings(DataObject):
       cloudsql_instances: Cloud SQL instances.
       memory: Memory limit.
       cpu: CPU limit.
+      namespace: Kubernetes namespace to run in.
+      readiness_probe: If true, create readiness probe.
   """
 
   NAMES = ('service_name', 'image', 'credential', 'context', 'builder',
            'local_port', 'env_vars', 'cloudsql_instances', 'memory', 'cpu',
-           'namespace')
+           'namespace', 'readiness_probe')
 
   @classmethod
   def FromArgs(cls, args):
@@ -206,7 +208,8 @@ class Settings(DataObject):
         cloudsql_instances=args.cloudsql_instances,
         memory=args.memory,
         cpu=args.cpu,
-        namespace=args.namespace if 'namespace' in args else None)
+        namespace=args.namespace if 'namespace' in args else None,
+        readiness_probe=args.readiness_probe)
 
 
 def _CreateBuilder(args, context):
@@ -215,6 +218,7 @@ def _CreateBuilder(args, context):
   Args:
     args: Args namespace.
     context: Build context directory.
+
   Returns:
     A builder data object.
   """
@@ -280,12 +284,30 @@ ports:
 - containerPort: 8080
 """
 
+# The readiness probe container sits in an infinite wait loop and waits until
+# port 8080 (1F90 in hex) is in use. This prevents the reload cycle from being
+# considered "complete" until the developer's application binds to $PORT.
+_READINESS_PROBE_CONTAINER_TEMPLATE = """
+name: {service}-readiness-probe
+image: gcr.io/gcp-runtimes/ubuntu_18_0_4:latest
+command: ["sleep"]
+args: ["infinity"]
+readinessProbe:
+  exec:
+    command:
+    - "grep"
+    - ":1F90"
+    - "/proc/net/tcp"
+  periodSeconds: 1
+"""
+
 
 def CreateDeployment(service_name,
                      image_name,
                      memory_limit=None,
                      cpu_limit=None,
-                     cpu_request=None):
+                     cpu_request=None,
+                     readiness_probe=False):
   """Create a deployment specification for a service.
 
   Args:
@@ -294,6 +316,7 @@ def CreateDeployment(service_name,
     memory_limit: Container memory limit.
     cpu_limit: Container cpu limit.
     cpu_request: Container cpu request.
+    readiness_probe: If true, add a readiness probe.
 
   Returns:
     Dictionary object representing the deployment yaml.
@@ -313,6 +336,11 @@ def CreateDeployment(service_name,
   containers = yaml_helper.GetOrCreate(
       deployment, ('spec', 'template', 'spec', 'containers'), constructor=list)
   containers.append(container)
+
+  if readiness_probe:
+    readiness_container = yaml.load(
+        _READINESS_PROBE_CONTAINER_TEMPLATE.format(service=service_name))
+    containers.append(readiness_container)
 
   return deployment
 
@@ -584,18 +612,20 @@ class AppContainerGenerator(KubeConfigGenerator):
                env_vars=None,
                memory_limit=None,
                cpu_limit=None,
-               cpu_request=None):
+               cpu_request=None,
+               readiness_probe=False):
     self._service_name = service_name
     self._image_name = image_name
     self._env_vars = env_vars
     self._memory_limit = memory_limit
     self._cpu_limit = cpu_limit
     self._cpu_request = cpu_request
+    self._readiness_probe = readiness_probe
 
   def CreateConfigs(self):
     deployment = CreateDeployment(self._service_name, self._image_name,
                                   self._memory_limit, self._cpu_limit,
-                                  self._cpu_request)
+                                  self._cpu_request, self._readiness_probe)
     default_env_vars = {
         'K_SERVICE': self._service_name,
         'K_CONFIGURATION': 'dev',

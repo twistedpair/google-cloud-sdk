@@ -59,20 +59,15 @@ def GetApitoolsTransport(timeout='unset',
     1. A httplib2.Http-like object backed by httplib2 or requests.
   """
   if base.UseRequests():
-    try:
-      session = requests.GetSession(
-          timeout=timeout,
-          enable_resource_quota=enable_resource_quota,
-          force_resource_quota=force_resource_quota,
-          response_encoding=response_encoding,
-          ca_certs=ca_certs,
-          allow_account_impersonation=allow_account_impersonation)
+    session = requests.GetSession(
+        timeout=timeout,
+        enable_resource_quota=enable_resource_quota,
+        force_resource_quota=force_resource_quota,
+        response_encoding=response_encoding,
+        ca_certs=ca_certs,
+        allow_account_impersonation=allow_account_impersonation)
 
-      return requests.GetApitoolsRequests(session)
-    except requests.UnsupportedCredentialsException:
-      # TODO(b/170148815) Fallback to httplib2 until requests can support all
-      # credential types.
-      pass
+    return requests.GetApitoolsRequests(session)
 
   return http.Http(timeout=timeout,
                    enable_resource_quota=enable_resource_quota,

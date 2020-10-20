@@ -558,7 +558,6 @@ _KEY_ALGORITHM_MAPPING = {
 
 _KEY_ALGORITHM_MAPPER = arg_utils.ChoiceEnumMapper(
     arg_name='--key-algorithm',
-    default='rsa-pss-4096-sha256',
     help_str='The crypto algorithm to use for creating a managed KMS key for '
     'the Certificate Authority.',
     message_enum=privateca_base.GetMessagesModule().KeyVersionSpec
@@ -600,8 +599,9 @@ def ParseTierFlag(args):
   return _TIER_MAPPER.GetEnumForChoice(args.tier)
 
 
-def AddKeyAlgorithmFlag(parser_group):
+def AddKeyAlgorithmFlag(parser_group, default='rsa-pkcs1-4096-sha256'):
   _KEY_ALGORITHM_MAPPER.choice_arg.AddToParser(parser_group)
+  _KEY_ALGORITHM_MAPPER.choice_arg.SetDefault(parser_group, default)
 
 
 def ParseKeySpec(args):

@@ -132,6 +132,7 @@ class _ConfigImpl(object):
     self._cert_and_key_path = None
     self.client_cert_path = None
     self.client_cert_password = None
+    self.cert_provider_command = ''
     atexit.register(self.Cleanup)
     if self.use_client_certificate:
       # Search for configuration produced by endpoint verification
@@ -145,7 +146,7 @@ class _ConfigImpl(object):
         if 'cert_provider_command' in json_out:
           # Execute the cert provider to provision client certificates for
           # context aware access
-          cmd = json_out['cert_provider_command']
+          self.cert_provider_command = json_out['cert_provider_command']
           # Remember the certificate path when auto provisioning
           # to cleanup after use
           self._cert_and_key_path = os.path.join(
@@ -153,7 +154,8 @@ class _ConfigImpl(object):
           # Certs provisioned using endpoint verification are stored as a
           # single file holding both the public certificate
           # and the private key
-          self._ProvisionClientCert(cmd, self._cert_and_key_path)
+          self._ProvisionClientCert(self.cert_provider_command,
+                                    self._cert_and_key_path)
           self.client_cert_path = self._cert_and_key_path
         else:
           raise CertProvisionException('no cert provider detected')
@@ -229,6 +231,7 @@ class Config(object):
     if not singleton_config:
       singleton_config = _ConfigImpl()
     self.use_client_certificate = singleton_config.use_client_certificate
+    self.cert_provider_command = singleton_config.cert_provider_command
     self.client_cert_path = singleton_config.client_cert_path
     self.client_cert_password = singleton_config.client_cert_password
 

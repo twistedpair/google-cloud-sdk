@@ -434,7 +434,6 @@ def LoadFreshCredential(account=None,
 
     * use_google_auth is True
     * google-auth is not globally disabled by auth/disable_load_google_auth.
-    * the active credential is not p12 service account.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -482,7 +481,6 @@ def LoadIfEnabled(allow_account_impersonation=True, use_google_auth=False):
 
     * use_google_auth is True
     * google-auth is not globally disabled by auth/disable_load_google_auth.
-    * the active credential is not p12 service account.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -539,7 +537,6 @@ def Load(account=None,
 
     * use_google_auth is True
     * google-auth is not globally disabled by auth/disable_load_google_auth.
-    * the active credential is not p12 service account.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -566,19 +563,6 @@ def Load(account=None,
     log.warning(
         'This command is using service account impersonation. All API calls will '
         'be executed as [{}].'.format(impersonate_service_account))
-
-    if use_google_auth:
-      # Check if the oauth2client version source creds is p12 service account.
-      # Since google-auth doesn't support p12 service account, we need to fall
-      # back to oauth2client behavior for account impersonation in this case.
-      oauth2client_source_creds = Load(
-          account=account,
-          allow_account_impersonation=False,
-          use_google_auth=False)
-      oauth2client_source_creds_type = c_creds.CredentialType.FromCredentials(
-          oauth2client_source_creds)
-      if oauth2client_source_creds_type == c_creds.CredentialType.P12_SERVICE_ACCOUNT:
-        use_google_auth = False
 
     if use_google_auth:
       google_auth_source_creds = Load(
@@ -688,7 +672,22 @@ def _Load(account, scopes, prevent_refresh, use_google_auth=False):
   if not prevent_refresh:
     RefreshIfAlmostExpire(cred)
 
+  if use_google_auth and c_creds.IsOauth2clientP12AccountCredentials(cred):
+    cred = _CreateP12GoogleAuth(cred)
+
   return cred
+
+
+def _CreateP12GoogleAuth(credentials):
+  Refresh(credentials)
+  p12_cred = c_creds.P12CredentialsGoogleAuth()
+  p12_cred.token = credentials.access_token
+  p12_cred.expiry = credentials.token_expiry
+  try:
+    p12_cred.id_tokenb64 = credentials.id_tokenb64
+  except AttributeError:
+    pass
+  return p12_cred
 
 
 def Refresh(credentials,

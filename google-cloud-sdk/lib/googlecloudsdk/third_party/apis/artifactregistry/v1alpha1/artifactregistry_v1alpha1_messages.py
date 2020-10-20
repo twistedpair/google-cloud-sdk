@@ -47,9 +47,12 @@ class GoogleDevtoolsArtifactregistryV1alpha1GcsSource(_messages.Message):
 
   Fields:
     uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
+    useWildcards: Supports URI wildcards for matching multiple objects from a
+      single URI.
   """
 
   uris = _messages.StringField(1, repeated=True)
+  useWildcards = _messages.BooleanField(2)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest(_messages.Message):

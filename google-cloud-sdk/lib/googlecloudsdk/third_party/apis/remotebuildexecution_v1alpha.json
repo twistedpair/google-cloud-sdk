@@ -1196,6 +1196,10 @@
           "description": "The input cache miss ratio.",
           "type": "number",
           "format": "float"
+        },
+        "dockerImageName": {
+          "description": "Docker Image name.",
+          "type": "string"
         }
       }
     },

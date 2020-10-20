@@ -1074,7 +1074,7 @@
       "type": "object",
       "properties": {
         "hls": {
-          "description": "HLS master manifest URI. If multiple HLS master manifests are created only first one is listed.",
+          "description": "HLS manifest URI per https:\/\/tools.ietf.org\/html\/rfc8216#section-4.3.4. If multiple HLS manifests are created, only the first one is listed.",
           "type": "string"
         },
         "dash": {

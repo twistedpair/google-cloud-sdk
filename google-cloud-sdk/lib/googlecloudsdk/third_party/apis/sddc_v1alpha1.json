@@ -345,7 +345,8 @@
             "The cluster is being created.",
             "The cluster is being updated.",
             "The cluster is being deleted.",
-            "The cluster has experienced an issue and might be unusable."
+            "The cluster has experienced an issue and might be unusable.",
+            "The cluster has pending operation."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -353,7 +354,8 @@
             "CREATING",
             "UPDATING",
             "DELETING",
-            "FAILED"
+            "FAILED",
+            "PENDING"
           ]
         },
         "management": {

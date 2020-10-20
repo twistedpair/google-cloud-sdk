@@ -1224,8 +1224,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
         including logical views.
       MODEL: Output only. The type of models, examples include
         https://cloud.google.com/bigquery-ml/docs/bigqueryml-intro
-      DATA_STREAM: Output only. An entry type which is used for streaming
-        entries. Example: Pub/Sub topic.
+      DATA_STREAM: An entry type which is used for streaming entries. Example:
+        Pub/Sub topic.
       FILESET: An entry type which is a set of files or objects. Example:
         Cloud Storage fileset.
     """
@@ -1973,6 +1973,7 @@ class GoogleCloudDatacatalogV1TagTemplateField(_messages.Message):
   r"""The template for an individual field within a tag template.
 
   Fields:
+    description: The description for this field. Defaults to an empty string.
     displayName: The display name for this field. Defaults to an empty string.
     isRequired: Whether this is a required field. Defaults to false.
     name: Output only. The resource name of the tag template field in URL
@@ -1986,11 +1987,12 @@ class GoogleCloudDatacatalogV1TagTemplateField(_messages.Message):
     type: Required. The type of value this tag field can contain.
   """
 
-  displayName = _messages.StringField(1)
-  isRequired = _messages.BooleanField(2)
-  name = _messages.StringField(3)
-  order = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  type = _messages.MessageField('GoogleCloudDatacatalogV1FieldType', 5)
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  isRequired = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  order = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  type = _messages.MessageField('GoogleCloudDatacatalogV1FieldType', 6)
 
 
 class GoogleCloudDatacatalogV1Taxonomy(_messages.Message):

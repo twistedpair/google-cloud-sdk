@@ -79,9 +79,19 @@ def DoInstalledAppBrowserFlowGoogleAuth(launch_browser,
   if client_id_file:
     AssertClientSecretIsInstalledType(client_id_file)
   google_auth_flow = c_flow.CreateGoogleAuthFlow(scopes, client_id_file)
-  user_creds = c_flow.RunGoogleAuthFlow(google_auth_flow, launch_browser)
-  return c_google_auth.UserCredWithReauth.FromGoogleAuthUserCredentials(
-      user_creds)
+  try:
+    user_creds = c_flow.RunGoogleAuthFlow(google_auth_flow, launch_browser)
+    return c_google_auth.UserCredWithReauth.FromGoogleAuthUserCredentials(
+        user_creds)
+  except c_flow.Error as e:
+    if c_store.IsContextAwareAccessDeniedError(e):
+      msg = c_store.CONTEXT_AWARE_ACCESS_HELP_MSG
+    else:
+      msg = 'There was a problem with web authentication.'
+      if launch_browser:
+        msg += ' Try running again with --no-launch-browser.'
+    log.error(msg)
+    raise
 
 
 def DoInstalledAppBrowserFlow(launch_browser, scopes, client_id_file=None,

@@ -341,7 +341,7 @@
             "Default unknown type.",
             "Output only. The type of entry that has a GoogleSQL schema, including logical views.",
             "Output only. The type of models, examples include https:\/\/cloud.google.com\/bigquery-ml\/docs\/bigqueryml-intro",
-            "Output only. An entry type which is used for streaming entries. Example: Pub\/Sub topic.",
+            "An entry type which is used for streaming entries. Example: Pub\/Sub topic.",
             "An entry type which is a set of files or objects. Example: Cloud Storage fileset."
           ],
           "enum": [
@@ -633,6 +633,10 @@
         "isRequired": {
           "description": "Whether this is a required field. Defaults to false.",
           "type": "boolean"
+        },
+        "description": {
+          "description": "The description for this field. Defaults to an empty string.",
+          "type": "string"
         },
         "order": {
           "description": "The order of this field with respect to other fields in this tag template. For example, a higher value can indicate a more important field. The value can be negative. Multiple fields can have the same order, and field orders within a tag do not have to be sequential.",

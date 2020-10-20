@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import itertools
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
@@ -31,35 +33,40 @@ def GetMessages():
   return apis.GetMessagesModule('containeranalysis', 'v1')
 
 
-def ListOccurrences(project,
-                    resource_filter,
-                    occurrence_filter=None):
+def ListOccurrences(project, res_filter):
   """List occurrences for resources in a project."""
   client = GetClient()
   messages = GetMessages()
-  base_filter = resource_filter
-  if occurrence_filter:
-    base_filter = ('({occurrence_filter}) AND ({base_filter})'.format(
-        occurrence_filter=occurrence_filter, base_filter=base_filter))
-
   project_ref = resources.REGISTRY.Parse(
       project, collection='cloudresourcemanager.projects')
   return list_pager.YieldFromList(
       client.projects_occurrences,
       request=messages.ContaineranalysisProjectsOccurrencesListRequest(
-          parent=project_ref.RelativeName(), filter=base_filter),
+          parent=project_ref.RelativeName(), filter=res_filter),
       field='occurrences',
       batch_size=1000,
       batch_size_attribute='pageSize')
 
 
-def GetVulnerabilitySummary(project, resource_filter):
+def ListOccurrencesWithFilters(project, filters):
+  """List occurrences for resources in a project with multiple filters."""
+  results = [ListOccurrences(project, f) for f in filters]
+  return itertools.chain(*results)
+
+
+def GetVulnerabilitySummary(project, res_filter):
   """Get vulnerability summary for resources in a project."""
   client = GetClient()
   messages = GetMessages()
+  project_ref = resources.REGISTRY.Parse(
+      project, collection='cloudresourcemanager.projects')
   req = (
       messages
       .ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(
-          parent=project, filter=resource_filter))
+          parent=project_ref.RelativeName(), filter=res_filter))
   return client.projects_occurrences.GetVulnerabilitySummary(req)
 
+
+def GetVulnerabilitySummaryWithFilters(project, filters):
+  """Get vulnerability summary for resources in a project with multiple filters."""
+  return [GetVulnerabilitySummary(project, f) for f in filters]

@@ -25,7 +25,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
 
 ARTIFACTREGISTRY_API_NAME = "artifactregistry"
-ARTIFACTREGISTRY_API_VERSION = "v1beta1"
+ARTIFACTREGISTRY_API_VERSION = "v1beta2"
 
 STORAGE_API_NAME = "storage"
 STORAGE_API_VERSION = "v1"
@@ -220,15 +220,6 @@ def ListLocations(project_id, page_size=None):
       batch_size_attribute="pageSize",
       field="locations")
   return sorted([loc.locationId for loc in locations])
-
-
-def TestStorageIAMPermission(bucket, project):
-  """Tests storage IAM permission for a given bucket for the user project."""
-  client = GetStorageClient()
-  messages = GetStorageMessages()
-  test_req = messages.StorageBucketsTestIamPermissionsRequest(
-      bucket=bucket, permissions=_GCR_PERMISSION, userProject=project)
-  return client.buckets.TestIamPermissions(test_req)
 
 
 def GetCryptoKeyPolicy(kms_key):

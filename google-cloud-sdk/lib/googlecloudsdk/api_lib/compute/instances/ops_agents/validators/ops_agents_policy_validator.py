@@ -60,6 +60,7 @@ _OS_SHORT_NAMES_WITH_OS_AGENT_PREINSTALLED = (
 _SUPPORTED_AGENT_MAJOR_VERSIONS = {
     'logging': ('1',),
     'metrics': ('5', '6'),
+    'ops-agent': ('1'),
 }
 
 
@@ -69,6 +70,16 @@ class AgentTypesUniquenessError(exceptions.PolicyValidationError):
   def __init__(self, agent_type):
     super(AgentTypesUniquenessError, self).__init__(
         'At most one agent with type [{}] is allowed.'.format(agent_type))
+
+
+class AgentTypesConflictError(exceptions.PolicyValidationError):
+  """Raised when agent type is ops-agent and another agent type is specified."""
+
+  def __init__(self):
+    super(AgentTypesConflictError, self).__init__(
+        'An agent with type [ops-agent] is detected. No other agent type is '
+        'allowed. The Ops Agent has both a logging module and a metrics module '
+        'already.')
 
 
 class AgentVersionInvalidFormatError(exceptions.PolicyValidationError):
@@ -136,6 +147,9 @@ def ValidateOpsAgentsPolicy(policy):
     errors from the following list.
     * AgentTypesUniquenessError:
       Multiple agents with the same type are specified.
+    * AgentTypesConflictError:
+      More than one agent type is specified when there is already a type
+      ops-agent.
     * AgentVersionInvalidFormatError:
       Agent version format is invalid.
     * AgentVersionAndEnableAutoupgradeConflictError:
@@ -167,13 +181,16 @@ def _ValidateAgentRules(agent_rules):
     list if the validation fails.
     * AgentTypesUniquenessError:
       Multiple agents with the same type are specified.
+    * AgentTypesConflictError:
+      More than one agent type is specified when there is already a type
+      ops-agent.
     * AgentVersionInvalidFormatError:
       Agent version format is invalid.
     * AgentVersionAndEnableAutoupgradeConflictError:
       Agent version is pinned but autoupgrade is enabled.
   """
-  # TODO(b/164155271): Empty agent rules should error out.
   errors = _ValidateAgentTypesUniqueness(agent_rules)
+  errors.extend(_ValidateAgentTypesConflict(agent_rules))
   for agent_rule in agent_rules:
     errors.extend(_ValidateAgentRule(agent_rule))
   return errors
@@ -200,6 +217,31 @@ def _ValidateAgentTypesUniqueness(agent_rules):
       agent_rule.type for agent_rule in agent_rules)
   duplicate_types = [k for k, v in agent_types.items() if v > 1]
   return [AgentTypesUniquenessError(t) for t in sorted(duplicate_types)]
+
+
+def _ValidateAgentTypesConflict(agent_rules):
+  """Validates that when agent type is ops-agent, it is the only agent type.
+
+  This validation happens after the arg parsing stage. At this point, we can
+  assume that the field is a list of OpsAgentPolicy.AgentRule object. Each
+  OpsAgentPolicy object's 'type' field already complies with the allowed values.
+
+  Args:
+    agent_rules: list of OpsAgentPolicy.AgentRule. The list of agent rules to be
+      managed by the Ops Agents policy.
+
+  Returns:
+    An empty list if the validation passes. A list that contains one or more
+    errors below if the validation fails.
+    * AgentTypesConflictError:
+      More than one agent type is specified when there is already a type
+      ops-agent.
+  """
+  agent_types = {agent_rule.type for agent_rule in agent_rules}
+  if agent_policy.OpsAgentPolicy.AgentRule.Type.OPS_AGENT in agent_types and len(
+      agent_types) > 1:
+    return [AgentTypesConflictError()]
+  return []
 
 
 def _ValidateAgentRule(agent_rule):

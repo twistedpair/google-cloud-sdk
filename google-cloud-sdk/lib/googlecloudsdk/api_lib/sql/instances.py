@@ -42,6 +42,7 @@ messages = apis.GetMessagesModule('sql', 'v1beta4')
 
 _BASE_CLOUD_SQL_PROXY_ERROR = 'Failed to start the Cloud SQL Proxy'
 
+_MYSQL_DATABASE_VERSION_PREFIX = 'MYSQL'
 _POSTGRES_DATABASE_VERSION_PREFIX = 'POSTGRES'
 _SQLSERVER_DATABASE_VERSION_PREFIX = 'SQLSERVER'
 
@@ -248,14 +249,19 @@ class _BaseInstances(object):
         cancel_on_no=True)
 
   @staticmethod
+  def IsMysqlDatabaseVersion(database_version):
+    """Returns a boolean indicating if the database version is MySQL."""
+    return database_version.name.startswith(_MYSQL_DATABASE_VERSION_PREFIX)
+
+  @staticmethod
   def IsPostgresDatabaseVersion(database_version):
     """Returns a boolean indicating if the database version is Postgres."""
-    return _POSTGRES_DATABASE_VERSION_PREFIX in database_version.name
+    return database_version.name.startswith(_POSTGRES_DATABASE_VERSION_PREFIX)
 
   @staticmethod
   def IsSqlServerDatabaseVersion(database_version):
     """Returns a boolean indicating if the database version is SQL Server."""
-    return _SQLSERVER_DATABASE_VERSION_PREFIX in database_version.name
+    return database_version.name.startswith(_SQLSERVER_DATABASE_VERSION_PREFIX)
 
 
 class InstancesV1Beta4(_BaseInstances):

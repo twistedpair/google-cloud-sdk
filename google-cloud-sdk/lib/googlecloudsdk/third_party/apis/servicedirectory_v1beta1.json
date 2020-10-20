@@ -249,6 +249,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "network": {
+          "description": "Immutable. Specifies the Google Compute Engine Network (VPC) of the Endpoint. Network must be in the same project as the Service Directory Endpoint. Invalid network (bad format, different project, non-existent) will be rejected. Project may be specified by project-id or project-number. Service Directory will return project-number. Example: `projects\/project-number\/global\/networks\/my-network`",
+          "type": "string"
         }
       }
     },

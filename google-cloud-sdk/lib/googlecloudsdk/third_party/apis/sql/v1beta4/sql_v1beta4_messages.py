@@ -2079,6 +2079,8 @@ class SqlExternalSyncSettingError(_messages.Message):
       UNSUPPORTED_GTID_MODE: The gtid_mode is not supported, applicable for
         MySQL.
       SQLSERVER_AGENT_NOT_RUNNING: SQL Server Agent is not running.
+      UNSUPPORTED_TABLE_DEFINITION: The table definition is not support due to
+        missing primary key or replica identity, applicable for postgres.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2100,6 +2102,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     INVALID_DB_PARAM = 17
     UNSUPPORTED_GTID_MODE = 18
     SQLSERVER_AGENT_NOT_RUNNING = 19
+    UNSUPPORTED_TABLE_DEFINITION = 20
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

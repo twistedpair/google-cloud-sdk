@@ -314,15 +314,17 @@ class ContainerSpec(_messages.Message):
   r"""Container Spec.
 
   Fields:
+    defaultEnvironment: Default runtime environment for the job.
     image: Name of the docker container image. E.g., gcr.io/project/some-image
     metadata: Metadata describing a template including description and
       validation rules.
     sdkInfo: Required. SDK info of the Flex Template.
   """
 
-  image = _messages.StringField(1)
-  metadata = _messages.MessageField('TemplateMetadata', 2)
-  sdkInfo = _messages.MessageField('SDKInfo', 3)
+  defaultEnvironment = _messages.MessageField('FlexTemplateRuntimeEnvironment', 1)
+  image = _messages.StringField(2)
+  metadata = _messages.MessageField('TemplateMetadata', 3)
+  sdkInfo = _messages.MessageField('SDKInfo', 4)
 
 
 class CounterMetadata(_messages.Message):

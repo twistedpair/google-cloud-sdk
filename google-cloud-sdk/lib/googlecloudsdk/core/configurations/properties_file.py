@@ -63,7 +63,7 @@ class PropertiesFile(object):
     try:
       parsed_config.read(properties_path)
     except configparser.ParsingError as e:
-      raise PropertiesParseError(e.message)
+      raise PropertiesParseError(str(e))
 
     for section in parsed_config.sections():
       if section not in self._properties:

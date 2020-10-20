@@ -571,6 +571,10 @@
         "oneShotAlgorithmSpec": {
           "description": "The spec of one-shot algorithms.",
           "$ref": "GoogleCloudMlV1_NasSpec_OneShotAlgorithmSpec"
+        },
+        "previousNasJobId": {
+          "description": "The previous NAS job ID to resume search. The `search_space_spec` needs to be the same between this and previous NAS job and its job state is `FINISHED` or `CANCELLED`.",
+          "type": "string"
         }
       }
     },

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.compute.instances import flags as instance_flags
 
 # TODO(b/129054682): fix the format in text render.
 
@@ -117,7 +118,7 @@ to learn about all available accelerator types.
       help=help_text)
 
 
-def AddCreateFlags(parser, support_location_hint=False):
+def AddCreateFlags(parser, support_location_hint=False, support_fleet=False):
   """Adds all flags needed for the create command."""
   GetDescriptionFlag().AddToParser(parser)
 
@@ -132,4 +133,7 @@ def AddCreateFlags(parser, support_location_hint=False):
   group.AddArgument(GetAcceleratorFlag())
   if support_location_hint:
     group.AddArgument(GetLocationHint())
+  if support_fleet:
+    group.AddArgument(instance_flags.AddMaintenanceFreezeDuration())
+    group.AddArgument(instance_flags.AddMaintenanceInterval())
   group.AddToParser(parser)

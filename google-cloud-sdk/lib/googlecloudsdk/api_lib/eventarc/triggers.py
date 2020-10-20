@@ -21,12 +21,13 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.eventarc import types
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times
 
-MAX_READY_LATENCY_MINUTES = 10
+MAX_ACTIVE_DELAY_MINUTES = 10
 
 _API_NAME = 'eventarc'
 _API_VERSION = 'v1beta1'
@@ -75,19 +76,25 @@ def GetTriggerURI(resource):
   return trigger.SelfLink()
 
 
-def RecentlyModified(update_time):
-  """Checks if the trigger with the given update_time was recently modified.
+def TriggerActiveTime(event_type, update_time):
+  """Computes the time by which the trigger will become active.
 
   Args:
+    event_type: str, the trigger's event type.
     update_time: str, the time when the trigger was last modified.
 
   Returns:
-    True if the trigger was recently modified and might not be ready for use.
+    The active time as a string, or None if the trigger is already active.
   """
+  if not types.IsAuditLogType(event_type):
+    # The delay only applies to Audit Log triggers.
+    return None
   update_dt = times.ParseDateTime(update_time)
-  max_duration = iso_duration.Duration(minutes=MAX_READY_LATENCY_MINUTES)
-  ready_dt = times.GetDateTimePlusDuration(update_dt, max_duration)
-  return times.Now() < ready_dt
+  delay = iso_duration.Duration(minutes=MAX_ACTIVE_DELAY_MINUTES)
+  active_dt = times.GetDateTimePlusDuration(update_dt, delay)
+  if times.Now() >= active_dt:
+    return None
+  return times.FormatDateTime(active_dt, fmt='%H:%M:%S', tzinfo=times.LOCAL)
 
 
 class TriggersClient(object):

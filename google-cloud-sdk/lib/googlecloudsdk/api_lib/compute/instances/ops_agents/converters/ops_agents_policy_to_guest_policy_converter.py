@@ -186,13 +186,13 @@ _AGENT_RULE_TEMPLATES = {
                     #!/bin/bash -e
                     %(clear_prev_repo)s
                     for i in {1..5}; do
-                      if (%(install)s; sudo service google-cloud-ops-agent start); then
+                      if (%(install)s; sudo systemctl start google-cloud-ops-agent.target); then
                         break
                       fi
                       sleep 1m
                     done"""),
             recipe_name='set-ops-agent-version',
-            current_major_version='0.*.*',
+            current_major_version='1.*.*',
         ),
 }
 

@@ -19,10 +19,34 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
+
+BUNDLE_ANTHOS = 'Anthos'
+BUNDLE_YAKIMA = 'Yakima'
 
 
 def Messages(api_version):
   return apis.GetMessagesModule('krmapihosting', api_version)
+
+
+def AddExtraArgs():
+  """Adds additional args that can't be easily represented in create.yaml."""
+
+  # TODO(b/169528795): this is a list even though it takes exactly one element
+  # because the API is expected to accept multiple elements in later versions.
+  bundles = base.Argument(
+      '--bundles',
+      dest='bundles',
+      required=True,
+      type=arg_parsers.ArgList(),
+      metavar='BUNDLE',
+      help="""
+Bundles that should be enabled. Exactly one bundle must be enabled.
+BUNDLE must be one of: %s, %s.
+""" % (BUNDLE_ANTHOS, BUNDLE_YAKIMA))
+  return [bundles]
 
 
 def CreateUpdateRequest(ref, args):
@@ -45,17 +69,35 @@ def CreateUpdateRequest(ref, args):
   if args.master_ipv4_cidr_block is not None:
     master_ipv4_cidr_block = args.master_ipv4_cidr_block
 
-  anthos_api_endpoint = messages.AnthosApiEndpoint(
+  # The current version of the API only supports exactly one bundle.
+  if len(args.bundles) != 1:
+    raise exceptions.InvalidArgumentException(
+        '--bundles', 'Exactly one bundle must be enabled')
+
+  bundles_config = None
+  if args.bundles[0].lower() == BUNDLE_ANTHOS.lower():
+    bundles_config = messages.BundlesConfig(
+        anthosSseConfig=messages.AnthosSseConfig(enabled=True))
+  elif args.bundles[0].lower() == BUNDLE_YAKIMA.lower():
+    bundles_config = messages.BundlesConfig(
+        yakimaConfig=messages.YakimaConfig(enabled=True))
+  else:
+    raise exceptions.InvalidArgumentException(
+        '--bundles',
+        'BUNDLE must be one of: %s, %s' % (BUNDLE_ANTHOS, BUNDLE_YAKIMA))
+
+  krm_api_host = messages.KrmApiHost(
       masterIpv4CidrBlock=master_ipv4_cidr_block,
       gitSecretType=git_secret_type,
       gitEndpoint=args.git_sync_repo,
       gitBranch=args.git_branch,
-      gitPolicyDir=args.git_policy_dir)
+      gitPolicyDir=args.git_policy_dir,
+      bundlesConfig=bundles_config)
 
   request = (
-      messages.KrmapihostingProjectsLocationsAnthosApiEndpointsCreateRequest(
+      messages.KrmapihostingProjectsLocationsKrmApiHostsCreateRequest(
           parent=custom_uri,
-          anthosApiEndpointId=ref.anthosApiEndpointsId,
-          anthosApiEndpoint=anthos_api_endpoint))
+          krmApiHostId=ref.krmApiHostsId,
+          krmApiHost=krm_api_host))
 
   return request

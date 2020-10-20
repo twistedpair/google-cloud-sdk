@@ -207,8 +207,8 @@ class Node(_messages.Message):
     LabelsValue: Resource labels to represent user-provided metadata.
 
   Fields:
-    acceleratorType: The type of hardware accelerators associated with this
-      node. Required.
+    acceleratorType: Required. The type of hardware accelerators associated
+      with this node.
     cidrBlock: The CIDR block that the TPU node will use when selecting an IP
       address. This CIDR block must be a /29 block; the Compute Engine
       networks API forbids a smaller block, and using a larger block would be
@@ -229,13 +229,14 @@ class Node(_messages.Message):
     modelBasePath: Inference Mode: Base path to exported saved model. This
       field can be used instead of model_config_file directly to specify the
       exported saved model's base path (excluding timestamp), whereas
-      model_config_file points to a GCS path to a ModelServerConfig proto.
-    modelConfigFile: Inference Mode: GCS path to model configuration file for
-      models to serve The contents of the model_config.pbtxt is a
+      model_config_file points to a Cloud Storage path to a ModelServerConfig
+      proto.
+    modelConfigFile: Inference Mode: Cloud Storage path to model configuration
+      file for models to serve. The contents of the model_config.pbtxt is a
       ModelServerConfig proto.
     modelName: Inference Mode: Model name for tensorflow serving to serve to
       incoming requests. If none is provided, "serving_default" will be used.
-    name: Output only. The immutable name of the TPU
+    name: Output only. Immutable. The name of the TPU
     network: The name of a network they wish to peer the TPU node to. It must
       be a preexisting Compute Engine network inside of the project on which
       this API has been activated. If none is provided, "default" will be
@@ -243,20 +244,20 @@ class Node(_messages.Message):
     networkEndpoints: Output only. The network endpoints where TPU workers can
       be accessed and sent work. It is recommended that Tensorflow clients of
       the node reach out to the 0th entry in this map first.
-    platformConfigFile: Inference Mode: GCS path to configuration file for
-      platform requirements The contents of the platform_config.pbtxt is a
-      PlatformConfigMap proto.
+    platformConfigFile: Inference Mode: Cloud Storage path to configuration
+      file for platform requirements The contents of the platform_config.pbtxt
+      is a PlatformConfigMap proto.
     port: Output only. DEPRECATED! Use network_endpoints instead. The network
       port for the TPU Node as visible to Compute Engine instances.
-    schedulingConfig: A SchedulingConfig attribute.
+    schedulingConfig: The scheduling options for this node.
     serviceAccount: Output only. The service account used to run the tensor
       flow services within the node. To share resources, including Google
       Cloud Storage data, with the Tensorflow job running in the Node, this
       account must have permissions to that data.
     state: Output only. The current state for the TPU Node.
     symptoms: Output only. The Symptoms that have occurred to the TPU Node.
-    tensorflowVersion: The version of Tensorflow running in the Node.
-      Required.
+    tensorflowVersion: Required. The version of Tensorflow running in the
+      Node.
     useServiceNetworking: Whether the VPC peering for the node is set up
       through Service Networking API. The VPC Peering should be set up before
       provisioning the node. If this field is set, cidr_block field should not
@@ -706,7 +707,7 @@ class TpuProjectsLocationsAcceleratorTypesGetRequest(_messages.Message):
   r"""A TpuProjectsLocationsAcceleratorTypesGetRequest object.
 
   Fields:
-    name: The resource name.
+    name: Required. The resource name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -721,7 +722,7 @@ class TpuProjectsLocationsAcceleratorTypesListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name.
+    parent: Required. The parent resource name.
   """
 
   filter = _messages.StringField(1)
@@ -763,7 +764,7 @@ class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
   Fields:
     node: A Node resource to be passed as the request body.
     nodeId: The unqualified resource name.
-    parent: The parent resource name.
+    parent: Required. The parent resource name.
   """
 
   node = _messages.MessageField('Node', 1)
@@ -775,7 +776,7 @@ class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
   r"""A TpuProjectsLocationsNodesDeleteRequest object.
 
   Fields:
-    name: The resource name.
+    name: Required. The resource name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -785,7 +786,7 @@ class TpuProjectsLocationsNodesGetRequest(_messages.Message):
   r"""A TpuProjectsLocationsNodesGetRequest object.
 
   Fields:
-    name: The resource name.
+    name: Required. The resource name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -798,7 +799,7 @@ class TpuProjectsLocationsNodesListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name.
+    parent: Required. The parent resource name.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -895,7 +896,7 @@ class TpuProjectsLocationsTensorflowVersionsGetRequest(_messages.Message):
   r"""A TpuProjectsLocationsTensorflowVersionsGetRequest object.
 
   Fields:
-    name: The resource name.
+    name: Required. The resource name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -910,7 +911,7 @@ class TpuProjectsLocationsTensorflowVersionsListRequest(_messages.Message):
     pageSize: The maximum number of items to return.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The parent resource name.
+    parent: Required. The parent resource name.
   """
 
   filter = _messages.StringField(1)
