@@ -67,6 +67,30 @@ properties:
       that infrequently accessed objects may be evicted from the cache
       before the defined TTL.
     type: integer
+  negativeCaching:
+    description: |-
+      Negative caching lets you set per-status code TTLs, in order to
+      apply fine-grained caching for common errors or redirects. This can
+      reduce the load on your origin and improve the end-user experience by
+      reducing response latency. By default, Cloud CDN applies the
+      following default TTLs to these status codes:   -300 (Multiple
+      Choice)   -301 and 308 (Permanent Redirects): 10m   -404 (Not Found)  -410
+      (Gone)   -451 (Unavailable For Legal Reasons): 120s -405 (Method Not
+      Found)   -414 (URI Too Long)   -501 (Not Implemented): 60s These defaults
+      can be overridden by a negative caching policy.
+    type: boolean
+  negativeCachingPolicy:
+    description: |-
+      Sets a cache TTL for the specified HTTP status codes. Negative caching
+      must be enabled to configure a negative caching policy. If you omit a
+      policy and have negative caching enabled, Cloud CDN uses the
+      default cache TTLs. Note that when specifying an explicit
+      negative caching policy, make sure to specify a cache TTL
+      for all response codes that you want to cache. Cloud CDN doesn't
+      apply any default negative caching when a policy exists.
+    type: array
+    items:
+      $ref: BackendServiceCdnPolicyNegativeCachingPolicy.yaml
   signedUrlCacheMaxAgeSec:
     description: |-
       Maximum number of seconds the response to a signed URL request will be

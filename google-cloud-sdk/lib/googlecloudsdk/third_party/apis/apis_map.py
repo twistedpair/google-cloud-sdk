@@ -1872,12 +1872,12 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
-    'sql': {
+    'sqladmin': {
         'v1beta4':
             APIDef(
-                class_path='googlecloudsdk.third_party.apis.sql.v1beta4',
-                client_classpath='sql_v1beta4_client.SqlV1beta4',
-                messages_modulepath='sql_v1beta4_messages',
+                class_path='googlecloudsdk.third_party.apis.sqladmin.v1beta4',
+                client_classpath='sqladmin_v1beta4_client.SqladminV1beta4',
+                messages_modulepath='sqladmin_v1beta4_messages',
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
@@ -2023,6 +2023,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'workflowexecutions': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.workflowexecutions.v1',
+                client_classpath='workflowexecutions_v1_client.WorkflowexecutionsV1',
+                messages_modulepath='workflowexecutions_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.workflowexecutions.v1alpha1',
@@ -2041,6 +2049,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'workflows': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.workflows.v1',
+                client_classpath='workflows_v1_client.WorkflowsV1',
+                messages_modulepath='workflows_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.workflows.v1alpha1',

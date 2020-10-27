@@ -546,7 +546,7 @@ class ServicenetworkingV1(base_api.BaseApiClient):
           }
 
     def Add(self, request, global_params=None):
-      r"""Service producers can use this method to add roles in the shared VPC host project. Each role is bound to the provided member. Each role must be selected from within a whitelisted set of roles. Each role is applied at only the granularity specified in the whitelist.
+      r"""Service producers can use this method to add roles in the shared VPC host project. Each role is bound to the provided member. Each role must be selected from within an allowlisted set of roles. Each role is applied at only the granularity specified in the allowlist.
 
       Args:
         request: (ServicenetworkingServicesRolesAddRequest) input message

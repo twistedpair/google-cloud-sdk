@@ -685,6 +685,8 @@ class ClusterUpdate(_messages.Message):
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
+    desiredAutoGke: AutoGKE is the configuration for AutoGKE settings on the
+      cluster.
     desiredBinaryAuthorization: The desired configuration options for the
       Binary Authorization feature.
     desiredClusterAutoscaling: Cluster-level autoscaling configuration.
@@ -805,38 +807,39 @@ class ClusterUpdate(_messages.Message):
     PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
-  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 2)
-  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 3)
-  desiredClusterTelemetry = _messages.MessageField('ClusterTelemetry', 4)
-  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 5)
-  desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 6)
-  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 7)
-  desiredEnableGvnic = _messages.BooleanField(8)
-  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 9)
-  desiredImage = _messages.StringField(10)
-  desiredImageProject = _messages.StringField(11)
-  desiredImageType = _messages.StringField(12)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 13)
-  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 14)
-  desiredLocations = _messages.StringField(15, repeated=True)
-  desiredLoggingService = _messages.StringField(16)
-  desiredMaster = _messages.MessageField('Master', 17)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 18)
-  desiredMasterVersion = _messages.StringField(19)
-  desiredMonitoringService = _messages.StringField(20)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 21)
-  desiredNodePoolId = _messages.StringField(22)
-  desiredNodeVersion = _messages.StringField(23)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 24)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 25)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 26)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 27)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 28)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 29)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 30)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 31)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 32)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 33)
+  desiredAutoGke = _messages.MessageField('AutoGKE', 2)
+  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
+  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 4)
+  desiredClusterTelemetry = _messages.MessageField('ClusterTelemetry', 5)
+  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 6)
+  desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 7)
+  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 8)
+  desiredEnableGvnic = _messages.BooleanField(9)
+  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 10)
+  desiredImage = _messages.StringField(11)
+  desiredImageProject = _messages.StringField(12)
+  desiredImageType = _messages.StringField(13)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 14)
+  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 15)
+  desiredLocations = _messages.StringField(16, repeated=True)
+  desiredLoggingService = _messages.StringField(17)
+  desiredMaster = _messages.MessageField('Master', 18)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 19)
+  desiredMasterVersion = _messages.StringField(20)
+  desiredMonitoringService = _messages.StringField(21)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 22)
+  desiredNodePoolId = _messages.StringField(23)
+  desiredNodeVersion = _messages.StringField(24)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 25)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 26)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 27)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 28)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 29)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 30)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 31)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 32)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 33)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 34)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1525,6 +1528,19 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EphemeralStorageConfig(_messages.Message):
+  r"""EphemeralStorageConfig contains configuration for the ephemeral storage
+  filesystem.
+
+  Fields:
+    localSsdCount: Number of local SSDs to use to back ephemeral storage. Uses
+      NVMe interfaces. Each local SSD is 375 GB in size. If zero, it means to
+      disable using local SSDs as ephemeral storage.
+  """
+
+  localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GcePersistentDiskCsiDriverConfig(_messages.Message):
@@ -2361,6 +2377,8 @@ class NodeConfig(_messages.Message):
       size is 100GB.
     diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
       'pd-ssd') If unspecified, the default disk type is 'pd-standard'
+    ephemeralStorageConfig: Parameters for the ephemeral storage filesystem.
+      If unspecified, ephemeral storage is backed by the boot disk.
     gcfsConfig: GCFS (Google Container File System) configs.
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
@@ -2519,26 +2537,27 @@ class NodeConfig(_messages.Message):
   bootDiskKmsKey = _messages.StringField(2)
   diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(4)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 5)
-  imageType = _messages.StringField(6)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 9)
-  localSsdCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(11)
-  metadata = _messages.MessageField('MetadataValue', 12)
-  minCpuPlatform = _messages.StringField(13)
-  nodeGroup = _messages.StringField(14)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 15)
-  oauthScopes = _messages.StringField(16, repeated=True)
-  preemptible = _messages.BooleanField(17)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 18)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 19)
-  serviceAccount = _messages.StringField(20)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
-  tags = _messages.StringField(22, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 23, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 24)
+  ephemeralStorageConfig = _messages.MessageField('EphemeralStorageConfig', 5)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 6)
+  imageType = _messages.StringField(7)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 10)
+  localSsdCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(12)
+  metadata = _messages.MessageField('MetadataValue', 13)
+  minCpuPlatform = _messages.StringField(14)
+  nodeGroup = _messages.StringField(15)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 16)
+  oauthScopes = _messages.StringField(17, repeated=True)
+  preemptible = _messages.BooleanField(18)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 19)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 20)
+  serviceAccount = _messages.StringField(21)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 22)
+  tags = _messages.StringField(23, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 24, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 25)
 
 
 class NodeKubeletConfig(_messages.Message):

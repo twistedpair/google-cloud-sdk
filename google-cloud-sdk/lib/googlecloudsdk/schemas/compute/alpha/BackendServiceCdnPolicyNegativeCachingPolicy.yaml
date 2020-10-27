@@ -33,9 +33,8 @@ properties:
     type: integer
   ttl:
     description: |-
-      The TTL (in seconds) to cache responses with the corresponding status code
-      for. A TTL of "0" means "always revalidate" and a value of "-1" disables
-      caching for that status code. The maximum allowed value is 1800s (30
+      The TTL (in seconds) for which to cache responses with the corresponding
+      status code. The maximum allowed value is 1800s (30
       minutes), noting that infrequently accessed objects may be evicted from
       the cache before the defined TTL.
     type: integer

@@ -28,7 +28,7 @@ import os
 import re
 
 from apitools.base.py import exceptions as apitools_exceptions
-
+from googlecloudsdk.api_lib import scheduler
 from googlecloudsdk.api_lib import tasks
 from googlecloudsdk.api_lib.app import build as app_cloud_build
 from googlecloudsdk.api_lib.app import deploy_app_command_util
@@ -681,6 +681,31 @@ def RunDeploy(
   }
 
 
+def _GetDeployableConfigsFromArgs(args):
+  """Get parsed YAML configs for any deployables specified in args.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+        arguments specified in the ArgsDeploy() function.
+
+  Returns:
+    A list of yaml_parsing.ConfigYamlInfos object for the parsed YAML file(s)
+    we are going to process.
+
+  Raises:
+    FileNotFoundError: If the path specified for a deployable does not exist.
+  """
+  paths = [os.path.abspath(x) for x in args.deployables]
+  configs = []
+  for path in paths:
+    if not os.path.exists(path):
+      raise exceptions.FileNotFoundError(path)
+    config = yaml_parsing.ConfigYamlInfo.FromFile(path)
+    if config:
+      configs.append(config)
+  return configs
+
+
 def RunDeployCloudTasks(args):
   """Perform a deployment using Cloud Tasks API based on the given args.
 
@@ -691,25 +716,45 @@ def RunDeployCloudTasks(args):
   Returns:
     A list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
   """
-  paths = [os.path.abspath(x) for x in args.deployables]
-  configs = []
-  for path in paths:
-    if not os.path.exists(path):
-      raise exceptions.FileNotFoundError(path)
-    config = yaml_parsing.ConfigYamlInfo.FromFile(path)
-    if config:
-      configs.append(config)
+  configs = _GetDeployableConfigsFromArgs(args)
   if configs:
     # TODO(b/169069379): Confirm the same metric name can be used twice in the
     # same run.
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG_START)
     # TODO(b/169069379): Upgrade to use GA once the relevant code is promoted
     tasks_api = tasks.GetApiAdapter(base.ReleaseTrack.BETA)
-    queues_data = app_deploy_migration_util.FetchCurrrentQueuesData(tasks_api)
+    queues_data = app_deploy_migration_util.FetchCurrentQueuesData(tasks_api)
     for config in configs:
-      app_deploy_migration_util.ValidateYamlFileConfig(config)
+      app_deploy_migration_util.ValidateQueueYamlFileConfig(config)
       app_deploy_migration_util.DeployQueuesYamlFile(
           tasks_api, config, queues_data)
+    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
+  return [c.name for c in configs]
+
+
+def RunDeployCloudScheduler(args):
+  """Perform a deployment using Cloud Scheduler APIs based on the given args.
+
+  Args:
+    args: argparse.Namespace, An object that contains the values for the
+        arguments specified in the ArgsDeploy() function.
+
+  Returns:
+    A list of config file identifiers, see yaml_parsing.ConfigYamlInfo.
+  """
+  configs = _GetDeployableConfigsFromArgs(args)
+  if configs:
+    # TODO(b/169069379): Confirm the same metric name can be used twice in the
+    # same run.
+    metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG_START)
+    # TODO(b/169069379): Upgrade to use GA once the relevant code is promoted
+    scheduler_api = scheduler.GetApiAdapter(base.ReleaseTrack.ALPHA,
+                                            legacy_cron=True)
+    jobs_data = app_deploy_migration_util.FetchCurrentJobsData(scheduler_api)
+    for config in configs:
+      app_deploy_migration_util.ValidateCronYamlFileConfig(config)
+      app_deploy_migration_util.DeployCronYamlFile(
+          scheduler_api, config, jobs_data)
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
   return [c.name for c in configs]
 

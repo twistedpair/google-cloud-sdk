@@ -26,9 +26,15 @@ SERVICE_IAM_POLICY_SET = 'IamPolicySet'
 SERVICE_ROUTES_READY = 'RoutesReady'
 SERVICE_CONFIGURATIONS_READY = 'ConfigurationsReady'
 BUILD_READY = 'BuildReady'
+UPLOAD_SOURCE = 'UploadSource'
 
 
-def _BuildFromSourceStage():
+def _UploadSourceStage():
+  return progress_tracker.Stage(
+      'Uploading sources...', key=UPLOAD_SOURCE)
+
+
+def _BuildContainerStage():
   return progress_tracker.Stage(
       'Building Container...', key=BUILD_READY)
 
@@ -51,7 +57,8 @@ def ServiceStages(include_iam_policy_set=False,
   """Return the progress tracker Stages for conditions of a Service."""
   stages = []
   if include_build:
-    stages.append(_BuildFromSourceStage())
+    stages.append(_UploadSourceStage())
+    stages.append(_BuildContainerStage())
   stages.append(progress_tracker.Stage(
       'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY))
   if include_route:

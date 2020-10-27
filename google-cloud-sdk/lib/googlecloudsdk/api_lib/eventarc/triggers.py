@@ -144,6 +144,9 @@ class TriggersClient(object):
     Returns:
       A long-running operation for create.
     """
+    # If no Cloud Run region was provided, use the trigger's location instead.
+    destination_run_region = destination_run_region or trigger_ref.Parent(
+    ).Name()
     trigger_message = self._BuildTriggerMessage(trigger_ref, matching_criteria,
                                                 service_account_ref,
                                                 destination_run_service,

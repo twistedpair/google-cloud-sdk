@@ -22,6 +22,7 @@ from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.api_lib.workflows import cache
 from googlecloudsdk.api_lib.workflows import poller_utils
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -134,6 +135,26 @@ class WorkflowExecutionClient(object):
     self.messages = self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_workflows_executions
 
+  def Create(self, workflow_ref, data):
+    """Creates a Workflow execution.
+
+    Args:
+      workflow_ref: Resource reference to the Workflow to execute.
+      data: Argments to use for executing the workflow.
+
+    Returns:
+      Execution: The workflow execution.
+    """
+    execution = self.messages.Execution()
+    execution.argument = data
+    create_req = self.messages.WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest(
+        parent=workflow_ref.RelativeName(),
+        execution=execution)
+    try:
+      return self._service.Create(create_req)
+    except api_exceptions.HttpError as e:
+      raise exceptions.HttpException(e, error_format='{message}')
+
   def Get(self, execution_ref):
     """Gets a workflow execution.
 
@@ -144,6 +165,9 @@ class WorkflowExecutionClient(object):
       Workflow: The workflow execution if it exists, an error exception
       otherwise.
     """
+    if execution_ref is None:
+      execution_ref = cache.get_cached_execution_id()
+
     get_req = self.messages.WorkflowexecutionsProjectsLocationsWorkflowsExecutionsGetRequest(
         name=execution_ref.RelativeName())
     try:
@@ -153,6 +177,10 @@ class WorkflowExecutionClient(object):
 
   def WaitForExecution(self, execution_ref):
     """Waits until the given execution is complete or the maximum wait time is reached."""
+
+    if execution_ref is None:
+      execution_ref = cache.get_cached_execution_id()
+
     poller = poller_utils.ExecutionsPoller(workflow_execution=self)
     progress_string = 'Waiting for execution [{}] to complete'.format(
         execution_ref.Name())

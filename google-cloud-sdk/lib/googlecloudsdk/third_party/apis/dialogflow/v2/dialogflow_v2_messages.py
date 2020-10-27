@@ -7072,6 +7072,12 @@ class GoogleCloudDialogflowV2beta1WebhookResponse(_messages.Message):
   source = _messages.StringField(8)
 
 
+class GoogleCloudDialogflowV3alpha1RunTestCaseMetadata(_messages.Message):
+  r"""Metadata returned for the TestCases.RunTestCase long running operation.
+  """
+
+
+
 class GoogleLongrunningListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -7255,10 +7261,10 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class GoogleTypeLatLng(_messages.Message):
-  r"""An object representing a latitude/longitude pair. This is expressed as a
-  pair of doubles representing degrees latitude and degrees longitude. Unless
-  specified otherwise, this must conform to the WGS84 standard. Values must be
-  within normalized ranges.
+  r"""An object that represents a latitude/longitude pair. This is expressed
+  as a pair of doubles to represent degrees latitude and degrees longitude.
+  Unless specified otherwise, this must conform to the WGS84 standard. Values
+  must be within normalized ranges.
 
   Fields:
     latitude: The latitude in degrees. It must be in the range [-90.0, +90.0].

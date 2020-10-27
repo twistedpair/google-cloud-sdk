@@ -77,10 +77,6 @@ def _GenerateUpdateMask(args):
           'hive_metastore_config.kerberos_config.keytab',
       '--krb5-config':
           'hive_metastore_config.kerberos_config.krb5_config_gcs_uri',
-      '--data-catalog-sync':
-          'metadataIntegration.dataCatalogConfig.disabled',
-      '--no-data-catalog-sync':
-          'metadataIntegration.dataCatalogConfig.disabled',
   }
 
   update_mask = set()
@@ -143,15 +139,3 @@ def UpdateServiceMaskHook(unused_ref, args, update_service_req):
   """
   update_service_req.updateMask = _GenerateUpdateMask(args)
   return update_service_req
-
-
-def Negate(data_catalog_sync):
-  """Returns the negation of the provided value.
-
-  Args:
-    data_catalog_sync: The provided data_catalog_sync value.
-
-  Returns:
-    The negation of the input value.
-  """
-  return not data_catalog_sync

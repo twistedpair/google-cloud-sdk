@@ -66,6 +66,13 @@ class Collections(enum.Enum):
       ['project'],
       True
   )
+  RESOURCERECORDSETS = (
+      'resourceRecordSets',
+      'projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}',
+      {},
+      ['project', 'managedZone', 'name', 'type'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

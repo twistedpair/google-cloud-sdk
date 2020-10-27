@@ -109,6 +109,17 @@ def IsOauth2clientP12AccountCredentials(creds):
           CredentialType.P12_SERVICE_ACCOUNT)
 
 
+def IsServiceAccountCredentials(creds):
+  if IsOauth2ClientCredentials(creds):
+    cred_type = CredentialType.FromCredentials(creds)
+    return cred_type in (CredentialType.SERVICE_ACCOUNT,
+                         CredentialType.P12_SERVICE_ACCOUNT)
+  else:
+    cred_type = CredentialTypeGoogleAuth.FromCredentials(creds)
+    return cred_type in (CredentialTypeGoogleAuth.SERVICE_ACCOUNT,
+                         CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT)
+
+
 def GetEffectiveTokenUri(cred_json, key='token_uri'):
   if properties.VALUES.auth.token_host.IsExplicitlySet():
     return properties.VALUES.auth.token_host.Get()

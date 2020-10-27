@@ -13,65 +13,6 @@ from apitools.base.py import extra_types
 package = 'networksecurity'
 
 
-class Authentication(_messages.Message):
-  r"""To be deprecated soon. Please use ServerTlsPolicy or ClientTlsPolicy
-  instead. Authentication is a resource that specifies how a client or server
-  should authenticate inbound or outbound connections. This resource itself
-  does not affect configuration unless it is attached to a backend service,
-  target https proxy or endpoint config selector resource.
-
-  Messages:
-    LabelsValue: Optional. Set of label tags associated with the Authorization
-      resource.
-
-  Fields:
-    createTime: Output only. The timestamp when the resource was created.
-    description: Optional. Free-text description of the resource.
-    labels: Optional. Set of label tags associated with the Authorization
-      resource.
-    name: Required. Name of the Authentication resource. It matches the
-      pattern
-      `projects/*/locations/{location}/authentications/{authentication}`
-    transportAuthentication: Optional. Peer to peer (i.e service to service
-      communication) authentication policy. If left blank, communications
-      between services are not encrypted (i.e., the TLS policy is set to
-      OPEN).
-    updateTime: Output only. The timestamp when the resource was updated.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the Authorization
-    resource.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  transportAuthentication = _messages.MessageField('TransportAuthentication', 5)
-  updateTime = _messages.StringField(6)
-
-
 class AuthorizationPolicy(_messages.Message):
   r"""AuthorizationPolicy is a resource that specifies how a server should
   authorize incoming connections. This resource in itself does not change the
@@ -150,21 +91,6 @@ class AuthorizationPolicy(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
-
-
-class CertificateProvider(_messages.Message):
-  r"""A CertificateProvider object.
-
-  Fields:
-    filepath: Obtain certificates and private key from a locally mounted
-      filesystem path. Used only when CertificateProviderType is FROM_FILE.
-    grpcEndpoint: gRPC specific configuration to access the gRPC server to
-      obtain the cert and private key. Used only when CertificateProviderType
-      is GRPC_ENDPOINT.
-  """
-
-  filepath = _messages.MessageField('TlsCertificatePaths', 1)
-  grpcEndpoint = _messages.MessageField('GrpcEndpoint', 2)
 
 
 class CertificateProviderInstance(_messages.Message):
@@ -574,17 +500,6 @@ class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
-class GrpcEndpoint(_messages.Message):
-  r"""Specification of the GRPC Endpoint.
-
-  Fields:
-    targetUri: The target URI of the gRPC endpoint. Only UDS path is
-      supported, and should start with "unix:".
-  """
-
-  targetUri = _messages.StringField(1)
-
-
 class HttpHeaderMatch(_messages.Message):
   r"""Specification of HTTP header match atrributes.
 
@@ -603,21 +518,6 @@ class HttpHeaderMatch(_messages.Message):
 
   headerName = _messages.StringField(1)
   regexMatch = _messages.StringField(2)
-
-
-class ListAuthenticationResponse(_messages.Message):
-  r"""Response returned by the ListAuthentications method.
-
-  Fields:
-    nextPageToken: If there might be more results than those appearing in this
-      response, then `next_page_token` is included. To get the next set of
-      results, call this method again using the value of `next_page_token` as
-      `page_token`.
-    resources: List of Authentication resources.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  resources = _messages.MessageField('Authentication', 2, repeated=True)
 
 
 class ListAuthorizationPoliciesResponse(_messages.Message):
@@ -780,139 +680,6 @@ class MTLSPolicy(_messages.Message):
   """
 
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
-
-
-class NetworksecurityProjectsLocationsAuthenticationCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsAuthenticationCreateRequest object.
-
-  Fields:
-    authentication: A Authentication resource to be passed as the request
-      body.
-    authenticationId: Required. Short name of the Authentication resource to
-      be created. This value should be 1-63 characters, and valid characters
-      are /a-z-/. E.g. "NewAuthentication".
-    parent: Required. The parent resource of the Authentication. Must be in
-      the format `projects/*/locations/{location}`.
-  """
-
-  authentication = _messages.MessageField('Authentication', 1)
-  authenticationId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class NetworksecurityProjectsLocationsAuthenticationDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsAuthenticationDeleteRequest object.
-
-  Fields:
-    name: Required. A name of the Authentication to delete. Must be in the
-      format `projects/*/locations/{location}/authentication/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsAuthenticationGetIamPolicyRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsAuthenticationGetIamPolicyRequest
-  object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworksecurityProjectsLocationsAuthenticationGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsAuthenticationGetRequest object.
-
-  Fields:
-    name: Required. A name of the Authentication to get. Must be in the format
-      `projects/*/locations/{location}/authentications/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsAuthenticationListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsAuthenticationListRequest object.
-
-  Fields:
-    pageSize: A integer attribute.
-    pageToken: The value returned by the last `ListAuthenticationsResponse`
-      Indicates that this is a continuation of a prior `ListAuthentications`
-      call, and that the system should return the next page of data.
-    parent: A string attribute.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class NetworksecurityProjectsLocationsAuthenticationPatchRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsAuthenticationPatchRequest object.
-
-  Fields:
-    authentication: A Authentication resource to be passed as the request
-      body.
-    name: Required. Name of the Authentication resource. It matches the
-      pattern
-      `projects/*/locations/{location}/authentications/{authentication}`
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Authentication resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  authentication = _messages.MessageField('Authentication', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
-class NetworksecurityProjectsLocationsAuthenticationSetIamPolicyRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsAuthenticationSetIamPolicyRequest
-  object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworksecurityProjectsLocationsAuthenticationTestIamPermissionsRequest(_messages.Message):
-  r"""A
-  NetworksecurityProjectsLocationsAuthenticationTestIamPermissionsRequest
-  object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsAuthorizationPoliciesCreateRequest(_messages.Message):
@@ -1512,73 +1279,6 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-    statusMessage: Output only. Human-readable status of the operation, if
-      any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
-class OriginationTlsSettings(_messages.Message):
-  r"""Specification of the origination TLS.
-
-  Enums:
-    ModeValueValuesEnum: Required. Specifies OPEN, TLS or MTLS authentication
-      mode.
-
-  Fields:
-    identityProvisioningContext: Optional. Defines a mechanism to provision
-      identity and certificate for peer to peer authentication. Required if
-      the mode is TLS or MTLS.
-    mode: Required. Specifies OPEN, TLS or MTLS authentication mode.
-    peerValidationContext: Optional. Defines the mechanism to obtain the
-      Certificate Authority certificate to validate the peer certificate.
-      Required if the mode is TLS or MTLS.
-    sni: Optional. SNI string to present to the server during TLS handshake.
-      This field is applicable only when originationTls.mode is TLS or MTLS.
-  """
-
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""Required. Specifies OPEN, TLS or MTLS authentication mode.
-
-    Values:
-      ORIGINATION_TLS_MODE_UNSPECIFIED: TLS mode is unspecified.
-      OPEN: Communications between services are not encrypted.
-      TLS: Communications are secured using TLS.
-      MTLS: Communications are secured using MTLS, i.e., the server will
-        request client certificates.
-    """
-    ORIGINATION_TLS_MODE_UNSPECIFIED = 0
-    OPEN = 1
-    TLS = 2
-    MTLS = 3
-
-  identityProvisioningContext = _messages.MessageField('CertificateProvider', 1)
-  mode = _messages.EnumField('ModeValueValuesEnum', 2)
-  peerValidationContext = _messages.MessageField('CertificateProvider', 3)
-  sni = _messages.StringField(4)
-
-
 class Rule(_messages.Message):
   r"""Specification of rules.
 
@@ -1794,51 +1494,6 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class TerminationTlsSettings(_messages.Message):
-  r"""Specification of termination TLS settings.
-
-  Enums:
-    ModeValueValuesEnum: Required. Specifies OPEN, TLS or MTLS authentication
-      mode or permissive combinations of the above. The permissive mode is
-      typically used during transition from one authentication mode to
-      another.
-
-  Fields:
-    identityProvisioningContext: Optional. Defines a mechanism to provision
-      identity and certificate for peer to peer authentication. Required if
-      the mode is TLS or MTLS.
-    mode: Required. Specifies OPEN, TLS or MTLS authentication mode or
-      permissive combinations of the above. The permissive mode is typically
-      used during transition from one authentication mode to another.
-    peerValidationContext: Optional. Defines the mechanism to obtain the
-      Certificate Authority certificate to validate the peer certificate.
-      Required if the mode is TLS or MTLS.
-  """
-
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""Required. Specifies OPEN, TLS or MTLS authentication mode or
-    permissive combinations of the above. The permissive mode is typically
-    used during transition from one authentication mode to another.
-
-    Values:
-      TERMINATION_TLS_MODE_UNSPECIFIED: TLS mode is unspecified.
-      OPEN: Communications between services are not encrypted.
-      TLS: Communications are secured using TLS.
-      MTLS: Communications are secured using MTLS (i.e., the server will
-        request client certificates.
-      OPEN_OR_MTLS: The terminator of Traffic allows either plaintext or MTLS.
-    """
-    TERMINATION_TLS_MODE_UNSPECIFIED = 0
-    OPEN = 1
-    TLS = 2
-    MTLS = 3
-    OPEN_OR_MTLS = 4
-
-  identityProvisioningContext = _messages.MessageField('CertificateProvider', 1)
-  mode = _messages.EnumField('ModeValueValuesEnum', 2)
-  peerValidationContext = _messages.MessageField('CertificateProvider', 3)
-
-
 class TlsCertificateFiles(_messages.Message):
   r"""Specification of TLS certificate files.
 
@@ -1850,37 +1505,6 @@ class TlsCertificateFiles(_messages.Message):
 
   certificatePath = _messages.StringField(1)
   privateKeyPath = _messages.StringField(2)
-
-
-class TlsCertificatePaths(_messages.Message):
-  r"""Specification of TLS certificate paths.
-
-  Fields:
-    certificatePath: The path to the file that has the certificate. This is
-      the public key when used in identityProvisioning and is the CA
-      validation certificate when used for PeerValidation.
-    privateKeyPath: The path to the file that has the identity certificate.
-      Not applicable when attached to PeerValidation.
-  """
-
-  certificatePath = _messages.StringField(1)
-  privateKeyPath = _messages.StringField(2)
-
-
-class TransportAuthentication(_messages.Message):
-  r"""Specification of the transport authentication policy.
-
-  Fields:
-    originationTlsSettings: Optional. Transport authentication policy for the
-      originator of TLS traffic. If left blank, this field will default to an
-      OriginationTls policy with TlsMode set to OPEN.
-    terminationTlsSettings: Optional. Transport authentication policy for the
-      terminator of TLS traffic. If left blank, this field will default to an
-      TerminationTls policy with TlsMode set to OPEN.
-  """
-
-  originationTlsSettings = _messages.MessageField('OriginationTlsSettings', 1)
-  terminationTlsSettings = _messages.MessageField('TerminationTlsSettings', 2)
 
 
 class ValidationCA(_messages.Message):

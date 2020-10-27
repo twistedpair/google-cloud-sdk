@@ -36,7 +36,7 @@ class Connector(_messages.Message):
     status: Output only. Status of the VPC access connector.
     subnet: The subnet in which to house the connector. If present, this field
       will take priority over `ip_cidr_range` and `network`. Format:
-      `projects/${HOST_PROJECT_ID}/regions/*/subnetworks/*`. If the subnet is
+      `projects/[HOST_PROJECT_ID]/regions/*/subnetworks/*`. If the subnet is
       from the same project as the connector, this path does not need to be
       fully qualified.
   """

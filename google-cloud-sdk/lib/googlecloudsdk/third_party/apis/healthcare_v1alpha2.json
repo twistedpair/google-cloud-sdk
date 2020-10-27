@@ -4524,7 +4524,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes the specified Attribute definition. Fails if it is referenced by the latest revision of any Consent or User data mapping."
+                          "description": "Deletes the specified Attribute definition. Fails if it is referenced by any User data mapping, the latest revision of any Consent, or the latest approved revision of any Consent content."
                         },
                         "patch": {
                           "id": "healthcare.projects.locations.datasets.consentStores.attributeDefinitions.patch",

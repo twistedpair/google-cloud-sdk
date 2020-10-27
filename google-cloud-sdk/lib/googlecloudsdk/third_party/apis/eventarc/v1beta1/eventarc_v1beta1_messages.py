@@ -961,10 +961,8 @@ class Trigger(_messages.Message):
       projects/{project}/locations/{location}/triggers/{trigger}
     serviceAccount: Optional. The IAM service account email associated with
       the trigger. The service account represents the identity of the trigger.
-      If not specified, the default compute service account will be used (see
-      https://cloud.google.com/compute/docs/access/service-
-      accounts#default_service_account). The principal who calls this API must
-      have `iam.serviceAccounts.actAs` permission in the service account. See
+      The principal who calls this API must have `iam.serviceAccounts.actAs`
+      permission in the service account. See
       https://cloud.google.com/iam/docs/understanding-service-
       accounts?hl=en#sa_common for more information. For Cloud Run
       destinations, this service account is used to generate identity tokens

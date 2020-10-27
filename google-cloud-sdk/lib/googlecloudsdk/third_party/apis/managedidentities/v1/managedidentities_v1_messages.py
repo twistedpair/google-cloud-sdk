@@ -1117,18 +1117,15 @@ class ManagedidentitiesProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
-    includeUnrevealedLocations: If true, the returned list will include
-      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """
 
   filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class Operation(_messages.Message):

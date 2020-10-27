@@ -326,7 +326,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the version and/or iamge type of the specified node pool.
+      r"""Updates the version and/or image type of the specified node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message
@@ -1259,7 +1259,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the version and/or iamge type of the specified node pool.
+      r"""Updates the version and/or image type of the specified node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message

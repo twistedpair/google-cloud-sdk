@@ -2228,7 +2228,7 @@ class GoogleCloudMlV1StudyConfig(_messages.Message):
 
     Values:
       ALGORITHM_UNSPECIFIED: The default algorithm used by the Cloud AI
-        Platform Optimization service.
+        Platform Vizier service.
       GAUSSIAN_PROCESS_BANDIT: Gaussian Process Bandit.
       GRID_SEARCH: Simple grid search within the feasible space. To use grid
         search, all parameters must be `INTEGER`, `CATEGORICAL`, or

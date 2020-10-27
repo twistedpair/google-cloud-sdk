@@ -34,6 +34,34 @@ class ActivateConsentRequest(_messages.Message):
   ttl = _messages.StringField(3)
 
 
+class AnalyzeEntitiesRequest(_messages.Message):
+  r"""The request to analyze healthcare entities in a document.
+
+  Fields:
+    documentContent: document_content is a document to be annotated.
+  """
+
+  documentContent = _messages.StringField(1)
+
+
+class AnalyzeEntitiesResponse(_messages.Message):
+  r"""Includes recognized entity mentions and relationships between them.
+
+  Fields:
+    entities: The union of all the candidate entities that the entity_mentions
+      in this response could link to. These are UMLS concepts or normalized
+      mention content.
+    entityMentions: entity_mentions contains all the annotated medical
+      entities that were were mentioned in the provided document.
+    relationships: relationships contains all the binary relationships that
+      were identified between entity mentions within the provided document.
+  """
+
+  entities = _messages.MessageField('Entity', 1, repeated=True)
+  entityMentions = _messages.MessageField('EntityMention', 2, repeated=True)
+  relationships = _messages.MessageField('EntityMentionRelationship', 3, repeated=True)
+
+
 class Annotation(_messages.Message):
   r"""An annotation record.
 
@@ -1070,6 +1098,84 @@ class Empty(_messages.Message):
 
 
 
+class Entity(_messages.Message):
+  r"""The candidate entities that an entity mention could link to.
+
+  Fields:
+    entityId: entity_id is a first class field entity_id uniquely identifies
+      this concept and its meta-vocabulary. For example, "UMLS/C0000970".
+    preferredTerm: preferred_term is the preferred term for this concept. For
+      example, "Acetaminophen". For ad hoc entities formed by normalization,
+      this is the most popular unnormalized string.
+    vocabularyCodes: Vocabulary codes are first-class fields and
+      differentiated from the concept unique identifier (entity_id).
+      vocabulary_codes contains the representation of this concept in
+      particular vocabularies, such as ICD-10, SNOMED-CT and RxNORM. These are
+      prefixed by the name of the vocabulary, followed by the unique code
+      within that vocabulary. For example, "RXNORM/A10334543".
+  """
+
+  entityId = _messages.StringField(1)
+  preferredTerm = _messages.StringField(2)
+  vocabularyCodes = _messages.StringField(3, repeated=True)
+
+
+class EntityMention(_messages.Message):
+  r"""An entity mention in the document.
+
+  Fields:
+    certaintyAssessment: The certainty assessment of the entity mention. Its
+      value is one of: LIKELY, SOMEWHAT_LIKELY, UNCERTAIN, SOMEWHAT_UNLIKELY,
+      UNLIKELY, CONDITIONAL
+    confidence: The model's confidence in this entity mention annotation. A
+      number between 0 and 1.
+    linkedEntities: linked_entities are candidate ontological concepts that
+      this entity mention may refer to. They are sorted by decreasing
+      confidence.it
+    mentionId: mention_id uniquely identifies each entity mention in a single
+      response.
+    subject: The subject this entity mention relates to. Its value is one of:
+      PATIENT, FAMILY_MEMBER, OTHER
+    temporalAssessment: How this entity mention relates to the subject
+      temporally. Its value is one of: CURRENT, CLINICAL_HISTORY,
+      FAMILY_HISTORY, UPCOMING, ALLERGY
+    text: text is the location of the entity mention in the document.
+    type: The semantic type of the entity: UNKNOWN_ENTITY_TYPE, ALONE,
+      ANATOMICAL_STRUCTURE, ASSISTED_LIVING, BF_RESULT, BM_RESULT, BM_UNIT,
+      BM_VALUE, BODY_FUNCTION, BODY_MEASUREMENT, COMPLIANT, DOESNOT_FOLLOWUP,
+      FAMILY, FOLLOWSUP, LABORATORY_DATA, LAB_RESULT, LAB_UNIT, LAB_VALUE,
+      MEDICAL_DEVICE, MEDICINE, MED_DOSE, MED_DURATION, MED_FORM,
+      MED_FREQUENCY, MED_ROUTE, MED_STATUS, MED_STRENGTH, MED_TOTALDOSE,
+      MED_UNIT, NON_COMPLIANT, OTHER_LIVINGSTATUS, PROBLEM, PROCEDURE,
+      PROCEDURE_RESULT, PROC_METHOD, REASON_FOR_NONCOMPLIANCE, SEVERITY,
+      SUBSTANCE_ABUSE, UNCLEAR_FOLLOWUP.
+  """
+
+  certaintyAssessment = _messages.MessageField('Feature', 1)
+  confidence = _messages.FloatField(2)
+  linkedEntities = _messages.MessageField('LinkedEntity', 3, repeated=True)
+  mentionId = _messages.StringField(4)
+  subject = _messages.MessageField('Feature', 5)
+  temporalAssessment = _messages.MessageField('Feature', 6)
+  text = _messages.MessageField('TextSpan', 7)
+  type = _messages.StringField(8)
+
+
+class EntityMentionRelationship(_messages.Message):
+  r"""Defines directed relationship from one entity mention to another.
+
+  Fields:
+    confidence: The model's confidence in this annotation. A number between 0
+      and 1.
+    objectId: object_id is the id of the object entity mention.
+    subjectId: subject_id is the id of the subject entity mention.
+  """
+
+  confidence = _messages.FloatField(1)
+  objectId = _messages.StringField(2)
+  subjectId = _messages.StringField(3)
+
+
 class ErrorDetail(_messages.Message):
   r"""Structure to describe the error encountered during batch operation on
   one resource. This is used both for sample errors in operation response, and
@@ -1449,6 +1555,20 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class Feature(_messages.Message):
+  r"""A feature of an entity mention.
+
+  Fields:
+    confidence: The model's confidence in this feature annotation. A number
+      between 0 and 1.
+    value: The value of this feature annotation. Its range depends on the type
+      of the feature.
+  """
+
+  confidence = _messages.FloatField(1)
+  value = _messages.StringField(2)
 
 
 class FhirConfig(_messages.Message):
@@ -4669,6 +4789,20 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest object.
+
+  Fields:
+    analyzeEntitiesRequest: A AnalyzeEntitiesRequest resource to be passed as
+      the request body.
+    nlpService: The resource name of the service of the form:
+      "projects/{project_id}/locations/{location_id}/services/nlp".
+  """
+
+  analyzeEntitiesRequest = _messages.MessageField('AnalyzeEntitiesRequest', 1)
+  nlpService = _messages.StringField(2, required=True)
+
+
 class Hl7SchemaConfig(_messages.Message):
   r"""Root config message for HL7v2 schema. This contains a schema structure
   of groups and segments, and filters that determine which messages to apply
@@ -5173,6 +5307,21 @@ class IngestMessageResponse(_messages.Message):
 
   hl7Ack = _messages.BytesField(1)
   message = _messages.MessageField('Message', 2)
+
+
+class LinkedEntity(_messages.Message):
+  r"""EntityMentions can be linked to multiple entities using a LinkedEntity
+  message lets us add other fields, e.g. confidence.
+
+  Fields:
+    entityId: entity_id is a concept unique identifier. These are prefixed by
+      a string that identifies the entity coding system, followed by the
+      unique identifier within that system. For example, "UMLS/C0000970". This
+      also supports ad hoc entities, which are formed by normalizing entity
+      mention content.
+  """
+
+  entityId = _messages.StringField(1)
 
 
 class ListAnnotationStoresResponse(_messages.Message):
@@ -6614,6 +6763,18 @@ class TextConfig(_messages.Message):
   """
 
   transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
+
+
+class TextSpan(_messages.Message):
+  r"""A span of text in the provided document.
+
+  Fields:
+    beginOffset: The unicode codepoint index of the beginning of this span.
+    content: The original text contained in this span.
+  """
+
+  beginOffset = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  content = _messages.StringField(2)
 
 
 class Type(_messages.Message):

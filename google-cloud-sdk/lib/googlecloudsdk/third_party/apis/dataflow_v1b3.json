@@ -1158,6 +1158,13 @@
             "$ref": "StageSource"
           }
         },
+        "prerequisiteStage": {
+          "description": "Other stages that must complete before this stage can run.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "componentTransform": {
           "description": "Transforms that comprise this execution stage.",
           "type": "array",

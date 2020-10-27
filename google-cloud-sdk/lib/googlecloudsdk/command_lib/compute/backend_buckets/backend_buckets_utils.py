@@ -96,6 +96,8 @@ def ApplyCdnPolicyArgs(client,
                                                        backend_bucket)
     if negative_caching_policy is not None:
       cdn_policy.negativeCachingPolicy = negative_caching_policy
+    if args.negative_caching_policy:
+      cdn_policy.negativeCaching = True
 
     if is_update:
       # Takes care of resetting fields that are invalid for given cache modes

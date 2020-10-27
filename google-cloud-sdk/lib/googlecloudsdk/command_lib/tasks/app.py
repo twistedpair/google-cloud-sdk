@@ -32,11 +32,12 @@ class RegionResolvingError(exceptions.Error):
   """Error for when the app's region cannot be ultimately determined."""
 
 
-def ResolveAppLocation(project_ref):
+def ResolveAppLocation(project_ref, locations_client=None):
   """Determines Cloud Tasks location for the project or creates an app.
 
   Args:
     project_ref: The project resource to look up the location for.
+    locations_client: The project resource used to look up locations.
 
   Returns:
     The existing or created app's locationId.
@@ -44,7 +45,8 @@ def ResolveAppLocation(project_ref):
   Raises:
     RegionResolvingError: If the region of the app could not be determined.
   """
-  location = _GetLocation(project_ref) or _CreateApp(project_ref)
+  location = _GetLocation(project_ref, locations_client=locations_client) or \
+      _CreateApp(project_ref)
   if location is not None:
     return location
   raise RegionResolvingError(
@@ -52,10 +54,11 @@ def ResolveAppLocation(project_ref):
       'is possible an AppEngine App does not exist for this project.')
 
 
-def _GetLocation(project_ref):
+def _GetLocation(project_ref, locations_client=None):
   """Gets the location from the Cloud Tasks API."""
   try:
-    locations_client = GetApiAdapter(calliope_base.ReleaseTrack.GA).locations
+    if not locations_client:
+      locations_client = GetApiAdapter(calliope_base.ReleaseTrack.GA).locations
     locations = list(locations_client.List(project_ref, page_size=2))
     if len(locations) > 1:
       # Projects currently can only use Cloud Tasks in single region, so this

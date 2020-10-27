@@ -29,3 +29,41 @@ def MakeSnapshotArg(plural=False):
       completer=compute_completers.RoutesCompleter,
       plural=plural,
       global_collection='compute.snapshots')
+
+
+def AddChainArg(parser):
+  parser.add_argument(
+      '--chain-name',
+      help=(
+          """Creates the new snapshot in the snapshot chain labeled with the specified name.
+          The chain name must be 1-63 characters long and comply with RFC1035.
+          Use this flag only if you are an advanced service owner who needs
+          to create separate snapshot chains, for example, for chargeback tracking.
+          When you describe your snapshot resource, this field is visible only
+          if it has a non-empty value."""))
+
+
+def AddSourceDiskCsekKey(parser):
+  parser.add_argument(
+      '--source-disk-key-file',
+      metavar='FILE',
+      help="""
+      Path to the customer-supplied encryption key of the source disk.
+      Required if the source disk is protected by a customer-supplied
+      encryption key.
+      """)
+
+
+SOURCE_DISK_ARG = compute_flags.ResourceArgument(
+    resource_name='source disk',
+    name='--source-disk',
+    completer=compute_completers.DisksCompleter,
+    short_help="""
+    Source disk used to create the snapshot. To create a snapshot from a source
+    disk in a different project, specify the full path to the source disk.
+    For example:
+    https://www.googleapis.com/compute/v1/projects/MY-PROJECT/zones/MY-ZONE/disks/MY-DISK
+    """,
+    zonal_collection='compute.disks',
+    regional_collection='compute.regionDisks',
+    required=False)

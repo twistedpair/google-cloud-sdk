@@ -190,7 +190,6 @@ def GetJsonKeyFlag():
 def GetShowAllMetadataFlag():
   return base.Argument(
       '--show-all-metadata',
-      hidden=True,
       action='store_true',
       help='Include all metadata in the output.')
 
@@ -198,7 +197,6 @@ def GetShowAllMetadataFlag():
 def GetShowDeploymentFlag():
   return base.Argument(
       '--show-deployment',
-      hidden=True,
       action='store_true',
       help='Include deployment metadata in the output.')
 
@@ -206,7 +204,6 @@ def GetShowDeploymentFlag():
 def GetShowImageBasisFlag():
   return base.Argument(
       '--show-image-basis',
-      hidden=True,
       action='store_true',
       help='Include base image metadata in the output.')
 
@@ -214,7 +211,6 @@ def GetShowImageBasisFlag():
 def GetShowPackageVulnerabilityFlag():
   return base.Argument(
       '--show-package-vulnerability',
-      hidden=True,
       action='store_true',
       help='Include vulnerability metadata in the output.')
 
@@ -222,7 +218,6 @@ def GetShowPackageVulnerabilityFlag():
 def GetShowBuildDetailsFlag():
   return base.Argument(
       '--show-build-details',
-      hidden=True,
       action='store_true',
       help='Include build metadata in the output.')
 
@@ -230,7 +225,6 @@ def GetShowBuildDetailsFlag():
 def GetMetadataFilterFlag():
   return base.Argument(
       '--metadata-filter',
-      hidden=True,
       help=('Additional filter to fetch metadata for a given '
             'qualified image reference.'))
 
@@ -239,23 +233,13 @@ def GetShowOccurrencesFromFlag():
   return base.Argument(
       '--show-occurrences-from',
       type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
-      hidden=True,
       default=10,
       help=('The number of the most recent images for which to '
             'summarize Occurences.'))
 
 
-def GetShowOccurrencesFlag():
-  return base.Argument(
-      '--show-occurrences',
-      hidden=True,
-      action='store_true',
-      help='Whether to show summaries of the various Occurrence types.')
-
-
 def GetOccurrenceFilterFlag():
   return base.Argument(
       '--occurrence-filter',
-      hidden=True,
       default='kind="BUILD" OR kind="IMAGE" OR kind="DISCOVERY"',
       help='A filter for the Occurrences which will be summarized.')

@@ -557,7 +557,7 @@
           }
         },
         "capacityGb": {
-          "description": "Output only. Capacity of the snapshot. This would be the size of the file share when the snapshot is restored.",
+          "description": "Output only. Capacity of the source file share when the snapshot was created.",
           "readOnly": true,
           "type": "string",
           "format": "int64"
@@ -687,7 +687,7 @@
           }
         },
         "capacityGb": {
-          "description": "Output only. Capacity of the backup. This would be the size of the file share when the backup is restored.",
+          "description": "Output only. Capacity of the source file share when the backup was created.",
           "readOnly": true,
           "type": "string",
           "format": "int64"
@@ -1384,7 +1384,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates an instance."
+                  "description": "Creates an instance. When creating from a snapshot or backup, the capacity of the new instance needs to be equal to or larger than the capacity of the snapshot or backup (and also equal to or larger than the minimum capacity of the tier)."
                 },
                 "patch": {
                   "id": "file.projects.locations.instances.patch",
@@ -1446,7 +1446,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Restores an existing instance's file share from a snapshot or backup."
+                  "description": "Restores an existing instance's file share from a snapshot or backup. The instance's file share capacity will be set to the snapshot's or backup's capacity or the minimum capacity of the tier, whichever is larger."
                 },
                 "delete": {
                   "id": "file.projects.locations.instances.delete",

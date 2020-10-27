@@ -3577,7 +3577,10 @@ class GoogleCloudAiplatformUiFeatureNoiseSigmaNoiseSigmaForFeature(_messages.Mes
   Fields:
     name: The name of the input feature for which noise sigma is provided. The
       features are defined in explanation metadata inputs.
-    sigma: Standard deviation of gaussian kernel for noise.
+    sigma: This represents the standard deviation of the Gaussian kernel that
+      will be used to add noise to the feature prior to computing gradients.
+      Similar to noise_sigma but represents the noise added to the current
+      feature. Defaults to 0.1.
   """
 
   name = _messages.StringField(1)
@@ -3617,7 +3620,8 @@ class GoogleCloudAiplatformUiGenericOperationMetadata(_messages.Message):
       field can indicate the pending state of operation and will be set to
       DONE when operation is done.
     updateTime: Output only. Time when the operation was updated for the last
-      time.
+      time. If the operation has finished (successfully or not), this is the
+      finish time.
     worksOn: Output only. List of resource names that the operation is working
       on.
   """
@@ -3985,6 +3989,21 @@ class GoogleCloudAiplatformUiSchemaImageSegmentationAnnotation(_messages.Message
   r"""Annotation details specific to image segmentation.
 
   Fields:
+    maskAnnotation: Mask based segmentation annotation. Only one mask
+      annotation can exist for one image.
+    polygonAnnotation: Polygon annotation.
+    polylineAnnotation: Polyline annotation.
+  """
+
+  maskAnnotation = _messages.MessageField('GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationMaskAnnotation', 1)
+  polygonAnnotation = _messages.MessageField('GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolygonAnnotation', 2)
+  polylineAnnotation = _messages.MessageField('GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolylineAnnotation', 3)
+
+
+class GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationMaskAnnotation(_messages.Message):
+  r"""The mask based segmentation annotation.
+
+  Fields:
     annotationSpecColors: The mapping between color and AnnotationSpec for
       this Annotation.
     maskGcsUri: Google Cloud Storage URI that points to the mask image. The
@@ -3996,6 +4015,72 @@ class GoogleCloudAiplatformUiSchemaImageSegmentationAnnotation(_messages.Message
 
   annotationSpecColors = _messages.MessageField('GoogleCloudAiplatformUiSchemaAnnotationSpecColor', 1, repeated=True)
   maskGcsUri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolygonAnnotation(_messages.Message):
+  r"""Represents a polygon in image.
+
+  Fields:
+    annotationSpecId: The resource Id of the AnnotationSpec that this
+      Annotation pertains to.
+    displayName: The display name of the AnnotationSpec that this Annotation
+      pertains to.
+    vertexes: The vertexes are connected one by one and the last vertex is
+      connected to the first one to represent a polygon.
+  """
+
+  annotationSpecId = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  vertexes = _messages.MessageField('GoogleCloudAiplatformUiSchemaVertex', 3, repeated=True)
+
+
+class GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolylineAnnotation(_messages.Message):
+  r"""Represents a polyline in image.
+
+  Fields:
+    annotationSpecId: The resource Id of the AnnotationSpec that this
+      Annotation pertains to.
+    displayName: The display name of the AnnotationSpec that this Annotation
+      pertains to.
+    vertexes: The vertexes are connected one by one and the last vertex in not
+      connected to the first one.
+  """
+
+  annotationSpecId = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  vertexes = _messages.MessageField('GoogleCloudAiplatformUiSchemaVertex', 3, repeated=True)
+
+
+class GoogleCloudAiplatformUiSchemaImageSegmentationSavedQueryMetadata(_messages.Message):
+  r"""The metadata of SavedQuery contains ImageSegmentation Annotations.
+
+  Enums:
+    AnnotationTypeValueValuesEnum: Type of annotations that can be referenced
+      by the saved query.
+
+  Fields:
+    annotationType: Type of annotations that can be referenced by the saved
+      query.
+    colorMap: The mapping between color and AnnotationSpec for this
+      SavedQuery.
+  """
+
+  class AnnotationTypeValueValuesEnum(_messages.Enum):
+    r"""Type of annotations that can be referenced by the saved query.
+
+    Values:
+      SEGMENTATION_ANNOTATION_TYPE_UNSPECIFIED: <no description>
+      SEGMENTATION_ANNOTATION_TYPE_MASK: <no description>
+      SEGMENTATION_ANNOTATION_TYPE_POLYGON: <no description>
+      SEGMENTATION_ANNOTATION_TYPE_POLYLINE: <no description>
+    """
+    SEGMENTATION_ANNOTATION_TYPE_UNSPECIFIED = 0
+    SEGMENTATION_ANNOTATION_TYPE_MASK = 1
+    SEGMENTATION_ANNOTATION_TYPE_POLYGON = 2
+    SEGMENTATION_ANNOTATION_TYPE_POLYLINE = 3
+
+  annotationType = _messages.EnumField('AnnotationTypeValueValuesEnum', 1)
+  colorMap = _messages.MessageField('GoogleCloudAiplatformUiSchemaAnnotationSpecColor', 2, repeated=True)
 
 
 class GoogleCloudAiplatformUiSchemaResolution(_messages.Message):
@@ -4244,6 +4329,19 @@ class GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataInputConfig(_message
   gcsSource = _messages.MessageField('GoogleCloudAiplatformUiSchemaTimeSeriesDatasetMetadataGcsSource', 2)
 
 
+class GoogleCloudAiplatformUiSchemaVertex(_messages.Message):
+  r"""A vertex represents a 2D point in the image. NOTE: the normalized vertex
+  coordinates are relative to the original image and range from 0 to 1.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+  """
+
+  x = _messages.FloatField(1)
+  y = _messages.FloatField(2)
+
+
 class GoogleCloudAiplatformUiSchemaVideoActionRecognitionAnnotation(_messages.Message):
   r"""Annotation details specific to video action recognition.
 
@@ -4379,15 +4477,32 @@ class GoogleCloudAiplatformUiSmoothGradConfig(_messages.Message):
   https://arxiv.org/pdf/1706.03825.pdf
 
   Fields:
-    featureNoiseSigma: Alternatively, set this to use different noise_sigma
-      per feature. One entry per feature. No noise is added to features that
-      are not set.
-    noiseSigma: If set, this std. deviation will be used to apply noise to all
-      features.
+    featureNoiseSigma: This is similar to noise_sigma, but provides additional
+      flexibility. A separate noise sigma can be provided for each feature,
+      which is useful if their distributions are different. No noise is added
+      to features that are not set. If this field is unset, noise_sigma will
+      be used for all features.
+    noiseSigma: This is a single float value and will be used to add noise to
+      all the features. Use this field when all features are normalized to
+      have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
+      where features are normalized to have 0-mean and 1-variance. Refer to
+      this doc for more details about normalization: https:
+      //developers.google.com/machine-learning // /data-
+      prep/transform/normalization. For best results the recommended value is
+      about 10% - 20% of the standard deviation of the input feature. Refer to
+      section 3.2 of the SmoothGrad paper:
+      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      distribution is different per feature, set feature_noise_sigma instead
+      for each feature.
+    noisySampleCount: The number of gradient samples to use for approximation.
+      The higher this number, the more accurate the gradient is, but the
+      runtime complexity increases by this factor as well. Valid range of its
+      value is [1, 50]. Defaults to 3.
   """
 
   featureNoiseSigma = _messages.MessageField('GoogleCloudAiplatformUiFeatureNoiseSigma', 1)
   noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  noisySampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformUiSpecialistPool(_messages.Message):
@@ -4479,13 +4594,19 @@ class GoogleCloudAiplatformUiXraiAttribution(_messages.Message):
   IMAGE).
 
   Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
     stepCount: Required. The number of steps for approximating the path
       integral. A good value to start is 50 and gradually increase until the
       sum to diff property is met within the desired error range. Valid range
       of its value is [1, 100], inclusively.
   """
 
-  stepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformUiSmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1alpha1AutomaticResources(_messages.Message):
@@ -5213,7 +5334,10 @@ class GoogleCloudAiplatformV1alpha1FeatureNoiseSigmaNoiseSigmaForFeature(_messag
   Fields:
     name: The name of the input feature for which noise sigma is provided. The
       features are defined in explanation metadata inputs.
-    sigma: Standard deviation of gaussian kernel for noise.
+    sigma: This represents the standard deviation of the Gaussian kernel that
+      will be used to add noise to the feature prior to computing gradients.
+      Similar to noise_sigma but represents the noise added to the current
+      feature. Defaults to 0.1.
   """
 
   name = _messages.StringField(1)
@@ -5229,7 +5353,8 @@ class GoogleCloudAiplatformV1alpha1GenericOperationMetadata(_messages.Message):
       files that couldn't be read. This field should never exceed 20 entries.
       Status details field will contain standard GCP error details.
     updateTime: Output only. Time when the operation was updated for the last
-      time.
+      time. If the operation has finished (successfully or not), this is the
+      finish time.
   """
 
   createTime = _messages.StringField(1)
@@ -5539,6 +5664,21 @@ class GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotation(_messages.M
   r"""Annotation details specific to image segmentation.
 
   Fields:
+    maskAnnotation: Mask based segmentation annotation. Only one mask
+      annotation can exist for one image.
+    polygonAnnotation: Polygon annotation.
+    polylineAnnotation: Polyline annotation.
+  """
+
+  maskAnnotation = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationMaskAnnotation', 1)
+  polygonAnnotation = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolygonAnnotation', 2)
+  polylineAnnotation = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolylineAnnotation', 3)
+
+
+class GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationMaskAnnotation(_messages.Message):
+  r"""The mask based segmentation annotation.
+
+  Fields:
     annotationSpecColors: The mapping between color and AnnotationSpec for
       this Annotation.
     maskGcsUri: Google Cloud Storage URI that points to the mask image. The
@@ -5550,6 +5690,40 @@ class GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotation(_messages.M
 
   annotationSpecColors = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaAnnotationSpecColor', 1, repeated=True)
   maskGcsUri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolygonAnnotation(_messages.Message):
+  r"""Represents a polygon in image.
+
+  Fields:
+    annotationSpecId: The resource Id of the AnnotationSpec that this
+      Annotation pertains to.
+    displayName: The display name of the AnnotationSpec that this Annotation
+      pertains to.
+    vertexes: The vertexes are connected one by one and the last vertex is
+      connected to the first one to represent a polygon.
+  """
+
+  annotationSpecId = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  vertexes = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaVertex', 3, repeated=True)
+
+
+class GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolylineAnnotation(_messages.Message):
+  r"""Represents a polyline in image.
+
+  Fields:
+    annotationSpecId: The resource Id of the AnnotationSpec that this
+      Annotation pertains to.
+    displayName: The display name of the AnnotationSpec that this Annotation
+      pertains to.
+    vertexes: The vertexes are connected one by one and the last vertex in not
+      connected to the first one.
+  """
+
+  annotationSpecId = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  vertexes = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaVertex', 3, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadata(_messages.Message):
@@ -5779,6 +5953,19 @@ class GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig(_m
   gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource', 2)
 
 
+class GoogleCloudAiplatformV1alpha1SchemaVertex(_messages.Message):
+  r"""A vertex represents a 2D point in the image. NOTE: the normalized vertex
+  coordinates are relative to the original image and range from 0 to 1.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+  """
+
+  x = _messages.FloatField(1)
+  y = _messages.FloatField(2)
+
+
 class GoogleCloudAiplatformV1alpha1SchemaVideoActionRecognitionAnnotation(_messages.Message):
   r"""Annotation details specific to video action recognition.
 
@@ -5903,15 +6090,32 @@ class GoogleCloudAiplatformV1alpha1SmoothGradConfig(_messages.Message):
   https://arxiv.org/pdf/1706.03825.pdf
 
   Fields:
-    featureNoiseSigma: Alternatively, set this to use different noise_sigma
-      per feature. One entry per feature. No noise is added to features that
-      are not set.
-    noiseSigma: If set, this std. deviation will be used to apply noise to all
-      features.
+    featureNoiseSigma: This is similar to noise_sigma, but provides additional
+      flexibility. A separate noise sigma can be provided for each feature,
+      which is useful if their distributions are different. No noise is added
+      to features that are not set. If this field is unset, noise_sigma will
+      be used for all features.
+    noiseSigma: This is a single float value and will be used to add noise to
+      all the features. Use this field when all features are normalized to
+      have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
+      where features are normalized to have 0-mean and 1-variance. Refer to
+      this doc for more details about normalization: https:
+      //developers.google.com/machine-learning // /data-
+      prep/transform/normalization. For best results the recommended value is
+      about 10% - 20% of the standard deviation of the input feature. Refer to
+      section 3.2 of the SmoothGrad paper:
+      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      distribution is different per feature, set feature_noise_sigma instead
+      for each feature.
+    noisySampleCount: The number of gradient samples to use for approximation.
+      The higher this number, the more accurate the gradient is, but the
+      runtime complexity increases by this factor as well. Valid range of its
+      value is [1, 50]. Defaults to 3.
   """
 
   featureNoiseSigma = _messages.MessageField('GoogleCloudAiplatformV1alpha1FeatureNoiseSigma', 1)
   noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  noisySampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
@@ -6000,13 +6204,19 @@ class GoogleCloudAiplatformV1alpha1XraiAttribution(_messages.Message):
   IMAGE).
 
   Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
     stepCount: Required. The number of steps for approximating the path
       integral. A good value to start is 50 and gradually increase until the
       sum to diff property is met within the desired error range. Valid range
       of its value is [1, 100], inclusively.
   """
 
-  stepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1SmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1Annotation(_messages.Message):
@@ -6298,10 +6508,13 @@ class GoogleCloudAiplatformV1beta1BatchPredictionJob(_messages.Message):
     error: Output only. Only populated when the job's state is
       JOB_STATE_FAILED or JOB_STATE_CANCELLED.
     generateExplanation: Generate explanation along with the batch prediction
-      results. This can only be set to true for AutoML tabular Models, and
-      only when the output destination is BigQuery. When it's true, the batch
-      prediction output will include a column named `explanation`. The value
-      is a struct that conforms to the Explanation object.
+      results. When it's true, the batch prediction output will change based
+      on the output format: * `bigquery`: output will include a column named
+      `explanation`. The value is a struct that conforms to the Explanation
+      object. * `jsonl`: The JSON objects on each line will include an
+      additional entry keyed `explanation`. The value of the entry is a JSON
+      object that conforms to the Explanation object. * `csv`: Generating
+      explanations for CSV format is not supported.
     inputConfig: Required. Input configuration of the instances on which
       predictions are performed. The schema of any single instance may be
       specified via the Model's PredictSchemata's instance_schema_uri.
@@ -7751,12 +7964,12 @@ class GoogleCloudAiplatformV1beta1ExportDataConfig(_messages.Message):
       as in ListAnnotations.
     gcsDestination: The Google Cloud Storage location where the output is to
       be written to. In the given directory a new directory will be created
-      with name: `export-data--` where timestamp is in YYYYMMDDHHMMSS format.
-      All export output will be written into that directory. Inside that
-      directory, annotations with the same schema will be grouped into sub
-      directories which are named with the corresponding annotations' schema
-      title. Inside these sub directories, a schema.yaml will be created to
-      describe the output format.
+      with name: `export-data--` where timestamp is in YYYY-MM-
+      DDThh:mm:ss.sssZ ISO-8601 format. All export output will be written into
+      that directory. Inside that directory, annotations with the same schema
+      will be grouped into sub directories which are named with the
+      corresponding annotations' schema title. Inside these sub directories, a
+      schema.yaml will be created to describe the output format.
   """
 
   annotationsFilter = _messages.StringField(1)
@@ -7886,7 +8099,10 @@ class GoogleCloudAiplatformV1beta1FeatureNoiseSigmaNoiseSigmaForFeature(_message
   Fields:
     name: The name of the input feature for which noise sigma is provided. The
       features are defined in explanation metadata inputs.
-    sigma: Standard deviation of gaussian kernel for noise.
+    sigma: This represents the standard deviation of the Gaussian kernel that
+      will be used to add noise to the feature prior to computing gradients.
+      Similar to noise_sigma but represents the noise added to the current
+      feature. Defaults to 0.1.
   """
 
   name = _messages.StringField(1)
@@ -7981,7 +8197,8 @@ class GoogleCloudAiplatformV1beta1GenericOperationMetadata(_messages.Message):
       files that couldn't be read. This field should never exceed 20 entries.
       Status details field will contain standard GCP error details.
     updateTime: Output only. Time when the operation was updated for the last
-      time.
+      time. If the operation has finished (successfully or not), this is the
+      finish time.
   """
 
   createTime = _messages.StringField(1)
@@ -9602,6 +9819,21 @@ class GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotation(_messages.Me
   r"""Annotation details specific to image segmentation.
 
   Fields:
+    maskAnnotation: Mask based segmentation annotation. Only one mask
+      annotation can exist for one image.
+    polygonAnnotation: Polygon annotation.
+    polylineAnnotation: Polyline annotation.
+  """
+
+  maskAnnotation = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationMaskAnnotation', 1)
+  polygonAnnotation = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolygonAnnotation', 2)
+  polylineAnnotation = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolylineAnnotation', 3)
+
+
+class GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationMaskAnnotation(_messages.Message):
+  r"""The mask based segmentation annotation.
+
+  Fields:
     annotationSpecColors: The mapping between color and AnnotationSpec for
       this Annotation.
     maskGcsUri: Google Cloud Storage URI that points to the mask image. The
@@ -9613,6 +9845,40 @@ class GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotation(_messages.Me
 
   annotationSpecColors = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaAnnotationSpecColor', 1, repeated=True)
   maskGcsUri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolygonAnnotation(_messages.Message):
+  r"""Represents a polygon in image.
+
+  Fields:
+    annotationSpecId: The resource Id of the AnnotationSpec that this
+      Annotation pertains to.
+    displayName: The display name of the AnnotationSpec that this Annotation
+      pertains to.
+    vertexes: The vertexes are connected one by one and the last vertex is
+      connected to the first one to represent a polygon.
+  """
+
+  annotationSpecId = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  vertexes = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaVertex', 3, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolylineAnnotation(_messages.Message):
+  r"""Represents a polyline in image.
+
+  Fields:
+    annotationSpecId: The resource Id of the AnnotationSpec that this
+      Annotation pertains to.
+    displayName: The display name of the AnnotationSpec that this Annotation
+      pertains to.
+    vertexes: The vertexes are connected one by one and the last vertex in not
+      connected to the first one.
+  """
+
+  annotationSpecId = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  vertexes = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaVertex', 3, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1SchemaImageSegmentationPredictionInstance(_messages.Message):
@@ -11133,6 +11399,19 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedData
   overrideExistingTable = _messages.BooleanField(2)
 
 
+class GoogleCloudAiplatformV1beta1SchemaVertex(_messages.Message):
+  r"""A vertex represents a 2D point in the image. NOTE: the normalized vertex
+  coordinates are relative to the original image and range from 0 to 1.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+  """
+
+  x = _messages.FloatField(1)
+  y = _messages.FloatField(2)
+
+
 class GoogleCloudAiplatformV1beta1SchemaVideoActionRecognitionAnnotation(_messages.Message):
   r"""Annotation details specific to video action recognition.
 
@@ -11520,15 +11799,32 @@ class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):
   https://arxiv.org/pdf/1706.03825.pdf
 
   Fields:
-    featureNoiseSigma: Alternatively, set this to use different noise_sigma
-      per feature. One entry per feature. No noise is added to features that
-      are not set.
-    noiseSigma: If set, this std. deviation will be used to apply noise to all
-      features.
+    featureNoiseSigma: This is similar to noise_sigma, but provides additional
+      flexibility. A separate noise sigma can be provided for each feature,
+      which is useful if their distributions are different. No noise is added
+      to features that are not set. If this field is unset, noise_sigma will
+      be used for all features.
+    noiseSigma: This is a single float value and will be used to add noise to
+      all the features. Use this field when all features are normalized to
+      have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
+      where features are normalized to have 0-mean and 1-variance. Refer to
+      this doc for more details about normalization: https:
+      //developers.google.com/machine-learning // /data-
+      prep/transform/normalization. For best results the recommended value is
+      about 10% - 20% of the standard deviation of the input feature. Refer to
+      section 3.2 of the SmoothGrad paper:
+      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      distribution is different per feature, set feature_noise_sigma instead
+      for each feature.
+    noisySampleCount: The number of gradient samples to use for approximation.
+      The higher this number, the more accurate the gradient is, but the
+      runtime complexity increases by this factor as well. Valid range of its
+      value is [1, 50]. Defaults to 3.
   """
 
   featureNoiseSigma = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureNoiseSigma', 1)
   noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  noisySampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1SpecialistPool(_messages.Message):
@@ -12112,13 +12408,19 @@ class GoogleCloudAiplatformV1beta1XraiAttribution(_messages.Message):
   IMAGE).
 
   Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
     stepCount: Required. The number of steps for approximating the path
       integral. A good value to start is 50 and gradually increase until the
       sum to diff property is met within the desired error range. Valid range
       of its value is [1, 100], inclusively.
   """
 
-  stepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):

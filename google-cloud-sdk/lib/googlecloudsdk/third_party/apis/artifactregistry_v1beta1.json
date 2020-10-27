@@ -277,17 +277,11 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified package format.",
-            "Docker package format.",
-            "Maven package format.",
-            "NPM package format.",
-            "APT package format."
+            "Docker package format."
           ],
           "enum": [
             "FORMAT_UNSPECIFIED",
-            "DOCKER",
-            "MAVEN",
-            "NPM",
-            "APT"
+            "DOCKER"
           ]
         },
         "description": {
@@ -713,6 +707,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
         }
       }
     }

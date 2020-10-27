@@ -55,7 +55,7 @@ class FileV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates an instance.
+      r"""Creates an instance. When creating from a backup, the capacity of the new instance needs to be equal to or larger than the capacity of the backup (and also equal to or larger than the minimum capacity of the tier).
 
       Args:
         request: (FileProjectsLocationsInstancesCreateRequest) input message

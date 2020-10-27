@@ -18,10 +18,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.kuberun import kubernetesobject
+from googlecloudsdk.api_lib.kuberun import mapobject
 
 
 class DomainMapping(kubernetesobject.KubernetesObject):
-  """Class that wraps JSON-based dict object of a domain mapping."""
+  """Wraps JSON-based dict object of a domain mapping."""
 
   @property
   def routeName(self):
@@ -29,4 +30,24 @@ class DomainMapping(kubernetesobject.KubernetesObject):
 
   @property
   def records(self):
-    return self._props['status']['resourceRecords']
+    return [ResourceRecord(x) for x in self._props['status']['resourceRecords']]
+
+
+class ResourceRecord(mapobject.MapObject):
+  """Wraps JSON-based dict object of a resource record of a domain mapping."""
+
+  @property
+  def type(self):
+    return self._props['type']
+
+  @property
+  def rrdata(self):
+    return self._props['rrdata']
+
+  @property
+  def name(self):
+    return self._props.get('name')
+
+  @name.setter
+  def name(self, n):
+    self._props['name'] = n

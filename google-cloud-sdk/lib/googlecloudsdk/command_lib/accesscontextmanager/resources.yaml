@@ -43,9 +43,6 @@ organization:
     help: |
       The ID of the organization.
     property: access_context_manager/organization
-    fallthroughs:
-    - hook: googlecloudsdk.command_lib.accesscontextmanager.cloud_bindings:GetDefaultOrganization
-      hint: automatically, if the current account belongs to an organization
 cloud-access-binding:
   name: cloud-access-binding
   request_id_field: gcpUserAccessBinding.name

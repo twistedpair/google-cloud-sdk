@@ -186,8 +186,8 @@ class DiscoverySummary:
 def GetContainerAnalysisMetadata(docker_version, args):
   """Retrieves metadata for a docker image."""
   metadata = ContainerAnalysisMetadata()
-  docker_str = docker_version.GetDockerString()
-  occ_filter = _CreateFilterFromImagesDescribeArgs(docker_str, args)
+  docker_url = 'https://{}'.format(docker_version.GetDockerString())
+  occ_filter = _CreateFilterFromImagesDescribeArgs(docker_url, args)
   if occ_filter is None:
     return metadata
   occurrences = ca_requests.ListOccurrences(docker_version.project, occ_filter)
@@ -197,7 +197,7 @@ def GetContainerAnalysisMetadata(docker_version, args):
   if metadata.vulnerability.vulnerabilities:
     vuln_summary = ca_requests.GetVulnerabilitySummary(
         docker_version.project,
-        filter_util.ContainerAnalysisFilter().WithResources([docker_str
+        filter_util.ContainerAnalysisFilter().WithResources([docker_url
                                                             ]).GetFilter())
     metadata.vulnerability.AddSummary(vuln_summary)
   return metadata
@@ -207,7 +207,8 @@ def GetContainerAnalysisMetadataForImages(repo_or_image, occurrence_filter,
                                           images):
   """Retrieves metadata for all images with a given path prefix."""
   metadata = collections.defaultdict(ContainerAnalysisMetadata)
-  occ_filters = _CreateFilterForImages(repo_or_image, occurrence_filter, images)
+  prefix = 'https://{}'.format(repo_or_image.GetDockerString())
+  occ_filters = _CreateFilterForImages(prefix, occurrence_filter, images)
   occurrences = ca_requests.ListOccurrencesWithFilters(repo_or_image.project,
                                                        occ_filters)
   for occ in occurrences:
@@ -215,8 +216,7 @@ def GetContainerAnalysisMetadataForImages(repo_or_image, occurrence_filter,
                         ContainerAnalysisMetadata()).AddOccurrence(occ)
 
   summary_filters = filter_util.ContainerAnalysisFilter().WithResourcePrefix(
-      repo_or_image.GetDockerString()).WithResources(
-          images).GetChunkifiedFilters()
+      prefix).WithResources(images).GetChunkifiedFilters()
   summaries = ca_requests.GetVulnerabilitySummaryWithFilters(
       repo_or_image.project, summary_filters)
   for summary in summaries:
@@ -285,11 +285,12 @@ def _CreateFilterFromImagesDescribeArgs(image, args):
   return occ_filter.GetFilter()
 
 
-def _CreateFilterForImages(repo_or_image, custom_filter, images):
+def _CreateFilterForImages(prefix, custom_filter, images):
   """Creates a list of filters from a docker image prefix, a custom filter and fully-qualified image URLs.
 
   Args:
-    repo_or_image: an instance of DockerImage or DockerRepo.
+    prefix: an URL prefix. Only metadata of images with this prefix will be
+      retrieved.
     custom_filter: user provided filter string.
     images: fully-qualified docker image URLs. Only metadata of these images
       will be retrieved.
@@ -298,7 +299,7 @@ def _CreateFilterForImages(repo_or_image, custom_filter, images):
     A filter string to send to the containeranalysis API.
   """
   occ_filter = filter_util.ContainerAnalysisFilter()
-  occ_filter.WithResourcePrefix(repo_or_image.GetDockerString())
+  occ_filter.WithResourcePrefix(prefix)
   occ_filter.WithResources(images)
   occ_filter.WithCustomFilter(custom_filter)
   return occ_filter.GetChunkifiedFilters()

@@ -386,7 +386,7 @@
           "type": "string"
         },
         "offer": {
-          "description": "Optional. The name of the offer is accepted in either of these formats: 'billingAccounts\/{billing_account}\/offers\/{offer}', or 'projects\/{consumer_project}\/services\/{service}\/standardOffers\/{offer}'.",
+          "description": "Optional. The name of the offer is accepted in either of these formats: 'billingAccounts\/{billing_account}\/offers\/{offer}', or 'services\/{service}\/standardOffers\/{offer}'.",
           "type": "string"
         },
         "quoteExternalName": {
@@ -732,6 +732,24 @@
       "type": "object",
       "properties": {
         "orders": {
+          "description": "The list of orders in this response.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1Order"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token for fetching the next page.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1ListMigratableOrdersResponse": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ListMigratableOrdersResponse",
+      "description": "Response message for ConsumerProcurementService.ListMigratableOrders.",
+      "type": "object",
+      "properties": {
+        "migratableOrders": {
           "description": "The list of orders in this response.",
           "type": "array",
           "items": {
@@ -1193,7 +1211,7 @@
       "type": "object",
       "properties": {
         "currencyCode": {
-          "description": "The 3-letter currency code defined in ISO 4217.",
+          "description": "The three-letter currency code defined in ISO 4217.",
           "type": "string"
         },
         "units": {
@@ -1656,7 +1674,7 @@
                   "type": "string"
                 },
                 "filter": {
-                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `display_name=abc`. Supported query attributes are * `display_name` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `display_name=\"foo:bar\"`, where the display name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `display_name=abc OR display_name=def`.",
+                  "description": "The filter that can be used to limit the list request. The filter is a query string that can match a selected set of attributes with string values. For example `display_name=abc`. Supported query attributes are * `display_name` * `product_external_name` If the query contains some special characters other than letters, underscore, or digits, the phrase must be quoted with double quotes. For example, `display_name=\"foo:bar\"`, where the display name needs to be quoted because it contains special character colon. Queries can be combined with `OR`, and `NOT` to form more complex queries. They can also be grouped to force a desired evaluation order. For example, `display_name=abc OR display_name=def`.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1671,6 +1689,47 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Lists Order resources that the user have access to, within the scope of the parent resource."
+            },
+            "listMigratable": {
+              "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.listMigratable",
+              "path": "v1alpha1/{+parent}/orders:listMigratable",
+              "flatPath": "v1alpha1/billingAccounts/{billingAccountsId}/orders:listMigratable",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. The parent resource to query for orders. This field is of the form `billingAccounts\/`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^billingAccounts\/[^\/]+$",
+                  "type": "string"
+                },
+                "newParent": {
+                  "description": "Required. The parent the Orders intend on migrating to. This field is of the form `billingAccounts\/`. You must have the \"consumerprocurement.orders.migrate\" permission on new_parent also.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of entries that are requested.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The token for fetching the next page.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1ListMigratableOrdersResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists migratable Order resources that the user have access to, within the scope of the parent resource."
             },
             "modify": {
               "id": "cloudcommerceconsumerprocurement.billingAccounts.orders.modify",

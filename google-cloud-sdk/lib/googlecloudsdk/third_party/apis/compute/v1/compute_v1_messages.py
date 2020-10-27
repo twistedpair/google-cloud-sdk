@@ -1610,7 +1610,7 @@ class AuthorizationLoggingOptions(_messages.Message):
 class Autoscaler(_messages.Message):
   r"""Represents an Autoscaler resource.  Google Compute Engine has two
   Autoscaler resources:  *
-  [Global](/compute/docs/reference/rest/{$api_version}/autoscalers) *
+  [Zonal](/compute/docs/reference/rest/{$api_version}/autoscalers) *
   [Regional](/compute/docs/reference/rest/{$api_version}/regionAutoscalers)
   Use autoscalers to automatically add or delete instances from a managed
   instance group according to your defined autoscaling policy. For more
@@ -22014,7 +22014,7 @@ class DistributionPolicy(_messages.Message):
 
   Fields:
     zones: Zones where the regional managed instance group will create and
-      manage instances.
+      manage its instances.
   """
 
   zones = _messages.MessageField('DistributionPolicyZoneConfiguration', 1, repeated=True)
@@ -27003,8 +27003,8 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    distributionPolicy: Policy specifying intended distribution of instances
-      in regional managed instance group.
+    distributionPolicy: Policy specifying the intended distribution of managed
+      instances across zones in a regional managed instance group.
     fingerprint: Fingerprint of this resource. This field may be used in
       optimistic locking. It will be ignored when inserting an
       InstanceGroupManager. An up-to-date fingerprint must be provided in
@@ -27016,7 +27016,10 @@ class InstanceGroupManager(_messages.Message):
     instanceGroup: [Output Only] The URL of the Instance Group resource.
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create all
-      new instances in the managed instance group.
+      new instances in the managed instance group. The templates for existing
+      instances in the group do not change unless you run recreateInstances,
+      run applyUpdatesToInstances, or set the group's updatePolicy.type to
+      PROACTIVE.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupManager for managed instance groups.
     name: The name of the managed instance group. The name must be 1-63
@@ -27045,8 +27048,8 @@ class InstanceGroupManager(_messages.Message):
       one version must leave the targetSize field unset. That version will be
       applied to all remaining instances. For more information, read about
       canary updates.
-    zone: [Output Only] The URL of the zone where the managed instance group
-      is located (for zonal resources).
+    zone: [Output Only] The URL of a zone where the managed instance group is
+      located (for zonal resources).
   """
 
   autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 1, repeated=True)
@@ -27632,7 +27635,11 @@ class InstanceGroupManagerVersion(_messages.Message):
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create new
       instances in the managed instance group until the `targetSize` for this
-      version is reached.
+      version is reached. The templates for existing instances in the group do
+      not change unless you run recreateInstances, run
+      applyUpdatesToInstances, or set the group's updatePolicy.type to
+      PROACTIVE; in those cases, existing instances are updated until the
+      `targetSize` for this version is reached.
     name: Name of the version. Unique among all versions in the scope of this
       managed instance group.
     targetSize: Specifies the intended number of instances to be created from
@@ -28086,7 +28093,10 @@ class InstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
   Fields:
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create all
-      new instances in the managed instance group.
+      new instances in the managed instance group. The templates for existing
+      instances in the group do not change unless you run recreateInstances,
+      run applyUpdatesToInstances, or set the group's updatePolicy.type to
+      PROACTIVE.
   """
 
   instanceTemplate = _messages.StringField(1)

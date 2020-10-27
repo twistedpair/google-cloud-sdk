@@ -77,13 +77,8 @@ _VALID_ENDPOINT_OVERRIDE_REGEX = re.compile(
     # - ipv4 addr
     # - ipv6 addr
     r'(?:'  # begin netlocation
-    # - domain name, e.g. 'test-foo.sandbox.googleapis.com'
-    #   1 or more domain labels ending in '.', e.g. 'sandbox.', 'googleapis.'
-    r'(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
-    #   ending top-level domain, e.g. 'com'
-    r'(?:[A-Z]{2,6}|[A-Z0-9-]{2,})|'
-    # - localhost
-    r'localhost|'
+    # - domain name, e.g. 'test-foo.sandbox.googleapis.com', or 'localhost'
+    r'(?:[A-Z0-9](?:[A-Z0-9-.])+)|'
     # - ipv4
     r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|'
     # - ipv6
@@ -1405,6 +1400,23 @@ class _SectionSsh(_Section):
         'True.')
 
 
+class _SectionDeclarative(_Section):
+  """Contains the properties for the 'declarative' section."""
+
+  def __init__(self):
+    super(_SectionDeclarative, self).__init__('declarative')
+    self.client = self._Add(
+        'client_type',
+        choices=['dcl', 'kcc'],
+        help_text='Underlying declarative client library to use for declarative commands.',
+        default='kcc')
+    self.format = self._Add(
+        'format',
+        choices=['kcc', 'hcl'],
+        help_text='Declarative format to use for declarative commands.',
+        default='kcc')
+
+
 class _SectionScc(_Section):
   """Contains the properties for the 'scc' section."""
 
@@ -1573,7 +1585,8 @@ class _SectionTransport(_Section):
     super(_SectionTransport, self).__init__('transport', hidden=True)
     self.disable_requests_override = self._AddBool(
         'disable_requests_override',
-        default=False,
+        # TODO(b/170726400): Disable requests until socks has been updated
+        default=True,
         hidden=True,
         help_text='Global switch to turn off using requests as a'
         'transport. Users can use it to switch back to the old '
@@ -2138,8 +2151,7 @@ class _SectionMetastore(_Section):
         'location',
         help_text='Default location to use when working with Dataproc '
         'Metastore. When a `location` is required but not provided by a flag, '
-        'the command will fall back to this value, if set.',
-        hidden=True)
+        'the command will fall back to this value, if set.')
     self.tier = self._Add(
         'tier',
         validator=self.TierValidator,
@@ -2151,7 +2163,6 @@ class _SectionMetastore(_Section):
         Valid values are:
             *   `enterprise` - The enterprise tier combines a powerful metastore
             serving layer with a highly scalable data storage layer.""",
-        hidden=True,
         choices=[x.name for x in list(_SectionMetastore.Tier)])
 
 
@@ -2229,11 +2240,11 @@ class _SectionVmware(_Section):
   def __init__(self):
     super(_SectionVmware, self).__init__('vmware')
 
-    self.location = self._Add(
-        'location',
+    self.region = self._Add(
+        'region',
         default='us-central1',
-        help_text='Default location to use when working with Cloud '
-        'VMware resources.  When a `--location` '
+        help_text='Default region to use when working with VMware '
+        'Engine resources.  When a `--region` '
         'flag is required but not provided, the command will fall back to '
         'this value, if set.')
 

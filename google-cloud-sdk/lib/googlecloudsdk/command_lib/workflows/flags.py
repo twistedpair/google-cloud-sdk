@@ -123,6 +123,14 @@ def AddServiceAccountArg(parser):
       '"projects/-/serviceAccounts/" is prepended to the service account ID.')
 
 
+def AddDataArg(parser):
+  """Adds argument for specifying the data that will be passed to the workflow."""
+  parser.add_argument(
+      '--data',
+      help='JSON string with data that will be passed to the workflow '
+      'as an argument.')
+
+
 def ParseExecution(args):
   """Get and validate execution from the args."""
   return args.CONCEPTS.execution.Parse()

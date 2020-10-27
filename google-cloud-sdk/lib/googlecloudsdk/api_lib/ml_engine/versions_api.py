@@ -233,7 +233,36 @@ class VersionsClient(object):
           health=kwargs['health_route']
       )
 
-  def BuildVersion(self, name,
+  def _ConfigureAutoScaling(self, version, **kwargs):
+    """Adds `auto_scaling` fields to version."""
+    if not any(kwargs.values()):
+      # Nothing related to containers was specified!
+      return
+
+    version.autoScaling = self.messages.GoogleCloudMlV1AutoScaling()
+    if kwargs['min_nodes']:
+      version.autoScaling.minNodes = kwargs['min_nodes']
+    if kwargs['max_nodes']:
+      version.autoScaling.maxNodes = kwargs['max_nodes']
+    if kwargs['metrics']:
+      version.autoScaling.metrics = []
+      if kwargs['metrics']['cpu-usage']:
+        t = int(kwargs['metrics']['cpu-usage'])
+        version.autoScaling.metrics.append(
+            self.messages.GoogleCloudMlV1MetricSpec(
+                name=self.messages.GoogleCloudMlV1MetricSpec.NameValueValuesEnum
+                .CPU_USAGE,
+                target=t))
+      if kwargs['metrics']['gpu-duty-cycle']:
+        t = int(kwargs['metrics']['gpu-duty-cycle'])
+        version.autoScaling.metrics.append(
+            self.messages.GoogleCloudMlV1MetricSpec(
+                name=self.messages.GoogleCloudMlV1MetricSpec.NameValueValuesEnum
+                .GPU_DUTY_CYCLE,
+                target=t))
+
+  def BuildVersion(self,
+                   name,
                    path=None,
                    deployment_uri=None,
                    runtime_version=None,
@@ -256,7 +285,11 @@ class VersionsClient(object):
                    ports=None,
                    predict_route=None,
                    health_route=None,
-                   containers_hidden=True):
+                   min_nodes=None,
+                   max_nodes=None,
+                   metrics=None,
+                   containers_hidden=True,
+                   autoscaling_hidden=True):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -299,8 +332,14 @@ class VersionsClient(object):
         are sent to.
       health_route: The HTTP path within the container that health checks are
         sent to.
-      containers_hidden: Whether or not container-related fields are hidden
-        on this track.
+      min_nodes: The minimum number of nodes to scale this model under load.
+      max_nodes: The maximum number of nodes to scale this model under load.
+      metrics: List of key-value pairs to set as metrics' target for
+        autoscaling.
+      containers_hidden: Whether or not container-related fields are hidden on
+        this track.
+      autoscaling_hidden: Whether or not autoscaling fields are hidden on this
+        track.
 
     Returns:
       A Version object (for the corresponding API version).
@@ -361,6 +400,10 @@ class VersionsClient(object):
           ports=ports,
           predict_route=predict_route,
           health_route=health_route)
+
+    if not autoscaling_hidden:
+      self._ConfigureAutoScaling(
+          version, min_nodes=min_nodes, max_nodes=max_nodes, metrics=metrics)
 
     for field_name, value in additional_fields.items():
       if value is not None:

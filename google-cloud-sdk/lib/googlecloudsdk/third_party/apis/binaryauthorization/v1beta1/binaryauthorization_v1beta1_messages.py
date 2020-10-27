@@ -82,7 +82,7 @@ class AdmissionWhitelistPattern(_messages.Message):
   rules.
 
   Fields:
-    namePattern: An image name pattern to whitelist, in the form
+    namePattern: An image name pattern to allowlist, in the form
       `registry/path/to/image`. This supports a trailing `*` as a wildcard,
       but this is allowed only in text after the `registry/` part.
   """
@@ -643,7 +643,7 @@ class Policy(_messages.Message):
       engine/reference/rest/v1/projects.zones.clusters.
 
   Fields:
-    admissionWhitelistPatterns: Optional. Admission policy whitelisting. A
+    admissionWhitelistPatterns: Optional. Admission policy allowlisting. A
       matching admission request will always be permitted. This feature is
       typically used to exclude Google or third-party infrastructure images
       from Binary Authorization policies.

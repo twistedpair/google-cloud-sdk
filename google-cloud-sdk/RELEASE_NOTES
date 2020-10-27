@@ -5,6 +5,119 @@ Copyright 2014-2020 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 316.0.0 (2020-10-27)
+
+### Breaking Changes
+
+*   **(Cloud Spanner)** Modified `gcloud spanner operations list` to disallow `--database` or
+  `--backup` flags used in combination with `--type=INSTANCE`.
+*   **(Vmware Engine)** Renamed `gcloud config vmware/location` to `gcloud config vmware/region`.
+
+
+### AI
+
+* Added `gcloud beta ai hp-tuning-jobs stream-logs` which provides the ability to stream logs of hyperparameter tuning jobs in AI Platform.
+
+### AI Platform
+
+* Added `--service-account` to `gcloud beta ai-platform jobs submit training`
+  to allow specifying a service account to use when running the training appplication for a  training job.
+* Updated `--region` flag of `gcloud ai-platform` command to include new CAIP
+  regions.
+
+### App Engine
+
+* Updated the Go SDK to version 1.9.72.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/go/release-notes>.
+
+### Artifact Registry
+
+* Disallowed creating CMEK-enabled repositories if Artifact Registry service account is not granted sufficient permissions.
+* Added a new command `gcloud beta artifacts docker images describe` that shows information of a docker image and optionally the metadata of the image from Container Analysis API.
+* Command `gcloud beta artifacts docker images list` will now show metadata of images from Container Analysis API as well.
+
+### Cloud Access Context Manager
+
+* Promoted `gcloud access-context-manager cloud-bindings` to GA.
+
+### Cloud Build
+
+*   Updated `cloud-build-local` to version 0.5.2. This version allows
+    `cloud-build-local` to execute without a GCP account, providing a warning
+    rather than an error.
+
+### Cloud SQL
+
+*   Promoted Postgres 13 to GA.
+
+### Cloud Shell
+
+* Promoted `gcloud cloud-shell` command group to GA.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.54.
+
+### Cloud Workflows
+
+*   Added `gcloud workflows executions describe-last` to beta which describes the last executed workflow execution that has been cached locally.
+*   Added `gcloud workflows executions wait-last` to beta which waits for the last cached workflow execution to complete.
+*   Added `gcloud workflows run` to beta which executes a workflow and waits for it to complete.
+
+### Compute Engine
+
+* Promoted `--mtu` flag to beta and GA for `gcloud compute networks
+<create|update>`.
+* Promoted `gcloud compute instances set-name` command to beta.
+* Promoted `scope` option for `--disk` flag for `gcloud compute instances create` to GA.
+* Fixed incorrect error message for `gcloud compute target-http-proxies`.
+* Added `--user-licenses` flag to disk create and update command for alpha.
+<import>' when the resource already exists.
+* Added `gcloud beta compute snapshots create` command. It allows to create
+  snapshots of disks.
+* Added `--[no-]negative-caching` and `--[no-]negative-caching-policy` to `gcloud beta compute backend-services create`, `gcloud beta compute backend-services update`,
+ `gcloud beta compute backend-buckets create` and `gcloud beta compute backend-buckets update`.
+* Added `cdnPolicy.negativeCaching` and `cdnPolicy.negativeCachingPolicy` to `gcloud beta compute backend-services import` and `gcloud beta compute backend-services export`.
+* Promoted HTTP Filter related resource properties to beta for:
+  * `gcloud compute target-http-proxies import`
+  * `gcloud compute target-http-proxies export`
+  * `gcloud compute target-https-proxies import`
+  * `gcloud compute target-https-proxies export`
+  * `gcloud compute url-maps import`
+  * `gcloud compute url-maps export`
+
+### Config Connector
+
+* Added Google Cloud Config Connector v1.26.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Events
+
+* Updated `gcloud beta events triggers create` to reference the
+serving.knative.dev/v1 APIVersion in the subscriber reference of created
+triggers.
+
+### Firebase Test Lab
+
+* Promoted `--testing-special-entitlements` flag of `gcloud firebase test ios
+  run` to GA.
+
+### Kpt
+
+* Updated kpt from v0.34.0 to v0.35.0.
+* Updated import of cli-utils from v0.20.1 to v0.20.6.
+* Updated import of kyaml from v0.8.0 to v0.9.2.
+* Updated import of cmd/config from v0.8.0 to v0.8.3.
+
+### Kubernetes Engine
+
+* Added `--release-channel=None` option to `gcloud container clusters create`. This option is used to explicitly opt-out of release channels.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 315.0.0 (2020-10-20)
 
 ### AI

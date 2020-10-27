@@ -83,7 +83,7 @@ class DatafusionV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Date Fusion instance.
+      r"""Deletes a single Data Fusion instance.
 
       Args:
         request: (DatafusionProjectsLocationsInstancesDeleteRequest) input message

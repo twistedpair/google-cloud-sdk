@@ -1665,7 +1665,7 @@ class AuthorizationLoggingOptions(_messages.Message):
 class Autoscaler(_messages.Message):
   r"""Represents an Autoscaler resource.  Google Compute Engine has two
   Autoscaler resources:  *
-  [Global](/compute/docs/reference/rest/{$api_version}/autoscalers) *
+  [Zonal](/compute/docs/reference/rest/{$api_version}/autoscalers) *
   [Regional](/compute/docs/reference/rest/{$api_version}/regionAutoscalers)
   Use autoscalers to automatically add or delete instances from a managed
   instance group according to your defined autoscaling policy. For more
@@ -3303,6 +3303,8 @@ class BackendService(_messages.Message):
       when the backend service is referenced by a URL map that is bound to
       target gRPC proxy that has validateForProxyless field set to true.
     connectionDraining: A ConnectionDraining attribute.
+    connectionTrackingPolicy: A BackendServiceConnectionTrackingPolicy
+      attribute.
     consistentHash: Consistent Hash-based load balancing can be used to
       provide soft session affinity based on HTTP headers, cookies or other
       properties. This load balancing policy is applicable only for HTTP
@@ -3575,33 +3577,34 @@ class BackendService(_messages.Message):
   cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
   circuitBreakers = _messages.MessageField('CircuitBreakers', 4)
   connectionDraining = _messages.MessageField('ConnectionDraining', 5)
-  consistentHash = _messages.MessageField('ConsistentHashLoadBalancerSettings', 6)
-  creationTimestamp = _messages.StringField(7)
-  customRequestHeaders = _messages.StringField(8, repeated=True)
-  customResponseHeaders = _messages.StringField(9, repeated=True)
-  description = _messages.StringField(10)
-  enableCDN = _messages.BooleanField(11)
-  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 12)
-  fingerprint = _messages.BytesField(13)
-  healthChecks = _messages.StringField(14, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 15)
-  id = _messages.IntegerField(16, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(17, default='compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 18)
-  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 19)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 20)
-  name = _messages.StringField(21)
-  network = _messages.StringField(22)
-  outlierDetection = _messages.MessageField('OutlierDetection', 23)
-  port = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(25)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 26)
-  region = _messages.StringField(27)
-  securityPolicy = _messages.StringField(28)
-  securitySettings = _messages.MessageField('SecuritySettings', 29)
-  selfLink = _messages.StringField(30)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 31)
-  timeoutSec = _messages.IntegerField(32, variant=_messages.Variant.INT32)
+  connectionTrackingPolicy = _messages.MessageField('BackendServiceConnectionTrackingPolicy', 6)
+  consistentHash = _messages.MessageField('ConsistentHashLoadBalancerSettings', 7)
+  creationTimestamp = _messages.StringField(8)
+  customRequestHeaders = _messages.StringField(9, repeated=True)
+  customResponseHeaders = _messages.StringField(10, repeated=True)
+  description = _messages.StringField(11)
+  enableCDN = _messages.BooleanField(12)
+  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 13)
+  fingerprint = _messages.BytesField(14)
+  healthChecks = _messages.StringField(15, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 16)
+  id = _messages.IntegerField(17, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(18, default='compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 19)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 20)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 21)
+  name = _messages.StringField(22)
+  network = _messages.StringField(23)
+  outlierDetection = _messages.MessageField('OutlierDetection', 24)
+  port = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(26)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 27)
+  region = _messages.StringField(28)
+  securityPolicy = _messages.StringField(29)
+  securitySettings = _messages.MessageField('SecuritySettings', 30)
+  selfLink = _messages.StringField(31)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 32)
+  timeoutSec = _messages.IntegerField(33, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -3929,6 +3932,68 @@ class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   ttl = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class BackendServiceConnectionTrackingPolicy(_messages.Message):
+  r"""Connection Tracking configuration for this BackendService.
+
+  Enums:
+    ConnectionPersistenceOnUnhealthyBackendsValueValuesEnum: Specifies
+      connection persistence when backends are unhealthy. The default value is
+      DEFAULT_FOR_PROTOCOL.  If set to DEFAULT_FOR_PROTOCOL, the existing
+      connections persist on unhealthy backends only for connection-oriented
+      protocols (TCP and SCTP) and only if the Tracking Mode is PER_CONNECTION
+      (default tracking mode) or the Session Affinity is configured for
+      5-tuple. They do not persist for UDP.  If set to NEVER_PERSIST, after a
+      backend becomes unhealthy, the existing connections on the unhealthy
+      backend are never persisted on the unhealthy backend. They are always
+      diverted to newly selected healthy backends (unless all backends are
+      unhealthy).  If set to ALWAYS_PERSIST, existing connections always
+      persist on unhealthy backends regardless of protocol and session
+      affinity. It is generally not recommended to use this mode overriding
+      the default.
+
+  Fields:
+    connectionPersistenceOnUnhealthyBackends: Specifies connection persistence
+      when backends are unhealthy. The default value is DEFAULT_FOR_PROTOCOL.
+      If set to DEFAULT_FOR_PROTOCOL, the existing connections persist on
+      unhealthy backends only for connection-oriented protocols (TCP and SCTP)
+      and only if the Tracking Mode is PER_CONNECTION (default tracking mode)
+      or the Session Affinity is configured for 5-tuple. They do not persist
+      for UDP.  If set to NEVER_PERSIST, after a backend becomes unhealthy,
+      the existing connections on the unhealthy backend are never persisted on
+      the unhealthy backend. They are always diverted to newly selected
+      healthy backends (unless all backends are unhealthy).  If set to
+      ALWAYS_PERSIST, existing connections always persist on unhealthy
+      backends regardless of protocol and session affinity. It is generally
+      not recommended to use this mode overriding the default.
+  """
+
+  class ConnectionPersistenceOnUnhealthyBackendsValueValuesEnum(_messages.Enum):
+    r"""Specifies connection persistence when backends are unhealthy. The
+    default value is DEFAULT_FOR_PROTOCOL.  If set to DEFAULT_FOR_PROTOCOL,
+    the existing connections persist on unhealthy backends only for
+    connection-oriented protocols (TCP and SCTP) and only if the Tracking Mode
+    is PER_CONNECTION (default tracking mode) or the Session Affinity is
+    configured for 5-tuple. They do not persist for UDP.  If set to
+    NEVER_PERSIST, after a backend becomes unhealthy, the existing connections
+    on the unhealthy backend are never persisted on the unhealthy backend.
+    They are always diverted to newly selected healthy backends (unless all
+    backends are unhealthy).  If set to ALWAYS_PERSIST, existing connections
+    always persist on unhealthy backends regardless of protocol and session
+    affinity. It is generally not recommended to use this mode overriding the
+    default.
+
+    Values:
+      ALWAYS_PERSIST: <no description>
+      DEFAULT_FOR_PROTOCOL: <no description>
+      NEVER_PERSIST: <no description>
+    """
+    ALWAYS_PERSIST = 0
+    DEFAULT_FOR_PROTOCOL = 1
+    NEVER_PERSIST = 2
+
+  connectionPersistenceOnUnhealthyBackends = _messages.EnumField('ConnectionPersistenceOnUnhealthyBackendsValueValuesEnum', 1)
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
@@ -24536,12 +24601,50 @@ class DisplayDevice(_messages.Message):
 class DistributionPolicy(_messages.Message):
   r"""A DistributionPolicy object.
 
+  Enums:
+    TargetShapeValueValuesEnum: The shape to which the group converges either
+      proactively or on resize events (depending on the value set in
+      updatePolicy.instanceRedistributionType). The possible values are EVEN
+      and ANY. For EVEN the group attempts to preserve a balanced number of
+      instances across zones. For ANY the group creates new instances where
+      resources are available to fulfill the request; as a result, instances
+      may be distributed unevenly across zones in this mode. The default value
+      is EVEN.
+
   Fields:
+    targetShape: The shape to which the group converges either proactively or
+      on resize events (depending on the value set in
+      updatePolicy.instanceRedistributionType). The possible values are EVEN
+      and ANY. For EVEN the group attempts to preserve a balanced number of
+      instances across zones. For ANY the group creates new instances where
+      resources are available to fulfill the request; as a result, instances
+      may be distributed unevenly across zones in this mode. The default value
+      is EVEN.
     zones: Zones where the regional managed instance group will create and
-      manage instances.
+      manage its instances.
   """
 
-  zones = _messages.MessageField('DistributionPolicyZoneConfiguration', 1, repeated=True)
+  class TargetShapeValueValuesEnum(_messages.Enum):
+    r"""The shape to which the group converges either proactively or on resize
+    events (depending on the value set in
+    updatePolicy.instanceRedistributionType). The possible values are EVEN and
+    ANY. For EVEN the group attempts to preserve a balanced number of
+    instances across zones. For ANY the group creates new instances where
+    resources are available to fulfill the request; as a result, instances may
+    be distributed unevenly across zones in this mode. The default value is
+    EVEN.
+
+    Values:
+      ANY: <no description>
+      BALANCED: <no description>
+      EVEN: <no description>
+    """
+    ANY = 0
+    BALANCED = 1
+    EVEN = 2
+
+  targetShape = _messages.EnumField('TargetShapeValueValuesEnum', 1)
+  zones = _messages.MessageField('DistributionPolicyZoneConfiguration', 2, repeated=True)
 
 
 class DistributionPolicyZoneConfiguration(_messages.Message):
@@ -29685,8 +29788,8 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    distributionPolicy: Policy specifying intended distribution of instances
-      in regional managed instance group.
+    distributionPolicy: Policy specifying the intended distribution of managed
+      instances across zones in a regional managed instance group.
     failoverAction: The action to perform in case of zone failure. Only one
       value is supported, NO_FAILOVER. The default is NO_FAILOVER.
     fingerprint: Fingerprint of this resource. This field may be used in
@@ -29700,7 +29803,10 @@ class InstanceGroupManager(_messages.Message):
     instanceGroup: [Output Only] The URL of the Instance Group resource.
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create all
-      new instances in the managed instance group.
+      new instances in the managed instance group. The templates for existing
+      instances in the group do not change unless you run recreateInstances,
+      run applyUpdatesToInstances, or set the group's updatePolicy.type to
+      PROACTIVE.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupManager for managed instance groups.
     name: The name of the managed instance group. The name must be 1-63
@@ -29740,8 +29846,8 @@ class InstanceGroupManager(_messages.Message):
       one version must leave the targetSize field unset. That version will be
       applied to all remaining instances. For more information, read about
       canary updates.
-    zone: [Output Only] The URL of the zone where the managed instance group
-      is located (for zonal resources).
+    zone: [Output Only] The URL of a zone where the managed instance group is
+      located (for zonal resources).
   """
 
   class FailoverActionValueValuesEnum(_messages.Enum):
@@ -30384,7 +30490,11 @@ class InstanceGroupManagerVersion(_messages.Message):
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create new
       instances in the managed instance group until the `targetSize` for this
-      version is reached.
+      version is reached. The templates for existing instances in the group do
+      not change unless you run recreateInstances, run
+      applyUpdatesToInstances, or set the group's updatePolicy.type to
+      PROACTIVE; in those cases, existing instances are updated until the
+      `targetSize` for this version is reached.
     name: Name of the version. Unique among all versions in the scope of this
       managed instance group.
     targetSize: Specifies the intended number of instances to be created from
@@ -30877,7 +30987,10 @@ class InstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
   Fields:
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create all
-      new instances in the managed instance group.
+      new instances in the managed instance group. The templates for existing
+      instances in the group do not change unless you run recreateInstances,
+      run applyUpdatesToInstances, or set the group's updatePolicy.type to
+      PROACTIVE.
   """
 
   instanceTemplate = _messages.StringField(1)

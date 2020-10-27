@@ -84,6 +84,25 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class Certificate(_messages.Message):
+  r"""Certificate used to configure LDAPS.
+
+  Fields:
+    expireTime: The certificate expire time.
+    issuingCertificate: The issuer of this certificate.
+    subject: The certificate subject.
+    subjectAlternativeName: The additional hostnames for the domain.
+    thumbprint: The certificate thumbprint which uniquely identifies the
+      certificate.
+  """
+
+  expireTime = _messages.StringField(1)
+  issuingCertificate = _messages.MessageField('Certificate', 2)
+  subject = _messages.StringField(3)
+  subjectAlternativeName = _messages.StringField(4, repeated=True)
+  thumbprint = _messages.StringField(5)
+
+
 class DetachTrustRequest(_messages.Message):
   r"""A DetachTrustRequest object.
 
@@ -718,6 +737,66 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   tier = _messages.StringField(4)
 
 
+class LDAPSSettings(_messages.Message):
+  r"""LDAPSSettings represents the ldaps settings for domain resource. LDAP is
+  the Lightweight Directory Access Protocol, defined in
+  https://tools.ietf.org/html/rfc4511. The settings object configures LDAP
+  over SSL/TLS, whether it is over port 636 or the StartTLS operation.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of this LDAPS
+      settings.
+
+  Fields:
+    certificate: Output only. The certificate used to configure LDAPS.
+      Certificates can be chained with a maximum length of 15.
+    certificatePassword: Input only. The password used to encrypt the uploaded
+      pfx certificate.
+    certificatePfx: Input only. The uploaded PKCS12-formatted certificate to
+      configure LDAPS with. It will enable the domain controllers in this
+      domain to accept LDAPS connections (either LDAP over SSL/TLS or the
+      StartTLS operation). A valid certificate chain must form a valid x.509
+      certificate chain (or be comprised of a single self-signed certificate.
+      It must be encrypted with either: 1) PBES2 + PBKDF2 + AES256 encryption
+      and SHA256 PRF; or 2) pbeWithSHA1And3-KeyTripleDES-CBC Private key must
+      be included for the leaf / single self-signed certificate. Note: For a
+      fqdn your-example-domain.com, the wildcard fqdn is *.your-example-
+      domain.com. Specifically the leaf certificate must have: - Either a
+      blank subject or a subject with CN matching the wildcard fqdn. - Exactly
+      two SANs - the fqdn adn wildcard fqdn. - Encipherment and digital key
+      signature key usages. - Server authentication extended key usage
+      (OID=1.3.6.1.5.5.7.3.1) - Private key must be in one of the following
+      formats: RSA, ECDSA, ED25519. - Private key must have appropriate key
+      length: 2048 for RSA, 256 for ECDSA - Signature algorithm of the leaf
+      certificate cannot be MD2, MD5 or SHA1.
+    name: The resource name of the LDAPS settings. Uses the form:
+      `projects/{project}/locations/{location}/domains/{domain}`.
+    state: Output only. The current state of this LDAPS settings.
+    updateTime: Output only. Last update time.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of this LDAPS settings.
+
+    Values:
+      STATE_UNSPECIFIED: Not Set
+      UPDATING: The LDAPS setting is being updated.
+      ACTIVE: The LDAPS setting is ready.
+      FAILED: The LDAPS setting is not applied correctly.
+    """
+    STATE_UNSPECIFIED = 0
+    UPDATING = 1
+    ACTIVE = 2
+    FAILED = 3
+
+  certificate = _messages.MessageField('Certificate', 1)
+  certificatePassword = _messages.StringField(2)
+  certificatePfx = _messages.BytesField(3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
+
+
 class ListDomainsResponse(_messages.Message):
   r"""A ListDomainsResponse object.
 
@@ -757,6 +836,22 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListSQLIntegrationsResponse(_messages.Message):
+  r"""ListSQLIntegrationsResponse is the response message for
+  ListSQLIntegrations method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    sqlIntegrations: A list of SQLIntegrations of a domain.
+    unreachable: A list of locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sqlIntegrations = _messages.MessageField('SQLIntegration', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -934,6 +1029,18 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsGetIamPolicyRequest(_messag
   resource = _messages.StringField(2, required=True)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest
+  object.
+
+  Fields:
+    name: Required. The domain resource name using the form:
+      `projects/{project_id}/locations/global/domains/{domain_name}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest(_messages.Message):
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsGetRequest object.
 
@@ -1036,6 +1143,49 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest(_messag
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsGetRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsGetRequest
+  object.
+
+  Fields:
+    name: Required. MangedOU resource name using the form:
+      `projects/{project_id}/locations/global/domains/*/sqlIntegrations/{name}
+      `
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsListRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter specifying constraints of a list operation. For
+      example, `SqlIntegration.name="sql"`.
+    orderBy: Optional. Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 1000 will be used by the service.
+      Regardless of the page_size value, the response may include a partial
+      list and a caller should only rely on response'ANIZATIONs
+      next_page_token to determine if there are more instances left to be
+      queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The resource name of the SqlIntegrations using the form:
+      `projects/{project_id}/locations/global/domains/*`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest(_messages.Message):
   r"""A
   ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest
@@ -1051,6 +1201,26 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest(_
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest
+  object.
+
+  Fields:
+    lDAPSSettings: A LDAPSSettings resource to be passed as the request body.
+    name: The resource name of the LDAPS settings. Uses the form:
+      `projects/{project}/locations/{location}/domains/{domain}`.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
+  """
+
+  lDAPSSettings = _messages.MessageField('LDAPSSettings', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ManagedidentitiesProjectsLocationsGlobalDomainsValidateTrustRequest(_messages.Message):
@@ -1124,18 +1294,15 @@ class ManagedidentitiesProjectsLocationsListRequest(_messages.Message):
 
   Fields:
     filter: The standard list filter.
-    includeUnrevealedLocations: If true, the returned list will include
-      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """
 
   filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -1365,6 +1532,46 @@ class ResetAdminPasswordResponse(_messages.Message):
   """
 
   password = _messages.StringField(1)
+
+
+class SQLIntegration(_messages.Message):
+  r"""Represents the SQL instance integrated with AD.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the managed OU.
+
+  Fields:
+    createTime: Output only. The time the instance was created. Synthetic
+      field is populated automatically by CCFE. go/ccfe-synthetic-field-user-
+      guide
+    name: The unique name of the sql integration in the form of `projects/{pro
+      ject_id}/locations/global/domains/{domain_name}/sqlIntegrations/{sql_int
+      egration}`
+    sqlInstance: The full resource name of an integrated sql instance
+    state: Output only. The current state of the managed OU.
+    updateTime: Output only. Last update time. Synthetic field is populated
+      automatically by CCFE.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the managed OU.
+
+    Values:
+      STATE_UNSPECIFIED: Not Set
+      CREATING: The sqlIntegration is being created.
+      DELETING: The sqlIntegration is being deleted.
+      READY: The sqlIntegration is ready.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    DELETING = 2
+    READY = 3
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  sqlInstance = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  updateTime = _messages.StringField(5)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -9,16 +9,16 @@ project:
     property: core/project
   disable_auto_completers: false
 
-location:
-  name: location
+region:
+  name: region
   collection: sddc.projects.locations
   attributes:
   - *project
-  - &location
+  - &region
     parameter_name: locationsId
-    attribute_name: location
+    attribute_name: region
     help: Region of the private cloud or cluster.
-    property: vmware/location
+    property: vmware/region
   disable_auto_completers: false
 
 privatecloud:
@@ -26,7 +26,7 @@ privatecloud:
   collection: sddc.projects.locations.clusterGroups
   attributes:
   - *project
-  - *location
+  - *region
   - &privatecloud
     parameter_name: clusterGroupsId
     attribute_name: privatecloud
@@ -38,7 +38,7 @@ cluster:
   collection: sddc.projects.locations.clusterGroups.clusters
   attributes:
   - *project
-  - *location
+  - *region
   - *privatecloud
   - &cluster
     parameter_name: clustersId

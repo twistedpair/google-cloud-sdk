@@ -400,7 +400,7 @@
       "type": "object",
       "properties": {
         "gcsDestination": {
-          "description": "The Google Cloud Storage location where the output is to be written to. In the given directory a new directory will be created with name: `export-data--` where timestamp is in YYYYMMDDHHMMSS format. All export output will be written into that directory. Inside that directory, annotations with the same schema will be grouped into sub directories which are named with the corresponding annotations' schema title. Inside these sub directories, a schema.yaml will be created to describe the output format.",
+          "description": "The Google Cloud Storage location where the output is to be written to. In the given directory a new directory will be created with name: `export-data--` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ ISO-8601 format. All export output will be written into that directory. Inside that directory, annotations with the same schema will be grouped into sub directories which are named with the corresponding annotations' schema title. Inside these sub directories, a schema.yaml will be created to describe the output format.",
           "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
         },
         "annotationsFilter": {
@@ -844,13 +844,18 @@
       "type": "object",
       "properties": {
         "noiseSigma": {
-          "description": "If set, this std. deviation will be used to apply noise to all features.",
+          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. Refer to this doc for more details about normalization: https: \/\/developers.google.com\/machine-learning \/\/ \/data-prep\/transform\/normalization. For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
           "type": "number",
           "format": "float"
         },
         "featureNoiseSigma": {
-          "description": "Alternatively, set this to use different noise_sigma per feature. One entry per feature. No noise is added to features that are not set.",
+          "description": "This is similar to noise_sigma, but provides additional flexibility. A separate noise sigma can be provided for each feature, which is useful if their distributions are different. No noise is added to features that are not set. If this field is unset, noise_sigma will be used for all features.",
           "$ref": "GoogleCloudAiplatformV1alpha1FeatureNoiseSigma"
+        },
+        "noisySampleCount": {
+          "description": "The number of gradient samples to use for approximation. The higher this number, the more accurate the gradient is, but the runtime complexity increases by this factor as well. Valid range of its value is [1, 50]. Defaults to 3.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -878,7 +883,7 @@
           "type": "string"
         },
         "sigma": {
-          "description": "Standard deviation of gaussian kernel for noise.",
+          "description": "This represents the standard deviation of the Gaussian kernel that will be used to add noise to the feature prior to computing gradients. Similar to noise_sigma but represents the noise added to the current feature. Defaults to 0.1.",
           "type": "number",
           "format": "float"
         }
@@ -893,6 +898,10 @@
           "description": "Required. The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is met within the desired error range. Valid range of its value is [1, 100], inclusively.",
           "type": "integer",
           "format": "int32"
+        },
+        "smoothGradConfig": {
+          "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+          "$ref": "GoogleCloudAiplatformV1alpha1SmoothGradConfig"
         }
       }
     },
@@ -1866,7 +1875,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1ManualBatchTuningParameters"
         },
         "generateExplanation": {
-          "description": "Generate explanation along with the batch prediction results. This can only be set to true for AutoML tabular Models, and only when the output destination is BigQuery. When it's true, the batch prediction output will include a column named `explanation`. The value is a struct that conforms to the Explanation object.",
+          "description": "Generate explanation along with the batch prediction results. When it's true, the batch prediction output will change based on the output format: * `bigquery`: output will include a column named `explanation`. The value is a struct that conforms to the Explanation object. * `jsonl`: The JSON objects on each line will include an additional entry keyed `explanation`. The value of the entry is a JSON object that conforms to the Explanation object. * `csv`: Generating explanations for CSV format is not supported.",
           "type": "boolean"
         },
         "outputInfo": {
@@ -3326,7 +3335,7 @@
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Time when the operation was updated for the last time.",
+          "description": "Output only. Time when the operation was updated for the last time. If the operation has finished (successfully or not), this is the finish time.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -3986,13 +3995,18 @@
       "type": "object",
       "properties": {
         "noiseSigma": {
-          "description": "If set, this std. deviation will be used to apply noise to all features.",
+          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. Refer to this doc for more details about normalization: https: \/\/developers.google.com\/machine-learning \/\/ \/data-prep\/transform\/normalization. For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
           "type": "number",
           "format": "float"
         },
         "featureNoiseSigma": {
-          "description": "Alternatively, set this to use different noise_sigma per feature. One entry per feature. No noise is added to features that are not set.",
+          "description": "This is similar to noise_sigma, but provides additional flexibility. A separate noise sigma can be provided for each feature, which is useful if their distributions are different. No noise is added to features that are not set. If this field is unset, noise_sigma will be used for all features.",
           "$ref": "GoogleCloudAiplatformUiFeatureNoiseSigma"
+        },
+        "noisySampleCount": {
+          "description": "The number of gradient samples to use for approximation. The higher this number, the more accurate the gradient is, but the runtime complexity increases by this factor as well. Valid range of its value is [1, 50]. Defaults to 3.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -4020,7 +4034,7 @@
           "type": "string"
         },
         "sigma": {
-          "description": "Standard deviation of gaussian kernel for noise.",
+          "description": "This represents the standard deviation of the Gaussian kernel that will be used to add noise to the feature prior to computing gradients. Similar to noise_sigma but represents the noise added to the current feature. Defaults to 0.1.",
           "type": "number",
           "format": "float"
         }
@@ -4035,6 +4049,10 @@
           "description": "Required. The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is met within the desired error range. Valid range of its value is [1, 100], inclusively.",
           "type": "integer",
           "format": "int32"
+        },
+        "smoothGradConfig": {
+          "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+          "$ref": "GoogleCloudAiplatformUiSmoothGradConfig"
         }
       }
     },
@@ -4680,6 +4698,25 @@
       "description": "Annotation details specific to image segmentation.",
       "type": "object",
       "properties": {
+        "maskAnnotation": {
+          "description": "Mask based segmentation annotation. Only one mask annotation can exist for one image.",
+          "$ref": "GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationMaskAnnotation"
+        },
+        "polygonAnnotation": {
+          "description": "Polygon annotation.",
+          "$ref": "GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolygonAnnotation"
+        },
+        "polylineAnnotation": {
+          "description": "Polyline annotation.",
+          "$ref": "GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolylineAnnotation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationMaskAnnotation": {
+      "id": "GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationMaskAnnotation",
+      "description": "The mask based segmentation annotation.",
+      "type": "object",
+      "properties": {
         "maskGcsUri": {
           "description": "Google Cloud Storage URI that points to the mask image. The image must be in PNG format. It must have the same size as the DataItem's image. Each pixel in the image mask represents the AnnotationSpec which the pixel in the image DataItem belong to. Each color is mapped to one AnnotationSpec based on annotation_spec_colors.",
           "type": "string"
@@ -4736,6 +4773,97 @@
           "description": "The fraction of this color that should be applied to the pixel. That is, the final pixel color is defined by the equation: pixel color = alpha * (this color) + (1.0 - alpha) * (background color) This means that a value of 1.0 corresponds to a solid color, whereas a value of 0.0 corresponds to a completely transparent color. This uses a wrapper message rather than a simple float scalar so that it is possible to distinguish between a default value and the value being unset. If omitted, this color object is to be rendered as a solid color (as if the alpha value had been explicitly given with a value of 1.0).",
           "type": "number",
           "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolygonAnnotation": {
+      "id": "GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolygonAnnotation",
+      "description": "Represents a polygon in image.",
+      "type": "object",
+      "properties": {
+        "vertexes": {
+          "description": "The vertexes are connected one by one and the last vertex is connected to the first one to represent a polygon.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiSchemaVertex"
+          }
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaVertex": {
+      "id": "GoogleCloudAiplatformUiSchemaVertex",
+      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "double"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolylineAnnotation": {
+      "id": "GoogleCloudAiplatformUiSchemaImageSegmentationAnnotationPolylineAnnotation",
+      "description": "Represents a polyline in image.",
+      "type": "object",
+      "properties": {
+        "vertexes": {
+          "description": "The vertexes are connected one by one and the last vertex in not connected to the first one.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiSchemaVertex"
+          }
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSchemaImageSegmentationSavedQueryMetadata": {
+      "id": "GoogleCloudAiplatformUiSchemaImageSegmentationSavedQueryMetadata",
+      "description": "The metadata of SavedQuery contains ImageSegmentation Annotations.",
+      "type": "object",
+      "properties": {
+        "colorMap": {
+          "description": "The mapping between color and AnnotationSpec for this SavedQuery.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformUiSchemaAnnotationSpecColor"
+          }
+        },
+        "annotationType": {
+          "description": "Type of annotations that can be referenced by the saved query.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "SEGMENTATION_ANNOTATION_TYPE_UNSPECIFIED",
+            "SEGMENTATION_ANNOTATION_TYPE_MASK",
+            "SEGMENTATION_ANNOTATION_TYPE_POLYGON",
+            "SEGMENTATION_ANNOTATION_TYPE_POLYLINE"
+          ]
         }
       }
     },
@@ -5185,7 +5313,7 @@
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Time when the operation was updated for the last time.",
+          "description": "Output only. Time when the operation was updated for the last time. If the operation has finished (successfully or not), this is the finish time.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -5550,6 +5678,25 @@
       "description": "Annotation details specific to image segmentation.",
       "type": "object",
       "properties": {
+        "maskAnnotation": {
+          "description": "Mask based segmentation annotation. Only one mask annotation can exist for one image.",
+          "$ref": "GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationMaskAnnotation"
+        },
+        "polygonAnnotation": {
+          "description": "Polygon annotation.",
+          "$ref": "GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolygonAnnotation"
+        },
+        "polylineAnnotation": {
+          "description": "Polyline annotation.",
+          "$ref": "GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolylineAnnotation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationMaskAnnotation": {
+      "id": "GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationMaskAnnotation",
+      "description": "The mask based segmentation annotation.",
+      "type": "object",
+      "properties": {
         "maskGcsUri": {
           "description": "Google Cloud Storage URI that points to the mask image. The image must be in PNG format. It must have the same size as the DataItem's image. Each pixel in the image mask represents the AnnotationSpec which the pixel in the image DataItem belong to. Each color is mapped to one AnnotationSpec based on annotation_spec_colors.",
           "type": "string"
@@ -5578,6 +5725,67 @@
         },
         "id": {
           "description": "The ID of the AnnotationSpec represented by the color in the segmentation mask.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolygonAnnotation": {
+      "id": "GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolygonAnnotation",
+      "description": "Represents a polygon in image.",
+      "type": "object",
+      "properties": {
+        "vertexes": {
+          "description": "The vertexes are connected one by one and the last vertex is connected to the first one to represent a polygon.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1SchemaVertex"
+          }
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SchemaVertex": {
+      "id": "GoogleCloudAiplatformV1alpha1SchemaVertex",
+      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "double"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolylineAnnotation": {
+      "id": "GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolylineAnnotation",
+      "description": "Represents a polyline in image.",
+      "type": "object",
+      "properties": {
+        "vertexes": {
+          "description": "The vertexes are connected one by one and the last vertex in not connected to the first one.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1SchemaVertex"
+          }
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
           "type": "string"
         }
       }
@@ -5986,7 +6194,7 @@
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Time when the operation was updated for the last time.",
+          "description": "Output only. Time when the operation was updated for the last time. If the operation has finished (successfully or not), this is the finish time.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -6417,13 +6625,18 @@
       "type": "object",
       "properties": {
         "noiseSigma": {
-          "description": "If set, this std. deviation will be used to apply noise to all features.",
+          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. Refer to this doc for more details about normalization: https: \/\/developers.google.com\/machine-learning \/\/ \/data-prep\/transform\/normalization. For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
           "type": "number",
           "format": "float"
         },
         "featureNoiseSigma": {
-          "description": "Alternatively, set this to use different noise_sigma per feature. One entry per feature. No noise is added to features that are not set.",
+          "description": "This is similar to noise_sigma, but provides additional flexibility. A separate noise sigma can be provided for each feature, which is useful if their distributions are different. No noise is added to features that are not set. If this field is unset, noise_sigma will be used for all features.",
           "$ref": "GoogleCloudAiplatformV1beta1FeatureNoiseSigma"
+        },
+        "noisySampleCount": {
+          "description": "The number of gradient samples to use for approximation. The higher this number, the more accurate the gradient is, but the runtime complexity increases by this factor as well. Valid range of its value is [1, 50]. Defaults to 3.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -6451,7 +6664,7 @@
           "type": "string"
         },
         "sigma": {
-          "description": "Standard deviation of gaussian kernel for noise.",
+          "description": "This represents the standard deviation of the Gaussian kernel that will be used to add noise to the feature prior to computing gradients. Similar to noise_sigma but represents the noise added to the current feature. Defaults to 0.1.",
           "type": "number",
           "format": "float"
         }
@@ -6466,6 +6679,10 @@
           "description": "Required. The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is met within the desired error range. Valid range of its value is [1, 100], inclusively.",
           "type": "integer",
           "format": "int32"
+        },
+        "smoothGradConfig": {
+          "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+          "$ref": "GoogleCloudAiplatformV1beta1SmoothGradConfig"
         }
       }
     },
@@ -8370,6 +8587,25 @@
       "description": "Annotation details specific to image segmentation.",
       "type": "object",
       "properties": {
+        "maskAnnotation": {
+          "description": "Mask based segmentation annotation. Only one mask annotation can exist for one image.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationMaskAnnotation"
+        },
+        "polygonAnnotation": {
+          "description": "Polygon annotation.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolygonAnnotation"
+        },
+        "polylineAnnotation": {
+          "description": "Polyline annotation.",
+          "$ref": "GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolylineAnnotation"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationMaskAnnotation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationMaskAnnotation",
+      "description": "The mask based segmentation annotation.",
+      "type": "object",
+      "properties": {
         "maskGcsUri": {
           "description": "Google Cloud Storage URI that points to the mask image. The image must be in PNG format. It must have the same size as the DataItem's image. Each pixel in the image mask represents the AnnotationSpec which the pixel in the image DataItem belong to. Each color is mapped to one AnnotationSpec based on annotation_spec_colors.",
           "type": "string"
@@ -8398,6 +8634,67 @@
         },
         "id": {
           "description": "The ID of the AnnotationSpec represented by the color in the segmentation mask.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolygonAnnotation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolygonAnnotation",
+      "description": "Represents a polygon in image.",
+      "type": "object",
+      "properties": {
+        "vertexes": {
+          "description": "The vertexes are connected one by one and the last vertex is connected to the first one to represent a polygon.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1SchemaVertex"
+          }
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaVertex": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaVertex",
+      "description": "A vertex represents a 2D point in the image. NOTE: the normalized vertex coordinates are relative to the original image and range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "double"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolylineAnnotation": {
+      "id": "GoogleCloudAiplatformV1beta1SchemaImageSegmentationAnnotationPolylineAnnotation",
+      "description": "Represents a polyline in image.",
+      "type": "object",
+      "properties": {
+        "vertexes": {
+          "description": "The vertexes are connected one by one and the last vertex in not connected to the first one.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1SchemaVertex"
+          }
+        },
+        "annotationSpecId": {
+          "description": "The resource Id of the AnnotationSpec that this Annotation pertains to.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the AnnotationSpec that this Annotation pertains to.",
           "type": "string"
         }
       }

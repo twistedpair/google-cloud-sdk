@@ -852,9 +852,9 @@ apis:
       resources:
         speech:
           path: speech
-  sql:
+  sqladmin:
     v1beta4:
-      discovery_doc: sql_v1beta4.json
+      discovery_doc: sqladmin_v1beta4.json
   storage:
     v1:
       discovery_doc: storage_v1.json
@@ -987,12 +987,17 @@ apis:
       default: true
     v1beta:
       discovery_doc: workflowexecutions_v1beta.json
+    v1:
+      discovery_doc: workflowexecutions_v1.json
   workflows:
     v1alpha1:
       discovery_doc: workflows_v1alpha1.json
+      # TODO(b/171499924): Change the default version to V1 at/after GA.
       default: true
     v1beta:
       discovery_doc: workflows_v1beta.json
+    v1:
+      discovery_doc: workflows_v1.json
   sddc:
     v1alpha1:
       discovery_doc: sddc_v1alpha1.json

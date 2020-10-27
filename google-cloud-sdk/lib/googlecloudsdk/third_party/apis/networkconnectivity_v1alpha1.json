@@ -933,7 +933,7 @@
           "enumDescriptions": [
             "The API implementation may cache and aggregate the data. The data may be lost when rare and unexpected system failures occur.",
             "The API implementation doesn't cache and aggregate the data. If the method returns successfully, it's guaranteed that the data has been persisted in durable storage.",
-            "In addition to the behavior described in HIGH, DEBUG enables additional validation logic that is only useful during the onboarding process. This is only available to Google internal services and the service must be whitelisted by chemist-dev@google.com in order to use this level."
+            "In addition to the behavior described in HIGH, DEBUG enables additional validation logic that is only useful during the onboarding process. This is only available to Google internal services and the service must be allowlisted by chemist-dev@google.com in order to use this level."
           ],
           "enum": [
             "LOW",
@@ -1006,12 +1006,12 @@
           }
         },
         "startTime": {
-          "description": "The start of the time period over which this metric value's measurement applies. The time period has different semantics for different metric types (cumulative, delta, and gauge). See the metric definition documentation in the service configuration for details.",
+          "description": "The start of the time period over which this metric value's measurement applies. The time period has different semantics for different metric types (cumulative, delta, and gauge). See the metric definition documentation in the service configuration for details. If not specified, google.api.servicecontrol.v1.Operation.start_time will be used.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "The end of the time period over which this metric value's measurement applies.",
+          "description": "The end of the time period over which this metric value's measurement applies. If not specified, google.api.servicecontrol.v1.Operation.end_time will be used.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -1195,7 +1195,7 @@
       "type": "object",
       "properties": {
         "currencyCode": {
-          "description": "The 3-letter currency code defined in ISO 4217.",
+          "description": "The three-letter currency code defined in ISO 4217.",
           "type": "string"
         },
         "units": {

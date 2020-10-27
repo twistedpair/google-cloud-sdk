@@ -698,6 +698,7 @@ def CreateNetworkInterfaceMessage(resources,
                                   project,
                                   location,
                                   scope,
+                                  nic_type=None,
                                   no_address=None,
                                   address=None,
                                   private_network_ip=None,
@@ -751,6 +752,10 @@ def CreateNetworkInterfaceMessage(resources,
       # ipaddress could not resolve as an IPv4 or IPv6 address.
       network_interface.networkIP = instances_flags.GetAddressRef(
           resources, private_network_ip, region).SelfLink()
+
+  if nic_type is not None:
+    network_interface.nicType = messages.NetworkInterface.NicTypeValueValuesEnum(
+        nic_type)
 
   if alias_ip_ranges_string:
     network_interface.aliasIpRanges = (
@@ -821,6 +826,7 @@ def CreateNetworkInterfaceMessages(resources, compute_client,
               network=interface.get('network', None),
               subnet=interface.get('subnet', None),
               private_network_ip=interface.get('private-network-ip', None),
+              nic_type=interface.get('nic-type', None),
               no_address=no_address,
               address=address,
               project=project,

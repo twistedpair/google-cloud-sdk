@@ -676,7 +676,13 @@ def FormatRequiredUserAction(s):
       line, and followed by a newline.
   """
   with _NarrowWrap(4) as wrapper:
-    return '\n==> ' + '\n==> '.join(wrapper.wrap(s)) + '\n'
+    separator = '\n==> '
+    prefix = separator
+    screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
+    if screen_reader:
+      separator = '\n '
+      prefix = '\n'
+    return prefix + separator.join(wrapper.wrap(s)) + '\n'
 
 
 def ProgressBar(label, stream=log.status, total_ticks=60, first=True,

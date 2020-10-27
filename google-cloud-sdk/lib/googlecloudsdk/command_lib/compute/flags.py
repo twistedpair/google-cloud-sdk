@@ -883,15 +883,17 @@ def AddStorageLocationFlag(parser, resource):
       """.format(resource))
 
 
-def AddGuestFlushFlag(parser, resource):
+def AddGuestFlushFlag(parser, resource, custom_help=None):
+  help_text = """
+  Create an application-consistent {} by informing the OS
+  to prepare for the snapshot process. Currently only supported
+  on Windows instances using the Volume Shadow Copy Service (VSS).
+  """.format(resource)
   parser.add_argument(
       '--guest-flush',
       action='store_true',
       default=False,
-      help=('Create an application-consistent {} by informing the OS '
-            'to prepare for the snapshot process. Currently only supported '
-            'on Windows instances using the Volume Shadow Copy Service '
-            '(VSS).'.format(resource)))
+      help=custom_help if custom_help else help_text)
 
 
 def AddShieldedInstanceInitialStateKeyArg(parser):

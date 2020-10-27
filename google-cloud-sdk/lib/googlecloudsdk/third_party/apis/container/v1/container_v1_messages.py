@@ -547,6 +547,10 @@ class ClusterUpdate(_messages.Message):
   be applied to a cluster with each request, so at most one field can be
   provided.
 
+  Enums:
+    DesiredPrivateIpv6GoogleAccessValueValuesEnum: The desired state of IPv6
+      connectivity to Google Services.
+
   Fields:
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
@@ -614,6 +618,8 @@ class ClusterUpdate(_messages.Message):
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
       picks the Kubernetes master version
     desiredPrivateClusterConfig: The desired private cluster configuration.
+    desiredPrivateIpv6GoogleAccess: The desired state of IPv6 connectivity to
+      Google Services.
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
@@ -622,6 +628,23 @@ class ClusterUpdate(_messages.Message):
       configuration.
     desiredWorkloadIdentityConfig: Configuration for Workload Identity.
   """
+
+  class DesiredPrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The desired state of IPv6 connectivity to Google Services.
+
+    Values:
+      PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED: Default value. Same as DISABLED
+      PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED: No private access to or from Google
+        Services
+      PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE: Enables private IPv6 access to
+        Google Services from GKE
+      PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL: Enables priate IPv6 access to
+        and from Google Services
+    """
+    PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
+    PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED = 1
+    PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE = 2
+    PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
 
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 1)
   desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 2)
@@ -641,11 +664,12 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(16)
   desiredNodeVersion = _messages.StringField(17)
   desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 18)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 19)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 20)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 21)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 22)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 23)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 19)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 20)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 21)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 22)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 23)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 24)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1751,6 +1775,11 @@ class Metric(_messages.Message):
 class NetworkConfig(_messages.Message):
   r"""NetworkConfig reports the relative names of network & subnetwork.
 
+  Enums:
+    PrivateIpv6GoogleAccessValueValuesEnum: The desired state of IPv6
+      connectivity to Google Services. By default, no private IPv6 access to
+      or from Google Services (all access will be via IPv4)
+
   Fields:
     defaultSnatStatus: Whether the cluster disables default in-node sNAT
       rules. In-node sNAT rules will be disabled when default_snat_status is
@@ -1764,16 +1793,39 @@ class NetworkConfig(_messages.Message):
       network(https://cloud.google.com/compute/docs/networks-and-
       firewalls#networks) to which the cluster is connected. Example:
       projects/my-project/global/networks/my-network
+    privateIpv6GoogleAccess: The desired state of IPv6 connectivity to Google
+      Services. By default, no private IPv6 access to or from Google Services
+      (all access will be via IPv4)
     subnetwork: Output only. The relative name of the Google Compute Engine
       [subnetwork](https://cloud.google.com/compute/docs/vpc) to which the
       cluster is connected. Example: projects/my-project/regions/us-
       central1/subnetworks/my-subnet
   """
 
+  class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
+    r"""The desired state of IPv6 connectivity to Google Services. By default,
+    no private IPv6 access to or from Google Services (all access will be via
+    IPv4)
+
+    Values:
+      PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED: Default value. Same as DISABLED
+      PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED: No private access to or from Google
+        Services
+      PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE: Enables private IPv6 access to
+        Google Services from GKE
+      PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL: Enables priate IPv6 access to
+        and from Google Services
+    """
+    PRIVATE_IPV6_GOOGLE_ACCESS_UNSPECIFIED = 0
+    PRIVATE_IPV6_GOOGLE_ACCESS_DISABLED = 1
+    PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE = 2
+    PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL = 3
+
   defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 1)
   enableIntraNodeVisibility = _messages.BooleanField(2)
   network = _messages.StringField(3)
-  subnetwork = _messages.StringField(4)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 4)
+  subnetwork = _messages.StringField(5)
 
 
 class NetworkPolicy(_messages.Message):

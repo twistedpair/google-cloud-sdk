@@ -979,7 +979,7 @@ class Money(_messages.Message):
   r"""Represents an amount of money with its currency type.
 
   Fields:
-    currencyCode: The 3-letter currency code defined in ISO 4217.
+    currencyCode: The three-letter currency code defined in ISO 4217.
     nanos: Number of nano (10^-9) units of the amount. The value must be
       between -999,999,999 and +999,999,999 inclusive. If `units` is positive,
       `nanos` must be positive or zero. If `units` is zero, `nanos` can be

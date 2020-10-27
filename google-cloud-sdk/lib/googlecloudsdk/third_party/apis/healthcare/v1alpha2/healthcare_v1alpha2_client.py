@@ -404,7 +404,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Attribute definition. Fails if it is referenced by the latest revision of any Consent or User data mapping.
+      r"""Deletes the specified Attribute definition. Fails if it is referenced by any User data mapping, the latest revision of any Consent, or the latest approved revision of any Consent content.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDeleteRequest) input message

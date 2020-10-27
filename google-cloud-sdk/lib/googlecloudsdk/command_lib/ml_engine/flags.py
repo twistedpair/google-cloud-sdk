@@ -22,6 +22,7 @@ import argparse
 import functools
 import itertools
 import sys
+import textwrap
 
 from googlecloudsdk.api_lib.ml_engine import jobs
 from googlecloudsdk.api_lib.ml_engine import versions_api
@@ -31,6 +32,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.iam import completers as iam_completers
+from googlecloudsdk.command_lib.iam import iam_util as core_iam_util
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.ml_engine import models_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -239,8 +241,21 @@ def GetRegionArg():
   """Adds --region flag to determine endpoint for models and versions."""
   return base.Argument(
       '--region',
-      # TODO(b/144662044) Add more regions.
-      choices=['asia-east1', 'europe-west4', 'us-central1'],
+      choices=[
+          'asia-east1',
+          'asia-northeast1',
+          'asia-southeast1',
+          'australia-southeast1',
+          'europe-west1',
+          'europe-west2',
+          'europe-west3',
+          'europe-west4',
+          'northamerica-northeast1',
+          'us-central1',
+          'us-east1',
+          'us-east4',
+          'us-west1',
+      ],
       help=_REGION_FLAG_HELPTEXT)
 
 
@@ -261,6 +276,22 @@ Private services access must already have been configured
 (https://cloud.google.com/vpc/docs/configure-private-services-access)
 for the network. If unspecified, the Job is not peered with any network.
 """)
+
+TRAINING_SERVICE_ACCOUNT = base.Argument(
+    '--service-account',
+    type=core_iam_util.GetIamAccountFormatValidator(),
+    required=False,
+    help=textwrap.dedent("""\
+      The email address of a service account to use when running the
+      training appplication. You must have the `iam.serviceAccounts.actAs`
+      permission for the specified service account. In addition, the AI Platform
+      Training Google-managed service account must have the
+      `roles/iam.serviceAccountAdmin` role for the specified service account.
+      [Learn more about configuring a service
+      account.](/ai-platform/training/docs/custom-service-account)
+      If not specified, the AI Platform Training Google-managed service account
+      is used by default.
+      """))
 
 
 def GetModuleNameFlag(required=True):
@@ -716,6 +747,14 @@ _OP_ACCELERATOR_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
     include_filter=lambda x: x.startswith('NVIDIA'),
     required=False)
 
+_OP_AUTOSCALING_METRIC_NAME_MAPPER = arg_utils.ChoiceEnumMapper(
+    'autoscaling-metric-name',
+    versions_api.GetMessagesModule().GoogleCloudMlV1MetricSpec
+    .NameValueValuesEnum,
+    help_str='The available metric names.',
+    include_filter=lambda x: x != 'METRIC_NAME_UNSPECIFIED',
+    required=False)
+
 _ACCELERATOR_TYPE_HELP = """\
    Hardware accelerator config for the {worker_type}. Must specify
    both the accelerator type (TYPE) for each server and the number of
@@ -735,6 +774,30 @@ def _ValidateAcceleratorCount(accelerator_count):
     raise arg_parsers.ArgumentTypeError(
         'The count of the accelerator must be greater than 0.')
   return count
+
+
+def _ValidateMetricTargetKey(key):
+  """Value validation for Metric target name."""
+  names = list(_OP_AUTOSCALING_METRIC_NAME_MAPPER.choices)
+  if key not in names:
+    raise ArgumentError("""\
+The autoscaling metric name can only be one of the following: {}.
+""".format(', '.join(["'{}'".format(c) for c in names])))
+  return key
+
+
+def _ValidateMetricTargetValue(value):
+  """Value validation for Metric target value."""
+  try:
+    result = int(value)
+  except (TypeError, ValueError):
+    raise ArgumentError('Metric target percentage value %s is not an integer.' %
+                        value)
+
+  if result < 0 or result > 100:
+    raise ArgumentError(
+        'Metric target value %s is not between 0 and 100.' % value)
+  return result
 
 
 def _MakeAcceleratorArgConfigArg(arg_name, arg_help, required=False):
@@ -955,3 +1018,33 @@ inclusive.
       '--health-route',
       help='HTTP path to send health checks to inside the container.'
   )
+
+
+def AddAutoScalingFlags(parser):
+  """Adds flags related to autoscaling to the specified parser."""
+  autoscaling_group = parser.add_argument_group(
+      help='Configure the autoscaling settings to be deployed.')
+  autoscaling_group.add_argument(
+      '--min-nodes',
+      type=int,
+      help="""\
+The minimum number of nodes to scale this model under load.
+""")
+  autoscaling_group.add_argument(
+      '--max-nodes',
+      type=int,
+      help="""\
+The maximum number of nodes to scale this model under load.
+""")
+  autoscaling_group.add_argument(
+      '--metric-targets',
+      metavar='METRIC-NAME=TARGET',
+      type=arg_parsers.ArgDict(
+          key_type=_ValidateMetricTargetKey, value_type=_ValidateMetricTargetValue),
+      action=arg_parsers.UpdateAction,
+      default={},
+      help="""\
+List of key-value pairs to set as metrics' target for autoscaling.
+Autoscaling could be based on CPU usage or GPU duty cycle, valid key could be
+cpu-usage or gpu-duty-cycle.
+""")

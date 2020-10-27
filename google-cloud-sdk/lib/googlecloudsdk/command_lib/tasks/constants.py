@@ -84,8 +84,4 @@ PUSH_QUEUES_APP_DEPLOY_DEFAULT_VALUES = {
 # max_retry_duration.
 PULL_QUEUES_APP_DEPLOY_DEFAULT_VALUES = {
     'max_attempts': -1,  # Translates as 'unlimited' in CT-FE
-    'max_backoff': '3600s',
-    'max_doublings': 16,
-    'max_retry_duration': '0s',  # Translates as 'unlimited' in CT-FE
-    'min_backoff': '0.100s',
 }

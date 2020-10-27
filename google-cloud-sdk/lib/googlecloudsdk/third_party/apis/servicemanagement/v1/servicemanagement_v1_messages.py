@@ -258,7 +258,7 @@ class AuthenticationRule(_messages.Message):
 
   Fields:
     allowWithoutCredential: If true, the service accepts API keys without any
-      other credential.
+      other credential. This flag only applies to HTTP and gRPC requests.
     oauth: The requirements for OAuth credentials.
     requirements: Requirements for additional authentication providers.
     selector: Selects the methods to which this rule applies. Refer to
@@ -697,7 +697,7 @@ class Context(_messages.Message):
   google.rpc.context.OriginContext The above specifies that all methods in the
   API request `google.rpc.context.ProjectContext` and
   `google.rpc.context.OriginContext`. Available context types are defined in
-  package `google.rpc.context`. This also provides mechanism to whitelist any
+  package `google.rpc.context`. This also provides mechanism to allowlist any
   protobuf message extension that can be sent in grpc metadata using "x-goog-
   ext--bin" and "x-goog-ext--jspb" format. For example, list any service
   specific protobuf types that can appear in grpc metadata as follows in your
@@ -1984,7 +1984,7 @@ class MetricDescriptor(_messages.Message):
         cleared for widespread use. By Alpha, all significant design issues
         are resolved and we are in the process of verifying functionality.
         Alpha customers need to apply for access, agree to applicable terms,
-        and have their projects whitelisted. Alpha releases don't have to be
+        and have their projects allowlisted. Alpha releases don't have to be
         feature complete, no SLAs are provided, and there are no technical
         support obligations, but they will be far enough along that customers
         can actually use them in test environments or for limited-use tests --
@@ -2103,7 +2103,7 @@ class MetricDescriptorMetadata(_messages.Message):
         cleared for widespread use. By Alpha, all significant design issues
         are resolved and we are in the process of verifying functionality.
         Alpha customers need to apply for access, agree to applicable terms,
-        and have their projects whitelisted. Alpha releases don't have to be
+        and have their projects allowlisted. Alpha releases don't have to be
         feature complete, no SLAs are provided, and there are no technical
         support obligations, but they will be far enough along that customers
         can actually use them in test environments or for limited-use tests --
@@ -2284,7 +2284,7 @@ class MonitoredResourceDescriptor(_messages.Message):
         cleared for widespread use. By Alpha, all significant design issues
         are resolved and we are in the process of verifying functionality.
         Alpha customers need to apply for access, agree to applicable terms,
-        and have their projects whitelisted. Alpha releases don't have to be
+        and have their projects allowlisted. Alpha releases don't have to be
         feature complete, no SLAs are provided, and there are no technical
         support obligations, but they will be far enough along that customers
         can actually use them in test environments or for limited-use tests --

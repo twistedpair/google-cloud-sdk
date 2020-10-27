@@ -57,6 +57,8 @@ class HealthcareV1beta1(base_api.BaseApiClient):
     self.projects_locations_datasets_hl7V2Stores = self.ProjectsLocationsDatasetsHl7V2StoresService(self)
     self.projects_locations_datasets_operations = self.ProjectsLocationsDatasetsOperationsService(self)
     self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
+    self.projects_locations_services_nlp = self.ProjectsLocationsServicesNlpService(self)
+    self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -550,7 +552,7 @@ class HealthcareV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Attribute definition. Fails if it is referenced by the latest revision of any Consent or User data mapping.
+      r"""Deletes the specified Attribute definition. Fails if it is referenced by any User data mapping, or the latest revision of any Consent.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsConsentStoresAttributeDefinitionsDeleteRequest) input message
@@ -4019,6 +4021,53 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
+
+  class ProjectsLocationsServicesNlpService(base_api.BaseApiService):
+    """Service class for the projects_locations_services_nlp resource."""
+
+    _NAME = 'projects_locations_services_nlp'
+
+    def __init__(self, client):
+      super(HealthcareV1beta1.ProjectsLocationsServicesNlpService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AnalyzeEntities(self, request, global_params=None):
+      r"""Analyze heathcare entity in a document. Its response includes the recognized entity mentions and the relationships between them. AnalyzeEntities uses context aware models to detect entities.
+
+      Args:
+        request: (HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnalyzeEntitiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeEntities')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeEntities.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/services/nlp:analyzeEntities',
+        http_method='POST',
+        method_id='healthcare.projects.locations.services.nlp.analyzeEntities',
+        ordered_params=['nlpService'],
+        path_params=['nlpService'],
+        query_params=[],
+        relative_path='v1beta1/{+nlpService}:analyzeEntities',
+        request_field='analyzeEntitiesRequest',
+        request_type_name='HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest',
+        response_type_name='AnalyzeEntitiesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServicesService(base_api.BaseApiService):
+    """Service class for the projects_locations_services resource."""
+
+    _NAME = 'projects_locations_services'
+
+    def __init__(self, client):
+      super(HealthcareV1beta1.ProjectsLocationsServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""

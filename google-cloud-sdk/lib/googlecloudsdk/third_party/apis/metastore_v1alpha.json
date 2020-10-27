@@ -279,8 +279,12 @@
       "description": "A managed metastore service that serves metadata queries.",
       "type": "object",
       "properties": {
+        "hiveMetastoreConfig": {
+          "description": "Configuration information specific to running Hive metastore software as the metastore service.",
+          "$ref": "HiveMetastoreConfig"
+        },
         "name": {
-          "description": "Immutable. The relative resource name of the metastore service, of the form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\".",
+          "description": "Immutable. The relative resource name of the metastore service, of the form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\".",
           "type": "string"
         },
         "createTime": {
@@ -302,12 +306,8 @@
             "type": "string"
           }
         },
-        "hiveMetastoreConfig": {
-          "description": "Configuration information specific to running Hive metastore software as the metastore service.",
-          "$ref": "HiveMetastoreConfig"
-        },
         "network": {
-          "description": "Immutable. The relative resource name of the VPC network on which the instance can be accessed. The network must belong to the same project as the metastore instance. It is specified in the following form:\"projects\/{project_id}\/global\/networks\/{network_id}\".",
+          "description": "Immutable. The relative resource name of the VPC network on which the instance can be accessed. The network must belong to the same project as the metastore instance. It is specified in the following form:\"projects\/{project_number}\/global\/networks\/{network_id}\".",
           "type": "string"
         },
         "endpointUri": {
@@ -367,10 +367,6 @@
             "ENTERPRISE"
           ]
         },
-        "metadataIntegration": {
-          "description": "The setting that defines how metastore metadata should be integrated with external services and systems.",
-          "$ref": "MetadataIntegration"
-        },
         "maintenanceWindow": {
           "description": "The one hour maintenance window of the metastore service. This specifies when the service can be restarted for maintenance purposes in UTC time.",
           "$ref": "MaintenanceWindow"
@@ -429,30 +425,8 @@
       "type": "object",
       "properties": {
         "cloudSecret": {
-          "description": "The relative resource name of a Secret Manager secret version, in the following form:\"projects\/{project_id}\/secrets\/{secret_id}\/versions\/{version_id}\".",
+          "description": "The relative resource name of a Secret Manager secret version, in the following form:\"projects\/{project_number}\/secrets\/{secret_id}\/versions\/{version_id}\".",
           "type": "string"
-        }
-      }
-    },
-    "MetadataIntegration": {
-      "id": "MetadataIntegration",
-      "description": "Specifies how metastore metadata should be integrated with external services.",
-      "type": "object",
-      "properties": {
-        "dataCatalogConfig": {
-          "description": "The integration config for the Data Catalog service.",
-          "$ref": "DataCatalogConfig"
-        }
-      }
-    },
-    "DataCatalogConfig": {
-      "id": "DataCatalogConfig",
-      "description": "Specifies how metastore metadata should be integrated with the Data Catalog service.",
-      "type": "object",
-      "properties": {
-        "disabled": {
-          "description": "Defines whether the metastore metadata should be synced to Data Catalog. The default value is to enable syncing metastore metadata to Data Catalog.",
-          "type": "boolean"
         }
       }
     },
@@ -522,8 +496,12 @@
       "description": "A metastore resource that imports metadata.",
       "type": "object",
       "properties": {
+        "databaseDump": {
+          "description": "Immutable. A database dump from a pre-existing metastore's database.",
+          "$ref": "DatabaseDump"
+        },
         "name": {
-          "description": "Immutable. The relative resource name of the metadata import, of the form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\/{metadata_import_id}\".",
+          "description": "Immutable. The relative resource name of the metadata import, of the form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\/{metadata_import_id}\".",
           "type": "string"
         },
         "description": {
@@ -560,10 +538,6 @@
             "UPDATING",
             "FAILED"
           ]
-        },
-        "databaseDump": {
-          "description": "Immutable. A database dump from a pre-existing metastore's database.",
-          "$ref": "DatabaseDump"
         }
       }
     },
@@ -1014,7 +988,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The relative resource name of the location of metastore services to list, in the following form:\"projects\/{project_id}\/locations\/{location_id}\".",
+                      "description": "Required. The relative resource name of the location of metastore services to list, in the following form:\"projects\/{project_number}\/locations\/{location_id}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1060,7 +1034,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The relative resource name of the metastore service to retrieve, in the following form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\".",
+                      "description": "Required. The relative resource name of the metastore service to retrieve, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
@@ -1085,7 +1059,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The relative resource name of the location in which to create a metastore service, in the following form:\"projects\/{project_id}\/locations\/{location_id}\".",
+                      "description": "Required. The relative resource name of the location in which to create a metastore service, in the following form:\"projects\/{project_number}\/locations\/{location_id}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1123,7 +1097,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Immutable. The relative resource name of the metastore service, of the form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\".",
+                      "description": "Immutable. The relative resource name of the metastore service, of the form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
@@ -1162,7 +1136,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The relative resource name of the metastore service to delete, in the following form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\".",
+                      "description": "Required. The relative resource name of the metastore service to delete, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\".",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
@@ -1284,7 +1258,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The relative resource name of the service whose metadata imports to list, in the following form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\".",
+                          "description": "Required. The relative resource name of the service whose metadata imports to list, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
@@ -1330,7 +1304,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The relative resource name of the metadata import to retrieve, in the following form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\/{import_id}\".",
+                          "description": "Required. The relative resource name of the metadata import to retrieve, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\/{import_id}\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/metadataImports\/[^\/]+$",
@@ -1355,7 +1329,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The relative resource name of the service in which to create a metastore import, in the following form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\"",
+                          "description": "Required. The relative resource name of the service in which to create a metastore import, in the following form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\"",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
@@ -1393,7 +1367,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Immutable. The relative resource name of the metadata import, of the form:\"projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\/{metadata_import_id}\".",
+                          "description": "Immutable. The relative resource name of the metadata import, of the form:\"projects\/{project_number}\/locations\/{location_id}\/services\/{service_id}\/metadataImports\/{metadata_import_id}\".",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/metadataImports\/[^\/]+$",

@@ -22,8 +22,7 @@ from apitools.base.protorpclite import protojson
 from googlecloudsdk.api_lib.run import k8s_object
 
 
-# TODO(b/141719436): Don't hardcode v1alpha1 version
-_SERVICE_API_VERSION = 'serving.knative.dev/v1alpha1'
+_SERVICE_API_VERSION = 'serving.knative.dev/v1'
 _SERVICE_KIND = 'Service'
 
 EVENT_TYPE_FIELD = 'type'

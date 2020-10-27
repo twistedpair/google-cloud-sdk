@@ -4768,7 +4768,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetInstanceTemplate(self, request, global_params=None):
-      r"""Specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you recreate them.
+      r"""Specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you run recreateInstances, run applyUpdatesToInstances, or set the group's updatePolicy.type to PROACTIVE.
 
       Args:
         request: (ComputeInstanceGroupManagersSetInstanceTemplateRequest) input message

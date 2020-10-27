@@ -156,14 +156,21 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
   the load on your origin and improve the end-user experience by reducing response
   latency.
 
-  Negative caching applies to 3xx, 4xx, and 5xx status codes defined in HTTP
-  RFC 7231.
+  Negative caching applies to 3xx, 4xx, and 5xx status codes that are cacheable
+  by default.
 
   Status codes not listed here cannot have their TTL explicitly set and aren't
   cached, in order to avoid cache poisoning attacks.
 
   HTTP success codes (HTTP 2xx) are handled by the values of defaultTtl and
   maxTtl.
+
+  When the cache mode is set to CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, these
+  values apply to responses with the specified response code that lack any
+  `cache-control`, `expires`, or `pragma: no-cache` headers.
+
+  When the cache mode is set to FORCE_CACHE_ALL, these values apply to all
+  responses with the specified response code, and override any caching headers.
 
   By default, Cloud CDN applies the following default TTLs to these status
   codes:
@@ -174,13 +181,17 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
 
   These defaults can be overridden in cdnPolicy.negativeCachingPolicy
   """
-  parser.add_argument(
-      '--negative-caching',
-      action=arg_parsers.StoreTrueFalseAction,
-      help=negative_caching_help,
-      hidden=True)
-  negative_caching_policy_group = parser.add_mutually_exclusive_group(
-      hidden=True)
+  negative_caching_group = parser.add_mutually_exclusive_group()
+  if update_command:
+    negative_caching_group.add_argument(
+        '--negative-caching',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=negative_caching_help)
+  else:
+    parser.add_argument(
+        '--negative-caching',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=negative_caching_help)
   negative_caching_policy_help = """\
   Sets a cache TTL for the specified HTTP status code.
 
@@ -190,44 +201,26 @@ def AddFlexibleCacheStepOne(parser, resource_name, update_command=False):
   cache TTLs are used.
 
   Note that when specifying an explicit negative caching policy, make sure that
-  you specify a cache TTL for all response codes that you want to cache.
+  you specify a cache TTL for all response codes that you want to cache. Cloud
+  CDN doesn't apply any default negative caching when a policy exists.
 
-  Cloud CDN doesn't apply any default negative caching when a policy exists.
+  *CODE* is the HTTP status code to define a TTL against. Only HTTP status codes
+  300, 301, 308, 404, 405, 410, 414, 421, 451, and 501 can be specified as
+  values, and you cannot specify a status code more than once.
 
-  *CODE* is the HTTP status code to define a TTL against.
-
-  Only HTTP status codes 300, 301, 308, 404, 405, 410, 414, 421, 451, and 501 can
-  be specified as values, and you cannot specify a status code more than
-  once.
-
-  The cache *TTL* (in seconds) to cache responses with the corresponding status
-  code for.
-
-  A TTL of "0" means Always revalidate.
-
-  Omit this field to disable negative caching for the status code.
-
-  The maximum allowed value is 1800s (30 minutes), noting that infrequently
-  accessed objects may be evicted from the cache before the defined TTL.
-
-  When the cache mode is set to CACHE_ALL_STATIC or USE_ORIGIN_HEADERS, these
-  values apply to responses with the specified response code that lack any
-  "cache-control", "expires", or "pragma: no-cache" headers.
-
-  When the cache mode is set to FORCE_CACHE_ALL, these values apply to all
-  responses with the specified response code, and override any caching headers.
+  TTL is the time to live (in seconds) for which to cache responses for the
+  specified *CODE*. The maximum allowed value is 1800s (30 minutes), noting that
+  infrequently accessed objects may be evicted from the cache before the defined TTL.
   """
-  negative_caching_policy_group.add_argument(
+  negative_caching_group.add_argument(
       '--negative-caching-policy',
       type=arg_parsers.ArgDict(key_type=int, value_type=int),
       metavar='[CODE=TTL]',
-      help=negative_caching_policy_help,
-      hidden=True)
+      help=negative_caching_policy_help)
   if update_command:
-    negative_caching_policy_group.add_argument(
+    negative_caching_group.add_argument(
         '--no-negative-caching-policies',
         action='store_true',
-        hidden=True,
         help='Remove all negative caching policies for the %s.' % resource_name)
   custom_response_header_help = """\
   Custom headers that the external HTTP(S) load balancer adds to proxied responses.

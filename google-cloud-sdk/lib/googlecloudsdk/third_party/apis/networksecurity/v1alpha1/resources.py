@@ -41,17 +41,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_AUTHENTICATION = (
-      'projects.locations.authentication',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/authentication/'
-              '{authenticationId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_AUTHORIZATIONPOLICIES = (
       'projects.locations.authorizationPolicies',
       '{+name}',

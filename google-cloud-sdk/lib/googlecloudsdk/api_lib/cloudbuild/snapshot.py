@@ -155,7 +155,11 @@ class Snapshot(object):
       log.debug('Added [%s]', path)
     return tf
 
-  def CopyTarballToGCS(self, storage_client, gcs_object, ignore_file=None):
+  def CopyTarballToGCS(self,
+                       storage_client,
+                       gcs_object,
+                       ignore_file=None,
+                       hide_logs=False):
     """Copy a tarball of the snapshot to GCS.
 
     Args:
@@ -163,6 +167,7 @@ class Snapshot(object):
         uploading.
       gcs_object: storage.objects Resource, The GCS object to write.
       ignore_file: Override .gcloudignore file to specify skip files.
+      hide_logs: boolean, not print the status message if the flag is true.
 
     Returns:
       storage_v1_messages.Object, The written GCS object.
@@ -178,14 +183,15 @@ class Snapshot(object):
           if self.any_files_ignored:
             if os.path.exists(ignore_file_path):
               log.info('Using ignore file [{}]'.format(ignore_file_path))
-            else:
+            elif not hide_logs:
               log.status.Print(
                   _IGNORED_FILE_MESSAGE.format(log_file=log.GetLogFilePath()))
-          log.status.write(
-              'Uploading tarball of [{src_dir}] to '
-              '[gs://{bucket}/{object}]\n'.format(
-                  src_dir=self.src_dir,
-                  bucket=gcs_object.bucket,
-                  object=gcs_object.object,
-              ),)
+          if not hide_logs:
+            log.status.write(
+                'Uploading tarball of [{src_dir}] to '
+                '[gs://{bucket}/{object}]\n'.format(
+                    src_dir=self.src_dir,
+                    bucket=gcs_object.bucket,
+                    object=gcs_object.object,
+                ),)
           return storage_client.CopyFileToGCS(archive_path, gcs_object)

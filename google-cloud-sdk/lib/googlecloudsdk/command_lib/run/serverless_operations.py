@@ -987,7 +987,7 @@ class ServerlessOperations(object):
   def _BuildFromSource(self, tracker, build_messages, build_config):
     """Build an image from source if a user specifies a source when deploying."""
     build, build_op = submit_util.Build(build_messages, True, build_config,
-                                        True)
+                                        hide_logs=True)
     build_op_ref = resources.REGISTRY.ParseRelativeName(
         build_op.name, 'cloudbuild.operations')
     build_log_url = build.logUrl
@@ -1006,8 +1006,9 @@ class ServerlessOperations(object):
                      allow_unauthenticated=None,
                      for_replace=False,
                      prefetch=False,
-                     build_config=None,
-                     build_messages=None):
+                     build_image=None,
+                     build_pack=None,
+                     build_source=None):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -1027,8 +1028,9 @@ class ServerlessOperations(object):
       prefetch: the service, pre-fetched for ReleaseService. `False` indicates
         the caller did not perform a prefetch; `None` indicates a nonexistant
         service.
-      build_config: The build config reference to the build.
-      build_messages: The message reference to the build.
+      build_image: The build image reference to the build.
+      build_pack: The build pack reference to the build.
+      build_source: The build source reference to the build.
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
        request to create/update the service.
@@ -1039,7 +1041,16 @@ class ServerlessOperations(object):
           interruptable=True,
           aborted_message='aborted')
 
-    if build_config is not None:
+    if build_source is not None:
+      tracker.StartStage(stages.UPLOAD_SOURCE)
+      tracker.UpdateHeaderMessage('Uploading sources.')
+      build_messages = cloudbuild_util.GetMessagesModule()
+      build_config = submit_util.CreateBuildConfigAlpha(
+          build_image, False, build_messages, None, None,
+          True, False, build_source, None, None, None,
+          None, None, None, build_pack, hide_logs=True)
+      tracker.CompleteStage(stages.UPLOAD_SOURCE)
+
       build_op_ref, build_log_url = self._BuildFromSource(
           tracker, build_messages, build_config)
       client = cloudbuild_util.GetClientInstance()

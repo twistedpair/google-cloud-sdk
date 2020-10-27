@@ -24,6 +24,7 @@ import os
 import re
 import shutil
 
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
@@ -247,15 +248,18 @@ class _RcUpdater(object):
       _TraceAction(console_io.FormatRequiredUserAction(
           'Start a new shell for the changes to take effect.'))
 
+    screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
+    prefix = '' if screen_reader else '==> '
+
     if not self.completion_update and self._CompletionExists():
-      _TraceAction(
-          '==> Source [{rc}] in your profile to enable shell command '
-          'completion for gcloud.'.format(rc=self.completion))
+      _TraceAction(prefix +
+                   'Source [{rc}] in your profile to enable shell command '
+                   'completion for gcloud.'.format(rc=self.completion))
 
     if not self.path_update:
-      _TraceAction(
-          '==> Source [{rc}] in your profile to add the Google Cloud SDK '
-          'command line tools to your $PATH.'.format(rc=self.path))
+      _TraceAction(prefix +
+                   'Source [{rc}] in your profile to add the Google Cloud SDK '
+                   'command line tools to your $PATH.'.format(rc=self.path))
 
 
 def _GetPreferredShell(path, default=_DEFAULT_SHELL):

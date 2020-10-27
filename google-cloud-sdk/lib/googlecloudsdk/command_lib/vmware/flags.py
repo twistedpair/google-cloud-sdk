@@ -52,18 +52,19 @@ def AddClusterArgToParser(parser):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddLocationArgToParser(parser, positional=False):
-  location_data = yaml_data.ResourceYAMLData.FromPath('vmware.location')
-  resource_spec = concepts.ResourceSpec.FromYaml(location_data.GetData())
+def AddRegionArgToParser(parser, positional=False):
+  """Parses region flag."""
+  region_data = yaml_data.ResourceYAMLData.FromPath('vmware.region')
+  resource_spec = concepts.ResourceSpec.FromYaml(region_data.GetData())
   if positional:
-    name = 'location'
+    name = 'region'
   else:
-    name = '--location'
+    name = '--region'
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
       required=True,
-      group_help='location.')
+      group_help='region.')
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 

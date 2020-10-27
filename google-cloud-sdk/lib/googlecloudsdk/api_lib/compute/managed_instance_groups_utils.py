@@ -18,10 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import random
 import re
 import string
 import sys
+from apitools.base.py import encoding
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.compute import exceptions
@@ -988,6 +990,32 @@ def BuildScaleIn(args, messages):
         timeWindowSec=args.scale_in_control.get('time-window'))
 
 
+def _RemoveScheduleEncoder(message, unused_encoder=None):
+  """Encoder for use when removing a schedule.
+
+  It works around issues with proto encoding of AdditionalProperties with null
+  values by directly encoding a dict of keys with None values into json,
+  skipping proto-based encoding.
+
+  Args:
+    message: an instance of AutoscalingPolicy.ScalingSchedulesValue.
+  Returns:
+    Schedule removal request JSON dumped to string.
+  """
+  py_object = {property.key: None for property in message.additionalProperties}
+  return json.dumps(py_object)
+
+
+def _RemoveScheduleDecoder(unused_data, unused_decoder=None):
+  """Dummy decoder for schedule removal message.
+
+  It's passed when registering message codec, but it will never be used as
+  removing schedules is a write-only operation.
+  """
+  raise NotImplementedError("This should never be called, it's a write-only"
+                            " operation.")
+
+
 def BuildScheduled(args, messages):
   """Builds AutoscalingPolicyScalingSchedules.
 
@@ -1043,11 +1071,17 @@ def BuildScheduled(args, messages):
                 value=messages.AutoscalingPolicyScalingSchedule(
                     disabled=True))])
   if getattr(args, 'remove_schedule', None) is not None:
+    # Register a custom message codec to properly encode AdditionalProperty's
+    # None value into nulls.
+    encoding.RegisterCustomMessageCodec(
+        encoder=_RemoveScheduleEncoder,
+        decoder=_RemoveScheduleDecoder)(
+            messages.AutoscalingPolicy.ScalingSchedulesValue)
     return messages.AutoscalingPolicy.ScalingSchedulesValue(
         additionalProperties=[
             scaling_schedule_wrapper(
                 key=args.remove_schedule,
-                value=messages.AutoscalingPolicyScalingSchedule())])
+                value=None)])
   if getattr(args, 'set_schedule', None) is not None:
     policy_name = args.set_schedule
     required = {'schedule_cron', 'schedule_duration_sec',

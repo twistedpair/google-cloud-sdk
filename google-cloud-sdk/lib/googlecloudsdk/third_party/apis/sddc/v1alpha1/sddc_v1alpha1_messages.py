@@ -1730,7 +1730,8 @@ class MetricValue(_messages.Message):
     distributionValue: A distribution value.
     doubleValue: A double precision floating point value.
     endTime: The end of the time period over which this metric value's
-      measurement applies.
+      measurement applies. If not specified,
+      google.api.servicecontrol.v1.Operation.end_time will be used.
     int64Value: A signed 64-bit integer value.
     labels: The labels describing the metric value. See comments on
       google.api.servicecontrol.v1.Operation.labels for the overriding
@@ -1740,7 +1741,9 @@ class MetricValue(_messages.Message):
     startTime: The start of the time period over which this metric value's
       measurement applies. The time period has different semantics for
       different metric types (cumulative, delta, and gauge). See the metric
-      definition documentation in the service configuration for details.
+      definition documentation in the service configuration for details. If
+      not specified, google.api.servicecontrol.v1.Operation.start_time will be
+      used.
     stringValue: A text string value.
   """
 
@@ -1800,7 +1803,7 @@ class Money(_messages.Message):
   r"""Represents an amount of money with its currency type.
 
   Fields:
-    currencyCode: The 3-letter currency code defined in ISO 4217.
+    currencyCode: The three-letter currency code defined in ISO 4217.
     nanos: Number of nano (10^-9) units of the amount. The value must be
       between -999,999,999 and +999,999,999 inclusive. If `units` is positive,
       `nanos` must be positive or zero. If `units` is zero, `nanos` can be
@@ -1971,7 +1974,7 @@ class Operation(_messages.Message):
       DEBUG: In addition to the behavior described in HIGH, DEBUG enables
         additional validation logic that is only useful during the onboarding
         process. This is only available to Google internal services and the
-        service must be whitelisted by chemist-dev@google.com in order to use
+        service must be allowlisted by chemist-dev@google.com in order to use
         this level.
     """
     LOW = 0

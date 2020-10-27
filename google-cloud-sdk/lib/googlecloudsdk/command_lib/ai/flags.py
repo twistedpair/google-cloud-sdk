@@ -185,7 +185,7 @@ def AddCreateCustomJobFlags(parser):
   worker_pool_spec_group.AddToParser(parser)
 
 
-def AddStreamLogsCustomJobFlags(parser):
+def AddStreamLogsFlags(parser):
   _POLLING_INTERVAL_FLAG.AddToParser(parser)
   _TASK_NAME.AddToParser(parser)
   _ALLOW_MULTILINE_LOGS.AddToParser(parser)

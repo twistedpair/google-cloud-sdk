@@ -280,7 +280,6 @@ def _CheckIamPermissions(project_id, cloudbuild_service_account_roles,
           'Would you like to enable this service?',
           throw_if_unattended=True,
           cancel_on_no=True)
-      services_api.EnableService(project.projectId, service_name)
 
   build_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(
       project.projectNumber)
@@ -335,28 +334,33 @@ def _VerifyRolesAndPromptIfMissing(project_id, account, applied_roles,
   except apitools_exceptions.HttpForbiddenError:
     missing_roles = required_roles - applied_roles
 
-  if missing_roles:
-    ep_table = ['{0} {1}'.format(role, account) for role in missing_roles]
-    prompt_message = (
-        'The following IAM permissions are needed for this operation:\n'
-        '[{0}]\n'.format('\n'.join(ep_table)))
-    console_io.PromptContinue(
-        message=prompt_message,
-        prompt_string='Would you like to add the permissions',
-        throw_if_unattended=True,
-        cancel_on_no=False)
+  if not missing_roles:
+    return
 
-    for role in sorted(missing_roles):
-      log.info('Adding [{0}] to [{1}]'.format(account, role))
-      try:
-        projects_api.AddIamPolicyBinding(project_id, account, role)
-      except apitools_exceptions.HttpForbiddenError:
-        log.warning(
-            'Your account does not have permission to add roles to the '
-            'service account {0}. If import fails, '
-            'ensure "{0}" has the roles "{1}" before retrying.'.format(
-                account, required_roles))
-        return
+  ep_table = ['{0} {1}'.format(role, account) for role in sorted(missing_roles)]
+  prompt_message = (
+      'The following IAM permissions are needed for this operation:\n'
+      '[{0}]\n'.format('\n'.join(ep_table)))
+  add_roles = console_io.PromptContinue(
+      message=prompt_message,
+      prompt_string='Would you like to add the permissions',
+      throw_if_unattended=True,
+      cancel_on_no=False)
+
+  if not add_roles:
+    return
+
+  for role in sorted(missing_roles):
+    log.info('Adding [{0}] to [{1}]'.format(account, role))
+    try:
+      projects_api.AddIamPolicyBinding(project_id, account, role)
+    except apitools_exceptions.HttpForbiddenError:
+      log.warning(
+          'Your account does not have permission to add roles to the '
+          'service account {0}. If import fails, '
+          'ensure "{0}" has the roles "{1}" before retrying.'.format(
+              account, required_roles))
+      return
 
 
 def _FindMissingRoles(applied_roles, required_roles):

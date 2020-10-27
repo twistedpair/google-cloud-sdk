@@ -1761,7 +1761,7 @@
     },
     "GoogleTypeLatLng": {
       "id": "GoogleTypeLatLng",
-      "description": "An object representing a latitude\/longitude pair. This is expressed as a pair of doubles representing degrees latitude and degrees longitude. Unless specified otherwise, this must conform to the WGS84 standard. Values must be within normalized ranges.",
+      "description": "An object that represents a latitude\/longitude pair. This is expressed as a pair of doubles to represent degrees latitude and degrees longitude. Unless specified otherwise, this must conform to the WGS84 standard. Values must be within normalized ranges.",
       "type": "object",
       "properties": {
         "latitude": {
@@ -5125,6 +5125,13 @@
             "$ref": "GoogleCloudDialogflowV2beta1EntityTypeEntity"
           }
         }
+      }
+    },
+    "GoogleCloudDialogflowV3alpha1RunTestCaseMetadata": {
+      "id": "GoogleCloudDialogflowV3alpha1RunTestCaseMetadata",
+      "description": "Metadata returned for the TestCases.RunTestCase long running operation.",
+      "type": "object",
+      "properties": {
       }
     }
   },

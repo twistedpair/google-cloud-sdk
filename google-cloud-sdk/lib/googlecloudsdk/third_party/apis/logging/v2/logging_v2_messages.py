@@ -1002,7 +1002,7 @@ class LogLink(_messages.Message):
 class LogMetric(_messages.Message):
   r"""Describes a logs-based metric. The value of the metric is the number of
   log entries that match a logs filter in a given time interval.Logs-based
-  metric can also be used to extract values from logs and create a a
+  metrics can also be used to extract values from logs and create a
   distribution of the values. The distribution records the statistics of the
   extracted values along with an optional histogram of the values as specified
   by the bucket options.
@@ -4125,7 +4125,7 @@ class MetricDescriptor(_messages.Message):
         cleared for widespread use. By Alpha, all significant design issues
         are resolved and we are in the process of verifying functionality.
         Alpha customers need to apply for access, agree to applicable terms,
-        and have their projects whitelisted. Alpha releases don't have to be
+        and have their projects allowlisted. Alpha releases don't have to be
         feature complete, no SLAs are provided, and there are no technical
         support obligations, but they will be far enough along that customers
         can actually use them in test environments or for limited-use tests --
@@ -4243,7 +4243,7 @@ class MetricDescriptorMetadata(_messages.Message):
         cleared for widespread use. By Alpha, all significant design issues
         are resolved and we are in the process of verifying functionality.
         Alpha customers need to apply for access, agree to applicable terms,
-        and have their projects whitelisted. Alpha releases don't have to be
+        and have their projects allowlisted. Alpha releases don't have to be
         feature complete, no SLAs are provided, and there are no technical
         support obligations, but they will be far enough along that customers
         can actually use them in test environments or for limited-use tests --
@@ -4384,7 +4384,7 @@ class MonitoredResourceDescriptor(_messages.Message):
         cleared for widespread use. By Alpha, all significant design issues
         are resolved and we are in the process of verifying functionality.
         Alpha customers need to apply for access, agree to applicable terms,
-        and have their projects whitelisted. Alpha releases don't have to be
+        and have their projects allowlisted. Alpha releases don't have to be
         feature complete, no SLAs are provided, and there are no technical
         support obligations, but they will be far enough along that customers
         can actually use them in test environments or for limited-use tests --

@@ -288,7 +288,7 @@ def _SetClusterAlpha(build_config, messages, arg_cluster_name,
 
 
 def _SetSource(build_config, messages, is_specified_source, no_source, source,
-               gcs_source_staging_dir, ignore_file):
+               gcs_source_staging_dir, ignore_file, hide_logs=False):
   """Set the source for the build config."""
   default_gcs_source = False
   default_bucket_name = None
@@ -358,12 +358,16 @@ def _SetSource(build_config, messages, is_specified_source, no_source, source,
         source_snapshot = snapshot.Snapshot(source, ignore_file=ignore_file)
         size_str = resource_transform.TransformSize(
             source_snapshot.uncompressed_size)
-        log.status.Print(
-            'Creating temporary tarball archive of {num_files} file(s)'
-            ' totalling {size} before compression.'.format(
-                num_files=len(source_snapshot.files), size=size_str))
+        if not hide_logs:
+          log.status.Print(
+              'Creating temporary tarball archive of {num_files} file(s)'
+              ' totalling {size} before compression.'.format(
+                  num_files=len(source_snapshot.files), size=size_str))
         staged_source_obj = source_snapshot.CopyTarballToGCS(
-            gcs_client, gcs_source_staging, ignore_file=ignore_file)
+            gcs_client,
+            gcs_source_staging,
+            ignore_file=ignore_file,
+            hide_logs=hide_logs)
         build_config.source = messages.Source(
             storageSource=messages.StorageSource(
                 bucket=staged_source_obj.bucket,
@@ -375,12 +379,13 @@ def _SetSource(build_config, messages, is_specified_source, no_source, source,
         if ext not in _ALLOWED_SOURCE_EXT:
           raise c_exceptions.BadFileException('Local file [{src}] is none of ' +
                                               ', '.join(_ALLOWED_SOURCE_EXT))
-        log.status.Print('Uploading local file [{src}] to '
-                         '[gs://{bucket}/{object}].'.format(
-                             src=source,
-                             bucket=gcs_source_staging.bucket,
-                             object=gcs_source_staging.object,
-                         ))
+        if not hide_logs:
+          log.status.Print('Uploading local file [{src}] to '
+                           '[gs://{bucket}/{object}].'.format(
+                               src=source,
+                               bucket=gcs_source_staging.bucket,
+                               object=gcs_source_staging.object,
+                           ))
         staged_source_obj = gcs_client.CopyFileToGCS(source, gcs_source_staging)
         build_config.source = messages.Source(
             storageSource=messages.StorageSource(
@@ -468,7 +473,7 @@ def CreateBuildConfigAlpha(tag, no_cache, messages, substitutions, arg_config,
                            gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
                            arg_machine_type, arg_disk_size, arg_worker_pool,
                            buildpack, arg_cluster_name=None,
-                           arg_cluster_location=None):
+                           arg_cluster_location=None, hide_logs=False):
   """Returns a build config."""
   timeout_str = _GetBuildTimeout()
 
@@ -476,7 +481,7 @@ def CreateBuildConfigAlpha(tag, no_cache, messages, substitutions, arg_config,
                                      arg_config, timeout_str, buildpack)
   build_config = _SetSource(build_config, messages, is_specified_source,
                             no_source, source, gcs_source_staging_dir,
-                            ignore_file)
+                            ignore_file, hide_logs=hide_logs)
   build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
   build_config = _SetMachineType(build_config, messages, arg_machine_type)
   build_config = _SetDiskSize(build_config, messages, arg_disk_size)
@@ -519,7 +524,7 @@ def DetermineBuildRegion(build_config, desired_region=None):
   return wp_region
 
 
-def Build(messages, async_, build_config, show_logs=False, build_region=None):
+def Build(messages, async_, build_config, hide_logs=False, build_region=None):
   """Starts the build."""
   log.debug('submitting build: ' + repr(build_config))
   client = cloudbuild_util.GetClientInstance(region=build_region)
@@ -534,7 +539,7 @@ def Build(messages, async_, build_config, show_logs=False, build_region=None):
       projectId=build.projectId,
       id=build.id)
 
-  if not show_logs:
+  if not hide_logs:
     log.CreatedResource(build_ref)
     if build.logUrl:
       log.status.Print(

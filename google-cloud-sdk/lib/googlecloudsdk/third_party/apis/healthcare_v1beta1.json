@@ -2893,6 +2893,173 @@
         }
       }
     },
+    "AnalyzeEntitiesRequest": {
+      "id": "AnalyzeEntitiesRequest",
+      "description": "The request to analyze healthcare entities in a document.",
+      "type": "object",
+      "properties": {
+        "documentContent": {
+          "description": "document_content is a document to be annotated.",
+          "type": "string"
+        }
+      }
+    },
+    "AnalyzeEntitiesResponse": {
+      "id": "AnalyzeEntitiesResponse",
+      "description": "Includes recognized entity mentions and relationships between them.",
+      "type": "object",
+      "properties": {
+        "entityMentions": {
+          "description": "entity_mentions contains all the annotated medical entities that were were mentioned in the provided document.",
+          "type": "array",
+          "items": {
+            "$ref": "EntityMention"
+          }
+        },
+        "entities": {
+          "description": "The union of all the candidate entities that the entity_mentions in this response could link to. These are UMLS concepts or normalized mention content.",
+          "type": "array",
+          "items": {
+            "$ref": "Entity"
+          }
+        },
+        "relationships": {
+          "description": "relationships contains all the binary relationships that were identified between entity mentions within the provided document.",
+          "type": "array",
+          "items": {
+            "$ref": "EntityMentionRelationship"
+          }
+        }
+      }
+    },
+    "EntityMention": {
+      "id": "EntityMention",
+      "description": "An entity mention in the document.",
+      "type": "object",
+      "properties": {
+        "mentionId": {
+          "description": "mention_id uniquely identifies each entity mention in a single response.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The semantic type of the entity: UNKNOWN_ENTITY_TYPE, ALONE, ANATOMICAL_STRUCTURE, ASSISTED_LIVING, BF_RESULT, BM_RESULT, BM_UNIT, BM_VALUE, BODY_FUNCTION, BODY_MEASUREMENT, COMPLIANT, DOESNOT_FOLLOWUP, FAMILY, FOLLOWSUP, LABORATORY_DATA, LAB_RESULT, LAB_UNIT, LAB_VALUE, MEDICAL_DEVICE, MEDICINE, MED_DOSE, MED_DURATION, MED_FORM, MED_FREQUENCY, MED_ROUTE, MED_STATUS, MED_STRENGTH, MED_TOTALDOSE, MED_UNIT, NON_COMPLIANT, OTHER_LIVINGSTATUS, PROBLEM, PROCEDURE, PROCEDURE_RESULT, PROC_METHOD, REASON_FOR_NONCOMPLIANCE, SEVERITY, SUBSTANCE_ABUSE, UNCLEAR_FOLLOWUP.",
+          "type": "string"
+        },
+        "text": {
+          "description": "text is the location of the entity mention in the document.",
+          "$ref": "TextSpan"
+        },
+        "linkedEntities": {
+          "description": "linked_entities are candidate ontological concepts that this entity mention may refer to. They are sorted by decreasing confidence.it",
+          "type": "array",
+          "items": {
+            "$ref": "LinkedEntity"
+          }
+        },
+        "temporalAssessment": {
+          "description": "How this entity mention relates to the subject temporally. Its value is one of: CURRENT, CLINICAL_HISTORY, FAMILY_HISTORY, UPCOMING, ALLERGY",
+          "$ref": "Feature"
+        },
+        "certaintyAssessment": {
+          "description": "The certainty assessment of the entity mention. Its value is one of: LIKELY, SOMEWHAT_LIKELY, UNCERTAIN, SOMEWHAT_UNLIKELY, UNLIKELY, CONDITIONAL",
+          "$ref": "Feature"
+        },
+        "subject": {
+          "description": "The subject this entity mention relates to. Its value is one of: PATIENT, FAMILY_MEMBER, OTHER",
+          "$ref": "Feature"
+        },
+        "confidence": {
+          "description": "The model's confidence in this entity mention annotation. A number between 0 and 1.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "TextSpan": {
+      "id": "TextSpan",
+      "description": "A span of text in the provided document.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The original text contained in this span.",
+          "type": "string"
+        },
+        "beginOffset": {
+          "description": "The unicode codepoint index of the beginning of this span.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "LinkedEntity": {
+      "id": "LinkedEntity",
+      "description": "EntityMentions can be linked to multiple entities using a LinkedEntity message lets us add other fields, e.g. confidence.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "entity_id is a concept unique identifier. These are prefixed by a string that identifies the entity coding system, followed by the unique identifier within that system. For example, \"UMLS\/C0000970\". This also supports ad hoc entities, which are formed by normalizing entity mention content.",
+          "type": "string"
+        }
+      }
+    },
+    "Feature": {
+      "id": "Feature",
+      "description": "A feature of an entity mention.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The value of this feature annotation. Its range depends on the type of the feature.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "The model's confidence in this feature annotation. A number between 0 and 1.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "Entity": {
+      "id": "Entity",
+      "description": "The candidate entities that an entity mention could link to.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "entity_id is a first class field entity_id uniquely identifies this concept and its meta-vocabulary. For example, \"UMLS\/C0000970\".",
+          "type": "string"
+        },
+        "preferredTerm": {
+          "description": "preferred_term is the preferred term for this concept. For example, \"Acetaminophen\". For ad hoc entities formed by normalization, this is the most popular unnormalized string.",
+          "type": "string"
+        },
+        "vocabularyCodes": {
+          "description": "Vocabulary codes are first-class fields and differentiated from the concept unique identifier (entity_id). vocabulary_codes contains the representation of this concept in particular vocabularies, such as ICD-10, SNOMED-CT and RxNORM. These are prefixed by the name of the vocabulary, followed by the unique code within that vocabulary. For example, \"RXNORM\/A10334543\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "EntityMentionRelationship": {
+      "id": "EntityMentionRelationship",
+      "description": "Defines directed relationship from one entity mention to another.",
+      "type": "object",
+      "properties": {
+        "subjectId": {
+          "description": "subject_id is the id of the subject entity mention.",
+          "type": "string"
+        },
+        "objectId": {
+          "description": "object_id is the id of the object entity mention.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "The model's confidence in this annotation. A number between 0 and 1.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "OperationMetadata provides information about the operation execution. Returned in the long-running operation's metadata field.",
@@ -7013,7 +7180,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Deletes the specified Attribute definition. Fails if it is referenced by the latest revision of any Consent or User data mapping."
+                          "description": "Deletes the specified Attribute definition. Fails if it is referenced by any User data mapping, or the latest revision of any Consent."
                         },
                         "patch": {
                           "id": "healthcare.projects.locations.datasets.consentStores.attributeDefinitions.patch",
@@ -7804,6 +7971,42 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    }
+                  }
+                }
+              }
+            },
+            "services": {
+              "resources": {
+                "nlp": {
+                  "methods": {
+                    "analyzeEntities": {
+                      "id": "healthcare.projects.locations.services.nlp.analyzeEntities",
+                      "path": "v1beta1/{+nlpService}:analyzeEntities",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/services/nlp:analyzeEntities",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "nlpService": {
+                          "description": "The resource name of the service of the form: \"projects\/{project_id}\/locations\/{location_id}\/services\/nlp\".",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/nlp$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "nlpService"
+                      ],
+                      "request": {
+                        "$ref": "AnalyzeEntitiesRequest"
+                      },
+                      "response": {
+                        "$ref": "AnalyzeEntitiesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Analyze heathcare entity in a document. Its response includes the recognized entity mentions and the relationships between them. AnalyzeEntities uses context aware models to detect entities."
                     }
                   }
                 }

@@ -637,6 +637,10 @@
         "instanceId": {
           "description": "The unique identifier of the Compute Engine instance.",
           "type": "string"
+        },
+        "publicKey": {
+          "description": "The public key used for sharing data with this instance.",
+          "type": "string"
         }
       }
     },
@@ -757,7 +761,7 @@
       "type": "object",
       "properties": {
         "idleDeleteTtl": {
-          "description": "Optional. The duration to keep the cluster alive while idling (when no jobs are running). Passing this threshold will cause the cluster to be deleted. Minimum value is 10 minutes; maximum value is 14 days (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json).",
+          "description": "Optional. The duration to keep the cluster alive while idling (when no jobs are running). Passing this threshold will cause the cluster to be deleted. Minimum value is 5 minutes; maximum value is 14 days (see JSON representation of Duration (https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json).",
           "type": "string",
           "format": "google-duration"
         },

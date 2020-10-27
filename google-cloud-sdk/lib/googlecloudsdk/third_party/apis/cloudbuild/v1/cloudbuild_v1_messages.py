@@ -813,19 +813,24 @@ class CloudbuildOauthGetRegistrationRequest(_messages.Message):
   r"""A CloudbuildOauthGetRegistrationRequest object.
 
   Enums:
-    NamespaceValueValuesEnum: The namespace that the credential belongs to.
+    NamespaceValueValuesEnum: Required. The namespace that the credential
+      belongs to.
 
   Fields:
-    githubEnterpriseConfig: The full resource name of the github enterprise
-      resource if applicable.
-    hostUrl: The host url that the oauth credentials are associated with. For
-      GitHub, this would be "https://github.com". For GitHubEnterprise, this
-      would be the host name of their github enterprise instance.
-    namespace: The namespace that the credential belongs to.
+    authUser: Optional. For users who are logged in using multiple accounts,
+      specify the auth user parameter so that the registration url redirects
+      back to the cloud console using the proper account.
+    githubEnterpriseConfig: Optional. The full resource name of the github
+      enterprise resource if applicable.
+    hostUrl: Required. The host url that the oauth credentials are associated
+      with. For GitHub, this would be "https://github.com". For
+      GitHubEnterprise, this would be the host name of their github enterprise
+      instance.
+    namespace: Required. The namespace that the credential belongs to.
   """
 
   class NamespaceValueValuesEnum(_messages.Enum):
-    r"""The namespace that the credential belongs to.
+    r"""Required. The namespace that the credential belongs to.
 
     Values:
       NAMESPACE_UNSPECIFIED: The default namespace.
@@ -834,9 +839,10 @@ class CloudbuildOauthGetRegistrationRequest(_messages.Message):
     NAMESPACE_UNSPECIFIED = 0
     GITHUB_ENTERPRISE = 1
 
-  githubEnterpriseConfig = _messages.StringField(1)
-  hostUrl = _messages.StringField(2)
-  namespace = _messages.EnumField('NamespaceValueValuesEnum', 3)
+  authUser = _messages.StringField(1)
+  githubEnterpriseConfig = _messages.StringField(2)
+  hostUrl = _messages.StringField(3)
+  namespace = _messages.EnumField('NamespaceValueValuesEnum', 4)
 
 
 class CloudbuildOauthProcessOAuthCallbackRequest(_messages.Message):
@@ -949,7 +955,11 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
   Fields:
     filter: The raw filter text to constrain the results.
     pageSize: Number of results to return in the list.
-    pageToken: Token to provide to skip to a particular spot in the list.
+    pageToken: The page token for the next page of Builds. If unspecified, the
+      first page of results is returned. If the token is rejected for any
+      reason, INVALID_ARGUMENT will be thrown. In this case, the token should
+      be discarded, and pagination should be restarted from the first page of
+      results. See https://google.aip.dev/158 for more.
     parent: The parent of the collection of `Builds`. Format:
       `projects/{project}/locations/location`
     projectId: Required. ID of the project.
@@ -1041,8 +1051,8 @@ class CloudbuildProjectsGithubEnterpriseConfigsPatchRequest(_messages.Message):
   Fields:
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
-    name: The full resource name for the GitHubEnterpriseConfig For example:
-      "projects/{$project_id}/githubEnterpriseConfig/{$config_id}"
+    name: Optional. The full resource name for the GitHubEnterpriseConfig For
+      example: "projects/{$project_id}/githubEnterpriseConfig/{$config_id}"
     updateMask: Update mask for the resource. If this is set, the server will
       only update the fields specified in the field mask. Otherwise, a full
       update of the mutable resource fields will be performed.
@@ -1215,7 +1225,11 @@ class CloudbuildProjectsLocationsBuildsListRequest(_messages.Message):
   Fields:
     filter: The raw filter text to constrain the results.
     pageSize: Number of results to return in the list.
-    pageToken: Token to provide to skip to a particular spot in the list.
+    pageToken: The page token for the next page of Builds. If unspecified, the
+      first page of results is returned. If the token is rejected for any
+      reason, INVALID_ARGUMENT will be thrown. In this case, the token should
+      be discarded, and pagination should be restarted from the first page of
+      results. See https://google.aip.dev/158 for more.
     parent: The parent of the collection of `Builds`. Format:
       `projects/{project}/locations/location`
     projectId: Required. ID of the project.
@@ -1423,7 +1437,7 @@ class FileHashes(_messages.Message):
 
 
 class GCSLocation(_messages.Message):
-  r"""Represents a storage location in GCS
+  r"""Represents a storage location in Cloud Storage
 
   Fields:
     bucket: Google Cloud Storage bucket. See
@@ -1495,15 +1509,17 @@ class GitHubEnterpriseConfig(_messages.Message):
   Enterprise server.
 
   Fields:
-    appConfigJson: GCS location of the encrypted GitHub App config
-      information.
-    appId: The GitHub app id of the Cloud Build app on the GitHub Enterprise
-      server.
+    appConfigJson: Optional. Cloud Storage location of the encrypted GitHub
+      App config information.
+    appId: Required. The GitHub app id of the Cloud Build app on the GitHub
+      Enterprise server.
     createTime: Output only. Time when the installation was associated with
       the project.
     hostUrl: The URL of the github enterprise host the configuration is for.
-    name: The full resource name for the GitHubEnterpriseConfig For example:
-      "projects/{$project_id}/githubEnterpriseConfig/{$config_id}"
+    name: Optional. The full resource name for the GitHubEnterpriseConfig For
+      example: "projects/{$project_id}/githubEnterpriseConfig/{$config_id}"
+    webhookKey: Optional. The key that should be attached to webhook calls to
+      the ReceiveWebhook endpoint.
   """
 
   appConfigJson = _messages.MessageField('GCSLocation', 1)
@@ -1511,6 +1527,7 @@ class GitHubEnterpriseConfig(_messages.Message):
   createTime = _messages.StringField(3)
   hostUrl = _messages.StringField(4)
   name = _messages.StringField(5)
+  webhookKey = _messages.StringField(6)
 
 
 class GitHubEventsConfig(_messages.Message):
@@ -1819,7 +1836,8 @@ class ListBuildsResponse(_messages.Message):
 
   Fields:
     builds: Builds will be sorted by `create_time`, descending.
-    nextPageToken: Token to receive the next page of results.
+    nextPageToken: Token to receive the next page of results. This will be
+      absent if the end of the response list has been reached.
   """
 
   builds = _messages.MessageField('Build', 1, repeated=True)

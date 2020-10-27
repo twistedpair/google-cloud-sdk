@@ -129,6 +129,7 @@ class JobsClient(object):
                        runtime_version=None,
                        python_version=None,
                        network=None,
+                       service_account=None,
                        labels=None,
                        kms_key=None,
                        custom_train_server_config=None):
@@ -153,6 +154,8 @@ class JobsClient(object):
           yaml file)
         network: user network to which the job should be peered with (overrides
           yaml file)
+        service_account: A service account (email address string) to use for the
+          job.
         labels: Job.LabelsValue, the Cloud labels for the job
         kms_key: A customer-managed encryption key to use for the job.
         custom_train_server_config: jobs_util.CustomTrainingInputServerConfig,
@@ -188,7 +191,8 @@ class JobsClient(object):
         'scaleTier': scale_tier,
         'runtimeVersion': runtime_version,
         'pythonVersion': python_version,
-        'network': network
+        'network': network,
+        'serviceAccount': service_account
     }
     for field_name, value in additional_fields.items():
       if value is not None:

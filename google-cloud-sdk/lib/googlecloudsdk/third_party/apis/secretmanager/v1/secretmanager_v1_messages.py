@@ -546,9 +546,6 @@ class Secret(_messages.Message):
 
   Fields:
     createTime: Output only. The time at which the Secret was created.
-    expireTime: Optional. Timestamp in UTC at which the Secret is scheduled to
-      expire. This is always provided on output, regardless of what was sent
-      on input.
     labels: The labels assigned to this Secret. Label keys must be between 1
       and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and
       must conform to the following PCRE regular expression:
@@ -561,7 +558,6 @@ class Secret(_messages.Message):
     replication: Required. Immutable. The replication policy of the secret
       data attached to the Secret. The replication policy cannot be changed
       after the Secret has been created.
-    ttl: Input only. The TTL for the Secret.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -595,11 +591,9 @@ class Secret(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  expireTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  replication = _messages.MessageField('Replication', 5)
-  ttl = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  replication = _messages.MessageField('Replication', 4)
 
 
 class SecretPayload(_messages.Message):
@@ -758,6 +752,13 @@ class SecretmanagerProjectsSecretsListRequest(_messages.Message):
   r"""A SecretmanagerProjectsSecretsListRequest object.
 
   Fields:
+    filter: Optional. Filter string, adhering to the rules in [List-operation
+      sorting and filtering](https://cloud.google.com/secret-
+      manager/docs/sorting-and-filtering). List only secrets matching the
+      filter. If filter is empty, all secrets are listed.
+    orderBy: Optional. Order_by string. Use "name" or leave empty for listing
+      secrets sorted by name in the ascending order, or "~name" for listing
+      secrets sorted by name in the descending order.
     pageSize: Optional. The maximum number of results to be returned in a
       single page. If set to 0, the server decides the number of results to
       return. If the number is greater than 25000, it is capped at 25000.
@@ -767,9 +768,11 @@ class SecretmanagerProjectsSecretsListRequest(_messages.Message):
       Secrets, in the format `projects/*`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SecretmanagerProjectsSecretsPatchRequest(_messages.Message):
@@ -887,6 +890,14 @@ class SecretmanagerProjectsSecretsVersionsListRequest(_messages.Message):
   r"""A SecretmanagerProjectsSecretsVersionsListRequest object.
 
   Fields:
+    filter: Optional. Filter string, adhering to the rules in [List-operation
+      sorting and filtering](https://cloud.google.com/secret-
+      manager/docs/sorting-and-filtering). List only secret versions matching
+      the filter. If filter is empty, all secret versions are listed.
+    orderBy: Optional. Order_by string. Use "~create_time" or leave empty for
+      listing secret versions sorted by creation time starting from the
+      latest, or "create_time" for listing them sorted by creation time
+      starting from the oldest.
     pageSize: Optional. The maximum number of results to be returned in a
       single page. If set to 0, the server decides the number of results to
       return. If the number is greater than 25000, it is capped at 25000.
@@ -896,9 +907,11 @@ class SecretmanagerProjectsSecretsVersionsListRequest(_messages.Message):
       SecretVersions to list, in the format `projects/*/secrets/*`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SetIamPolicyRequest(_messages.Message):

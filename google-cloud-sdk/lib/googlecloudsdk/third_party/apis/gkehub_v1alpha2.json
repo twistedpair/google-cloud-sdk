@@ -480,16 +480,16 @@
       "type": "object",
       "properties": {
         "issuer": {
-          "description": "Optional. A JWT issuer URI. If set, then Google will attempt OIDC discovery on this URI, and allow valid OIDC tokens from this issuer to authenticate within the below identity namespace. This can be updated from a non-empty to empty value and vice-versa. But cannot be changed from one non-empty value to another. Setting to empty will disable Workload Identity. issuer should be a valid URL of length < 2000 that can be parsed, and must start with https:\/\/.",
+          "description": "Optional. A Json Web Token (JWT) issuer URI. If set, then Google will allow valid OIDC tokens from this issuer to authenticate within the below workload identity pool. OIDC discovery will be performed on this URI to validate tokens from the issuer, unless `oidc_jwks` is set. This can be updated from a non-empty to empty value and vice-versa. But cannot be changed from one non-empty value to another. Setting to empty will disable Workload Identity. issuer should be a valid URL of length < 2000 that can be parsed, and must start with https:\/\/.",
           "type": "string"
         },
-        "identityNamespace": {
-          "description": "Output only. The identity namespace in which the above issuer will be recognized. This field is now deprecated, and will be removed eventually. Callers should now use workload_identity_pool instead of identity_namespace, once we start setting it.",
-          "readOnly": true,
-          "type": "string"
+        "oidcJwks": {
+          "description": "Optional. OIDC verification keys for this Membership in JWKS format (RFC 7517). It contains a list of OIDC verification keys that can be used to verify OIDC JWT tokens. When this field is set, OIDC discovery will not be performed on the issuer and instead OIDC tokens will be validated using this field.",
+          "type": "string",
+          "format": "byte"
         },
         "identityProvider": {
-          "description": "Output only. An identity provider that reflects this issuer in the identity namespace.",
+          "description": "Output only. An identity provider that reflects this issuer in the workload identity pool.",
           "readOnly": true,
           "type": "string"
         },
@@ -783,6 +783,50 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusDetail": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "cancelRequested": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     }

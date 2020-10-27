@@ -289,14 +289,11 @@ advantage of new features.
 Clusters subscribed to 'stable' receive versions that are known to be
 stable and reliable in production.
 """,
-  }
-
-  if is_update:
-    none_text = """\
-Use '--release-channel=None' to take a cluster off of a release channel.
-Clusters on 'rapid' cannot be taken off of the release channel.
+      'None':
+          """\
+Use 'None' to opt-out of any release channel.
 """
-    choices['None'] = none_text
+  }
 
   return parser.add_argument(
       '--release-channel',

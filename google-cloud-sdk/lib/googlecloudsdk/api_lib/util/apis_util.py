@@ -51,4 +51,5 @@ class UnknownVersionError(exceptions.Error):
 # helper method can be used to convert it into a (name, alias) tuple.
 # TODO(b/31163851): remove the need for this alias map.
 _API_NAME_ALIASES = {
+    'sql': 'sqladmin',
 }

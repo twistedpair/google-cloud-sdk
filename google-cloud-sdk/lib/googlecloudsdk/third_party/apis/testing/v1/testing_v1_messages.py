@@ -260,7 +260,7 @@ class AndroidModel(_messages.Message):
 class AndroidRoboTest(_messages.Message):
   r"""A test of an android application that explores the application on a
   virtual or physical Android Device, finding culprits and crashes as it goes.
-  Next tag: 29
+  Next tag: 30
 
   Fields:
     appApk: The APK for the application under test.
@@ -509,22 +509,22 @@ class ClientInfoDetail(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""Represents a whole or partial calendar date, e.g. a birthday. The time
-  of day and time zone are either specified elsewhere or are not significant.
-  The date is relative to the Proleptic Gregorian Calendar. This can
-  represent: * A full date, with non-zero year, month and day values * A month
-  and day value, with a zero year, e.g. an anniversary * A year on its own,
-  with zero month and day values * A year and month value, with a zero day,
-  e.g. a credit card expiration date Related types are google.type.TimeOfDay
-  and `google.protobuf.Timestamp`.
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day value, with a zero year, such as an
+  anniversary * A year on its own, with zero month and day values * A year and
+  month value, with a zero day, such as a credit card expiration date Related
+  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
 
   Fields:
-    day: Day of month. Must be from 1 to 31 and valid for the year and month,
-      or 0 if specifying a year by itself or a year and month where the day is
-      not significant.
-    month: Month of year. Must be from 1 to 12, or 0 if specifying a year
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
       without a month and day.
-    year: Year of date. Must be from 1 to 9999, or 0 if specifying a date
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
       without a year.
   """
 
@@ -956,7 +956,7 @@ class ManualSharding(_messages.Message):
       methods to be run for each shard. When any physical devices are
       selected, the number of test_targets_for_shard must be >= 1 and <= 50.
       When no physical devices are selected, the number must be >= 1 and <=
-      250.
+      500.
   """
 
   testTargetsForShard = _messages.MessageField('TestTargetsForShard', 1, repeated=True)
@@ -1831,7 +1831,7 @@ class UniformSharding(_messages.Message):
   Fields:
     numShards: Required. Total number of shards. When any physical devices are
       selected, the number must be >= 1 and <= 50. When no physical devices
-      are selected, the number must be >= 1 and <= 250.
+      are selected, the number must be >= 1 and <= 500.
   """
 
   numShards = _messages.IntegerField(1, variant=_messages.Variant.INT32)

@@ -231,7 +231,9 @@ class CloudListTask(task.Task):
     fields_scope = _translate_display_detail_to_fields_scope(
         self._display_detail, is_bucket_listing=False)
     iterator = wildcard_iterator.CloudWildcardIterator(
-        new_cloud_url, fields_scope=fields_scope)
+        new_cloud_url,
+        all_versions=self._all_versions,
+        fields_scope=fields_scope)
     return self._recursion_helper(iterator, recursion_level)
 
   def _recursion_helper(self, iterator, recursion_level):
@@ -316,7 +318,9 @@ class CloudListTask(task.Task):
         self._display_detail, is_bucket_listing=self._cloud_url.is_provider())
     resources = plurality_checkable_iterator.PluralityCheckableIterator(
         wildcard_iterator.CloudWildcardIterator(
-            self._cloud_url, fields_scope=fields_scope))
+            self._cloud_url,
+            all_versions=self._all_versions,
+            fields_scope=fields_scope))
 
     if resources.is_empty():
       raise errors.InvalidUrlError('One or more URLs matched no objects.')

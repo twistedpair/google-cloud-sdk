@@ -152,6 +152,27 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersGetRequest(_messages.
   name = _messages.StringField(1, required=True)
 
 
+class CloudcommerceconsumerprocurementBillingAccountsOrdersListMigratableRequest(_messages.Message):
+  r"""A
+  CloudcommerceconsumerprocurementBillingAccountsOrdersListMigratableRequest
+  object.
+
+  Fields:
+    newParent: Required. The parent the Orders intend on migrating to. This
+      field is of the form `billingAccounts/`. You must have the
+      "consumerprocurement.orders.migrate" permission on new_parent also.
+    pageSize: The maximum number of entries that are requested.
+    pageToken: The token for fetching the next page.
+    parent: Required. The parent resource to query for orders. This field is
+      of the form `billingAccounts/`.
+  """
+
+  newParent = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest
   object.
@@ -160,13 +181,14 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
     filter: The filter that can be used to limit the list request. The filter
       is a query string that can match a selected set of attributes with
       string values. For example `display_name=abc`. Supported query
-      attributes are * `display_name` If the query contains some special
-      characters other than letters, underscore, or digits, the phrase must be
-      quoted with double quotes. For example, `display_name="foo:bar"`, where
-      the display name needs to be quoted because it contains special
-      character colon. Queries can be combined with `OR`, and `NOT` to form
-      more complex queries. They can also be grouped to force a desired
-      evaluation order. For example, `display_name=abc OR display_name=def`.
+      attributes are * `display_name` * `product_external_name` If the query
+      contains some special characters other than letters, underscore, or
+      digits, the phrase must be quoted with double quotes. For example,
+      `display_name="foo:bar"`, where the display name needs to be quoted
+      because it contains special character colon. Queries can be combined
+      with `OR`, and `NOT` to form more complex queries. They can also be
+      grouped to force a desired evaluation order. For example,
+      `display_name=abc OR display_name=def`.
     pageSize: The maximum number of entries that are requested.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for orders. This field is
@@ -982,7 +1004,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo(_messages.Messa
     flavorExternalName: External name of the flavor being purchased.
     offer: Optional. The name of the offer is accepted in either of these
       formats: 'billingAccounts/{billing_account}/offers/{offer}', or
-      'projects/{consumer_project}/services/{service}/standardOffers/{offer}'.
+      'services/{service}/standardOffers/{offer}'.
     parameters: Optional. User provided parameters.
     pricePlanVersion: The price plan version being purchased.
     productExternalName: External name of the product being purchased.
@@ -1065,6 +1087,18 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListFreeTrialsResponse(_mess
   """
 
   freeTrials = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1ListMigratableOrdersResponse(_messages.Message):
+  r"""Response message for ConsumerProcurementService.ListMigratableOrders.
+
+  Fields:
+    migratableOrders: The list of orders in this response.
+    nextPageToken: The token for fetching the next page.
+  """
+
+  migratableOrders = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Order', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -1764,7 +1798,7 @@ class GoogleTypeMoney(_messages.Message):
   r"""Represents an amount of money with its currency type.
 
   Fields:
-    currencyCode: The 3-letter currency code defined in ISO 4217.
+    currencyCode: The three-letter currency code defined in ISO 4217.
     nanos: Number of nano (10^-9) units of the amount. The value must be
       between -999,999,999 and +999,999,999 inclusive. If `units` is positive,
       `nanos` must be positive or zero. If `units` is zero, `nanos` can be

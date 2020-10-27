@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2013 Google LLC. All Rights Reserved.
+# Copyright 2020 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -662,6 +662,10 @@ class ImportCommand(six.with_metaclass(abc.ABCMeta, Command)):
 
 class ExportCommand(six.with_metaclass(abc.ABCMeta, Command)):
   """A command that outputs one resource to file in yaml format."""
+
+
+class DeclarativeCommand(six.with_metaclass(abc.ABCMeta, Command)):
+  """Command class for managing gcp resources as YAML/JSON files."""
 
 
 class BinaryBackedCommand(six.with_metaclass(abc.ABCMeta, Command)):

@@ -65,7 +65,12 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     super(YamlPrinter, self).__init__(*args, retain_none_values=True, **kwargs)
     # pylint:disable=g-import-not-at-top, Delay import for performance.
     from ruamel import yaml
-    self._yaml = yaml.YAML(typ='safe')
+    # Use pure=True to only use python implementations. Otherwise, it can load
+    # the the _ruamel_yaml C extension from site packages if
+    # CLOUDSDK_PYTHON_SITEPACKAGES=1 is set. There is no guarantee that the C
+    # extension is compatible with our vendored ruamel.yaml and the python
+    # runtime.
+    self._yaml = yaml.YAML(typ='safe', pure=True)
     self._yaml.default_flow_style = False
     self._yaml.old_indent = resource_printer_base.STRUCTURED_INDENTATION
     self._yaml.allow_unicode = True

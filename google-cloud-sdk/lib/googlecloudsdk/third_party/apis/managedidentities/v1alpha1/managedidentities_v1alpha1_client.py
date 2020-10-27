@@ -39,11 +39,76 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_global_domains_sqlIntegrations = self.ProjectsLocationsGlobalDomainsSqlIntegrationsService(self)
     self.projects_locations_global_domains = self.ProjectsLocationsGlobalDomainsService(self)
     self.projects_locations_global_operations = self.ProjectsLocationsGlobalOperationsService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsGlobalDomainsSqlIntegrationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_domains_sqlIntegrations resource."""
+
+    _NAME = 'projects_locations_global_domains_sqlIntegrations'
+
+    def __init__(self, client):
+      super(ManagedidentitiesV1alpha1.ProjectsLocationsGlobalDomainsSqlIntegrationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single sqlIntegration.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SQLIntegration) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/sqlIntegrations/{sqlIntegrationsId}',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.domains.sqlIntegrations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsGetRequest',
+        response_type_name='SQLIntegration',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SQLIntegrations in a given domain.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSQLIntegrationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/sqlIntegrations',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.domains.sqlIntegrations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/sqlIntegrations',
+        request_field='',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsSqlIntegrationsListRequest',
+        response_type_name='ListSQLIntegrationsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsGlobalDomainsService(base_api.BaseApiService):
     """Service class for the projects_locations_global_domains resource."""
@@ -217,6 +282,33 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetLdapssettings(self, request, global_params=None):
+      r"""Gets the domain ldaps settings.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LDAPSSettings) The response message.
+      """
+      config = self.GetMethodConfig('GetLdapssettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetLdapssettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/ldapssettings',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.domains.getLdapssettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}/ldapssettings',
+        request_field='',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsGetLdapssettingsRequest',
+        response_type_name='LDAPSSettings',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Domains in a given project.
 
@@ -376,6 +468,33 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def UpdateLdapssettings(self, request, global_params=None):
+      r"""Patches a single ldaps settings.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateLdapssettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateLdapssettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/ldapssettings',
+        http_method='PATCH',
+        method_id='managedidentities.projects.locations.global.domains.updateLdapssettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha1/{+name}/ldapssettings',
+        request_field='lDAPSSettings',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsUpdateLdapssettingsRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -590,7 +709,7 @@ class ManagedidentitiesV1alpha1(base_api.BaseApiClient):
         method_id='managedidentities.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha1/{+name}/locations',
         request_field='',
         request_type_name='ManagedidentitiesProjectsLocationsListRequest',

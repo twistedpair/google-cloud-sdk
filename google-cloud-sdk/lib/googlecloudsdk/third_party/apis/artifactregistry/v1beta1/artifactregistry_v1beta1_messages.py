@@ -561,9 +561,12 @@ class GoogleDevtoolsArtifactregistryV1alpha1GcsSource(_messages.Message):
 
   Fields:
     uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
+    useWildcards: Supports URI wildcards for matching multiple objects from a
+      single URI.
   """
 
   uris = _messages.StringField(1, repeated=True)
+  useWildcards = _messages.BooleanField(2)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse(_messages.Message):
@@ -1025,15 +1028,9 @@ class Repository(_messages.Message):
     Values:
       FORMAT_UNSPECIFIED: Unspecified package format.
       DOCKER: Docker package format.
-      MAVEN: Maven package format.
-      NPM: NPM package format.
-      APT: APT package format.
     """
     FORMAT_UNSPECIFIED = 0
     DOCKER = 1
-    MAVEN = 2
-    NPM = 3
-    APT = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

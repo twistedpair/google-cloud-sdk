@@ -2466,10 +2466,12 @@ class InstanceReference(_messages.Message):
   Fields:
     instanceId: The unique identifier of the Compute Engine instance.
     instanceName: The user-friendly name of the Compute Engine instance.
+    publicKey: The public key used for sharing data with this instance.
   """
 
   instanceId = _messages.StringField(1)
   instanceName = _messages.StringField(2)
+  publicKey = _messages.StringField(3)
 
 
 class InstantiateWorkflowTemplateRequest(_messages.Message):
@@ -2849,7 +2851,7 @@ class LifecycleConfig(_messages.Message):
       (https://developers.google.com/protocol-buffers/docs/proto3#json)).
     idleDeleteTtl: Optional. The duration to keep the cluster alive while
       idling (when no jobs are running). Passing this threshold will cause the
-      cluster to be deleted. Minimum value is 10 minutes; maximum value is 14
+      cluster to be deleted. Minimum value is 5 minutes; maximum value is 14
       days (see JSON representation of Duration
       (https://developers.google.com/protocol-buffers/docs/proto3#json).
     idleStartTime: Output only. The time when cluster became idle (most recent

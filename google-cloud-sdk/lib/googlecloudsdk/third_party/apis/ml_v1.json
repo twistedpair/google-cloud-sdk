@@ -2133,7 +2133,7 @@
           "description": "The search algorithm specified for the study.",
           "type": "string",
           "enumDescriptions": [
-            "The default algorithm used by the Cloud AI Platform Optimization service.",
+            "The default algorithm used by the Cloud AI Platform Vizier service.",
             "Gaussian Process Bandit.",
             "Simple grid search within the feasible space. To use grid search, all parameters must be `INTEGER`, `CATEGORICAL`, or `DISCRETE`.",
             "Simple random search within the feasible space."

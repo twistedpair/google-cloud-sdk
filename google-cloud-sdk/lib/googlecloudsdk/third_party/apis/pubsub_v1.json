@@ -246,6 +246,10 @@
         "kmsKeyName": {
           "description": "The resource name of the Cloud KMS CryptoKey to be used to protect access to messages published on this topic. The expected format is `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
           "type": "string"
+        },
+        "schemaSettings": {
+          "description": "Settings for validating messages published against a schema.",
+          "$ref": "SchemaSettings"
         }
       }
     },
@@ -264,6 +268,31 @@
         "satisfiesPzs": {
           "description": "Reserved for future use. This field is set only in responses from the server; it is ignored if it is set in any requests.",
           "type": "boolean"
+        }
+      }
+    },
+    "SchemaSettings": {
+      "id": "SchemaSettings",
+      "description": "Settings for validating messages published against a schema.",
+      "type": "object",
+      "properties": {
+        "schema": {
+          "description": "Required. The name of the schema that messages published should be validated against. Format is `projects\/{project}\/schemas\/{schema}`. The value of this field will be `_deleted-schema_` if the schema has been deleted.",
+          "type": "string"
+        },
+        "encoding": {
+          "description": "The encoding of messages validated against `schema`.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified",
+            "JSON encoding",
+            "Binary encoding, as defined by the schema type. For some schema types, binary encoding may not be available."
+          ],
+          "enum": [
+            "ENCODING_UNSPECIFIED",
+            "JSON",
+            "BINARY"
+          ]
         }
       }
     },

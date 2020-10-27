@@ -584,6 +584,10 @@
           "description": " The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects\/[KEY_PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[RING_NAME]\/cryptoKeys\/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https:\/\/cloud.google.com\/compute\/docs\/disks\/customer-managed-encryption",
           "type": "string"
         },
+        "ephemeralStorageConfig": {
+          "description": "Parameters for the ephemeral storage filesystem. If unspecified, ephemeral storage is backed by the boot disk.",
+          "$ref": "EphemeralStorageConfig"
+        },
         "gcfsConfig": {
           "description": "GCFS (Google Container File System) configs.",
           "$ref": "GcfsConfig"
@@ -825,6 +829,18 @@
         "cpuCfsQuotaPeriod": {
           "description": "Set the CPU CFS quota period value 'cpu.cfs_period_us'. The string must be a sequence of decimal numbers, each with optional fraction and a unit suffix, such as \"300ms\". Valid time units are \"ns\", \"us\" (or \"\u00B5s\"), \"ms\", \"s\", \"m\", \"h\". The value must be a positive duration.",
           "type": "string"
+        }
+      }
+    },
+    "EphemeralStorageConfig": {
+      "id": "EphemeralStorageConfig",
+      "description": "EphemeralStorageConfig contains configuration for the ephemeral storage filesystem.",
+      "type": "object",
+      "properties": {
+        "localSsdCount": {
+          "description": "Number of local SSDs to use to back ephemeral storage. Uses NVMe interfaces. Each local SSD is 375 GB in size. If zero, it means to disable using local SSDs as ephemeral storage.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2682,6 +2698,10 @@
           "description": "The Kubernetes version to change the master to. Users may specify either explicit versions offered by Kubernetes Engine or version aliases, which have the following behavior: - \"latest\": picks the highest valid Kubernetes version - \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version - \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version - \"1.X.Y-gke.N\": picks an explicit Kubernetes version - \"-\": picks the default Kubernetes version",
           "type": "string"
         },
+        "desiredAutoGke": {
+          "description": "AutoGKE is the configuration for AutoGKE settings on the cluster.",
+          "$ref": "AutoGKE"
+        },
         "desiredImage": {
           "description": "The desired name of the image to use for this node. This is used to create clusters using a custom image.",
           "type": "string"
@@ -4428,7 +4448,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the version and\/or iamge type of the specified node pool."
+                      "description": "Updates the version and\/or image type of the specified node pool."
                     },
                     "setAutoscaling": {
                       "id": "container.projects.locations.clusters.nodePools.setAutoscaling",
@@ -5622,7 +5642,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the version and\/or iamge type of the specified node pool."
+                      "description": "Updates the version and\/or image type of the specified node pool."
                     },
                     "autoscaling": {
                       "id": "container.projects.zones.clusters.nodePools.autoscaling",

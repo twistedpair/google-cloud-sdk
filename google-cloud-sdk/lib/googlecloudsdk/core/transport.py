@@ -434,8 +434,8 @@ def LogRequest(redact_token=True):
     log.status.Print('method: {method}'.format(method=method))
     log.status.Print('== headers start ==')
     for h, v in sorted(six.iteritems(headers)):
-      if redact_token and (h == b'Authorization' or
-                           h == b'x-goog-iam-authorization-token'):
+      if redact_token and h.lower() in (b'authorization',
+                                        b'x-goog-iam-authorization-token'):
         v = '--- Token Redacted ---'
       log.status.Print('{0}: {1}'.format(h, v))
     log.status.Print('== headers end ==')

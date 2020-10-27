@@ -23,7 +23,6 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import validation
-from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
 
 
@@ -135,7 +134,6 @@ class CustomJobsClient(object):
     request = self.messages.AiplatformProjectsLocationsCustomJobsGetRequest(
         name=name)
     response = self._service.Get(request)
-    log.status.Print(response.endTime is None)
 
     def ShouldContinue(periods_without_logs):
       if periods_without_logs <= 1:

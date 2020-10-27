@@ -85,19 +85,21 @@ class Authority(_messages.Message):
   https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
 
   Fields:
-    identityNamespace: Output only. The identity namespace in which the above
-      issuer will be recognized. This field is now deprecated, and will be
-      removed eventually. Callers should now use workload_identity_pool
-      instead of identity_namespace, once we start setting it.
     identityProvider: Output only. An identity provider that reflects this
-      issuer in the identity namespace.
-    issuer: Optional. A JWT issuer URI. If set, then Google will attempt OIDC
-      discovery on this URI, and allow valid OIDC tokens from this issuer to
-      authenticate within the below identity namespace. This can be updated
-      from a non-empty to empty value and vice-versa. But cannot be changed
-      from one non-empty value to another. Setting to empty will disable
-      Workload Identity. issuer should be a valid URL of length < 2000 that
-      can be parsed, and must start with https://.
+      issuer in the workload identity pool.
+    issuer: Optional. A Json Web Token (JWT) issuer URI. If set, then Google
+      will allow valid OIDC tokens from this issuer to authenticate within the
+      below workload identity pool. OIDC discovery will be performed on this
+      URI to validate tokens from the issuer, unless `oidc_jwks` is set. This
+      can be updated from a non-empty to empty value and vice-versa. But
+      cannot be changed from one non-empty value to another. Setting to empty
+      will disable Workload Identity. issuer should be a valid URL of length <
+      2000 that can be parsed, and must start with https://.
+    oidcJwks: Optional. OIDC verification keys for this Membership in JWKS
+      format (RFC 7517). It contains a list of OIDC verification keys that can
+      be used to verify OIDC JWT tokens. When this field is set, OIDC
+      discovery will not be performed on the issuer and instead OIDC tokens
+      will be validated using this field.
     workloadIdentityPool: Output only. The name of the workload identity pool
       in which the above issuer will be recognized. There is a single Workload
       Identity Pool per Hub that is shared between all Memberships that belong
@@ -106,9 +108,9 @@ class Authority(_messages.Message):
       versions of this API.
   """
 
-  identityNamespace = _messages.StringField(1)
-  identityProvider = _messages.StringField(2)
-  issuer = _messages.StringField(3)
+  identityProvider = _messages.StringField(1)
+  issuer = _messages.StringField(2)
+  oidcJwks = _messages.BytesField(3)
   workloadIdentityPool = _messages.StringField(4)
 
 
@@ -1065,6 +1067,32 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
+      cancellation of the operation. Operations that have successfully been
+      cancelled have Operation.error value with a google.rpc.Status.code of 1,
+      corresponding to `Code.CANCELLED`.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  statusDetail = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class Policy(_messages.Message):

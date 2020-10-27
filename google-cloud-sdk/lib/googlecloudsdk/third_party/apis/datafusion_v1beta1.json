@@ -1125,7 +1125,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single Date Fusion instance."
+                  "description": "Deletes a single Data Fusion instance."
                 },
                 "patch": {
                   "id": "datafusion.projects.locations.instances.patch",

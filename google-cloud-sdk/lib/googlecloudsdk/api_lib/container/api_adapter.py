@@ -1354,7 +1354,7 @@ class APIAdapter(object):
       for pool in cluster.nodePools:
         pool.config.bootDiskKmsKey = options.boot_disk_kms_key
 
-    _AddReleaseChannelToCluster(cluster, options, self.messages)
+    cluster.releaseChannel = _GetReleaseChannel(options, self.messages)
 
     if options.auto_gke:
       cluster.autogke = self.messages.AutoGKE()
@@ -2090,7 +2090,7 @@ class APIAdapter(object):
 
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(
-          desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
+          desiredReleaseChannel=_GetReleaseChannel(
               options, self.messages))
 
     if options.disable_default_snat is not None:
@@ -3544,7 +3544,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.privateClusterConfig.masterGlobalAccessConfig = \
           self.messages.PrivateClusterMasterGlobalAccessConfig(
               enabled=options.enable_master_global_access)
-    _AddReleaseChannelToCluster(cluster, options, self.messages)
+    cluster.releaseChannel = _GetReleaseChannel(options, self.messages)
     _AddNotificationConfigToCluster(cluster, options, self.messages)
     if options.enable_cost_management:
       cluster.costManagementConfig = self.messages.CostManagementConfig(
@@ -3637,7 +3637,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(
-          desiredReleaseChannel=_GetReleaseChannelForClusterUpdate(
+          desiredReleaseChannel=_GetReleaseChannel(
               options, self.messages))
 
     if options.notification_config is not None:
@@ -4041,18 +4041,6 @@ def _AddSandboxConfigToNodeConfig(node_config, options, messages):
         type=sandbox_types[options.sandbox['type']])
 
 
-def _AddReleaseChannelToCluster(cluster, options, messages):
-  """Adds ReleaseChannel to Cluster."""
-  if options.release_channel is not None:
-    channels = {
-        'rapid': messages.ReleaseChannel.ChannelValueValuesEnum.RAPID,
-        'regular': messages.ReleaseChannel.ChannelValueValuesEnum.REGULAR,
-        'stable': messages.ReleaseChannel.ChannelValueValuesEnum.STABLE,
-    }
-    cluster.releaseChannel = messages.ReleaseChannel(
-        channel=channels[options.release_channel])
-
-
 def _AddNotificationConfigToCluster(cluster, options, messages):
   """Adds notification config to Cluster."""
   nc = options.notification_config
@@ -4065,8 +4053,8 @@ def _AddNotificationConfigToCluster(cluster, options, messages):
     cluster.notificationConfig = messages.NotificationConfig(pubsub=pubsub)
 
 
-def _GetReleaseChannelForClusterUpdate(options, messages):
-  """Gets the ReleaseChannel from update options."""
+def _GetReleaseChannel(options, messages):
+  """Gets the ReleaseChannel from options."""
   if options.release_channel is not None:
     channels = {
         'rapid': messages.ReleaseChannel.ChannelValueValuesEnum.RAPID,

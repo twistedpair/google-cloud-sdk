@@ -282,6 +282,10 @@
           "description": "Feature for Apigee.",
           "$ref": "ApigeeFeatureSpec"
         },
+        "servicedirectoryFeatureSpec": {
+          "description": "Feature for Service Directory.",
+          "$ref": "ServiceDirectoryFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the resource itself.",
           "readOnly": true,
@@ -620,6 +624,13 @@
         }
       }
     },
+    "ServiceDirectoryFeatureSpec": {
+      "id": "ServiceDirectoryFeatureSpec",
+      "description": "An empty spec for service directory feature. This is required since Feature proto requires a spec.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "FeatureState": {
       "id": "FeatureState",
       "description": "FeatureState describes the status of any feature.",
@@ -724,6 +735,10 @@
         "apigeeFeatureState": {
           "description": "State for the Apigee Feature.",
           "$ref": "ApigeeFeatureState"
+        },
+        "servicedirectoryFeatureState": {
+          "description": "State for the Service Directory Feature.",
+          "$ref": "ServiceDirectoryFeatureState"
         },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
@@ -1304,6 +1319,13 @@
       "properties": {
       }
     },
+    "ServiceDirectoryFeatureState": {
+      "id": "ServiceDirectoryFeatureState",
+      "description": "An empty state for service directory feature. This is rqeuired since FeatureStateDetails requires a state.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1521,6 +1543,50 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusDetail": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "cancelRequested": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     }

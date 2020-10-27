@@ -523,6 +523,154 @@
         }
       }
     },
+    "ListSQLIntegrationsResponse": {
+      "id": "ListSQLIntegrationsResponse",
+      "description": "ListSQLIntegrationsResponse is the response message for ListSQLIntegrations method.",
+      "type": "object",
+      "properties": {
+        "sqlIntegrations": {
+          "description": "A list of SQLIntegrations of a domain.",
+          "type": "array",
+          "items": {
+            "$ref": "SQLIntegration"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "A list of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SQLIntegration": {
+      "id": "SQLIntegration",
+      "description": "Represents the SQL instance integrated with AD.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The unique name of the sql integration in the form of `projects\/{project_id}\/locations\/global\/domains\/{domain_name}\/sqlIntegrations\/{sql_integration}`",
+          "type": "string"
+        },
+        "sqlInstance": {
+          "description": "The full resource name of an integrated sql instance",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time the instance was created. Synthetic field is populated automatically by CCFE. go\/ccfe-synthetic-field-user-guide",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time. Synthetic field is populated automatically by CCFE.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. The current state of the managed OU.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not Set",
+            "The sqlIntegration is being created.",
+            "The sqlIntegration is being deleted.",
+            "The sqlIntegration is ready."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "DELETING",
+            "READY"
+          ]
+        }
+      }
+    },
+    "LDAPSSettings": {
+      "id": "LDAPSSettings",
+      "description": "LDAPSSettings represents the ldaps settings for domain resource. LDAP is the Lightweight Directory Access Protocol, defined in https:\/\/tools.ietf.org\/html\/rfc4511. The settings object configures LDAP over SSL\/TLS, whether it is over port 636 or the StartTLS operation.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the LDAPS settings. Uses the form: `projects\/{project}\/locations\/{location}\/domains\/{domain}`.",
+          "type": "string"
+        },
+        "certificate": {
+          "description": "Output only. The certificate used to configure LDAPS. Certificates can be chained with a maximum length of 15.",
+          "readOnly": true,
+          "$ref": "Certificate"
+        },
+        "state": {
+          "description": "Output only. The current state of this LDAPS settings.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Not Set",
+            "The LDAPS setting is being updated.",
+            "The LDAPS setting is ready.",
+            "The LDAPS setting is not applied correctly."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "UPDATING",
+            "ACTIVE",
+            "FAILED"
+          ]
+        },
+        "certificatePfx": {
+          "description": "Input only. The uploaded PKCS12-formatted certificate to configure LDAPS with. It will enable the domain controllers in this domain to accept LDAPS connections (either LDAP over SSL\/TLS or the StartTLS operation). A valid certificate chain must form a valid x.509 certificate chain (or be comprised of a single self-signed certificate. It must be encrypted with either: 1) PBES2 + PBKDF2 + AES256 encryption and SHA256 PRF; or 2) pbeWithSHA1And3-KeyTripleDES-CBC Private key must be included for the leaf \/ single self-signed certificate. Note: For a fqdn your-example-domain.com, the wildcard fqdn is *.your-example-domain.com. Specifically the leaf certificate must have: - Either a blank subject or a subject with CN matching the wildcard fqdn. - Exactly two SANs - the fqdn adn wildcard fqdn. - Encipherment and digital key signature key usages. - Server authentication extended key usage (OID=1.3.6.1.5.5.7.3.1) - Private key must be in one of the following formats: RSA, ECDSA, ED25519. - Private key must have appropriate key length: 2048 for RSA, 256 for ECDSA - Signature algorithm of the leaf certificate cannot be MD2, MD5 or SHA1.",
+          "type": "string",
+          "format": "byte"
+        },
+        "certificatePassword": {
+          "description": "Input only. The password used to encrypt the uploaded pfx certificate.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Certificate": {
+      "id": "Certificate",
+      "description": "Certificate used to configure LDAPS.",
+      "type": "object",
+      "properties": {
+        "subject": {
+          "description": "The certificate subject.",
+          "type": "string"
+        },
+        "thumbprint": {
+          "description": "The certificate thumbprint which uniquely identifies the certificate.",
+          "type": "string"
+        },
+        "subjectAlternativeName": {
+          "description": "The additional hostnames for the domain.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "issuingCertificate": {
+          "description": "The issuer of this certificate.",
+          "$ref": "Certificate"
+        },
+        "expireTime": {
+          "description": "The certificate expire time.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -1066,11 +1214,6 @@
                   "location": "query",
                   "type": "string"
                 },
-                "includeUnrevealedLocations": {
-                  "description": "If true, the returned list will include locations which are not yet revealed.",
-                  "location": "query",
-                  "type": "boolean"
-                },
                 "pageSize": {
                   "description": "The standard list page size.",
                   "location": "query",
@@ -1552,6 +1695,65 @@
                       ],
                       "description": "Validate the trust state Operation"
                     },
+                    "getLdapssettings": {
+                      "id": "managedidentities.projects.locations.global.domains.getLdapssettings",
+                      "path": "v1alpha1/{+name}/ldapssettings",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/ldapssettings",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The domain resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{domain_name}`",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "LDAPSSettings"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the domain ldaps settings."
+                    },
+                    "updateLdapssettings": {
+                      "id": "managedidentities.projects.locations.global.domains.updateLdapssettings",
+                      "path": "v1alpha1/{+name}/ldapssettings",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/ldapssettings",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the LDAPS settings. Uses the form: `projects\/{project}\/locations\/{location}\/domains\/{domain}`.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "LDAPSSettings"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Patches a single ldaps settings."
+                    },
                     "setIamPolicy": {
                       "id": "managedidentities.projects.locations.global.domains.setIamPolicy",
                       "path": "v1alpha1/{+resource}:setIamPolicy",
@@ -1638,6 +1840,84 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "sqlIntegrations": {
+                      "methods": {
+                        "list": {
+                          "id": "managedidentities.projects.locations.global.domains.sqlIntegrations.list",
+                          "path": "v1alpha1/{+parent}/sqlIntegrations",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/sqlIntegrations",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the SqlIntegrations using the form: `projects\/{project_id}\/locations\/global\/domains\/*`",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Optional. The maximum number of items to return. If not specified, a default value of 1000 will be used by the service. Regardless of the page_size value, the response may include a partial list and a caller should only rely on response'ANIZATIONs next_page_token to determine if there are more instances left to be queried.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Optional. The next_page_token value returned from a previous List request, if any.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "filter": {
+                              "description": "Optional. Filter specifying constraints of a list operation. For example, `SqlIntegration.name=\"sql\"`.",
+                              "location": "query",
+                              "type": "string"
+                            },
+                            "orderBy": {
+                              "description": "Optional. Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListSQLIntegrationsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists SQLIntegrations in a given domain."
+                        },
+                        "get": {
+                          "id": "managedidentities.projects.locations.global.domains.sqlIntegrations.get",
+                          "path": "v1alpha1/{+name}",
+                          "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}/sqlIntegrations/{sqlIntegrationsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. MangedOU resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/*\/sqlIntegrations\/{name}`",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+\/sqlIntegrations\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "SQLIntegration"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets details of a single sqlIntegration."
+                        }
+                      }
                     }
                   }
                 }

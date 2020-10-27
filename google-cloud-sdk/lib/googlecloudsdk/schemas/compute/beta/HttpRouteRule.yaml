@@ -38,6 +38,29 @@ properties:
       pathMatchers[].routeRules[].routeA
       ction.weightedBackendService.backendServiceWeightAction[].headerAction
     $ref: HttpHeaderAction.yaml
+  httpFilterConfigs:
+    description: |-
+      Outbound route specific configuration for networkservices.HttpFilter
+      resources enabled by Traffic Director. httpFilterConfigs only applies for
+      Loadbalancers with loadBalancingScheme set to INTERNAL_SELF_MANAGED. See
+      ForwardingRule for more details. Not supported when the URL map is bound
+      to target gRPC proxy that has validateForProxyless field set to true.
+    type: array
+    items:
+      $ref: HttpFilterConfig.yaml
+  httpFilterMetadata:
+    description: |-
+      Outbound route specific metadata supplied to
+      networkservices.HttpFilter resources enabled by Traffic Director.
+      httpFilterMetadata only applies for Loadbalancers with
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED. See ForwardingRule
+      for more details. The only configTypeUrl supported is
+      type.googleapis.com/google.protobuf.Struct  Not supported when the URL
+      map is bound to target gRPC proxy that has validateForProxyless field
+      set to true.
+    type: array
+    items:
+      $ref: HttpFilterConfig.yaml
   matchRules:
     description: A HttpRouteRuleMatch attribute.
     type: array

@@ -112,3 +112,23 @@ class HpTuningJobsClient(object):
         field='hyperparameterTuningJobs',
         batch_size_attribute='pageSize',
         limit=limit)
+
+  def CheckJobComplete(self, name):
+    """Returns a function to decide if log fetcher should continue polling.
+
+    Args:
+      name: String id of job.
+
+    Returns:
+      A one-argument function decides if log fetcher should continue.
+    """
+    request = self.messages.AiplatformProjectsLocationsHyperparameterTuningJobsGetRequest(
+        name=name)
+    response = self._service.Get(request)
+
+    def ShouldContinue(periods_without_logs):
+      if periods_without_logs <= 1:
+        return True
+      return response.endTime is None
+
+    return ShouldContinue

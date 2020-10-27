@@ -402,6 +402,107 @@ def _TokenExpiresWithinWindow(expiry_window,
   return token_expiry_time <= window_end
 
 
+def _GetAccessTokenFromCreds(creds):
+  if creds is None:
+    return None
+  if c_creds.IsGoogleAuthCredentials(creds):
+    return creds.token
+  else:
+    return creds.access_token
+
+
+def GetAccessToken(account=None, scopes=None, allow_account_impersonation=True):
+  """Returns the access token of the given account or the active account.
+
+  GetAccessToken ignores whether credentials have been disabled via properties.
+  Use this function when the caller absolutely requires credentials.
+
+  Args:
+    account: str, The account to get the access token for. If None, the
+      account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES are
+      requested.
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials (if that is configured).
+  """
+  creds = Load(account, scopes, False, allow_account_impersonation, True)
+  return _GetAccessTokenFromCreds(creds)
+
+
+def GetAccessTokenIfEnabled(account=None,
+                            scopes=None,
+                            allow_account_impersonation=True):
+  """Returns the access token of the given account or the active account.
+
+  If credentials have been disabled via properties, this will return None.
+  Otherwise it return the access token of the account like normal. Use this
+  function when credentials are optional for the caller, or the caller want to
+  handle the situation of credentials being disabled by properties.
+
+  Args:
+    account: str, The account to get the access token for. If None, the
+      account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES are
+      requested.
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials (if that is configured).
+  """
+  if properties.VALUES.auth.disable_credentials.GetBool():
+    return None
+  return GetAccessToken(account, scopes, allow_account_impersonation)
+
+
+def GetFreshAccessToken(account=None,
+                        scopes=None,
+                        min_expiry_duration='1h',
+                        allow_account_impersonation=True):
+  """Returns a fresh access token of the given account or the active account.
+
+  Same as GetAccessToken except that the access token returned by
+  this function is valid for at least min_expiry_duration.
+
+  Args:
+    account: str, The account to get the access token for. If None, the
+      account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES are
+      requested.
+    min_expiry_duration: Duration str, Refresh the token if they are
+      within this duration from expiration. Must be a valid duration between 0
+      seconds and 1 hour (e.g. '0s' >x< '1h').
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials (if that is configured).
+  """
+  creds = LoadFreshCredential(account, scopes, min_expiry_duration,
+                              allow_account_impersonation, True)
+  return _GetAccessTokenFromCreds(creds)
+
+
+def GetFreshAccessTokenIfEnabled(account=None,
+                                 scopes=None,
+                                 min_expiry_duration='1h',
+                                 allow_account_impersonation=True):
+  """Returns a fresh access token of the given account or the active account.
+
+  Same as GetAccessTokenIfEnabled except that the access token returned by
+  this function is valid for at least min_expiry_duration.
+
+  Args:
+    account: str, The account to get the access token for. If None, the
+      account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES are
+      requested.
+    min_expiry_duration: Duration str, Refresh the token if they are
+      within this duration from expiration. Must be a valid duration between 0
+      seconds and 1 hour (e.g. '0s' >x< '1h').
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials (if that is configured).
+  """
+  if properties.VALUES.auth.disable_credentials.GetBool():
+    return None
+  return GetFreshAccessToken(account, scopes, min_expiry_duration,
+                             allow_account_impersonation)
+
+
 def LoadFreshCredential(account=None,
                         scopes=None,
                         min_expiry_duration='1h',

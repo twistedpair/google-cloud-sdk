@@ -284,7 +284,7 @@ def AddNoTrafficFlag(parser):
       'effect is that the revision being deployed will not receive traffic.\n\n'
       'After a deployment with this flag the LATEST revision will not receive '
       'traffic on future deployments. To restore sending traffic to the LATEST '
-      'revision by default, run the `gcloud run service update-traffic` '
+      'revision by default, run the `gcloud run services update-traffic` '
       'command with `--to-latest`.')
 
 

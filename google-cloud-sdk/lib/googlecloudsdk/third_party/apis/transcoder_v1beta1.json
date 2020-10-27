@@ -446,19 +446,19 @@
       "type": "object",
       "properties": {
         "codec": {
-          "description": "Codec type. The default is `\"h264\"`. Supported codecs: - 'h264' - 'h265' - 'vp9'",
+          "description": "Codec type. The following codecs are supported: * `h264` (default) * `h265` * `vp9`",
           "type": "string"
         },
         "profile": {
-          "description": "Enforce specified codec profile. The default is `\"high\"`. Supported codec profiles: - 'baseline' - 'main' - 'high'",
+          "description": "Enforces the specified codec profile. The following profiles are supported: * `baseline` * `main` * `high` (default) The available options are FFmpeg-compatible. Note that certain values for this field may cause the transcoder to override other fields you set in the `VideoStream` message.",
           "type": "string"
         },
         "tune": {
-          "description": "Enforce specified codec tune.",
+          "description": "Enforces the specified codec tune. The available options are FFmpeg-compatible. Note that certain values for this field may cause the transcoder to override other fields you set in the `VideoStream` message.",
           "type": "string"
         },
         "preset": {
-          "description": "Enforce specified codec preset. The default is `\"veryfast\"`.",
+          "description": "Enforces the specified codec preset. The default is `veryfast`. The available options are FFmpeg-compatible. Note that certain values for this field may cause the transcoder to override other fields you set in the `VideoStream` message.",
           "type": "string"
         },
         "heightPixels": {

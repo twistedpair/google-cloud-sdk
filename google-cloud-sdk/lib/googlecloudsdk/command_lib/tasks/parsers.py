@@ -271,6 +271,21 @@ def ParseCreateOrUpdateQueueArgs(args,
             args, queue_type, messages, is_update))
 
 
+def ExtractTargetFromAppEngineHostUrl(host_url, project):
+  """Extracts any target (aka service) if it exists in the AppEngine host URL.
+
+  Args:
+    host_url: The full AppEngine host URL minus the scheme.
+    project: The base name of the project.
+  Returns:
+    The target if it exists in the URL, None otherwise. Some examples are:
+    'alpha.some_project.uk.r.appspot.com' => 'alpha'
+    'some_project.uk.r.appspot.com' => None
+  """
+  delimiter = '.{}.'.format(project)
+  return host_url.split(delimiter, 1)[0] if delimiter in host_url else None
+
+
 def ParseCreateTaskArgs(args, task_type, messages,
                         release_track=base.ReleaseTrack.GA):
   """Parses task level args."""

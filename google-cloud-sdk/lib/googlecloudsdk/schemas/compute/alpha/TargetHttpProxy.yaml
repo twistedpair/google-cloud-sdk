@@ -35,10 +35,10 @@ properties:
     type: string
   httpFilters:
     description: |-
-      Urls to networkservices.HttpFilter resources enabled for xDS clients using
-      this configuration. For example, https://networkservices.g
-      oogleapis.com/v1alpha1/projects/project/locations/locationhttpFilters/ht
-      tpFilter Only filters that handle outbound connection and stream events
+      URLs to networkservices.HttpFilter resources enabled for xDS clients using
+      this configuration. For example,
+      https://networkservices.googleapis.com/v1alpha1/projects/project/locations/location/httpFilters/httpFilter
+      Only filters that handle outbound connection and stream events
       may be specified. These filters work in conjunction with a default set of
       HTTP filters that may already be configured by Traffic Director. Traffic
       Director will determine the final location of these filters within xDS

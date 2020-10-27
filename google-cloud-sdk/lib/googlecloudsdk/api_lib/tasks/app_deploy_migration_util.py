@@ -144,8 +144,20 @@ def _SetSpecifiedArg(cloud_task_args, key, value):
   cloud_task_args._specified_args[key] = value
 
 
+def _DeleteSpecifiedArg(cloud_task_args, key):
+  """Deletes the specified key in the namespace provided.
+
+  Args:
+    cloud_task_args: argparse.Namespace, A dummy args namespace built to pass
+      on forwards to Cloud Tasks API.
+    key: The attribute key we are trying to set.
+  """
+  # pylint: disable=protected-access
+  del cloud_task_args._specified_args[key]
+
+
 def _PostProcessMinMaxBackoff(
-    cloud_task_args, used_default_value_for_min_backoff):
+    cloud_task_args, used_default_value_for_min_backoff, cur_queue_state):
   """Checks min and max backoff values and updates the other value if needed.
 
   When uploading via queue.yaml files, if only one of the backoff values is
@@ -159,33 +171,38 @@ def _PostProcessMinMaxBackoff(
     used_default_value_for_min_backoff: A boolean value telling us if we used
       a default value for min_backoff or if it was specified explicitly in the
       YAML file.
+    cur_queue_state: apis.cloudtasks.<ver>.cloudtasks_<ver>_messages.Queue,
+      The Queue instance fetched from the backend if it exists, None otherwise.
   """
-  min_backoff_specified = cloud_task_args.IsSpecified('min_backoff')
-  max_backoff_specified = cloud_task_args.IsSpecified('max_backoff')
+  if cloud_task_args.type == 'pull':
+    return
   min_backoff = convertors.CheckAndConvertStringToFloatIfApplicable(
       cloud_task_args.min_backoff)
   max_backoff = convertors.CheckAndConvertStringToFloatIfApplicable(
       cloud_task_args.max_backoff)
-  if min_backoff_specified and max_backoff_specified:
-    if min_backoff > max_backoff:
-      if used_default_value_for_min_backoff:
-        cloud_task_args.min_backoff = cloud_task_args.max_backoff
-        _SetSpecifiedArg(
-            cloud_task_args, 'min_backoff', cloud_task_args.max_backoff)
-      else:
-        cloud_task_args.max_backoff = cloud_task_args.min_backoff
-        _SetSpecifiedArg(
-            cloud_task_args, 'max_backoff', cloud_task_args.min_backoff)
-  elif min_backoff_specified and not max_backoff_specified:
-    if min_backoff > 3600:
-      cloud_task_args.max_backoff = cloud_task_args.min_backoff
-      _SetSpecifiedArg(
-          cloud_task_args, 'max_backoff', cloud_task_args.min_backoff)
-  elif max_backoff_specified and not min_backoff_specified:
-    if max_backoff < 0.1:
+  if min_backoff > max_backoff:
+    if used_default_value_for_min_backoff:
+      min_backoff = max_backoff
       cloud_task_args.min_backoff = cloud_task_args.max_backoff
       _SetSpecifiedArg(
           cloud_task_args, 'min_backoff', cloud_task_args.max_backoff)
+    else:
+      max_backoff = min_backoff
+      cloud_task_args.max_backoff = cloud_task_args.min_backoff
+      _SetSpecifiedArg(
+          cloud_task_args, 'max_backoff', cloud_task_args.min_backoff)
+
+  # Check if the backend values match with what we are trying to set
+  if cur_queue_state and cur_queue_state.retryConfig:
+    old_min_backoff = convertors.CheckAndConvertStringToFloatIfApplicable(
+        cur_queue_state.retryConfig.minBackoff)
+    old_max_backoff = convertors.CheckAndConvertStringToFloatIfApplicable(
+        cur_queue_state.retryConfig.maxBackoff)
+    if max_backoff == old_max_backoff and min_backoff == old_min_backoff:
+      _DeleteSpecifiedArg(cloud_task_args, 'min_backoff')
+      cloud_task_args.min_backoff = None
+      _DeleteSpecifiedArg(cloud_task_args, 'max_backoff')
+      cloud_task_args.max_backoff = None
 
 
 def _PostProcessRoutingOverride(cloud_task_args, cur_queue_state):
@@ -261,8 +278,8 @@ def _PopulateCloudTasksArgs(queue, cur_queue_state, ct_expected_args):
       if old_arg in CONVERSION_FUNCTIONS:
         value = CONVERSION_FUNCTIONS[old_arg](value)
       if (
-          new_arg in ('name', 'type') or
           not cur_queue_state or
+          new_arg in ('name', 'type', 'min_backoff', 'max_backoff') or
           _DoesAttributeNeedToBeUpdated(cur_queue_state, new_arg, value)
       ):
         # Attributes specified here are forwarded to CT APIs. We always forward
@@ -281,11 +298,13 @@ def _PopulateCloudTasksArgs(queue, cur_queue_state, ct_expected_args):
         value = default_values[new_arg]
         if (
             not cur_queue_state or
+            new_arg in ('min_backoff', 'max_backoff') or
             _DoesAttributeNeedToBeUpdated(cur_queue_state, new_arg, value)
         ):
           _SetSpecifiedArg(cloud_task_args, new_arg, value)
     setattr(cloud_task_args, new_arg, value)
-  _PostProcessMinMaxBackoff(cloud_task_args, used_default_value_for_min_backoff)
+  _PostProcessMinMaxBackoff(
+      cloud_task_args, used_default_value_for_min_backoff, cur_queue_state)
   _PostProcessRoutingOverride(cloud_task_args, cur_queue_state)
   return cloud_task_args
 
@@ -346,8 +365,66 @@ def _ValidateTaskRetryLimit(queue):
         'than zero.')
 
 
-def ValidateYamlFileConfig(config):
-  """Validates queue configuration parameters in the YAML file.
+def ValidateCronYamlFileConfig(config):
+  """Validates jobs configuration parameters in the cron YAML file.
+
+  The purpose of this function is to mimick the behaviour of the old
+  implementation of `gcloud app deploy cron.yaml` before migrating away
+  from console-admin-hr. The errors generated are the same as the ones
+  previously seen when gcloud sent the batch-request for updating jobs to the
+  Zeus backend.
+
+  Args:
+     config: A yaml_parsing.ConfigYamlInfo object for the parsed YAML file we
+      are going to process.
+
+  Raises:
+    HTTPError: Various different scenarios defined in the function can cause
+      this exception to be raised.
+  """
+  cron_yaml = config.parsed
+  if not cron_yaml.cron:
+    return
+  for job in cron_yaml.cron:
+
+    # Retry Parameters
+    if job.retry_parameters:
+
+      # Job Retry Limit
+      if (
+          job.retry_parameters.job_retry_limit and
+          job.retry_parameters.job_retry_limit > 5
+      ):
+        _RaiseHTTPException(
+            'Invalid Cron retry parameters: Cannot set retry limit to more '
+            'than 5 (currently set to {}).'.format(
+                job.retry_parameters.job_retry_limit))
+
+      # Job Age Limit
+      if (
+          job.retry_parameters.job_age_limit and
+          int(convertors.CheckAndConvertStringToFloatIfApplicable(
+              job.retry_parameters.job_age_limit)) <= 0
+      ):
+        _RaiseHTTPException(
+            'Invalid Cron retry parameters: Job age limit must be greater '
+            'than zero seconds.')
+
+      # Min & Max backoff comparison
+      if (
+          job.retry_parameters.min_backoff_seconds is not None and
+          job.retry_parameters.max_backoff_seconds is not None
+      ):
+        min_backoff = job.retry_parameters.min_backoff_seconds
+        max_backoff = job.retry_parameters.max_backoff_seconds
+        if max_backoff < min_backoff:
+          _RaiseHTTPException(
+              'Invalid Cron retry parameters: Min backoff sec must not be '
+              'greater than than max backoff sec.')
+
+
+def ValidateQueueYamlFileConfig(config):
+  """Validates queue configuration parameters in the queue YAML file.
 
   The purpose of this function is to mimick the behaviour of the old
   implementation of `gcloud app deploy queue.yaml` before migrating away
@@ -364,6 +441,8 @@ def ValidateYamlFileConfig(config):
       this exception to be raised.
   """
   queue_yaml = config.parsed
+  if not queue_yaml.queue:
+    return
   for queue in queue_yaml.queue:
     # Push queues
     if not queue.mode or queue.mode == constants.PUSH_QUEUE:
@@ -502,7 +581,7 @@ def ValidateYamlFileConfig(config):
             'pull-based queue.')
 
 
-def FetchCurrrentQueuesData(tasks_api):
+def FetchCurrentQueuesData(tasks_api):
   """Fetches the current queues data stored in the database.
 
   Args:
@@ -520,6 +599,23 @@ def FetchCurrrentQueuesData(tasks_api):
       os.path.basename(x.name): x for x in queues_client.List(region_ref)
   }
   return all_queues_in_db_dict
+
+
+def FetchCurrentJobsData(scheduler_api):
+  """Fetches the current jobs data stored in the database.
+
+  Args:
+    scheduler_api: api_lib.scheduler.<Alpha|Beta|GA>ApiAdapter, Cloud Scheduler
+      API needed for doing jobs based operations.
+
+  Returns:
+    A list of currently existing jobs in the backend.
+  """
+  jobs_client = scheduler_api.jobs
+  app_location = app.ResolveAppLocation(
+      parsers.ParseProject(), locations_client=scheduler_api.locations)
+  region_ref = parsers.ParseLocation(app_location).RelativeName()
+  return list(x for x in jobs_client.List(region_ref))
 
 
 def DeployQueuesYamlFile(
@@ -656,11 +752,178 @@ def DeployQueuesYamlFile(
       queues_client.Pause(queue_ref)
 
   for queue_name in queues_not_present_in_yaml:
-    # TODO(b/169069379): Disable these queues. Pausing for now since there is
-    # no way to disable yet.
     queue = all_queues_in_db_dict[queue_name]
     if queue.state in (queue.state.PAUSED, queue.state.DISABLED):
       continue
     queue_ref = _DummyQueueRef('{}{}'.format(queue_ref_stub, queue_name))
     queues_client.Pause(queue_ref)
+  return responses
+
+
+def _CreateUniqueJobKeyForExistingJob(job, project):
+  """Creates a key from the proto job instance's attributes passed as input.
+
+  Args:
+    job: An instance of job fetched from the backend.
+    project: The base name of the project.
+  Returns:
+    A tuple of attributes used as a key to identify this job.
+  """
+  return (
+      job.schedule.schedule,
+      job.schedule.timeZone,
+      job.appEngineHttpTarget.relativeUrl,
+      job.description,
+      convertors.CheckAndConvertStringToFloatIfApplicable(
+          job.retryConfig.minBackoffDuration) if job.retryConfig else None,
+      convertors.CheckAndConvertStringToFloatIfApplicable(
+          job.retryConfig.maxBackoffDuration) if job.retryConfig else None,
+      job.retryConfig.maxDoublings if job.retryConfig else None,
+      convertors.CheckAndConvertStringToFloatIfApplicable(
+          job.retryConfig.maxRetryDuration) if job.retryConfig else None,
+      job.retryConfig.retryCount if job.retryConfig else None,
+      parsers.ExtractTargetFromAppEngineHostUrl(
+          job.appEngineHttpTarget.appEngineRouting.host, project),
+    )
+
+
+def _CreateUniqueJobKeyForYamlJob(job):
+  """Creates a key from the YAML job instance's attributes passed as input.
+
+  Args:
+    job: An instance of a parsed YAML job object.
+  Returns:
+    A tuple of attributes used as a key to identify this job.
+  """
+  retry_params = job.retry_parameters
+  return (
+      job.schedule,
+      job.timezone if job.timezone else 'UTC',
+      job.url,
+      job.description,
+      retry_params.min_backoff_seconds if retry_params else None,
+      retry_params.max_backoff_seconds if retry_params else None,
+      retry_params.max_doublings if retry_params else None,
+      convertors.CheckAndConvertStringToFloatIfApplicable(
+          retry_params.job_age_limit) if retry_params else None,
+      retry_params.job_retry_limit if retry_params else None,
+      job.target,
+  )
+
+
+def _BuildJobsMappingDict(existing_jobs, project):
+  """Builds a dictionary of unique jobs by attributes.
+
+  Each key is in this dictionary is based on all the existing attributes of a
+  job. Multiple jobs can map to the same key if all their attributes (schedule,
+  url, timezone, description, etc.) match.
+
+  Args:
+    existing_jobs: A list of jobs that already exist in the backend. Each job
+      maps to an apis.cloudscheduler.<ver>.cloudscheduler<ver>_messages.Job
+      instance.
+    project: The base name of the project.
+  Returns:
+    A dictionary where a key is built based on a all the job attributes and the
+    value is an apis.cloudscheduler.<ver>.cloudscheduler<ver>_messages.Job
+    instance.
+  """
+  jobs_indexed_dict = {}
+  for job in existing_jobs:
+    key = _CreateUniqueJobKeyForExistingJob(job, project)
+    if key not in jobs_indexed_dict:
+      jobs_indexed_dict[key] = []
+    jobs_indexed_dict[key].append(job)
+  return jobs_indexed_dict
+
+
+def CreateJobInstance(scheduler_api, yaml_job):
+  """Build a proto format job instance  matching the input YAML based job.
+
+  Args:
+    scheduler_api: api_lib.scheduler.<Alpha|Beta|GA>ApiAdapter, Cloud Scheduler
+      API needed for doing jobs based operations.
+    yaml_job: A parsed yaml_job entry read from the 'cron.yaml' file.
+  Returns:
+    An cloudscheduler.<ver>.cloudscheduler_<ver>_messages.Job instance.
+  """
+  messages = scheduler_api.messages
+  if yaml_job.retry_parameters:
+    retry_config = messages.RetryConfig(
+        maxBackoffDuration=convertors.ConvertBackoffSeconds(
+            yaml_job.retry_parameters.max_backoff_seconds),
+        maxDoublings=yaml_job.retry_parameters.max_doublings,
+        maxRetryDuration=convertors.ConvertTaskAgeLimit(
+            yaml_job.retry_parameters.job_age_limit),
+        minBackoffDuration=convertors.ConvertBackoffSeconds(
+            yaml_job.retry_parameters.min_backoff_seconds),
+        retryCount=yaml_job.retry_parameters.job_retry_limit
+    )
+  else:
+    retry_config = None
+  return messages.Job(
+      appEngineHttpTarget=messages.AppEngineHttpTarget(
+          httpMethod=messages.AppEngineHttpTarget.HttpMethodValueValuesEnum.GET,
+          relativeUrl=yaml_job.url,
+          appEngineRouting=messages.AppEngineRouting(service=yaml_job.target)),
+      retryConfig=retry_config,
+      description=yaml_job.description,
+      legacyAppEngineCron=scheduler_api.jobs.legacy_cron,
+      schedule=messages.Schedule(
+          schedule=yaml_job.schedule,
+          timeZone=yaml_job.timezone if yaml_job.timezone else 'UTC'))
+
+
+def DeployCronYamlFile(scheduler_api, config, existing_jobs):
+  """Perform a deployment based on the parsed 'cron.yaml' file.
+
+  For every job defined in the cron.yaml file, we will create a new cron job
+  for any job that did not already exist in our backend. We will also delete
+  those jobs which are not present in the YAML file but exist in our backend.
+  Note: We do not update any jobs. The only operations are Create and Delete.
+  So if we modify any attribute of an existing job in the YAML file, the old
+  job gets deleted and a new job is created based on the new attributes.
+
+  Args:
+    scheduler_api: api_lib.scheduler.<Alpha|Beta|GA>ApiAdapter, Cloud Scheduler
+      API needed for doing jobs based operations.
+    config: A yaml_parsing.ConfigYamlInfo object for the parsed YAML file we
+      are going to process.
+   existing_jobs: A list of jobs that already exist in the backend. Each job
+      maps to an apis.cloudscheduler.<ver>.cloudscheduler<ver>_messages.Job
+      instance.
+  Returns:
+    A list of responses received from the Cloud Scheduler APIs representing job
+    states for every call made to create a job.
+  """
+  cron_yaml = config.parsed
+  jobs_client = scheduler_api.jobs
+  app_location = app.ResolveAppLocation(
+      parsers.ParseProject(), locations_client=scheduler_api.locations)
+  region_ref = parsers.ParseLocation(app_location).RelativeName()
+  project = os.path.basename(str(parsers.ParseProject()))
+  existing_jobs_dict = _BuildJobsMappingDict(existing_jobs, project)
+
+  # Create a new job for any job that does not map exactly to jobs that already
+  # exist in the backend.
+  responses = []
+  if cron_yaml.cron:
+    for yaml_job in cron_yaml.cron:
+      job_key = _CreateUniqueJobKeyForYamlJob(yaml_job)
+      if job_key in existing_jobs_dict and existing_jobs_dict[job_key]:
+        # If the job already exists then we do not need to do anything.
+        # TODO(b/169069379): Enhance to pop based on oldest/newest
+        existing_jobs_dict[job_key].pop()
+        continue
+      job = CreateJobInstance(scheduler_api, yaml_job)
+      responses.append(jobs_client.Create(region_ref, job))
+
+  # TODO(b/169069379): Preserve next job execution for jobs whose only change
+  # is description
+
+  # Delete the jobs which are no longer in the YAML file
+  for jobs_list in existing_jobs_dict.values():
+    for yaml_job in jobs_list:
+      jobs_client.Delete(yaml_job.name)
+
   return responses

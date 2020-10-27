@@ -76,11 +76,15 @@ class AllowedSubjectAltNames(_messages.Message):
     allowCustomSans: Optional. Specifies if to allow custom X509Extension
       values.
     allowGlobbingDnsWildcards: Optional. Specifies if glob patterns used for
-      allowed_dns_names allows wildcard certificates.
+      allowed_dns_names allow wildcard certificates. If this is set,
+      certificate requests with wildcard domains will be permitted to match a
+      glob pattern specified in allowed_dns_names. Otherwise, certificate
+      requests with wildcard domains will be permitted only if
+      allowed_dns_names contains a literal wildcard.
     allowedDnsNames: Optional. Contains valid, fully-qualified host names.
       Glob patterns are also supported. To allow an explicit wildcard
       certificate, escape with backlash (i.e. "\*"). E.g. for globbed entries:
-      '*bar.com' will allow foo.bar.com, but not *.bar.com, unless the
+      '*bar.com' will allow 'foo.bar.com', but not '*.bar.com', unless the
       allow_globbing_dns_wildcards field is set. E.g. for wildcard entries:
       '\*.bar.com' will allow '*.bar.com', but not 'foo.bar.com'.
     allowedEmailAddresses: Optional. Contains valid RFC 2822 E-mail addresses.

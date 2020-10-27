@@ -111,6 +111,8 @@ def ConvertBackoffSeconds(value):
   Returns:
     The string representing the time with 's' appended at the end.
   """
+  if value is None:
+    return None
   return '{}s'.format(round(value, 8))
 
 

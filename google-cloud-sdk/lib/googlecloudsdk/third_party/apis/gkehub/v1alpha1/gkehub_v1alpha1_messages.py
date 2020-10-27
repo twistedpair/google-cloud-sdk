@@ -548,6 +548,7 @@ class Feature(_messages.Message):
       cluster service discovery.
     name: Output only. The unique name of this feature resource in the format:
       `projects/[project_id]/locations/global/features/[feature_id]`.
+    servicedirectoryFeatureSpec: Feature for Service Directory.
     servicemeshFeatureSpec: A ServiceMeshFeatureSpec attribute.
     updateTime: Output only. Timestamp for when the Feature was last updated.
   """
@@ -591,8 +592,9 @@ class Feature(_messages.Message):
   multiclusteringressFeatureSpec = _messages.MessageField('MultiClusterIngressFeatureSpec', 13)
   multiclusterservicediscoveryFeatureSpec = _messages.MessageField('MultiClusterServiceDiscoveryFeatureSpec', 14)
   name = _messages.StringField(15)
-  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 16)
-  updateTime = _messages.StringField(17)
+  servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 16)
+  servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 17)
+  updateTime = _messages.StringField(18)
 
 
 class FeatureState(_messages.Message):
@@ -697,6 +699,7 @@ class FeatureStateDetails(_messages.Message):
     multiclusteringressFeatureState: State for the Ingress for Anthos Feature.
     multiclusterservicediscoveryFeatureState: State for the Multi-cluster
       Service Discovery Feature.
+    servicedirectoryFeatureState: State for the Service Directory Feature.
     servicemeshFeatureState: State for the Service Mesh Feature.
     updateTime: The last update time of this status by the controllers
   """
@@ -727,8 +730,9 @@ class FeatureStateDetails(_messages.Message):
   meteringFeatureState = _messages.MessageField('MeteringFeatureState', 9)
   multiclusteringressFeatureState = _messages.MessageField('MultiClusterIngressFeatureState', 10)
   multiclusterservicediscoveryFeatureState = _messages.MessageField('MultiClusterServiceDiscoveryFeatureState', 11)
-  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 12)
-  updateTime = _messages.StringField(13)
+  servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 12)
+  servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 13)
+  updateTime = _messages.StringField(14)
 
 
 class FeatureTest(_messages.Message):
@@ -1542,6 +1546,32 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
+      cancellation of the operation. Operations that have successfully been
+      cancelled have Operation.error value with a google.rpc.Status.code of 1,
+      corresponding to `Code.CANCELLED`.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  statusDetail = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class OperatorState(_messages.Message):
   r"""State information for an ACM's Operator
 
@@ -1692,6 +1722,20 @@ class PolicyControllerVersion(_messages.Message):
   """
 
   version = _messages.StringField(1)
+
+
+class ServiceDirectoryFeatureSpec(_messages.Message):
+  r"""An empty spec for service directory feature. This is required since
+  Feature proto requires a spec.
+  """
+
+
+
+class ServiceDirectoryFeatureState(_messages.Message):
+  r"""An empty state for service directory feature. This is rqeuired since
+  FeatureStateDetails requires a state.
+  """
+
 
 
 class ServiceMeshAnalysisMessage(_messages.Message):

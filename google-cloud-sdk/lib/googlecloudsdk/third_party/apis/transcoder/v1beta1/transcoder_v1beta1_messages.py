@@ -980,8 +980,8 @@ class VideoStream(_messages.Message):
       supported on all decoders. The default is `false`.
     bitrateBps: Required. The video bitrate in bits per second. Must be
       between 1 and 1,000,000,000.
-    codec: Codec type. The default is `"h264"`. Supported codecs: - 'h264' -
-      'h265' - 'vp9'
+    codec: Codec type. The following codecs are supported: * `h264` (default)
+      * `h265` * `vp9`
     crfLevel: Target CRF level. Must be between 10 and 36, where 10 is the
       highest quality and 36 is the most efficient compression. The default is
       21.
@@ -1016,13 +1016,22 @@ class VideoStream(_messages.Message):
       'yuv422p10' 10-bit HDR pixel format. - 'yuv444p10' 10-bit HDR pixel
       format. - 'yuv420p12' 12-bit HDR pixel format. - 'yuv422p12' 12-bit HDR
       pixel format. - 'yuv444p12' 12-bit HDR pixel format.
-    preset: Enforce specified codec preset. The default is `"veryfast"`.
-    profile: Enforce specified codec profile. The default is `"high"`.
-      Supported codec profiles: - 'baseline' - 'main' - 'high'
+    preset: Enforces the specified codec preset. The default is `veryfast`.
+      The available options are FFmpeg-compatible. Note that certain values
+      for this field may cause the transcoder to override other fields you set
+      in the `VideoStream` message.
+    profile: Enforces the specified codec profile. The following profiles are
+      supported: * `baseline` * `main` * `high` (default) The available
+      options are FFmpeg-compatible. Note that certain values for this field
+      may cause the transcoder to override other fields you set in the
+      `VideoStream` message.
     rateControlMode: Specify the `rate_control_mode`. The default is `"vbr"`.
       Supported rate control modes: - 'vbr' - variable bitrate - 'crf' -
       constant rate factor
-    tune: Enforce specified codec tune.
+    tune: Enforces the specified codec tune. The available options are FFmpeg-
+      compatible. Note that certain values for this field may cause the
+      transcoder to override other fields you set in the `VideoStream`
+      message.
     vbvFullnessBits: Initial fullness of the Video Buffering Verifier (VBV)
       buffer in bits. Must be greater than zero. The default is equal to 90%
       of `VideoStream.vbv_size_bits`.

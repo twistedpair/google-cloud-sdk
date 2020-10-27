@@ -24,6 +24,7 @@ import encodings.idna  # pylint: disable=unused-import
 import os
 import re
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib import artifacts
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 
@@ -40,7 +41,7 @@ _INVALID_REPO_NAME_ERROR = (
 
 _REPO_REGEX = "^[a-z]([a-z0-9-]*[a-z0-9])?$"
 
-_AR_SERVICE_ACCOUNT = "serviceAccount:service-{project_num}@gcp-sa-artifactregistry.iam.gserviceaccount.com"
+_AR_SERVICE_ACCOUNT = "service-{project_num}@gcp-sa-artifactregistry.iam.gserviceaccount.com"
 
 
 def _GetMessagesForResource(resource_ref):
@@ -81,64 +82,68 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
   messages = _GetMessagesForResource(repo_ref)
   repo_format = messages.Repository.FormatValueValuesEnum(
       repo_args.repository_format.upper())
-  if repo_format in [
-      messages.Repository.FormatValueValuesEnum.MAVEN,
-      messages.Repository.FormatValueValuesEnum.NPM,
-  ]:
+  if repo_format != messages.Repository.FormatValueValuesEnum.DOCKER:
     log.status.Print("Note: Language package support is in Alpha.\n")
-  if repo_format == messages.Repository.FormatValueValuesEnum.APT:
-    log.status.Print("Note: APT package support is in Alpha.\n")
 
   request.repository.name = repo_ref.RelativeName()
   request.repositoryId = repo_ref.repositoriesId
   return request
 
 
-def CheckServiceAccountPermission(response, args):
+def CheckServiceAccountPermission(unused_repo_ref, repo_args, request):
   """Checks and grants key encrypt/decrypt permission for service account.
 
   Checks if Artifact Registry service account has encrypter/decrypter or owner
   role for the given key. If not, prompts users to grant key encrypter/decrypter
-  permission to the service account. If users say no to the prompt, logs a
-  message and points to the official documentation.
+  permission to the service account. Operation would fail if users do not grant
+  the permission.
 
   Args:
-    response: Create repository response.
-    args: User input arguments.
+    unused_repo_ref: Repo reference input.
+    repo_args: User input arguments.
+    request: Create repository request.
 
   Returns:
-    Create repository response.
+    Create repository request.
   """
-  if args.kms_key:
-    project_num = project_util.GetProjectNumber(GetProject(args))
+  if repo_args.kms_key:
+    project_num = project_util.GetProjectNumber(GetProject(repo_args))
     service_account = _AR_SERVICE_ACCOUNT.format(project_num=project_num)
+    try:
+      ar_requests.GetServiceAccount(service_account)
+    except apitools_exceptions.HttpNotFoundError:
+      msg = (
+          "The Artifact Registry service account does not exist, please create"
+          " the service account.\nLearn more: "
+          "https://cloud.google.com/artifact-registry/docs/cmek")
+      raise ar_exceptions.ArtifactRegistryError(msg)
 
-    policy = ar_requests.GetCryptoKeyPolicy(args.kms_key)
+    policy = ar_requests.GetCryptoKeyPolicy(repo_args.kms_key)
     has_permission = False
     for binding in policy.bindings:
-      if service_account in binding.members and (
+      if "serviceAccount:" + service_account in binding.members and (
           binding.role == "roles/cloudkms.cryptoKeyEncrypterDecrypter" or
           binding.role == "roles/owner"):
         has_permission = True
         break
     if not has_permission:
-      cont = console_io.PromptContinue(
+      console_io.PromptContinue(
           prompt_string=(
-              "\nDo you want to grant the Artifact Registry Service Account "
+              "\nGrant the Artifact Registry Service Account "
               "permission to encrypt/decrypt with the selected key [{key_name}]"
-              .format(key_name=args.kms_key)),
-          cancel_on_no=False)
-      if not cont:
-        log.status.Print(
-            "Note: You will need to grant the Artifact Registry Service "
-            "Account permissions to encrypt/decrypt on the selected key.\n"
-            "Learn more: https://cloud.google.com/artifact-registry/docs/cmek")
-        return response
-      ar_requests.AddCryptoKeyPermission(args.kms_key, service_account)
+              .format(key_name=repo_args.kms_key)),
+          cancel_on_no=True,
+          cancel_string=(
+              "The Artifact Registry Service Account needs permissions to "
+              "encrypt/decrypt on the selected key.\n"
+              "Learn more: https://cloud.google.com/artifact-registry/docs/cmek"
+          ))
+      ar_requests.AddCryptoKeyPermission(repo_args.kms_key,
+                                         "serviceAccount:" + service_account)
       log.status.Print(
           "Added Cloud KMS CryptoKey Encrypter/Decrypter Role to [{key_name}]"
-          .format(key_name=args.kms_key))
-  return response
+          .format(key_name=repo_args.kms_key))
+  return request
 
 
 def DeleteVersionTags(ver_ref, ver_args, request):

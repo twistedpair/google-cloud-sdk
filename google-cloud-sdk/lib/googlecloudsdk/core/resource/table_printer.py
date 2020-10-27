@@ -22,6 +22,7 @@ import io
 import json
 import re
 
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_projection_spec
@@ -279,6 +280,24 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       remaining_value = prefix + remaining_value
     return next_line, remaining_value
 
+  def _GetSubformatIndexes(self):
+    # Get indexes of all columns with subformat
+    subs = []
+    if self._subformats:
+      for subformat in self._subformats:
+        if subformat.printer:
+          subs.append(subformat.index)
+    return subs
+
+  def _GetVisibleLabels(self):
+    # Get visible labels
+    if 'no-heading' not in self.attributes:
+      if self._heading:
+        return self._heading
+      elif self.column_attributes:
+        return self._Visible(self.column_attributes.Labels())
+    return None
+
   def Finish(self):
     """Prints the table."""
     if not self._rows:
@@ -345,6 +364,73 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       align = self.column_attributes.Alignments()
     else:
       align = None
+
+    # Flatten the table under screen reader mode for accessibility,
+    # ignore box wrappers if any.
+    screen_reader = properties.VALUES.accessibility.screen_reader.GetBool()
+    if screen_reader:
+      # Print the title if specified.
+      title = self.attributes.get('title')
+      if title is not None:
+        self._out.write(title)
+        self._out.write('\n\n')
+
+      # Get indexes of all columns with no data
+      if self._optional:
+        # Delete optional columns that have no data.
+        optional = False
+        visible = []
+        for i, col in enumerate(
+            self._Visible(self.column_attributes.Columns())):
+          if not col.attribute.optional:
+            visible.append(i)
+          else:
+            optional = True
+        if optional:
+          # At least one optional column has no data. Adjust all column lists.
+          if not visible:
+            # All columns are optional and have no data => no output.
+            self._empty = True
+            return
+          self._visible = visible
+
+      labels = self._GetVisibleLabels()
+      subs = self._GetSubformatIndexes()
+
+      # Print items
+      for i, row in enumerate(rows):
+        if i:
+          self._out.write('\n')
+        for j in range(len(row)):
+          # Skip columns that have no data in entire column
+          if self._visible is not None and j not in self._visible:
+            continue
+          # Skip columns with subformats, which will be printed lastly
+          if j in subs:
+            continue
+          content = six.text_type(_Stringify(row[j]))
+          if labels and j < len(labels) and labels[j]:
+            self._out.write('{0}: {1}'.format(labels[j], content))
+          else:
+            self._out.write(content)
+          self._out.write('\n')
+        if self._subformats:
+          for subformat in self._subformats:
+            if subformat.printer:
+              subformat.printer.Print(row[subformat.index])
+              nested_output = subformat.out.getvalue()
+              # Indent the nested printer lines.
+              for k, line in enumerate(nested_output.split('\n')[:-1]):
+                if not k:
+                  self._out.write('\n')
+                self._out.write(line + '\n')
+              # Rewind the output buffer.
+              subformat.out.truncate(0)
+              subformat.out.seek(0)
+              self._out.write('\n')
+      self._rows = []
+      super(TablePrinter, self).Finish()
+      return
 
     # Stringify all column cells for all rows.
     rows = [[_Stringify(cell) for cell in row] for row in rows]

@@ -2316,6 +2316,8 @@ class ExecutionStageSummary(_messages.Message):
     kind: Type of tranform this stage is executing.
     name: Dataflow service generated name for this stage.
     outputSource: Output sources for this stage.
+    prerequisiteStage: Other stages that must complete before this stage can
+      run.
   """
 
   class KindValueValuesEnum(_messages.Enum):
@@ -2350,6 +2352,7 @@ class ExecutionStageSummary(_messages.Message):
   kind = _messages.EnumField('KindValueValuesEnum', 5)
   name = _messages.StringField(6)
   outputSource = _messages.MessageField('StageSource', 7, repeated=True)
+  prerequisiteStage = _messages.StringField(8, repeated=True)
 
 
 class FailedLocation(_messages.Message):

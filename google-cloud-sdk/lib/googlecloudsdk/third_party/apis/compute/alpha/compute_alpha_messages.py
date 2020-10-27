@@ -1424,6 +1424,9 @@ class AttachedDisk(_messages.Message):
       encryption keys, so you cannot use your own keys to encrypt disks in a
       managed instance group.
     diskSizeGb: The size of the disk in GB.
+    forceAttach: [Input Only] Whether to force attach the regional disk even
+      if it's currently attached to another instance. If you try to force
+      attach a zonal disk to an instance, you will receive an error.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read  Enabling guest
       operating system features to see a list of available options.
@@ -1524,18 +1527,19 @@ class AttachedDisk(_messages.Message):
   deviceName = _messages.StringField(3)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
   diskSizeGb = _messages.IntegerField(5)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 6, repeated=True)
-  index = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 8)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 9)
-  kind = _messages.StringField(10, default='compute#attachedDisk')
-  licenses = _messages.StringField(11, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 12)
-  savedState = _messages.EnumField('SavedStateValueValuesEnum', 13)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 14)
-  source = _messages.StringField(15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  userLicenses = _messages.StringField(17, repeated=True)
+  forceAttach = _messages.BooleanField(6)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
+  index = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('AttachedDiskInitializeParams', 9)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
+  kind = _messages.StringField(11, default='compute#attachedDisk')
+  licenses = _messages.StringField(12, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 13)
+  savedState = _messages.EnumField('SavedStateValueValuesEnum', 14)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 15)
+  source = _messages.StringField(16)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  userLicenses = _messages.StringField(18, repeated=True)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -1855,7 +1859,7 @@ class AuthorizationLoggingOptions(_messages.Message):
 class Autoscaler(_messages.Message):
   r"""Represents an Autoscaler resource.  Google Compute Engine has two
   Autoscaler resources:  *
-  [Global](/compute/docs/reference/rest/{$api_version}/autoscalers) *
+  [Zonal](/compute/docs/reference/rest/{$api_version}/autoscalers) *
   [Regional](/compute/docs/reference/rest/{$api_version}/regionAutoscalers)
   Use autoscalers to automatically add or delete instances from a managed
   instance group according to your defined autoscaling policy. For more
@@ -3507,6 +3511,8 @@ class BackendService(_messages.Message):
       when the backend service is referenced by a URL map that is bound to
       target gRPC proxy that has validateForProxyless field set to true.
     connectionDraining: A ConnectionDraining attribute.
+    connectionTrackingPolicy: A BackendServiceConnectionTrackingPolicy
+      attribute.
     consistentHash: Consistent Hash-based load balancing can be used to
       provide soft session affinity based on HTTP headers, cookies or other
       properties. This load balancing policy is applicable only for HTTP
@@ -3790,36 +3796,37 @@ class BackendService(_messages.Message):
   cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 3)
   circuitBreakers = _messages.MessageField('CircuitBreakers', 4)
   connectionDraining = _messages.MessageField('ConnectionDraining', 5)
-  consistentHash = _messages.MessageField('ConsistentHashLoadBalancerSettings', 6)
-  creationTimestamp = _messages.StringField(7)
-  customRequestHeaders = _messages.StringField(8, repeated=True)
-  customResponseHeaders = _messages.StringField(9, repeated=True)
-  description = _messages.StringField(10)
-  edgeSecurityPolicy = _messages.StringField(11)
-  enableCDN = _messages.BooleanField(12)
-  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 13)
-  fingerprint = _messages.BytesField(14)
-  healthChecks = _messages.StringField(15, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 16)
-  id = _messages.IntegerField(17, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(18, default='compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 19)
-  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 20)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 21)
-  name = _messages.StringField(22)
-  network = _messages.StringField(23)
-  outlierDetection = _messages.MessageField('OutlierDetection', 24)
-  port = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(26)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 27)
-  region = _messages.StringField(28)
-  securityPolicy = _messages.StringField(29)
-  securitySettings = _messages.MessageField('SecuritySettings', 30)
-  selfLink = _messages.StringField(31)
-  selfLinkWithId = _messages.StringField(32)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 33)
-  subsetting = _messages.MessageField('Subsetting', 34)
-  timeoutSec = _messages.IntegerField(35, variant=_messages.Variant.INT32)
+  connectionTrackingPolicy = _messages.MessageField('BackendServiceConnectionTrackingPolicy', 6)
+  consistentHash = _messages.MessageField('ConsistentHashLoadBalancerSettings', 7)
+  creationTimestamp = _messages.StringField(8)
+  customRequestHeaders = _messages.StringField(9, repeated=True)
+  customResponseHeaders = _messages.StringField(10, repeated=True)
+  description = _messages.StringField(11)
+  edgeSecurityPolicy = _messages.StringField(12)
+  enableCDN = _messages.BooleanField(13)
+  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 14)
+  fingerprint = _messages.BytesField(15)
+  healthChecks = _messages.StringField(16, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 17)
+  id = _messages.IntegerField(18, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(19, default='compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 20)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 21)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 22)
+  name = _messages.StringField(23)
+  network = _messages.StringField(24)
+  outlierDetection = _messages.MessageField('OutlierDetection', 25)
+  port = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(27)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 28)
+  region = _messages.StringField(29)
+  securityPolicy = _messages.StringField(30)
+  securitySettings = _messages.MessageField('SecuritySettings', 31)
+  selfLink = _messages.StringField(32)
+  selfLinkWithId = _messages.StringField(33)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 34)
+  subsetting = _messages.MessageField('Subsetting', 35)
+  timeoutSec = _messages.IntegerField(36, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -4150,6 +4157,68 @@ class BackendServiceCdnPolicyNegativeCachingPolicy(_messages.Message):
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   ttl = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class BackendServiceConnectionTrackingPolicy(_messages.Message):
+  r"""Connection Tracking configuration for this BackendService.
+
+  Enums:
+    ConnectionPersistenceOnUnhealthyBackendsValueValuesEnum: Specifies
+      connection persistence when backends are unhealthy. The default value is
+      DEFAULT_FOR_PROTOCOL.  If set to DEFAULT_FOR_PROTOCOL, the existing
+      connections persist on unhealthy backends only for connection-oriented
+      protocols (TCP and SCTP) and only if the Tracking Mode is PER_CONNECTION
+      (default tracking mode) or the Session Affinity is configured for
+      5-tuple. They do not persist for UDP.  If set to NEVER_PERSIST, after a
+      backend becomes unhealthy, the existing connections on the unhealthy
+      backend are never persisted on the unhealthy backend. They are always
+      diverted to newly selected healthy backends (unless all backends are
+      unhealthy).  If set to ALWAYS_PERSIST, existing connections always
+      persist on unhealthy backends regardless of protocol and session
+      affinity. It is generally not recommended to use this mode overriding
+      the default.
+
+  Fields:
+    connectionPersistenceOnUnhealthyBackends: Specifies connection persistence
+      when backends are unhealthy. The default value is DEFAULT_FOR_PROTOCOL.
+      If set to DEFAULT_FOR_PROTOCOL, the existing connections persist on
+      unhealthy backends only for connection-oriented protocols (TCP and SCTP)
+      and only if the Tracking Mode is PER_CONNECTION (default tracking mode)
+      or the Session Affinity is configured for 5-tuple. They do not persist
+      for UDP.  If set to NEVER_PERSIST, after a backend becomes unhealthy,
+      the existing connections on the unhealthy backend are never persisted on
+      the unhealthy backend. They are always diverted to newly selected
+      healthy backends (unless all backends are unhealthy).  If set to
+      ALWAYS_PERSIST, existing connections always persist on unhealthy
+      backends regardless of protocol and session affinity. It is generally
+      not recommended to use this mode overriding the default.
+  """
+
+  class ConnectionPersistenceOnUnhealthyBackendsValueValuesEnum(_messages.Enum):
+    r"""Specifies connection persistence when backends are unhealthy. The
+    default value is DEFAULT_FOR_PROTOCOL.  If set to DEFAULT_FOR_PROTOCOL,
+    the existing connections persist on unhealthy backends only for
+    connection-oriented protocols (TCP and SCTP) and only if the Tracking Mode
+    is PER_CONNECTION (default tracking mode) or the Session Affinity is
+    configured for 5-tuple. They do not persist for UDP.  If set to
+    NEVER_PERSIST, after a backend becomes unhealthy, the existing connections
+    on the unhealthy backend are never persisted on the unhealthy backend.
+    They are always diverted to newly selected healthy backends (unless all
+    backends are unhealthy).  If set to ALWAYS_PERSIST, existing connections
+    always persist on unhealthy backends regardless of protocol and session
+    affinity. It is generally not recommended to use this mode overriding the
+    default.
+
+    Values:
+      ALWAYS_PERSIST: <no description>
+      DEFAULT_FOR_PROTOCOL: <no description>
+      NEVER_PERSIST: <no description>
+    """
+    ALWAYS_PERSIST = 0
+    DEFAULT_FOR_PROTOCOL = 1
+    NEVER_PERSIST = 2
+
+  connectionPersistenceOnUnhealthyBackends = _messages.EnumField('ConnectionPersistenceOnUnhealthyBackendsValueValuesEnum', 1)
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
@@ -27591,7 +27660,7 @@ class DistributionPolicy(_messages.Message):
       may be distributed unevenly across zones in this mode. The default value
       is EVEN.
     zones: Zones where the regional managed instance group will create and
-      manage instances.
+      manage its instances.
   """
 
   class TargetShapeValueValuesEnum(_messages.Enum):
@@ -33432,8 +33501,8 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    distributionPolicy: Policy specifying intended distribution of instances
-      in regional managed instance group.
+    distributionPolicy: Policy specifying the intended distribution of managed
+      instances across zones in a regional managed instance group.
     failoverAction: The action to perform in case of zone failure. Only one
       value is supported, NO_FAILOVER. The default is NO_FAILOVER.
     fingerprint: Fingerprint of this resource. This field may be used in
@@ -33447,7 +33516,10 @@ class InstanceGroupManager(_messages.Message):
     instanceGroup: [Output Only] The URL of the Instance Group resource.
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create all
-      new instances in the managed instance group.
+      new instances in the managed instance group. The templates for existing
+      instances in the group do not change unless you run recreateInstances,
+      run applyUpdatesToInstances, or set the group's updatePolicy.type to
+      PROACTIVE.
     kind: [Output Only] The resource type, which is always
       compute#instanceGroupManager for managed instance groups.
     name: The name of the managed instance group. The name must be 1-63
@@ -33489,8 +33561,8 @@ class InstanceGroupManager(_messages.Message):
       one version must leave the targetSize field unset. That version will be
       applied to all remaining instances. For more information, read about
       canary updates.
-    zone: [Output Only] The URL of the zone where the managed instance group
-      is located (for zonal resources).
+    zone: [Output Only] The URL of a zone where the managed instance group is
+      located (for zonal resources).
   """
 
   class FailoverActionValueValuesEnum(_messages.Enum):
@@ -34147,7 +34219,11 @@ class InstanceGroupManagerVersion(_messages.Message):
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create new
       instances in the managed instance group until the `targetSize` for this
-      version is reached.
+      version is reached. The templates for existing instances in the group do
+      not change unless you run recreateInstances, run
+      applyUpdatesToInstances, or set the group's updatePolicy.type to
+      PROACTIVE; in those cases, existing instances are updated until the
+      `targetSize` for this version is reached.
     name: Name of the version. Unique among all versions in the scope of this
       managed instance group.
     tag: Tag describing the version. Used to trigger rollout of a target
@@ -34667,7 +34743,10 @@ class InstanceGroupManagersSetInstanceTemplateRequest(_messages.Message):
   Fields:
     instanceTemplate: The URL of the instance template that is specified for
       this managed instance group. The group uses this template to create all
-      new instances in the managed instance group.
+      new instances in the managed instance group. The templates for existing
+      instances in the group do not change unless you run recreateInstances,
+      run applyUpdatesToInstances, or set the group's updatePolicy.type to
+      PROACTIVE.
   """
 
   instanceTemplate = _messages.StringField(1)
@@ -36700,6 +36779,8 @@ class InterconnectAttachment(_messages.Message):
     customerRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on the customer router subinterface for this interconnect
       attachment.
+    dataplaneVersion: [Output Only] Dataplane version for this
+      InterconnectAttachment.
     description: An optional description of this resource.
     edgeAvailabilityDomain: Desired availability domain for the attachment.
       Only available for type PARTNER, at creation time, and can take one of
@@ -36988,30 +37069,31 @@ class InterconnectAttachment(_messages.Message):
   cloudRouterIpAddress = _messages.StringField(4)
   creationTimestamp = _messages.StringField(5)
   customerRouterIpAddress = _messages.StringField(6)
-  description = _messages.StringField(7)
-  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 8)
-  encryption = _messages.EnumField('EncryptionValueValuesEnum', 9)
-  googleReferenceId = _messages.StringField(10)
-  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(12)
-  ipsecInternalAddresses = _messages.StringField(13, repeated=True)
-  kind = _messages.StringField(14, default='compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  mtu = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  name = _messages.StringField(18)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 19)
-  pairingKey = _messages.StringField(20)
-  partnerAsn = _messages.IntegerField(21)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 22)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 23)
-  region = _messages.StringField(24)
-  router = _messages.StringField(25)
-  selfLink = _messages.StringField(26)
-  selfLinkWithId = _messages.StringField(27)
-  state = _messages.EnumField('StateValueValuesEnum', 28)
-  type = _messages.EnumField('TypeValueValuesEnum', 29)
-  vlanTag8021q = _messages.IntegerField(30, variant=_messages.Variant.INT32)
+  dataplaneVersion = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  description = _messages.StringField(8)
+  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 9)
+  encryption = _messages.EnumField('EncryptionValueValuesEnum', 10)
+  googleReferenceId = _messages.StringField(11)
+  id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(13)
+  ipsecInternalAddresses = _messages.StringField(14, repeated=True)
+  kind = _messages.StringField(15, default='compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  mtu = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  name = _messages.StringField(19)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 20)
+  pairingKey = _messages.StringField(21)
+  partnerAsn = _messages.IntegerField(22)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 23)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 24)
+  region = _messages.StringField(25)
+  router = _messages.StringField(26)
+  selfLink = _messages.StringField(27)
+  selfLinkWithId = _messages.StringField(28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  type = _messages.EnumField('TypeValueValuesEnum', 30)
+  vlanTag8021q = _messages.IntegerField(31, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -41147,11 +41229,9 @@ class NetworkInterface(_messages.Message):
       is assigned by the system.
     nicType: The type of vNIC to be used on this interface. This may be gVNIC
       or VirtioNet.
-    queueCount: The networking queue count for the network interface. Both Rx
-      and Tx queues will be set to this number. If it's not specified by the
-      user, a default number of queues will be assigned. For Virtio-net, each
-      interface will get (min(#vCPU, 32) / #vNIC) queues. For gVNIC, each
-      interface will get (min(#vCPU / 2, 16) / #vNIC) qeueus.
+    queueCount: The networking queue count that's specified by users for the
+      network interface. Both Rx and Tx queues will be set to this number.
+      It'll be empty if not specified by the users.
     stackType: The stack type for this network interface to identify whether
       the IPv6 feature is enabled or not. If not specified, IPV4_ONLY will be
       used.  This field can be both set at instance creation and update

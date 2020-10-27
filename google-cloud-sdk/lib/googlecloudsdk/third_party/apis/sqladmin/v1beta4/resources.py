@@ -17,8 +17,8 @@
 import enum
 
 
-BASE_URL = 'https://www.googleapis.com/sql/v1beta4/'
-DOCS_URL = 'https://cloud.google.com/sql/docs/reference/latest'
+BASE_URL = 'https://sqladmin.googleapis.com/sql/v1beta4/'
+DOCS_URL = 'https://developers.google.com/cloud-sql/'
 
 
 class Collections(enum.Enum):
@@ -28,42 +28,42 @@ class Collections(enum.Enum):
       'backupRuns',
       'projects/{project}/instances/{instance}/backupRuns/{id}',
       {},
-      [u'project', u'instance', u'id'],
+      ['project', 'instance', 'id'],
       True
   )
   DATABASES = (
       'databases',
       'projects/{project}/instances/{instance}/databases/{database}',
       {},
-      [u'project', u'instance', u'database'],
+      ['project', 'instance', 'database'],
       True
   )
   INSTANCES = (
       'instances',
       'projects/{project}/instances/{instance}',
       {},
-      [u'project', u'instance'],
+      ['project', 'instance'],
       True
   )
   OPERATIONS = (
       'operations',
       'projects/{project}/operations/{operation}',
       {},
-      [u'project', u'operation'],
+      ['project', 'operation'],
       True
   )
   SSLCERTS = (
       'sslCerts',
       'projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
       {},
-      [u'project', u'instance', u'sha1Fingerprint'],
+      ['project', 'instance', 'sha1Fingerprint'],
       True
   )
   PROJECTS = (
       'projects',
       'projects/{project}',
       {},
-      [u'project'],
+      ['project'],
       True
   )
 

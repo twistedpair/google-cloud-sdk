@@ -1157,6 +1157,38 @@ class RetryPolicy(_messages.Message):
   minimumBackoff = _messages.StringField(2)
 
 
+class SchemaSettings(_messages.Message):
+  r"""Settings for validating messages published against a schema.
+
+  Enums:
+    EncodingValueValuesEnum: The encoding of messages validated against
+      `schema`.
+
+  Fields:
+    encoding: The encoding of messages validated against `schema`.
+    schema: Required. The name of the schema that messages published should be
+      validated against. Format is `projects/{project}/schemas/{schema}`. The
+      value of this field will be `_deleted-schema_` if the schema has been
+      deleted.
+  """
+
+  class EncodingValueValuesEnum(_messages.Enum):
+    r"""The encoding of messages validated against `schema`.
+
+    Values:
+      ENCODING_UNSPECIFIED: Unspecified
+      JSON: JSON encoding
+      BINARY: Binary encoding, as defined by the schema type. For some schema
+        types, binary encoding may not be available.
+    """
+    ENCODING_UNSPECIFIED = 0
+    JSON = 1
+    BINARY = 2
+
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 1)
+  schema = _messages.StringField(2)
+
+
 class SeekRequest(_messages.Message):
   r"""Request for the `Seek` method.
 
@@ -1489,6 +1521,8 @@ class Topic(_messages.Message):
       (`-`), underscores (`_`), periods (`.`), tildes (`~`), plus (`+`) or
       percent signs (`%`). It must be between 3 and 255 characters in length,
       and it must not start with `"goog"`.
+    schemaSettings: Settings for validating messages published against a
+      schema.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1520,6 +1554,7 @@ class Topic(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 3)
   name = _messages.StringField(4)
+  schemaSettings = _messages.MessageField('SchemaSettings', 5)
 
 
 class UpdateSnapshotRequest(_messages.Message):

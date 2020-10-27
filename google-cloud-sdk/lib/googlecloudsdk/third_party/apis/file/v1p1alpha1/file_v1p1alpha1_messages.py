@@ -26,8 +26,8 @@ class Backup(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
-    capacityGb: Output only. Capacity of the backup. This would be the size of
-      the file share when the backup is restored.
+    capacityGb: Output only. Capacity of the source file share when the backup
+      was created.
     createTime: Output only. The time when the backup was created.
     description: A description of the backup with 2048 characters or less.
       Requests with longer descriptions will be rejected.
@@ -1478,8 +1478,8 @@ class Snapshot(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata.
 
   Fields:
-    capacityGb: Output only. Capacity of the snapshot. This would be the size
-      of the file share when the snapshot is restored.
+    capacityGb: Output only. Capacity of the source file share when the
+      snapshot was created.
     createTime: Output only. The time when the snapshot was created.
     description: A description of the snapshot with 2048 characters or less.
       Requests with longer descriptions will be rejected.
